@@ -105,22 +105,19 @@ const NameAudit = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -132,15 +129,13 @@ const NameAudit = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     chip: (active) => active
-      ? (isDark ? 'bg-cyan-900/40 border-cyan-500 text-cyan-200' : 'bg-cyan-100 border-cyan-500 text-cyan-800')
+      ? (isDark ? 'bg-[#1f2530] border-[#7fb3e0] text-zinc-100' : 'bg-[#eef3f8] border-[#142a43] text-[#142a43]')
       : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-200 text-gray-500 hover:border-gray-300'),
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State ───
   const [mode, setMode] = useState('analyze'); // 'analyze' | 'compare'
@@ -467,30 +462,30 @@ const NameAudit = ({ tool }) => {
     const mockups = {
       app_store: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_app_store')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_app_store')}</p>
           <div className="flex items-center gap-3">
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{initial}</div>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold ${isDark ? 'bg-[#2f6fb0] text-white' : 'bg-[#142a43] text-white'}`}>{initial}</div>
             <div>
               <p className={`font-bold ${c.text}`}>{n}</p>
-              <p className={`text-xs ${c.textMuteded}`}>{t('nau_mockup_rating', { industry: industry || t('nau_mockup_default_industry') })}</p>
-              <p className={`text-[10px] ${c.textMuteded}`}>{t('nau_mockup_domain', { slug })}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_mockup_rating', { industry: industry || t('nau_mockup_default_industry') })}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_mockup_domain', { slug })}</p>
             </div>
           </div>
         </div>
       ),
       business_card: (
         <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-zinc-600 bg-zinc-900' : 'border-gray-300 bg-white'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('nau_mockup_business_card')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('nau_mockup_business_card')}</p>
           <p className={`text-xl font-bold tracking-wide ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
-          <p className={`text-[10px] ${c.textMuteded} mt-1`}>{industry || t('nau_mockup_card_tagline')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mt-1`}>{industry || t('nau_mockup_card_tagline')}</p>
           <div className={`mt-3 pt-2 border-t ${c.border}`}>
-            <p className={`text-[10px] ${c.textMuteded}`}>{t('nau_mockup_card_contact', { slug })}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_mockup_card_contact', { slug })}</p>
           </div>
         </div>
       ),
       email_sig: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_email_sig')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_email_sig')}</p>
           <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
             <p className="font-semibold">{t('nau_mockup_person_name')}</p>
             <p>{t('nau_mockup_person_role')} <span className={`font-bold ${c.text}`}>{n}</span></p>
@@ -500,15 +495,15 @@ const NameAudit = ({ tool }) => {
       ),
       hero: (
         <div className={`p-6 rounded-lg border ${c.border} ${isDark ? 'bg-gradient-to-b from-zinc-800 to-zinc-900' : 'bg-gradient-to-b from-gray-50 to-white'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('nau_mockup_hero')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('nau_mockup_hero')}</p>
           <p className={`text-2xl font-bold ${c.text} mb-1`}>{n}</p>
           <p className={`text-sm ${c.textSecondary}`}>{industry ? t('nau_mockup_hero_tag', { industry: industry.toLowerCase() }) : t('nau_mockup_hero_tag_default')}</p>
-          <div className={`inline-block mt-3 px-4 py-1.5 rounded-full text-xs font-semibold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{t('nau_mockup_get_started')}</div>
+          <div className={`inline-block mt-3 px-4 py-1.5 rounded-full text-xs font-semibold ${isDark ? 'bg-[#2f6fb0] text-white' : 'bg-[#142a43] text-white'}`}>{t('nau_mockup_get_started')}</div>
         </div>
       ),
       browser_bar: (
         <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_browser_bar')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_browser_bar')}</p>
           <div className={`flex items-center gap-2 p-2 rounded border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300'}`}>
             <span className="text-xs">🔒</span>
             <span className={`text-sm font-mono ${c.text}`}>{t('nau_mockup_browser_url', { slug })}</span>
@@ -517,38 +512,38 @@ const NameAudit = ({ tool }) => {
       ),
       notification: (
         <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_notification')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_notification')}</p>
           <div className={`flex items-center gap-2.5 p-2.5 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} shadow`}>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}`}>{initial}</div>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${isDark ? 'bg-[#2f6fb0] text-white' : 'bg-[#142a43] text-white'}`}>{initial}</div>
             <div>
               <p className={`text-xs font-bold ${c.text}`}>{n}</p>
-              <p className={`text-[10px] ${c.textMuteded}`}>{t('nau_mockup_notif_body')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_mockup_notif_body')}</p>
             </div>
           </div>
         </div>
       ),
       spotify: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_spotify')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_spotify')}</p>
           <div className="flex items-center gap-3">
             <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold ${isDark ? 'bg-green-700 text-white' : 'bg-green-600 text-white'}`}>{initial}</div>
             <div>
               <p className={`font-bold ${c.text}`}>{n}</p>
-              <p className={`text-xs ${c.textMuteded}`}>{t('nau_mockup_listeners')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_mockup_listeners')}</p>
             </div>
           </div>
         </div>
       ),
       poster: (
         <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-zinc-500 bg-zinc-900' : 'border-gray-400 bg-gray-50'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('nau_mockup_poster')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('nau_mockup_poster')}</p>
           <p className={`text-3xl font-black tracking-wider uppercase ${c.text}`} style={{ fontFamily: 'Impact, sans-serif' }}>{n}</p>
-          <p className={`text-xs ${c.textMuteded} mt-2`}>{t('nau_mockup_poster_sub')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('nau_mockup_poster_sub')}</p>
         </div>
       ),
       merch: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_merch')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_merch')}</p>
           <div className={`py-6 rounded ${isDark ? 'bg-zinc-800' : 'bg-gray-800'}`}>
             <p className="text-white text-lg font-bold tracking-widest uppercase">{n}</p>
           </div>
@@ -556,29 +551,29 @@ const NameAudit = ({ tool }) => {
       ),
       packaging: (
         <div className={`p-4 rounded-lg border-2 ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-white'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_packaging')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_packaging')}</p>
           <p className={`text-lg font-bold tracking-wider ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
           <div className={`h-px ${isDark ? 'bg-zinc-600' : 'bg-gray-300'} my-1.5 mx-8`}></div>
-          <p className={`text-[10px] tracking-widest uppercase ${c.textMuteded}`}>{industry || t('nau_mockup_packaging_default')}</p>
+          <p className={`text-xs tracking-widest uppercase ${c.textMuteded}`}>{industry || t('nau_mockup_packaging_default')}</p>
         </div>
       ),
       birth_announcement: (
         <div className={`p-6 rounded-lg border-2 ${isDark ? 'border-emerald-700 bg-emerald-950/20' : 'border-emerald-300 bg-emerald-50'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_birth')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_birth')}</p>
           <p className={`text-xs tracking-widest uppercase ${c.textMuteded}`}>{t('nau_mockup_birth_welcome')}</p>
           <p className={`text-3xl font-light mt-1 ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>{n}</p>
-          <p className={`text-xs ${c.textMuteded} mt-1`}>{t('nau_mockup_birth_stats')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('nau_mockup_birth_stats')}</p>
         </div>
       ),
       nametag: (
         <div className={`p-4 rounded-lg border-2 ${isDark ? 'border-amber-700 bg-amber-950/20' : 'border-amber-300 bg-amber-50'} text-center`}>
-          <p className={`text-xs ${c.textMuteded} mb-1`}>{t('nau_mockup_nametag')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('nau_mockup_nametag')}</p>
           <p className={`text-2xl font-bold ${c.text}`}>{n}</p>
         </div>
       ),
       vet_record: (
         <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900' : 'bg-gray-50'}`}>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('nau_mockup_vet')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('nau_mockup_vet')}</p>
           <div className={`text-xs ${c.textSecondary} space-y-0.5`}>
             <p><span className="font-bold">{t('nau_mockup_vet_patient')}</span> <span className={`font-bold ${c.text}`}>{n}</span></p>
             <p>{t('nau_mockup_vet_species_line')}</p>
@@ -601,11 +596,11 @@ const NameAudit = ({ tool }) => {
     ).size;
     if (distinctCount < 2) return null;
     return (
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
           <span>📈</span> {t('nau_evolution_title')}
         </h3>
-        <p className={`text-xs ${c.textMuteded} mb-3`}>{t('nau_evolution_desc')}</p>
+        <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('nau_evolution_desc')}</p>
         <div className="flex items-end gap-1 h-24 mb-2">
           {evolutionTimeline.slice(-15).map((entry, i) => {
             const rank = VERDICT_ORDER[entry.verdict] || 3;
@@ -624,11 +619,11 @@ const NameAudit = ({ tool }) => {
           })}
         </div>
         <div className="flex justify-between">
-          <span className={`text-[9px] ${c.textMuteded}`}>{t('nau_evolution_older')}</span>
-          <span className={`text-[9px] ${c.textMuteded}`}>{t('nau_evolution_newer')}</span>
+          <span className={`text-[13px] ${c.textMuteded}`}>{t('nau_evolution_older')}</span>
+          <span className={`text-[13px] ${c.textMuteded}`}>{t('nau_evolution_newer')}</span>
         </div>
         <button onClick={() => { if (window.confirm(t('nau_evolution_clear_confirm'))) setEvolutionTimeline([]); }}
-          className={`text-xs ${c.textMuteded} hover:underline mt-2`}>{t('nau_evolution_clear')}</button>
+          className={`text-[13px] ${c.textMuteded} hover:underline mt-2`}>{t('nau_evolution_clear')}</button>
       </div>
     );
   };
@@ -813,9 +808,9 @@ const NameAudit = ({ tool }) => {
     const explainerKey = sectionExplainers[id];
     const explainerVisible = showExplainer[id];
     return (
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-        <button onClick={() => toggleSection(id)} className={`w-full flex items-center justify-between ${c.text}`}>
-          <h3 className="font-bold flex items-center gap-2">
+      <div className={`border-t ${c.border} pt-5`}>
+        <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(id)} className={`w-full flex items-center justify-between ${c.text}`}>
+          <h3 className="text-base font-bold flex items-center gap-2">
             <span>{icon}</span> {title}
             {explainerKey && (
               <span onClick={(e) => { e.stopPropagation(); toggleExplainer(id); }}
@@ -823,14 +818,14 @@ const NameAudit = ({ tool }) => {
                 title={t('nau_why_matter')}>ℹ️</span>
             )}
           </h3>
-          {<Caret open={isOpen} />}
+          {<span data-print-hide><Caret open={isOpen} /></span>}
         </button>
         {explainerVisible && explainerKey && (
           <div className={`mt-2 p-3 rounded-lg ${c.cardAlt} border text-sm`}>
             💡 {t(explainerKey)}
           </div>
         )}
-        {isOpen && <div className="mt-4">{children}</div>}
+        {<div data-sec-body hidden={!(isOpen)} className="mt-4">{children}</div>}
       </div>
     );
   };
@@ -894,13 +889,21 @@ const NameAudit = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ═══ Persistent Header ═══ */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🔍'}</span>{t('nau_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -911,6 +914,7 @@ const NameAudit = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
         </div>
         <div className="p-5 space-y-4">
@@ -934,7 +938,7 @@ const NameAudit = ({ tool }) => {
           {/* Analyze Mode */}
           {mode === 'analyze' && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-3`}>
-              <label className={`block text-xs font-semibold ${c.labelText} mb-1.5`}>{t('nau_label_the_name')} <span className={c.required}>*</span></label>
+              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('nau_label_the_name')} <span className={c.required}>*</span></label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && name.trim() && context) handleAnalyze(); }}
                 placeholder={t('nau_ph_the_name')}
@@ -944,7 +948,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Compare Mode */}
           {mode === 'compare' && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 space-y-3`}>
+            <div className={`border-t ${c.border} pt-5 space-y-3`}>
               <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('nau_label_names_to_compare')} <span className={c.required}>*</span></label>
               {compareNames.map((n, idx) => (
                 <div key={idx} className="flex gap-2">
@@ -978,7 +982,7 @@ const NameAudit = ({ tool }) => {
           )}
 
           {/* Context */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('nau_label_what_for')} <span className={c.required}>*</span></label>
             <div className="flex flex-wrap gap-2">
               {contexts.map(ct => (
@@ -991,8 +995,8 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* Optional */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 space-y-4`}>
-            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('nau_optional_heading')}</p>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
+            <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('nau_optional_heading')}</p>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_industry')}</label>
               <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
@@ -1011,7 +1015,7 @@ const NameAudit = ({ tool }) => {
             )}
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_priority')}</label>
-              <p className={`text-xs ${c.textMuteded} mb-1.5`}>{t('nau_priority_examples')}</p>
+              <p className={`text-[13px] ${c.textMuteded} mb-1.5`}>{t('nau_priority_examples')}</p>
               <input type="text" value={priority} onChange={(e) => setPriority(e.target.value)}
                 placeholder={t('nau_ph_priority')}
                 onKeyDown={(e) => { if (e.key === 'Enter') { mode === 'analyze' ? handleAnalyze() : handleCompare(); } }}
@@ -1037,16 +1041,16 @@ const NameAudit = ({ tool }) => {
 
           {/* Audit History */}
           {auditHistory.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-              <button onClick={() => setShowHistory(!showHistory)}
+            <div className={`border-t ${c.border} pt-5`}>
+              <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)}
                 className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className="flex items-center gap-2 font-semibold text-sm">
                   <span>📜</span> {t('nau_history_title', { count: auditHistory.length })}
                 </span>
-                <Caret open={showHistory} />
+                <span data-print-hide><Caret open={showHistory} /></span>
               </button>
-              {showHistory && (
-                <div className="mt-3 space-y-2">
+              {(
+                <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
                   {auditHistory.map((entry) => (
                     <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
                       <div className="flex-1 min-w-0">
@@ -1056,8 +1060,8 @@ const NameAudit = ({ tool }) => {
                           {entry.concernsCount > 0 && <span className={`text-xs px-1.5 py-0.5 rounded border ${c.warning}`}>{entry.concernsCount > 1 ? t('nau_concerns_other', { count: entry.concernsCount }) : t('nau_concerns_one', { count: entry.concernsCount })}</span>}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          {entry.context && <span className={`text-xs ${c.textMuteded}`}>{entry.context}</span>}
-                          <span className={`text-xs ${c.textMuteded}`}>
+                          {entry.context && <span className={`text-[13px] ${c.textMuteded}`}>{entry.context}</span>}
+                          <span className={`text-[13px] ${c.textMuteded}`}>
                             {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                           </span>
                         </div>
@@ -1069,7 +1073,7 @@ const NameAudit = ({ tool }) => {
                     </div>
                   ))}
                   <button onClick={() => { setAuditHistory([]); setShowHistory(false); }}
-                    className={`text-xs ${c.textMuteded} hover:underline mt-1`}>{t('nau_clear_history')}</button>
+                    className={`text-[13px] ${c.textMuteded} hover:underline mt-1`}>{t('nau_clear_history')}</button>
                 </div>
               )}
             </div>
@@ -1090,7 +1094,7 @@ const NameAudit = ({ tool }) => {
 
           {/* NameStorm cross-ref — hidden during loading to reduce scroll-jump distance */}
           {!loading && !compareLoading && (
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
               {t('nau_xref_pre').split('{{link}}').map((seg, i) => (
                 <React.Fragment key={i}>
                   {i > 0 && <a href="/NameStorm" className={linkStyle}>{t('nau_xref_namestorm')}</a>}
@@ -1178,7 +1182,7 @@ const NameAudit = ({ tool }) => {
         <div className="space-y-5">
 
           {/* Controls */}
-          <div id="nau-anchor-controls" className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 space-y-3`}>
+          <div id="nau-anchor-controls" className={`border-t ${c.border} pt-5 space-y-3`}>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-semibold ${c.text}`}>"{results.name_analyzed}"</span>
@@ -1194,7 +1198,7 @@ const NameAudit = ({ tool }) => {
                   <span>{allExpanded ? '🔼' : '🔽'}</span> {allExpanded ? t('nau_collapse_all') : t('nau_expand_all')}
                 </button>
                 <button onClick={() => setShowMockups(!showMockups)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${showMockups ? (isDark ? 'bg-cyan-900/40 text-cyan-200' : 'bg-cyan-100 text-cyan-700') : c.btnSecondary}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${showMockups ? (isDark ? 'bg-[#1f2530] text-zinc-100' : 'bg-[#eef3f8] text-[#142a43]') : c.btnSecondary}`}>
                   <span>🎨</span> {t('nau_mockups')}
                 </button>
               </div>
@@ -1231,7 +1235,7 @@ const NameAudit = ({ tool }) => {
                     {compareLoading ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> : t('nau_btn_go')}
                   </button>
                   <button onClick={() => { setAnalyzeToCompare(false); setCompareSecondName(''); }}
-                    className={`text-xs ${c.textMuteded}`}>✕</button>
+                    className={`text-[13px] ${c.textMuteded}`}>✕</button>
                 </>
               )}
             </div>
@@ -1266,7 +1270,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Check Before You Commit */}
           {results.check_before_you_commit?.length > 0 && (
-            <div id="nau-anchor-checklist" className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+            <div id="nau-anchor-checklist" className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>✅</span> {t('nau_checklist_title')}
               </h3>
@@ -1280,7 +1284,7 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── #9: Context Mockups Toggle (in controls area) ─── */}
           {results && showMockups && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>🎨</span> {t('nau_mockups_title')}
               </h3>
@@ -1340,7 +1344,7 @@ const NameAudit = ({ tool }) => {
                     <p className={`text-sm ${c.textSecondary}`}>{results.word_of_mouth[key]}</p>
                   </div>
                 ))}
-                <p className={`text-xs ${c.textMuteded} italic`}>{t('nau_wom_test_caption')}</p>
+                <p className={`text-[13px] ${c.textMuteded} italic`}>{t('nau_wom_test_caption')}</p>
               </div>
             </Section>
           )}
@@ -1477,14 +1481,14 @@ const NameAudit = ({ tool }) => {
                         </span>
                       ))}
                     </div>
-                    <p className={`text-xs ${c.textMuteded}`}>{t('nau_dns_disclaimer')}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_dns_disclaimer')}</p>
                   </div>
                 )}
                 {results.live_availability.suggested_handle && (
                   <div>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('nau_avail_social_title')}</p>
                     <p className={`text-sm font-mono ${c.text} mb-1`}>{t('nau_suggested_handle', { handle: results.live_availability.suggested_handle })}</p>
-                    <p className={`text-xs ${c.textMuteded}`}>{t('nau_social_disclaimer')}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{t('nau_social_disclaimer')}</p>
                   </div>
                 )}
               </div>
@@ -1492,7 +1496,7 @@ const NameAudit = ({ tool }) => {
           )}
 
           {/* ─── Test It With People ─── */}
-          <div id="nau-anchor-twp" className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          <div id="nau-anchor-twp" className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>👥</span> {t('nau_twp_title')}
             </h3>
@@ -1504,15 +1508,15 @@ const NameAudit = ({ tool }) => {
               <li>{t('nau_twp_q4')}</li>
               <li>{t('nau_twp_q5')}</li>
             </ol>
-            <p className={`text-xs ${c.textMuteded} italic mt-3`}>{t('nau_twp_dont_explain')}</p>
+            <p className={`text-[13px] ${c.textMuteded} italic mt-3`}>{t('nau_twp_dont_explain')}</p>
           </div>
 
           {/* ─── Context-Specific Deep Dive ─── */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔬</span> {context === 'Baby' ? t('nau_deepdive_title_baby') : context === 'Band / Music Project' ? t('nau_deepdive_title_music') : context === 'Pet' ? t('nau_deepdive_title_pet') : t('nau_deepdive_title_default')}
             </h3>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>
+            <p className={`text-[13px] ${c.textMuteded} mb-3`}>
               {context === 'Baby' ? t('nau_deepdive_desc_baby')
                 : context === 'Band / Music Project' ? t('nau_deepdive_desc_music')
                 : context === 'Pet' ? t('nau_deepdive_desc_pet')
@@ -1525,7 +1529,7 @@ const NameAudit = ({ tool }) => {
                 } disabled:opacity-40`}>
                 {deepDiveLoading ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {t('nau_deepdive_loading')}</>)
                   : (<><span>🔬</span> {t('nau_deepdive_btn')}
-                    <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{t('nau_pro_badge')}</span></>)}
+                    <span className={`text-xs px-1 py-0.5 rounded font-bold ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{t('nau_pro_badge')}</span></>)}
               </button>
             ) : (
               <div className="space-y-3">
@@ -1533,7 +1537,7 @@ const NameAudit = ({ tool }) => {
                   <div key={i} className={`p-3 rounded-lg ${severityStyle(section.severity)} ${section.severity ? 'border' : ''}`}>
                     <p className="text-xs font-bold mb-1">{section.title}</p>
                     <p className="text-sm">{section.finding}</p>
-                    {section.detail && <p className={`text-xs ${c.textMuteded} mt-1`}>{section.detail}</p>}
+                    {section.detail && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{section.detail}</p>}
                   </div>
                 ))}
                 {deepDiveResults.verdict && (
@@ -1547,11 +1551,11 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* ─── Challenge This Audit ─── */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
               <span>🔄</span> {t('nau_second_title')}
             </h3>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>
+            <p className={`text-[13px] ${c.textMuteded} mb-3`}>
               {t('nau_second_desc')}
             </p>
             {!secondOpinionResults ? (
@@ -1561,7 +1565,7 @@ const NameAudit = ({ tool }) => {
                 } disabled:opacity-40`}>
                 {secondOpinionLoading ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {t('nau_second_loading')}</>)
                   : (<><span>🔄</span> {t('nau_second_btn')}
-                    <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-cyan-900/50 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{t('nau_pro_badge')}</span></>)}
+                    <span className={`text-xs px-1 py-0.5 rounded font-bold ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{t('nau_pro_badge')}</span></>)}
               </button>
             ) : (
               <div className="space-y-3">
@@ -1608,7 +1612,7 @@ const NameAudit = ({ tool }) => {
             const scrollToId = (id) => { const el = document.getElementById(`nau-anchor-${id}`); if (el) revealSection(el); };
 
             return (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                   <span>→</span> {t('nau_next_steps')}
                 </h3>
@@ -1626,15 +1630,14 @@ const NameAudit = ({ tool }) => {
                     ⚡ {t('nau_next_explore')}
                   </a>
                 </div>
-                {isWeak && concerns && <p className={`text-xs ${c.textMuteded} mt-2`}>{t('nau_weak_note', { weaknesses: concerns })}</p>}
+                {isWeak && concerns && <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('nau_weak_note', { weaknesses: concerns })}</p>}
                 {/* Fix This Name — premium */}
                 <PremiumGate feature="nameAudit.fixThisName" label={t('nau_premium_fix_label')}>
                   <button onClick={handleFixThisName} disabled={fixLoading || !!fixResults}
                     className={`w-full mt-3 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                       fixResults ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-100 border border-gray-200 text-gray-400')
                       : fixLoading ? (isDark ? 'bg-zinc-700 border border-zinc-600 text-zinc-400' : 'bg-gray-200 border border-gray-200 text-gray-400')
-                      : isDark ? 'bg-cyan-900/30 border border-cyan-700 text-cyan-200 hover:bg-cyan-900/50'
-                        : 'bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100'
+                      : isDark ? 'bg-[#1f2530] border border-[#2c3a4a] text-zinc-100 hover:bg-[#1f2530]' : 'bg-[#eef3f8] border border-[#d4dde8] text-[#142a43] hover:bg-[#234568]'
                     } disabled:opacity-40`}
                   >
                     {fixLoading ? (<><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> {t('nau_fix_loading')}</>)
@@ -1648,7 +1651,7 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── Fix This Name Results ─── */}
           {fixResults && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                 <span>✨</span> {t('nau_fix_heading', { name: results?.name_analyzed })}
               </h3>
@@ -1669,12 +1672,12 @@ const NameAudit = ({ tool }) => {
                         </div>
                         <p className={`text-sm ${c.textSecondary} mt-1.5`}>{v.why_it_may_be_stronger}</p>
                         {v.what_it_addresses && (
-                          <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1 font-medium`}>
+                          <p className={`text-xs ${isDark ? 'text-[#a9cdef]' : 'text-[#165b9a]'} mt-1 font-medium`}>
                             → {t('nau_fix_fixes_prefix', { value: v.what_it_addresses })}
                           </p>
                         )}
                         {v.tradeoff && (
-                          <p className={`text-xs ${c.textMuteded} mt-1`}>{t('nau_fix_tradeoff', { value: v.tradeoff })}</p>
+                          <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('nau_fix_tradeoff', { value: v.tradeoff })}</p>
                         )}
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
@@ -1698,11 +1701,11 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── Naming Journal ─── */}
           {results && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>📝</span> {t('nau_journal_title')}
               </h3>
-              <p className={`text-xs ${c.textMuteded} mb-3`}>
+              <p className={`text-[13px] ${c.textMuteded} mb-3`}>
                 {t('nau_journal_desc')}
               </p>
               {/* Existing notes */}
@@ -1712,18 +1715,18 @@ const NameAudit = ({ tool }) => {
                     <div key={note.id} className={`flex items-start justify-between gap-2 p-2.5 rounded-lg ${c.cardAlt}`}>
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm ${c.textSecondary}`}>{note.text}</p>
-                        <p className={`text-xs ${c.textMuteded} mt-0.5`}>
+                        <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>
                           {new Date(note.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                         </p>
                       </div>
                       <button onClick={() => deleteJournalNote(results.name_analyzed, note.id)}
-                        className={`text-xs ${c.textMuteded} hover:${c.text} flex-shrink-0`}>✕</button>
+                        className={`text-[13px] ${c.textMuteded} hover:${c.text} flex-shrink-0`}>✕</button>
                     </div>
                   ))}
                 </div>
               )}
               {/* Add note input */}
-              <label className={`block text-xs font-semibold ${c.labelText} mb-1`}>
+              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
                 {t('nau_journal_add_label')} <span className={c.required}>*</span>
               </label>
               <input type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
@@ -1739,9 +1742,9 @@ const NameAudit = ({ tool }) => {
 
           {/* ─── Stakeholder Decision Kit (export CTA) ─── */}
           {results && (
-            <div className={`p-4 rounded-xl border-2 border-dashed ${isDark ? 'border-cyan-800' : 'border-cyan-300'} text-center`}>
+            <div className={`p-4 rounded-xl border-2 border-dashed ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'} text-center`}>
               <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('nau_share_team_title')}</p>
-              <p className={`text-xs ${c.textMuteded}`}>
+              <p className={`text-[13px] ${c.textMuteded}`}>
                 {t('nau_share_team_desc').split(/(\{\{copy\}\}|\{\{print\}\})/).map((seg, i) => (
                   seg === '{{copy}}' ? <strong key={i}>{t('nau_share_team_copy')}</strong>
                     : seg === '{{print}}' ? <strong key={i}>{t('nau_share_team_print')}</strong>
@@ -1753,7 +1756,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-800/50' : 'bg-gray-50'}`}>
-            <p className={`text-xs ${c.textMuteded}`}>
+            <p className={`text-[13px] ${c.textMuteded}`}>
               {t('nau_footer')}
             </p>
           </div>

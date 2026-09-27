@@ -323,21 +323,20 @@ const RentersDepositSaver = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -347,9 +346,7 @@ const RentersDepositSaver = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label       = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Ephemeral state ──
   const [step, setStep]               = useState(1); // 1=property details, 2=walkthrough, 3=results
@@ -756,19 +753,27 @@ const RentersDepositSaver = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden print:hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🏦'}</span>{t('rds_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading || streamLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             <div className="flex items-center gap-3">
               {hasProgress && step < 3 && !results && !streamLoading ? (
-                <div className={`flex items-center gap-1.5 text-xs ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+                <div className={`flex items-center gap-1.5 text-xs ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>
                   <span className="font-medium">{t('rds_progress_saved')}</span>
                 </div>
               ) : null}
@@ -778,6 +783,7 @@ const RentersDepositSaver = ({ tool }) => {
                 </button>
               ) : null}
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -800,12 +806,11 @@ const RentersDepositSaver = ({ tool }) => {
                 step === num
                   ? `bg-cyan-600 text-white shadow-md ${isDark ? 'shadow-emerald-900/40' : 'shadow-emerald-200'}`
                   : step > num
-                  ? isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-800/50 cursor-pointer'
-                    : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200 cursor-pointer'
+                  ? isDark ? 'bg-[#1f2530] text-[#a9cdef] hover:bg-[#1f2530] cursor-pointer' : 'bg-[#eef3f8] text-[#142a43] hover:bg-[#234568] cursor-pointer'
                   : isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-zinc-100 text-zinc-400'
               }`}
             >
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-black ${
                 step > num ? 'bg-cyan-500 text-white' : step === num ? 'bg-white/20 text-white' : ''
               }`}>
                 {step > num ? '✓' : num}
@@ -834,16 +839,16 @@ const RentersDepositSaver = ({ tool }) => {
               first, in one sentence; the full list stays a click away. */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
             <div className="flex items-start gap-3">
-              <span className={`flex-shrink-0 mt-0.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📷</span>
+              <span className={`flex-shrink-0 mt-0.5 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>📷</span>
               <div className="flex-1">
                 <h4 className={`text-sm font-bold ${c.text} mb-1`}>{t('rds_before_you_start')}</h4>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{t('rds_before_you_start_body')}</p>
-                <button onClick={() => setShowPhotoTips(v => !v)} aria-expanded={showPhotoTips}
-                  className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
-                  {t('rds_photo_tips')} <Caret open={showPhotoTips} />
+                <button data-print-heading onClick={() => setShowPhotoTips(v => !v)} aria-expanded={showPhotoTips}
+                  className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>
+                  {t('rds_photo_tips')} <span data-print-hide><Caret open={showPhotoTips} /></span>
                 </button>
-                {showPhotoTips && (
-                  <div className={`text-xs ${c.textSecondary} space-y-1 mt-2`}>
+                {(
+                  <div data-sec-body hidden={!(showPhotoTips)} className={`text-xs ${c.textSecondary} space-y-1 mt-2`}>
                     <p>{t('rds_photo_tip1')}</p>
                     <p>{t('rds_photo_tip2')}</p>
                     <p>{t('rds_photo_tip3')}</p>
@@ -855,10 +860,10 @@ const RentersDepositSaver = ({ tool }) => {
           </div>
 
           {/* ── Room selector bar ── */}
-          <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="flex items-center justify-between mb-3">
               <h2 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
-                <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📋</span>
+                <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>📋</span>
                 {t('rds_room_walkthrough')}
               </h2>
               <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
@@ -899,7 +904,7 @@ const RentersDepositSaver = ({ tool }) => {
                     <span className="hidden sm:inline">{roomLabel(room.name)}</span>
                     {room.included && isComplete && <span>✓</span>}
                     {room.included && !isComplete && roomTotal > 0 && (
-                      <span className={`text-[10px] font-bold ms-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-400'}`}>
+                      <span className={`text-xs font-bold ms-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-400'}`}>
                         {roomDone}/{roomTotal}
                       </span>
                     )}
@@ -943,7 +948,7 @@ const RentersDepositSaver = ({ tool }) => {
                     <button
                       onClick={() => duplicateRoom(activeRoom)}
                       className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg transition-colors ${
-                        isDark ? 'text-cyan-400 hover:bg-cyan-900/30' : 'text-cyan-600 hover:bg-cyan-50'
+                        isDark ? 'text-[#7fb3e0] hover:bg-[#1f2530]' : 'text-[#165b9a] hover:bg-[#eef3f8]'
                       }`}
                     >
                       ⧉
@@ -1040,7 +1045,7 @@ const RentersDepositSaver = ({ tool }) => {
                             ? `⚠️ ${t('rds_document_damage')}`
                             : `📝 ${t('rds_document_this')}`}
                         </p>
-                        <p className={`text-[11px] font-semibold ${c.textSecondary} mb-1`}>{t('rds_describe_it')}</p>
+                        <p className={`text-[13px] font-semibold ${c.textSecondary} mb-1`}>{t('rds_describe_it')}</p>
                         <textarea
                           value={cp.notes}
                           onChange={e => updateCheckpoint(activeRoom, cpIdx, 'notes', e.target.value)}
@@ -1057,7 +1062,7 @@ const RentersDepositSaver = ({ tool }) => {
                         {/* The tip names the thing they are standing in front of,
                             because "one wide shot" means nothing until it means
                             the whole window. */}
-                        <p className={`text-[11px] mt-1.5 ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>
+                        <p className={`text-[13px] mt-1.5 ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>
                           📷 {t('rds_shoot_item', { item: itemName(cp.label) })}
                         </p>
                       </div>
@@ -1069,9 +1074,7 @@ const RentersDepositSaver = ({ tool }) => {
                 <button
                   onClick={() => addCheckpoint(activeRoom)}
                   className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-dashed text-xs font-bold transition-colors ${
-                    isDark
-                      ? 'border-zinc-600 text-zinc-400 hover:border-cyan-600 hover:text-cyan-400'
-                      : 'border-zinc-300 text-zinc-400 hover:border-cyan-400 hover:text-cyan-600'
+                    isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-zinc-300 text-zinc-400 hover:border-[#142a43] hover:text-[#142a43]'
                   }`}
                 >
 
@@ -1082,7 +1085,7 @@ const RentersDepositSaver = ({ tool }) => {
           )}
 
           {/* Cross-ref */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('rds_xref_walkthrough')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('rds_lease_trap')}</a> {t('rds_xref_walkthrough_after')}
           </p>
 
@@ -1090,7 +1093,7 @@ const RentersDepositSaver = ({ tool }) => {
               going, not what they had just done. Counting what they found
               turns forty taps into a result, and says why there is a step
               after this one. */}
-          <div className={`rounded-2xl border p-4 ${isDark ? 'border-cyan-800 bg-cyan-900/20' : 'border-cyan-200 bg-cyan-50'}`}>
+          <div className={`rounded-2xl border p-4 ${isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]'}`}>
             <p className={`text-sm font-bold ${c.text}`}>{t('rds_walkthrough_done')}</p>
             <p className={`text-sm mt-1 ${c.textSecondary}`}>
               {flaggedCount > 0
@@ -1136,7 +1139,7 @@ const RentersDepositSaver = ({ tool }) => {
       {step === 1 && (
         <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-6 sm:p-8`}>
           <div className="flex items-center gap-2 mb-6">
-            <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>🏠</span>
+            <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>🏠</span>
             <h2 className={`text-xl font-bold ${c.text}`}>{t('rds_property_details')}</h2>
           </div>
 
@@ -1171,9 +1174,9 @@ const RentersDepositSaver = ({ tool }) => {
                       {/* ── Location bar + Rights lookup ── */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
             <div className="flex items-center gap-2 mb-3">
-              <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
-              <h3 className={`text-sm font-bold ${c.text}`}>{t('rds_your_location')}</h3>
-              <span className={`text-xs ${c.textMuteded}`}>{t('rds_for_law')}</span>
+              <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>⚖️</span>
+              <h3 className={`text-base font-bold ${c.text}`}>{t('rds_your_location')}</h3>
+              <span className={`text-[13px] ${c.textMuteded}`}>{t('rds_for_law')}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-3">
@@ -1246,7 +1249,7 @@ const RentersDepositSaver = ({ tool }) => {
                   <>
                     <div className="flex items-start justify-between mb-2">
                       <h4 className={`text-sm font-bold ${c.text} flex items-center gap-1.5`}>
-                        <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
+                        <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>⚖️</span>
                         {t('rds_deposit_rights_loc', { loc: locationString })}
                       </h4>
                       <div className="flex gap-1.5">
@@ -1266,7 +1269,7 @@ const RentersDepositSaver = ({ tool }) => {
                         <ul className="space-y-1 list-none">
                           {rightsResult.key_rights.map((kr, i) => (
                             <li key={i} className="flex items-start gap-1.5">
-                              <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'} shrink-0`}>•</span>
+                              <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} shrink-0`}>•</span>
                               <span>{kr}</span>
                             </li>
                           ))}
@@ -1312,7 +1315,7 @@ const RentersDepositSaver = ({ tool }) => {
             </div>
 
             <div className={`border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'} pt-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded} mb-3`}>{t('rds_landlord_optional')}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-3`}>{t('rds_landlord_optional')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>{t('rds_name')}</label>
@@ -1351,7 +1354,7 @@ const RentersDepositSaver = ({ tool }) => {
                   <button key={sp.room} type="button" aria-pressed={on}
                     onClick={() => idx >= 0 && toggleRoom(idx)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
-                      on ? (isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700')
+                      on ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
                          : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
                     }`}>
                     {on ? '☑' : '☐'} {t(sp.labelKey)}
@@ -1394,7 +1397,7 @@ const RentersDepositSaver = ({ tool }) => {
           {/* Section tabs — hidden on print so all sections flow cleanly */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-3 flex flex-wrap items-center gap-1.5 print:hidden`}>
             {streamLoading && (
-              <span className={`flex items-center gap-1.5 text-xs font-semibold me-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+              <span className={`flex items-center gap-1.5 text-xs font-semibold me-2 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>
                 <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏦'}</span>
                 {t('rds_generating')}
               </span>
@@ -1425,10 +1428,10 @@ const RentersDepositSaver = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-5 sm:p-6 ${expandedSection !== 'report' ? 'hidden print:block' : ''}`}>
               <div className="mb-4">
                 <h3 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📋</span>
+                  <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>📋</span>
                   {t('rds_condition_report')}
                 </h3>
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{t('rds_condition_sub')}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('rds_condition_sub')}</p>
               </div>
               <div className={`rounded-xl border p-5 text-sm leading-relaxed whitespace-pre-wrap font-mono ${
                 isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-zinc-50 border-zinc-200 text-gray-800'
@@ -1448,7 +1451,7 @@ const RentersDepositSaver = ({ tool }) => {
                   <span>📄</span>
                   {t('rds_landlord_letter')}
                 </h3>
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{t('rds_landlord_letter_sub')}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('rds_landlord_letter_sub')}</p>
               </div>
               <div className={`rounded-xl border p-5 text-sm leading-relaxed whitespace-pre-wrap ${
                 isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-zinc-50 border-zinc-200 text-gray-800'
@@ -1468,7 +1471,7 @@ const RentersDepositSaver = ({ tool }) => {
                   <span>📷</span>
                   {t('rds_photo_shot_list')}
                 </h3>
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{t('rds_photo_shot_list_sub')}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('rds_photo_shot_list_sub')}</p>
               </div>
               <div className={`rounded-xl border p-5 text-sm leading-relaxed whitespace-pre-wrap ${
                 isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-zinc-50 border-zinc-200 text-gray-800'
@@ -1485,10 +1488,10 @@ const RentersDepositSaver = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-5 sm:p-6 ${expandedSection !== 'rights' ? 'hidden print:block' : ''}`}>
               <div className="mb-4">
                 <h3 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
+                  <span className={`${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>⚖️</span>
                   {t('rds_your_rights')}
                 </h3>
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{t('rds_your_rights_sub', { loc: locationString })}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('rds_your_rights_sub', { loc: locationString })}</p>
               </div>
               <div className={`rounded-xl border p-5 text-sm leading-relaxed whitespace-pre-wrap ${
                 isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-zinc-50 border-zinc-200 text-gray-800'
@@ -1505,7 +1508,7 @@ const RentersDepositSaver = ({ tool }) => {
 
           {/* Move-out reminder */}
           {results.move_out_tips ? (
-            <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className="flex items-start gap-3">
                 <span>💡</span>
                 <div>
@@ -1533,8 +1536,8 @@ const RentersDepositSaver = ({ tool }) => {
               domain name. Absent, not empty, when the pre-pass didn't run or
               cited nothing — see renters-deposit-saver.js. */}
           {results.verified_sources?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-5`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔎 {t('rds_verified_sources_header')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔎 {t('rds_verified_sources_header')}</p>
               <div className="space-y-2">
                 {results.verified_sources.map((src, i) => (
                   <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
@@ -1546,8 +1549,8 @@ const RentersDepositSaver = ({ tool }) => {
           )}
 
           {/* Cross-references */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('rds_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔗 {t('rds_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/LeaseTrapDetector"         className={`text-xs ${linkStyle}`}>🏠 {t('rds_lease_trap')}</a>
               <a href="/ComplaintEscalationWriter" className={`text-xs ${linkStyle}`}>📝 {t('rds_complaint_writer')}</a>

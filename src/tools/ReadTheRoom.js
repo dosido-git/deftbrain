@@ -173,12 +173,12 @@ const ConvoLine = ({ label, emoji, text, accent = false, onSave, c, isDark, isSa
 
 const SectionBlock = ({ id, title, children, c, expandedSections, toggleSection }) => (
   <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-    <button onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between">
+    <button data-print-heading aria-expanded={!!(expandedSections[id])} onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between">
       <h3 className={`font-bold ${c.text}`}>{title}</h3>
-      <Caret open={expandedSections[id]} />
+      <span data-print-hide><Caret open={expandedSections[id]} /></span>
     </button>
-    {expandedSections[id] && (
-      <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>
+    {(
+      <div data-sec-body hidden={!(expandedSections[id])} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>
     )}
   </div>
 );
@@ -186,7 +186,7 @@ const SectionBlock = ({ id, title, children, c, expandedSections, toggleSection 
 // PF-31: every submit button carries the ⌘↵ chip, because the same global
 // keyboard handler covers every group/sub-action, not just a couple of them.
 const InputCard = ({ title, subtitle, children, onSubmit, btnLabel, btnIcon, c, loading, tool, playbookLength, t }) => (
-  <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+  <div className={`border-t ${c.border} pt-5 space-y-4`}>
     <h3 className={`font-bold ${c.text}`}>{title}</h3>
     {subtitle && (
       <p className={`text-sm ${c.textMuted}`}>
@@ -223,20 +223,17 @@ const ReadTheRoom = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    btnActive:     isDark ? 'bg-cyan-600 text-white border-cyan-500'
-                          : 'bg-cyan-600 text-white border-cyan-600',
+    btnActive:     isDark ? 'bg-[#2f6fb0] text-white border-[#7fb3e0]' : 'bg-[#142a43] text-white border-[#142a43]',
     btnInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700'
                           : 'bg-white text-gray-500 hover:text-gray-700 border-gray-200',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -256,9 +253,7 @@ const ReadTheRoom = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [group, setGroup] = useState('prepare');
@@ -750,14 +745,22 @@ const ReadTheRoom = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between">
             <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2 text-xl">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Read the Room'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rr_tagline')}</p>
+              {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                <span className="me-2 text-xl">{tool?.icon ?? '🎭'}</span>{tool?.tagline ?? t('rr_tagline')}
+              </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {hasAnyContent && (
@@ -766,6 +769,7 @@ const ReadTheRoom = ({ tool }) => {
                 {t('rr_reset')}
               </button>
             )}
+          </div>
           </div>
         </div>
         <div className="px-5 py-3 flex flex-wrap gap-1.5">
@@ -781,7 +785,7 @@ const ReadTheRoom = ({ tool }) => {
 
       {/* ── Sub-choice: a question with a real answer, not a second nav row ── */}
       {!subConfirmed && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+        <div className={`border-t ${c.border} pt-5 space-y-3`}>
           <h3 className={`font-bold ${c.text}`}>{t(QUESTION_KEY[group])}</h3>
           <div className="space-y-2">
             {SUB_ACTIONS[group].map(s => (
@@ -807,7 +811,7 @@ const ReadTheRoom = ({ tool }) => {
       {/* ══════════════════════════════════════════ */}
       {activeKey === 'prepare:event' && (
         <>
-          <p className={`text-xs ${c.textMuted} px-1`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>
             {t('rr_event_hard_convo').split('{{link}}').map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
@@ -818,7 +822,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_event_title')} subtitle={t('rr_event_subtitle')} onSubmit={handlePrepareEvent}
             btnLabel={t('rr_event_btn')} btnIcon="🎉" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_type')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_type')}<Req c={c} /></p>
               <TileGrid items={EVENTS} selected={eventType} onSelect={setEventType} c={c} t={t} />
               <button onClick={() => setEventType(eventType === 'other' ? '' : 'other')}
                 className={`mt-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
@@ -831,7 +835,7 @@ const ReadTheRoom = ({ tool }) => {
               )}
             </div>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_details')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_details')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
               <textarea value={eventDetails} onChange={e => setEventDetails(e.target.value)}
                 placeholder={t('rr_ph_event_details')} rows={2}
                 className={`w-full ${inp}`} />
@@ -840,7 +844,7 @@ const ReadTheRoom = ({ tool }) => {
             <input value={concerns} onChange={e => setConcerns(e.target.value)} placeholder={t('rr_ph_event_concerns')} className={`w-full ${inp}`} />
             <input value={topicsToAvoid} onChange={e => setTopicsToAvoid(e.target.value)} placeholder={t('rr_ph_event_avoid')} className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_feeling')}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_event_feeling')}</p>
               <div className="flex flex-wrap gap-2">
                 {COMFORT.map(cl => (
                   <button key={cl.id} onClick={() => setComfort(cl.id)}
@@ -863,7 +867,7 @@ const ReadTheRoom = ({ tool }) => {
                 <p className={`text-sm ${c.text} mt-1`}>{eventResult.what_to_aim_for}</p>
               </div>
               {eventResult.simple_plan?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+                <div className={`border-t ${c.border} pt-5 space-y-2`}>
                   <h3 className={`font-bold ${c.text}`}>{t('rr_simple_plan')}</h3>
                   {eventResult.simple_plan.map((step, i) => (
                     <p key={i} className={`text-sm ${c.textSecondary}`}>{i + 1}. {step}</p>
@@ -871,7 +875,7 @@ const ReadTheRoom = ({ tool }) => {
                 </div>
               )}
               {eventResult.starters?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+                <div className={`border-t ${c.border} pt-5 space-y-3`}>
                   <h3 className={`font-bold ${c.text}`}>{t('rr_starters')}</h3>
                   {eventResult.starters.map((s, i) => {
                     const tc = TONE_COLORS[s.tone] || TONE_COLORS.warm;
@@ -880,11 +884,11 @@ const ReadTheRoom = ({ tool }) => {
                         <div className="flex items-center gap-2 flex-wrap">
                           {s.moment && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{s.moment}</span>}
                           {s.tone && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? tc[0] : tc[1]}`}>{s.tone}</span>}
-                          {s.use_when && <span className={`text-xs ${c.textMuted}`}>{s.use_when}</span>}
+                          {s.use_when && <span className={`text-[13px] ${c.textMuted}`}>{s.use_when}</span>}
                         </div>
                         <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={s.say} accent
                           onSave={(line) => saveLine(line, effectiveEventType || eventDetails)} c={c} isDark={isDark} isSaved={isSaved} />
-                        {s.why_it_helps && <p className={`text-xs ${c.textMuted}`}>{s.why_it_helps}</p>}
+                        {s.why_it_helps && <p className={`text-[13px] ${c.textMuted}`}>{s.why_it_helps}</p>}
                       </div>
                     );
                   })}
@@ -907,7 +911,7 @@ const ReadTheRoom = ({ tool }) => {
                   <p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {eventResult.one_thing_to_remember}</p>
                 </div>
               )}
-              <p className={`text-xs ${c.textMuted}`}>
+              <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
                 {t('rr_event_say_hard').split('{{link}}').map((part, i, arr) => (
                   <React.Fragment key={i}>
                     {part}
@@ -930,7 +934,7 @@ const ReadTheRoom = ({ tool }) => {
             <input value={personName} onChange={e => setPersonName(e.target.value)}
               placeholder={t('rr_ph_person_name')} className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_person_relationship')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_person_relationship')}<Req c={c} /></p>
               <select value={personRelationship} onChange={e => setPersonRelationship(e.target.value)} className={`w-full ${inp}`}>
                 <option value="">{t('rr_select')}</option>
                 {RELATIONSHIPS.map(r => <option key={r.id} value={r.label}>{t(r.labelKey)}</option>)}
@@ -942,7 +946,7 @@ const ReadTheRoom = ({ tool }) => {
               )}
             </div>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_person_what_know')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_person_what_know')}<Req c={c} /></p>
               <textarea value={personKnow} onChange={e => setPersonKnow(e.target.value)}
                 placeholder={t('rr_ph_person_know')} rows={2} className={`w-full ${inp}`} />
             </div>
@@ -953,17 +957,17 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
 
           {trackedPeople.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+            <div className={`border-t ${c.border} pt-5 space-y-3`}>
               <h3 className={`font-bold ${c.text}`}>{t('rr_recurring_people')}</h3>
-              <p className={`text-xs ${c.textMuted}`}>{t('rr_recurring_subtitle')}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t('rr_recurring_subtitle')}</p>
               {trackedPeople.map((tp, tpIdx) => (
                 <div key={tpIdx} className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
                   <div className="flex items-center justify-between">
-                    <p className={`text-sm font-bold ${c.text}`}>{tp.name} <span className={`text-xs ${c.textMuted}`}>{t('rr_recurring_meta', { relationship: tp.relationship, count: tp.notes.length })}</span></p>
-                    <button onClick={() => setSelectedTrackedPerson(selectedTrackedPerson === tpIdx ? null : tpIdx)} className={`text-xs ${c.accentTxt}`}><Caret open={selectedTrackedPerson === tpIdx} /></button>
+                    <p className={`text-sm font-bold ${c.text}`}>{tp.name} <span className={`text-[13px] ${c.textMuted}`}>{t('rr_recurring_meta', { relationship: tp.relationship, count: tp.notes.length })}</span></p>
+                    <button data-print-heading aria-expanded={!!(selectedTrackedPerson === tpIdx)} onClick={() => setSelectedTrackedPerson(selectedTrackedPerson === tpIdx ? null : tpIdx)} className={`text-xs ${c.accentTxt}`}><span data-print-hide><Caret open={selectedTrackedPerson === tpIdx} /></span></button>
                   </div>
-                  {selectedTrackedPerson === tpIdx && (
-                    <div className="space-y-2">
+                  {(
+                    <div data-sec-body hidden={!(selectedTrackedPerson === tpIdx)} className="space-y-2">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <input ref={el => { trackedPeopleInputRefs.current[tpIdx] = el; }} value={personNoteTopics} onChange={e => setPersonNoteTopics(e.target.value)} placeholder={t('rr_ph_topics_worked')} className={`px-2 py-1.5 rounded-lg border text-xs ${c.input}`} />
                         <input value={personNoteBombed} onChange={e => setPersonNoteBombed(e.target.value)} placeholder={t('rr_ph_topics_bombed')} className={`px-2 py-1.5 rounded-lg border text-xs ${c.input}`} />
@@ -979,7 +983,7 @@ const ReadTheRoom = ({ tool }) => {
                         )}
                       </div>
                       {tp.notes.slice(0, 5).map((n, ni) => (
-                        <p key={ni} className={`text-xs ${c.textMuted}`}>[{n.date}] ✅ {n.topicsWorked || '—'} | ❌ {n.topicsBombed || '—'}{n.notes ? ` | ${n.notes}` : ''}</p>
+                        <p key={ni} className={`text-[13px] ${c.textMuted}`}>[{n.date}] ✅ {n.topicsWorked || '—'} | ❌ {n.topicsBombed || '—'}{n.notes ? ` | ${n.notes}` : ''}</p>
                       ))}
                     </div>
                   )}
@@ -1006,7 +1010,7 @@ const ReadTheRoom = ({ tool }) => {
               {personRefreshResult.fresh_things_to_try?.map((o, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={o.say} accent {...sp} />
-                  <p className={`text-xs ${c.textMuted}`}>{o.why_now}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{o.why_now}</p>
                 </div>
               ))}
               {personRefreshResult.one_wildcard && (
@@ -1032,9 +1036,9 @@ const ReadTheRoom = ({ tool }) => {
                 </div>
               )}
               {personResult.easy_ways_in?.map((s, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                <div key={i} className={`border-t ${c.border} pt-5 space-y-2`}>
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={s.say} accent onSave={(line) => saveLine(line, personName || effectivePersonRel)} {...sp} />
-                  {s.why && <p className={`text-xs ${c.textMuted}`}>{s.why}</p>}
+                  {s.why && <p className={`text-[13px] ${c.textMuted}`}>{s.why}</p>}
                 </div>
               ))}
               {personResult.questions_that_fit?.length > 0 && (
@@ -1057,7 +1061,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_group_title')} subtitle={t('rr_group_subtitle')} onSubmit={handlePrepareGroup}
             btnLabel={t('rr_group_btn')} btnIcon="👥" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_group_describe')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_group_describe')}<Req c={c} /></p>
               <textarea value={groupSituation} onChange={e => setGroupSituation(e.target.value)}
                 placeholder={t('rr_ph_group_describe')} rows={2} className={`w-full ${inp}`} />
             </div>
@@ -1079,7 +1083,7 @@ const ReadTheRoom = ({ tool }) => {
                 <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
                   {e.moment && <p className={`text-xs font-bold ${c.textMuted}`}>{e.moment}</p>}
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={e.say} accent onSave={(line) => saveLine(line, 'group')} {...sp} />
-                  {e.why_it_helps && <p className={`text-xs ${c.textMuted}`}>{e.why_it_helps}</p>}
+                  {e.why_it_helps && <p className={`text-[13px] ${c.textMuted}`}>{e.why_it_helps}</p>}
                 </div>
               ))}
               {groupResult.if_youre_not_included && (
@@ -1102,7 +1106,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_culture_title')} subtitle={t('rr_culture_subtitle')} onSubmit={handlePrepareCulture}
             btnLabel={t('rr_culture_btn')} btnIcon="🌍" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_culture_background')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_culture_background')}<Req c={c} /></p>
               <input value={cultureText} onChange={e => setCultureText(e.target.value)}
                 placeholder={t('rr_ph_culture_text')} className={`w-full ${inp}`} />
             </div>
@@ -1116,12 +1120,12 @@ const ReadTheRoom = ({ tool }) => {
           {cultureResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
               {cultureResult.norms_worth_checking?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+                <div className={`border-t ${c.border} pt-5 space-y-3`}>
                   <h3 className={`font-bold ${c.text}`}>{t('rr_norms_worth_checking')}</h3>
                   {cultureResult.norms_worth_checking.map((n, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <p className={`text-sm font-bold ${c.text}`}>{n.norm}</p>
-                      {n.why_it_might_matter && <p className={`text-xs ${c.textMuted}`}>{n.why_it_might_matter}</p>}
+                      {n.why_it_might_matter && <p className={`text-[13px] ${c.textMuted}`}>{n.why_it_might_matter}</p>}
                     </div>
                   ))}
                 </div>
@@ -1148,7 +1152,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_say_title')} subtitle={t('rr_say_subtitle')} onSubmit={() => handleNowSay(false)}
             btnLabel={t('rr_say_btn')} btnIcon="💬" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_situation')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_situation')}<Req c={c} /></p>
               <TileGrid items={QUICK_SCENARIOS} selected={quickScenario}
                 onSelect={(id) => { setQuickScenario(id === quickScenario ? '' : id); setQuickExclude([]); setQuickResult(null); }} c={c} t={t} />
               <button onClick={() => { setQuickScenario(quickScenario === 'other' ? '' : 'other'); setQuickOther(''); }}
@@ -1162,16 +1166,16 @@ const ReadTheRoom = ({ tool }) => {
               )}
             </div>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_who')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_say_who')} <span className={`font-normal ${c.textMuted}`}>{t('rr_optional')}</span></p>
               <TileGrid items={RELATIONSHIPS.map(r => ({ ...r, icon: '' }))} selected={quickRelationship} onSelect={setQuickRelationship} c={c} t={t} />
             </div>
           </InputCard>
 
           {quickResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+              <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={quickResult.say} accent onSave={(line) => saveLine(line, effectiveQuickScenario)} {...sp} />
-                <p className={`text-xs ${c.textMuted}`}>{quickResult.why_it_works}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{quickResult.why_it_works}</p>
                 {quickResult.if_they_respond_briefly && <p className={`text-xs ${c.textSecondary}`}>🤏 {quickResult.if_they_respond_briefly}</p>}
                 {quickResult.if_they_engage && <p className={`text-xs ${c.textSecondary}`}>💬 {quickResult.if_they_engage}</p>}
                 <button title={t('cmd_enter')} onClick={() => handleNowSay(true)} disabled={loading}
@@ -1201,7 +1205,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_stalled_title')} subtitle={t('rr_stalled_subtitle')} onSubmit={handleNowStalled}
             btnLabel={t('rr_stalled_btn')} btnIcon="⏸️" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_stalled_what')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_stalled_what')}<Req c={c} /></p>
               <textarea value={stalledWhat} onChange={e => setStalledWhat(e.target.value)}
                 placeholder={t('rr_ph_stalled_what')} rows={3} className={`w-full ${inp}`} />
             </div>
@@ -1219,17 +1223,17 @@ const ReadTheRoom = ({ tool }) => {
                 </div>
               )}
               {stalledResult.if_you_try_again && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                <div className={`border-t ${c.border} pt-5 space-y-2`}>
                   <p className={`text-xs font-bold ${c.text}`}>{t('rr_try_again')}</p>
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={stalledResult.if_you_try_again.say} accent {...sp} />
-                  {stalledResult.if_you_try_again.why_it_might_help && <p className={`text-xs ${c.textMuted}`}>{stalledResult.if_you_try_again.why_it_might_help}</p>}
+                  {stalledResult.if_you_try_again.why_it_might_help && <p className={`text-[13px] ${c.textMuted}`}>{stalledResult.if_you_try_again.why_it_might_help}</p>}
                 </div>
               )}
               {stalledResult.if_you_let_it_wind_down && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
                   <p className={`text-xs font-bold ${c.textMuted}`}>{t('rr_wind_down')}</p>
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={stalledResult.if_you_let_it_wind_down.say} {...sp} />
-                  {stalledResult.if_you_let_it_wind_down.why_thats_fine && <p className={`text-xs ${c.textMuted}`}>{stalledResult.if_you_let_it_wind_down.why_thats_fine}</p>}
+                  {stalledResult.if_you_let_it_wind_down.why_thats_fine && <p className={`text-[13px] ${c.textMuted}`}>{stalledResult.if_you_let_it_wind_down.why_thats_fine}</p>}
                 </div>
               )}
             </div>
@@ -1246,7 +1250,7 @@ const ReadTheRoom = ({ tool }) => {
             <h3 className={`font-bold ${isDark ? 'text-red-200' : 'text-red-800'}`}>{t('rr_awkward_title')}</h3>
             <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-600'}`}>{t('rr_awkward_subtitle')}</p>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_awkward_what')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_awkward_what')}<Req c={c} /></p>
               <textarea value={recoverySaid} onChange={e => setRecoverySaid(e.target.value)}
                 placeholder={t('rr_ph_be_specific')} rows={2} className={`w-full ${inp}`} />
             </div>
@@ -1269,14 +1273,14 @@ const ReadTheRoom = ({ tool }) => {
           </div>
           {recoveryResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-              <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
+              <div className={`border-t ${c.border} pt-5 space-y-2`}>
                 <p className={`text-sm ${c.textSecondary}`}>{recoveryResult.what_happened}</p>
                 {recoveryResult.do_you_need_to_fix_it?.answer && (
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{pinned(RECOVER_ANSWER_KEY, recoveryResult.do_you_need_to_fix_it.answer)}</span>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{pinned(RECOVER_ANSWER_KEY, recoveryResult.do_you_need_to_fix_it.answer)}</span>
                   </div>
                 )}
-                {recoveryResult.do_you_need_to_fix_it?.why && <p className={`text-xs ${c.textMuted}`}>{recoveryResult.do_you_need_to_fix_it.why}</p>}
+                {recoveryResult.do_you_need_to_fix_it?.why && <p className={`text-[13px] ${c.textMuted}`}>{recoveryResult.do_you_need_to_fix_it.why}</p>}
               </div>
               {recoveryResult.say_this_now && <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={recoveryResult.say_this_now} accent {...sp} />}
               {recoveryResult.or_just_keep_going && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">➡️ {recoveryResult.or_just_keep_going}</p></div>}
@@ -1299,9 +1303,9 @@ const ReadTheRoom = ({ tool }) => {
           {exitResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
               {exitResult.exit_lines?.map((l, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                <div key={i} className={`border-t ${c.border} pt-5 space-y-2`}>
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={l.say} accent onSave={(line) => saveLine(line, 'exit')} {...sp} />
-                  {l.move && <p className={`text-xs ${c.textMuted}`}>🚶 {l.move}</p>}
+                  {l.move && <p className={`text-[13px] ${c.textMuted}`}>🚶 {l.move}</p>}
                 </div>
               ))}
               {exitResult.one_thing_to_remember && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">💚 {exitResult.one_thing_to_remember}</p></div>}
@@ -1318,7 +1322,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_meant_title')} subtitle={t('rr_meant_subtitle')} onSubmit={handleDecodeMeant}
             btnLabel={t('rr_meant_btn')} btnIcon="🔎" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_meant_what')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_meant_what')}<Req c={c} /></p>
               <textarea value={theyDid} onChange={e => setTheyDid(e.target.value)}
                 placeholder={t('rr_ph_be_specific')} rows={3} className={`w-full ${inp}`} />
             </div>
@@ -1334,8 +1338,8 @@ const ReadTheRoom = ({ tool }) => {
           {decodeResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
               {decodeResult.my_read?.label && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                  <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{pinned(DECODE_LABEL_KEY, decodeResult.my_read.label)}</div>
+                <div className={`border-t ${c.border} pt-5 space-y-2`}>
+                  <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{pinned(DECODE_LABEL_KEY, decodeResult.my_read.label)}</div>
                   <p className={`text-sm ${c.text}`}>{decodeResult.my_read.explanation}</p>
                 </div>
               )}
@@ -1377,7 +1381,7 @@ const ReadTheRoom = ({ tool }) => {
           <InputCard title={t('rr_depth_title')} subtitle={t('rr_depth_subtitle')} onSubmit={handleDecodeDepth}
             btnLabel={t('rr_depth_btn')} btnIcon="📶" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_depth_what')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_depth_what')}<Req c={c} /></p>
               <textarea value={depthWhat} onChange={e => setDepthWhat(e.target.value)}
                 placeholder={t('rr_ph_depth_what')} rows={3} className={`w-full ${inp}`} />
             </div>
@@ -1408,13 +1412,13 @@ const ReadTheRoom = ({ tool }) => {
               )}
               <div className="grid sm:grid-cols-2 gap-3">
                 {depthResult.if_you_go_deeper?.say && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rr_depth_go_deeper')}</p>
                     <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={depthResult.if_you_go_deeper.say} accent {...sp} />
                   </div>
                 )}
                 {depthResult.if_you_keep_it_light?.say && (
-                  <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('rr_depth_keep_light')}</p>
                     <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={depthResult.if_you_keep_it_light.say} {...sp} />
                   </div>
@@ -1439,7 +1443,7 @@ const ReadTheRoom = ({ tool }) => {
             btnLabel={t(isRepair ? 'rr_badly_btn' : 'rr_sense_btn')} btnIcon={isRepair ? '😬' : '🧭'} c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <input value={afterEvent} onChange={e => setAfterEvent(e.target.value)} placeholder={t('rr_ph_after_event')} className={`w-full ${inp}`} />
             <div>
-              <p className={`text-xs font-semibold ${c.labelText} mb-1.5`}>{t('rr_after_what')}<Req c={c} /></p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('rr_after_what')}<Req c={c} /></p>
               <textarea value={afterWhat} onChange={e => setAfterWhat(e.target.value)}
                 placeholder={t(isRepair ? 'rr_ph_badly_what' : 'rr_ph_after_what')} rows={isRepair ? 4 : 2} className={`w-full ${inp}`} />
             </div>
@@ -1474,24 +1478,24 @@ const ReadTheRoom = ({ tool }) => {
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                   <p className={`text-sm ${c.text}`}>😬 {a.what_felt_bad}</p>
                   <p className={`text-sm ${c.textSecondary}`}>🔄 {a.another_way_to_read_it}</p>
-                  {a.next_time && <p className={`text-xs ${c.textMuted}`}>{a.next_time}</p>}
+                  {a.next_time && <p className={`text-[13px] ${c.textMuted}`}>{a.next_time}</p>}
                 </div>
               ))}
               {afterResult.plausible_turning_points?.map((pt, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4 space-y-1`}>
+                <div key={i} className={`border-t ${c.border} pt-5 space-y-1`}>
                   <p className={`text-sm font-bold ${c.text}`}>{pt.moment}</p>
                   {pt.why_it_may_have_mattered && <p className={`text-xs ${c.textSecondary}`}>{pt.why_it_may_have_mattered}</p>}
                 </div>
               ))}
               {afterResult.what_you_could_control?.length > 0 && (
                 <div className={`${c.infoBox} border rounded-xl p-5 space-y-1`}>
-                  <h3 className="font-bold text-sm">{t('rr_badly_could_control')}</h3>
+                  <h3 className="text-base font-bold text-sm">{t('rr_badly_could_control')}</h3>
                   {afterResult.what_you_could_control.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
                 </div>
               )}
               {afterResult.what_you_couldnt_know?.length > 0 && (
                 <div className={`${c.success} border rounded-xl p-5 space-y-1`}>
-                  <h3 className="font-bold text-sm">{t('rr_badly_couldnt_know')}</h3>
+                  <h3 className="text-base font-bold text-sm">{t('rr_badly_couldnt_know')}</h3>
                   {afterResult.what_you_couldnt_know.map((n, i) => <p key={i} className="text-sm">• {n}</p>)}
                 </div>
               )}
@@ -1512,11 +1516,11 @@ const ReadTheRoom = ({ tool }) => {
             btnLabel={t('rr_followup_btn')} btnIcon="💌" c={c} loading={loading} tool={tool} playbookLength={playbook.length} t={t}>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_followup_who')}<Req c={c} /></p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('rr_followup_who')}<Req c={c} /></p>
                 <input value={followUpWho} onChange={e => setFollowUpWho(e.target.value)} placeholder={t('rr_ph_followup_who')} className={inp} />
               </div>
               <div>
-                <p className={`text-xs font-semibold ${c.labelText} mb-1`}>{t('rr_followup_context')}<Req c={c} /></p>
+                <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('rr_followup_context')}<Req c={c} /></p>
                 <input value={followUpContext} onChange={e => setFollowUpContext(e.target.value)} placeholder={t('rr_ph_followup_context')} className={inp} />
               </div>
             </div>
@@ -1527,10 +1531,10 @@ const ReadTheRoom = ({ tool }) => {
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
               {followUpResult.timing && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">⏰ {followUpResult.timing}</p></div>}
               {followUpResult.messages?.map((m, i) => (
-                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}>
-                  <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{m.style}</span>
+                <div key={i} className={`border-t ${c.border} pt-5 space-y-2`}>
+                  <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{m.style}</span>
                   <div className={`${c.warningBox} border rounded-lg p-4`}><p className={`text-sm ${c.text}`}>{m.text}</p></div>
-                  {m.why && <p className={`text-xs ${c.textMuted}`}>{m.why}</p>}
+                  {m.why && <p className={`text-[13px] ${c.textMuted}`}>{m.why}</p>}
                 </div>
               ))}
               {followUpResult.if_no_reply && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">{t('rr_followup_if_no_reply')}</p><p className={`text-sm ${c.textSecondary}`}>{followUpResult.if_no_reply}</p></div>}
@@ -1544,8 +1548,8 @@ const ReadTheRoom = ({ tool }) => {
 
       {/* ── Post-result cross-refs ── */}
       {!results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('rr_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-semibold mb-3 ${c.textMuted}`}>{t('rr_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('rr_related_velvet')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('rr_related_difficult')}</a>
@@ -1554,8 +1558,8 @@ const ReadTheRoom = ({ tool }) => {
       )}
 
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('rr_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-semibold mb-3 ${c.textMuted}`}>{t('rr_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('rr_related_velvet')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('rr_related_difficult')}</a>
@@ -1584,13 +1588,13 @@ const ReadTheRoom = ({ tool }) => {
         </div>
         {showPlaybook && (
           <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
-            <p className={`text-xs ${c.textMuted}`}>{t('rr_playbook_subtitle')}</p>
+            <p className={`text-[13px] ${c.textMuted}`}>{t('rr_playbook_subtitle')}</p>
             {playbook.length === 0
               ? <p className={`text-sm ${c.textMuted}`}>{t('rr_playbook_empty')}</p>
               : playbook.map((p, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}>
-                  <div><p className={`text-sm font-medium ${c.text}`}>💡 {p.tactic}</p><p className={`text-xs ${c.textMuted}`}>{p.context}</p></div>
-                  <button onClick={() => setPlaybook(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted}`}>✕</button>
+                  <div><p className={`text-sm font-medium ${c.text}`}>💡 {p.tactic}</p><p className={`text-[13px] ${c.textMuted}`}>{p.context}</p></div>
+                  <button onClick={() => setPlaybook(prev => prev.filter((_, idx) => idx !== i))} className={`text-[13px] ${c.textMuted}`}>✕</button>
                 </div>
               ))}
           </div>
@@ -1601,19 +1605,19 @@ const ReadTheRoom = ({ tool }) => {
               ? <p className={`text-sm ${c.textMuted}`}>{t('rr_plans_empty')}</p>
               : gamePlans.map((gp, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-                  <button onClick={() => toggleSection(`plan-${i}`)} className="w-full flex items-start justify-between">
+                  <button data-print-heading aria-expanded={!!expandedSections[`plan-${i}`]} onClick={() => toggleSection(`plan-${i}`)} className="w-full flex items-start justify-between">
                     <div className="flex-1 min-w-0 text-start">
                       <p className={`text-sm font-bold ${c.text} truncate`}>{gp.label}</p>
-                      <p className={`text-xs ${c.textMuted}`}>{new Date(gp.timestamp).toLocaleDateString()}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>{new Date(gp.timestamp).toLocaleDateString()}</p>
                     </div>
-                    <Caret open={expandedSections[`plan-${i}`]} />
+                    <span data-print-hide><Caret open={expandedSections[`plan-${i}`]} /></span>
                   </button>
-                  {expandedSections[`plan-${i}`] && (
-                    <div className={`mt-2 pt-2 border-t ${c.border} space-y-1`}>
+                  {(
+                    <div data-sec-body hidden={!(expandedSections[`plan-${i}`])} className={`mt-2 pt-2 border-t ${c.border} space-y-1`}>
                       {gp.data?.what_to_aim_for && <p className={`text-sm ${c.textSecondary}`}>{gp.data.what_to_aim_for}</p>}
-                      {gp.data?.starters?.map((s, si) => <p key={si} className={`text-xs ${c.textMuted}`}>🗣️ "{s.say}"</p>)}
+                      {gp.data?.starters?.map((s, si) => <p key={si} className={`text-[13px] ${c.textMuted}`}>🗣️ "{s.say}"</p>)}
                       {gp.data?.one_thing_to_remember && <p className={`text-xs ${c.accentTxt}`}>{gp.data.one_thing_to_remember}</p>}
-                      <button onClick={() => setGamePlans(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted} mt-1`}>✕ {t('rr_remove')}</button>
+                      <button onClick={() => setGamePlans(prev => prev.filter((_, idx) => idx !== i))} className={`text-[13px] ${c.textMuted} mt-1`}>✕ {t('rr_remove')}</button>
                     </div>
                   )}
                 </div>
@@ -1622,30 +1626,30 @@ const ReadTheRoom = ({ tool }) => {
         )}
         {saved.length > 0 && (
           <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
-            <h4 className={`font-bold text-xs ${c.textMuted} uppercase`}>{t('rr_saved_title', { count: saved.length })}</h4>
+            <h4 className={`font-bold text-[13px] ${c.textMuted} uppercase`}>{t('rr_saved_title', { count: saved.length })}</h4>
             {saved.slice(0, 10).map((s, i) => (
               <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
-                <div><p className={`text-sm ${c.textSecondary} italic`}>"{s.line}"</p><p className={`text-xs ${c.textMuted}`}>{s.context}</p></div>
-                <button onClick={() => setSaved(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuted}`}>✕</button>
+                <div><p className={`text-sm ${c.textSecondary} italic`}>"{s.line}"</p><p className={`text-[13px] ${c.textMuted}`}>{s.context}</p></div>
+                <button onClick={() => setSaved(prev => prev.filter((_, idx) => idx !== i))} className={`text-[13px] ${c.textMuted}`}>✕</button>
               </div>
             ))}
           </div>
         )}
         {sessionHistory.length > 0 && (
           <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>
-            <button onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
-              <h3 className={`font-bold text-sm ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
-              <Caret open={expandedSections.sessionHistory} />
+            <button data-print-heading aria-expanded={!!(expandedSections.sessionHistory)} onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
+              <h3 className={`text-base font-bold ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
+              <span data-print-hide><Caret open={expandedSections.sessionHistory} /></span>
             </button>
-            {expandedSections.sessionHistory && (
-              <div className="mt-3 space-y-1">
+            {(
+              <div data-sec-body hidden={!(expandedSections.sessionHistory)} className="mt-3 space-y-1">
                 {sessionHistory.slice(0, 20).map((h, i) => (
                   <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
                     <span className={`text-sm ${c.textSecondary}`}>{h.preview}</span>
-                    <span className={`text-xs ${c.textMuted}`}>{new Date(h.timestamp).toLocaleDateString()}</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>{new Date(h.timestamp).toLocaleDateString()}</span>
                   </div>
                 ))}
-                <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('rr_clear')}</button>
+                <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted}`}>{t('rr_clear')}</button>
               </div>
             )}
           </div>

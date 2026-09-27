@@ -115,21 +115,20 @@ const SkillGapMap = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -139,15 +138,13 @@ const SkillGapMap = ({ tool }) => {
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     proofBg:       isDark ? 'bg-zinc-900/20' : 'bg-zinc-50',
     proofText:     isDark ? 'text-zinc-300' : 'text-zinc-700',
-    networkBg:     isDark ? 'bg-cyan-900/15' : 'bg-cyan-50',
+    networkBg:     isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]',
   };
   // Aliases
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State: Inputs ───
   const [currentRole, setCurrentRole] = useState('');
@@ -525,12 +522,20 @@ const SkillGapMap = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Persistent header — single reset always in same position */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className={`pb-3 border-b border-zinc-500`}>
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{toolTagline(tool?.tagline ?? t('sgm_tagline'))}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -542,16 +547,17 @@ const SkillGapMap = ({ tool }) => {
             )}
           </div>
         </div>
+        </div>
       </div>
 
       {/* ═══ INPUT ═══ */}
       {!hasResults && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {/* Mode toggle */}
             <div className="flex items-center gap-2">
               <button onClick={() => setMode('map')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'map' ? c.btnPrimary : c.btnSecondary}`}>{t('sgm_mode_map')}</button>
-              <button onClick={() => setMode('explore')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnSecondary}`}>{t('sgm_mode_explore')}</button>
+              <button onClick={() => setMode('explore')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'explore' ? `${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0]' : 'bg-[#142a43] hover:bg-[#234568]'} text-white` : c.btnSecondary}`}>{t('sgm_mode_explore')}</button>
             </div>
             {/* Inputs */}
             <div className={mode === 'map' ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : ''}>
@@ -596,7 +602,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* Quick transitions */}
           {mode === 'map' && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('sgm_popular_transitions')}</p>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -615,7 +621,7 @@ const SkillGapMap = ({ tool }) => {
             </div>
           )}
 
-          <p className={`text-xs text-center ${c.textMuteded} mb-2`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded} mb-2`}>
             {t('sgm_xref_brag').split('{{link}}').map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
@@ -626,7 +632,7 @@ const SkillGapMap = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={mode === 'map' ? handleAnalyze : handleExplore}
             disabled={loading || !currentRole.trim() || (mode === 'map' && !targetRole.trim())}
-            className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${(!currentRole.trim() || (mode === 'map' && !targetRole.trim())) ? c.btnIdle : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
+            className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${(!currentRole.trim() || (mode === 'map' && !targetRole.trim())) ? c.btnIdle : mode === 'explore' ? `${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0]' : 'bg-[#142a43] hover:bg-[#234568]'} text-white` : c.btnPrimary}`}>
             {loading ? (<><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? t('sgm_exploring') : t('sgm_mapping')}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> {t('sgm_explore_paths')}</>) : (<><span className="text-lg">🗺️</span> {t('sgm_map_gaps')}</>)}
           {!loading && (
             <kbd aria-hidden="true"
@@ -638,10 +644,10 @@ const SkillGapMap = ({ tool }) => {
 
 
           {savedMaps.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-4`}>
-              <button onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
+            <div className={`border-t ${c.border} pt-5`}>
+              <button data-print-heading aria-expanded={!!(expandedSections.saved)} onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_previous', { count: dedupedSavedMaps.length })}</span>
-                <Caret open={expandedSections.saved} />
+                <span data-print-hide><Caret open={expandedSections.saved} /></span>
               </button>
               {expandedSections.saved && dedupedSavedMaps.map((s, i) => (
                 <button key={i} onClick={() => { setCurrentRole(s.from); setTargetRole(s.to); setMode('map'); }}
@@ -667,34 +673,34 @@ const SkillGapMap = ({ tool }) => {
           card, and order here is presentation only — never a ranking. */}
       {exploreData && (
         <div className="space-y-5">
-          <div className={`${c.card} rounded-xl shadow-sm p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('sgm_explore_paths_from', { role: currentRole })}</p>
           </div>
 
           <div className="space-y-3">
             {exploreData.directions?.map((dir, i) => (
-              <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+              <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
                 <div className="flex items-start justify-between gap-3">
                   <h4 className={`text-lg font-bold ${c.text} flex-1`}>{dir.target_role}</h4>
                   <button onClick={() => selectExploreDirection(dir)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${c.btnPrimary} flex-shrink-0`}>{t('sgm_map_this')}</button>
                 </div>
                 <div className="mt-3 space-y-2">
                   <div>
-                    <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_why_connects')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('sgm_explore_why_connects')}</p>
                     <p className={`text-xs ${c.accentTxt}`}>{dir.why_it_connects}</p>
                   </div>
                   <div>
-                    <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_work_involves')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('sgm_explore_work_involves')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{dir.what_the_work_involves}</p>
                   </div>
                   <div className={`p-2 rounded ${c.cardAlt}`}>
-                    <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_learn_more')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('sgm_explore_learn_more')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{dir.worth_learning_more_about}</p>
                   </div>
                   {dir.one_way_to_investigate && (
                     <div>
-                      <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('sgm_explore_investigate')}</p>
-                      <p className={`text-xs ${c.textMuteded}`}>💡 {dir.one_way_to_investigate}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('sgm_explore_investigate')}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>💡 {dir.one_way_to_investigate}</p>
                     </div>
                   )}
                 </div>
@@ -704,7 +710,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* Not a "load more results" pattern — exploration stays open-
               ended rather than forcing a restart when the first set misses. */}
-          <div className={`${c.card} rounded-xl shadow-sm p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_explore_not_seeing_it')}</p>
             <div className="flex flex-wrap gap-2">
               <button onClick={() => handleExplore({ more: true })} disabled={exploreMoreLoading}
@@ -723,7 +729,7 @@ const SkillGapMap = ({ tool }) => {
                     placeholder={t('sgm_explore_whats_missing_ph')}
                     className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                   <button onClick={() => handleExplore()} disabled={loading}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold ${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white disabled:opacity-40 flex-shrink-0`}>
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold ${isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0]' : 'bg-[#142a43] hover:bg-[#234568]'} text-white disabled:opacity-40 flex-shrink-0`}>
                     {t('sgm_explore_regenerate')}
                   </button>
                 </div>
@@ -741,7 +747,7 @@ const SkillGapMap = ({ tool }) => {
           the answer. */}
       {results && (
         <div ref={resultsRef} className="scroll-mt-24 space-y-5">
-          <div className={`${c.card} rounded-xl shadow-sm p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm font-semibold ${c.text}`}>🗺️ {results.transition?.current} → {results.transition?.target}</p>
             {completedCount > 0 && <Badge c={c} type="success">{t('sgm_completed_badge', { count: completedCount })}</Badge>}
           </div>
@@ -751,12 +757,12 @@ const SkillGapMap = ({ tool }) => {
           {/* ─── STARTING POINT ─── unknowns framed here, once — the
               catch-all "Other Things We Can't Tell Yet" card at the bottom
               was the same caveat repeated as its own report section. */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold ${c.text} mb-2`}>{t('sgm_starting_point')}</h3>
             <p className={`text-sm ${c.text}`}>{results.starting_point?.summary}</p>
             {results.starting_point?.important_unknowns?.length > 0 && (
               <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mt-3`}>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_important_unknown')}</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('sgm_important_unknown')}</p>
                 {results.starting_point.important_unknowns.map((u, i) => (
                   <p key={i} className={`text-xs ${c.textSecondary} ${i > 0 ? 'mt-1' : ''}`}>• {u}</p>
                 ))}
@@ -770,11 +776,11 @@ const SkillGapMap = ({ tool }) => {
               gap (item 22). ✓ = confidence: direct, ~ = confidence: partial
               (plausibly relevant, but the input doesn't establish specifics). */}
           {results.transferable_strengths?.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className="flex items-center justify-between gap-3">
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🔄</span> {t('sgm_transferable')}</h3>
-                <button onClick={() => toggleSection('_transferable')} className={`text-xs font-semibold ${c.accentTxt} flex items-center gap-1 flex-shrink-0`}>
-                  {t('sgm_why_may_transfer')} <Caret open={!!expandedSections._transferable} />
+                <button data-print-heading aria-expanded={!!(!!expandedSections._transferable)} onClick={() => toggleSection('_transferable')} className={`text-xs font-semibold ${c.accentTxt} flex items-center gap-1 flex-shrink-0`}>
+                  {t('sgm_why_may_transfer')} <span data-print-hide><Caret open={!!expandedSections._transferable} /></span>
                 </button>
               </div>
               <div className="mt-3 space-y-1.5">
@@ -784,8 +790,8 @@ const SkillGapMap = ({ tool }) => {
                       <span className={ts.confidence === 'partial' ? c.textMuteded : (isDark ? 'text-emerald-400' : 'text-emerald-600')}>{ts.confidence === 'partial' ? '~' : '✓'}</span>
                       {' '}<span className="font-semibold">{ts.strength}</span>
                     </p>
-                    {expandedSections._transferable && (
-                      <p className={`text-xs ${c.textSecondary} ms-5 mt-0.5`}>{ts.evidence} → {ts.transfer}</p>
+                    {(
+                      <p data-sec-body hidden={!(expandedSections._transferable)} className={`text-xs ${c.textSecondary} ms-5 mt-0.5`}>{ts.evidence} → {ts.transfer}</p>
                     )}
                   </div>
                 ))}
@@ -798,18 +804,18 @@ const SkillGapMap = ({ tool }) => {
               model's stated reason for suggesting this one, not a claim
               that it's the most important gap. */}
           {results.start_here && (
-            <div className={`${c.card} rounded-2xl shadow-sm p-6 border-2 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt} mb-1`}>{t('sgm_start_here')}</p>
+            <div className={`${c.card} rounded-2xl shadow-sm p-6 border-2 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
+              <p className={`text-[13px] font-boldr ${c.accentTxt} mb-1`}>{t('sgm_start_here')}</p>
               <h3 className={`text-lg font-black ${c.text}`}>{results.start_here.capability}</h3>
               {results.start_here.why_it_matters && (
                 <>
-                  <p className={`text-[9px] font-bold uppercase tracking-wide ${c.textMuteded} mt-2`}>{t('sgm_why_this_one')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuteded} mt-2`}>{t('sgm_why_this_one')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{results.start_here.why_it_matters}</p>
                 </>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-                <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_current_evidence')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.current_evidence}</p></div>
-                <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_gap_label')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.gap}</p></div>
+                <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_current_evidence')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.current_evidence}</p></div>
+                <div className={`p-2 rounded ${c.cardAlt}`}><p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_gap_label')}</p><p className={`text-xs ${c.textSecondary}`}>{results.start_here.gap}</p></div>
               </div>
               {results.start_here.proof && <p className={`text-xs ${c.accentTxt} mt-2`}>🎯 {results.start_here.proof}</p>}
             </div>
@@ -820,11 +826,11 @@ const SkillGapMap = ({ tool }) => {
             <div className={`${c.warningBox} border rounded-xl p-5`}>
               <h4 className={`font-bold ${c.accentTxt} mb-2`}>{t('sgm_next_move')}</h4>
               <p className={`text-sm ${c.text}`}>{results.next_move.primary}</p>
-              {results.next_move.why && <p className={`text-xs ${c.textMuteded} mt-1 italic`}>{results.next_move.why}</p>}
+              {results.next_move.why && <p className={`text-[13px] ${c.textMuteded} mt-1 italic`}>{results.next_move.why}</p>}
               {results.next_move.proof && <p className={`text-xs ${c.accentTxt} mt-2`}>🎯 {results.next_move.proof}</p>}
               {results.next_move.alternatives?.length > 0 && (
                 <div className="mt-3">
-                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_other_options')}</p>
+                  <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('sgm_other_options')}</p>
                   {results.next_move.alternatives.map((alt, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {alt}</p>)}
                 </div>
               )}
@@ -840,25 +846,25 @@ const SkillGapMap = ({ tool }) => {
               <div className="p-5 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className={`p-3 rounded-lg border ${c.border} text-center`}>
-                    <p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_econ_current')}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_econ_current')}</p>
                     <p className={`text-lg font-black ${c.text}`}>{formatCurrency(economicsData.current_salary_range?.mid || 0, userLocale, userCurrency)}</p>
-                    <p className={`text-[9px] ${c.textMuteded}`}>{formatCurrency(economicsData.current_salary_range?.low || 0, userLocale, userCurrency)} – {formatCurrency(economicsData.current_salary_range?.high || 0, userLocale, userCurrency)}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{formatCurrency(economicsData.current_salary_range?.low || 0, userLocale, userCurrency)} – {formatCurrency(economicsData.current_salary_range?.high || 0, userLocale, userCurrency)}</p>
                   </div>
                   <div className={`p-3 rounded-lg ${c.warningBox} border text-center`}>
-                    <p className={`text-[9px] font-bold ${c.accentTxt}`}>{t('sgm_econ_delta')}</p>
+                    <p className={`text-xs font-bold ${c.accentTxt}`}>{t('sgm_econ_delta')}</p>
                     <p className={`text-lg font-black ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>+{economicsData.salary_delta?.expected_increase_percent}%</p>
-                    <p className={`text-[9px] ${c.accentTxt}`}>{t('sgm_econ_per_year', { amount: `+${formatCurrency(economicsData.salary_delta?.annual_dollar_increase || 0, userLocale, userCurrency)}` })}</p>
+                    <p className={`text-xs ${c.accentTxt}`}>{t('sgm_econ_per_year', { amount: `+${formatCurrency(economicsData.salary_delta?.annual_dollar_increase || 0, userLocale, userCurrency)}` })}</p>
                   </div>
                   <div className={`p-3 rounded-lg border ${c.border} text-center`}>
-                    <p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_econ_target')}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_econ_target')}</p>
                     <p className={`text-lg font-black ${c.text}`}>{formatCurrency(economicsData.target_salary_range?.mid || 0, userLocale, userCurrency)}</p>
-                    <p className={`text-[9px] ${c.textMuteded}`}>{formatCurrency(economicsData.target_salary_range?.low || 0, userLocale, userCurrency)} – {formatCurrency(economicsData.target_salary_range?.high || 0, userLocale, userCurrency)}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{formatCurrency(economicsData.target_salary_range?.low || 0, userLocale, userCurrency)} – {formatCurrency(economicsData.target_salary_range?.high || 0, userLocale, userCurrency)}</p>
                   </div>
                 </div>
                 {economicsData.salary_delta?.realistic_starting_salary && <p className={`text-xs ${c.warning} border rounded-lg p-2`}>{t('sgm_econ_realistic', { offer: economicsData.salary_delta.realistic_starting_salary })}</p>}
                 {economicsData.transition_costs?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_econ_transition_costs')}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('sgm_econ_transition_costs')}</p>
                     {economicsData.transition_costs.map((tc, i) => (
                       <div key={i} className={`flex items-center justify-between text-xs py-1 border-b ${c.border}`}>
                         <span className={c.text}>{tc.item}</span>
@@ -873,7 +879,7 @@ const SkillGapMap = ({ tool }) => {
                 )}
                 {economicsData.roi_analysis && (
                   <div className={`${economicsData.roi_analysis.verdict?.startsWith('Strong') || economicsData.roi_analysis.verdict?.startsWith('Good') ? c.success : c.warning} border rounded-lg p-4`}>
-                    <p className="text-[10px] font-bold mb-1">{t('sgm_econ_roi_verdict', { verdict: economicsData.roi_analysis.verdict })}</p>
+                    <p className="text-xs font-bold mb-1">{t('sgm_econ_roi_verdict', { verdict: economicsData.roi_analysis.verdict })}</p>
                     <p className="text-xs">{t('sgm_econ_payback', { months: economicsData.roi_analysis.payback_period_months, y3: economicsData.roi_analysis.year_3_cumulative, y5: economicsData.roi_analysis.year_5_cumulative })}</p>
                   </div>
                 )}
@@ -885,8 +891,8 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── COMPANY FIT ─── */}
           {companyData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
-              <div className={`p-5 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
+              <div className={`p-5 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🏢</span> {t('sgm_company_title')}</h4>
               </div>
               <div className="p-5 space-y-3">
@@ -897,28 +903,28 @@ const SkillGapMap = ({ tool }) => {
                       <Badge c={c} type={ct.fit_score >= 70 ? 'success' : ct.fit_score >= 50 ? 'warning' : 'info'}>{t('sgm_company_fit', { score: ct.fit_score })}</Badge>
                     </div>
                     <p className={`text-xs ${c.textSecondary} mb-1`}>{ct.why_good_for_you}</p>
-                    <p className={`text-[10px] ${c.textMuteded}`}>🔍 {ct.what_to_search}</p>
-                    {ct.interview_advantage && <p className={`text-[10px] ${c.accentTxt} mt-1`}>💪 {ct.interview_advantage}</p>}
-                    {ct.typical_titles?.length > 0 && <div className="flex flex-wrap gap-1 mt-1">{ct.typical_titles.map((tt, ti) => <span key={ti} className={`text-[9px] px-1.5 py-0.5 rounded ${c.cardAlt} ${c.textMuteded}`}>{tt}</span>)}</div>}
+                    <p className={`text-[13px] ${c.textMuteded}`}>🔍 {ct.what_to_search}</p>
+                    {ct.interview_advantage && <p className={`text-xs ${c.accentTxt} mt-1`}>💪 {ct.interview_advantage}</p>}
+                    {ct.typical_titles?.length > 0 && <div className="flex flex-wrap gap-1 mt-1">{ct.typical_titles.map((tt, ti) => <span key={ti} className={`text-xs px-1.5 py-0.5 rounded ${c.cardAlt} ${c.textMuteded}`}>{tt}</span>)}</div>}
                   </div>
                 ))}
                 {companyData.stealth_targets && (
-                  <div className={`${isDark ? 'bg-cyan-900/15 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border rounded-lg p-4`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-1`}>{t('sgm_company_stealth')}</p>
+                  <div className={`${isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]'} border rounded-lg p-4`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'} mb-1`}>{t('sgm_company_stealth')}</p>
                     <p className={`text-xs font-bold ${c.text}`}>{companyData.stealth_targets.type}</p>
                     <p className={`text-xs ${c.textSecondary} mt-1`}>{companyData.stealth_targets.why_surprising}</p>
                   </div>
                 )}
                 {companyData.avoid_types?.length > 0 && companyData.avoid_types.map((at, i) => (
                   <div key={i} className={`p-3 rounded-lg ${c.danger} border`}>
-                    <p className="text-xs font-bold">⚠️ {at.type}</p><p className="text-[10px]">{at.why_avoid}</p>
-                    {at.exception && <p className={`text-[10px] ${c.accentTxt} mt-1`}>{t('sgm_company_exception', { exception: at.exception })}</p>}
+                    <p className="text-xs font-bold">⚠️ {at.type}</p><p className="text-xs">{at.why_avoid}</p>
+                    {at.exception && <p className={`text-xs ${c.accentTxt} mt-1`}>{t('sgm_company_exception', { exception: at.exception })}</p>}
                   </div>
                 ))}
                 {companyData.application_strategy && (
                   <div className={`${c.cardAlt} rounded-lg p-3`}>
-                    <p className={`text-[10px] ${c.text}`}>{t('sgm_company_expect', { ratio: companyData.application_strategy.apply_ratio, channel: companyData.application_strategy.best_channel })}</p>
-                    <p className={`text-[10px] ${c.accentTxt}`}>⏰ {companyData.application_strategy.timing}</p>
+                    <p className={`text-xs ${c.text}`}>{t('sgm_company_expect', { ratio: companyData.application_strategy.apply_ratio, channel: companyData.application_strategy.best_channel })}</p>
+                    <p className={`text-xs ${c.accentTxt}`}>⏰ {companyData.application_strategy.timing}</p>
                   </div>
                 )}
               </div>
@@ -934,63 +940,63 @@ const SkillGapMap = ({ tool }) => {
               <div className="p-5 space-y-4">
                 {interviewData.transition_story && (
                   <div className={`${c.warningBox} border rounded-lg p-4`}>
-                    <p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{t('sgm_interview_story')}</p>
+                    <p className={`text-xs font-bold ${c.accentTxt} mb-1`}>{t('sgm_interview_story')}</p>
                     <p className={`text-sm ${c.text} italic mb-2`}>"{interviewData.transition_story.the_narrative}"</p>
                     <p className={`text-xs ${c.accentTxt} font-semibold`}>{t('sgm_interview_bridge', { bridge: interviewData.transition_story.the_bridge })}</p>
-                    <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'} mt-1`}>{t('sgm_interview_never_say', { phrase: interviewData.transition_story.what_to_never_say })}</p>
+                    <p className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'} mt-1`}>{t('sgm_interview_never_say', { phrase: interviewData.transition_story.what_to_never_say })}</p>
                   </div>
                 )}
                 {interviewData.transition_questions?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-red-300' : 'text-red-700'} mb-2`}>{t('sgm_interview_transition_qs')}</p>
+                    <p className={`text-xs font-bold ${isDark ? 'text-red-300' : 'text-red-700'} mb-2`}>{t('sgm_interview_transition_qs')}</p>
                     {interviewData.transition_questions.map((tq, i) => (
                       <div key={i} className={`p-3 rounded-lg border ${c.border} mb-2`}>
                         <p className={`text-xs font-bold ${c.text} mb-1`}>{t('sgm_interview_q_prefix', { question: tq.question })}</p>
-                        <p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('sgm_interview_want_to_know', { reason: tq.why_they_ask })}</p>
-                        <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>{t('sgm_interview_landmine', { landmine: tq.landmine })}</p>
-                        <p className={`text-[10px] ${c.textSecondary}`}>{t('sgm_interview_framework', { framework: tq.framework })}</p>
-                        {tq.key_phrase && <p className={`text-[10px] ${c.accentTxt} mt-0.5`}>{t('sgm_interview_key_phrase', { phrase: tq.key_phrase })}</p>}
-                        {tq.example_opener && <p className={`text-[10px] ${c.accentTxt} mt-1 italic`}>{t('sgm_interview_open_with', { opener: tq.example_opener })}</p>}
+                        <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('sgm_interview_want_to_know', { reason: tq.why_they_ask })}</p>
+                        <p className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>{t('sgm_interview_landmine', { landmine: tq.landmine })}</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{t('sgm_interview_framework', { framework: tq.framework })}</p>
+                        {tq.key_phrase && <p className={`text-xs ${c.accentTxt} mt-0.5`}>{t('sgm_interview_key_phrase', { phrase: tq.key_phrase })}</p>}
+                        {tq.example_opener && <p className={`text-xs ${c.accentTxt} mt-1 italic`}>{t('sgm_interview_open_with', { opener: tq.example_opener })}</p>}
                       </div>
                     ))}
                   </div>
                 )}
                 {interviewData.behavioral_questions?.length > 0 && (
                   <div>
-                    <button onClick={() => toggleSection('behavioral')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>💬</span> {t('sgm_interview_behavioral', { count: interviewData.behavioral_questions.length })} <Caret open={expandedSections.behavioral} /></button>
+                    <button data-print-heading aria-expanded={!!(expandedSections.behavioral)} onClick={() => toggleSection('behavioral')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>💬</span> {t('sgm_interview_behavioral', { count: interviewData.behavioral_questions.length })} <span data-print-hide><Caret open={expandedSections.behavioral} /></span></button>
                     {expandedSections.behavioral && interviewData.behavioral_questions.map((bq, i) => (
                       <div key={i} className={`p-3 rounded-lg ${c.cardAlt} mt-2`}>
                         <p className={`text-xs font-bold ${c.text}`}>{bq.question}</p>
-                        <p className={`text-[10px] ${c.textSecondary}`}>{t('sgm_interview_story_from', { source: bq.best_story_from })}</p>
-                        <p className={`text-[10px] ${c.accentTxt} italic`}>"{bq.opening_line}"</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{t('sgm_interview_story_from', { source: bq.best_story_from })}</p>
+                        <p className={`text-xs ${c.accentTxt} italic`}>"{bq.opening_line}"</p>
                       </div>
                     ))}
                   </div>
                 )}
                 {interviewData.questions_to_ask?.length > 0 && (
                   <div>
-                    <button onClick={() => toggleSection('ask')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>❓</span> {t('sgm_interview_smart_qs', { count: interviewData.questions_to_ask.length })} <Caret open={expandedSections.ask} /></button>
+                    <button data-print-heading aria-expanded={!!(expandedSections.ask)} onClick={() => toggleSection('ask')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>❓</span> {t('sgm_interview_smart_qs', { count: interviewData.questions_to_ask.length })} <span data-print-hide><Caret open={expandedSections.ask} /></span></button>
                     {expandedSections.ask && interviewData.questions_to_ask.map((qa, i) => (
                       <div key={i} className={`p-2 rounded-lg ${c.cardAlt} mt-1.5`}>
                         <p className={`text-xs ${c.text}`}>{qa.question}</p>
-                        <p className={`text-[10px] ${c.accentTxt}`}>{qa.why_smart}</p>
+                        <p className={`text-xs ${c.accentTxt}`}>{qa.why_smart}</p>
                       </div>
                     ))}
                   </div>
                 )}
                 {interviewData.technical_questions?.length > 0 && (
                   <div>
-                    <button onClick={() => toggleSection('technical')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>🔧</span> {t('sgm_interview_technical_qs', { count: interviewData.technical_questions.length })} <Caret open={expandedSections.technical} /></button>
+                    <button data-print-heading aria-expanded={!!(expandedSections.technical)} onClick={() => toggleSection('technical')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>🔧</span> {t('sgm_interview_technical_qs', { count: interviewData.technical_questions.length })} <span data-print-hide><Caret open={expandedSections.technical} /></span></button>
                     {expandedSections.technical && interviewData.technical_questions.map((tq, i) => (
                       <div key={i} className={`p-3 rounded-lg border ${c.border} mt-2`}>
                         <p className={`text-xs font-bold ${c.text}`}>{tq.question}</p>
-                        {tq.honest_answer_if_learning && <p className={`text-[10px] ${c.textSecondary} mt-0.5`}>{t('sgm_interview_if_learning', { answer: tq.honest_answer_if_learning })}</p>}
-                        {tq.bridge_from_current && <p className={`text-[10px] ${c.accentTxt} mt-0.5`}>{t('sgm_interview_tech_bridge', { bridge: tq.bridge_from_current })}</p>}
+                        {tq.honest_answer_if_learning && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{t('sgm_interview_if_learning', { answer: tq.honest_answer_if_learning })}</p>}
+                        {tq.bridge_from_current && <p className={`text-xs ${c.accentTxt} mt-0.5`}>{t('sgm_interview_tech_bridge', { bridge: tq.bridge_from_current })}</p>}
                       </div>
                     ))}
                   </div>
                 )}
-                {interviewData.confidence_note && <p className={`text-xs ${c.textMuteded} italic`}>💡 {interviewData.confidence_note}</p>}
+                {interviewData.confidence_note && <p className={`text-[13px] ${c.textMuteded} italic`}>💡 {interviewData.confidence_note}</p>}
               </div>
             </div>
           )}
@@ -1015,31 +1021,31 @@ const SkillGapMap = ({ tool }) => {
                           <Badge c={c} type={STATUS_COLORS[gap.status] || 'info'}>{t(STATUS_LABELS[gap.status] || gap.status)}</Badge>
                         </div>
                         <p className={`text-xs ${c.textSecondary} mb-1`}>{gap.gap}</p>
-                        <p className={`text-[10px] ${c.textMuteded}`}>{t(BASIS_LABELS[gap.relevance_basis] || 'sgm_basis_role')}</p>
+                        <p className={`text-[13px] ${c.textMuteded}`}>{t(BASIS_LABELS[gap.relevance_basis] || 'sgm_basis_role')}</p>
                       </div>
-                      <button onClick={() => toggleSection(gap.capability)} className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections[gap.capability]} /></button>
+                      <button data-print-heading aria-expanded={!!(expandedSections[gap.capability])} onClick={() => toggleSection(gap.capability)} className={`text-[13px] ${c.textMuteded}`}><span data-print-hide><Caret open={expandedSections[gap.capability]} /></span></button>
                     </div>
                   </div>
-                  {expandedSections[gap.capability] && (
-                    <div className={`p-4 space-y-3 ${c.cardAlt} border-t ${c.border}`}>
+                  {(
+                    <div data-sec-body hidden={!(expandedSections[gap.capability])} className={`p-4 space-y-3 ${c.cardAlt} border-t ${c.border}`}>
                       <p className={`text-xs ${c.text}`}><span className="font-bold">{t('sgm_target_relevance')}</span> {gap.target_relevance}</p>
                       <p className={`text-xs ${c.text}`}><span className="font-bold">{t('sgm_current_evidence')}:</span> {gap.current_evidence}</p>
                       <div className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
-                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_next_move')}</p>
+                        <p className={`text-xs font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_next_move')}</p>
                         <p className={`text-xs font-semibold ${c.text}`}>{gap.next_move}</p>
-                        {gap.proof && <p className={`text-[10px] ${c.textSecondary} mt-1`}>🎯 {gap.proof}</p>}
+                        {gap.proof && <p className={`text-xs ${c.textSecondary} mt-1`}>🎯 {gap.proof}</p>}
                       </div>
-                      {!deepData[gap.capability] ? <Btn onClick={() => handleDeep(gap)} disabled={deepLoading === gap.capability} icon="🔍" label={t('sgm_gap_deep_dive')} color={c.btnPrimary} /> : <span className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('sgm_gap_plan_below')}</span>}
+                      {!deepData[gap.capability] ? <Btn onClick={() => handleDeep(gap)} disabled={deepLoading === gap.capability} icon="🔍" label={t('sgm_gap_deep_dive')} color={c.btnPrimary} /> : <span className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>{t('sgm_gap_plan_below')}</span>}
                       {deepData[gap.capability] && (
                         <div className={`border-t ${c.border} pt-3 space-y-3`}>
                           {deepData[gap.capability].learning_path?.map((stage, si) => (
                             <div key={si} className={`p-3 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
                               <p className={`text-xs font-bold ${c.text} mb-1`}>{stage.stage}</p>
-                              {stage.activities?.map((a, ai) => <p key={ai} className={`text-[10px] ${c.text} mb-1`}>• {a.activity} <span className={c.textMuteded}>({a.resource}, {a.free_or_paid})</span></p>)}
-                              <p className={`text-[10px] ${c.accentTxt}`}>✓ {stage.checkpoint}</p>
+                              {stage.activities?.map((a, ai) => <p key={ai} className={`text-xs ${c.text} mb-1`}>• {a.activity} <span className={c.textMuteded}>({a.resource}, {a.free_or_paid})</span></p>)}
+                              <p className={`text-xs ${c.accentTxt}`}>✓ {stage.checkpoint}</p>
                             </div>
                           ))}
-                          {deepData[gap.capability].good_enough_threshold && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_good_enough')}</p><p className={`text-xs ${c.text}`}>{deepData[gap.capability].good_enough_threshold}</p></div>}
+                          {deepData[gap.capability].good_enough_threshold && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt} mb-0.5`}>{t('sgm_gap_good_enough')}</p><p className={`text-xs ${c.text}`}>{deepData[gap.capability].good_enough_threshold}</p></div>}
                         </div>
                       )}
                     </div>
@@ -1095,7 +1101,7 @@ const SkillGapMap = ({ tool }) => {
                 {results.transition_tasks.map((tt, i) => (
                   <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
                     <p className={`text-xs font-bold ${c.text}`}>{tt.task}</p>
-                    <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{tt.why}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{tt.why}</p>
                   </div>
                 ))}
               </div>
@@ -1149,14 +1155,14 @@ const SkillGapMap = ({ tool }) => {
                     <p className={`text-xs ${c.textSecondary} mb-2`}>{phase.focus}</p>
                     {phase.milestones?.map((ms, mi) => (
                       <div key={mi} className={`p-2 rounded-lg ${c.cardAlt} mb-1.5`}>
-                        <span className={`text-[10px] font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('sgm_timeline_week_short', { week: ms.week })}</span>
+                        <span className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('sgm_timeline_week_short', { week: ms.week })}</span>
                         <p className={`text-xs ${c.text}`}>{ms.milestone}</p>
-                        {ms.deliverable && <p className={`text-[10px] ${c.accentTxt}`}>📦 {ms.deliverable}</p>}
+                        {ms.deliverable && <p className={`text-xs ${c.accentTxt}`}>📦 {ms.deliverable}</p>}
                       </div>
                     ))}
                   </div>
                 ))}
-                {timelineData.ready_to_apply_by && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.accentTxt}`}>{t('sgm_timeline_start_applying')}</p><p className={`text-xs ${c.text}`}>{timelineData.ready_to_apply_by}</p></div>}
+                {timelineData.ready_to_apply_by && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt}`}>{t('sgm_timeline_start_applying')}</p><p className={`text-xs ${c.text}`}>{timelineData.ready_to_apply_by}</p></div>}
                 {timelineData.plateau_warning && <p className={`text-xs ${c.warning} border rounded-lg p-2`}>⚠️ {timelineData.plateau_warning}</p>}
               </div>
             </div>
@@ -1164,17 +1170,17 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── PROOF ─── */}
           {proofData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
               <div className={`p-5 ${c.proofBg} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_proof_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {proofData.proof_plans?.map((pp, i) => (
                   <div key={i} className={`border rounded-lg ${c.border} p-4`}>
                     <p className={`text-xs font-bold ${c.text} mb-2`}>{pp.skill}</p>
                     <div className="space-y-2">
-                      <div><p className={`text-[10px] font-bold ${c.proofText}`}>{t('sgm_proof_build')}</p><p className={`text-xs ${c.text}`}>{pp.project_proof?.title}</p><p className={`text-[10px] ${c.textSecondary}`}>{pp.project_proof?.description}</p>
-                        {pp.project_proof?.resume_bullet && <div className="flex items-start gap-2 mt-1"><p className={`text-[10px] ${c.text} flex-1`}>📝 {pp.project_proof.resume_bullet}</p></div>}
+                      <div><p className={`text-xs font-bold ${c.proofText}`}>{t('sgm_proof_build')}</p><p className={`text-xs ${c.text}`}>{pp.project_proof?.title}</p><p className={`text-xs ${c.textSecondary}`}>{pp.project_proof?.description}</p>
+                        {pp.project_proof?.resume_bullet && <div className="flex items-start gap-2 mt-1"><p className={`text-xs ${c.text} flex-1`}>📝 {pp.project_proof.resume_bullet}</p></div>}
                       </div>
-                      <div><p className={`text-[10px] font-bold ${c.proofText}`}>{t('sgm_proof_contribute')}</p><p className={`text-xs ${c.text}`}>{pp.contribution_proof?.title}</p><p className={`text-[10px] ${c.textSecondary}`}>{pp.contribution_proof?.description}</p></div>
+                      <div><p className={`text-xs font-bold ${c.proofText}`}>{t('sgm_proof_contribute')}</p><p className={`text-xs ${c.text}`}>{pp.contribution_proof?.title}</p><p className={`text-xs ${c.textSecondary}`}>{pp.contribution_proof?.description}</p></div>
                     </div>
                   </div>
                 ))}
@@ -1185,18 +1191,18 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── NETWORK ─── */}
           {networkData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
               <div className={`p-5 ${c.networkBg} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_network_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {networkData.network_gaps?.map((ng, i) => (
                   <div key={i} className={`p-4 rounded-lg border ${c.border}`}>
                     <p className={`text-sm font-bold ${c.text}`}>{ng.type}</p>
                     <p className={`text-xs ${c.textSecondary} mb-2`}>{ng.why_critical}</p>
-                    <div className="flex items-start gap-2"><p className={`text-[10px] ${c.text} flex-1`}>💬 {ng.opener}</p></div>
-                    <p className={`text-[10px] ${c.textMuteded} mt-1`}>📍 {ng.where_to_find}</p>
+                    <div className="flex items-start gap-2"><p className={`text-xs ${c.text} flex-1`}>💬 {ng.opener}</p></div>
+                    <p className={`text-[13px] ${c.textMuteded} mt-1`}>📍 {ng.where_to_find}</p>
                   </div>
                 ))}
-                {networkData.unexpected_ally && <div className={`${isDark ? 'bg-cyan-900/15 border-cyan-700' : 'bg-cyan-50 border-cyan-200'} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{t('sgm_network_unexpected', { type: networkData.unexpected_ally.type })}</p><p className={`text-xs ${c.textSecondary}`}>{networkData.unexpected_ally.how_they_help}</p></div>}
+                {networkData.unexpected_ally && <div className={`${isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]'} border rounded-lg p-3`}><p className={`text-xs font-bold ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{t('sgm_network_unexpected', { type: networkData.unexpected_ally.type })}</p><p className={`text-xs ${c.textSecondary}`}>{networkData.unexpected_ally.how_they_help}</p></div>}
               </div>
             </div>
           )}
@@ -1223,35 +1229,35 @@ const SkillGapMap = ({ tool }) => {
                     <ScoreBar score={resumeData.overall_score} />
                     {resumeData.strengths?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>{t('sgm_resume_strengths')}</p>
+                        <p className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>{t('sgm_resume_strengths')}</p>
                         {resumeData.strengths.map((s, i) => (
                           <div key={i} className={`p-3 rounded-lg ${c.success} border mb-2`}>
                             <p className="text-xs font-bold">{s.element}</p>
-                            <p className="text-[10px] mt-0.5">{s.why}</p>
+                            <p className="text-xs mt-0.5">{s.why}</p>
                           </div>
                         ))}
                       </div>
                     )}
                     {resumeData.problems?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>{t('sgm_resume_problems')}</p>
+                        <p className={`text-xs font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>{t('sgm_resume_problems')}</p>
                         {resumeData.problems.map((p, i) => (
                           <div key={i} className={`p-3 rounded-lg ${p.severity === 'critical' ? c.danger : p.severity === 'moderate' ? c.warning : c.infoBox} border mb-2`}>
                             <div className="flex items-center gap-2 mb-0.5"><Badge c={c} type={p.severity === 'critical' ? 'danger' : p.severity === 'moderate' ? 'warning' : 'info'}>{p.severity}</Badge><span className="text-xs font-bold">{p.element}</span></div>
-                            <p className="text-[10px]">{p.why}</p>
-                            <p className={`text-[10px] ${c.accentTxt} mt-1`}>{t('sgm_resume_fix', { fix: p.fix })}</p>
+                            <p className="text-xs">{p.why}</p>
+                            <p className={`text-xs ${c.accentTxt} mt-1`}>{t('sgm_resume_fix', { fix: p.fix })}</p>
                           </div>
                         ))}
                       </div>
                     )}
                     {resumeData.rewritten_bullets?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{t('sgm_resume_rewritten')}</p>
+                        <p className={`text-xs font-bold ${c.accentTxt} mb-1`}>{t('sgm_resume_rewritten')}</p>
                         {resumeData.rewritten_bullets.map((rb, i) => (
                           <div key={i} className={`p-3 rounded-lg border ${c.border} mb-2`}>
-                            <p className={`text-[10px] ${c.textMuteded} line-through`}>{rb.original}</p>
+                            <p className={`text-[13px] ${c.textMuteded} line-through`}>{rb.original}</p>
                             <div className="flex items-start gap-2 mt-1"><p className={`text-xs ${c.text} font-medium flex-1`}>{rb.rewritten}</p></div>
-                            <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{rb.what_changed}</p>
+                            <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{rb.what_changed}</p>
                           </div>
                         ))}
                       </div>
@@ -1259,12 +1265,12 @@ const SkillGapMap = ({ tool }) => {
                     {resumeData.summary_suggestion && <div className="flex items-start gap-2"><p className={`text-xs ${c.text} flex-1`}>{t('sgm_resume_summary', { summary: resumeData.summary_suggestion })}</p></div>}
                     {resumeData.missing_elements?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>{t('sgm_resume_missing')}</p>
+                        <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>{t('sgm_resume_missing')}</p>
                         {resumeData.missing_elements.map((m, i) => (
                           <div key={i} className={`p-3 rounded-lg ${c.warning} border mb-2`}>
                             <p className="text-xs font-bold">{m.element}</p>
-                            <p className="text-[10px] mt-0.5">{m.why}</p>
-                            {m.how_to_add && <p className={`text-[10px] ${c.accentTxt} mt-0.5`}>{t('sgm_resume_how_to_add', { how: m.how_to_add })}</p>}
+                            <p className="text-xs mt-0.5">{m.why}</p>
+                            {m.how_to_add && <p className={`text-xs ${c.accentTxt} mt-0.5`}>{t('sgm_resume_how_to_add', { how: m.how_to_add })}</p>}
                           </div>
                         ))}
                       </div>
@@ -1296,7 +1302,7 @@ const SkillGapMap = ({ tool }) => {
                     {reframeData.coverage_summary && <p className={`text-xs ${c.textSecondary}`}>{reframeData.coverage_summary}</p>}
                     {reframeData.strongest_translations?.length > 0 && (
                       <div className={`${c.success} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold mb-1`}>{t('sgm_reframe_strongest')}</p>
+                        <p className={`text-xs font-bold mb-1`}>{t('sgm_reframe_strongest')}</p>
                         {reframeData.strongest_translations.map((st, i) => (
                           <p key={i} className="text-xs">• {st}</p>
                         ))}
@@ -1305,32 +1311,32 @@ const SkillGapMap = ({ tool }) => {
                     {reframeData.translations?.map((tr, i) => (
                       <div key={i} className={`p-3 rounded-lg border ${c.border}`}>
                         <div className="grid grid-cols-2 gap-2 mb-1">
-                          <div className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('sgm_reframe_you_say')}</p><p className={`text-xs ${c.textSecondary}`}>{tr.original}</p></div>
-                          <div className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-[9px] font-bold ${c.accentTxt}`}>{t('sgm_reframe_they_say')}</p><p className={`text-xs ${c.text}`}>{tr.translated}</p></div>
+                          <div className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}><p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_reframe_you_say')}</p><p className={`text-xs ${c.textSecondary}`}>{tr.original}</p></div>
+                          <div className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-xs font-bold ${c.accentTxt}`}>{t('sgm_reframe_they_say')}</p><p className={`text-xs ${c.text}`}>{tr.translated}</p></div>
                         </div>
                         <div className="flex items-center gap-2 mb-1">
                           {tr.transfer_type && <Badge c={c} type={tr.transfer_type === 'direct' ? 'success' : tr.transfer_type === 'gap' ? 'danger' : 'warning'}>{tr.transfer_type}</Badge>}
                           {tr.strength && <Badge c={c} type={tr.strength === 'strong' ? 'success' : tr.strength === 'weak' ? 'danger' : 'info'}>{tr.strength}</Badge>}
                         </div>
-                        {tr.resume_bullet && <div className="flex items-start gap-2"><p className={`text-[10px] ${c.text} flex-1`}>📝 {tr.resume_bullet}</p></div>}
+                        {tr.resume_bullet && <div className="flex items-start gap-2"><p className={`text-xs ${c.text} flex-1`}>📝 {tr.resume_bullet}</p></div>}
                       </div>
                     ))}
-                    {reframeData.elevator_pitch && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.accentTxt}`}>{t('sgm_reframe_pitch')}</p><p className={`text-sm ${c.text} italic`}>"{reframeData.elevator_pitch}"</p></div>}
+                    {reframeData.elevator_pitch && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt}`}>{t('sgm_reframe_pitch')}</p><p className={`text-sm ${c.text} italic`}>"{reframeData.elevator_pitch}"</p></div>}
                     {reframeData.linkedin_headline && (
                       <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{t('sgm_reframe_linkedin')}</p>
+                        <p className={`text-xs font-bold ${c.accentTxt} mb-1`}>{t('sgm_reframe_linkedin')}</p>
                         <p className={`text-xs ${c.text}`}>{reframeData.linkedin_headline}</p>
                       </div>
                     )}
                     {reframeData.vocabulary_cheat_sheet?.length > 0 && (
                       <div>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_reframe_vocab')}</p>
+                        <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('sgm_reframe_vocab')}</p>
                         <div className="space-y-1">
                           {reframeData.vocabulary_cheat_sheet.map((v, i) => (
                             <div key={i} className={`p-2 rounded-lg border ${c.border} grid grid-cols-2 gap-2`}>
-                              <div><p className={`text-[9px] ${c.textMuteded}`}>{t('sgm_reframe_vocab_you')}</p><p className={`text-xs ${c.textSecondary}`}>{v.you_say}</p></div>
-                              <div><p className={`text-[9px] ${c.accentTxt}`}>{t('sgm_reframe_vocab_they')}</p><p className={`text-xs font-semibold ${c.text}`}>{v.they_say}</p></div>
-                              {v.context && <p className={`text-[9px] ${c.textMuteded} col-span-2`}>{v.context}</p>}
+                              <div><p className={`text-[13px] ${c.textMuteded}`}>{t('sgm_reframe_vocab_you')}</p><p className={`text-xs ${c.textSecondary}`}>{v.you_say}</p></div>
+                              <div><p className={`text-xs ${c.accentTxt}`}>{t('sgm_reframe_vocab_they')}</p><p className={`text-xs font-semibold ${c.text}`}>{v.they_say}</p></div>
+                              {v.context && <p className={`text-[13px] ${c.textMuteded} col-span-2`}>{v.context}</p>}
                             </div>
                           ))}
                         </div>
@@ -1359,7 +1365,7 @@ const SkillGapMap = ({ tool }) => {
                         { key: 'biggestWorry', labelKey: 'sgm_calibrate_worry_label', phKey: 'sgm_calibrate_worry_ph' },
                       ].map(field => (
                         <div key={field.key}>
-                          <label className={`block text-[10px] font-bold ${c.textMuteded} mb-1`}>{t(field.labelKey)}</label>
+                          <label className={`block text-xs font-bold ${c.textMuteded} mb-1`}>{t(field.labelKey)}</label>
                           <input type="text" value={constraints[field.key] || ''} onChange={e => setConstraints(prev => ({ ...prev, [field.key]: e.target.value }))}
                             placeholder={t(field.phKey)} className={`w-full p-2 border rounded-lg outline-none text-xs ${c.input}`} />
                         </div>
@@ -1376,15 +1382,15 @@ const SkillGapMap = ({ tool }) => {
                     </div>
                     {calibrateData.constraint_specific_advice?.map((ca, i) => (
                       <div key={i} className={`p-3 rounded-lg ${c.cardAlt}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded}`}>{ca.constraint}</p>
+                        <p className={`text-xs font-bold ${c.textMuteded}`}>{ca.constraint}</p>
                         <p className={`text-xs ${c.text}`}>{ca.advice}</p>
                       </div>
                     ))}
                     {calibrateData.risk_assessment && (
                       <div className={`${c.danger} border rounded-lg p-3`}>
-                        <p className="text-[10px] font-bold mb-0.5">{t('sgm_calibrate_biggest_risk')}</p>
+                        <p className="text-xs font-bold mb-0.5">{t('sgm_calibrate_biggest_risk')}</p>
                         <p className="text-xs">{calibrateData.risk_assessment.biggest_risk}</p>
-                        <p className={`text-[10px] ${c.accentTxt} mt-1`}>{t('sgm_calibrate_mitigation', { mitigation: calibrateData.risk_assessment.mitigation })}</p>
+                        <p className={`text-xs ${c.accentTxt} mt-1`}>{t('sgm_calibrate_mitigation', { mitigation: calibrateData.risk_assessment.mitigation })}</p>
                       </div>
                     )}
                     {calibrateData.momentum_strategy && <p className={`text-xs ${c.accentTxt}`}>🏃 {calibrateData.momentum_strategy}</p>}
@@ -1412,7 +1418,7 @@ const SkillGapMap = ({ tool }) => {
                     <div className="flex items-center gap-4">
                       <div className="text-center">
                         <p className={`text-2xl font-black ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{progressData.updated_readiness?.score}%</p>
-                        <p className={`text-[10px] ${c.accentTxt} font-bold`}>{progressData.updated_readiness?.improvement}</p>
+                        <p className={`text-xs ${c.accentTxt} font-bold`}>{progressData.updated_readiness?.improvement}</p>
                       </div>
                       <div className="flex-1"><ScoreBar score={progressData.updated_readiness?.score || 0} /><p className={`text-xs ${c.text} mt-1`}>{progressData.updated_readiness?.summary}</p></div>
                     </div>
@@ -1421,7 +1427,7 @@ const SkillGapMap = ({ tool }) => {
                     {progressData.celebration && <p className={`text-sm ${c.text} italic text-center`}>🎉 {progressData.celebration}</p>}
                     {!celebrateData && <button onClick={() => handleCelebrate(t('sgm_progress_milestone', { score: progressData.updated_readiness?.score || 0, count: completedCount }))} className={`w-full text-center text-xs py-2 rounded-lg ${isDark ? 'bg-amber-900/20 text-amber-300 hover:bg-amber-900/40' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'} transition-colors`}>{t('sgm_progress_celebrate')}</button>}
                     {progressData.new_gaps_revealed?.length > 0 && (
-                      <div className={`${c.warning} border rounded-lg p-3`}><p className="text-[10px] font-bold mb-1">{t('sgm_progress_new_gaps')}</p>
+                      <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">{t('sgm_progress_new_gaps')}</p>
                         {progressData.new_gaps_revealed.map((ng, i) => <p key={i} className="text-xs">• {ng}</p>)}
                       </div>
                     )}
@@ -1444,41 +1450,41 @@ const SkillGapMap = ({ tool }) => {
                     {[{ l: t('sgm_daylife_meetings'), v: daylifeData.role_reality.percent_meetings }, { l: t('sgm_daylife_deep_work'), v: daylifeData.role_reality.percent_deep_work }, { l: t('sgm_daylife_communication'), v: daylifeData.role_reality.percent_communication }, { l: t('sgm_daylife_admin'), v: daylifeData.role_reality.percent_admin }].map((item, i) => item.v ? (
                       <div key={i} className={`text-center p-2 rounded-lg ${c.cardAlt} flex-1 min-w-[60px]`}>
                         <p className={`text-lg font-black ${c.text}`}>{item.v}%</p>
-                        <p className={`text-[9px] ${c.textMuteded}`}>{item.l}</p>
+                        <p className={`text-[13px] ${c.textMuteded}`}>{item.l}</p>
                       </div>
                     ) : null)}
                   </div>
                 )}
                 {daylifeData.schedule?.map((s, i) => (
                   <div key={i} className={`flex items-start gap-3 p-2 rounded-lg ${s.feeling === 'energizing' || s.feeling === 'satisfying' ? (isDark ? 'bg-green-900/10' : 'bg-green-50/50') : s.feeling === 'draining' || s.feeling === 'stressful' ? (isDark ? 'bg-red-900/10' : 'bg-red-50/50') : ''}`}>
-                    <span className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-600'} w-14 flex-shrink-0`}>{s.time}</span>
+                    <span className={`text-xs font-bold ${isDark ? 'text-red-400' : 'text-red-600'} w-14 flex-shrink-0`}>{s.time}</span>
                     <div className="flex-1">
                       <p className={`text-xs font-semibold ${c.text}`}>{s.activity}</p>
-                      <p className={`text-[10px] ${c.textSecondary}`}>{s.detail}</p>
-                      {s.decision_moment && <p className={`text-[10px] ${c.accentTxt} mt-0.5 italic`}>⚖️ {s.decision_moment}</p>}
+                      <p className={`text-xs ${c.textSecondary}`}>{s.detail}</p>
+                      {s.decision_moment && <p className={`text-xs ${c.accentTxt} mt-0.5 italic`}>⚖️ {s.decision_moment}</p>}
                     </div>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded ${s.feeling === 'energizing' || s.feeling === 'satisfying' ? c.success : s.feeling === 'draining' || s.feeling === 'stressful' ? c.danger : c.cardAlt} ${c.textMuteded}`}>{s.feeling}</span>
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${s.feeling === 'energizing' || s.feeling === 'satisfying' ? c.success : s.feeling === 'draining' || s.feeling === 'stressful' ? c.danger : c.cardAlt} ${c.textMuteded}`}>{s.feeling}</span>
                   </div>
                 ))}
                 {daylifeData.the_frustration && (
                   <div className={`${c.danger} border rounded-lg p-4`}>
-                    <p className="text-[10px] font-bold mb-1">{t('sgm_daylife_frustration')}</p>
+                    <p className="text-xs font-bold mb-1">{t('sgm_daylife_frustration')}</p>
                     <p className="text-xs">{daylifeData.the_frustration.scenario}</p>
-                    <p className={`text-[10px] ${c.accentTxt} mt-1`}>{t('sgm_daylife_good_ones', { how: daylifeData.the_frustration.how_good_ones_handle_it })}</p>
-                    <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{t('sgm_daylife_ask_yourself', { question: daylifeData.the_frustration.would_you_tolerate })}</p>
+                    <p className={`text-xs ${c.accentTxt} mt-1`}>{t('sgm_daylife_good_ones', { how: daylifeData.the_frustration.how_good_ones_handle_it })}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-1 italic`}>{t('sgm_daylife_ask_yourself', { question: daylifeData.the_frustration.would_you_tolerate })}</p>
                   </div>
                 )}
                 {daylifeData.the_reward && (
                   <div className={`${c.success} border rounded-lg p-4`}>
-                    <p className="text-[10px] font-bold mb-1">{t('sgm_daylife_reward', { frequency: daylifeData.the_reward.frequency })}</p>
+                    <p className="text-xs font-bold mb-1">{t('sgm_daylife_reward', { frequency: daylifeData.the_reward.frequency })}</p>
                     <p className="text-xs">{daylifeData.the_reward.scenario}</p>
-                    {daylifeData.the_reward.your_version && <p className={`text-[10px] ${c.accentTxt} mt-1`}>{t('sgm_daylife_for_you', { version: daylifeData.the_reward.your_version })}</p>}
+                    {daylifeData.the_reward.your_version && <p className={`text-xs ${c.accentTxt} mt-1`}>{t('sgm_daylife_for_you', { version: daylifeData.the_reward.your_version })}</p>}
                   </div>
                 )}
                 {daylifeData.reality_check && (
                   <div className={`${c.cardAlt} rounded-lg p-3`}>
-                    <p className={`text-[10px] ${c.textMuteded}`}>{t('sgm_daylife_surprise', { what: daylifeData.reality_check.what_surprises_people })}</p>
-                    <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-1`}>{t('sgm_daylife_dealbreaker', { test: daylifeData.reality_check.dealbreaker_test })}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{t('sgm_daylife_surprise', { what: daylifeData.reality_check.what_surprises_people })}</p>
+                    <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-1`}>{t('sgm_daylife_dealbreaker', { test: daylifeData.reality_check.dealbreaker_test })}</p>
                   </div>
                 )}
               </div>
@@ -1487,8 +1493,8 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── MARKET PULSE ─── */}
           {marketData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
-              <div className={`p-5 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
+              <div className={`p-5 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📊</span> {t('sgm_market_title')}</h4>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge c={c} type={marketData.market_outlook?.direction?.includes('easier') ? 'success' : marketData.market_outlook?.direction?.includes('harder') ? 'danger' : 'warning'}>{marketData.market_outlook?.direction}</Badge>
@@ -1504,13 +1510,13 @@ const SkillGapMap = ({ tool }) => {
                 ))}
                 {marketData.timing_advice && (
                   <div className={`${marketData.timing_advice.recommendation === 'Accelerate' ? c.success : c.warning} border rounded-lg p-3`}>
-                    <p className="text-[10px] font-bold mb-0.5">⏰ {marketData.timing_advice.recommendation}</p>
+                    <p className="text-xs font-bold mb-0.5">⏰ {marketData.timing_advice.recommendation}</p>
                     <p className="text-xs">{marketData.timing_advice.reasoning}</p>
-                    <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('sgm_market_window', { window: marketData.timing_advice.window })}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('sgm_market_window', { window: marketData.timing_advice.window })}</p>
                   </div>
                 )}
-                {marketData.emerging_requirements?.length > 0 && <div><p className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>{t('sgm_market_emerging')}</p>{marketData.emerging_requirements.map((er, i) => <p key={i} className={`text-xs ${c.text}`}>• {er}</p>)}</div>}
-                {marketData.declining_requirements?.length > 0 && <div><p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('sgm_market_declining')}</p>{marketData.declining_requirements.map((dr, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {dr}</p>)}</div>}
+                {marketData.emerging_requirements?.length > 0 && <div><p className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>{t('sgm_market_emerging')}</p>{marketData.emerging_requirements.map((er, i) => <p key={i} className={`text-xs ${c.text}`}>• {er}</p>)}</div>}
+                {marketData.declining_requirements?.length > 0 && <div><p className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_market_declining')}</p>{marketData.declining_requirements.map((dr, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {dr}</p>)}</div>}
                 {marketData.wildcard && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>{t('sgm_market_wildcard', { wildcard: marketData.wildcard })}</p>}
               </div>
             </div>
@@ -1525,7 +1531,7 @@ const SkillGapMap = ({ tool }) => {
               <div className="p-5 space-y-4">
                 {adjacencyData.bottleneck_skill && (
                   <div className={`${c.danger} border-2 rounded-lg p-4`}>
-                    <p className="text-[10px] font-bold mb-0.5">{t('sgm_adjacency_bottleneck')}</p>
+                    <p className="text-xs font-bold mb-0.5">{t('sgm_adjacency_bottleneck')}</p>
                     <p className="text-sm font-bold">{adjacencyData.bottleneck_skill.skill}</p>
                     <p className="text-xs mt-1">{t('sgm_adjacency_blocks', { blocks: adjacencyData.bottleneck_skill.blocks?.join(', ') })}</p>
                   </div>
@@ -1535,18 +1541,18 @@ const SkillGapMap = ({ tool }) => {
                     <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black ${i === 0 ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : `${c.cardAlt} ${c.text}`}`}>{os.order}</span>
                     <div className="flex-1">
                       <p className={`text-xs font-bold ${c.text}`}>{os.skill}</p>
-                      <p className={`text-[10px] ${c.textSecondary}`}>{os.why_first}</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{os.why_first}</p>
                     </div>
-                    {os.unlocks_count > 0 && <span className={`text-[9px] ${c.accentTxt}`}>{t('sgm_adjacency_unlocks', { count: os.unlocks_count })}</span>}
+                    {os.unlocks_count > 0 && <span className={`text-xs ${c.accentTxt}`}>{t('sgm_adjacency_unlocks', { count: os.unlocks_count })}</span>}
                   </div>
                 ))}
                 {adjacencyData.parallel_tracks?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('sgm_adjacency_parallel')}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('sgm_adjacency_parallel')}</p>
                     {adjacencyData.parallel_tracks.map((pt, i) => (
                       <div key={i} className={`p-2 rounded-lg ${c.cardAlt} mb-1.5`}>
-                        <p className={`text-[10px] font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{pt.track_name}</p>
-                        <p className={`text-[10px] ${c.textSecondary}`}>{pt.skills?.join(' + ')}</p>
+                        <p className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{pt.track_name}</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{pt.skills?.join(' + ')}</p>
                       </div>
                     ))}
                   </div>
@@ -1564,11 +1570,11 @@ const SkillGapMap = ({ tool }) => {
               </div>
               <p className={`text-sm font-semibold ${c.text} mb-1`}>{nudgeData.assignment}</p>
               <p className={`text-xs ${c.textSecondary}`}>{nudgeData.why_this_week}</p>
-              <div className="flex items-center gap-4 mt-2 text-[10px]">
+              <div className="flex items-center gap-4 mt-2 text-xs">
                 <span className={c.textMuteded}>⏱️ {nudgeData.time_estimate}</span>
                 <span className={c.textMuteded}>📦 {nudgeData.deliverable}</span>
               </div>
-              {nudgeData.stretch_goal && <p className={`text-[10px] ${c.accentTxt} mt-2`}>{t('sgm_nudge_stretch', { goal: nudgeData.stretch_goal })}</p>}
+              {nudgeData.stretch_goal && <p className={`text-xs ${c.accentTxt} mt-2`}>{t('sgm_nudge_stretch', { goal: nudgeData.stretch_goal })}</p>}
               {nudgeData.motivation && <p className={`text-xs ${c.text} italic mt-2`}>💪 {nudgeData.motivation}</p>}
             </div>
           )}
@@ -1584,17 +1590,17 @@ const SkillGapMap = ({ tool }) => {
                   <div className={`p-4 rounded-lg border ${c.border}`}>
                     <p className={`text-sm ${c.text} font-semibold`}>{mentorData.ideal_mentor_profile.background}</p>
                     <p className={`text-xs ${c.textSecondary} mt-1`}>{mentorData.ideal_mentor_profile.why_this_profile}</p>
-                    <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('sgm_mentor_seniority', { seniority: mentorData.ideal_mentor_profile.seniority })}</p>
-                    {mentorData.ideal_mentor_profile.red_flags?.map((rf, i) => <p key={i} className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'} mt-1`}>{t('sgm_mentor_avoid', { flag: rf })}</p>)}
+                    <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('sgm_mentor_seniority', { seniority: mentorData.ideal_mentor_profile.seniority })}</p>
+                    {mentorData.ideal_mentor_profile.red_flags?.map((rf, i) => <p key={i} className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'} mt-1`}>{t('sgm_mentor_avoid', { flag: rf })}</p>)}
                   </div>
                 )}
                 {mentorData.what_to_ask_them?.length > 0 && (
                   <div>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('sgm_mentor_ask')}</p>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('sgm_mentor_ask')}</p>
                     {mentorData.what_to_ask_them.map((qa, i) => (
                       <div key={i} className={`p-2 rounded-lg ${c.cardAlt} mb-1.5`}>
                         <p className={`text-xs font-bold ${c.text}`}>{qa.question}</p>
-                        <p className={`text-[10px] ${c.textMuteded}`}>{t('sgm_mentor_listen', { what: qa.what_to_listen_for })}</p>
+                        <p className={`text-[13px] ${c.textMuteded}`}>{t('sgm_mentor_listen', { what: qa.what_to_listen_for })}</p>
                       </div>
                     ))}
                   </div>
@@ -1603,7 +1609,7 @@ const SkillGapMap = ({ tool }) => {
                   <div key={i} className={`text-xs ${c.textSecondary}`}>📍 {wf.channel}: {wf.search_strategy}</div>
                 ))}
                 {mentorData.mentorship_structure && (
-                  <p className={`text-[10px] ${c.textMuteded}`}>📅 {mentorData.mentorship_structure.frequency} · {mentorData.mentorship_structure.format} · {mentorData.mentorship_structure.duration}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>📅 {mentorData.mentorship_structure.frequency} · {mentorData.mentorship_structure.format} · {mentorData.mentorship_structure.duration}</p>
                 )}
                 {mentorData.alternative_to_formal_mentor && <p className={`text-xs ${c.accentTxt}`}>{t('sgm_mentor_no_mentor', { alternative: mentorData.alternative_to_formal_mentor })}</p>}
               </div>
@@ -1612,8 +1618,8 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── JOB POSTING DECODER ─── */}
           {showDecode && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
-              <div className={`p-5 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_decode_title')}</h4></div>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
+              <div className={`p-5 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_decode_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!decodeData && (
                   <>
@@ -1638,18 +1644,18 @@ const SkillGapMap = ({ tool }) => {
                       </div>
                     ))}
                     {decodeData.red_flags?.length > 0 && (
-                      <div><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>{t('sgm_decode_red_flags')}</p>
+                      <div><p className={`text-xs font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>{t('sgm_decode_red_flags')}</p>
                         {decodeData.red_flags.map((rf, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>"{rf.phrase}" → {rf.translation}</p>)}
                       </div>
                     )}
                     {decodeData.green_flags?.length > 0 && (
-                      <div><p className={`text-[10px] font-bold ${isDark ? 'text-green-400' : 'text-green-700'} mb-1`}>{t('sgm_decode_green_flags')}</p>
+                      <div><p className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-700'} mb-1`}>{t('sgm_decode_green_flags')}</p>
                         {decodeData.green_flags.map((gf, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>"{gf.phrase}" → {gf.why_good}</p>)}
                       </div>
                     )}
                     {decodeData.application_strategy && (
                       <div className={`${c.warningBox} border rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>{t('sgm_decode_strategy')}</p>
+                        <p className={`text-xs font-bold ${c.accentTxt} mb-1`}>{t('sgm_decode_strategy')}</p>
                         <p className={`text-xs ${c.text}`}>{t('sgm_decode_cover', { angle: decodeData.application_strategy.cover_letter_angle })}</p>
                         <p className={`text-xs ${c.textSecondary} mt-1`}>{t('sgm_decode_emphasize', { emphasis: decodeData.application_strategy.resume_emphasis })}</p>
                       </div>
@@ -1662,8 +1668,8 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── OUTREACH DRAFTER ─── */}
           {showOutreach && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
-              <div className={`p-5 ${isDark ? 'bg-cyan-900/15' : 'bg-cyan-50'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_outreach_title')}</h4></div>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-[#7fb3e0]' : 'border-[#142a43]'}`}>
+              <div className={`p-5 ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_outreach_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!outreachData && (
                   <>
@@ -1672,21 +1678,21 @@ const SkillGapMap = ({ tool }) => {
                       placeholder={t('sgm_outreach_person_ph')} className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
                     <input type="text" value={outreachGoal} onChange={e => setOutreachGoal(e.target.value)}
                       placeholder={t('sgm_outreach_goal_ph')} className={`w-full p-3 border rounded-xl outline-none text-sm ${c.input}`} />
-                    <Btn onClick={handleOutreach} disabled={outreachLoading || !personDesc.trim()} icon="📧" label={t('sgm_outreach_draft_btn')} color={isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white'} />
+                    <Btn onClick={handleOutreach} disabled={outreachLoading || !personDesc.trim()} icon="📧" label={t('sgm_outreach_draft_btn')} color={isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white'} />
                   </>
                 )}
                 {outreachData && (
                   <div className="space-y-3">
-                    {outreachData.subject_line && <p className={`text-xs ${c.textMuteded}`}>{t('sgm_outreach_subject')} <span className={`font-bold ${c.text}`}>{outreachData.subject_line}</span></p>}
+                    {outreachData.subject_line && <p className={`text-[13px] ${c.textMuteded}`}>{t('sgm_outreach_subject')} <span className={`font-bold ${c.text}`}>{outreachData.subject_line}</span></p>}
                     <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-900/50' : 'bg-white'}`}>
                       <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>{outreachData.message}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge c={c} type="info">{outreachData.platform}</Badge>
                     </div>
-                    <p className={`text-[10px] ${c.accentTxt}`}>{t('sgm_outreach_why_respond', { reason: outreachData.why_theyd_respond })}</p>
-                    {outreachData.followup && <p className={`text-[10px] ${c.textMuteded}`}>{t('sgm_outreach_followup', { followup: outreachData.followup })}</p>}
-                    {outreachData.if_they_say_yes && <p className={`text-[10px] ${c.textSecondary}`}>{t('sgm_outreach_if_yes', { prep: outreachData.if_they_say_yes })}</p>}
+                    <p className={`text-xs ${c.accentTxt}`}>{t('sgm_outreach_why_respond', { reason: outreachData.why_theyd_respond })}</p>
+                    {outreachData.followup && <p className={`text-[13px] ${c.textMuteded}`}>{t('sgm_outreach_followup', { followup: outreachData.followup })}</p>}
+                    {outreachData.if_they_say_yes && <p className={`text-xs ${c.textSecondary}`}>{t('sgm_outreach_if_yes', { prep: outreachData.if_they_say_yes })}</p>}
                     <button onClick={() => { setOutreachData(null); setPersonDesc(''); setOutreachGoal(''); }} className={`text-xs ${c.accentTxt} underline`}>{t('sgm_outreach_draft_another')}</button>
                   </div>
                 )}
@@ -1713,11 +1719,11 @@ const SkillGapMap = ({ tool }) => {
                       <div className={`p-3 rounded-lg border ${c.border}`}>
                         <div className="flex items-center gap-2 mb-1">
                           <Badge c={c} type={h.eval.score >= 70 ? 'success' : h.eval.score >= 50 ? 'warning' : 'danger'}>{t('sgm_mock_score', { score: h.eval.score })}</Badge>
-                          <span className={`text-[10px] font-bold ${c.text}`}>{h.eval.verdict}</span>
+                          <span className={`text-xs font-bold ${c.text}`}>{h.eval.verdict}</span>
                         </div>
-                        <p className={`text-[10px] ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ {h.eval.what_worked}</p>
-                        <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5`}>💡 {h.eval.coach_tip}</p>
-                        {h.eval.rewritten_opener && <p className={`text-[10px] ${c.accentTxt} mt-0.5 italic`}>{t('sgm_mock_better_opener', { opener: h.eval.rewritten_opener })}</p>}
+                        <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ {h.eval.what_worked}</p>
+                        <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5`}>💡 {h.eval.coach_tip}</p>
+                        {h.eval.rewritten_opener && <p className={`text-xs ${c.accentTxt} mt-0.5 italic`}>{t('sgm_mock_better_opener', { opener: h.eval.rewritten_opener })}</p>}
                       </div>
                     )}
                   </div>
@@ -1730,7 +1736,7 @@ const SkillGapMap = ({ tool }) => {
                         <Badge c={c} type="info">{mockQuestion.category}</Badge>
                       </div>
                       <p className={`text-sm font-bold ${c.text}`}>🎤 {mockQuestion.question}</p>
-                      {mockQuestion.context && <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('sgm_mock_want_to_know', { context: mockQuestion.context })}</p>}
+                      {mockQuestion.context && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('sgm_mock_want_to_know', { context: mockQuestion.context })}</p>}
                     </div>
                     <label htmlFor="sgm-mock-answer" className={`block text-sm font-semibold ${c.label} mt-3 mb-1.5`}>{t('sgm_mock_answer_label')} <span className={c.required}>*</span></label>
                     <textarea id="sgm-mock-answer" value={mockAnswer} onChange={e => setMockAnswer(e.target.value)} rows={3}
@@ -1741,7 +1747,7 @@ const SkillGapMap = ({ tool }) => {
                     </div>
                   </div>
                 )}
-                {mockLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> {t('sgm_mock_evaluating')}</p>}
+                {mockLoading && <p className={`text-[13px] ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> {t('sgm_mock_evaluating')}</p>}
               </div>
             </div>
           )}
@@ -1752,7 +1758,7 @@ const SkillGapMap = ({ tool }) => {
               <p className="text-3xl mb-2">🏆</p>
               <p className={`text-lg font-black ${c.text}`}>{celebrateData.headline}</p>
               <p className={`text-sm ${c.textSecondary} mt-2`}>{celebrateData.message}</p>
-              <p className={`text-xs ${c.textMuteded} mt-2`}>{celebrateData.perspective}</p>
+              <p className={`text-[13px] ${c.textMuteded} mt-2`}>{celebrateData.perspective}</p>
               {celebrateData.shareable && (
                 <div className="flex items-center justify-center gap-2 mt-3">
                   <p className={`text-xs ${c.text} italic`}>"{celebrateData.shareable}"</p>
@@ -1763,8 +1769,8 @@ const SkillGapMap = ({ tool }) => {
           )}
 
           {/* Cross-refs */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('sgm_related_tools')}</p>
+          <div data-print-hide className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('sgm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BragSheetBuilder" className={`text-xs ${linkStyle}`}>{t('sgm_link_brag_short')}</a>
               <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('sgm_link_difficult_talk')}</a>

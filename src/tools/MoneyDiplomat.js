@@ -381,7 +381,7 @@ function GroundedResult({ mode, results, c, t }) {
   if (!spec || !results) return null;
   const head = spec.head ? results[spec.head] : null;
 
-  const Label = ({ k }) => <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t(k)}</p>;
+  const Label = ({ k }) => <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t(k)}</p>;
   const List = ({ items }) => <>{items.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {x}</p>)}</>;
 
   const render = (key, labelKey, kind) => {
@@ -398,7 +398,7 @@ function GroundedResult({ mode, results, c, t }) {
               .filter(([, x]) => x).map(([lk, x], i) => (
               <div key={i} className={`${c.cardAlt} border rounded-lg p-2 text-center`}>
                 <p className={`text-sm font-black ${c.text}`}>{x}</p>
-                <p className={`text-[9px] ${c.textMuteded}`}>{t(lk)}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{t(lk)}</p>
               </div>
             ))}
           </div>;
@@ -407,7 +407,7 @@ function GroundedResult({ mode, results, c, t }) {
             <div key={i} className={`${c.cardAlt} border rounded-lg p-3 mb-2`}>
               <p className={`text-xs font-bold ${c.text}`}>{o.option}</p>
               {o.how_it_works && <p className={`text-xs ${c.textSecondary} mt-1`}>{o.how_it_works}</p>}
-              {o.how_each_option_may_feel_or_function && <p className={`text-[11px] ${c.textMuteded} mt-1`}>{o.how_each_option_may_feel_or_function}</p>}
+              {o.how_each_option_may_feel_or_function && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{o.how_each_option_may_feel_or_function}</p>}
               {o.script && <p className={`text-xs ${c.textSecondary} mt-1 italic`}>{o.script}</p>}
             </div>
           ))}</>;
@@ -436,7 +436,7 @@ function GroundedResult({ mode, results, c, t }) {
             {v.amount_guidance && <p className={`text-xs ${c.textSecondary}`}>{v.amount_guidance}</p>}
             {v.terms_to_clarify?.length > 0 && <List items={v.terms_to_clarify} />}
             {v.script && <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{v.script}</p>}
-            {v.if_they_push && <p className={`text-[11px] ${c.textMuteded} mt-1`}>{v.if_they_push}</p>}
+            {v.if_they_push && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{v.if_they_push}</p>}
           </div>;
         case 'existing_debt':
           if (!v.next_step && !v.script) return null;
@@ -450,13 +450,13 @@ function GroundedResult({ mode, results, c, t }) {
             {v.key_points?.length > 0 && <List items={v.key_points} />}
             {v.what_to_clarify?.length > 0 && <List items={v.what_to_clarify} />}
             {v.boundary_if_needed && <p className={`text-xs ${c.textSecondary}`}>{v.boundary_if_needed}</p>}
-            {v.if_they_disagree && <p className={`text-[11px] ${c.textMuteded}`}>{v.if_they_disagree}</p>}
+            {v.if_they_disagree && <p className={`text-[13px] ${c.textMuteded}`}>{v.if_they_disagree}</p>}
           </div>;
         default: return null;
       }
     })();
     if (!inner) return null;
-    return <div key={key} className={`${c.card} border rounded-xl p-4`}><Label k={labelKey} />{inner}</div>;
+    return <div key={key} className={`border-t ${c.border} pt-5`}><Label k={labelKey} />{inner}</div>;
   };
 
   return (
@@ -485,22 +485,19 @@ const MoneyDiplomat = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -510,8 +507,7 @@ const MoneyDiplomat = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -519,9 +515,7 @@ const MoneyDiplomat = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [activeType, setActiveType] = useState(null);
   const [situation, setSituation] = useState('');
@@ -847,7 +841,7 @@ const MoneyDiplomat = ({ tool }) => {
         {/* ─── TIP ADVISOR RESULTS ─── */}
         {activeType === 'tip' && results?.practical_answer && <GroundedResult mode="tip" results={results} c={c} t={t} />}
         {activeType === 'split' && results?.options && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.the_awkward_part && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_awkward_part}</p>}
             {results?.options?.map((opt, oi) => (
               <div key={oi} className={`p-4 rounded-lg border ${oi === 0 ? (isDark ? 'border-emerald-600 bg-emerald-900/10' : 'border-emerald-400 bg-emerald-50/50') : `${c.border} ${c.cardAlt}`}`}>
@@ -868,27 +862,27 @@ const MoneyDiplomat = ({ tool }) => {
                     <span className={`font-black ${c.textSecondary}`}>{opt.total_with_tip}</span>
                   </div>
                 )}
-                <p className={`text-[10px] ${c.textMuteded} mt-1`}>{opt.best_for}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1`}>{opt.best_for}</p>
               </div>
             ))}
             {results?.recommended && <p className={`text-sm ${c.textSecondary} font-semibold`}>👉 {results?.recommended}</p>}
             {results?.tip_recommendation && (
               <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                <p className="text-[10px] font-bold mb-1">{t('md_res_split_tip')}</p>
+                <p className="text-xs font-bold mb-1">{t('md_res_split_tip')}</p>
                 <div className="flex items-center justify-between">
                   <span className={`text-sm font-bold ${c.text}`}>{results?.tip_recommendation?.percentage}%</span>
                   <span className={`text-sm font-black ${c.textSecondary}`}>{results?.tip_recommendation?.total_tip}</span>
                 </div>
-                {results?.tip_recommendation?.note && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{results?.tip_recommendation?.note}</p>}
+                {results?.tip_recommendation?.note && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{results?.tip_recommendation?.note}</p>}
               </div>
             )}
             {results?.how_to_bring_it_up && (
               <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_split_what_to_say')}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('md_res_split_what_to_say')}</p>
                 <p className={`text-sm ${c.text} mt-1 italic`}>"{results?.how_to_bring_it_up}"</p>
               </div>
             )}
-            {results?.next_time && <p className={`text-xs ${c.textMuteded}`}>{t('md_res_split_next_time', { tip: results?.next_time })}</p>}
+            {results?.next_time && <p className={`text-[13px] ${c.textMuteded}`}>{t('md_res_split_next_time', { tip: results?.next_time })}</p>}
           </div>
         )}
 
@@ -896,12 +890,12 @@ const MoneyDiplomat = ({ tool }) => {
         {activeType === 'venmo' && results?.verdict && <GroundedResult mode="venmo" results={results} c={c} t={t} />}
         {activeType === 'gift' && results?.range && <GroundedResult mode="gift" results={results} c={c} t={t} />}
         {activeType === 'roommate' && results?.fair_split && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.fair_split?.map((fs, i) => (
               <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
                 <div>
                   <p className={`text-sm font-bold ${c.text}`}>{fs.person}</p>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{fs.percentage}%</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>{fs.percentage}%</p>
                 </div>
                 <p className={`text-lg font-black ${c.textSecondary}`}>{fs.amount}</p>
               </div>
@@ -915,9 +909,9 @@ const MoneyDiplomat = ({ tool }) => {
             ))}
             {results?.the_conversation && (
               <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_room_how')}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('md_res_room_how')}</p>
                 <p className={`text-sm ${c.text} mt-1 italic`}>"{results?.the_conversation?.opener}"</p>
-                {results?.the_conversation?.if_pushback && <p className={`text-[10px] ${c.textMuteded} mt-2`}>{t('md_res_room_pushback', { pushback: results?.the_conversation?.if_pushback })}</p>}
+                {results?.the_conversation?.if_pushback && <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('md_res_room_pushback', { pushback: results?.the_conversation?.if_pushback })}</p>}
               </div>
             )}
           </div>
@@ -926,17 +920,17 @@ const MoneyDiplomat = ({ tool }) => {
         {/* ─── FAMILY MONEY RESULTS ─── */}
         {activeType === 'family' && results?.practical_issue && <GroundedResult mode="family" results={results} c={c} t={t} />}
         {activeType === 'dining' && results?.pre_game && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.who_pays && (
               <div className={`p-3 rounded-lg ${c.cardAlt} border ${c.border}`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_din_who_pays')}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('md_res_din_who_pays')}</p>
                 <p className={`text-sm ${c.text} mt-1`}>{results?.who_pays?.expectation}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{results?.who_pays?.reasoning}</p>
-                <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>{results?.who_pays?.the_dance}</p>
+                <p className={`text-[13px] ${c.textMuteded} mt-1 italic`}>{results?.who_pays?.the_dance}</p>
               </div>
             )}
             <div className="space-y-2">
-              <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_din_strategy')}</p>
+              <p className={`text-xs font-bold ${c.textMuteded}`}>{t('md_res_din_strategy')}</p>
               <p className={`text-xs ${c.text}`}>🍽️ {results?.pre_game?.restaurant_strategy}</p>
               <p className={`text-xs ${c.text}`}>💳 {results?.pre_game?.splitting_strategy}</p>
               <p className={`text-xs ${c.text}`}>📋 {results?.pre_game?.ordering_strategy}</p>
@@ -950,9 +944,9 @@ const MoneyDiplomat = ({ tool }) => {
             ))}
             {results?.budget_moves && (
               <div className={`${c.warning} border rounded-lg p-3 space-y-1`}>
-                <p className="text-[10px] font-bold">{t('md_res_din_budget')}</p>
+                <p className="text-xs font-bold">{t('md_res_din_budget')}</p>
                 <p className="text-xs">{results?.budget_moves?.if_over_budget}</p>
-                {results?.budget_moves?.if_pressured && <p className="text-[10px]">{t('md_res_din_if_pressured', { response: results?.budget_moves?.if_pressured })}</p>}
+                {results?.budget_moves?.if_pressured && <p className="text-xs">{t('md_res_din_if_pressured', { response: results?.budget_moves?.if_pressured })}</p>}
               </div>
             )}
             {results?.pro_tip && <p className={`text-xs ${c.textSecondary} italic`}>💡 {results?.pro_tip}</p>}
@@ -961,19 +955,19 @@ const MoneyDiplomat = ({ tool }) => {
 
         {/* ─── GROUP EVENT RESULTS ─── */}
         {activeType === 'group' && results?.settlement && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.settlement?.map((s, i) => (
               <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
                 <div>
                   <p className={`text-sm font-bold ${c.text}`}>{s.person}</p>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{t('md_res_grp_paid_fair', { paid: s.paid_so_far, fair: s.fair_share })}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>{t('md_res_grp_paid_fair', { paid: s.paid_so_far, fair: s.fair_share })}</p>
                 </div>
                 <p className={`text-sm font-black ${s.owes_or_owed?.startsWith('+') ? (isDark ? 'text-red-300' : 'text-red-700') : (isDark ? 'text-green-300' : 'text-green-700')}`}>{s.owes_or_owed}</p>
               </div>
             ))}
             {results?.simplification?.transactions?.length > 0 && (
               <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>{t('md_res_grp_simplified', { count: results?.simplification?.transactions.length })}</p>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('md_res_grp_simplified', { count: results?.simplification?.transactions.length })}</p>
                 {results?.simplification?.transactions.map((txn, i) => (
                   <p key={i} className={`text-xs ${c.text}`}>{txn.from} → {txn.to}: <span className="font-bold">{txn.amount}</span> ({txn.method})</p>
                 ))}
@@ -981,7 +975,7 @@ const MoneyDiplomat = ({ tool }) => {
             )}
             {results?.the_dropout?.applicable && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className="text-[10px] font-bold">{t('md_res_grp_dropout')}</p>
+                <p className="text-xs font-bold">{t('md_res_grp_dropout')}</p>
                 <p className="text-xs mt-1">{results?.the_dropout?.fair_solution}</p>
                 {results?.the_dropout?.how_to_tell_them && <>
                   <p className="text-xs italic mt-1">"{results?.the_dropout?.how_to_tell_them}"</p>
@@ -995,7 +989,7 @@ const MoneyDiplomat = ({ tool }) => {
         {/* ─── LENDING RESULTS ─── */}
         {activeType === 'lend' && results?.recommendation && <GroundedResult mode="lend" results={results} c={c} t={t} />}
         {activeType === 'work' && results?.assessment && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div className="flex items-center gap-2 flex-wrap">
               <Badge c={c} type="info">{results?.assessment?.type}</Badge>
               <Badge c={c} type={results?.assessment?.pressure_level === 'Heavy' ? 'danger' : results?.assessment?.pressure_level === 'Moderate' ? 'warning' : 'success'}>{t('md_res_work_pressure', { level: results?.assessment?.pressure_level })}</Badge>
@@ -1010,7 +1004,7 @@ const MoneyDiplomat = ({ tool }) => {
             )}
             {results?.if_opting_out?.possible && (
               <div className={`${c.cardAlt} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_res_work_optout')}</p>
+                <p className={`text-xs font-bold ${c.textMuteded}`}>{t('md_res_work_optout')}</p>
                 <p className={`text-xs ${c.text} mt-1`}>{results?.if_opting_out?.how}</p>
               </div>
             )}
@@ -1029,11 +1023,11 @@ const MoneyDiplomat = ({ tool }) => {
         {activeType === 'travel' && results?.bridge && <GroundedResult mode="travel" results={results} c={c} t={t} />}
         {activeType === 'date' && results?.options && <GroundedResult mode="date" results={results} c={c} t={t} />}
         {activeType === 'subs' && results?.fair_split && (
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.the_wrinkle && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_wrinkle}</p>}
             {results?.fair_split?.map((fs, i) => (
               <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
-                <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[10px] ${c.textMuteded}`}>{fs.reasoning}</p></div>
+                <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[13px] ${c.textMuteded}`}>{fs.reasoning}</p></div>
                 <p className={`text-lg font-black ${c.textSecondary}`}>{fs.amount}</p>
               </div>
             ))}
@@ -1042,7 +1036,7 @@ const MoneyDiplomat = ({ tool }) => {
             )}
             {results?.if_leaving && (
               <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('md_res_subs_if_leaving')}</p>
+                <p className={`text-xs font-bold ${c.textSecondary}`}>{t('md_res_subs_if_leaving')}</p>
                 <p className={`text-sm ${c.text} italic mt-1`}>"{results?.if_leaving?.how_to_say_it}"</p>
               </div>
             )}
@@ -1058,8 +1052,8 @@ const MoneyDiplomat = ({ tool }) => {
         {activeType === 'charity' && results?.recommendation && <GroundedResult mode="charity" results={results} c={c} t={t} />}
 
         {/* Cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('md_related_tools')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('md_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>{t('md_link_velvet')}</a>
             <a href="/BillRescue" className={`text-xs ${linkStyle}`}>{t('md_link_bill')}</a>
@@ -1072,17 +1066,25 @@ const MoneyDiplomat = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2 text-xl">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
-                </h2>
-                {/* The title line above already prints the icon; the catalog tagline now
-                    opens with one too, so it would stack twice. */}
-                <p className={`text-sm ${c.textSecondary}`}>{toolTagline(tool?.tagline ?? t('md_tagline'))}</p>
+                {/* PF-30 — the wrapper already prints the name as the page <h1>. The
+                    catalog tagline opens with its own emoji, so toolTagline() strips
+                    it rather than stacking two icons. */}
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                  <span className="me-2 text-xl">{tool?.icon ?? '💵'}</span>{toolTagline(tool?.tagline ?? t('md_tagline'))}
+                </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first
@@ -1096,16 +1098,17 @@ const MoneyDiplomat = ({ tool }) => {
               ) : null}
             </div>
           </div>
+          </div>
         </div>
         <div className="p-5 space-y-3">
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setShowTracker(!showTracker)} className={`text-xs px-3 py-1 rounded-full border ${showTracker ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
+            <button aria-pressed={showTracker} onClick={() => setShowTracker(!showTracker)} className={`text-xs px-3 py-1 rounded-full border ${showTracker ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               {debts.filter(d => !d.settled).length > 0 ? t('md_pill_tracker_count', { count: debts.filter(d => !d.settled).length }) : t('md_pill_tracker')}
             </button>
-            <button onClick={() => setShowSimulator(!showSimulator)} className={`text-xs px-3 py-1 rounded-full border ${showSimulator ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
+            <button aria-pressed={showSimulator} onClick={() => setShowSimulator(!showSimulator)} className={`text-xs px-3 py-1 rounded-full border ${showSimulator ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               {t('md_pill_practice')}
             </button>
-            <button onClick={() => setQuickMode(!quickMode)} className={`text-xs px-3 py-1 rounded-full border ${quickMode ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
+            <button aria-pressed={quickMode} onClick={() => setQuickMode(!quickMode)} className={`text-xs px-3 py-1 rounded-full border ${quickMode ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               {t('md_pill_quick')}
             </button>
 
@@ -1128,29 +1131,29 @@ const MoneyDiplomat = ({ tool }) => {
             <div className="flex gap-1 ms-auto">
               {[{ id: 'tip', labelKey: 'md_quick_tab_tip' }, { id: 'split', labelKey: 'md_quick_tab_split' }].map(tab => (
                 <button key={tab.id} onClick={() => setQuickCalc(p => ({ ...p, type: tab.id }))}
-                  className={`text-[10px] px-2 py-0.5 rounded-full ${quickCalc.type === tab.id ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : `${c.cardAlt} ${c.text}`}`}>{t(tab.labelKey)}</button>
+                  className={`text-xs px-2 py-0.5 rounded-full ${quickCalc.type === tab.id ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : `${c.cardAlt} ${c.text}`}`}>{t(tab.labelKey)}</button>
               ))}
             </div>
           </div>
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className={`text-[9px] font-bold ${c.textMuteded}`}>{t('md_quick_bill')}</label>
+              <label className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_bill')}</label>
               <input type="text" value={quickCalc.bill} onChange={e => setQuickCalc(p => ({ ...p, bill: e.target.value }))}
                 placeholder={t('md_quick_bill_ph', { sym })} className={`w-full p-2 border rounded-lg text-lg font-bold ${c.input}`} />
             </div>
             {quickCalc.type === 'tip' && (
               <div className="w-20">
-                <label className={`text-[9px] font-bold ${c.textMuteded}`}>{t('md_quick_tip_pct')}</label>
+                <label className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_tip_pct')}</label>
                 <div className="flex items-center gap-1">
                   {[15, 18, 20, 25].map(p => (
                     <button key={p} onClick={() => setQuickCalc(prev => ({ ...prev, tipPct: p }))}
-                      className={`text-[10px] px-1.5 py-1 rounded ${quickCalc.tipPct === p ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : c.cardAlt}`}>{p}</button>
+                      className={`text-xs px-1.5 py-1 rounded ${quickCalc.tipPct === p ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : c.cardAlt}`}>{p}</button>
                   ))}
                 </div>
               </div>
             )}
             <div className="w-16">
-              <label className={`text-[9px] font-bold ${c.textMuteded}`}>{t('md_quick_people')}</label>
+              <label className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_people')}</label>
               <input type="number" min="1" max="50" value={quickCalc.people} onChange={e => setQuickCalc(p => ({ ...p, people: parseInt(e.target.value) || 1 }))}
                 className={`w-full p-2 border rounded-lg text-center ${c.input}`} />
             </div>
@@ -1158,17 +1161,17 @@ const MoneyDiplomat = ({ tool }) => {
           {quickResult && (
             <div className={`flex items-center justify-around mt-3 p-3 rounded-lg ${c.cardAlt}`}>
               {quickCalc.type === 'tip' && <>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>{t('md_quick_tip')}</p><p className={`text-lg font-black ${c.textSecondary}`}>{formatCurrency(Number(quickResult.tip), userLocale, userCurrency)}</p></div>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>{t('md_quick_total')}</p><p className={`text-lg font-black ${c.text}`}>{formatCurrency(Number(quickResult.total), userLocale, userCurrency)}</p></div>
-                {quickResult.perPerson && <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>{t('md_quick_per_person')}</p><p className={`text-lg font-black ${c.text}`}>{formatCurrency(Number(quickResult.perPerson), userLocale, userCurrency)}</p></div>}
+                <div className="text-center"><p className={`text-[13px] ${c.textMuteded}`}>{t('md_quick_tip')}</p><p className={`text-lg font-black ${c.textSecondary}`}>{formatCurrency(Number(quickResult.tip), userLocale, userCurrency)}</p></div>
+                <div className="text-center"><p className={`text-[13px] ${c.textMuteded}`}>{t('md_quick_total')}</p><p className={`text-lg font-black ${c.text}`}>{formatCurrency(Number(quickResult.total), userLocale, userCurrency)}</p></div>
+                {quickResult.perPerson && <div className="text-center"><p className={`text-[13px] ${c.textMuteded}`}>{t('md_quick_per_person')}</p><p className={`text-lg font-black ${c.text}`}>{formatCurrency(Number(quickResult.perPerson), userLocale, userCurrency)}</p></div>}
               </>}
               {quickCalc.type === 'split' && <>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>{t('md_quick_total')}</p><p className={`text-lg font-black ${c.text}`}>{formatCurrency(Number(quickResult.total), userLocale, userCurrency)}</p></div>
-                <div className="text-center"><p className={`text-[9px] ${c.textMuteded}`}>{t('md_quick_per_person')}</p><p className={`text-lg font-black ${c.textSecondary}`}>{formatCurrency(Number(quickResult.perPerson), userLocale, userCurrency)}</p></div>
+                <div className="text-center"><p className={`text-[13px] ${c.textMuteded}`}>{t('md_quick_total')}</p><p className={`text-lg font-black ${c.text}`}>{formatCurrency(Number(quickResult.total), userLocale, userCurrency)}</p></div>
+                <div className="text-center"><p className={`text-[13px] ${c.textMuteded}`}>{t('md_quick_per_person')}</p><p className={`text-lg font-black ${c.textSecondary}`}>{formatCurrency(Number(quickResult.perPerson), userLocale, userCurrency)}</p></div>
               </>}
             </div>
           )}
-          <p className={`text-[9px] ${c.textMuteded} text-center mt-2`}>{t('md_quick_footnote')}</p>
+          <p className={`text-[13px] ${c.textMuteded} text-center mt-2`}>{t('md_quick_footnote')}</p>
         </div>
       )}
 
@@ -1177,17 +1180,17 @@ const MoneyDiplomat = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${isDark ? 'border-red-600' : 'border-red-400'}`}>
           <div className={`p-4 ${isDark ? 'bg-red-900/20' : 'bg-red-50'} border-b ${c.border}`}>
             <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🎭</span> {t('md_sim_title')}</h4>
-            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('md_sim_helper')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('md_sim_helper')}</p>
           </div>
           <div className="p-4 space-y-3">
             {!simPrompt && (
               <>
                 <div>
-                  <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_situation_label')} <span className={c.required}>*</span></label>
+                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_situation_label')} <span className={c.required}>*</span></label>
                   <textarea value={simSituation} onChange={e => setSimSituation(e.target.value)} rows={2} placeholder={t('md_sim_situation_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_who_label')}</label>
+                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_who_label')}</label>
                   <input type="text" value={simOtherPerson} onChange={e => setSimOtherPerson(e.target.value)} placeholder={t('md_sim_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
                 <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
@@ -1210,8 +1213,8 @@ const MoneyDiplomat = ({ tool }) => {
                   <div className={`p-2 rounded-lg border ${c.border} flex items-center gap-3`}>
                     <Badge c={c} type={h.eval.score >= 70 ? 'success' : h.eval.score >= 50 ? 'warning' : 'danger'}>{h.eval.score}/100</Badge>
                     <div className="flex-1">
-                      <p className={`text-[10px] ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ {h.eval.what_worked}</p>
-                      {h.eval.power_move && <p className={`text-[10px] ${c.textSecondary}`}>⚡ {h.eval.power_move}</p>}
+                      <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ {h.eval.what_worked}</p>
+                      {h.eval.power_move && <p className={`text-xs ${c.textSecondary}`}>⚡ {h.eval.power_move}</p>}
                     </div>
                   </div>
                 )}
@@ -1221,17 +1224,17 @@ const MoneyDiplomat = ({ tool }) => {
             {/* Current prompt */}
             {simPrompt && !simPrompt.resolved && (
               <div>
-                {simPrompt.scene && <p className={`text-xs ${c.textMuteded} italic mb-2`}>{simPrompt.scene}</p>}
+                {simPrompt.scene && <p className={`text-[13px] ${c.textMuteded} italic mb-2`}>{simPrompt.scene}</p>}
                 <div className={`p-4 rounded-lg ${isDark ? 'bg-red-900/15 border-red-700' : 'bg-red-50 border-red-200'} border-2`}>
                   <div className="flex items-center gap-2 mb-1">
                     {simPrompt.their_emotion && <Badge c={c} type="info">{simPrompt.their_emotion}</Badge>}
                     {simPrompt.escalation_level && <Badge c={c} type={simPrompt.escalation_level === 'Escalating' ? 'danger' : simPrompt.escalation_level === 'De-escalating' ? 'success' : 'info'}>{simPrompt.escalation_level}</Badge>}
                   </div>
                   <p className={`text-sm font-semibold ${c.text}`}>🎭 "{simPrompt.their_line}"</p>
-                  {simPrompt.what_theyre_really_thinking && <p className={`text-[10px] ${c.textMuteded} italic mt-1`}>{t('md_sim_thinking_badge', { thought: simPrompt.what_theyre_really_thinking })}</p>}
-                  {simPrompt.coaching_hint && <p className={`text-[10px] ${c.textSecondary} mt-1`}>{t('md_sim_hint', { hint: simPrompt.coaching_hint })}</p>}
+                  {simPrompt.what_theyre_really_thinking && <p className={`text-[13px] ${c.textMuteded} italic mt-1`}>{t('md_sim_thinking_badge', { thought: simPrompt.what_theyre_really_thinking })}</p>}
+                  {simPrompt.coaching_hint && <p className={`text-xs ${c.textSecondary} mt-1`}>{t('md_sim_hint', { hint: simPrompt.coaching_hint })}</p>}
                 </div>
-                <label htmlFor="md-sim-response" className={`text-[10px] font-bold ${c.textMuted} block mb-0.5 mt-2`}>{t('md_sim_response_label')} <span className={c.required}>*</span></label>
+                <label htmlFor="md-sim-response" className={`text-xs font-bold ${c.textMuted} block mb-0.5 mt-2`}>{t('md_sim_response_label')} <span className={c.required}>*</span></label>
                 <textarea id="md-sim-response" value={simResponse} onChange={e => setSimResponse(e.target.value)} rows={2}
                   placeholder={t('md_sim_response_ph')} className={`w-full p-3 border rounded-xl outline-none text-sm resize-y mt-2 ${c.input}`} />
                 <div className="flex items-center gap-2 mt-2">
@@ -1250,7 +1253,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.textSecondary} underline mt-2`}>{t('md_sim_try_another')}</button>
               </div>
             )}
-            {simLoading && <p className={`text-xs ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> {t('md_sim_thinking_char')}</p>}
+            {simLoading && <p className={`text-[13px] ${c.textMuteded} flex items-center gap-2`}><span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> {t('md_sim_thinking_char')}</p>}
           </div>
         </div>
       )}
@@ -1266,15 +1269,15 @@ const MoneyDiplomat = ({ tool }) => {
             {/* Add new debt */}
             <div className="grid grid-cols-4 gap-2">
               <div>
-                <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_who')} <span className={c.required}>*</span></label>
+                <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_who')} <span className={c.required}>*</span></label>
                 <input type="text" value={newDebt.person} onChange={e => setNewDebt(p => ({ ...p, person: e.target.value }))} placeholder={t('md_tracker_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_amount')} <span className={c.required}>*</span></label>
+                <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_amount')} <span className={c.required}>*</span></label>
                 <input type="text" value={newDebt.amount} onChange={e => setNewDebt(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_tracker_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_forwhat')}</label>
+                <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_forwhat')}</label>
                 <input type="text" value={newDebt.context} onChange={e => setNewDebt(p => ({ ...p, context: e.target.value }))} placeholder={t('md_tracker_forwhat_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div className="flex items-end">
@@ -1283,7 +1286,7 @@ const MoneyDiplomat = ({ tool }) => {
             </div>
 
             {/* Active debts */}
-            {debts.filter(d => !d.settled).length === 0 && <p className={`text-xs ${c.textMuteded} text-center py-2`}>{t('md_tracker_empty')}</p>}
+            {debts.filter(d => !d.settled).length === 0 && <p className={`text-[13px] ${c.textMuteded} text-center py-2`}>{t('md_tracker_empty')}</p>}
             {debts.filter(d => !d.settled).map(debt => (
               <div key={debt.id} className={`flex items-center gap-3 p-3 rounded-lg border ${c.border}`}>
                 <div className="flex-1">
@@ -1291,14 +1294,14 @@ const MoneyDiplomat = ({ tool }) => {
                     <p className={`text-sm font-bold ${c.text}`}>{debt.person}</p>
                     <p className={`text-sm font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{debt.amount}</p>
                   </div>
-                  <p className={`text-[10px] ${c.textMuteded}`}>{debt.context} · {debt.date} · {t('md_tracker_reminders', { count: debt.attempts || 0 })}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}>{debt.context} · {debt.date} · {t('md_tracker_reminders', { count: debt.attempts || 0 })}</p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} transition-colors disabled:opacity-40`}>
+                  <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} transition-colors disabled:opacity-40`}>
                     {nudgeLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💵'}</span></> : '📨'} {t('md_tracker_nudge')}
                   </button>
-                  <button onClick={() => settleDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800'}`}>{t('md_tracker_paid')}</button>
-                  <button onClick={() => removeDebt(debt.id)} className={`text-[10px] px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500'}`}>🗑️</button>
+                  <button onClick={() => settleDebt(debt.id)} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800'}`}>{t('md_tracker_paid')}</button>
+                  <button onClick={() => removeDebt(debt.id)} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500'}`}>🗑️</button>
                 </div>
               </div>
             ))}
@@ -1312,20 +1315,20 @@ const MoneyDiplomat = ({ tool }) => {
                 </div>
                 <p className={`text-sm ${c.text} italic`}>"{nudgeData.message}"</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className={`text-[9px] ${c.textMuteded}`}>{nudgeData.timing}</span>
+                  <span className={`text-[13px] ${c.textMuteded}`}>{nudgeData.timing}</span>
                 </div>
-                {nudgeData.escalation_note && <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('md_tracker_if_no_response', { note: nudgeData.escalation_note })}</p>}
+                {nudgeData.escalation_note && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('md_tracker_if_no_response', { note: nudgeData.escalation_note })}</p>}
               </div>
             )}
 
             {/* Settled debts */}
             {debts.filter(d => d.settled).length > 0 && (
               <div>
-                <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('md_tracker_settled')}</p>
+                <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('md_tracker_settled')}</p>
                 {debts.filter(d => d.settled).map(debt => (
-                  <div key={debt.id} className={`flex items-center gap-2 py-1 text-xs ${c.textMuteded} line-through`}>
+                  <div key={debt.id} className={`flex items-center gap-2 py-1 text-[13px] ${c.textMuteded} line-through`}>
                     <span>{debt.person}</span><span>{debt.amount}</span><span>{debt.context}</span>
-                    <button onClick={() => removeDebt(debt.id)} className="text-[9px]">🗑️</button>
+                    <button onClick={() => removeDebt(debt.id)} className="text-xs">🗑️</button>
                   </div>
                 ))}
               </div>
@@ -1334,7 +1337,7 @@ const MoneyDiplomat = ({ tool }) => {
             {/* Total owed */}
             {debts.filter(d => !d.settled).length > 0 && (
               <div className={`text-center pt-2 border-t ${c.border}`}>
-                <p className={`text-[10px] ${c.textMuteded}`}>{t('md_tracker_total_outstanding')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{t('md_tracker_total_outstanding')}</p>
                 <p className={`text-lg font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
                   {formatCurrency(debts.filter(d => !d.settled).reduce((sum, d) => sum + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0), userLocale, userCurrency)}
                 </p>
@@ -1346,11 +1349,11 @@ const MoneyDiplomat = ({ tool }) => {
 
       {/* ─── Situation Picker ─── */}
       {!results && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <p className={`text-xs font-bold ${c.textMuteded} mb-3`}>{t('md_picker_prompt')}</p>
           {SITUATION_GROUPS.map(grp => (
             <div key={grp.labelKey} className="mb-4 last:mb-0">
-              <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-2`}>{t(grp.labelKey)}</p>
+              <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t(grp.labelKey)}</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {grp.ids.map(id => SITUATIONS.find(x => x.id === id)).filter(Boolean).map(sit => (
                   <button key={sit.id} onClick={() => { setActiveType(sit.id); setResults(null); setError(''); }}
@@ -1358,8 +1361,8 @@ const MoneyDiplomat = ({ tool }) => {
                       ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50')
                       : `${c.border} ${c.card} hover:border-emerald-300`}`}>
                     <span className="text-xl">{sit.icon}</span>
-                    <p className={`text-[10px] font-bold mt-1 ${activeType === sit.id ? c.textSecondary : c.text}`}>{t(sit.labelKey)}</p>
-                    <p className={`text-[9px] ${c.textMuteded}`}>{t(sit.descKey)}</p>
+                    <p className={`text-xs font-bold mt-1 ${activeType === sit.id ? c.textSecondary : c.text}`}>{t(sit.labelKey)}</p>
+                    <p className={`text-[13px] ${c.textMuteded}`}>{t(sit.descKey)}</p>
                   </button>
                 ))}
               </div>
@@ -1372,7 +1375,7 @@ const MoneyDiplomat = ({ tool }) => {
               {/* Shared situation field */}
               {activeType !== 'travel' && activeType !== 'gift' && (
                 <div>
-                  <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_describe_label')} <span className={c.required}>*</span></label>
+                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_describe_label')} <span className={c.required}>*</span></label>
                   <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={3} placeholder={
                   activeType === 'tip' ? t('md_ph_tip') :
                   activeType === 'split' ? t('md_ph_split', { sym }) :
@@ -1392,23 +1395,23 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'tip' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_country')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_country')}</label>
                     <select value={tipFields.country} onChange={e => setTipFields(p => ({ ...p, country: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {TIP_COUNTRY_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_service')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_service')}</label>
                     <select value={tipFields.serviceType} onChange={e => setTipFields(p => ({ ...p, serviceType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {TIP_SERVICE_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_bill')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_bill')}</label>
                     <input type="text" value={tipFields.billAmount} onChange={e => setTipFields(p => ({ ...p, billAmount: e.target.value }))} placeholder={t('md_tip_bill_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_party')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_party')}</label>
                     <input type="text" value={tipFields.partySize} onChange={e => setTipFields(p => ({ ...p, partySize: e.target.value }))} placeholder={t('md_tip_party_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1417,11 +1420,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'split' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_who')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_who')}</label>
                     <input type="text" value={splitFields.people} onChange={e => setSplitFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_split_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_total')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_total')}</label>
                     <input type="text" value={splitFields.totalBill} onChange={e => setSplitFields(p => ({ ...p, totalBill: e.target.value }))} placeholder={t('md_split_total_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1430,17 +1433,17 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'venmo' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_amount')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_amount')}</label>
                     <input type="text" value={venmoFields.amount} onChange={e => setVenmoFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_venmo_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_relationship')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_relationship')}</label>
                     <select value={venmoFields.relationship} onChange={e => setVenmoFields(p => ({ ...p, relationship: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {VENMO_REL_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_howlong')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_howlong')}</label>
                     <input type="text" value={venmoFields.timePassed} onChange={e => setVenmoFields(p => ({ ...p, timePassed: e.target.value }))} placeholder={t('md_venmo_howlong_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1450,32 +1453,32 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_occasion')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_occasion')}</label>
                       <input type="text" value={giftFields.occasion} onChange={e => setGiftFields(p => ({ ...p, occasion: e.target.value }))} placeholder={t('md_gift_occasion_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_relationship')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_relationship')}</label>
                       <input type="text" value={giftFields.relationship} onChange={e => setGiftFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_gift_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_their_spend')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_their_spend')}</label>
                       <input type="text" value={giftFields.theirSpend} onChange={e => setGiftFields(p => ({ ...p, theirSpend: e.target.value }))} placeholder={t('md_gift_their_spend_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_budget')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_budget')}</label>
                       <input type="text" value={giftFields.yourBudget} onChange={e => setGiftFields(p => ({ ...p, yourBudget: e.target.value }))} placeholder={t('md_gift_budget_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_region')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_region')}</label>
                       <select value={giftFields.region} onChange={e => setGiftFields(p => ({ ...p, region: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                         {GIFT_REGION_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_context')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_context')}</label>
                     <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_gift_context_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1484,11 +1487,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'roommate' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_people')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_people')}</label>
                     <input type="text" value={roommateFields.people} onChange={e => setRoommateFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_roommate_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_total')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_total')}</label>
                     <input type="text" value={roommateFields.totalCost} onChange={e => setRoommateFields(p => ({ ...p, totalCost: e.target.value }))} placeholder={t('md_roommate_total_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1497,11 +1500,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'family' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
                     <input type="text" value={familyFields.familyDynamic} onChange={e => setFamilyFields(p => ({ ...p, familyDynamic: e.target.value }))} placeholder={t('md_family_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
                     <input type="text" value={familyFields.culturalContext} onChange={e => setFamilyFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_family_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1510,13 +1513,13 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'dining' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_context')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_context')}</label>
                     <select value={diningFields.context} onChange={e => setDiningFields(p => ({ ...p, context: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {DINING_CTX_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_budget')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_budget')}</label>
                     <input type="text" value={diningFields.yourBudget} onChange={e => setDiningFields(p => ({ ...p, yourBudget: e.target.value }))} placeholder={t('md_dining_budget_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1526,18 +1529,18 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_event')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_event')}</label>
                       <select value={groupFields.eventType} onChange={e => setGroupFields(p => ({ ...p, eventType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                         {GROUP_EVENT_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_people')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_people')}</label>
                       <input type="text" value={groupFields.people} onChange={e => setGroupFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_group_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_expenses')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_expenses')}</label>
                     <textarea value={groupFields.expenses} onChange={e => setGroupFields(p => ({ ...p, expenses: e.target.value }))} rows={2} placeholder={t('md_group_expenses_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1546,15 +1549,15 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'lend' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_amount')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_amount')}</label>
                     <input type="text" value={lendFields.amount} onChange={e => setLendFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_lend_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_relationship')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_relationship')}</label>
                     <input type="text" value={lendFields.relationship} onChange={e => setLendFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_lend_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_history')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_history')}</label>
                     <input type="text" value={lendFields.sessionHistory} onChange={e => setLendFields(p => ({ ...p, sessionHistory: e.target.value }))} placeholder={t('md_lend_history_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1563,11 +1566,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'work' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_role')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_role')}</label>
                     <input type="text" value={workFields.role} onChange={e => setWorkFields(p => ({ ...p, role: e.target.value }))} placeholder={t('md_work_role_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_company')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_company')}</label>
                     <select value={workFields.companySize} onChange={e => setWorkFields(p => ({ ...p, companySize: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {WORK_SIZE_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
@@ -1578,11 +1581,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'travel' && (
                 <div className="space-y-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_destination')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_destination')}</label>
                     <input type="text" value={travelFields.destination} onChange={e => setTravelFields(p => ({ ...p, destination: e.target.value }))} placeholder={t('md_travel_destination_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_question')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_question')}</label>
                     <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_travel_question_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1592,17 +1595,17 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_number')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_number')}</label>
                       <select value={dateFields.dateNumber} onChange={e => setDateFields(p => ({ ...p, dateNumber: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                         {DATE_NUM_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_dynamic')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_dynamic')}</label>
                       <input type="text" value={dateFields.dynamic} onChange={e => setDateFields(p => ({ ...p, dynamic: e.target.value }))} placeholder={t('md_date_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_cultural')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_cultural')}</label>
                       <input type="text" value={dateFields.culturalContext} onChange={e => setDateFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_date_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
@@ -1612,15 +1615,15 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'subs' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_service')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_service')}</label>
                     <input type="text" value={subsFields.service} onChange={e => setSubsFields(p => ({ ...p, service: e.target.value }))} placeholder={t('md_subs_service_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_people')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_people')}</label>
                     <input type="text" value={subsFields.people} onChange={e => setSubsFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_subs_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_cost')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_cost')}</label>
                     <input type="text" value={subsFields.monthlyCost} onChange={e => setSubsFields(p => ({ ...p, monthlyCost: e.target.value }))} placeholder={t('md_subs_cost_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1630,21 +1633,21 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_current')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_current')}</label>
                       <input type="text" value={salaryFields.currentSalary} onChange={e => setSalaryFields(p => ({ ...p, currentSalary: e.target.value }))} placeholder={t('md_salary_current_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_target')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_target')}</label>
                       <input type="text" value={salaryFields.targetRole} onChange={e => setSalaryFields(p => ({ ...p, targetRole: e.target.value }))} placeholder={t('md_salary_target_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_location')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_location')}</label>
                       <input type="text" value={salaryFields.location} onChange={e => setSalaryFields(p => ({ ...p, location: e.target.value }))} placeholder={t('md_salary_location_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_experience')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_experience')}</label>
                       <input type="text" value={salaryFields.experience} onChange={e => setSalaryFields(p => ({ ...p, experience: e.target.value }))} placeholder={t('md_salary_experience_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
@@ -1654,11 +1657,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'afford' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_cost')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_cost')}</label>
                     <input type="text" value={affordFields.cost} onChange={e => setAffordFields(p => ({ ...p, cost: e.target.value }))} placeholder={t('md_afford_cost_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_income')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_income')}</label>
                     <input type="text" value={affordFields.income} onChange={e => setAffordFields(p => ({ ...p, income: e.target.value }))} placeholder={t('md_afford_income_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1667,11 +1670,11 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'inheritance' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
                     <input type="text" value={inheritanceFields.familyDynamic} onChange={e => setInheritanceFields(p => ({ ...p, familyDynamic: e.target.value }))} placeholder={t('md_inh_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
                     <input type="text" value={inheritanceFields.culturalContext} onChange={e => setInheritanceFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_inh_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1681,16 +1684,16 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_your_bg')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_your_bg')}</label>
                       <input type="text" value={culturalFields.yourBackground} onChange={e => setCulturalFields(p => ({ ...p, yourBackground: e.target.value }))} placeholder={t('md_cultural_your_bg_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_their_bg')}</label>
+                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_their_bg')}</label>
                       <input type="text" value={culturalFields.theirBackground} onChange={e => setCulturalFields(p => ({ ...p, theirBackground: e.target.value }))} placeholder={t('md_cultural_their_bg_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_situation')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_situation')}</label>
                     <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_cultural_situation_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1699,17 +1702,17 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'charity' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_type')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_type')}</label>
                     <select value={charityFields.askType} onChange={e => setCharityFields(p => ({ ...p, askType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {CHARITY_TYPE_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_relationship')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_relationship')}</label>
                     <input type="text" value={charityFields.relationship} onChange={e => setCharityFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_charity_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_amount')}</label>
+                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_amount')}</label>
                     <input type="text" value={charityFields.amount} onChange={e => setCharityFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_charity_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
@@ -1732,7 +1735,7 @@ const MoneyDiplomat = ({ tool }) => {
 
           {/* Pre-result cross-ref — at the foot of the form, never above it. */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 mt-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1.5`}>{t('md_before_you_ask')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-1.5`}>{t('md_before_you_ask')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BillRescue" className={`text-xs ${linkStyle}`}>{t('md_link_bill')}</a>
             </div>
@@ -1747,23 +1750,23 @@ const MoneyDiplomat = ({ tool }) => {
 
       {/* ─── HISTORY ─── */}
       {sessionHistory.length > 0 && !hasAnswer && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <div className="flex items-center justify-between mb-2">
-            <p className={`text-[10px] font-bold ${c.textMuteded}`}>{t('md_recent', { count: sessionHistory.length })}</p>
-            <button onClick={() => { setSessionHistory([]); }} className={`text-[10px] ${c.textMuteded} underline`}>{t('md_clear')}</button>
+            <p className={`text-xs font-bold ${c.textMuteded}`}>{t('md_recent', { count: sessionHistory.length })}</p>
+            <button onClick={() => { setSessionHistory([]); }} className={`text-[13px] ${c.textMuteded} underline`}>{t('md_clear')}</button>
           </div>
           {sessionHistory.slice(0, 5).map((h, i) => (
             <div key={i} className={`flex items-center gap-2 py-1.5 border-b last:border-0 ${c.border}`}>
               <Badge c={c} type="info">{h.type}</Badge>
               <span className={`text-xs ${c.text} flex-1 truncate`}>{h.summary}</span>
-              <span className={`text-[9px] ${c.textMuteded}`}>{new Date(h.date).toLocaleDateString()}</span>
+              <span className={`text-[13px] ${c.textMuteded}`}>{new Date(h.date).toLocaleDateString()}</span>
             </div>
           ))}
         </div>
       )}
       {/* Disclaimer */}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p className={`text-[13px] ${c.textMuted}`}>
           {t('md_disclaimer')}
         </p>
       </div>

@@ -58,13 +58,13 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -72,27 +72,27 @@ const ComplaintEscalationWriter = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     required:      'text-red-500',
     // ─── Tool-specific semantic colors ───
-    highlight:        isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
+    highlight:        isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     hintStyle:        isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-100 text-slate-600',
     letterBox:        isDark ? 'bg-zinc-900/50 border-zinc-600' : 'bg-gray-50 border-gray-200',
-    industryActive:   isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    industryActive:   isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     industryInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    toneActive:       isDark ? 'border-cyan-500 bg-cyan-900/30' : 'border-cyan-600 bg-cyan-50',
+    toneActive:       isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]',
     toneInactive:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
     issueTip:         isDark ? 'text-amber-400' : 'text-amber-600',
     resolvedBtn:      isDark ? 'border-emerald-600 bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50' : 'border-emerald-400 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
     resolvedText:     isDark ? 'text-emerald-300' : 'text-emerald-700',
     escalateBtn:      isDark ? 'border-red-700 bg-red-900/30 text-red-300 hover:bg-red-900/50' : 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100',
-    analyzeBtn:       isDark ? 'border-cyan-700 bg-cyan-900/30 text-cyan-300 hover:bg-cyan-900/50' : 'border-cyan-300 bg-cyan-50 text-cyan-700 hover:bg-cyan-100',
+    analyzeBtn:       isDark ? 'border-[#2c3a4a] bg-[#1f2530] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8] text-[#142a43] hover:bg-[#234568]',
     failedText:       isDark ? 'text-red-400' : 'text-red-600',
     editDoneBtn:      isDark ? 'bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
     loadingSubmit:    isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-500',
-    firstVisitLink:   isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700',
+    firstVisitLink:   isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef]' : 'text-[#165b9a] hover:text-[#142a43]',
     progressTrack:    isDark ? 'bg-zinc-700' : 'bg-gray-200',
-    contextBadge:     isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
+    contextBadge:     isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     tacticsTag:       isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
-    counterBox:       isDark ? 'border-cyan-700 bg-cyan-900/20' : 'border-cyan-300 bg-cyan-50',
-    counterBoxHd:     isDark ? 'text-cyan-400' : 'text-cyan-700',
+    counterBox:       isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]',
+    counterBoxHd:     isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]',
     // ─── Severity semantic colors (for severityConfig lookup) ───
     sevLowColor:    isDark ? 'text-green-400' : 'text-green-600',
     sevLowBg:       isDark ? 'bg-green-900/20' : 'bg-green-50',
@@ -104,7 +104,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
     sevCritBg:      isDark ? 'bg-red-900/20' : 'bg-red-50',
     sevCritBorder:  isDark ? 'border-red-700' : 'border-red-200',
     redFlagsBox:      isDark ? 'bg-red-900/20 text-red-300' : 'bg-red-50 text-red-700',
-    checkboxAccent:   isDark ? 'accent-cyan-500' : 'accent-cyan-600',
+    checkboxAccent:   isDark ? 'accent-[#7fb3e0]' : 'accent-[#142a43]',
     evidenceChecked:  isDark ? 'bg-emerald-900/20' : 'bg-emerald-50',
     stageTabInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500 bg-transparent' : 'border-gray-300 text-gray-500 hover:border-gray-400 bg-transparent',
     timelineLine:     isDark ? 'bg-zinc-600' : 'bg-gray-300',
@@ -122,9 +122,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Helper color maps (dynamic + isDark) ───
   const legalStrengthBadge = {
@@ -184,7 +182,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const stageColors = (color, type) => {
     const map = {
       blue:   { badge: isDark ? 'bg-sky-900/40 text-sky-300 border-sky-700' : 'bg-sky-100 text-sky-700 border-sky-200', bg: isDark ? 'bg-sky-900/15' : 'bg-sky-50', border: isDark ? 'border-sky-700' : 'border-sky-300', accent: isDark ? 'text-sky-400' : 'text-sky-600' },
-      purple: { badge: isDark ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700' : 'bg-cyan-100 text-cyan-700 border-cyan-200', bg: isDark ? 'bg-cyan-900/15' : 'bg-cyan-50', border: isDark ? 'border-cyan-700' : 'border-cyan-300', accent: isDark ? 'text-cyan-400' : 'text-cyan-600' },
+      purple: { badge: isDark ? 'bg-[#1f2530] text-[#a9cdef] border-[#2c3a4a]' : 'bg-[#eef3f8] text-[#142a43] border-[#d4dde8]', bg: isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]', border: isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]', accent: isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]' },
       orange: { badge: isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-200', bg: isDark ? 'bg-amber-900/15' : 'bg-amber-50', border: isDark ? 'border-amber-700' : 'border-amber-300', accent: isDark ? 'text-amber-400' : 'text-amber-600' },
       pink:   { badge: isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-200', bg: isDark ? 'bg-red-900/15' : 'bg-red-50', border: isDark ? 'border-red-700' : 'border-red-300', accent: isDark ? 'text-red-400' : 'text-red-600' },
       red:    { badge: isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-200', bg: isDark ? 'bg-red-900/15' : 'bg-red-50', border: isDark ? 'border-red-700' : 'border-red-300', accent: isDark ? 'text-red-400' : 'text-red-600' },
@@ -404,7 +402,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className={`text-sm font-bold ${c.text}`}>{t('cew_ready_to_send')}</p>
-              <p className={`text-xs ${c.textMuteded}`}>{t('cew_ready_desc')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('cew_ready_desc')}</p>
             </div>
             <button onClick={() => markStageSent(stageNum)} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnPrimary}`}>
               ✅ {sentLabel || t('cew_mark_sent')}
@@ -442,7 +440,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           )}
 
           <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('cew_did_respond')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('cew_did_respond')}</p>
             <div className="flex flex-wrap gap-2">
               <button onClick={() => markStageOutcome(stageNum, 'resolved')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.resolvedBtn}`}>✅ {t('cew_btn_resolved')}</button>
               <button onClick={() => setShowResponseInput(stageNum)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.analyzeBtn}`}>📨 {t('cew_btn_analyze_resp')}</button>
@@ -480,10 +478,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className="space-y-3 mt-4">
                   <div className={`p-3 rounded-xl border ${recoBg[responseAnalysis.recommendation] || recoDefault}`}>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${recoBadge[responseAnalysis.recommendation] || recoBadgeDefault}`}>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${recoBadge[responseAnalysis.recommendation] || recoBadgeDefault}`}>
                         {responseAnalysis.recommendation === 'accept' ? <>✅ {t('cew_reco_accept')}</> : responseAnalysis.recommendation === 'counter' ? <>🤝 {t('cew_reco_counter')}</> : responseAnalysis.recommendation === 'escalate' ? <>⬆️ {t('cew_reco_escalate')}</> : <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📧'}</span> {t('cew_reco_wait')}</>}
                       </span>
-                      <span className={`text-xs ${c.textMuteded}`}>{responseAnalysis.response_type_label}</span>
+                      <span className={`text-[13px] ${c.textMuteded}`}>{responseAnalysis.response_type_label}</span>
                     </div>
                     <p className={`text-sm leading-relaxed ${c.text}`}>{responseAnalysis.assessment}</p>
                   {responseAnalysis.is_genuine !== undefined && (
@@ -492,7 +490,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     </p>
                   )}
                   {responseAnalysis.genuineness_explanation && (
-                    <p className={`text-xs ${c.textMuteded} mt-0.5`}>{responseAnalysis.genuineness_explanation}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{responseAnalysis.genuineness_explanation}</p>
                   )}
                   </div>
 
@@ -503,7 +501,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>🎭 {t('cew_tactics_identified')}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {(responseAnalysis.tactics_used || []).map((tactic, i) => (
-                          <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.tacticsTag}`}>{tactic}</span>
+                          <span key={i} className={`px-2 py-0.5 rounded-full text-xs font-bold ${c.tacticsTag}`}>{tactic}</span>
                         ))}
                       </div>
                     </div>
@@ -528,10 +526,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       </div>
                       <div className={`whitespace-pre-wrap text-xs ${c.textSecondary} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
                       {responseAnalysis.if_counter.target_amount_or_resolution && (
-                        <p className={`text-xs ${c.textMuteded} mt-2`}>{t('cew_target')} {responseAnalysis.if_counter.target_amount_or_resolution}</p>
+                        <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('cew_target')} {responseAnalysis.if_counter.target_amount_or_resolution}</p>
                       )}
                       {responseAnalysis.if_counter.leverage_to_mention && (
-                        <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('cew_leverage')} {responseAnalysis.if_counter.leverage_to_mention}</p>
+                        <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('cew_leverage')} {responseAnalysis.if_counter.leverage_to_mention}</p>
                       )}
                     </div>
                   )}
@@ -774,13 +772,21 @@ const ComplaintEscalationWriter = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
         {/* Standard header */}
-        <div className="mb-4 pb-3 border-b border-zinc-500">
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '📧'}</span>{t('cew_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -792,13 +798,14 @@ const ComplaintEscalationWriter = ({ tool }) => {
             </div>
           </div>
         </div>
+        </div>
 
         {/* ── HISTORY PANEL — inside card so it's visible regardless of scroll position ── */}
         {showHistory && complaintHistory.length > 0 && (
           <div className={`mb-4 rounded-xl border ${c.border} overflow-hidden`}>
             <div className={`px-4 py-2.5 border-b ${c.border} ${c.cardAlt} flex items-center justify-between`}>
-              <span className={`text-xs font-bold ${c.text} uppercase tracking-wider`}>🕐 {t('cew_past_complaints')}</span>
-              <button onClick={() => setShowHistory(false)} className={`text-xs ${c.textMuted} hover:${c.text}`}>✕ {t('cew_close')}</button>
+              <span className={`text-[13px] font-bold ${c.text}r`}>🕐 {t('cew_past_complaints')}</span>
+              <button onClick={() => setShowHistory(false)} className={`text-[13px] ${c.textMuted} hover:${c.text}`}>✕ {t('cew_close')}</button>
             </div>
             <div className="divide-y divide-zinc-700/30 max-h-96 overflow-y-auto">
               {complaintHistory.map(h => {
@@ -809,17 +816,17 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 const toneLabels = { firm: t('cew_tone_firm_short'), aggressive: t('cew_tone_aggressive_short'), empathetic: t('cew_tone_empathetic_short') };
                 const isActive = h.id === activeComplaintId;
                 return (
-                  <div key={h.id} className={`p-4 ${isActive ? (isDark ? 'bg-cyan-900/10' : 'bg-cyan-50/60') : ''}`}>
+                  <div key={h.id} className={`p-4 ${isActive ? (isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]') : ''}`}>
                     {/* Row 1: company + date + severity */}
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`text-sm font-bold ${c.text}`}>{h.company}</span>
-                        {isActive && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>{t('cew_active')}</span>}
+                        {isActive && <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{t('cew_active')}</span>}
                       </div>
-                      <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
+                      <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
                     </div>
                     {/* Row 2: meta */}
-                    <div className={`flex items-center gap-2 text-xs ${c.textMuted} mb-2 flex-wrap`}>
+                    <div className={`flex items-center gap-2 text-[13px] ${c.textMuted} mb-2 flex-wrap`}>
                       <span>{new Date(h.date).toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                       {h.industry && h.industry !== 'auto' && <><span>·</span><span>{h.industry}</span></>}
                       {h.tone && <><span>·</span><span>{toneLabels[h.tone] || h.tone}</span></>}
@@ -833,7 +840,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                           const st = progress[n];
                           return (
                             <div key={n} title={t('cew_stage_label', { n, label: st ? st.outcome : t('cew_unknown') })}
-                              className={`flex items-center justify-center w-7 h-7 rounded-full text-[11px] border ${
+                              className={`flex items-center justify-center w-7 h-7 rounded-full text-[13px] border ${
                                 st?.outcome === 'resolved' ? (isDark ? 'bg-emerald-900/40 border-emerald-600 text-emerald-300' : 'bg-emerald-100 border-emerald-400 text-emerald-700') :
                                 st?.outcome === 'failed'   ? (isDark ? 'bg-red-900/40 border-red-600 text-red-300' : 'bg-red-100 border-red-400 text-red-700') :
                                 st?.outcome === 'pending'  ? (isDark ? 'bg-amber-900/40 border-amber-600 text-amber-300' : 'bg-amber-100 border-amber-400 text-amber-700') :
@@ -843,7 +850,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                             </div>
                           );
                         })}
-                        <span className={`text-xs ${c.textMuted} ms-1`}>
+                        <span className={`text-[13px] ${c.textMuted} ms-1`}>
                           {Object.values(progress).filter(s => s.outcome === 'resolved').length > 0 ? `✅ ${t('cew_resolved_short')}` :
                            Object.values(progress).filter(s => s.outcome === 'pending').length > 0 ? t('cew_in_progress') :
                            t('cew_stages_count', { done: Object.keys(progress).length })}
@@ -861,12 +868,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         </button>
                       )}
                       {isActive && (
-                        <span className={`text-xs font-semibold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+                        <span className={`text-xs font-semibold ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>
                           ✓ {t('cew_currently_active')}
                         </span>
                       )}
                       {!resultsMap[h.id] && !isActive && (
-                        <span className={`text-xs ${c.textMuted}`}>{t('cew_inputs_only')}</span>
+                        <span className={`text-[13px] ${c.textMuted}`}>{t('cew_inputs_only')}</span>
                       )}
                     </div>
                   </div>
@@ -893,7 +900,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
               ].map((f, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2.5 rounded-xl ${c.card}`}>
                   <span className="text-lg">{f.emoji}</span>
-                  <div><p className={`text-sm font-bold ${c.text}`}>{f.title}</p><p className={`text-xs ${c.textMuteded}`}>{f.desc}</p></div>
+                  <div><p className={`text-sm font-bold ${c.text}`}>{f.title}</p><p className={`text-[13px] ${c.textMuteded}`}>{f.desc}</p></div>
                 </div>
               ))}
             </div>
@@ -911,7 +918,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             {issue.length > 0 && issue.length < 100 && (
               <p className={`text-xs ${c.issueTip} mt-2`}>{t('cew_issue_tip')}</p>
             )}
-            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_ctrl_enter')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cew_ctrl_enter')}</p>
           </div>
 
 
@@ -959,7 +966,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <button key={toneOpt.id} onClick={() => setTone(toneOpt.id)}
                   className={`p-3 rounded-xl border text-start transition-all ${tone === toneOpt.id ? c.toneActive : c.toneInactive}`}>
                   <p className={`text-sm font-bold ${c.text}`}>{toneOpt.label}</p>
-                  <p className={`text-xs ${c.textMuteded} mt-0.5`}>{toneOpt.desc}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{toneOpt.desc}</p>
                 </button>
               ))}
             </div>
@@ -1028,7 +1035,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           )}
 
           {/* PF-33 — an offer belongs after the ask */}
-          <p className={`text-xs text-center ${c.textMuted} mt-3`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted} mt-3`}>
             {t('cew_xref_pre_q')} <a href="/PlainTalk" className={linkStyle}>🗣️ {t('cew_xref_plaintalk')}</a> {t('cew_xref_pre_tail')}
           </p>
         </div>
@@ -1056,7 +1063,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           </div>
 
           {/* ── ESCALATION LADDER ── */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⚡</span> {t('cew_escalation_ladder')}</h3>
             <p className={`text-sm ${c.textSecondary} mb-5`}>{t('cew_ladder_intro')}</p>
 
@@ -1081,7 +1088,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 the tab row just looks short — the visitor should know the rest
                 exists and what brings it. */}
             {!showAllSteps && unlockedThrough < 5 && (
-              <p className={`text-xs ${c.textMuteded} mb-5`}>
+              <p className={`text-[13px] ${c.textMuteded} mb-5`}>
                 {t('cew_next_unlocks')}{' '}
                 <button onClick={() => setShowAllSteps(true)} className={`underline font-semibold ${c.textSecondary}`}>
                   {t('cew_show_all_steps')}
@@ -1124,12 +1131,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <div className="flex items-center gap-2 mt-2">
                           <button onClick={() => setEditingLetter(null)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.editDoneBtn}`}>✅ {t('cew_done_editing')}</button>
                           <button onClick={() => cancelEditingLetter(stageKey, s.letter_body)} className={`text-xs font-bold ${c.textMuteded}`}>{t('cew_reset_original')}</button>
-                          {editedLetters[stageKey] !== s.letter_body && <span className={`text-[10px] ${c.issueTip}`}>✏️ {t('cew_modified')}</span>}
+                          {editedLetters[stageKey] !== s.letter_body && <span className={`text-xs ${c.issueTip}`}>✏️ {t('cew_modified')}</span>}
                         </div>
                       </div>
                     ) : (
                       <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{letterText}
-                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ {t('cew_edited_letter')}</p>}
+                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-xs mt-2 ${c.issueTip}`}>✏️ {t('cew_edited_letter')}</p>}
                       </div>
                     )}
                   </div>
@@ -1169,7 +1176,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s2')}</p>
-                  <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s2_desc')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cew_regen_s2_desc')}</p>
                 </div>
               );
               return (
@@ -1177,7 +1184,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <h4 className={`font-bold ${c.text}`}>{t('cew_s2_heading')}</h4>
-                      {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
+                      {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
                     </div>
                     <div className="flex items-center gap-2">
                       {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.complaint_text)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ {t('cew_edit')}</button>}
@@ -1201,7 +1208,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       </div>
                     ) : (
                       <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{complaintText}
-                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.complaint_text && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ {t('cew_edited_text')}</p>}
+                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.complaint_text && <p className={`text-xs mt-2 ${c.issueTip}`}>✏️ {t('cew_edited_text')}</p>}
                       </div>
                     )}
                   </div>
@@ -1223,7 +1230,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s3')}</p>
-                  <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s3_desc')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cew_regen_s3_desc')}</p>
                 </div>
               );
               return (
@@ -1231,7 +1238,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <h4 className={`font-bold ${c.text}`}>{t('cew_s3_heading')}</h4>
-                      {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
+                      {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
                     </div>
                     <div className="flex items-center gap-2">
                       {!isEditing && <button onClick={() => startEditingLetter(stageKey, s.letter_body)} className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.btnSecondary}`}>✏️ {t('cew_edit')}</button>}
@@ -1250,7 +1257,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       </div>
                     ) : (
                       <div className={`whitespace-pre-wrap text-sm ${c.textSecondary} leading-relaxed`}>{letterText}
-                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-[10px] mt-2 ${c.issueTip}`}>✏️ {t('cew_edited_letter')}</p>}
+                        {editedLetters[stageKey] && editedLetters[stageKey] !== s.letter_body && <p className={`text-xs mt-2 ${c.issueTip}`}>✏️ {t('cew_edited_letter')}</p>}
                       </div>
                     )}
                   </div>
@@ -1260,8 +1267,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {(s.target_contacts || []).map((tc, i) => (
                         <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{tc.title}</span>
-                          {tc.email_pattern && <span className={`ms-2 font-mono text-xs ${c.textMuteded}`}>{tc.email_pattern}</span>}
-                          {tc.why && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{tc.why}</p>}
+                          {tc.email_pattern && <span className={`ms-2 font-mono text-[13px] ${c.textMuteded}`}>{tc.email_pattern}</span>}
+                          {tc.why && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{tc.why}</p>}
                         </div>
                       ))}
                     </div>
@@ -1280,14 +1287,14 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s4')}</p>
-                  <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s4_desc')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cew_regen_s4_desc')}</p>
                 </div>
               );
               return (
                 <div className={`space-y-4 ${c.text}`}>
                   <div className="flex items-center gap-2">
                     <h4 className={`font-bold ${c.text}`}>{t('cew_s4_heading')}</h4>
-                    {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
+                    {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
                   </div>
                   {s.social_media_post && (
                     <div className={`rounded-xl p-5 border ${c.letterBox}`}>
@@ -1295,7 +1302,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`text-xs font-bold ${c.textMuteded}`}>{t('cew_twitter_post')}</p>
                       </div>
                       <p className={`text-sm ${c.text} leading-relaxed`}>{s.social_media_post}</p>
-                      <p className={`text-xs ${c.textMuteded} mt-2`}>{t('cew_chars', { n: s.social_media_post.length })}</p>
+                      <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('cew_chars', { n: s.social_media_post.length })}</p>
                     </div>
                   )}
                   {s.social_media_long && (
@@ -1335,21 +1342,21 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>{t('cew_regen_s5')}</p>
-                  <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_regen_s5_desc')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cew_regen_s5_desc')}</p>
                 </div>
               );
               return (
                 <div className={`space-y-4 ${c.text}`}>
                   <div className="flex items-center gap-2">
                     <h4 className={`font-bold ${c.text}`}>{t('cew_s5_heading')}</h4>
-                    {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
+                    {isRegenerated && <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${c.contextBadge}`}>🔄 {t('cew_context_aware')}</span>}
                   </div>
                   {s.chargeback?.applicable && (
                     <div className={`p-5 rounded-xl border ${stageColors('red', 'border')} ${stageColors('red', 'bg')}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>💳 {t('cew_chargeback')}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        {s.chargeback.reason_code && <div><p className={`text-xs ${c.textMuteded}`}>{t('cew_reason_code')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.reason_code}</p></div>}
-                        {s.chargeback.time_window && <div><p className={`text-xs ${c.textMuteded}`}>{t('cew_time_window')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.time_window}</p></div>}
+                        {s.chargeback.reason_code && <div><p className={`text-[13px] ${c.textMuteded}`}>{t('cew_reason_code')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.reason_code}</p></div>}
+                        {s.chargeback.time_window && <div><p className={`text-[13px] ${c.textMuteded}`}>{t('cew_time_window')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.chargeback.time_window}</p></div>}
                       </div>
                       {s.chargeback.how_to_file && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>{t('cew_how_to_file')}</strong> {s.chargeback.how_to_file}</p>}
                       {s.chargeback.documentation_needed && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>{t('cew_documentation')}</strong> {s.chargeback.documentation_needed}</p>}
@@ -1360,9 +1367,9 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-5 rounded-xl border ${c.border} ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${stageColors('red', 'accent')} mb-2`}>⚖️ {t('cew_small_claims')}</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
-                        {s.small_claims.filing_fee_range && <div><p className={`text-xs ${c.textMuteded}`}>{t('cew_filing_fee')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.filing_fee_range}</p></div>}
-                        {s.small_claims.max_claim_amount && <div><p className={`text-xs ${c.textMuteded}`}>{t('cew_max_claim')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.max_claim_amount}</p></div>}
-                        {s.small_claims.jurisdiction && <div><p className={`text-xs ${c.textMuteded}`}>{t('cew_jurisdiction')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.jurisdiction}</p></div>}
+                        {s.small_claims.filing_fee_range && <div><p className={`text-[13px] ${c.textMuteded}`}>{t('cew_filing_fee')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.filing_fee_range}</p></div>}
+                        {s.small_claims.max_claim_amount && <div><p className={`text-[13px] ${c.textMuteded}`}>{t('cew_max_claim')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.max_claim_amount}</p></div>}
+                        {s.small_claims.jurisdiction && <div><p className={`text-[13px] ${c.textMuteded}`}>{t('cew_jurisdiction')}</p><p className={`text-sm font-semibold ${c.text}`}>{s.small_claims.jurisdiction}</p></div>}
                       </div>
                       {s.small_claims.typical_outcome && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>{t('cew_typical_outcome')}</strong> {s.small_claims.typical_outcome}</p>}
                       {s.small_claims.company_response && <p className={`text-sm ${c.textSecondary}`}><strong>{t('cew_company_usually')}</strong> {s.small_claims.company_response}</p>}
@@ -1392,15 +1399,15 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Evidence Checklist */}
           {results?.evidence_checklist?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <button onClick={() => toggleSection('evidence')} className={`w-full flex items-center justify-between ${c.text}`}>
-                <h3 className="font-bold flex items-center gap-2">
+            <div className={`border-t ${c.border} pt-5`}>
+              <button data-print-heading aria-expanded={!!(expandedSections.evidence)} onClick={() => toggleSection('evidence')} className={`w-full flex items-center justify-between ${c.text}`}>
+                <h3 className="text-base font-bold flex items-center gap-2">
                   <span>📋</span> {t('cew_evidence_checklist', { done: results?.evidence_checklist?.filter((_, i) => isEvidenceChecked(i)).length, total: results?.evidence_checklist?.length })}
                 </h3>
-                {<Caret open={expandedSections.evidence} />}
+                {<span data-print-hide><Caret open={expandedSections.evidence} /></span>}
               </button>
-              {expandedSections.evidence && (
-                <div className="space-y-2 mt-4">
+              {(
+                <div data-sec-body hidden={!(expandedSections.evidence)} className="space-y-2 mt-4">
                   {renderHint('evidence', t('cew_evidence_hint'))}
                   {results?.evidence_checklist?.map((item, idx) => (
                     <div key={idx} onClick={() => toggleEvidence(idx)}
@@ -1409,7 +1416,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <p className={`text-sm font-semibold ${isEvidenceChecked(idx) ? `${c.textMuteded} line-through` : c.text}`}>{item.item}</p>
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${evidencePriority[item.priority] || evidencePriorityDefault}`}>{item.priority}</span>
+                          <span className={`px-1.5 py-0.5 rounded text-[13px] font-bold ${evidencePriority[item.priority] || evidencePriorityDefault}`}>{item.priority}</span>
                         </div>
                         <p className={`text-xs ${c.textSecondary} mt-0.5`}>{item.how}</p>
                       </div>
@@ -1451,13 +1458,13 @@ const ComplaintEscalationWriter = ({ tool }) => {
             })()}
             {/* Legal Leverage */}
             {results?.legal_leverage?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-                <button onClick={() => toggleSection('legal')} className={`w-full flex items-center justify-between ${c.text}`}>
-                  <h3 className="font-bold flex items-center gap-2"><span>⚖️</span> {t('cew_legal_leverage', { count: results?.legal_leverage?.length })}</h3>
-                  {<Caret open={expandedSections.legal} />}
+              <div className={`border-t ${c.border} pt-5`}>
+                <button data-print-heading aria-expanded={!!(expandedSections.legal)} onClick={() => toggleSection('legal')} className={`w-full flex items-center justify-between ${c.text}`}>
+                  <h3 className="text-base font-bold flex items-center gap-2"><span>⚖️</span> {t('cew_legal_leverage', { count: results?.legal_leverage?.length })}</h3>
+                  {<span data-print-hide><Caret open={expandedSections.legal} /></span>}
                 </button>
-                {expandedSections.legal && (
-                  <div className="space-y-3 mt-4">
+                {(
+                  <div data-sec-body hidden={!(expandedSections.legal)} className="space-y-3 mt-4">
                     {/* The heading promises considerations; give them first, as
                         the short ticked list it implies. The detail below is
                         for whoever wants the citation. */}
@@ -1477,9 +1484,9 @@ const ComplaintEscalationWriter = ({ tool }) => {
                           <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${legalStrengthBadge[law.strength] || legalStrengthDefault}`}>{law.strength}</span>
                         </div>
-                        {law.what_it_protects && <p className={`text-xs font-semibold ${c.textSecondary} mb-1`}>{law.what_it_protects}</p>}
+                        {law.what_it_protects && <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{law.what_it_protects}</p>}
                         <p className={`text-sm ${c.textSecondary} mb-1`}>{law.how_it_applies}</p>
-                        <p className={`text-xs ${c.textMuteded}`}>{t('cew_company_risk')} {law.consequence_for_company}</p>
+                        <p className={`text-[13px] ${c.textMuteded}`}>{t('cew_company_risk')} {law.consequence_for_company}</p>
                         {law.time_limit_days && (
                           <div className={`mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${timeLimitBg(law.time_limit_days)}`}>
                             <span className="text-xs">{law.time_limit_days <= 30 ? '🚨' : law.time_limit_days <= 90 ? '⏰' : '📅'}</span>
@@ -1499,14 +1506,14 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Timeline */}
           {results?.timeline && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⏰</span> {t('cew_campaign_timeline')}</h3>
               <div className="relative ps-6">
                 <div className={`absolute start-2 top-0 bottom-0 w-0.5 ${c.timelineLine}`} />
                 {Object.entries(results?.timeline).map(([key, value], idx) => (
                   <div key={key} className="relative mb-4 last:mb-0">
                     <div className={`absolute -start-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
-                    <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
+                    <p className={`text-[13px] font-bold ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{typeof value === 'string' ? value : Array.isArray(value?.actions) ? value.actions.join(' ') : Array.isArray(value) ? value.join(' ') : String(value ?? '')}</p>
                   </div>
                 ))}
@@ -1516,7 +1523,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Quick Tips */}
           {results?.quick_tips?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>⚡</span> {t('cew_tactical_tips')}</h3>
               {results?.quick_tips?.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondary} mb-2`}>• {tip}</p>)}
             </div>
@@ -1524,13 +1531,13 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Call Script */}
           {results?.call_script && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <button onClick={() => setShowCallScript(!showCallScript)} className={`w-full flex items-center justify-between ${c.text}`}>
-                <h3 className="font-bold flex items-center gap-2"><span>📞</span> {t('cew_call_script')}</h3>
-                {<Caret open={showCallScript} />}
+            <div className={`border-t ${c.border} pt-5`}>
+              <button data-print-heading aria-expanded={!!(showCallScript)} onClick={() => setShowCallScript(!showCallScript)} className={`w-full flex items-center justify-between ${c.text}`}>
+                <h3 className="text-base font-bold flex items-center gap-2"><span>📞</span> {t('cew_call_script')}</h3>
+                {<span data-print-hide><Caret open={showCallScript} /></span>}
               </button>
-              {showCallScript && (
-                <div className="space-y-4 mt-4">
+              {(
+                <div data-sec-body hidden={!(showCallScript)} className="space-y-4 mt-4">
                   <div className={`p-4 rounded-xl border ${c.callOpenBox}`}>
                     <p className={`text-xs font-bold ${c.callOpenText} mb-1`}>📋 {t('cew_open_with')}</p>
                     <p className={`text-sm ${c.text} leading-relaxed`}>{results?.call_script?.opening}</p>
@@ -1561,7 +1568,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📝 {t('cew_redirect_writing')}</p>
                       <p className={`text-sm italic ${c.text}`}>"{results?.call_script?.redirect_to_writing}"</p>
-                      <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_redirect_note')}</p>
+                      <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cew_redirect_note')}</p>
                     </div>
                   )}
                   {results?.call_script?.if_they_pressure && (
@@ -1577,15 +1584,15 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Campaign Log */}
           {getCampaignEntries().length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <button onClick={() => toggleSection('campaign')} className={`w-full flex items-center justify-between ${c.text}`}>
-                <h3 className="font-bold flex items-center gap-2">
+            <div className={`border-t ${c.border} pt-5`}>
+              <button data-print-heading aria-expanded={!!(expandedSections.campaign)} onClick={() => toggleSection('campaign')} className={`w-full flex items-center justify-between ${c.text}`}>
+                <h3 className="text-base font-bold flex items-center gap-2">
                   <span>📜</span> {getCampaignEntries().length === 1 ? t('cew_campaign_log_one', { count: getCampaignEntries().length }) : t('cew_campaign_log', { count: getCampaignEntries().length })}
                 </h3>
-                {<Caret open={expandedSections.campaign} />}
+                {<span data-print-hide><Caret open={expandedSections.campaign} /></span>}
               </button>
-              {expandedSections.campaign && (
-                <div className="space-y-3 mt-4">
+              {(
+                <div data-sec-body hidden={!(expandedSections.campaign)} className="space-y-3 mt-4">
                   {getCampaignEntries().sort((a, b) => a.stage - b.stage).map(entry => {
                     const stg = stageConfig[entry.stage - 1];
                     return (
@@ -1593,11 +1600,11 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <div className="flex items-center gap-2 mb-1">
                           <span>{stg?.icon || '📨'}</span>
                           <p className={`text-sm font-bold ${c.text}`}>{t('cew_stage_label', { n: entry.stage, label: stg?.label || t('cew_unknown') })}</p>
-                          {entry.sentDate && <span className={`text-xs ${c.textMuteded}`}>{t('cew_sent_on', { date: new Date(entry.sentDate).toLocaleDateString(userLocale || undefined) })}</span>}
-                          {entry.outcome && <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${outcomeBadge[entry.outcome] || ''}`}>{entry.outcome}</span>}
+                          {entry.sentDate && <span className={`text-[13px] ${c.textMuteded}`}>{t('cew_sent_on', { date: new Date(entry.sentDate).toLocaleDateString(userLocale || undefined) })}</span>}
+                          {entry.outcome && <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${outcomeBadge[entry.outcome] || ''}`}>{entry.outcome}</span>}
                         </div>
                         {entry.companyResponse && <p className={`text-xs ${c.textSecondary} mt-1`}>📨 {t('cew_log_response', { text: `${entry.companyResponse.slice(0, 120)}…` })}</p>}
-                        {entry.analysisResult?.recommendation && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('cew_ai_said', { reco: entry.analysisResult.recommendation, assessment: `${entry.analysisResult.assessment?.slice(0, 100)}…` })}</p>}
+                        {entry.analysisResult?.recommendation && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>{t('cew_ai_said', { reco: entry.analysisResult.recommendation, assessment: `${entry.analysisResult.assessment?.slice(0, 100)}…` })}</p>}
                       </div>
                     );
                   })}
@@ -1613,9 +1620,9 @@ const ComplaintEscalationWriter = ({ tool }) => {
           </div>
 
           {/* Cross-references (post-result) */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider mb-2`}>{t('cew_while_at_it')}</p>
-            <p className={`text-sm ${c.textSecondary}`}>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-semibold ${c.textMuted}r mb-2`}>{t('cew_while_at_it')}</p>
+            <p data-print-hide className={`text-sm ${c.textSecondary}`}>
               {t('cew_xref_post_q')} <a href="/LeverageLogic" className={linkStyle}>⚖️ {t('cew_xref_leverage')}</a> {t('cew_xref_post_tail')}
               {amountAtStake && <>{' '}{t('cew_xref_billing_q')} <a href="/BillRescue" className={linkStyle}>💰 {t('cew_xref_billrescue')}</a> {t('cew_xref_billing_tail')}</>}
             </p>
@@ -1623,7 +1630,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${c.disclaimerBox}`}>
-            <p className={`text-xs ${c.textMuteded}`}>⚖️ {t('cew_disclaimer')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>⚖️ {t('cew_disclaimer')}</p>
           </div>
         </div>
       )}

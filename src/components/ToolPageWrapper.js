@@ -35,7 +35,8 @@ const SITE_STYLE_CONVERTED = new Set(['DoctorVisitPrep', 'WrongAnswersOnly', 'Le
   'TicketTackler', 'ConflictCoach', 'PartyArchitect', 'TipOfTongue', 'DriveHome', 'DocumentDetective', 'BeforeTheCrash', 'PlotHoleFinder', 'PronounceItRight',
   'FutureProof', 'JargonAssassin', 'CaptionMagic', 'SignalVsNoise', 'PetBehaviorDecoder', 'DecisionPrism', 'DreamPatternSpotter', 'GhostWriter', 'NameThatFeeling',
   'MagicMouth', 'ResearchDecoder', 'FakeReviewDetective', 'HeartOfTheMatter', 'NerveCheck', 'RoommateCourt', 'BatchFlow', 'BrainStateDeejay', 'DoctorVisitTranslator', 'TripRecon', 'TheRunthrough',
-  'MicroAdventureMapper', 'MeetingHijackStopper', 'BrainDumpBuddy', 'RecipeChaosSolver', 'JustifyMyMeeting', 'LazyWorkoutAdapter', 'BrainRoulette', 'SafeWalk']);
+  'MicroAdventureMapper', 'MeetingHijackStopper', 'BrainDumpBuddy', 'RecipeChaosSolver', 'JustifyMyMeeting', 'LazyWorkoutAdapter', 'BrainRoulette', 'SafeWalk',
+  'BragSheetBuilder', 'RentersDepositSaver', 'ComplaintEscalationWriter', 'PlainTalk', 'ReadTheRoom', 'NameAudit', 'MoneyDiplomat', 'SkillGapMap']);
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {

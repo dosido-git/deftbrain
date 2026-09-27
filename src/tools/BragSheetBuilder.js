@@ -100,15 +100,13 @@ const BragSheetBuilder = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -120,15 +118,15 @@ const BragSheetBuilder = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     tab:           (active) => active
-                     ? (isDark ? 'border-cyan-400 text-cyan-300' : 'border-cyan-600 text-cyan-700')
+                     ? (isDark ? 'border-cyan-400 text-[#a9cdef]' : 'border-[#142a43] text-[#142a43]')
                      : (isDark ? 'border-transparent text-zinc-400 hover:text-zinc-200' : 'border-transparent text-gray-500 hover:text-gray-700'),
     // ── Extended keys ──
     chip:           (active) => active
-                      ? (isDark ? 'bg-cyan-900/40 border-cyan-600 text-cyan-200' : 'bg-cyan-100 border-cyan-400 text-cyan-800')
+                      ? (isDark ? 'bg-[#1f2530] border-[#7fb3e0] text-zinc-100' : 'bg-[#eef3f8] border-[#142a43] text-[#142a43]')
                       : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-gray-100 border-gray-200 text-gray-600 hover:border-gray-400'),
-    highlightText:  isDark ? 'text-cyan-400' : 'text-cyan-600',
+    highlightText:  isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     highlightAlt:   isDark ? 'text-emerald-400' : 'text-emerald-600',
-    highlightBg:    isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
+    highlightBg:    isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     beforeBg:       isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-100 border-slate-200',
     afterBg:        isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     hoverBg:        isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-slate-100',
@@ -138,24 +136,22 @@ const BragSheetBuilder = ({ tool }) => {
     scoreHigh:      isDark ? 'bg-emerald-500' : 'bg-emerald-500',
     scoreMid:       isDark ? 'bg-amber-500' : 'bg-amber-500',
     scoreLow:       isDark ? 'bg-red-500' : 'bg-red-500',
-    starBadge:      isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
+    starBadge:      isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     upgradeTag:     isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700',
     tweakTag:       isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700',
     preUpgradeBg:   isDark ? 'bg-zinc-700/40' : 'bg-slate-100',
     successFg:      isDark ? 'text-emerald-400' : 'text-emerald-600',
-    journalBorder:  isDark ? 'border-cyan-700' : 'border-cyan-300',
-    addMoreBorder:  isDark ? 'border-cyan-700' : 'border-cyan-400',
+    journalBorder:  isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]',
+    addMoreBorder:  isDark ? 'border-[#2c3a4a]' : 'border-[#142a43]',
     excavatorBtn:   isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200 border border-zinc-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200',
-    excavatorPanel: isDark ? 'bg-zinc-800/80 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
+    excavatorPanel: isDark ? 'bg-zinc-800/80 border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     closingNote:    isDark ? 'bg-zinc-800' : 'bg-slate-50',
     savedBtn:       isDark ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-50 text-emerald-700 border-emerald-300',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Constants ───
   const INDUSTRIES = [
@@ -641,11 +637,11 @@ const BragSheetBuilder = ({ tool }) => {
     const h = size === 'sm' ? 'h-1.5' : 'h-2.5';
     return (
       <div className="flex items-center gap-2 w-full">
-        {label && <span className={`text-[10px] font-bold ${c.textMuteded} w-28 text-end flex-shrink-0`}>{label}</span>}
+        {label && <span className={`text-xs font-bold ${c.textMuteded} w-28 text-end flex-shrink-0`}>{label}</span>}
         <div className={`flex-1 ${c.scoreBg} rounded-full ${h} overflow-hidden`}>
           <div className={`${color} ${h} rounded-full transition-all`} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} />
         </div>
-        <span className={`text-[10px] font-bold ${c.text} w-8`}>{score}</span>
+        <span className={`text-xs font-bold ${c.text} w-8`}>{score}</span>
       </div>
     );
   };
@@ -654,12 +650,20 @@ const BragSheetBuilder = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Persistent header card — single reset, always in same position */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🏆'}</span>{t('bsb_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -670,6 +674,7 @@ const BragSheetBuilder = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
         {/* Quick-actions + role/experience — input-phase only */}
         {!results && (
@@ -698,7 +703,7 @@ const BragSheetBuilder = ({ tool }) => {
             <button onClick={() => setShowJournal(false)} className={`text-sm ${c.textMuteded}`}>✕</button>
           </div>
           <p className={`text-xs ${c.textSecondary} mb-3`}>{t('bsb_journal_desc')}</p>
-          <label className={`block text-xs font-semibold ${c.textSecondary} mb-1.5`}>{t('bsb_new_entry')} <span className={c.required}>*</span></label>
+          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('bsb_new_entry')} <span className={c.required}>*</span></label>
           <div className="flex gap-2 mb-3">
             <input type="text" value={journalEntry} onChange={e => setJournalEntry(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addJournalEntry(); } }}
@@ -731,7 +736,7 @@ const BragSheetBuilder = ({ tool }) => {
               </div>
             </>
           )}
-          {journal.length === 0 && <p className={`text-xs ${c.textMuteded} italic`}>{t('bsb_journal_empty')}</p>}
+          {journal.length === 0 && <p className={`text-[13px] ${c.textMuteded} italic`}>{t('bsb_journal_empty')}</p>}
         </div>
       )}
 
@@ -741,7 +746,7 @@ const BragSheetBuilder = ({ tool }) => {
 
 
           {/* Accomplishments */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="mb-2">
               <label className={`font-semibold ${c.text}`}>{t('bsb_your_accomplishments')} <span className={c.required}>*</span> <span className={`font-normal ${c.textMuteded}`}>{t('bsb_humble_hint')}</span></label>
               <div className="mt-1.5">
@@ -757,18 +762,18 @@ const BragSheetBuilder = ({ tool }) => {
               <div className={`mb-4 p-4 rounded-xl border-2 ${c.excavatorPanel}`}>
                 <div className="flex items-center justify-between mb-3">
                   <h4 className={`text-sm font-bold ${c.text}`}>🧠 {t('bsb_memory_jogger')}</h4>
-                  <button onClick={() => setShowExcavator(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
+                  <button onClick={() => setShowExcavator(false)} className={`text-[13px] ${c.textMuteded}`}>✕</button>
                 </div>
                 <div className="space-y-3">
                   {excavatorData.categories.map((cat, ci) => (
                     <div key={ci}>
-                      <button onClick={() => toggleSection(`exc-${ci}`)} className={`flex items-center gap-1.5 w-full text-start mb-1.5`}>
+                      <button data-print-heading aria-expanded={expandedSections[`exc-${ci}`] !== false} onClick={() => toggleSection(`exc-${ci}`)} className={`flex items-center gap-1.5 w-full text-start mb-1.5`}>
                         <span>{cat.icon}</span>
                         <span className={`text-xs font-bold ${c.text}`}>{cat.name}</span>
-                        <Caret open={expandedSections[`exc-${ci}`] !== false} className="ms-auto" />
+                        <span data-print-hide><Caret open={expandedSections[`exc-${ci}`] !== false} className="ms-auto" /></span>
                       </button>
-                      {expandedSections[`exc-${ci}`] !== false && (
-                        <div className="space-y-1.5 ms-5">
+                      {(
+                        <div data-sec-body hidden={!(expandedSections[`exc-${ci}`] !== false)} className="space-y-1.5 ms-5">
                           {cat.questions.map((q, qi) => (
                             <button key={qi} onClick={() => { setCurrentEntry(q.exampleAccomplishment || ''); entryRef.current?.focus(); }}
                               className={`w-full text-start p-2 rounded-lg text-xs ${c.hoverBg} transition-colors`}>
@@ -801,7 +806,7 @@ const BragSheetBuilder = ({ tool }) => {
               className={`flex-1 p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
             <button onClick={addAccomplishment} disabled={!currentEntry.trim()} className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-xl font-bold text-lg`}>➕</button>
             <div className="flex items-center justify-between mt-2">
-              <p className={`text-xs ${c.textMuteded}`}>{t('bsb_enter_to_add')}</p>
+              <p className={`text-[13px] ${c.textMuteded}`}>{t('bsb_enter_to_add')}</p>
               {accomplishments.length > 0 && (
                 <button
                   onClick={() => {
@@ -817,7 +822,7 @@ const BragSheetBuilder = ({ tool }) => {
           </div>
 
           {/* Purposes */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_what_for')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_pick_all')}</span></label>
             <div className="flex flex-wrap gap-2">
               {PURPOSES.map(p => (
@@ -842,7 +847,7 @@ const BragSheetBuilder = ({ tool }) => {
 
           {/* Tone — stays visible; the review called it one of the
               best selectors on the site. */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div>
               <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_tone')}</label>
               <div className="flex flex-wrap gap-2">
@@ -859,7 +864,7 @@ const BragSheetBuilder = ({ tool }) => {
               BEFORE the accomplishments. None of them matter more than what
               you actually did, and asking four of them first is what makes a
               person close the tab. Collapsed, and optional. */}
-          <details className={`group ${c.card} rounded-xl shadow-sm p-4`}>
+          <details className={`group border-t ${c.border} pt-5`}>
             <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <div className={`flex items-center gap-2 font-semibold ${c.text}`}>
                 {t('bsb_about_you')}
@@ -921,7 +926,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* History panel */}
           {sessionHistory.length > 0 && (
             <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('bsb_recent')}</h3>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>🕐 {t('bsb_recent')}</h3>
               <div className="space-y-1.5">
                 {sessionHistory.map(entry => (
                   <button key={entry.id}
@@ -938,7 +943,7 @@ const BragSheetBuilder = ({ tool }) => {
             </div>
           )}
 
-          <p className={`text-xs text-center ${c.textMuteded}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
             {t('bsb_overwhelmed_xref')} 🔧 <a href="/TaskAvalancheBreaker" className={linkStyle}>{t('bsb_task_avalanche')}</a> {t('bsb_overwhelmed_xref_end')}
           </p>
         </div>
@@ -1008,32 +1013,32 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'transform' && (
             <div className="space-y-4">
               {transforms.map((tr, idx) => (
-                <div key={idx} className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
+                <div key={idx} className={`border-t ${c.border} pt-5 space-y-3`}>
                   <div className={`${c.beforeBg} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>{t('bsb_you_said')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('bsb_you_said')}</p>
                     <p className={`text-sm ${c.textSecondary} italic`}>{tr.original}</p>
                   </div>
                   <div className="flex items-center gap-2 px-2">
                     <span className={c.highlightText}>→</span>
-                    <span className={`text-[10px] font-bold ${c.highlightText}`}>{tr.what_changed}</span>
-                    {tr._refined && <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${c.upgradeTag}`}>{t('bsb_upgraded')}</span>}
-                    {tr._tweaked && <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${c.tweakTag}`}>{t('bsb_tweaked')}</span>}
+                    <span className={`text-xs font-bold ${c.highlightText}`}>{tr.what_changed}</span>
+                    {tr._refined && <span className={`text-xs font-black uppercase px-1.5 py-0.5 rounded ${c.upgradeTag}`}>{t('bsb_upgraded')}</span>}
+                    {tr._tweaked && <span className={`text-xs font-black uppercase px-1.5 py-0.5 rounded ${c.tweakTag}`}>{t('bsb_tweaked')}</span>}
                   </div>
                   {tr._refined && preUpgradeVersions[idx] && (
                     <div className={`px-3 py-2 rounded-lg ${c.preUpgradeBg}`}>
-                      <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('bsb_before_upgrade')}</p>
-                      <p className={`text-xs ${c.textMuteded} line-through`}>{preUpgradeVersions[idx]}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-0.5`}>{t('bsb_before_upgrade')}</p>
+                      <p className={`text-[13px] ${c.textMuteded} line-through`}>{preUpgradeVersions[idx]}</p>
                     </div>
                   )}
                   <div className={`flex-1 ${c.afterBg} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.highlightText} uppercase mb-1`}>{t('bsb_power_version')}</p>
+                    <p className={`text-[13px] font-bold ${c.highlightText} mb-1`}>{t('bsb_power_version')}</p>
                     <p className={`text-sm font-semibold ${c.text}`}>{tr.improved}</p>
                   </div>
                   {tr.metric_highlight && <p className={`text-xs font-bold px-2 ${c.successFg}`}>📊 {tr.metric_highlight}</p>}
                   {tr.verb_upgrades?.length > 0 && (
                     <div className="flex flex-wrap gap-2 px-1">
                       {tr.verb_upgrades.map((vu, i) => (
-                        <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full ${c.highlightBg} border font-bold`}>
+                        <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.highlightBg} border font-bold`}>
                           <span className={c.textMuteded}>{vu.from}</span> → <span className={c.highlightAlt}>{vu.to}</span>
                         </span>
                       ))}
@@ -1051,15 +1056,15 @@ const BragSheetBuilder = ({ tool }) => {
                         <PendingBtn itemKey={`${idx}-softer`} pending={pendingTweak}
                           icon={pendingTweak === `${idx}-softer` ? (tool?.icon ?? '🏆') : '🌊'}
                           onClick={() => runTweak(`${idx}-softer`, () => handleTweak(idx, t('bsb_softer_instr')))} disabled={tweakLoading}
-                          className={`text-[10px] px-2.5 py-1 rounded-lg ${c.btnSecondary}`}>{t('bsb_softer')}</PendingBtn>
+                          className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary}`}>{t('bsb_softer')}</PendingBtn>
                         <PendingBtn itemKey={`${idx}-stronger`} pending={pendingTweak}
                           icon={pendingTweak === `${idx}-stronger` ? (tool?.icon ?? '🏆') : '🔥'}
                           onClick={() => runTweak(`${idx}-stronger`, () => handleTweak(idx, t('bsb_stronger_instr')))} disabled={tweakLoading}
-                          className={`text-[10px] px-2.5 py-1 rounded-lg ${c.btnSecondary}`}>{t('bsb_stronger')}</PendingBtn>
-                        <button onClick={() => setTweakingIdx(idx)} className={`text-[10px] px-2.5 py-1 rounded-lg ${c.btnSecondary}`}>✏️ {t('bsb_reword')}</button>
-                        <span className={`text-[10px] ${c.textMuteded} mx-0.5`}>|</span>
+                          className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary}`}>{t('bsb_stronger')}</PendingBtn>
+                        <button onClick={() => setTweakingIdx(idx)} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary}`}>✏️ {t('bsb_reword')}</button>
+                        <span className={`text-[13px] ${c.textMuteded} mx-0.5`}>|</span>
                         <button onClick={() => { setStarSelectIdx(starSelectIdx === idx ? null : idx); setStarQuestion(''); }} disabled={starLoading === idx}
-                          className={`text-[10px] px-2.5 py-1 rounded-lg ${c.btnSecondary} disabled:opacity-40`}>⭐ {t('bsb_star_story')}</button>
+                          className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} disabled:opacity-40`}>⭐ {t('bsb_star_story')}</button>
                       </>
                     )}
                     {tweakingIdx === idx && (
@@ -1071,7 +1076,7 @@ const BragSheetBuilder = ({ tool }) => {
                           placeholder={t('bsb_tweak_ph')} autoFocus className={`flex-1 p-2 border rounded-lg text-xs outline-none ${c.input}`} />
                         <button onClick={() => handleTweak(idx, tweakInstruction)} disabled={tweakLoading || !tweakInstruction.trim()}
                           className={`${c.btnPrimary} disabled:opacity-40 px-3 rounded-lg text-xs font-bold`}>{tweakLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> : '✓'}</button>
-                        <button onClick={() => { setTweakingIdx(null); setTweakInstruction(''); }} className={`text-xs ${c.textMuteded}`}>✕</button>
+                        <button onClick={() => { setTweakingIdx(null); setTweakInstruction(''); }} className={`text-[13px] ${c.textMuteded}`}>✕</button>
                       </div>
                       </div>
                     )}
@@ -1084,7 +1089,7 @@ const BragSheetBuilder = ({ tool }) => {
                       <button onClick={() => handleGenerateStar(idx)} disabled={starLoading === idx}
                         className={`${c.btnPrimary} disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold`}>
                         {starLoading === idx ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_generating')}</> : t('bsb_generate')}</button>
-                      <button onClick={() => { setStarSelectIdx(null); setStarQuestion(''); }} className={`text-xs ${c.textMuteded}`}>{t('bsb_cancel')}</button>
+                      <button onClick={() => { setStarSelectIdx(null); setStarQuestion(''); }} className={`text-[13px] ${c.textMuteded}`}>{t('bsb_cancel')}</button>
                     </div>
                   )}
                 </div>
@@ -1094,7 +1099,7 @@ const BragSheetBuilder = ({ tool }) => {
                   <div className="flex items-start gap-3">
                     <span className="text-xl flex-shrink-0 mt-0.5">💪</span>
                     <div>
-                      <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('bsb_permission_brag')}</h3>
+                      <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('bsb_permission_brag')}</h3>
                       {r.confidence.reframe && <p className={`text-sm ${c.textSecondary} mb-2`}>{r.confidence.reframe}</p>}
                       {r.confidence.imposter_killer && <p className={`text-xs ${c.highlightAlt} font-semibold`}>{r.confidence.imposter_killer}</p>}
                     </div>
@@ -1106,7 +1111,7 @@ const BragSheetBuilder = ({ tool }) => {
 
           {/* ══════ TAB: METRICS ══════ */}
           {activeTab === 'metrics' && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                 <span className="text-lg">📊</span> {refineRound === 0 ? t('bsb_metrics_excavator') : t('bsb_round_dig', { round: refineRound + 1 })}
               </h3>
@@ -1116,9 +1121,9 @@ const BragSheetBuilder = ({ tool }) => {
                   const src = transforms[mq.accomplishment_index];
                   return (
                     <div key={i} className={`p-4 rounded-lg border ${c.border}`}>
-                      {src && <p className={`text-[10px] font-bold ${c.highlightText} mb-2`}>{t('bsb_re', { num: mq.accomplishment_index + 1 })} "{src.original?.substring(0, 60)}…"</p>}
+                      {src && <p className={`text-xs font-bold ${c.highlightText} mb-2`}>{t('bsb_re', { num: mq.accomplishment_index + 1 })} "{src.original?.substring(0, 60)}…"</p>}
                       <p className={`text-sm font-semibold ${c.text} mb-1`}>{mq.question}</p>
-                      <p className={`text-xs ${c.textMuteded} mb-2`}>{t('bsb_why')} {mq.why}</p>
+                      <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('bsb_why')} {mq.why}</p>
                       {mq.example && <p className={`text-xs ${c.highlightText} mb-3`}>{t('bsb_eg_quote', { example: mq.example })}</p>}
                       <input type="text" value={metricsAnswers[i] || ''} onChange={e => setMetricsAnswers(prev => ({ ...prev, [i]: e.target.value }))}
                         placeholder={t('bsb_your_answer_ph')} className={`w-full p-2.5 border rounded-lg outline-none text-sm ${c.input}`} />
@@ -1129,7 +1134,7 @@ const BragSheetBuilder = ({ tool }) => {
               <button onClick={handleRefine} disabled={refineLoading || Object.values(metricsAnswers).every(v => !v?.trim())}
                 className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${c.btnPrimary} disabled:opacity-40`}>
                 {refineLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🏆'}</span> {t('bsb_upgrading')}</> : `🚀 ${t('bsb_upgrade_bullets')}`}</button>
-              {refineRound > 0 && <p className={`text-xs ${c.textMuteded} text-center`}>✅ {t('bsb_round_done', { round: refineRound, count: refinedData?.upgraded_transformations?.length || 0 })}{metrics.length > 0 ? t('bsb_more_questions') : t('bsb_all_maxed')}</p>}
+              {refineRound > 0 && <p className={`text-[13px] ${c.textMuteded} text-center`}>✅ {t('bsb_round_done', { round: refineRound, count: refinedData?.upgraded_transformations?.length || 0 })}{metrics.length > 0 ? t('bsb_more_questions') : t('bsb_all_maxed')}</p>}
             </div>
           )}
 
@@ -1137,7 +1142,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'radar' && (
             <div className="space-y-4">
               {!radarData && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6 text-center`}>
+                <div className={`border-t ${c.border} pt-5 text-center`}>
                   <span className="text-4xl block mb-3">📡</span>
                   <h3 className={`font-bold ${c.text} mb-2`}>{t('bsb_radar_title')}</h3>
                   <p className={`text-sm ${c.textSecondary} mb-4`}>{t('bsb_radar_desc')}</p>
@@ -1147,7 +1152,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {radarData && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-5`}>
+                <div className={`border-t ${c.border} pt-5 space-y-5`}>
                   <div className="flex items-center justify-between">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>📡</span> {t('bsb_strength_radar')}</h3>
                     <div className={`px-3 py-1.5 rounded-lg font-bold text-sm ${radarData.overall_score >= 70 ? c.success : radarData.overall_score >= 50 ? c.warning : c.danger} border`}>
@@ -1161,7 +1166,7 @@ const BragSheetBuilder = ({ tool }) => {
                           <span className="text-sm">{dim.icon}</span>
                           <ScoreBar score={dim.score} label={dim.name} />
                         </div>
-                        {dim.gap_suggestion && <p className={`text-[10px] ${c.highlightText} ms-10`}>💡 {dim.gap_suggestion}</p>}
+                        {dim.gap_suggestion && <p className={`text-xs ${c.highlightText} ms-10`}>💡 {dim.gap_suggestion}</p>}
                       </div>
                     ))}
                   </div>
@@ -1170,11 +1175,11 @@ const BragSheetBuilder = ({ tool }) => {
                   {radarData.level_comparison && <p className={`text-xs ${c.textSecondary} italic`}>{radarData.level_comparison}</p>}
                   {radarData.next_actions?.length > 0 && (
                     <div className={`${c.highlightBg} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('bsb_next_steps')}</p>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('bsb_next_steps')}</p>
                       {radarData.next_actions.map((a, i) => <p key={i} className="text-xs">→ {a}</p>)}
                     </div>
                   )}
-                  <button onClick={() => setRadarData(null)} className={`text-xs ${c.textMuteded}`}>{t('bsb_reanalyze')}</button>
+                  <button onClick={() => setRadarData(null)} className={`text-[13px] ${c.textMuteded}`}>{t('bsb_reanalyze')}</button>
                 </div>
               )}
             </div>
@@ -1183,7 +1188,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* ══════ TAB: TAILOR ══════ */}
           {activeTab === 'tailor' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
+              <div className={`border-t ${c.border} pt-5 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">🎯</span> {t('bsb_tailor_title')}</h3>
                 <p className={`text-sm ${c.textSecondary}`}>{t('bsb_tailor_desc')}</p>
                 <textarea value={jdText} onChange={e => setJdText(e.target.value)} rows={6} placeholder={t('bsb_jd_ph')}
@@ -1195,7 +1200,7 @@ const BragSheetBuilder = ({ tool }) => {
               {tailorData && (
                 <div className="space-y-4">
                   {/* Match score */}
-                  <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className={`font-bold ${c.text}`}>{t('bsb_match_score')}</h4>
                       <span className={`text-xl font-bold ${tailorData.match_score >= 70 ? (c.successFg) : c.highlightText}`}>{tailorData.match_score}%</span>
@@ -1205,11 +1210,11 @@ const BragSheetBuilder = ({ tool }) => {
                   </div>
                   {/* JD Requirements */}
                   {tailorData.jd_requirements?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>📋 {t('bsb_jd_requirements')}</h4>
                       <div className="flex flex-wrap gap-1.5">
                         {tailorData.jd_requirements.map((req, i) => (
-                          <span key={i} className={`text-[10px] px-2 py-1 rounded-full border font-semibold ${req.priority === 'must_have' ? c.danger : req.priority === 'nice_to_have' ? c.warning : c.highlightBg}`}>
+                          <span key={i} className={`text-xs px-2 py-1 rounded-full border font-semibold ${req.priority === 'must_have' ? c.danger : req.priority === 'nice_to_have' ? c.warning : c.highlightBg}`}>
                             {req.requirement}
                           </span>
                         ))}
@@ -1218,13 +1223,13 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Relevance ranking */}
                   {tailorData.relevance_ranking?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>🎯 {t('bsb_per_bullet')}</h4>
                       <div className="space-y-3">
                         {tailorData.relevance_ranking.map((rr, i) => (
                           <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
                             <div className="flex items-center justify-between mb-1">
-                              <span className={`text-[10px] font-bold ${c.textMuted}`}>{t('bsb_accomplishment_num', { num: (rr.accomplishment_index ?? i) + 1 })}</span>
+                              <span className={`text-xs font-bold ${c.textMuted}`}>{t('bsb_accomplishment_num', { num: (rr.accomplishment_index ?? i) + 1 })}</span>
                               <span className={`text-xs font-bold ${rr.relevance_score >= 70 ? c.successFg : c.highlightText}`}>{rr.relevance_score}%</span>
                             </div>
                             {rr.tailored_version && (
@@ -1232,7 +1237,7 @@ const BragSheetBuilder = ({ tool }) => {
                             )}
                             {rr.keywords_used?.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {rr.keywords_used.map((k, ki) => <span key={ki} className={`text-[9px] px-1.5 py-0.5 rounded ${c.highlightBg} border`}>{k}</span>)}
+                                {rr.keywords_used.map((k, ki) => <span key={ki} className={`text-xs px-1.5 py-0.5 rounded ${c.highlightBg} border`}>{k}</span>)}
                               </div>
                             )}
                           </div>
@@ -1242,7 +1247,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Tailored bullets */}
                   {tailorData.tailored_resume_bullets?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>📄 {t('bsb_tailored_bullets')}</h4>
                       </div>
@@ -1255,7 +1260,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Cover letter opening */}
                   {tailorData.cover_letter_opening && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>✉️ {t('bsb_cover_opening')}</h4>
                         
@@ -1265,13 +1270,13 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Gaps */}
                   {tailorData.gaps?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>⚠️ {t('bsb_gaps_address')}</h4>
                       <div className="space-y-2">
                         {tailorData.gaps.map((gap, i) => (
                           <div key={i} className={`p-3 rounded-lg border ${gap.severity === 'critical' ? c.danger : gap.severity === 'moderate' ? c.warning : c.highlightBg}`}>
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-[10px] font-black uppercase">{gap.severity}</span>
+                              <span className="text-xs font-black uppercase">{gap.severity}</span>
                               <span className={`text-xs font-bold ${c.text}`}>{gap.requirement}</span>
                             </div>
                             <p className="text-xs">{gap.suggestion}</p>
@@ -1289,7 +1294,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'interview' && (
             <div className="space-y-4">
               {!matrixData && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6 text-center`}>
+                <div className={`border-t ${c.border} pt-5 text-center`}>
                   <span className="text-4xl block mb-3">🎤</span>
                   <h3 className={`font-bold ${c.text} mb-2`}>{t('bsb_interview_title')}</h3>
                   <p className={`text-sm ${c.textSecondary} mb-4`}>{t('bsb_interview_desc')}</p>
@@ -1301,7 +1306,7 @@ const BragSheetBuilder = ({ tool }) => {
               {matrixData && (
                 <div className="space-y-4">
                   {/* Coverage summary */}
-                  <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className={`font-bold ${c.text}`}>🎤 {t('bsb_interview_coverage')}</h4>
                       <span className={`text-sm font-bold ${matrixData.coverage_score >= 70 ? (c.successFg) : c.highlightText}`}>
@@ -1312,7 +1317,7 @@ const BragSheetBuilder = ({ tool }) => {
                     {matrixData.prep_summary && <p className={`text-xs ${c.textSecondary} mt-2`}>{matrixData.prep_summary}</p>}
                   </div>
                   {/* Covered questions */}
-                  <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <h4 className={`font-bold ${c.text} mb-3`}>✅ {t('bsb_ready_for')}</h4>
                     <div className="space-y-2">
                       {matrixData.questions?.filter(q => q.best_match?.type !== 'none').map((q, i) => (
@@ -1320,8 +1325,8 @@ const BragSheetBuilder = ({ tool }) => {
                           <div className="flex-1">
                             <p className={`text-sm font-semibold ${c.text}`}>"{q.question}"</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded ${c.highlightBg} border font-bold`}>{q.category}</span>
-                              <span className={`text-[9px] ${c.textMuteded}`}>{q.likelihood === 'very_likely' ? `🔴 ${t('bsb_very_likely')}` : q.likelihood === 'likely' ? `🟡 ${t('bsb_likely')}` : `⚪ ${t('bsb_possible')}`}</span>
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${c.highlightBg} border font-bold`}>{q.category}</span>
+                              <span className={`text-[13px] ${c.textMuteded}`}>{q.likelihood === 'very_likely' ? `🔴 ${t('bsb_very_likely')}` : q.likelihood === 'likely' ? `🟡 ${t('bsb_likely')}` : `⚪ ${t('bsb_possible')}`}</span>
                             </div>
                           </div>
                           {q.best_match?.angle && <p className={`text-xs ${c.highlightText} mt-2`}>💡 {q.best_match.angle}</p>}
@@ -1332,7 +1337,7 @@ const BragSheetBuilder = ({ tool }) => {
                   </div>
                   {/* Gaps */}
                   {matrixData.gaps?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>⚠️ {t('bsb_gaps_no_answer')}</h4>
                       <div className="space-y-2">
                         {matrixData.gaps.map((gap, i) => (
@@ -1344,7 +1349,7 @@ const BragSheetBuilder = ({ tool }) => {
                       </div>
                     </div>
                   )}
-                  <button onClick={() => setMatrixData(null)} className={`text-xs ${c.textMuteded}`}>{t('bsb_rebuild_matrix')}</button>
+                  <button onClick={() => setMatrixData(null)} className={`text-[13px] ${c.textMuteded}`}>{t('bsb_rebuild_matrix')}</button>
                 </div>
               )}
             </div>
@@ -1353,7 +1358,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* ══════ TAB: VOICE ══════ */}
           {activeTab === 'voice' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
+              <div className={`border-t ${c.border} pt-5 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">✍️</span> {t('bsb_voice_title')}</h3>
                 <p className={`text-sm ${c.textSecondary}`}>{t('bsb_voice_desc')}</p>
                 {/* sr-only: PF-15's documented exemption. The button is disabled
@@ -1372,35 +1377,35 @@ const BragSheetBuilder = ({ tool }) => {
                 <div className="space-y-4">
                   {/* Voice profile */}
                   {voiceData.voice_profile && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>🔊 {t('bsb_voice_profile')}</h4>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{voiceData.voice_summary}</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className={`text-[10px] px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>{t('bsb_sentences')} {voiceData.voice_profile.sentence_length}</span>
-                        <span className={`text-[10px] px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>{t('bsb_formality')} {voiceData.voice_profile.formality}</span>
-                        <span className={`text-[10px] px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>{t('bsb_perspective')} {voiceData.voice_profile.perspective}</span>
+                        <span className={`text-xs px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>{t('bsb_sentences')} {voiceData.voice_profile.sentence_length}</span>
+                        <span className={`text-xs px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>{t('bsb_formality')} {voiceData.voice_profile.formality}</span>
+                        <span className={`text-xs px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>{t('bsb_perspective')} {voiceData.voice_profile.perspective}</span>
                       </div>
-                      {voiceData.voice_profile.style_notes && <p className={`text-xs ${c.textMuteded} mt-2 italic`}>{voiceData.voice_profile.style_notes}</p>}
+                      {voiceData.voice_profile.style_notes && <p className={`text-[13px] ${c.textMuteded} mt-2 italic`}>{voiceData.voice_profile.style_notes}</p>}
                       {voiceData.voice_profile.prefers?.length > 0 && <p className={`text-xs ${c.textSecondary} mt-1`}>✓ {t('bsb_gravitate')} {voiceData.voice_profile.prefers.join(', ')}</p>}
-                      {voiceData.voice_profile.avoids?.length > 0 && <p className={`text-xs ${c.textMuteded} mt-0.5`}>✗ {t('bsb_avoid')} {voiceData.voice_profile.avoids.join(', ')}</p>}
+                      {voiceData.voice_profile.avoids?.length > 0 && <p className={`text-[13px] ${c.textMuteded} mt-0.5`}>✗ {t('bsb_avoid')} {voiceData.voice_profile.avoids.join(', ')}</p>}
                     </div>
                   )}
                   {/* Rewritten transformations */}
                   {voiceData.rewritten_transformations?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>{t('bsb_acc_in_voice')}</h4>
                       <div className="space-y-3">
                         {voiceData.rewritten_transformations.map((rt, i) => (
                           <div key={i} className="space-y-1.5">
                             <div className={`${c.beforeBg} border rounded-lg p-2.5`}>
-                              <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('bsb_ai_version')}</p>
-                              <p className={`text-xs ${c.textMuteded}`}>{rt.original_ai_version}</p>
+                              <p className={`text-xs font-bold ${c.textMuteded} mb-0.5`}>{t('bsb_ai_version')}</p>
+                              <p className={`text-[13px] ${c.textMuteded}`}>{rt.original_ai_version}</p>
                             </div>
                             <div className={`${c.afterBg} border rounded-lg p-2.5`}>
-                              <p className={`text-[10px] font-bold ${c.highlightText} mb-0.5`}>{t('bsb_your_voice')}</p>
+                              <p className={`text-xs font-bold ${c.highlightText} mb-0.5`}>{t('bsb_your_voice')}</p>
                               <p className={`text-sm font-semibold ${c.text}`}>{rt.voice_matched_version}</p>
                             </div>
-                            {rt.what_changed && <p className={`text-[10px] ${c.textMuted} px-1`}>✏️ {rt.what_changed}</p>}
+                            {rt.what_changed && <p className={`text-[13px] ${c.textMuted} px-1`}>✏️ {rt.what_changed}</p>}
                           </div>
                         ))}
                       </div>
@@ -1408,7 +1413,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Rewritten resume bullets */}
                   {voiceData.rewritten_resume_bullets?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>📄 {t('bsb_bullets_voice')}</h4>
                       </div>
@@ -1421,7 +1426,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Rewritten LinkedIn */}
                   {voiceData.rewritten_linkedin && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+                    <div className={`border-t ${c.border} pt-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>💼 {t('bsb_linkedin_voice')}</h4>
                         
@@ -1438,7 +1443,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'outputs' && (
             <div className="space-y-4">
               {bullets.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">📄</span> {t('bsb_resume_bullets')}</h3>
                   </div>
@@ -1450,13 +1455,13 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {allStarStories.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-                  <button onClick={() => toggleSection('star')} className={`w-full flex items-center justify-between ${c.text}`}>
-                    <h3 className="font-bold flex items-center gap-2"><span className="text-lg">⭐</span> {t('bsb_star_stories')} ({allStarStories.length})</h3>
-                    <Caret open={!(expandedSections.star === false)} />
+                <div className={`border-t ${c.border} pt-5`}>
+                  <button data-print-heading aria-expanded={!!(!(expandedSections.star === false))} onClick={() => toggleSection('star')} className={`w-full flex items-center justify-between ${c.text}`}>
+                    <h3 className="text-base font-bold flex items-center gap-2"><span className="text-lg">⭐</span> {t('bsb_star_stories')} ({allStarStories.length})</h3>
+                    <span data-print-hide><Caret open={!(expandedSections.star === false)} /></span>
                   </button>
-                  {expandedSections.star !== false && (
-                    <div className="space-y-4 mt-4">
+                  {(
+                    <div data-sec-body hidden={!(expandedSections.star !== false)} className="space-y-4 mt-4">
                       {allStarStories.map((story, idx) => (
                         <div key={idx} className="space-y-2">
                           {idx > 0 && <div className={`border-t ${c.border} my-3`} />}
@@ -1471,15 +1476,15 @@ const BragSheetBuilder = ({ tool }) => {
                               { k: 'A', l: t('bsb_star_action'), v: story.action }, { k: 'R', l: t('bsb_star_result'), v: story.result }]
                               .map(s => s.v ? (
                                 <div key={s.k} className={`flex items-start gap-2 ${c.cardAlt} rounded-lg p-2.5`}>
-                                  <span className={`text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${c.starBadge}`}>{s.k}</span>
-                                  <div><p className={`text-[10px] font-bold ${c.textMuteded}`}>{s.l}</p><p className={`text-xs ${c.text}`}>{s.v}</p></div>
+                                  <span className={`text-xs font-black w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${c.starBadge}`}>{s.k}</span>
+                                  <div><p className={`text-xs font-bold ${c.textMuteded}`}>{s.l}</p><p className={`text-xs ${c.text}`}>{s.v}</p></div>
                                 </div>
                               ) : null)}
                           </div>
                           {story.good_for_questions?.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 px-1">
-                              <span className={`text-[10px] font-bold ${c.textMuteded}`}>{t('bsb_good_for')}</span>
-                              {story.good_for_questions.map((q, qi) => <span key={qi} className={`text-[10px] px-2 py-0.5 rounded-full ${c.highlightBg} border`}>{q}</span>)}
+                              <span className={`text-xs font-bold ${c.textMuteded}`}>{t('bsb_good_for')}</span>
+                              {story.good_for_questions.map((q, qi) => <span key={qi} className={`text-xs px-2 py-0.5 rounded-full ${c.highlightBg} border`}>{q}</span>)}
                             </div>
                           )}
                         </div>
@@ -1489,7 +1494,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {r.linkedin_about && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">💼</span> {t('bsb_linkedin_about')}</h3>
                     
@@ -1498,7 +1503,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {r.custom_output && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">✏️</span> {t('bsb_custom_output')}</h3>
                   </div>
@@ -1507,7 +1512,7 @@ const BragSheetBuilder = ({ tool }) => {
               )}
 
               {r.performance_review && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">📝</span> {t('bsb_perf_review')}</h3>
                     
@@ -1521,7 +1526,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* ══════ TAB: RAISE ══════ */}
           {activeTab === 'raise' && raise.summary && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">💰</span> {t('bsb_raise_ammo')}</h3>
                 </div>
@@ -1543,7 +1548,7 @@ const BragSheetBuilder = ({ tool }) => {
                 )}
                 {raise.script && (
                   <div className={`p-4 rounded-xl ${c.highlightBg} border`}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-2`}>{t('bsb_say_this')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('bsb_say_this')}</p>
                     <p className={`text-sm ${c.text} leading-relaxed`}>"{raise.script}"</p>
                     <div className="mt-2"></div>
                   </div>
@@ -1554,13 +1559,13 @@ const BragSheetBuilder = ({ tool }) => {
 
           {/* Cross-references */}
           <div className="text-center space-y-2">
-            <p className={`text-xs ${c.textMuteded}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuteded}`}>
               {t('bsb_leverage_xref')} 💪 <a href="/LeverageLogic" className={linkStyle}>{t('bsb_leverage_logic')}</a> {t('bsb_leverage_xref_end')}
             </p>
           </div>
 
           <div className={`p-4 rounded-xl text-center ${c.closingNote}`}>
-            <p className={`text-xs ${c.textMuteded}`}>✨ {t('bsb_closing_note')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>✨ {t('bsb_closing_note')}</p>
           </div>
           <p className={`text-xs text-center ${c.textMuteded}`}>{t('bsb_ai_disclaimer')}</p>
         </div>

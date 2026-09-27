@@ -98,21 +98,20 @@ const PlainTalk = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -120,15 +119,13 @@ const PlainTalk = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     highlight:     isDark ? 'bg-amber-900/30 text-amber-200' : 'bg-amber-100 text-amber-900',
-    tabActive:     isDark ? 'border-cyan-500 text-cyan-300 bg-zinc-700/30' : 'border-cyan-600 text-cyan-700 bg-cyan-50',
+    tabActive:     isDark ? 'border-[#7fb3e0] text-[#a9cdef] bg-zinc-700/30' : 'border-[#142a43] text-[#142a43] bg-[#eef3f8]',
     tabInactive:   isDark ? 'border-transparent text-zinc-400 hover:text-zinc-200' : 'border-transparent text-gray-500 hover:text-gray-700',
   };
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── useState ──
   const [inputText, setInputText] = useState('');
@@ -558,7 +555,7 @@ const PlainTalk = ({ tool }) => {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex-1">
-            <div className="flex justify-between text-[10px] mb-1">
+            <div className="flex justify-between text-xs mb-1">
               <span className={c.textMuteded}>{t('plt_original')}: {level.original}</span>
               <span className={c.textMuteded}>{t('plt_grade', { n: origGrade })}</span>
             </div>
@@ -569,7 +566,7 @@ const PlainTalk = ({ tool }) => {
           </div>
           <span className={`text-lg font-bold ${c.accentTxt}`}>→</span>
           <div className="flex-1">
-            <div className="flex justify-between text-[10px] mb-1">
+            <div className="flex justify-between text-xs mb-1">
               <span className={c.textMuteded}>{t('plt_translated')}: {level.translated}</span>
               <span className={c.textMuteded}>{t('plt_grade', { n: transGrade })}</span>
             </div>
@@ -591,13 +588,21 @@ const PlainTalk = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🔍'}</span>{tool?.tagline ?? t('plt_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -617,14 +622,14 @@ const PlainTalk = ({ tool }) => {
                 {SAMPLE_TEXTS.map((sx, i) => (
                   <button key={i} onClick={() => applySample(sx)} disabled={loading}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all disabled:opacity-40 ${
-                      isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:bg-cyan-900/20'
-                        : 'border-zinc-200 text-zinc-600 hover:border-cyan-400 hover:bg-cyan-50'
+                      isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]'
                     }`}>
                     {sx.emoji} {t(sx.labelKey)}
                   </button>
                 ))}
               </div>
             )}
+          </div>
           </div>
         </div>
 
@@ -645,7 +650,7 @@ const PlainTalk = ({ tool }) => {
                   <button key={m.id} onClick={() => { setCompareOnly(m.id === 'changed'); if (m.id === 'changed') setActiveTab('compare'); }}
                     aria-pressed={on}
                     className={`text-start px-4 py-3 rounded-xl border transition-all ${
-                      on ? (isDark ? 'border-cyan-500 bg-cyan-900/30' : 'border-cyan-400 bg-cyan-50')
+                      on ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]')
                          : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')
                     }`}>
                     <span className={`block text-sm font-bold ${c.text}`}>{m.emoji} {t(m.labelKey)}</span>
@@ -678,7 +683,7 @@ const PlainTalk = ({ tool }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${c.btnSecondary}`}>
                   📎 {t('plt_upload_file')}
                 </label>
-                <span className={`text-[11px] ${c.textMuteded}`}>{t('plt_file_types')}</span>
+                <span className={`text-[13px] ${c.textMuteded}`}>{t('plt_file_types')}</span>
                 {fileName && (
                   <span className={`text-xs flex items-center gap-1.5 ${c.textMuteded}`}>
                     {pdfBase64 && <span aria-hidden="true">📄</span>}{fileName}
@@ -688,11 +693,11 @@ const PlainTalk = ({ tool }) => {
                   </span>
                 )}
               </div>
-              <span className={`text-xs ${c.textMuteded}`}>
+              <span className={`text-[13px] ${c.textMuteded}`}>
                 {wordCount > 0 ? t('plt_words', { count: wordCount.toLocaleString() }) : ''}
               </span>
             </div>
-            <p className={`text-[11px] ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('plt_jargon_hint')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {t('plt_xref_jargonassassin')}</a> {t('plt_jargon_hint_after')}
             </p>
           </div>
@@ -717,7 +722,7 @@ const PlainTalk = ({ tool }) => {
           <>
 
             {/* Options */}
-            <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-5`}>
+            <div className={`border-t ${c.border} pt-5 space-y-5`}>
               {/* Text type */}
               <div>
                 <label className={`block text-sm font-bold ${c.text} mb-2`}>
@@ -728,7 +733,7 @@ const PlainTalk = ({ tool }) => {
                     <button key={tt.id} onClick={() => setTextType(tt.id)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                         textType === tt.id
-                          ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                          ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]'
                           : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'
                       }`}>
                       <span>{tt.emoji}</span> {t(tt.labelKey)}
@@ -741,7 +746,7 @@ const PlainTalk = ({ tool }) => {
                 <label className={`block text-base font-bold ${c.text} mb-1`}>
                   🎯 {t('plt_focus_label')}
                 </label>
-                <p className={`text-xs ${c.textMuteded} mb-2`}>
+                <p className={`text-[13px] ${c.textMuteded} mb-2`}>
                   {t('plt_focus_help')}
                 </p>
                 <input
@@ -800,7 +805,7 @@ const PlainTalk = ({ tool }) => {
                 differ only by scope, so the useful thing is not a list of names
                 but the line between them — stated as the reader's situation,
                 which is the part they actually know. */}
-            <div className={`${c.card} border ${c.border} rounded-2xl p-4`}>
+            <div data-print-hide className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('plt_which_tool')}</p>
               <ul className={`space-y-1.5 text-xs ${c.textSecondary}`}>
                 <li>{t('plt_which_whole')} → <span className="font-bold">{tool?.title ?? 'Plain Talk'}</span> <span className={c.textMuteded}>{t('plt_which_here')}</span></li>
@@ -859,7 +864,7 @@ const PlainTalk = ({ tool }) => {
 
             {/* Selection hint */}
             {(activeTab === 'xray' || activeTab === 'sidebyside') && (
-              <p className={`text-[10px] ${c.textMuteded} text-center`}>
+              <p className={`text-[13px] ${c.textMuteded} text-center`}>
                 💡 {t('plt_select_hint')}
               </p>
             )}
@@ -868,7 +873,7 @@ const PlainTalk = ({ tool }) => {
             {activeTab === 'overview' && result && (
               <div className="space-y-4">
                 {/* One-sentence summary */}
-                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`text-lg font-bold ${c.text} mb-2`}>
                     {result.overview?.one_sentence}
                   </h3>
@@ -882,13 +887,13 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Key takeaways */}
                 {result.overview?.key_takeaways?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>📌 {t('plt_key_takeaways')}</h4>
                     <div className="space-y-2">
                       {result.overview.key_takeaways.map((kt, i) => (
                         <div key={i} className={`flex items-start gap-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
                           <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                            isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'
+                            isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'
                           }`}>{i + 1}</span>
                           <p className={`text-sm leading-relaxed ${c.text}`}>{kt}</p>
                         </div>
@@ -941,11 +946,11 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Specialist suggestion */}
                 {result.specialist_suggestion?.tool && SPECIALIST_TOOLS[result.specialist_suggestion.tool] && (
-                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>💡 {t('plt_specialist')}</p>
                     <a href={`/${result.specialist_suggestion.tool}`}
                       className={`flex items-center gap-3 p-3 rounded-xl border transition-all hover:shadow-md ${
-                        isDark ? 'border-zinc-600 hover:border-cyan-500' : 'border-zinc-200 hover:border-cyan-300'
+                        isDark ? 'border-zinc-600 hover:border-[#7fb3e0]' : 'border-zinc-200 hover:border-[#d4dde8]'
                       }`}>
                       <span className="text-2xl">
                         {SPECIALIST_TOOLS[result.specialist_suggestion.tool]?.emoji || '🔧'}
@@ -956,7 +961,7 @@ const PlainTalk = ({ tool }) => {
                             ? t(SPECIALIST_TOOLS[result.specialist_suggestion.tool].labelKey)
                             : result.specialist_suggestion.tool}
                         </p>
-                        <p className={`text-xs ${c.textMuteded}`}>{result.specialist_suggestion.reason}</p>
+                        <p className={`text-[13px] ${c.textMuteded}`}>{result.specialist_suggestion.reason}</p>
                       </div>
                       <span className={c.textMuteded}>→</span>
                     </a>
@@ -965,7 +970,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Type-specific insights */}
                 {result.type_insights && (
-                  <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-4`}>
+                  <div className={`border-t ${c.border} pt-5 space-y-4`}>
                     <h4 className={`text-sm font-bold ${c.text}`}>
                       ⚖️ {t('plt_deep_analysis')} {result.detected_type_label || result.detected_type}
                     </h4>
@@ -990,7 +995,7 @@ const PlainTalk = ({ tool }) => {
                         <div className="flex flex-wrap gap-1.5">
                           {result.type_insights.negotiable_items.map((item, i) => (
                             <span key={i} className={`text-xs px-2.5 py-1 rounded-lg border ${
-                              isDark ? 'border-cyan-700/50 bg-cyan-900/20 text-cyan-300' : 'border-cyan-200 bg-cyan-50 text-cyan-700'
+                              isDark ? 'border-[#2c3a4a] bg-[#1f2530] text-[#a9cdef]' : 'border-[#d4dde8] bg-[#eef3f8] text-[#142a43]'
                             }`}>
                               {item}
                             </span>
@@ -1018,7 +1023,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Reading progress */}
                 {reviewProgress && reviewProgress.total > 3 && (
-                  <div className={`${c.card} border rounded-2xl shadow-sm p-4`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className={`text-xs font-bold ${c.textMuteded}`}>📖 {t('plt_reading_progress')}</p>
                       <span className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_sections_reviewed', { reviewed: reviewProgress.reviewed, total: reviewProgress.total })}</span>
@@ -1028,7 +1033,7 @@ const PlainTalk = ({ tool }) => {
                         style={{ width: `${reviewProgress.percent}%` }} />
                     </div>
                     {annotationCount > 0 && (
-                      <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>📝 {t('plt_notes_saved', { count: annotationCount })}</p>
+                      <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>📝 {t('plt_notes_saved', { count: annotationCount })}</p>
                     )}
                   </div>
                 )}
@@ -1038,7 +1043,7 @@ const PlainTalk = ({ tool }) => {
             {/* ═══ TAB: FULL TRANSLATION ═══ */}
             {activeTab === 'translation' && result && (
               <div className="space-y-4">
-                <div className={`${c.card} border rounded-2xl shadow-sm p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className={`text-sm font-bold ${c.text}`}>💬 {t('plt_plain_translation')}</h4>
                   </div>
@@ -1049,16 +1054,16 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Jargon glossary */}
                 {result.jargon_glossary?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
-                    <button onClick={() => setShowGlossary(!showGlossary)}
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <button data-print-heading aria-expanded={!!(showGlossary)} onClick={() => setShowGlossary(!showGlossary)}
                       className={`flex items-center justify-between w-full`}>
                       <h4 className={`text-sm font-bold ${c.text}`}>
                         📚 {t('plt_glossary', { count: result.jargon_glossary.length })}
                       </h4>
-                      <Caret open={showGlossary} />
+                      <span data-print-hide><Caret open={showGlossary} /></span>
                     </button>
-                    {showGlossary && (
-                      <div className="mt-3 space-y-2">
+                    {(
+                      <div data-sec-body hidden={!(showGlossary)} className="mt-3 space-y-2">
                         {result.jargon_glossary.map((j, i) => (
                           <div key={i} className={`p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
                             <span className={`text-sm font-bold ${c.accentTxt}`}>{j.term}</span>
@@ -1076,14 +1081,14 @@ const PlainTalk = ({ tool }) => {
             {activeTab === 'xray' && result && (
               <div className="space-y-4">
                 {/* Structural architecture */}
-                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3`}>🏗️ {t('plt_architecture')}</h4>
                   <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.structure?.architecture}</p>
                 </div>
 
                 {/* Persuasion techniques */}
                 {result.structure?.persuasion_techniques?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                  <div className={`border-t ${c.border} pt-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧠 {t('plt_persuasion')}</h4>
                     <div className="space-y-2">
                       {result.structure.persuasion_techniques.map((tech, i) => (
@@ -1119,13 +1124,13 @@ const PlainTalk = ({ tool }) => {
                 )}
 
                 {/* Section-by-section breakdown */}
-                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className={`text-sm font-bold ${c.text}`}>📋 {t('plt_breakdown')}</h4>
                     <div className="flex items-center gap-2">
-                      <button onClick={expandAll} className={`text-[10px] font-bold ${c.accentTxt}`}>{t('plt_expand_all')}</button>
+                      <button onClick={expandAll} className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_expand_all')}</button>
                       <span className={c.textMuteded}>·</span>
-                      <button onClick={collapseAll} className={`text-[10px] font-bold ${c.accentTxt}`}>{t('plt_collapse_all')}</button>
+                      <button onClick={collapseAll} className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_collapse_all')}</button>
                     </div>
                   </div>
 
@@ -1137,9 +1142,9 @@ const PlainTalk = ({ tool }) => {
                       { id: 'flagged', label: `🚩 ${t('plt_filter_flagged', { count: sectionCounts.flagged })}` },
                     ].map(f => (
                       <button key={f.id} onClick={() => setSectionFilter(f.id)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all ${
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
                           sectionFilter === f.id
-                            ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                            ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]'
                             : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500'
                         }`}>
                         {f.label}
@@ -1155,7 +1160,7 @@ const PlainTalk = ({ tool }) => {
                       const isReviewed = reviewedSections[section.id];
                       return (
                         <div key={section.id} className={`rounded-xl border overflow-hidden ${isDark ? imp.dark : imp.light}`}>
-                          <button onClick={() => toggleSection(section.id)}
+                          <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(section.id)}
                             className="w-full flex items-center gap-3 p-3 text-start">
                             <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${imp.dot}`} />
                             <div className="flex-1 min-w-0">
@@ -1163,7 +1168,7 @@ const PlainTalk = ({ tool }) => {
                                 {section.title}
                                 {hasNote && <span className="ms-1">📝</span>}
                               </p>
-                              <p className={`text-xs ${c.textMuteded} truncate`}>{section.purpose}</p>
+                              <p className={`text-[13px] ${c.textMuteded} truncate`}>{section.purpose}</p>
                             </div>
                             <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                               section.importance === 'high' ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700')
@@ -1172,24 +1177,24 @@ const PlainTalk = ({ tool }) => {
                             }`}>
                               {section.importance}
                             </span>
-                            <Caret open={isOpen} />
+                            <span data-print-hide><Caret open={isOpen} /></span>
                           </button>
-                          {isOpen && (
-                            <div className={`px-4 pb-4 border-t ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
+                          {(
+                            <div data-sec-body hidden={!(isOpen)} className={`px-4 pb-4 border-t ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                                 <div>
-                                  <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1.5`}>{t('plt_original')}</p>
+                                  <p className={`text-[13px] font-boldr ${c.textMuteded} mb-1.5`}>{t('plt_original')}</p>
                                   <p className={`text-xs leading-relaxed ${c.textSecondary} italic`}>{section.original}</p>
                                 </div>
                                 <div>
-                                  <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt} mb-1.5`}>{t('plt_plain_english')}</p>
+                                  <p className={`text-[13px] font-boldr ${c.accentTxt} mb-1.5`}>{t('plt_plain_english')}</p>
                                   <p className={`text-sm leading-relaxed ${c.text}`}>{section.translation}</p>
                                 </div>
                               </div>
                               {section.flags?.length > 0 && (
                                 <div className="mt-3 flex flex-wrap gap-1.5">
                                   {section.flags.map((f, i) => (
-                                    <span key={i} className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                    <span key={i} className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                                       isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'
                                     }`}>
                                       🚩 {f}
@@ -1200,7 +1205,7 @@ const PlainTalk = ({ tool }) => {
                               {/* Annotation + Review */}
                               <div className={`mt-3 pt-3 border-t flex items-start gap-2 ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
                                 <button onClick={() => markReviewed(section.id)}
-                                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all flex-shrink-0 ${
+                                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all flex-shrink-0 ${
                                     isReviewed
                                       ? isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-50 text-emerald-700'
                                       : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600'
@@ -1217,19 +1222,19 @@ const PlainTalk = ({ tool }) => {
                                     <button onClick={() => saveNote(section.id)}
                                       className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_save')}</button>
                                     <button onClick={() => setEditingNote(null)}
-                                      className={`text-xs ${c.textMuteded}`}>✕</button>
+                                      className={`text-[13px] ${c.textMuteded}`}>✕</button>
                                   </div>
                                 ) : hasNote ? (
                                   <div className="flex-1 flex items-center gap-1.5">
                                     <span className={`text-xs ${c.textSecondary}`}>📝 {hasNote.text}</span>
                                     <button onClick={() => startEditing(section.id)}
-                                      className={`text-[10px] ${c.textMuteded}`}>{t('plt_edit')}</button>
+                                      className={`text-[13px] ${c.textMuteded}`}>{t('plt_edit')}</button>
                                     <button onClick={() => deleteNote(section.id)}
-                                      className={`text-[10px] ${c.textMuteded}`}>✕</button>
+                                      className={`text-[13px] ${c.textMuteded}`}>✕</button>
                                   </div>
                                 ) : (
                                   <button onClick={() => startEditing(section.id)}
-                                    className={`text-[10px] font-bold ${c.textMuteded} hover:${c.accentTxt}`}>
+                                    className={`text-xs font-bold ${c.textMuteded} hover:${c.accentTxt}`}>
                                     📝 {t('plt_add_note')}
                                   </button>
                                 )}
@@ -1250,13 +1255,13 @@ const PlainTalk = ({ tool }) => {
             {/* ═══ TAB: SIDE-BY-SIDE ═══ */}
             {activeTab === 'sidebyside' && result && (
               <div className="space-y-4">
-                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className={`text-sm font-bold ${c.text}`}>↔️ {t('plt_side_by_side')}</h4>
                     <div className="flex items-center gap-2">
-                      <button onClick={expandAll} className={`text-[10px] font-bold ${c.accentTxt}`}>{t('plt_expand_all')}</button>
+                      <button onClick={expandAll} className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_expand_all')}</button>
                       <span className={c.textMuteded}>·</span>
-                      <button onClick={collapseAll} className={`text-[10px] font-bold ${c.accentTxt}`}>{t('plt_collapse_all')}</button>
+                      <button onClick={collapseAll} className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_collapse_all')}</button>
                     </div>
                   </div>
 
@@ -1268,9 +1273,9 @@ const PlainTalk = ({ tool }) => {
                       { id: 'flagged', label: `🚩 ${t('plt_filter_flagged', { count: sectionCounts.flagged })}` },
                     ].map(f => (
                       <button key={f.id} onClick={() => setSectionFilter(f.id)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all ${
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
                           sectionFilter === f.id
-                            ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                            ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]'
                             : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500'
                         }`}>
                         {f.label}
@@ -1284,28 +1289,28 @@ const PlainTalk = ({ tool }) => {
                       const isOpen = expandedSections[section.id];
                       return (
                         <div key={section.id} className={`rounded-xl border overflow-hidden ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
-                          <button onClick={() => toggleSection(section.id)}
+                          <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(section.id)}
                             className={`w-full flex items-center gap-3 p-3 text-start ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
                             <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${imp.dot}`} />
                             <p className={`text-sm font-bold ${c.text} flex-1`}>
                               {section.title}
                               {annotations[section.id] && <span className="ms-1">📝</span>}
                             </p>
-                            <Caret open={isOpen} />
+                            <span data-print-hide><Caret open={isOpen} /></span>
                           </button>
-                          {isOpen && (
-                            <div className="grid grid-cols-1 md:grid-cols-2">
+                          {(
+                            <div data-sec-body hidden={!(isOpen)} className="grid grid-cols-1 md:grid-cols-2">
                               <div className={`p-4 ${isDark ? 'bg-zinc-800 border-e border-zinc-700' : 'bg-white border-e border-zinc-200'}`}>
-                                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('plt_original')}</p>
+                                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('plt_original')}</p>
                                 <p className={`text-xs leading-relaxed ${c.textSecondary}`}>{section.original}</p>
                               </div>
-                              <div className={`p-4 ${isDark ? 'bg-zinc-700/20' : 'bg-cyan-50/50'}`}>
-                                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.accentTxt} mb-2`}>{t('plt_plain_english')}</p>
+                              <div className={`p-4 ${isDark ? 'bg-zinc-700/20' : 'bg-[#eef3f8]'}`}>
+                                <p className={`text-[13px] font-boldr ${c.accentTxt} mb-2`}>{t('plt_plain_english')}</p>
                                 <p className={`text-sm leading-relaxed ${c.text}`}>{section.translation}</p>
                                 {section.flags?.length > 0 && (
                                   <div className="mt-2 flex flex-wrap gap-1">
                                     {section.flags.map((f, i) => (
-                                      <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded ${
+                                      <span key={i} className={`text-xs px-1.5 py-0.5 rounded ${
                                         isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700'
                                       }`}>🚩 {f}</span>
                                     ))}
@@ -1330,11 +1335,11 @@ const PlainTalk = ({ tool }) => {
               <div className="space-y-4">
                 {!compareResult ? (
                   <>
-                    <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-4`}>
+                    <div className={`border-t ${c.border} pt-5 space-y-4`}>
                       {/* No heading here: the selected tile above already says
                           this is the comparison, and the old "Compare Two
                           Documents" label was the machine's name for it. */}
-                      <p className={`text-xs ${c.textMuteded}`}>{t('plt_compare_intro')}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>{t('plt_compare_intro')}</p>
                       <p className={`text-sm font-semibold ${c.textSecondary}`}>{t('plt_compare_philosophy')}</p>
 
                       {[
@@ -1369,10 +1374,10 @@ const PlainTalk = ({ tool }) => {
                               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${c.btnSecondary}`}>
                               📎 {t('plt_upload_file')}
                             </label>
-                            <span className={`text-[11px] ${c.textMuteded}`}>{t('plt_file_types')}</span>
+                            <span className={`text-[13px] ${c.textMuteded}`}>{t('plt_file_types')}</span>
                             {d.side === 'A' && inputText && !compareTextA && !comparePdfA && (
                               <button onClick={() => setCompareTextA(inputText)}
-                                className={`text-[11px] font-bold ${c.accentTxt}`}>← {t('plt_use_as_a')}</button>
+                                className={`text-[13px] font-bold ${c.accentTxt}`}>← {t('plt_use_as_a')}</button>
                             )}
                           </div>
                         </div>
@@ -1390,7 +1395,7 @@ const PlainTalk = ({ tool }) => {
                           {COMPARE_QUESTION_GROUPS.map((g, gi) => (
                             <div key={gi}>
                               {g.key && (
-                                <p className={`text-[11px] font-bold ${c.textMuteded} mb-1`}>{g.emoji} {t(g.key)}</p>
+                                <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{g.emoji} {t(g.key)}</p>
                               )}
                               <div className="flex flex-wrap gap-1.5">
                                 {g.items.map(q => {
@@ -1399,7 +1404,7 @@ const PlainTalk = ({ tool }) => {
                                     <button key={q.id} type="button" aria-pressed={on}
                                       onClick={() => setCompareQuestions(prev => on ? prev.filter(x => x !== q.id) : [...prev, q.id])}
                                       className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                                        on ? (isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700')
+                                        on ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
                                            : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
                                       }`}>
                                       {on ? '☑' : '☐'} {t(q.labelKey)}
@@ -1444,7 +1449,7 @@ const PlainTalk = ({ tool }) => {
                       <div className={`p-5 rounded-2xl border ${
                         compareResult.bottom_line.should_you_care === 'no' ? c.success : c.warning
                       }`}>
-                        <p className="text-xs font-bold uppercase tracking-wider mb-1">🎯 {t('plt_bottom_line')}</p>
+                        <p className="text-[13px] font-boldr mb-1">🎯 {t('plt_bottom_line')}</p>
                         <p className="text-lg font-black mb-1">
                           {compareResult.bottom_line.should_you_care === 'no' ? t('plt_care_no') : t('plt_care_yes')}
                         </p>
@@ -1454,7 +1459,7 @@ const PlainTalk = ({ tool }) => {
 
                     {/* What you shouldn't miss */}
                     {compareResult.key_changes?.length > 0 && (
-                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                      <div className={`border-t ${c.border} pt-5`}>
                         <h4 className={`text-sm font-bold ${c.text} mb-3`}>
                           🚨 {t('plt_shouldnt_miss', { count: compareResult.key_changes.length })}
                         </h4>
@@ -1473,7 +1478,7 @@ const PlainTalk = ({ tool }) => {
                               </div>
                               {k.why_it_matters && (
                                 <>
-                                  <p className={`text-[11px] font-bold ${c.textMuteded}`}>{t('plt_why_matters')}</p>
+                                  <p className={`text-[13px] font-bold ${c.textMuteded}`}>{t('plt_why_matters')}</p>
                                   <p className={`text-sm leading-relaxed ${c.text}`}>{k.why_it_matters}</p>
                                 </>
                               )}
@@ -1485,7 +1490,7 @@ const PlainTalk = ({ tool }) => {
 
                     {/* Noise, named once */}
                     {compareResult.minor_changes?.length > 0 && (
-                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                      <div className={`border-t ${c.border} pt-5`}>
                         <h4 className={`text-sm font-bold ${c.text} mb-2`}>🟡 {t('plt_probably_fine')}</h4>
                         <ul className={`space-y-1 text-sm ${c.textSecondary}`}>
                           {compareResult.minor_changes.map((m, i) => (
@@ -1513,9 +1518,9 @@ const PlainTalk = ({ tool }) => {
                         being able to say something about it to the person on the
                         other side of the document. */}
                     {compareResult.questions_to_ask?.length > 0 && (
-                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                      <div className={`border-t ${c.border} pt-5`}>
                         <h4 className={`text-sm font-bold ${c.text} mb-1`}>💬 {t('plt_questions_to_ask')}</h4>
-                        <p className={`text-xs ${c.textMuteded} mb-3`}>{t('plt_questions_to_ask_help')}</p>
+                        <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('plt_questions_to_ask_help')}</p>
                         <ul className="space-y-2">
                           {compareResult.questions_to_ask.map((q, i) => (
                             <li key={i} className={`text-sm leading-relaxed flex items-start gap-2 ${c.text}`}>
@@ -1528,26 +1533,26 @@ const PlainTalk = ({ tool }) => {
 
                     {/* The raw edits, always secondary */}
                     {compareResult.key_changes?.some(k => k.before_full || k.after_full) && (
-                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
-                        <button onClick={() => setShowRawEdits(v => !v)} aria-expanded={showRawEdits}
+                      <div className={`border-t ${c.border} pt-5`}>
+                        <button data-print-heading onClick={() => setShowRawEdits(v => !v)} aria-expanded={showRawEdits}
                           className={`w-full flex items-center gap-2 text-sm font-bold ${c.text} text-start`}>
                           <span>🔬</span><span>{t('plt_actual_edits')}</span>
-                          <Caret open={showRawEdits} className="ms-auto" />
+                          <span data-print-hide><Caret open={showRawEdits} className="ms-auto" /></span>
                         </button>
-                        {showRawEdits && (
-                          <div className="mt-4 space-y-4">
+                        {(
+                          <div data-sec-body hidden={!(showRawEdits)} className="mt-4 space-y-4">
                             {compareResult.key_changes.filter(k => k.before_full || k.after_full).map((k, i) => (
                               <div key={k.id || i}>
                                 <p className={`text-xs font-bold ${c.text} mb-1.5`}>{k.topic}</p>
                                 {k.before_full && (
                                   <div className={`p-2.5 rounded-lg mb-1 ${isDark ? 'bg-red-900/10' : 'bg-red-50/60'}`}>
-                                    <p className={`text-[10px] font-bold mb-0.5 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('plt_before')}</p>
+                                    <p className={`text-xs font-bold mb-0.5 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('plt_before')}</p>
                                     <p className={`text-xs ${c.textSecondary}`}>{k.before_full}</p>
                                   </div>
                                 )}
                                 {k.after_full && (
                                   <div className={`p-2.5 rounded-lg ${isDark ? 'bg-emerald-900/10' : 'bg-emerald-50/60'}`}>
-                                    <p className={`text-[10px] font-bold mb-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('plt_after')}</p>
+                                    <p className={`text-xs font-bold mb-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('plt_after')}</p>
                                     <p className={`text-xs ${c.textSecondary}`}>{k.after_full}</p>
                                   </div>
                                 )}
@@ -1564,7 +1569,7 @@ const PlainTalk = ({ tool }) => {
 
             {/* ─── FOLLOW-UP QUESTIONS ─── real analyses only, never the compare-only view */}
             {result && !result._compareOnly && result.detected_type && (
-            <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>💬 {t('plt_followup_title')}</h4>
               <div className="flex items-center gap-2">
                 <label htmlFor="pt-followup" className="sr-only">{t('plt_followup_label')}</label>
@@ -1594,7 +1599,7 @@ const PlainTalk = ({ tool }) => {
                       <p className={`text-xs font-bold ${c.accentTxt} mb-2`}>❓ {fu.question}</p>
                       <p className={`text-sm leading-relaxed ${c.text} mb-3`}>{fu.answer}</p>
                       {fu.key_quote && (
-                        <blockquote className={`text-xs italic ps-3 border-s-2 ${isDark ? 'border-cyan-600 text-zinc-400' : 'border-cyan-300 text-zinc-500'}`}>
+                        <blockquote className={`text-xs italic ps-3 border-s-2 ${isDark ? 'border-[#7fb3e0] text-zinc-400' : 'border-[#d4dde8] text-zinc-500'}`}>
                           "{fu.key_quote}"
                         </blockquote>
                       )}
@@ -1609,8 +1614,8 @@ const PlainTalk = ({ tool }) => {
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {fu.follow_up_suggestions.map((s, j) => (
                             <button key={j} onClick={() => setFollowUpQuestion(s)}
-                              className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${
-                                isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-200 text-zinc-500 hover:border-cyan-300 hover:text-cyan-600'
+                              className={`text-xs font-bold px-2.5 py-1 rounded-lg border transition-all ${
+                                isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-zinc-200 text-zinc-500 hover:border-[#d4dde8] hover:text-[#142a43]'
                               }`}>
                               {s}
                             </button>
@@ -1625,8 +1630,8 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ─── CROSS-REFERENCES ─── */}
-            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('plt_related')}</p>
+            <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔗 {t('plt_related')}</p>
               <div className="flex flex-wrap gap-3">
                 <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ {t('plt_xref_jargonassassin')}</a>
                 <a href="/ComplaintEscalationWriter" className={`text-xs ${linkStyle}`}>📨 {t('plt_xref_complaint')}</a>
@@ -1643,7 +1648,7 @@ const PlainTalk = ({ tool }) => {
           </div>
         )}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('plt_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('plt_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('plt_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('plt_session')}</span><span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };
