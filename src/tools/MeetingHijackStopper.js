@@ -159,13 +159,13 @@ function KeepOnTrack({ results, c, isDark, onFinish, t }) {
 
   return (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center gap-2 mb-2">
           {items.map((_, i) => (
             <div key={i} className={`flex-1 h-2 rounded-full ${i < currentIdx ? 'bg-emerald-500' : i === currentIdx ? (overTime ? 'bg-red-500' : 'bg-cyan-500') : (isDark ? 'bg-zinc-700' : 'bg-slate-200')}`} />
           ))}
         </div>
-        <p className={`text-xs ${c.textMuted}`}>{t('mhp_item_of', { n: currentIdx + 1, total: items.length })} · {t('mhp_total_elapsed', { time: fmt(totalElapsed) })}</p>
+        <p className={`text-[13px] ${c.textMuted}`}>{t('mhp_item_of', { n: currentIdx + 1, total: items.length })} · {t('mhp_total_elapsed', { time: fmt(totalElapsed) })}</p>
       </div>
 
       <div className={`${c.timerBg} rounded-xl p-6 text-center`}>
@@ -195,34 +195,34 @@ function KeepOnTrack({ results, c, isDark, onFinish, t }) {
         </div>
       </div>
 
-      <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+      <div className={`border-t ${c.border} pt-5 space-y-3`}>
         {current?.purpose && (
           <div>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('mhp_why_its_here')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('mhp_why_its_here')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{current.purpose}</p>
           </div>
         )}
         {current?.how_to_run_it && (
           <div>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('mhp_how_to_run')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('mhp_how_to_run')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{current.how_to_run_it}</p>
           </div>
         )}
         {current?.say_this_if_helpful && (
           <div className={`${c.infoBox} border rounded-lg p-3`}>
-            <p className="text-[10px] font-bold mb-1">{t('mhp_you_could_say')}</p>
+            <p className="text-xs font-bold mb-1">{t('mhp_you_could_say')}</p>
             <p className="text-sm">{current.say_this_if_helpful}</p>
           </div>
         )}
       </div>
 
       {watch.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-          <p className={`text-xs font-bold ${c.labelText} mb-3`}>🛡️ {t('mhp_if_it_wanders')}</p>
+        <div className={`border-t ${c.border} pt-5`}>
+          <p className={`text-[15px] font-semibold ${c.labelText} mb-3`}>🛡️ {t('mhp_if_it_wanders')}</p>
           <div className="space-y-2">
             {watch.map((w, i) => w.say_this && (
               <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                <p className={`text-[11px] font-bold ${c.text}`}>{w.situation}</p>
+                <p className={`text-[13px] font-bold ${c.text}`}>{w.situation}</p>
                 <p className={`text-xs ${c.textSecondary} mt-1`}>{w.say_this}</p>
               </div>
             ))}
@@ -248,22 +248,19 @@ const MeetingHijackStopper = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -275,8 +272,7 @@ const MeetingHijackStopper = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'
-                          : 'bg-cyan-600 border-cyan-600 text-white',
+    pillActive:    isDark ? 'bg-[#2f6fb0] border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500'
                           : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -289,9 +285,7 @@ const MeetingHijackStopper = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── The three stages, plus two utilities that are not stages ──
   const [stage, setStage] = useState('plan');
@@ -543,7 +537,7 @@ const MeetingHijackStopper = ({ tool }) => {
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
         {STAGES.map((x, i) => (
-          <button key={x.key} onClick={() => { if (x.ready) { setStage(x.key); setUtility(''); } }}
+          <button aria-pressed={stage === x.key && !utility} key={x.key} onClick={() => { if (x.ready) { setStage(x.key); setUtility(''); } }}
             disabled={!x.ready} title={t(x.descKey)}
             className={`px-3 py-2 rounded-lg text-xs font-bold border transition min-h-[40px] ${
               !x.ready ? 'opacity-40 cursor-not-allowed ' : ''
@@ -552,7 +546,7 @@ const MeetingHijackStopper = ({ tool }) => {
           </button>
         ))}
       </div>
-      {activeStage && !utility && <p className={`text-xs ${c.textMuted}`}>{t(activeStage.descKey)}</p>}
+      {activeStage && !utility && <p className={`text-[13px] ${c.textMuted}`}>{t(activeStage.descKey)}</p>}
       <div className="flex flex-wrap gap-3 pt-1">
         <button onClick={() => setUtility(utility === 'actions' ? '' : 'actions')}
           className={`text-xs ${utility === 'actions' ? c.accentTxt + ' font-bold' : c.textMuted} underline underline-offset-2`}>
@@ -571,12 +565,12 @@ const MeetingHijackStopper = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderPlan = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.label} block mb-1`}>
             {t('mhp_f_goal_label')} <span className={c.required}>{t('mhp_required')}</span>
           </label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('mhp_f_goal_hint')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('mhp_f_goal_hint')}</p>
           <textarea value={meetingGoal} onChange={e => setMeetingGoal(e.target.value)}
             placeholder={t('mhp_f_goal_ph')} rows={3}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
@@ -586,12 +580,12 @@ const MeetingHijackStopper = ({ tool }) => {
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_time_label')}</label>
           <div className="flex flex-wrap gap-2">
             {DURATIONS.map(d => (
-              <button key={d} onClick={() => setDuration(d)}
+              <button aria-pressed={duration === d} key={d} onClick={() => setDuration(d)}
                 className={`px-3 py-2 rounded-lg text-xs font-bold border min-h-[40px] ${duration === d ? c.pillActive : c.pillInactive}`}>
                 {t('mhp_unit_min', { n: d })}
               </button>
             ))}
-            <button onClick={() => setDuration('other')}
+            <button aria-pressed={duration === 'other'} onClick={() => setDuration('other')}
               className={`px-3 py-2 rounded-lg text-xs font-bold border min-h-[40px] ${duration === 'other' ? c.pillActive : c.pillInactive}`}>
               {t('mhp_other')}
             </button>
@@ -617,7 +611,7 @@ const MeetingHijackStopper = ({ tool }) => {
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_format_label')}</label>
           <div className="flex flex-wrap gap-2">
             {FORMATS.map(f => (
-              <button key={f.value} onClick={() => { setFormat(f.value); if (f.value === 'In person') setPlatform(''); }}
+              <button aria-pressed={format === f.value} key={f.value} onClick={() => { setFormat(f.value); if (f.value === 'In person') setPlatform(''); }}
                 className={`px-3 py-2 rounded-lg text-xs font-bold border min-h-[40px] ${format === f.value ? c.pillActive : c.pillInactive}`}>
                 {t(f.labelKey)}
               </button>
@@ -671,7 +665,7 @@ const MeetingHijackStopper = ({ tool }) => {
 
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.label} block mb-1`}>{t('mhp_f_extra_label')}</label>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('mhp_f_extra_hint')}</p>
+          <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('mhp_f_extra_hint')}</p>
           <textarea value={extraContext} onChange={e => setExtraContext(e.target.value)}
             placeholder={t('mhp_f_extra_ph')} rows={2}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
@@ -693,11 +687,11 @@ const MeetingHijackStopper = ({ tool }) => {
 
       {!hasPlan && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('mhp_before_you_plan')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mhp_before_you_plan')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/JustifyMyMeeting" className={`text-xs ${linkStyle}`}>🕵️ {t('mhp_justify_my_meeting')}</a>
           </div>
-          <p className={`text-xs ${c.textMuted} mt-1`}>{t('mhp_xref_justify_note')}</p>
+          <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('mhp_xref_justify_note')}</p>
         </div>
       )}
 
@@ -710,9 +704,9 @@ const MeetingHijackStopper = ({ tool }) => {
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
         <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>🎯 {t('mhp_h_goal')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>🎯 {t('mhp_h_goal')}</p>
           {p.goal && <p className={`text-sm ${c.textSecondary} mb-3`}>{p.goal}</p>}
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mhp_end_state_label')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('mhp_end_state_label')}</p>
           <p className={`text-base font-bold ${c.text}`}>{p.end_state}</p>
         </div>
 
@@ -720,26 +714,26 @@ const MeetingHijackStopper = ({ tool }) => {
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
               <p className={`text-sm font-bold ${c.text}`}>📋 {t('mhp_h_plan')}</p>
-              <p className={`text-[11px] ${c.textMuted}`}>
+              <p className={`text-[13px] ${c.textMuted}`}>
                 {t('mhp_scheduled_of_total', { scheduled: p.scheduled_minutes ?? 0, total: p.total_minutes ?? 0 })}
                 {p.unscheduled_minutes > 0 ? ` · ${t('mhp_unscheduled', { n: p.unscheduled_minutes })}` : ''}
               </p>
             </div>
             {p.agenda.map((a, i) => (
-              <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <div key={i} className={`border-t ${c.border} pt-5`}>
                 <p className={`text-sm font-bold ${c.text}`}>
                   {i + 1}. {a.title} <span className={`font-normal ${c.accentTxt}`}>— {t('mhp_unit_min', { n: a.minutes })}</span>
                 </p>
                 {a.purpose && <p className={`text-xs italic ${c.textMuted} mt-1`}>{t('mhp_why_its_here')} {a.purpose}</p>}
                 {a.how_to_run_it && (
                   <div className="mt-2">
-                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('mhp_how_to_run')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('mhp_how_to_run')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{a.how_to_run_it}</p>
                   </div>
                 )}
                 {a.say_this_if_helpful && (
                   <div className={`${c.quoteBg} border ${c.border} rounded-lg p-2.5 mt-2`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-0.5`}>{t('mhp_you_could_say')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('mhp_you_could_say')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{a.say_this_if_helpful}</p>
                   </div>
                 )}
@@ -752,23 +746,23 @@ const MeetingHijackStopper = ({ tool }) => {
           <div className="space-y-3">
             <p className={`text-sm font-bold ${c.text}`}>🛡️ {t('mhp_h_watch_for')}</p>
             {results.watch_for?.map((w, i) => (
-              <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <div key={i} className={`border-t ${c.border} pt-5`}>
                 <p className={`text-sm font-bold ${c.text} mb-2`}>{w.situation}</p>
                 {w.prevent_it && (
                   <div className="mb-1.5">
-                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('mhp_prevent_it')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('mhp_prevent_it')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{w.prevent_it}</p>
                   </div>
                 )}
                 {w.if_it_happens && (
                   <div className="mb-1.5">
-                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('mhp_if_it_happens')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('mhp_if_it_happens')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{w.if_it_happens}</p>
                   </div>
                 )}
                 {w.say_this && (
                   <div className={`${c.quoteBg} border ${c.border} rounded-lg p-2.5 mt-2`}>
-                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-0.5`}>{t('mhp_you_could_say')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('mhp_you_could_say')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{w.say_this}</p>
                   </div>
                 )}
@@ -778,12 +772,12 @@ const MeetingHijackStopper = ({ tool }) => {
         )}
 
         {results?.decision_plan?.needed && (results?.decision_plan?.approach || results?.decision_plan?.what_needs_clarifying) && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm font-bold ${c.text} mb-2`}>🗳️ {t('mhp_h_decision')}</p>
             {results?.decision_plan?.approach && <p className={`text-xs ${c.textSecondary}`}>{results.decision_plan?.approach}</p>}
             {results?.decision_plan?.what_needs_clarifying && (
               <div className={`${c.warning} border rounded-lg p-3 mt-3`}>
-                <p className="text-[10px] font-bold uppercase mb-0.5">{t('mhp_clarify_first')}</p>
+                <p className="text-[13px] font-bold mb-0.5">{t('mhp_clarify_first')}</p>
                 <p className="text-xs">{results.decision_plan?.what_needs_clarifying}</p>
               </div>
             )}
@@ -803,7 +797,7 @@ const MeetingHijackStopper = ({ tool }) => {
             ))}
             {results.finish_strong?.closing_script && (
               <div className={`${c.quoteBg} border ${c.border} rounded-lg p-2.5 mt-2`}>
-                <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-0.5`}>{t('mhp_you_could_say')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('mhp_you_could_say')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{results.finish_strong?.closing_script}</p>
               </div>
             )}
@@ -823,7 +817,7 @@ const MeetingHijackStopper = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderCapture = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+      <div className={`border-t ${c.border} pt-5 space-y-4`}>
         <p className={`text-sm ${c.textSecondary}`}>{t('mhp_cap_intro')}</p>
 
         <div>
@@ -891,13 +885,13 @@ const MeetingHijackStopper = ({ tool }) => {
       {followUp && (
         <div className="scroll-mt-24 space-y-4" ref={followUpRef}>
           {followUp.what_we_decided?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1.5`}>✅ {t('mhp_fu_decided')}</p>
               {followUp.what_we_decided.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {x}</p>)}
             </div>
           )}
           {followUp.what_happens_next?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1.5`}>➡️ {t('mhp_fu_next')}</p>
               {followUp.what_happens_next.map((s, i) => (
                 <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>
@@ -915,7 +909,7 @@ const MeetingHijackStopper = ({ tool }) => {
             </div>
           )}
           {followUp.message && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>✉️ {t('mhp_fu_message')}</p>
               <div className={`${c.quoteBg} border ${c.border} rounded-lg p-3`}>
                 <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{followUp.message}</p>
@@ -931,10 +925,10 @@ const MeetingHijackStopper = ({ tool }) => {
   // UTILITIES — not stages
   // ════════════════════════════════════════════════════════════
   const renderActions = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+    <div className={`border-t ${c.border} pt-5`}>
       <p className={`text-sm font-bold ${c.text} mb-3`}>✅ {t('mhp_h_actions')}</p>
       {actionItems.length === 0 ? (
-        <p className={`text-xs ${c.textMuted}`}>{t('mhp_actions_empty')}</p>
+        <p className={`text-[13px] ${c.textMuted}`}>{t('mhp_actions_empty')}</p>
       ) : (
         <div className="space-y-2">
           {actionItems.map(a => (
@@ -943,7 +937,7 @@ const MeetingHijackStopper = ({ tool }) => {
                 onChange={() => setActionItems(prev => prev.map(x => x.id === a.id ? { ...x, done: !x.done } : x))} />
               <div className="flex-1">
                 <p className={`text-sm ${a.done ? `line-through ${c.textMuted}` : c.text}`}>{a.task}</p>
-                <p className={`text-[11px] ${c.textMuted}`}>
+                <p className={`text-[13px] ${c.textMuted}`}>
                   {[a.owner, a.when, a.fromMeeting].filter(Boolean).join(' · ')}
                 </p>
               </div>
@@ -958,17 +952,17 @@ const MeetingHijackStopper = ({ tool }) => {
   );
 
   const renderHistory = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+    <div className={`border-t ${c.border} pt-5`}>
       <p className={`text-sm font-bold ${c.text} mb-3`}>🕘 {t('mhp_h_history')}</p>
       {sessionHistory.length === 0 ? (
-        <p className={`text-xs ${c.textMuted}`}>{t('mhp_history_empty')}</p>
+        <p className={`text-[13px] ${c.textMuted}`}>{t('mhp_history_empty')}</p>
       ) : (
         <div className="space-y-2">
           {sessionHistory.map(h => (
             <div key={h.id} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 flex items-center justify-between gap-3`}>
               <div className="min-w-0">
                 <p className={`text-sm ${c.text} truncate`}>{h.preview}</p>
-                <p className={`text-[11px] ${c.textMuted}`}>{h.date} · {t('mhp_unit_min', { n: h.duration })}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{h.date} · {t('mhp_unit_min', { n: h.duration })}</p>
               </div>
               <button onClick={() => reuse(h)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                 {t('mhp_history_reopen')}
@@ -990,13 +984,21 @@ const MeetingHijackStopper = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🛡️'}</span>
                   {toolTagline(tool?.tagline ?? t('mhp_tagline'))}
                 </p>
@@ -1008,6 +1010,7 @@ const MeetingHijackStopper = ({ tool }) => {
                 </button>
               )}
             </div>
+          </div>
           </div>
         </div>
         <div className="p-4">
@@ -1033,8 +1036,8 @@ const MeetingHijackStopper = ({ tool }) => {
 
       {/* Post-result cross-refs */}
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mhp_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('mhp_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/JustifyMyMeeting" className={`text-xs ${linkStyle}`}>🕵️ {t('mhp_justify_my_meeting')}</a>
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('mhp_velvet_hammer')}</a>
@@ -1044,7 +1047,7 @@ const MeetingHijackStopper = ({ tool }) => {
 
       {/* Disclaimer */}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>{t('mhp_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuted}`}>{t('mhp_disclaimer')}</p>
       </div>
 
     </div>
@@ -1061,15 +1064,15 @@ function Section({ icon, title, children, defaultOpen = false, c, onToggle }) {
   const [open, setOpen] = useState(defaultOpen);
   const ui = (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={() => { setOpen(p => !p); onToggle?.(); }}
+      <button data-print-heading aria-expanded={!!(open)} onClick={() => { setOpen(p => !p); onToggle?.(); }}
         className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
-          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
+          <h3 className={`text-base font-bold ${c.text}`}>{title}</h3>
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}
+      {<div data-sec-body hidden={!(open)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}
     </div>
   );
   return ui;

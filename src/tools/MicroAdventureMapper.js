@@ -149,22 +149,19 @@ const MicroAdventureMapper = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -176,15 +173,14 @@ const MicroAdventureMapper = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific semantic keys
     headerBg:      isDark ? 'bg-emerald-900/10 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
     tagBg:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-700',
-    timelineDot:   isDark ? 'bg-cyan-600 border-cyan-500' : 'bg-cyan-600 border-cyan-500',
+    timelineDot:   isDark ? 'bg-[#2f6fb0] border-[#7fb3e0]' : 'bg-[#142a43] border-[#142a43]',
     timeline:      isDark ? 'border-zinc-600' : 'border-gray-300',
     stopCard:      isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
     tipBg:         isDark ? 'bg-amber-900/20 border-amber-700/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
@@ -200,9 +196,7 @@ const MicroAdventureMapper = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Inputs ──
   const [location, setLocation] = useState('');
@@ -528,7 +522,7 @@ const MicroAdventureMapper = ({ tool }) => {
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
         return (
-          <button key={opt.value}
+          <button aria-pressed={active} key={opt.value}
             onClick={() => multi ? setter(opt.value) : setter(opt.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
             {active && !multi && <span className="inline me-1">✓</span>}
@@ -544,10 +538,10 @@ const MicroAdventureMapper = ({ tool }) => {
   // RENDER: Input Form
   // ══════════════════════════════════════════
   const renderInputForm = () => (
-    <div className="space-y-4">
+    <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
       {/* Location */}
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('mam_where_label')} <span className={c.required}>*</span></label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('mam_where_label')} <span className={c.required}>*</span></label>
         <input type="text" value={location} onChange={e => setLocation(e.target.value)}
           placeholder={t('mam_where_ph')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -555,10 +549,10 @@ const MicroAdventureMapper = ({ tool }) => {
 
       {/* Time + When */}
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('mam_time_label')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('mam_time_label')}</label>
         {renderPills(TIME_OPTIONS, timeAvailable, setTimeAvailable)}
 
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 mt-4 block`}>{t('mam_when_label')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 mt-4 block`}>{t('mam_when_label')}</label>
         {renderPills(WHEN_OPTIONS, when, setWhen)}
 
         {when === 'later_today' && (
@@ -571,41 +565,41 @@ const MicroAdventureMapper = ({ tool }) => {
 
       {/* Interests */}
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('mam_interests_label')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('mam_interests_hint')}</p>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('mam_interests_label')}</label>
+        <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('mam_interests_hint')}</p>
         {renderPills(INTERESTS, interests, toggleInterest, true)}
       </div>
 
       {/* Vibe + Budget */}
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('mam_vibe_label')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('mam_vibe_label')}</label>
         {renderPills(VIBE_OPTIONS, vibe, setVibe)}
 
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 mt-4 block`}>{t('mam_budget_label')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 mt-4 block`}>{t('mam_budget_label')}</label>
         {renderPills(BUDGET_OPTIONS, budget, setBudget)}
       </div>
 
       {/* Transport + Companions */}
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('mam_around_label')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('mam_around_label')}</label>
         {renderPills(TRANSPORT_OPTIONS, transport, setTransport)}
 
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 mt-4 block`}>{t('mam_who_label')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 mt-4 block`}>{t('mam_who_label')}</label>
         {renderPills(COMPANION_OPTIONS, companions, setCompanions)}
       </div>
 
       {/* Accessibility */}
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-        <button onClick={() => setShowAccessibility(!showAccessibility)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
-          {<Caret open={showAccessibility} />}
+        <button data-print-heading aria-expanded={!!(showAccessibility)} onClick={() => setShowAccessibility(!showAccessibility)}
+          className={`flex items-center gap-2 text-[13px] font-bold ${c.textSecondary}`}>
+          {<span data-print-hide><Caret open={showAccessibility} /></span>}
           {t('mam_acc_label')}
-          {accessibility.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{accessibility.length}</span>}
+          {accessibility.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-xs ${c.pillActive}`}>{accessibility.length}</span>}
         </button>
-        {showAccessibility && (
-          <div className="flex flex-wrap gap-2 mt-3">
+        {(
+          <div data-sec-body hidden={!(showAccessibility)} className="flex flex-wrap gap-2 mt-3">
             {ACCESSIBILITY_OPTIONS.map(opt => (
-              <button key={opt.value} onClick={() => toggleAccessibility(opt.value)}
+              <button aria-pressed={accessibility.includes(opt.value)} key={opt.value} onClick={() => toggleAccessibility(opt.value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${accessibility.includes(opt.value) ? c.pillActive : c.pillInactive}`}>
                 {accessibility.includes(opt.value) && <span className="inline me-1">✓</span>}
                 {t(opt.labelKey)}
@@ -631,7 +625,7 @@ const MicroAdventureMapper = ({ tool }) => {
       </button>
 
       {/* Pre-result cross-ref */}
-      <p className={`text-xs text-center ${c.textMuted}`}>
+      <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
         {t('mam_xref_pre')} <a href="/DateNight" className={`text-xs ${linkStyle}`}>🌙 {t('mam_xref_datenight')}</a> {t('mam_xref_datenight_suffix')}
       </p>
     </div>
@@ -659,7 +653,7 @@ const MicroAdventureMapper = ({ tool }) => {
         </div>
         {adv.why_this_fits && (
           <div>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-0.5`}>{t('mam_why_fits_title')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-0.5`}>{t('mam_why_fits_title')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{adv.why_this_fits}</p>
           </div>
         )}
@@ -694,7 +688,7 @@ const MicroAdventureMapper = ({ tool }) => {
                     {stop.cost && <span className={`text-xs font-semibold ${c.accentTxt} flex-shrink-0`}>{stop.cost}</span>}
                   </div>
 
-                  <div className={`flex flex-wrap items-center gap-3 text-xs ${c.textMuted} mb-2`}>
+                  <div className={`flex flex-wrap items-center gap-3 text-[13px] ${c.textMuted} mb-2`}>
                     {stop.area && <span className="flex items-center gap-1">📍 {stop.area}</span>}
                     {stop.duration_min && <span>⏱️ {t('mam_about_min', { n: stop.duration_min })}</span>}
                   </div>
@@ -715,7 +709,7 @@ const MicroAdventureMapper = ({ tool }) => {
                   )}
 
                   {stop.verify && (
-                    <p className={`text-xs ${c.textMuted} mb-2`}>✅ <span className="font-semibold">{t('mam_verify')}</span> {stop.verify}</p>
+                    <p className={`text-[13px] ${c.textMuted} mb-2`}>✅ <span className="font-semibold">{t('mam_verify')}</span> {stop.verify}</p>
                   )}
 
                   {/* Swap button */}
@@ -835,8 +829,8 @@ const MicroAdventureMapper = ({ tool }) => {
         {renderActions()}
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('mam_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mam_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/GetNoticed" className={`text-xs ${linkStyle}`}>🧲 {t('mam_xref_lucksurface')}</a>
             <a href="/BeforeHello" className={`text-xs ${linkStyle}`}>🌀 {t('mam_xref_gravitywell')}</a>
@@ -889,32 +883,32 @@ const MicroAdventureMapper = ({ tool }) => {
       return (
         <div key={entry.id} className={`rounded-xl border ${c.journalCard} overflow-hidden mb-2`}>
           {/* Summary row */}
-          <button onClick={() => setExpandedJournalId(isExpanded ? null : entry.id)}
+          <button data-print-heading aria-expanded={!!(isExpanded)} onClick={() => setExpandedJournalId(isExpanded ? null : entry.id)}
             className={`w-full flex items-center gap-3 p-3 text-start`}>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-semibold ${c.text} truncate`}>{adv.name || t('mam_journal_adventure')}</span>
               </div>
-              <div className={`flex items-center gap-2 text-xs ${c.textMuted} mt-0.5`}>
+              <div className={`flex items-center gap-2 text-[13px] ${c.textMuted} mt-0.5`}>
                 <span>{formatDate(entry.date)}</span>
                 <span>·</span>
                 <span>{t('mam_journal_stops', { n: stops.length })}</span>
                 {adv.total_cost && <><span>·</span><span>{adv.total_cost}</span></>}
               </div>
             </div>
-            {<Caret open={isExpanded} className="flex-shrink-0" />}
+            {<span data-print-hide><Caret open={isExpanded} className="flex-shrink-0" /></span>}
           </button>
 
           {/* Expanded detail */}
-          {isExpanded && (
-            <div className={`px-3 pb-3 border-t ${c.border}`}>
+          {(
+            <div data-sec-body hidden={!(isExpanded)} className={`px-3 pb-3 border-t ${c.border}`}>
               {adv.tagline && <p className={`text-xs italic ${c.textSecondary} mt-2 mb-2`}>{adv.tagline}</p>}
 
               {/* Condensed stop list */}
               <div className="space-y-1.5 mb-3">
                 {stops.map((s, i) => (
                   <div key={i} className={`flex items-start gap-2 text-xs ${c.text}`}>
-                    <span className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white ${isDark ? 'bg-zinc-600' : 'bg-zinc-400'}`}>{s.number || i + 1}</span>
+                    <span className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black text-white ${isDark ? 'bg-zinc-600' : 'bg-zinc-400'}`}>{s.number || i + 1}</span>
                     <div className="min-w-0">
                       <span className="font-semibold">{s.name}</span>
                       {s.location && <span className={`${c.textMuted} ms-1`}>— {s.location}</span>}
@@ -943,18 +937,18 @@ const MicroAdventureMapper = ({ tool }) => {
 
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.journalBg}`}>
-        <button onClick={() => setShowJournal(!showJournal)}
+        <button data-print-heading aria-expanded={!!(showJournal)} onClick={() => setShowJournal(!showJournal)}
           className={`w-full flex items-center gap-2 text-start`}>
           <span className={`${c.journalAccent}`}>📖</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('mam_journal_title')}</span>
-          <span className={`text-xs ${c.textMuted}`}>{t('mam_journal_past', { n: pastAdventures.length })}</span>
-          {<Caret open={showJournal} />}
+          <span className={`text-[13px] ${c.textMuted}`}>{t('mam_journal_past', { n: pastAdventures.length })}</span>
+          {<span data-print-hide><Caret open={showJournal} /></span>}
         </button>
 
-        {showJournal && (
-          <div className="mt-3">
+        {(
+          <div data-sec-body hidden={!(showJournal)} className="mt-3">
             {/* Dedup indicator */}
-            <p className={`text-xs ${c.textMuted} mb-3`}>
+            <p className={`text-[13px] ${c.textMuted} mb-3`}>
               {t('mam_journal_dedup')}
             </p>
 
@@ -969,8 +963,8 @@ const MicroAdventureMapper = ({ tool }) => {
                 <div key={loc} className="mb-3 last:mb-0">
                   <div className={`flex items-center gap-1.5 mb-1.5`}>
                     <span className={`${c.journalAccent}`}>📍</span>
-                    <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>{loc}</span>
-                    <span className={`text-xs ${c.textMuted}`}>({grouped[loc].length})</span>
+                    <span className={`text-[13px] font-bold ${c.textSecondary}`}>{loc}</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>({grouped[loc].length})</span>
                   </div>
                   {grouped[loc].map(renderJournalEntry)}
                 </div>
@@ -997,12 +991,20 @@ const MicroAdventureMapper = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🗺️'}</span>{toolTagline(tool?.tagline ?? t('mam_tagline'))}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1016,10 +1018,11 @@ const MicroAdventureMapper = ({ tool }) => {
               </button>
             ) : null}
           </div>
+          </div>
         </div>
         <div className="p-5 space-y-4">
           {!results && (
-            <p className={`text-xs ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('mam_xref_party_pre')} <a href="/PartyArchitect" className={linkStyle}>🎉 {t('mam_xref_party')}</a> {t('mam_xref_party_suffix')}
             </p>
           )}
@@ -1033,7 +1036,7 @@ const MicroAdventureMapper = ({ tool }) => {
 
       {/* Disclaimer */}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p className={`text-[13px] ${c.textMuted}`}>
           {t('mam_disclaimer')}
         </p>
       </div>

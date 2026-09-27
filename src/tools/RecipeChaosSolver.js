@@ -116,14 +116,14 @@ function Section({ icon, title, children, defaultOpen = false, c }) {
   const [open, toggle] = useReducer(o => !o, defaultOpen);
   return (
     <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-      <button onClick={toggle} className="w-full p-3 flex items-center justify-between text-start min-h-[44px]">
+      <button data-print-heading aria-expanded={!!(open)} onClick={toggle} className="w-full p-3 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2">
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-xs font-bold ${c.text}`}>{title}</h3>
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-3 pb-3 border-t ${c.border} pt-2.5`}>{children}</div>}
+      {<div data-sec-body hidden={!(open)} className={`px-3 pb-3 border-t ${c.border} pt-2.5`}>{children}</div>}
     </div>
   );
 }
@@ -183,16 +183,15 @@ const RecipeChaosSolver = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -200,18 +199,15 @@ const RecipeChaosSolver = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
     warningBox:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    dropzone:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-600 hover:text-cyan-400 bg-zinc-800/50'
-                          : 'border-zinc-300 text-zinc-400 hover:border-cyan-400 hover:text-cyan-600 bg-white',
+    dropzone:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef] bg-zinc-800/50' : 'border-zinc-300 text-zinc-400 hover:border-[#142a43] hover:text-[#142a43] bg-white',
     chaos:         isDark ? 'bg-fuchsia-900/20 border-fuchsia-700 text-fuchsia-200' : 'bg-fuchsia-50 border-fuchsia-300 text-fuchsia-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Nav ──
   const [view, setView] = useState('rescue'); // rescue | substitute | scale | preflight | flavor | recent
@@ -641,13 +637,13 @@ const RecipeChaosSolver = ({ tool }) => {
     <div className="space-y-4">
       {!rescueResults && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_making')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_making')} <span className={c.required}>*</span></label>
               <div className="flex gap-1.5 mb-2">
                 {['quick', 'paste', 'photo'].map(m => (
                   <button key={m} onClick={() => setInputMode(m)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${inputMode === m ? c.pillActive : `${c.pillInactive} border-transparent`}`}>
+                    className={`px-2.5 py-1 rounded-lg text-[13px] font-semibold border ${inputMode === m ? c.pillActive : `${c.pillInactive} border-transparent`}`}>
                     {t(`rcs_mode_${m}`)}
                   </button>
                 ))}
@@ -679,11 +675,11 @@ const RecipeChaosSolver = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_wrong')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_wrong')} <span className={c.required}>*</span></label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {QUICK_PROBLEMS.map(qp => (
                   <button key={qp.labelKey} onClick={() => setProblemDescription(t(qp.descKey))}
-                    className={`px-2 py-1 rounded-full text-[10px] font-semibold border ${c.pillInactive}`}>
+                    className={`px-2 py-1 rounded-full text-xs font-semibold border ${c.pillInactive}`}>
                     {t(qp.labelKey)}
                   </button>
                 ))}
@@ -693,7 +689,7 @@ const RecipeChaosSolver = ({ tool }) => {
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {PROBLEM_CATEGORIES.map(cat => (
                   <button key={cat.id} onClick={() => setProblemCategory(cat.id)}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-semibold border ${problemCategory === cat.id ? c.pillActive : `${c.pillInactive} border-transparent`}`}>
+                    className={`px-2 py-1 rounded-lg text-xs font-semibold border ${problemCategory === cat.id ? c.pillActive : `${c.pillInactive} border-transparent`}`}>
                     {cat.emoji} {t(cat.labelKey)}
                   </button>
                 ))}
@@ -701,17 +697,17 @@ const RecipeChaosSolver = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <textarea value={availableIngredients} onChange={e => setAvailableIngredients(e.target.value)} rows={2} placeholder={t('rcs_ph_have')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
               <div className="mt-2">
                 {pantryImagePreview ? (
                   <div className="relative inline-block">
                     <img src={pantryImagePreview} alt="" className="rounded-lg max-h-24 w-auto" />
-                    <button onClick={() => clearImage('pantry')} className={`absolute top-1 end-1 ${c.btnSecondary} rounded-full w-5 h-5 text-[10px]`}>✕</button>
+                    <button onClick={() => clearImage('pantry')} className={`absolute top-1 end-1 ${c.btnSecondary} rounded-full w-5 h-5 text-xs`}>✕</button>
                   </div>
                 ) : (
-                  <label className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] cursor-pointer ${c.dropzone}`}>
+                  <label className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[13px] cursor-pointer ${c.dropzone}`}>
                     {compressingPantry ? t('rcs_processing') : `📸 ${t('rcs_pantry_photo_opt')}`}
                     <input ref={pantryPhotoRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, 'pantry')} />
                   </label>
@@ -720,14 +716,14 @@ const RecipeChaosSolver = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_problem_photo')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_problem_photo')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               {disasterImagePreview ? (
                 <div className="relative inline-block">
                   <img src={disasterImagePreview} alt="" className="rounded-lg max-h-24 w-auto" />
-                  <button onClick={() => clearImage('disaster')} className={`absolute top-1 end-1 ${c.btnSecondary} rounded-full w-5 h-5 text-[10px]`}>✕</button>
+                  <button onClick={() => clearImage('disaster')} className={`absolute top-1 end-1 ${c.btnSecondary} rounded-full w-5 h-5 text-xs`}>✕</button>
                 </div>
               ) : (
-                <label className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] cursor-pointer ${c.dropzone}`}>
+                <label className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[13px] cursor-pointer ${c.dropzone}`}>
                   {compressingDisaster ? t('rcs_processing') : `🔍 ${t('rcs_problem_photo_opt')}`}
                   <input ref={disasterPhotoRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, 'disaster')} />
                 </label>
@@ -736,12 +732,12 @@ const RecipeChaosSolver = ({ tool }) => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
                 <input value={dietaryRestrictions} onChange={e => setDietaryRestrictions(e.target.value)} placeholder={t('rcs_ph_dietary')}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_urgency')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_urgency')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
                 <input value={timePressure} onChange={e => setTimePressure(e.target.value)} placeholder={t('rcs_ph_urgency')}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
@@ -785,11 +781,11 @@ const RecipeChaosSolver = ({ tool }) => {
         )}
 
         {f && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="flex items-start justify-between gap-2 mb-2">
               <h3 className={`text-sm font-black ${c.text}`}>{f.name}</h3>
               {f.assessment && ASSESSMENT_META[f.assessment] && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold flex-shrink-0 ${toneClass(c, ASSESSMENT_META[f.assessment].tone)}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full border font-bold flex-shrink-0 ${toneClass(c, ASSESSMENT_META[f.assessment].tone)}`}>
                   {t(ASSESSMENT_META[f.assessment].key)}
                 </span>
               )}
@@ -798,7 +794,7 @@ const RecipeChaosSolver = ({ tool }) => {
 
             {f.ingredients_used?.length > 0 && (
               <div className="mb-3">
-                <p className={`text-[11px] font-bold ${c.labelText} mb-1`}>{t('rcs_ingredients')}</p>
+                <p className={`text-[13px] font-bold ${c.labelText} mb-1`}>{t('rcs_ingredients')}</p>
                 <ul className={`text-xs ${c.textSecondary} space-y-0.5 list-disc list-inside`}>
                   {f.ingredients_used.map((ing, i) => <li key={i}>{ing}</li>)}
                 </ul>
@@ -807,7 +803,7 @@ const RecipeChaosSolver = ({ tool }) => {
 
             {f.instructions?.length > 0 && (
               <div className="mb-3">
-                <p className={`text-[11px] font-bold ${c.labelText} mb-1`}>{t('rcs_steps')}</p>
+                <p className={`text-[13px] font-bold ${c.labelText} mb-1`}>{t('rcs_steps')}</p>
                 <ol className={`text-xs ${c.textSecondary} space-y-1.5 list-decimal list-inside`}>
                   {f.instructions.map((s, i) => <li key={i}>{s}</li>)}
                 </ol>
@@ -865,7 +861,7 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.card} border-2 ${c.border} rounded-xl p-4 space-y-3`}>
         <div className="flex items-center justify-between">
           <p className={`text-xs font-bold ${c.labelText}`}>{t('rcs_step_of', { n: step + 1, total })}</p>
-          <button onClick={() => setWalkthroughOpen(false)} className={`text-xs ${c.textMuted}`}>✕</button>
+          <button onClick={() => setWalkthroughOpen(false)} className={`text-[13px] ${c.textMuted}`}>✕</button>
         </div>
         <p className={`text-base ${c.text}`}>{f.instructions[step]}</p>
         {walkthroughShowWhy && f.why_this_works && (
@@ -897,9 +893,9 @@ const RecipeChaosSolver = ({ tool }) => {
     <div className="space-y-4">
       {!subResults && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_sub_q_missing')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_sub_q_missing')} <span className={c.required}>*</span></label>
               <div className="space-y-2">
                 {subIngredients.map((val, i) => (
                   <div key={i} className="flex gap-2">
@@ -914,12 +910,12 @@ const RecipeChaosSolver = ({ tool }) => {
               <button onClick={addSubSlot} className={`mt-2 text-xs font-semibold ${c.accentTxt}`}>+ {t('rcs_add_another')}</button>
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_making')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_making')} <span className={c.required}>*</span></label>
               <input value={subContext} onChange={e => setSubContext(e.target.value)} placeholder={t('rcs_ph_dish')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <input value={subDiet} onChange={e => setSubDiet(e.target.value)} placeholder={t('rcs_ph_dietary')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
@@ -934,22 +930,22 @@ const RecipeChaosSolver = ({ tool }) => {
       )}
       {subResults && (
         <div className="space-y-3">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm ${c.text} font-semibold mb-1`}>{subResults.strategy}</p>
             {subResults.combined_impact && <p className={`text-xs ${c.textSecondary}`}>{subResults.combined_impact}</p>}
           </div>
           {subResults.swaps?.map((s, i) => (
-            <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div key={i} className={`border-t ${c.border} pt-5`}>
               <div className="flex items-start justify-between gap-2 mb-1.5">
                 <p className={`text-sm font-bold ${c.text}`}>{s.missing} → {s.substitute}</p>
                 {FIT_META[s.fit] && (
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold flex-shrink-0 ${toneClass(c, FIT_META[s.fit].tone)}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full border font-bold flex-shrink-0 ${toneClass(c, FIT_META[s.fit].tone)}`}>
                     {t(FIT_META[s.fit].key)}
                   </span>
                 )}
               </div>
               <p className={`text-xs ${c.textSecondary}`}>{s.why}</p>
-              {s.interaction_note && <p className={`text-xs ${c.textMuted} mt-1.5 italic`}>{s.interaction_note}</p>}
+              {s.interaction_note && <p className={`text-[13px] ${c.textMuted} mt-1.5 italic`}>{s.interaction_note}</p>}
             </div>
           ))}
           {subResults.difference_from_original && (
@@ -967,20 +963,20 @@ const RecipeChaosSolver = ({ tool }) => {
     <div className="space-y-4">
       {!scaleResults && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_scale_q_recipe')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_q_recipe')} <span className={c.required}>*</span></label>
               <textarea value={scaleRecipe} onChange={e => setScaleRecipe(e.target.value)} rows={5} placeholder={t('rcs_ph_recipe_paste')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_scale_original')}</label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_original')}</label>
                 <input type="number" min="1" value={scaleOriginal} onChange={e => setScaleOriginal(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_scale_target')} <span className={c.required}>*</span></label>
+                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_target')} <span className={c.required}>*</span></label>
                 <input type="number" min="1" value={scaleTarget} onChange={e => setScaleTarget(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
@@ -996,12 +992,12 @@ const RecipeChaosSolver = ({ tool }) => {
       )}
       {scaleResults && (
         <div className="space-y-3">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 text-center`}>
+          <div className={`border-t ${c.border} pt-5 text-center`}>
             <p className={`text-sm ${c.textSecondary}`}>{t('rcs_servings_arrow', { from: scaleResults.original_servings, to: scaleResults.target_servings })}</p>
             <p className={`text-2xl font-black ${c.accentTxt}`}>{scaleResults.scale_factor}×</p>
           </div>
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[11px] font-bold ${c.labelText} mb-2`}>{t('rcs_ingredients')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.labelText} mb-2`}>{t('rcs_ingredients')}</p>
             <div className="space-y-1.5">
               {scaleResults.scaled_ingredients?.map((ing, i) => (
                 <div key={i} className="text-xs">
@@ -1037,19 +1033,19 @@ const RecipeChaosSolver = ({ tool }) => {
     <div className="space-y-4">
       {!pfResults && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_recipe')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_recipe')} <span className={c.required}>*</span></label>
               <textarea value={pfRecipe} onChange={e => setPfRecipe(e.target.value)} rows={5} placeholder={t('rcs_ph_recipe_paste')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <textarea value={pfIngredients} onChange={e => setPfIngredients(e.target.value)} rows={2} placeholder={t('rcs_ph_have')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_equipment')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_equipment')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <input value={pfEquipment} onChange={e => setPfEquipment(e.target.value)} placeholder={t('rcs_ph_equipment')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
@@ -1072,8 +1068,8 @@ const RecipeChaosSolver = ({ tool }) => {
             <div className={`${c.warningBox} border rounded-lg p-3 text-sm font-semibold`}>❓ {pfResults.one_important_question}</div>
           )}
           {pfResults.ingredient_check?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[11px] font-bold ${c.labelText} mb-2`}>{t('rcs_ingredients')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.labelText} mb-2`}>{t('rcs_ingredients')}</p>
               <div className="space-y-1.5">
                 {pfResults.ingredient_check.map((ing, i) => (
                   <div key={i} className="flex items-center justify-between text-xs">
@@ -1085,8 +1081,8 @@ const RecipeChaosSolver = ({ tool }) => {
             </div>
           )}
           {pfResults.equipment_check?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-[11px] font-bold ${c.labelText} mb-2`}>{t('rcs_pf_equipment')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.labelText} mb-2`}>{t('rcs_pf_equipment')}</p>
               <div className="space-y-1.5">
                 {pfResults.equipment_check.map((eq, i) => (
                   <div key={i} className="flex items-center justify-between text-xs">
@@ -1112,24 +1108,24 @@ const RecipeChaosSolver = ({ tool }) => {
     <div className="space-y-4">
       {!ffResults && (
         <div className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_dish')} <span className={c.required}>*</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_dish')} <span className={c.required}>*</span></label>
               <input value={ffDish} onChange={e => setFfDish(e.target.value)} placeholder={t('rcs_ph_dish')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_wrong')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_wrong')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <textarea value={ffWrong} onChange={e => setFfWrong(e.target.value)} rows={2} placeholder={t('rcs_ff_ph_wrong')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <input value={ffIngredients} onChange={e => setFfIngredients(e.target.value)} placeholder={t('rcs_ph_have')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
               <input value={ffDiet} onChange={e => setFfDiet(e.target.value)} placeholder={t('rcs_ph_dietary')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
@@ -1143,7 +1139,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
       )}
       {ffResults?.needs_more_detail && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+        <div className={`border-t ${c.border} pt-5 space-y-3`}>
           <label className={`text-sm font-semibold ${c.text} block`}>❓ {ffResults.clarifying_question} <span className={c.required}>*</span></label>
           <input value={ffClarifyAnswer} onChange={e => setFfClarifyAnswer(e.target.value)} placeholder={t('rcs_ff_ph_answer')}
             className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
@@ -1155,7 +1151,7 @@ const RecipeChaosSolver = ({ tool }) => {
       )}
       {ffResults && !ffResults.needs_more_detail && ffResults.diagnosis && (
         <div className="space-y-3">
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm ${c.text}`}>{ffResults.diagnosis}</p>
           </div>
           {ffResults.fixes?.map((fx, i) => (
@@ -1183,7 +1179,7 @@ const RecipeChaosSolver = ({ tool }) => {
         <div className="flex flex-wrap gap-1.5">
           {['all', 'rescue', 'substitute', 'scale', 'preflight', 'flavor'].map(f => (
             <button key={f} onClick={() => setRecentFilter(f)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${recentFilter === f ? c.pillActive : `${c.pillInactive} border-transparent`}`}>
+              className={`px-2.5 py-1 rounded-lg text-[13px] font-semibold border ${recentFilter === f ? c.pillActive : `${c.pillInactive} border-transparent`}`}>
               {f === 'all' ? t('rcs_recent_all') : t(`rcs_nav_${f === 'substitute' ? 'substitute' : f}`)}
             </button>
           ))}
@@ -1193,11 +1189,11 @@ const RecipeChaosSolver = ({ tool }) => {
           <div key={entry.id} className={`${c.card} border ${c.border} rounded-xl p-3.5 flex items-center justify-between gap-3`}>
             <div className="min-w-0">
               <p className={`text-sm font-semibold ${c.text} truncate`}>{MODE_ICON[entry.mode]} {entry.title}</p>
-              <p className={`text-[10px] ${c.textMuted}`}>{new Date(entry.date).toLocaleDateString()}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{new Date(entry.date).toLocaleDateString()}</p>
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
-              <button onClick={() => viewFromRecentLog(entry)} className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-bold`}>{t('rcs_view')}</button>
-              <button onClick={() => restoreFromRecent(entry)} className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-bold`}>{t('rcs_use_again')}</button>
+              <button onClick={() => viewFromRecentLog(entry)} className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[13px] font-bold`}>{t('rcs_view')}</button>
+              <button onClick={() => restoreFromRecent(entry)} className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[13px] font-bold`}>{t('rcs_use_again')}</button>
             </div>
           </div>
         ))}
@@ -1210,13 +1206,21 @@ const RecipeChaosSolver = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             <div>
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🍳'}</span>{tool?.tagline ?? t('rcs_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1228,6 +1232,7 @@ const RecipeChaosSolver = ({ tool }) => {
                 {t('rcs_start_over')}
               </button>
             ) : null}
+          </div>
           </div>
         </div>
         <div className="px-5 py-3">
@@ -1252,12 +1257,12 @@ const RecipeChaosSolver = ({ tool }) => {
       </div>
 
       {!results && (
-        <p className={`text-xs ${c.textMuted} text-center pt-1`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-1`}>
           {t('rcs_xref_pre')} <a href="/MiseEnPlace" className={linkStyle}>{t('rcs_xref_link')}</a>
         </p>
       )}
       {results && (
-        <p className={`text-xs ${c.textMuted} text-center pt-1`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-1`}>
           {t('rcs_xref_post')} <a href="/MiseEnPlace" className={linkStyle}>{t('rcs_xref_link')}</a>
         </p>
       )}

@@ -338,7 +338,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
     btnLime: isDark ? 'bg-lime-600 hover:bg-lime-500 text-white' : 'bg-lime-600 hover:bg-lime-700 text-white',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     sec: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     on: isDark ? 'bg-lime-600 text-white' : 'bg-lime-600 text-white',
@@ -351,7 +351,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     accBox: isDark ? 'bg-lime-900/20 border-lime-700' : 'bg-lime-50 border-lime-200',
     accTxt: isDark ? 'text-lime-300' : 'text-lime-700',
-    cyanBox: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    cyanBox: isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     errBox: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     sld: isDark ? 'accent-lime-400' : 'accent-lime-600',
@@ -361,9 +361,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Input state ───
   const [mode, setMode] = useState('right-now');
@@ -799,12 +797,20 @@ const LazyWorkoutAdapter = ({ tool }) => {
   return (
     <div ref={stageRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
       {/* ─── Persistent header card ─── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🧘'}</span>{t('lwa_tagline')}
               </p>
               {MODE_EXAMPLES[mode] && (
@@ -816,6 +822,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 ↻ {t('lwa_start_over')}
               </button>
             )}
+          </div>
           </div>
         </div>
         <div className="px-5 py-4 space-y-3">
@@ -848,7 +855,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
           </div>
 
           {/* Pre-result cross-ref */}
-          <p className={`text-xs ${c.textMuted}`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
             {t('lwa_xref_low_energy')} <a href="/PEP" className={linkStyle}>✨ {t('lwa_pep')}</a> {t('lwa_xref_pep_help')}
           </p>
         </div>
@@ -1393,8 +1400,8 @@ const LazyWorkoutAdapter = ({ tool }) => {
 
       {/* Post-result cross-refs */}
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('lwa_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('lwa_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/BeforeTheCrash" className={`text-xs ${linkStyle}`}>⚡ {t('lwa_crash_predictor')}</a>
             <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ {t('lwa_pep')}</a>

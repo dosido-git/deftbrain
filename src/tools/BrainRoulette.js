@@ -106,13 +106,13 @@ const HowSolid = ({ data, verified, c, t }) => {
   if (!verified && !data?.note) return null;
   return (
     <div className="mt-3">
-      <button type="button" onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1.5 text-xs ${c.textMuted} hover:underline`}>
-        <Caret open={open} /> {t('bro_how_solid')}
+      <button data-print-heading aria-expanded={!!(open)} type="button" onClick={() => setOpen(!open)}
+        className={`inline-flex items-center gap-1.5 text-[13px] ${c.textMuted} hover:underline`}>
+        <span data-print-hide><Caret open={open} /></span> {t('bro_how_solid')}
         {verified?.status ? <span className={`font-semibold ${c.textSecondary}`}>· {t('bro_checked')}</span> : null}
       </button>
-      {open && (
-        <div className={`text-xs ${c.textSecondary} mt-1.5 leading-relaxed space-y-1.5`}>
+      {(
+        <div data-sec-body hidden={!(open)} className={`text-xs ${c.textSecondary} mt-1.5 leading-relaxed space-y-1.5`}>
           {verified ? (
             <>
               <p><span className="font-semibold">{verified.status}</span>{verified.gap ? ` — ${verified.gap}` : ''}</p>
@@ -142,10 +142,8 @@ const BrainRoulette = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-700',
     textMuted:     isDark ? 'text-zinc-400' : 'text-slate-500',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:ring-cyan-100',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     border:        isDark ? 'border-zinc-700' : 'border-slate-200',
     success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -153,7 +151,7 @@ const BrainRoulette = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-300' : 'bg-red-50 border-red-200 text-red-800',
     // ── Tool-specific ──
     textStrong:    isDark ? 'text-zinc-200' : 'text-slate-800',
-    textCyan:      isDark ? 'text-cyan-400' : 'text-cyan-600',
+    textCyan:      isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-slate-500 hover:text-slate-800',
     ghostHover:    isDark ? 'hover:bg-zinc-700/30' : 'hover:bg-slate-100',
     // ── Verdict colors (debate mode) ──
@@ -167,24 +165,23 @@ const BrainRoulette = ({ tool }) => {
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
-    pillActive:    isDark ? 'bg-cyan-900/40 text-cyan-300 ring-2 ring-cyan-500 shadow-sm' : 'bg-cyan-100 text-cyan-700 ring-2 ring-cyan-300 shadow-sm',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
+    pillActive:    isDark ? 'bg-[#1f2530] text-[#a9cdef] ring-2 ring-[#7fb3e0]/40 shadow-sm' : 'bg-[#eef3f8] text-[#142a43] ring-2 ring-[#142a43]/30 shadow-sm',
     pillInactive:  isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800',
-    pillCustom:    isDark ? 'bg-cyan-900/30 text-cyan-300 ring-2 ring-cyan-500 shadow-sm' : 'bg-cyan-100 text-cyan-700 ring-2 ring-cyan-300 shadow-sm',
-    depthActive:   isDark ? 'border-cyan-500 bg-cyan-900/20 shadow-sm' : 'border-cyan-300 bg-cyan-50 shadow-sm',
+    pillCustom:    isDark ? 'bg-[#1f2530] text-[#a9cdef] ring-2 ring-[#7fb3e0]/40 shadow-sm' : 'bg-[#eef3f8] text-[#142a43] ring-2 ring-[#142a43]/30 shadow-sm',
+    depthActive:   isDark ? 'border-[#7fb3e0] bg-[#1f2530] shadow-sm' : 'border-[#d4dde8] bg-[#eef3f8] shadow-sm',
     depthInactive: isDark ? 'border-zinc-700 hover:border-zinc-600 bg-zinc-800' : 'border-slate-100 hover:border-slate-200 bg-white',
     resultHeader:  isDark ? 'bg-gradient-to-r from-cyan-700 to-sky-600' : 'bg-gradient-to-r from-cyan-600 to-sky-500',
     resultBorder:  isDark ? 'border-zinc-700' : 'border-slate-100',
-    deeperCard:    isDark ? 'bg-zinc-800 border-zinc-600 hover:border-cyan-500' : 'bg-white border-slate-200 hover:border-cyan-300 hover:shadow-sm',
+    deeperCard:    isDark ? 'bg-zinc-800 border-zinc-600 hover:border-[#7fb3e0]' : 'bg-white border-slate-200 hover:border-[#d4dde8] hover:shadow-sm',
     savedCard:     isDark ? 'bg-zinc-700' : 'bg-slate-50',
-    savedPill:     isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-600',
+    savedPill:     isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#165b9a]',
     streak:        isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-800',
     limitBar:      isDark ? 'bg-zinc-700' : 'bg-slate-100',
-    limitFill:     isDark ? 'bg-cyan-500' : 'bg-cyan-400',
+    limitFill:     isDark ? 'bg-[#2f6fb0]' : 'bg-cyan-400',
     footerText:    isDark ? 'text-zinc-500' : 'text-slate-400',
-    chainBorder:   isDark ? 'border-s-cyan-500' : 'border-s-cyan-400',
-    tabActive:     isDark ? 'border-cyan-500 text-cyan-400' : 'border-cyan-500 text-cyan-600',
+    chainBorder:   isDark ? 'border-s-[#7fb3e0]' : 'border-s-[#142a43]',
+    tabActive:     isDark ? 'border-[#7fb3e0] text-[#7fb3e0]' : 'border-[#142a43] text-[#165b9a]',
     tabInactive:   isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-slate-400 hover:text-slate-600',
     historyRow:    isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-slate-50',
     statBox:       isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-slate-50 border-slate-200',
@@ -194,8 +191,8 @@ const BrainRoulette = ({ tool }) => {
     journeyActive: isDark ? 'bg-sky-700 text-sky-100 border-sky-600' : 'bg-sky-600 text-white border-sky-600',
     journeyDone:   isDark ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-700 border-emerald-300',
     journeyPending:isDark ? 'bg-zinc-700 text-zinc-400 border-zinc-600' : 'bg-slate-100 text-slate-400 border-slate-200',
-    digestCard:    isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-700 border-zinc-600' : 'bg-gradient-to-br from-white to-cyan-50 border-cyan-200',
-    conceptPill:   isDark ? 'bg-cyan-900/30 text-cyan-300 border-cyan-700 hover:bg-cyan-900/50' : 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100',
+    digestCard:    isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-700 border-zinc-600' : 'bg-gradient-to-br from-white to-cyan-50 border-[#d4dde8]',
+    conceptPill:   isDark ? 'bg-[#1f2530] text-[#a9cdef] border-[#2c3a4a] hover:bg-[#1f2530]' : 'bg-[#eef3f8] text-[#142a43] border-[#d4dde8] hover:bg-[#234568]',
     flashcardFront:isDark ? 'bg-gradient-to-br from-cyan-800 to-sky-800' : 'bg-gradient-to-br from-cyan-500 to-sky-500',
     flashcardBack: isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-slate-200',
     flashcardForgot: isDark ? 'bg-red-900/20 text-red-300 border-red-700' : 'bg-red-50 text-red-600 border-red-200',
@@ -203,9 +200,9 @@ const BrainRoulette = ({ tool }) => {
     // ── Named keys for formerly-inline isDark ternaries ──
     debateWhyBg:     isDark ? 'bg-zinc-700/50' : 'bg-white/50',
     threadPanelBg:   isDark ? 'bg-zinc-800/50 border-zinc-700' : 'bg-slate-50 border-slate-100',
-    conceptsBg:      isDark ? 'bg-cyan-900/10 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
+    conceptsBg:      isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     savedItemHover:  isDark ? 'hover:bg-zinc-600/50' : 'hover:bg-slate-100',
-    savedBtnActive:  isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
+    savedBtnActive:  isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     savedBtnInactive:isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-slate-50 text-slate-500 hover:bg-slate-100',
     savedInner:      isDark ? 'bg-zinc-800' : 'bg-white',
     // ── SVG/inline-style raw hex values ──
@@ -221,9 +218,7 @@ const BrainRoulette = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'font-semibold underline text-cyan-400 hover:text-cyan-300'
-    : 'font-semibold underline text-cyan-600 hover:text-cyan-700';
+  const linkStyle = isDark ? 'font-semibold underline text-[#7fb3e0] hover:text-[#a9cdef]' : 'font-semibold underline text-[#165b9a] hover:text-[#142a43]';
 
   // Resolve verdict colorKey → c value with explicit refs
   // (S1.1k can't trace c[colorKey] indirection; explicit chain also catches typos.)
@@ -710,8 +705,8 @@ const BrainRoulette = ({ tool }) => {
   const renderDebateTab = () => (
     <div>
       <div className={`mb-5 p-5 rounded-2xl border ${c.debateClaim}`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('bro_debate_title')}</h3>
-        <p className={`text-xs ${c.textMuted} mb-4`}>{t('bro_debate_intro')}</p>
+        <h3 className={`text-base font-bold ${c.text} mb-2`}>{t('bro_debate_title')}</h3>
+        <p className={`text-[13px] ${c.textMuted} mb-4`}>{t('bro_debate_intro')}</p>
         {!debateResult && (
           <button onClick={handleDebate} disabled={loading || !canSpin}
             className={`disabled:opacity-40 px-6 py-3 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
@@ -724,7 +719,7 @@ const BrainRoulette = ({ tool }) => {
         <div className="space-y-4">
           {/* The Claim */}
           <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('bro_debate_the_claim')}</p>
+            <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('bro_debate_the_claim')}</p>
             <p className={`text-base font-semibold leading-relaxed ${c.text}`}>{debateResult.claim}</p>
             {!debateRevealed && (
               <div className="mt-4">
@@ -749,7 +744,7 @@ const BrainRoulette = ({ tool }) => {
                     <p className={`text-sm font-bold ${verdictClass(debateResult.verdict)}`}>
                       {VERDICT_LABELS[debateResult.verdict]?.labelKey ? t(VERDICT_LABELS[debateResult.verdict].labelKey) : debateResult.verdict}
                     </p>
-                    <p className={`text-xs ${c.textMuted}`}>{debateGuess === 'true' && debateResult.verdict === 'mostly_false' ? t('bro_debate_gotcha') : debateGuess === 'false' && debateResult.verdict !== 'mostly_false' ? t('bro_debate_close_nuanced') : t('bro_debate_good_instinct')}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{debateGuess === 'true' && debateResult.verdict === 'mostly_false' ? t('bro_debate_gotcha') : debateGuess === 'false' && debateResult.verdict !== 'mostly_false' ? t('bro_debate_close_nuanced') : t('bro_debate_good_instinct')}</p>
                   </div>
                 </div>
                 <h4 className={`text-lg font-bold ${c.text} mb-2`}>{debateResult.reveal_title}</h4>
@@ -781,8 +776,8 @@ const BrainRoulette = ({ tool }) => {
     <div>
       {!journey ? (
         <div className={`p-5 rounded-2xl border ${c.journeyStep}`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('bro_journey_title')}</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>{t('bro_journey_intro')}</p>
+          <h3 className={`text-base font-bold ${c.text} mb-2`}>{t('bro_journey_title')}</h3>
+          <p className={`text-[13px] ${c.textMuted} mb-4`}>{t('bro_journey_intro')}</p>
           <input type="text" value={journeyTheme} onChange={e => setJourneyTheme(e.target.value)}
             placeholder={t('bro_journey_theme_ph')}
             onKeyDown={e => { if (e.key === 'Enter') handleStartJourney(); }}
@@ -799,7 +794,7 @@ const BrainRoulette = ({ tool }) => {
             <h3 className={`text-lg font-bold ${c.text}`}>{journey.title}</h3>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{journey.description}</p>
             <div className="flex gap-2 mt-3">
-              <span className={`text-xs ${c.textMuted}`}>{t('bro_journey_steps_count', { done: journeySteps.length, total: journey.steps.length })}</span>
+              <span className={`text-[13px] ${c.textMuted}`}>{t('bro_journey_steps_count', { done: journeySteps.length, total: journey.steps.length })}</span>
               <button onClick={() => { setJourney(null); setJourneySteps([]); setJourneyCurrentStep(0); }}
                 className={`text-xs font-semibold ${c.btnGhost}`}>{t('bro_journey_exit')}</button>
             </div>
@@ -899,14 +894,14 @@ const BrainRoulette = ({ tool }) => {
               <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
                 <div className="flex items-center gap-2 mb-2">
                   <span>{topic.emoji || ['📅','🔀','🃏'][i]}</span>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted}`}>
+                  <span className={`text-[13px] font-boldr ${c.textMuted}`}>
                     {topic.type === 'today' ? t('bro_digest_type_today') : topic.type === 'mashup' ? t('bro_digest_type_mashup') : t('bro_digest_type_wildcard')}
                   </span>
                 </div>
                 <h4 className={`text-sm font-bold ${c.text} mb-1`}>{topic.title}</h4>
                 <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{topic.content}</p>
                 {topic.interest_connections?.length > 0 && (
-                  <div className="flex gap-1 mt-2">{topic.interest_connections.map((ic, j) => <span key={j} className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>
+                  <div className="flex gap-1 mt-2">{topic.interest_connections.map((ic, j) => <span key={j} className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>
                 )}
                 <div className="flex gap-2 mt-3">
                   <button onClick={() => { setCustomTopic(topic.title); setActiveTab('spin'); }}
@@ -940,11 +935,11 @@ const BrainRoulette = ({ tool }) => {
           <div className={`rounded-2xl overflow-hidden mb-3 border-s-4 ${c.chainBorder} border ${c.border} ${c.card}`}>
             {deeperResults._clickedLabel && (
               <div className={`px-6 pt-4 pb-2`}>
-                <p className={`text-xs ${c.textMuted}`}>{t('bro_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{deeperResults._clickedLabel}</span></p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('bro_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{deeperResults._clickedLabel}</span></p>
               </div>
             )}
             <div className="px-6 py-5">
-              <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('bro_depth_n', { n: 1 })}</span>
+              <span className={`text-[15px] font-semibold ${c.labelText}`}>{t('bro_depth_n', { n: 1 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{deeperResults.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{deeperResults.content}</p>
               <HowSolid data={deeperResults.how_solid} verified={verifications[deeperResults.title]} c={c} t={t} />
@@ -956,11 +951,11 @@ const BrainRoulette = ({ tool }) => {
           <div key={idx} className={`rounded-2xl overflow-hidden mb-3 border-s-4 ${c.chainBorder} border ${c.border} ${c.card}`} style={{ marginInlineStart: Math.min(idx + 1, 3) * 8 }}>
             {cr._clickedLabel && (
               <div className={`px-6 pt-4 pb-2`}>
-                <p className={`text-xs ${c.textMuted}`}>{t('bro_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{cr._clickedLabel}</span></p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('bro_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{cr._clickedLabel}</span></p>
               </div>
             )}
             <div className="px-6 py-5">
-              <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('bro_depth_n', { n: idx + 2 })}</span>
+              <span className={`text-[15px] font-semibold ${c.labelText}`}>{t('bro_depth_n', { n: idx + 2 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{cr.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{cr.content}</p>
               <HowSolid data={cr.how_solid} verified={verifications[cr.title]} c={c} t={t} />
@@ -970,7 +965,7 @@ const BrainRoulette = ({ tool }) => {
         ))}
         {latestChainThreads?.length > 0 && (
           <div className={`rounded-xl p-4 mb-3 border ${c.threadPanelBg}`} style={{ marginInlineStart: Math.min(chainResults.length, 3) * 8 }}>
-            <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>🔗</span> {t('bro_keep_going')}</h3>
+            <h3 className={`text-base font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>🔗</span> {t('bro_keep_going')}</h3>
             <div className="space-y-2">
               {latestChainThreads.map((thread, i) => (
                 <button key={i} onClick={() => handleChainDeeper(thread)} disabled={!canSpin}
@@ -988,7 +983,7 @@ const BrainRoulette = ({ tool }) => {
             {t('bro_spin_from_this_find')}
           </button>
         )}
-        {conceptsLoading && <div className="flex items-center gap-2 mb-3 py-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('bro_extracting_concepts')}</span></div>}
+        {conceptsLoading && <div className="flex items-center gap-2 mb-3 py-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span><span className={`text-[13px] ${c.textMuted}`}>{t('bro_extracting_concepts')}</span></div>}
         {extractedConcepts?.length > 0 && (
           <div className={`rounded-xl p-4 mb-3 border ${c.conceptsBg}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('bro_spin_from_this')}</p>
@@ -997,7 +992,7 @@ const BrainRoulette = ({ tool }) => {
                 <button key={i} onClick={() => handleSpinFromConcept(con)}
                   className={`w-full text-start flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all ${c.deeperCard}`}>
                   <span className={c.textCyan}>🎲</span>
-                  <div><span className={`text-sm font-semibold ${c.text}`}>{con.label}</span><p className={`text-xs ${c.textMuted}`}>{con.angle}</p></div>
+                  <div><span className={`text-sm font-semibold ${c.text}`}>{con.label}</span><p className={`text-[13px] ${c.textMuted}`}>{con.angle}</p></div>
                 </button>
               ))}
             </div>
@@ -1028,19 +1023,19 @@ const BrainRoulette = ({ tool }) => {
               const isExp = expandedSavedIdx === idx;
               return (
                 <div key={item.topic_tag} className={`rounded-xl overflow-hidden ${c.savedCard} relative group`}>
-                  <button onClick={() => setExpandedSavedIdx(isExp ? null : idx)} className={`w-full text-start p-4 ${c.savedItemHover} transition-colors`}>
+                  <button data-print-heading aria-expanded={!!(isExp)} onClick={() => setExpandedSavedIdx(isExp ? null : idx)} className={`w-full text-start p-4 ${c.savedItemHover} transition-colors`}>
                     <div className="flex items-start gap-3">
-                      <Caret open={isExp} className="mt-0.5" />
+                      <span data-print-hide><Caret open={isExp} className="mt-0.5" /></span>
                       <div className="flex-1 pe-8">
                         <h4 className={`font-bold text-sm mb-1 ${c.textStrong}`}>{item.title}</h4>
-                        {!isExp && <p className={`text-xs leading-relaxed line-clamp-2 ${c.textMuted}`}>{item.hook}</p>}
-                        {item.interest_connections && <div className="flex gap-1.5 mt-2">{item.interest_connections.map((cn, i) => <span key={i} className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{cn}</span>)}</div>}
+                        {!isExp && <p data-print-hide className={`text-xs leading-relaxed line-clamp-2 ${c.textMuted}`}>{item.hook}</p>}
+                        {item.interest_connections && <div className="flex gap-1.5 mt-2">{item.interest_connections.map((cn, i) => <span key={i} className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{cn}</span>)}</div>}
                       </div>
                     </div>
                   </button>
                   <button onClick={e => { e.stopPropagation(); removeSavedItem(item.topic_tag); }} className={`absolute top-3 end-3 text-xs opacity-0 group-hover:opacity-100 ${c.btnGhost} ${c.deleteHover}`}>🗑️</button>
-                  {isExp && (
-                    <div className={`px-4 pb-4 border-t ${c.border}`}>
+                  {(
+                    <div data-sec-body hidden={!(isExp)} className={`px-4 pb-4 border-t ${c.border}`}>
                       <p className={`text-sm leading-relaxed whitespace-pre-line mt-3 ${c.textSecondary}`}>{item.hook}</p>
                       {item.deeperResults && <div className={`mt-3 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{item.deeperResults.title}</h5><p className={`text-xs ${c.textSecondary}`}>{item.deeperResults.content}</p>{item.deeperResults.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {item.deeperResults.mind_blown}</p>}</div>}
                       {item.chainResults?.map((cr, ci) => <div key={ci} className={`mt-2 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`} style={{ marginInlineStart: (ci+1)*4 }}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{cr.title}</h5><p className={`text-xs ${c.textSecondary}`}>{cr.content}</p></div>)}
@@ -1066,7 +1061,7 @@ const BrainRoulette = ({ tool }) => {
       {(savedItems.length > 0 || sessionHistory.length > 3) && (
         <div className={`p-5 rounded-2xl border ${c.border} mb-5 ${c.card}`}>
           <div className="flex items-center justify-between mb-3">
-            <div><h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>{t('bro_flashback_title')}</h4><p className={`text-xs ${c.textMuted}`}>{t('bro_flashback_subtitle')}</p></div>
+            <div><h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>{t('bro_flashback_title')}</h4><p className={`text-[13px] ${c.textMuted}`}>{t('bro_flashback_subtitle')}</p></div>
             {flashbackDueCount > 0 && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.streak}`}>{t('bro_flashback_due', { n: flashbackDueCount })}</span>}
           </div>
           {!flashbackCard ? (
@@ -1125,7 +1120,7 @@ const BrainRoulette = ({ tool }) => {
               })}
             </svg>
           </div>
-          <p className={`text-[10px] ${c.textMuted} text-center mt-2`}>{t('bro_graph_footer', { topics: graphData.nodes.length, connections: graphData.edges.length })}</p>
+          <p className={`text-[13px] ${c.textMuted} text-center mt-2`}>{t('bro_graph_footer', { topics: graphData.nodes.length, connections: graphData.edges.length })}</p>
         </div>
       )}
 
@@ -1133,7 +1128,7 @@ const BrainRoulette = ({ tool }) => {
       {historyStats && (
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[{ l: t('bro_stat_explored'), v: historyStats.total, i: '🎲' }, { l: t('bro_stat_active_days'), v: historyStats.uniqueDays, i: '📅' }, { l: t('bro_stat_saved'), v: historyStats.saved, i: '🔖' }].map(s => (
-            <div key={s.l} className={`p-3 rounded-xl border ${c.statBox} text-center`}><div className="text-lg mb-0.5">{s.i}</div><div className={`text-xl font-bold ${c.text}`}>{s.v}</div><div className={`text-[10px] ${c.textMuted}`}>{s.l}</div></div>
+            <div key={s.l} className={`p-3 rounded-xl border ${c.statBox} text-center`}><div className="text-lg mb-0.5">{s.i}</div><div className={`text-xl font-bold ${c.text}`}>{s.v}</div><div className={`text-[13px] ${c.textMuted}`}>{s.l}</div></div>
           ))}
         </div>
       )}
@@ -1146,7 +1141,7 @@ const BrainRoulette = ({ tool }) => {
             <div key={int} className="flex items-center gap-3 mb-2">
               <span className={`text-xs font-bold ${c.textMuted} w-4`}>{i + 1}</span>
               <div className={`flex-1 h-2 rounded-full overflow-hidden ${c.limitBar}`}><div className={`h-full rounded-full ${c.limitFill}`} style={{ width: `${(cnt / historyStats.topInterests[0][1]) * 100}%` }} /></div>
-              <span className={`text-xs font-semibold ${c.textStrong}`}>{int}</span><span className={`text-[10px] ${c.textMuted}`}>{cnt}</span>
+              <span className={`text-xs font-semibold ${c.textStrong}`}>{int}</span><span className={`text-[13px] ${c.textMuted}`}>{cnt}</span>
             </div>
           ))}
         </div>
@@ -1159,9 +1154,9 @@ const BrainRoulette = ({ tool }) => {
           <div className="divide-y" style={{ borderColor: c.divideColor }}>
             {sessionHistory.slice(0, 50).map((h, i) => (
               <div key={i} className={`px-4 py-3 ${c.historyRow}`}>
-                <div className="flex items-center justify-between"><h5 className={`text-sm font-semibold ${c.textStrong} flex-1 pe-3`}>{h.title}</h5><span className={`text-[10px] ${c.textMuted}`}>{new Date(h.spunAt).toLocaleDateString()}</span></div>
-                <p className={`text-xs ${c.textMuted} line-clamp-1 mt-0.5`}>{h.hook}</p>
-                {h.interest_connections?.length > 0 && <div className="flex gap-1 mt-1">{h.interest_connections.map((ic, j) => <span key={j} className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>}
+                <div className="flex items-center justify-between"><h5 className={`text-sm font-semibold ${c.textStrong} flex-1 pe-3`}>{h.title}</h5><span className={`text-[13px] ${c.textMuted}`}>{new Date(h.spunAt).toLocaleDateString()}</span></div>
+                <p className={`text-[13px] ${c.textMuted} line-clamp-1 mt-0.5`}>{h.hook}</p>
+                {h.interest_connections?.length > 0 && <div className="flex gap-1 mt-1">{h.interest_connections.map((ic, j) => <span key={j} className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>}
               </div>
             ))}
           </div>
@@ -1215,8 +1210,16 @@ const BrainRoulette = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="me-2 text-xl">{tool?.icon ?? '🎲'}</span>
@@ -1232,6 +1235,7 @@ const BrainRoulette = ({ tool }) => {
               </button>
             )}
           </div>
+        </div>
         </div>
         {/* Tabs — unified inside header card */}
         <div className="flex gap-0.5 pt-3 border-b overflow-x-auto" style={{ borderColor: c.divideColor }}>
@@ -1258,8 +1262,8 @@ const BrainRoulette = ({ tool }) => {
       {activeTab === 'spin' && (
         <>
           {/* Interests */}
-          <div className="mb-5">
-            <div className="mb-3"><h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('bro_your_interests')}</h3><p className={`text-xs ${c.textMuted}`}>{t('bro_pick_2plus')}</p></div>
+          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className="mb-5">
+            <div className="mb-3"><h3 className={`text-base font-bold ${c.text} mb-1`}>{t('bro_your_interests')}</h3><p className={`text-[13px] ${c.textMuted}`}>{t('bro_pick_2plus')}</p></div>
             <div className="flex flex-wrap gap-2 mb-3">
               {allInterests.map(int => {
                 const active = selectedInterests.includes(int.id);
@@ -1292,7 +1296,7 @@ const BrainRoulette = ({ tool }) => {
                 Choosing one now clears the other, which is what "or" has to
                 mean. */}
             <div className={`mb-4 p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-              <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2 flex-wrap`}>{t('bro_spin_on_topic')} <span className={`font-normal text-xs ${c.textMuted}`}>{t('bro_instead_interests')}</span></label>
+              <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2 flex-wrap`}>{t('bro_spin_on_topic')} <span className={`font-normal text-[13px] ${c.textMuted}`}>{t('bro_instead_interests')}</span></label>
               <input type="text" value={customTopic}
                 onChange={e => { setCustomTopic(e.target.value); if (e.target.value.trim() && selectedInterests.length) setSelectedInterests([]); }}
                 placeholder={t('bro_custom_topic_ph')}
@@ -1314,7 +1318,7 @@ const BrainRoulette = ({ tool }) => {
               {DEPTH_OPTIONS.map(opt => (
                 <button key={opt.id} onClick={() => setDepth(opt.id)}
                   className={`text-start p-3 rounded-xl border-2 transition-all ${depth === opt.id ? c.depthActive : c.depthInactive}`}>
-                  <div className="text-lg mb-0.5">{opt.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{t(opt.labelKey)}</div><div className={`text-[10px] mt-0.5 ${c.textMuted}`}>{t(opt.descKey)}</div>
+                  <div className="text-lg mb-0.5">{opt.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{t(opt.labelKey)}</div><div className={`text-xs mt-0.5 ${c.textMuted}`}>{t(opt.descKey)}</div>
                 </button>
               ))}
             </div>
@@ -1348,7 +1352,7 @@ const BrainRoulette = ({ tool }) => {
 
           {/* Pre-result cross-ref */}
           {!result && (
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
               {t('bro_xref_debate_pre')}{' '}
               <a href="/ArgueSmarter" className={linkStyle}>{t('bro_xref_debate_link')}</a>{' '}
               {t('bro_xref_debate_post')}
@@ -1360,7 +1364,7 @@ const BrainRoulette = ({ tool }) => {
             <div data-copy-results ref={resultsRef} className={`scroll-mt-24 rounded-2xl overflow-hidden mb-5 border ${c.border} ${c.card}`}>
               <div className={`px-6 py-4 ${c.resultHeader}`}>
                 <h2 className="text-xl font-bold text-white">{result.title}</h2>
-                {result.interest_connections?.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{result.interest_connections.map((cn, i) => <span key={i} className="text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full">{cn}</span>)}</div>}
+                {result.interest_connections?.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{result.interest_connections.map((cn, i) => <span key={i} className="text-[13px] font-boldr bg-white/20 text-white px-2 py-0.5 rounded-full">{cn}</span>)}</div>}
               </div>
               <div className="px-6 py-5">
                 <p className={`text-base leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{result.hook}</p>
@@ -1378,16 +1382,16 @@ const BrainRoulette = ({ tool }) => {
                   <span>🎲</span>{cooldownTick > 0 ? `${cooldownTick}s` : t('bro_spin_again')}
                 </button>
               </div>
-              <div className={`px-6 py-3 border-t ${c.border}`}>
+              <div data-print-hide className={`px-6 py-3 border-t ${c.border}`}>
                 <p className={`text-xs text-center ${c.textMuted}`}>{t('bro_ai_disclaimer')}</p>
-                <p className={`text-xs text-center mt-1 ${c.textMuted}`}>
+                <p data-print-hide className={`text-xs text-center mt-1 ${c.textMuted}`}>
                   {t('bro_xref_six_result_pre')} <a href="/SixDegreesOfMe" className={linkStyle}>{t('bro_xref_six_result_link')}</a> {t('bro_xref_six_result_post')}
                 </p>
               </div>
               {/* Go Deeper (initial) */}
               {result.deeper_threads?.length > 0 && !deeperResults && (
                 <div className={`px-6 py-4 border-t ${c.threadPanelBg}`}>
-                  <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>✨</span> {t('bro_go_deeper')}</h3>
+                  <h3 className={`text-base font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>✨</span> {t('bro_go_deeper')}</h3>
                   <div className="space-y-2">
                     {result.deeper_threads.map((thread, i) => (
                       <button key={i} onClick={() => handleGoDeeper(thread)} disabled={!canSpin}
@@ -1405,7 +1409,7 @@ const BrainRoulette = ({ tool }) => {
                     className={`flex items-center gap-2 text-xs font-semibold ${c.textCyan}`}>{t('bro_spin_from_this_extract')}</button>
                 </div>
               )}
-              {!deeperResults && conceptsLoading && <div className="px-6 py-3 flex items-center gap-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('bro_extracting')}</span></div>}
+              {!deeperResults && conceptsLoading && <div className="px-6 py-3 flex items-center gap-2"><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎲'}</span><span className={`text-[13px] ${c.textMuted}`}>{t('bro_extracting')}</span></div>}
               {!deeperResults && extractedConcepts?.length > 0 && (
                 <div className={`px-6 py-4 border-t ${c.border}`}>
                   <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('bro_spin_from_this')}</p>
@@ -1423,8 +1427,8 @@ const BrainRoulette = ({ tool }) => {
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.border} ${c.card}`}><span className="animate-spin inline-block text-2xl mb-3">{tool?.icon ?? '🎲'}</span><p className={`text-sm font-semibold ${c.textMuted}`}>{t('bro_digging_deeper')}</p></div>
           )}
 
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs ${c.textMuted} text-center`}>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
               {t('bro_xref_six_footer_pre')}{' '}
               <a href="/SixDegreesOfMe" className={linkStyle}>{t('bro_xref_six_footer_link')}</a>{' '}
               {t('bro_xref_six_footer_post')}

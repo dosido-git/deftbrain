@@ -258,8 +258,7 @@ const SafeWalk = ({ tool }) => {
     // SafeWalk extensions
     btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-zinc-500 hover:text-zinc-800',
     btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     tabActive:     isDark ? 'bg-emerald-500 text-zinc-900' : 'bg-zinc-800 text-white',
     tabInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700' : 'bg-white text-zinc-500 hover:text-zinc-700 border-zinc-200',
     dangerBg:      isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
@@ -273,9 +272,7 @@ const SafeWalk = ({ tool }) => {
     walkBtn:       isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-white' : 'bg-slate-700 hover:bg-slate-600 text-white',
   };
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // Returns true if value contains city+state abbreviation or 5-digit zip
   const isLocationComplete = (val) => {
@@ -882,7 +879,7 @@ const SafeWalk = ({ tool }) => {
             <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
               <span className="text-white">🔇</span>
             </div>
-            <span className="text-[10px] text-slate-500">{t('sw_mute')}</span>
+            <span className="text-xs text-slate-500">{t('sw_mute')}</span>
           </div>
           <button onClick={endFakeCall}
             className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30 active:scale-95">
@@ -892,7 +889,7 @@ const SafeWalk = ({ tool }) => {
             <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
               <span className="text-white">🔊</span>
             </div>
-            <span className="text-[10px] text-slate-500">{t('sw_speaker')}</span>
+            <span className="text-xs text-slate-500">{t('sw_speaker')}</span>
           </div>
         </div>
       </div>
@@ -973,7 +970,7 @@ const SafeWalk = ({ tool }) => {
   const renderSettings = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <h3 className={`text-sm font-bold ${c.text}`}>⚙️ {t('sw_emergency_contacts')}</h3>
+        <h3 className={`text-base font-bold ${c.text}`}>⚙️ {t('sw_emergency_contacts')}</h3>
         <button onClick={() => setShowSettings(false)} className={c.btnGhost}><span>✕</span></button>
       </div>
 
@@ -1001,7 +998,7 @@ const SafeWalk = ({ tool }) => {
               </button>
               <div className="flex-1 min-w-0">
                 <span className={`text-sm font-bold ${c.text} block truncate`}>{ct.name}</span>
-                <span className={`text-xs ${c.textMuted} truncate block`}>
+                <span className={`text-[13px] ${c.textMuted} truncate block`}>
                   {ct.relation}{ct.relation && ct.phone ? ' · ' : ''}{ct.phone}
                   {ct.isPrimary && <span className={`ms-1.5 ${c.accentTxt} font-bold`}>{t('sw_primary')}</span>}
                 </span>
@@ -1015,7 +1012,7 @@ const SafeWalk = ({ tool }) => {
       )}
 
       {contacts.length === 0 && (
-        <p className={`text-xs ${c.textMuted} text-center py-3`}>
+        <p className={`text-[13px] ${c.textMuted} text-center py-3`}>
           {t('sw_contacts_empty')}
         </p>
       )}
@@ -1030,12 +1027,12 @@ const SafeWalk = ({ tool }) => {
       const isOpen = expandedSections[key];
       return (
         <div className={`rounded-xl border ${c.border} ${c.card} overflow-hidden mb-3`}>
-          <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
+          <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
             <span>{icon}</span>
             <span className={`text-sm font-bold ${c.text} flex-1`}>{title}</span>
-            {<Caret open={isOpen} />}
+            {<span data-print-hide><Caret open={isOpen} /></span>}
           </button>
-          {isOpen && <div className="px-4 pb-4">{children}</div>}
+          {<div data-sec-body hidden={!(isOpen)} className="px-4 pb-4">{children}</div>}
         </div>
       );
     };
@@ -1058,7 +1055,7 @@ const SafeWalk = ({ tool }) => {
               {r.what_matters.unknowns_that_matter?.length > 0 && (
                 <div className={`mt-3 pt-3 border-t ${c.border} space-y-1`}>
                   <p className={`text-xs font-bold ${c.textMuted} uppercase`}>{t('sw_unknowns')}</p>
-                  {r.what_matters.unknowns_that_matter.map((u, i) => <p key={i} className={`text-xs ${c.textMuted}`}>{u}</p>)}
+                  {r.what_matters.unknowns_that_matter.map((u, i) => <p key={i} className={`text-[13px] ${c.textMuted}`}>{u}</p>)}
                 </div>
               )}
             </div>
@@ -1077,7 +1074,7 @@ const SafeWalk = ({ tool }) => {
                   </div>
                   <div className="flex-1">
                     <span className={`text-sm font-semibold ${checkedItems[i] ? `line-through ${c.textMuted}` : c.text}`}>{item.action}</span>
-                    <p className={`text-xs ${c.textMuted} mt-0.5`}>{item.why_here}</p>
+                    <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{item.why_here}</p>
                   </div>
                 </button>
               ))}
@@ -1088,7 +1085,7 @@ const SafeWalk = ({ tool }) => {
           {r.route_choice?.useful && r.route_choice.guidance && renderCollapsible('route', '🔀', t('sw_route_choice'), (
             <div className={`p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
               <p className={`text-sm ${c.text}`}>{r.route_choice.guidance}</p>
-              {r.route_choice.basis && <p className={`text-xs ${c.textMuted} mt-1`}>{r.route_choice.basis}</p>}
+              {r.route_choice.basis && <p className={`text-[13px] ${c.textMuted} mt-1`}>{r.route_choice.basis}</p>}
             </div>
           ))}
 
@@ -1107,7 +1104,7 @@ const SafeWalk = ({ tool }) => {
           {/* Check-In Plan */}
           {r.check_in_plan?.worth_considering && renderCollapsible('checkin', '📱', t('sw_checkin_plan'), (
             <div className="space-y-2">
-              {r.check_in_plan.reason && <p className={`text-xs ${c.textMuted}`}>{r.check_in_plan.reason}</p>}
+              {r.check_in_plan.reason && <p className={`text-[13px] ${c.textMuted}`}>{r.check_in_plan.reason}</p>}
               {r.check_in_plan.message && (
                 <div className={`p-3 rounded-lg border ${c.cardAlt} ${c.border} text-sm ${c.text}`}>
                   {r.check_in_plan.message}
@@ -1122,7 +1119,7 @@ const SafeWalk = ({ tool }) => {
               {r.verified_local_info.map((v, i) => (
                 <div key={i} className={`p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
                   <p className={`text-sm ${c.text}`}>{v.fact}</p>
-                  <p className={`text-xs ${c.textMuted} mt-1`}>
+                  <p className={`text-[13px] ${c.textMuted} mt-1`}>
                     {v.source_name}{v.source_date_or_status ? ` — ${v.source_date_or_status}` : ''}
                     {v.source_url && <> · <a href={v.source_url} target="_blank" rel="noopener noreferrer" className={linkStyle}>{t('sw_source_link')}</a></>}
                   </p>
@@ -1139,7 +1136,7 @@ const SafeWalk = ({ tool }) => {
           )}
 
           {/* Disclaimer */}
-          <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
+          <p className={`text-[13px] ${c.textMuted} text-center px-4`}>
             {t('sw_disclaimer')}
           </p>
 
@@ -1149,7 +1146,7 @@ const SafeWalk = ({ tool }) => {
             <span>🧭</span> {t('sw_ready_start')}
           </button>
 
-          <div className={`text-xs ${c.textMuted} text-center space-y-1 pt-1`}>
+          <div data-print-hide className={`text-[13px] ${c.textMuted} text-center space-y-1 pt-1`}>
             <p>{t('sw_unfamiliar')}{' '}
               <a href="/LayoverMaximizer" className={`text-xs ${linkStyle}`}>{t('sw_layover')}</a> {t('sw_layover_help')}
             </p>
@@ -1172,32 +1169,32 @@ const SafeWalk = ({ tool }) => {
       <div className="space-y-3 pt-1">
         <div className="flex gap-3">
           <div className="flex-1 min-w-0">
-            <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_from')} <span className={c.required}>*</span></span>
+            <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_from')} <span className={c.required}>*</span></span>
             <input type="text" value={fromLocation}
               onChange={e => setFromLocation(e.target.value)}
               onBlur={() => setFromTouched(true)}
               placeholder={t('sw_ph_from')}
               className={`w-full px-3 py-2.5 rounded-xl border text-base outline-none transition-colors
                 ${fromErr ? (isDark ? 'border-red-700 bg-red-900/20 text-zinc-100 placeholder-zinc-500' : 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400') : c.input}`} />
-            {fromErr && <p className="text-[11px] text-red-500 mt-1">{t('sw_err_location')}</p>}
+            {fromErr && <p className="text-[13px] text-red-500 mt-1">{t('sw_err_location')}</p>}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_to')} <span className={c.required}>*</span></span>
+            <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_to')} <span className={c.required}>*</span></span>
             <input type="text" value={toLocation}
               onChange={e => setToLocation(e.target.value)}
               onBlur={() => setToTouched(true)}
               placeholder={t('sw_ph_to')}
               className={`w-full px-3 py-2.5 rounded-xl border text-base outline-none transition-colors
                 ${toErr ? (isDark ? 'border-red-700 bg-red-900/20 text-zinc-100 placeholder-zinc-500' : 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400') : c.input}`} />
-            {toErr && <p className="text-[11px] text-red-500 mt-1">{t('sw_err_location')}</p>}
+            {toErr && <p className="text-[13px] text-red-500 mt-1">{t('sw_err_location')}</p>}
           </div>
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_when')}</span>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_when')}</span>
           <div className="flex flex-wrap gap-1.5">
             {TIME_OPTIONS.map(opt => (
-              <button key={opt.id} onClick={() => setTimeOfDay(timeOfDay === opt.id ? '' : opt.id)}
+              <button aria-pressed={timeOfDay === opt.id} key={opt.id} onClick={() => setTimeOfDay(timeOfDay === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${timeOfDay === opt.id ? c.pillActive : c.pillInactive}`}>
                 {t(opt.labelKey)}
@@ -1207,10 +1204,10 @@ const SafeWalk = ({ tool }) => {
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_how_long')}</span>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_how_long')}</span>
           <div className="flex flex-wrap gap-1.5">
             {DURATION_OPTIONS.map(opt => (
-              <button key={opt.id} onClick={() => setWalkDuration(walkDuration === opt.id ? '' : opt.id)}
+              <button aria-pressed={walkDuration === opt.id} key={opt.id} onClick={() => setWalkDuration(walkDuration === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${walkDuration === opt.id ? c.pillActive : c.pillInactive}`}>
                 {t(opt.labelKey)}
@@ -1220,15 +1217,15 @@ const SafeWalk = ({ tool }) => {
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_route_knowledge')} <span className={c.textMuted}>{t('sw_optional')}</span></span>
-          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('sw_route_knowledge_help')}</p>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_route_knowledge')} <span className={c.textMuted}>{t('sw_optional')}</span></span>
+          <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('sw_route_knowledge_help')}</p>
           <textarea value={routeKnowledge} onChange={e => setRouteKnowledge(e.target.value)}
             placeholder={t('sw_ph_route_knowledge')}
             rows={3} className={`w-full px-4 py-2.5 rounded-xl border text-base ${c.input} outline-none resize-none`} />
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_concerns')} <span className={c.textMuted}>{t('sw_optional')}</span></span>
+          <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_concerns')} <span className={c.textMuted}>{t('sw_optional')}</span></span>
           <textarea value={concerns} onChange={e => setConcerns(e.target.value)}
             placeholder={t('sw_ph_concerns')}
             rows={2} className={`w-full px-4 py-2.5 rounded-xl border text-base ${c.input} outline-none resize-none`} />
@@ -1248,7 +1245,7 @@ const SafeWalk = ({ tool }) => {
         )}
         </button>
 
-        <p className={`text-xs ${c.textMuted} text-center pt-1`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-1`}>
           {t('sw_feeling_anxious')}{' '}
           <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>{t('sw_nervecheck')}</a> {t('sw_nervecheck_help')}
         </p>
@@ -1270,7 +1267,7 @@ const SafeWalk = ({ tool }) => {
 
           {!walkTimer && !timerExpired ? (
             <>
-              <span className={`text-xs font-bold ${c.walkTextSec} uppercase tracking-wide mb-3 block`}>{t('sw_checkin_reminder')}</span>
+              <span className={`text-[13px] font-bold ${c.walkTextSec} mb-3 block`}>{t('sw_checkin_reminder')}</span>
               <div className="flex flex-wrap gap-2 mb-3">
                 {WALK_TIMER_PRESETS.map(p => (
                   <button key={p.min} onClick={() => { setSelectedTimerMin(p.min); setCustomTimerMin(''); }}
@@ -1365,7 +1362,7 @@ const SafeWalk = ({ tool }) => {
               <span className="text-emerald-400 text-2xl">📲</span>
               <span className="text-sm font-bold text-white">{t('sw_pretend_call')}</span>
             </button>
-            <span className={`text-[10px] ${c.walkTextSec} text-center`}>{t('sw_pretend_call_disclosure')}</span>
+            <span className={`text-xs ${c.walkTextSec} text-center`}>{t('sw_pretend_call_disclosure')}</span>
           </div>
 
           {/* Flashlight */}
@@ -1376,7 +1373,7 @@ const SafeWalk = ({ tool }) => {
             <span className="text-sm font-bold text-white">
               {flashlightOn ? (flashlightIsScreenOnly ? t('sw_screen_light_on') : t('sw_light_on')) : t('sw_flashlight')}
             </span>
-            <span className={`text-[10px] ${c.walkTextSec}`}>{flashlightOn ? t('sw_tap_to_off_short') : t('sw_illuminate')}</span>
+            <span className={`text-xs ${c.walkTextSec}`}>{flashlightOn ? t('sw_tap_to_off_short') : t('sw_illuminate')}</span>
           </button>
 
           {/* Location */}
@@ -1387,7 +1384,7 @@ const SafeWalk = ({ tool }) => {
             <span className="text-sm font-bold text-white">
               {pendingLocationMsg ? (canNativeShare ? t('sw_tap_to_share') : t('sw_tap_to_copy')) : (canNativeShare ? t('sw_share_location') : t('sw_copy_location_tile'))}
             </span>
-            <span className={`text-[10px] ${c.walkTextSec}`}>{locationMsg || t('sw_copy_to_text')}</span>
+            <span className={`text-xs ${c.walkTextSec}`}>{locationMsg || t('sw_copy_to_text')}</span>
           </button>
 
           {/* Emergency */}
@@ -1395,7 +1392,7 @@ const SafeWalk = ({ tool }) => {
             className="p-5 rounded-2xl border-2 border-red-500/50 bg-red-500/10 flex flex-col items-center gap-2 active:scale-95 transition-all">
             <span className="text-red-400 text-2xl">🚨</span>
             <span className="text-sm font-bold text-red-300">{t('sw_emergency_tools')}</span>
-            <span className="text-[10px] text-red-400/70">{t('sw_emergency_tile_sub')}</span>
+            <span className="text-xs text-red-400/70">{t('sw_emergency_tile_sub')}</span>
           </button>
         </div>
 
@@ -1429,16 +1426,24 @@ const SafeWalk = ({ tool }) => {
 
   return (
     <div className={c.text}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
+      <div>
 
         {/* ── Header — always first inside card ── */}
-        <div className="px-5 pt-2.5">
-        <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
+        <div>
+        {/* Header — site style (2026-09-27): a pale band of the tool's color
+            bleeding to the card edges, the ground the "Try an example" pill was
+            made for (PF-17c). Screen only. */}
+        <div
+          data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div className="flex items-start justify-between">
           <div>
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2 text-xl">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'Safe Walk'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sw_tagline')}</p>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+              <span className="me-2 text-xl">{tool?.icon ?? '🚶'}</span>{tool?.tagline ?? t('sw_tagline')}
+            </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ms-3">
@@ -1452,6 +1457,7 @@ const SafeWalk = ({ tool }) => {
               <span>⚙️</span>
             </button>
           </div>
+        </div>
         </div>
         </div>
 
@@ -1494,7 +1500,7 @@ const SafeWalk = ({ tool }) => {
       )}
 
       {results && (
-        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>
           {t('sw_driving_instead')} <a href="/DriveHome" className={linkStyle}>{t('sw_drivehome')}</a> {t('sw_drivehome_road')}
         </p>
       )}
@@ -1502,12 +1508,12 @@ const SafeWalk = ({ tool }) => {
       {/* ── Recent Routes — demoted to a small utility row ── */}
       {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-3 mt-4`}>
-          <button onClick={() => setShowRecent(v => !v)} className="w-full flex items-center justify-between">
+          <button data-print-heading aria-expanded={!!(showRecent)} onClick={() => setShowRecent(v => !v)} className="w-full flex items-center justify-between">
             <span className={`text-xs font-bold ${c.text}`}>🕐 {t('sw_recent_routes_count', { count: sessionHistory.length })}</span>
-            <Caret open={showRecent} />
+            <span data-print-hide><Caret open={showRecent} /></span>
           </button>
-          {showRecent && (
-            <div className="space-y-1.5 mt-3">
+          {(
+            <div data-sec-body hidden={!(showRecent)} className="space-y-1.5 mt-3">
               {sessionHistory.map(entry => (
                 <div key={entry.id} className={`px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                   <span className={`${c.textMuted} flex-shrink-0`}>

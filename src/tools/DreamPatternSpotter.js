@@ -351,7 +351,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className="max-w-4xl mx-auto space-y-4">
+      <div className="space-y-4">
 
         {/* Header */}
         <div>

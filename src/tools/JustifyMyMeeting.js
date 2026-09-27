@@ -94,22 +94,19 @@ const JustifyMyMeeting = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -119,8 +116,7 @@ const JustifyMyMeeting = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'bg-cyan-600 border-cyan-500 text-white'
-                          : 'bg-cyan-600 border-cyan-600 text-white',
+    pillActive:    isDark ? 'bg-[#2f6fb0] border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500'
                           : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -131,9 +127,7 @@ const JustifyMyMeeting = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── State ──
   const [view, setView] = useState('judge');
@@ -462,19 +456,19 @@ const JustifyMyMeeting = ({ tool }) => {
     if (!cells.length) {
       return (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs ${c.textMuted}`}>{t('mbd_tf_none')}</p>
+          <p className={`text-[13px] ${c.textMuted}`}>{t('mbd_tf_none')}</p>
         </div>
       );
     }
     return (
-      <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('mbd_tf_title')}</h3>
-        <p className={`text-[11px] ${c.textMuted} mb-3`}>{t('mbd_tf_sub')}</p>
+      <div className={`border-t ${c.border} pt-5`}>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('mbd_tf_title')}</h3>
+        <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('mbd_tf_sub')}</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {cells.map((item, i) => (
             <div key={i} className={`${item.highlight ? c.cardAlt : c.quoteBg} rounded-lg p-3 text-center border ${c.border}`}>
               <p className={`text-lg font-black ${c.text}`}>{item.value}</p>
-              <p className={`text-[9px] ${c.textMuted}`}>{item.label}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{item.label}</p>
             </div>
           ))}
         </div>
@@ -580,7 +574,7 @@ const JustifyMyMeeting = ({ tool }) => {
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
         {NAV_TABS.map(tab => (
-          <button key={tab.key} onClick={() => setView(tab.key)} title={t(tab.descKey)}
+          <button aria-pressed={view === tab.key} key={tab.key} onClick={() => setView(tab.key)} title={t(tab.descKey)}
             className={`px-3 py-2 rounded-lg text-xs font-bold border transition min-h-[40px] ${
               view === tab.key ? c.pillActive : c.pillInactive
             }`}>
@@ -588,7 +582,7 @@ const JustifyMyMeeting = ({ tool }) => {
           </button>
         ))}
       </div>
-      {activeTab && <p className={`text-xs ${c.textMuted}`}>{t(activeTab.descKey)}</p>}
+      {activeTab && <p className={`text-[13px] ${c.textMuted}`}>{t(activeTab.descKey)}</p>}
     </div>
   );
 
@@ -616,7 +610,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
   const renderJudge = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_j_intro')}</p>
 
         <div className="mb-4">
@@ -668,7 +662,7 @@ const JustifyMyMeeting = ({ tool }) => {
           )}
 
           {judgeResults.why_this_verdict?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1.5`}>🧭 {t('mbd_j_why')}</p>
               {judgeResults.why_this_verdict.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {x}</p>)}
             </div>
@@ -691,14 +685,14 @@ const JustifyMyMeeting = ({ tool }) => {
           {renderFootprint(judgeResults.time_footprint)}
 
           {judgeResults.better_format?.how && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1`}>🔀 {t('mbd_j_better')}</p>
               {judgeResults.better_format.recommendation && FORMAT_LABELS[judgeResults.better_format.recommendation] && (
-                <p className={`text-[11px] font-bold ${c.accentTxt} mb-1.5`}>{t(FORMAT_LABELS[judgeResults.better_format.recommendation])}</p>
+                <p className={`text-[13px] font-bold ${c.accentTxt} mb-1.5`}>{t(FORMAT_LABELS[judgeResults.better_format.recommendation])}</p>
               )}
               <p className={`text-xs ${c.textSecondary}`}>{judgeResults.better_format.how}</p>
               {judgeResults.better_format.assumptions && (
-                <p className={`text-[11px] ${c.textMuted} mt-2`}>{t('mbd_j_assumes')} {judgeResults.better_format.assumptions}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-2`}>{t('mbd_j_assumes')} {judgeResults.better_format.assumptions}</p>
               )}
             </div>
           )}
@@ -718,7 +712,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
           {/* The follow-up the verdict earns — offered, never assumed. */}
           {showAgendaOffer && !agendaResults && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1`}>🔧 {t('mbd_agenda_offer_title')}</p>
               <p className={`text-xs ${c.textSecondary} mb-3`}>{t('mbd_agenda_offer_sub')}</p>
               <button onClick={runAgenda} disabled={loading}
@@ -729,7 +723,7 @@ const JustifyMyMeeting = ({ tool }) => {
           )}
 
           {showMessageOffer && !messageResults && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1`}>✉️ {t('mbd_msg_offer_title')}</p>
               <p className={`text-xs ${c.textSecondary} mb-3`}>{t('mbd_msg_offer_sub')}</p>
               <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_msg_relationship_label')}</label>
@@ -748,49 +742,49 @@ const JustifyMyMeeting = ({ tool }) => {
           {(agendaResults || messageResults) && (
             <div className="scroll-mt-24 space-y-4" ref={followUpRef}>
               {agendaResults && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+                <div className={`border-t ${c.border} pt-5 space-y-3`}>
                   <p className={`text-sm font-bold ${c.text}`}>🔧 {t('mbd_agenda_title')}</p>
 
                   {agendaResults.why_are_we_meeting && (
                     <div>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_why')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_why')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{agendaResults.why_are_we_meeting}</p>
                     </div>
                   )}
                   {agendaResults.what_must_be_true_when_we_leave?.length > 0 && (
                     <div>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_leave')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_leave')}</p>
                       {agendaResults.what_must_be_true_when_we_leave.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {x}</p>)}
                     </div>
                   )}
                   {agendaResults.who_needs_to_participate?.length > 0 && (
                     <div>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_who')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_who')}</p>
                       {agendaResults.who_needs_to_participate.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {x}</p>)}
                     </div>
                   )}
                   {agendaResults.before_the_meeting?.length > 0 && (
                     <div>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_before')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_before')}</p>
                       {agendaResults.before_the_meeting.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {x}</p>)}
                     </div>
                   )}
                   {agendaResults.live_agenda?.length > 0 && (
                     <div>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_live')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_live')}</p>
                       {agendaResults.live_agenda.map((x, i) => (
                         <div key={i} className={`${c.quoteBg} border ${c.border} rounded-lg p-2.5 mb-1.5`}>
                           <p className={`text-xs font-bold ${c.text}`}>
                             {x.item}{x.minutes ? <span className={`ms-2 font-normal ${c.textMuted}`}>{t('mbd_unit_minutes', { n: x.minutes })}</span> : null}
                           </p>
-                          {x.why_live && <p className={`text-[11px] ${c.textMuted} mt-0.5`}>{x.why_live}</p>}
+                          {x.why_live && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{x.why_live}</p>}
                         </div>
                       ))}
                     </div>
                   )}
                   {agendaResults.end_with && (
                     <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_end')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_ag_end')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{agendaResults.end_with}</p>
                     </div>
                   )}
@@ -798,7 +792,7 @@ const JustifyMyMeeting = ({ tool }) => {
               )}
 
               {messageResults && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+                <div className={`border-t ${c.border} pt-5 space-y-3`}>
                   <p className={`text-sm font-bold ${c.text}`}>✉️ {t('mbd_msg_title')}</p>
                   {messageResults.message && (
                     <div className={`${c.quoteBg} border ${c.border} rounded-lg p-3`}>
@@ -806,17 +800,17 @@ const JustifyMyMeeting = ({ tool }) => {
                     </div>
                   )}
                   {messageResults.why_it_lands && (
-                    <p className={`text-xs ${c.textMuted}`}>{t('mbd_msg_why')} {messageResults.why_it_lands}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{t('mbd_msg_why')} {messageResults.why_it_lands}</p>
                   )}
                   {messageResults.if_they_say_no && (
                     <div>
-                      <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_msg_if_no')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_msg_if_no')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{messageResults.if_they_say_no}</p>
                     </div>
                   )}
                   {messageResults.do_not_send && (
                     <div className={`${c.warning} border rounded-lg p-3`}>
-                      <p className="text-[11px] font-bold uppercase mb-1">{t('mbd_msg_do_not_send')}</p>
+                      <p className="text-[13px] font-bold uppercase mb-1">{t('mbd_msg_do_not_send')}</p>
                       <p className="text-xs">{messageResults.do_not_send}</p>
                     </div>
                   )}
@@ -834,7 +828,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderZombie = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_z_intro')}</p>
 
         <div className="mb-4">
@@ -894,7 +888,7 @@ const JustifyMyMeeting = ({ tool }) => {
           </div>
 
           {zombieResults.then_and_now && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1`}>🕰️ {t('mbd_z_then_now')}</p>
               <p className={`text-xs ${c.textSecondary}`}>{zombieResults.then_and_now}</p>
             </div>
@@ -908,12 +902,12 @@ const JustifyMyMeeting = ({ tool }) => {
           )}
 
           {zombieResults.what_to_change?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🔧 {t('mbd_z_change')}</p>
               {zombieResults.what_to_change.map((x, i) => (
                 <div key={i} className={`${c.quoteBg} border ${c.border} rounded-lg p-2.5 mb-1.5`}>
                   <p className={`text-xs font-bold ${c.text}`}>{x.change}</p>
-                  {x.why && <p className={`text-[11px] ${c.textMuted} mt-0.5`}>{x.why}</p>}
+                  {x.why && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{x.why}</p>}
                 </div>
               ))}
             </div>
@@ -944,7 +938,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderWeek = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_w_intro')}</p>
 
         <div className="space-y-3 mb-4">
@@ -999,27 +993,27 @@ const JustifyMyMeeting = ({ tool }) => {
           )}
 
           {weekResults.totals && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('mbd_tf_title')}</h3>
-              <p className={`text-[11px] ${c.textMuted} mb-3`}>{t('mbd_tf_sub')}</p>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('mbd_tf_title')}</h3>
+              <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('mbd_tf_sub')}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <div className={`${c.quoteBg} rounded-lg p-3 text-center border ${c.border}`}>
                   <p className={`text-lg font-black ${c.text}`}>{weekResults.totals.meetings}</p>
-                  <p className={`text-[9px] ${c.textMuted}`}>{t('mbd_w_total_meetings')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('mbd_w_total_meetings')}</p>
                 </div>
                 <div className={`${c.quoteBg} rounded-lg p-3 text-center border ${c.border}`}>
                   <p className={`text-lg font-black ${c.text}`}>{t('mbd_unit_hours', { n: weekResults.totals.your_hours })}</p>
-                  <p className={`text-[9px] ${c.textMuted}`}>{t('mbd_w_total_your_hours')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('mbd_w_total_your_hours')}</p>
                 </div>
                 {weekResults.totals.person_hours !== null && weekResults.totals.person_hours !== undefined && (
                   <div className={`${c.cardAlt} rounded-lg p-3 text-center border ${c.border}`}>
                     <p className={`text-lg font-black ${c.text}`}>{t('mbd_unit_hours', { n: weekResults.totals.person_hours })}</p>
-                    <p className={`text-[9px] ${c.textMuted}`}>{t('mbd_w_total_person_hours')}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{t('mbd_w_total_person_hours')}</p>
                   </div>
                 )}
               </div>
               {weekResults.totals.meetings_missing_numbers > 0 && (
-                <p className={`text-[11px] ${c.textMuted} mt-2`}>{t('mbd_w_missing_numbers', { n: weekResults.totals.meetings_missing_numbers })}</p>
+                <p className={`text-[13px] ${c.textMuted} mt-2`}>{t('mbd_w_missing_numbers', { n: weekResults.totals.meetings_missing_numbers })}</p>
               )}
             </div>
           )}
@@ -1030,7 +1024,7 @@ const JustifyMyMeeting = ({ tool }) => {
                 <div key={i} className={`${readColor(m.read)} border rounded-xl p-3.5`}>
                   <div className="flex items-start justify-between gap-3 mb-1">
                     <p className={`text-sm font-bold ${c.text}`}>{m.name}</p>
-                    <span className="text-[10px] font-black uppercase flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-black uppercase flex-shrink-0 mt-0.5">
                       {READ_LABELS[m.read] ? t(READ_LABELS[m.read]) : m.read}
                     </span>
                   </div>
@@ -1041,13 +1035,13 @@ const JustifyMyMeeting = ({ tool }) => {
           )}
 
           {weekResults.opportunities?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🔀 {t('mbd_w_opportunities')}</p>
               {weekResults.opportunities.map((o, i) => (
                 <div key={i} className={`${c.quoteBg} border ${c.border} rounded-lg p-2.5 mb-1.5`}>
                   <p className={`text-xs font-bold ${c.text}`}>{o.change}</p>
-                  {o.which && <p className={`text-[11px] ${c.accentTxt} mt-0.5`}>{o.which}</p>}
-                  {o.what_it_assumes && <p className={`text-[11px] ${c.textMuted} mt-0.5`}>{t('mbd_j_assumes')} {o.what_it_assumes}</p>}
+                  {o.which && <p className={`text-[13px] ${c.accentTxt} mt-0.5`}>{o.which}</p>}
+                  {o.what_it_assumes && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{t('mbd_j_assumes')} {o.what_it_assumes}</p>}
                 </div>
               ))}
             </div>
@@ -1083,7 +1077,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderRescue = () => (
     <div className="space-y-4">
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      <div className={`border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_r_intro')}</p>
 
         <div className="mb-4">
@@ -1119,13 +1113,13 @@ const JustifyMyMeeting = ({ tool }) => {
         <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
           {rescueResults.the_problem && (
             <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
-              <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_r_problem')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_r_problem')}</p>
               <p className={`text-sm ${c.text}`}>{rescueResults.the_problem}</p>
             </div>
           )}
 
           {rescueResults.say_this_now && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-2`}>🗣️ {t('mbd_r_say_now')}</p>
               <div className={`${c.quoteBg} border ${c.border} rounded-lg p-3`}>
                 <p className={`text-sm ${c.textSecondary} whitespace-pre-wrap`}>{rescueResults.say_this_now}</p>
@@ -1203,13 +1197,21 @@ const JustifyMyMeeting = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Persistent Header ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div>
+        <div>
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🕵️'}</span>
                   {toolTagline(tool?.tagline ?? t('mbd_tagline'))}
                 </p>
@@ -1221,6 +1223,7 @@ const JustifyMyMeeting = ({ tool }) => {
                 </button>
               )}
             </div>
+          </div>
           </div>
         </div>
         <div className="p-4">
@@ -1243,7 +1246,7 @@ const JustifyMyMeeting = ({ tool }) => {
       {/* Pre-result cross-ref — at the foot, never above the primary action */}
       {!results && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('mbd_xref_before')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mbd_xref_before')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/MeetingHijackStopper" className={`text-xs ${linkStyle}`}>{t('mbd_xref_hijack')}</a>
             <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>{t('mbd_xref_jargon')}</a>
@@ -1256,14 +1259,14 @@ const JustifyMyMeeting = ({ tool }) => {
           becomes furniture. The output has to demonstrate the rule instead. */}
       {!results && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-          <p className={`text-xs ${c.textMuted}`}>{t('mbd_disclaimer')}</p>
+          <p className={`text-[13px] ${c.textMuted}`}>{t('mbd_disclaimer')}</p>
         </div>
       )}
 
       {/* Post-result cross-refs */}
       {results && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('mbd_xref_next_step')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mbd_xref_next_step')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/MeetingHijackStopper" className={`text-xs ${linkStyle}`}>{t('mbd_xref_hijack')}</a>
             <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>{t('mbd_xref_jargon')}</a>
@@ -1286,16 +1289,16 @@ function Section({ icon, title, badge, children, defaultOpen = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
   const ui = (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(p => !p)}
+      <button data-print-heading aria-expanded={!!(open)} onClick={() => setOpen(p => !p)}
         className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
-          <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
-          {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.cardAlt}`}>{badge}</span>}
+          <h3 className={`text-base font-bold ${c.text}`}>{title}</h3>
+          {badge && <span className={`text-xs font-black px-2 py-0.5 rounded ${c.cardAlt}`}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
+      {<div data-sec-body hidden={!(open)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
     </div>
   );
   return ui;

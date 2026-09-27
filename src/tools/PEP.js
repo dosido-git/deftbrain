@@ -336,7 +336,7 @@ const PEP = ({ tool }) => {
 
   const hasSomethingToReset = !!(results || context.trim());
 
-  return <div className={`max-w-4xl mx-auto space-y-4 ${c.text}`}>
+  return <div className={`space-y-4 ${c.text}`}>
     <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
       {/* Header — site style (2026-09-27): a pale band of the tool's color
           bleeding to the card edges, the ground the "Try an example" pill was

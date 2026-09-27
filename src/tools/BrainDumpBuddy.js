@@ -106,17 +106,14 @@ const BrainDumpBuddy = ({ tool }) => {
     text:          isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-slate-500',
-    input:         isDark
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
-      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-[#7fb3e0]' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#142a43]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 text-zinc-200 hover:bg-zinc-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -127,31 +124,29 @@ const BrainDumpBuddy = ({ tool }) => {
     pillActive:    'bg-cyan-600 text-white',
     blockBg:       isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
     dumpBg:        isDark ? 'bg-zinc-900 border-zinc-600' : 'bg-gray-50 border-gray-200',
-    accentLight:   isDark ? 'bg-cyan-900/40 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    accentLightText: isDark ? 'text-cyan-300' : 'text-cyan-800',
+    accentLight:   isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    accentLightText: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     // ── State-specific keys ──
     progressBarBg:        isDark ? 'bg-zinc-700' : 'bg-gray-200',
-    checkboxChecked:      isDark ? 'bg-cyan-600 border-cyan-600' : 'bg-cyan-600 border-cyan-600',
+    checkboxChecked:      isDark ? 'bg-[#2f6fb0] border-[#7fb3e0]' : 'bg-[#142a43] border-[#142a43]',
     checkboxUnchecked:    isDark ? 'border-zinc-500' : 'border-gray-300',
     excavatorResultBg:    isDark ? 'bg-amber-900/20 border-amber-700/50' : 'bg-amber-50 border-amber-200',
     excavatorResultTitle: isDark ? 'text-amber-300' : 'text-amber-600',
     moveToActionsBtn:     isDark ? 'bg-emerald-700 text-emerald-100' : 'bg-emerald-200 text-emerald-800',
     worryPermissionText:  isDark ? 'text-amber-300' : 'text-amber-700',
     doFirstDoneCard:      isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
-    doFirstActiveCard:    isDark ? 'bg-cyan-900/30 border-cyan-600' : 'bg-cyan-50 border-cyan-300',
+    doFirstActiveCard:    isDark ? 'bg-[#1f2530] border-[#7fb3e0]' : 'bg-[#eef3f8] border-[#d4dde8]',
     doFirstCheckDone:     isDark ? 'bg-emerald-600 border-emerald-600' : 'bg-emerald-500 border-emerald-500',
     doFirstCheckActive:   'border-cyan-400',
     doFirstDoneLabel:     isDark ? 'text-emerald-400' : 'text-emerald-600',
-    doFirstActiveLabel:   isDark ? 'text-cyan-300' : 'text-cyan-600',
+    doFirstActiveLabel:   isDark ? 'text-[#a9cdef]' : 'text-[#165b9a]',
     allDoneText:          isDark ? 'text-emerald-300' : 'text-emerald-600',
     labelText:            isDark ? 'text-zinc-200' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'font-medium text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'font-medium text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'font-medium text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'font-medium text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // Category color helper
   const catColors = (color) => {
@@ -161,7 +156,7 @@ const BrainDumpBuddy = ({ tool }) => {
       amber:   { bg: isDark ? 'bg-amber-900/30 border-amber-700'  : 'bg-amber-50 border-amber-200', text: isDark ? 'text-amber-300'   : 'text-amber-800' },
       sky:     { bg: isDark ? 'bg-sky-900/30 border-sky-700'      : 'bg-sky-50 border-sky-200',     text: isDark ? 'text-sky-300'     : 'text-sky-800' },
       slate:   { bg: isDark ? 'bg-slate-700/50 border-slate-600'  : 'bg-slate-100 border-slate-300', text: isDark ? 'text-slate-300'  : 'text-slate-600' },
-      cyan:    { bg: isDark ? 'bg-cyan-900/30 border-cyan-700'    : 'bg-cyan-50 border-cyan-200',   text: isDark ? 'text-cyan-300'    : 'text-cyan-800' },
+      cyan:    { bg: isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',   text: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]' },
       zinc:    { bg: isDark ? 'bg-zinc-700/50 border-zinc-600'    : 'bg-slate-100 border-slate-300', text: isDark ? 'text-zinc-300'   : 'text-slate-700' },
       green:   { bg: isDark ? 'bg-green-900/30 border-green-700'  : 'bg-green-50 border-green-200', text: isDark ? 'text-green-300'   : 'text-green-800' },
     };
@@ -563,18 +558,18 @@ const BrainDumpBuddy = ({ tool }) => {
 
     return (
       <div key={key} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-        <button onClick={() => toggleSection(key)} className="w-full p-4 flex items-center justify-between text-start">
+        <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(key)} className="w-full p-4 flex items-center justify-between text-start">
           <div className="flex items-center gap-2.5">
             <span>{config.icon}</span>
-            <h3 className={`text-sm font-bold ${c.text}`}>{t(config.labelKey)}</h3>
-            <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${remaining === 0 && isActionable ? c.success : `${cc.bg} border ${cc.text}`}`}>
+            <h3 className={`text-base font-bold ${c.text}`}>{t(config.labelKey)}</h3>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded ${remaining === 0 && isActionable ? c.success : `${cc.bg} border ${cc.text}`}`}>
                 {isActionable ? (remaining === 0 ? t('bdb_done_check') : t('bdb_done_left', { count: remaining })) : items.length}
               </span>
           </div>
-          <Caret open={isOpen} />
+          <span data-print-hide><Caret open={isOpen} /></span>
         </button>
-        {isOpen && (
-          <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
+        {(
+          <div data-sec-body hidden={!(isOpen)} className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
             {items.map((item, i) => {
               const isString = typeof item === 'string';
               const text = isString ? item : (item.task || item.decision || item.what || item.feeling || item.thought || item.idea || item.reason || JSON.stringify(item));
@@ -596,7 +591,7 @@ const BrainDumpBuddy = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm ${c.text} ${checked ? 'line-through' : ''}`}>{text}</p>
                       {!checked && sub && (
-                        <p className={`text-[10px] ${c.textMuted} mt-0.5`}>
+                        <p className={`text-[13px] ${c.textMuted} mt-0.5`}>
                           {item.who && `→ ${item.who}`}
                           {item.how && ` (${item.how})`}
                           {item.delegate_to && `→ ${t('bdb_delegate_to')}: ${item.delegate_to}`}
@@ -616,10 +611,10 @@ const BrainDumpBuddy = ({ tool }) => {
                       {/* Reclassify buttons — hidden when checked */}
                       {!checked && (
                         <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-                          {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ✅</button>}
-                          {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ☁️</button>}
-                          {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
-                          {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} className={`text-[9px] px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 💗</button>}
+                          {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ✅</button>}
+                          {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ☁️</button>}
+                          {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
+                          {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 💗</button>}
                         </div>
                       )}
                     </div>
@@ -627,7 +622,7 @@ const BrainDumpBuddy = ({ tool }) => {
                       {/* Excavate button for worries — hidden when checked */}
                       {key === 'worries' && !checked && !excavateData[i] && (
                         <button onClick={() => handleExcavate(text, i)} disabled={excavatingIdx === i}
-                          className={`text-[10px] px-2 py-1 rounded-lg ${c.btnSecondary} hover:opacity-80`}>
+                          className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary} hover:opacity-80`}>
                           {excavatingIdx === i ? <span className="animate-spin inline-block text-xl">{tool?.icon ?? '🧠'}</span> : '🔍'}
                         </button>
                       )}
@@ -636,22 +631,22 @@ const BrainDumpBuddy = ({ tool }) => {
                   {/* v3: Inline excavation results */}
                   {key === 'worries' && excavateData[i] && (
                     <div className={`mt-2 p-3 rounded-lg border ${c.excavatorResultBg}`}>
-                      <p className={`text-[10px] font-bold uppercase mb-1 ${c.excavatorResultTitle}`}>{t('bdb_underneath')}</p>
+                      <p className={`text-[13px] font-bold mb-1 ${c.excavatorResultTitle}`}>{t('bdb_underneath')}</p>
                       <p className={`text-xs ${c.text} mb-2`}>{excavateData[i].whats_underneath}</p>
                       {excavateData[i].likelihood && (
-                        <p className={`text-[10px] ${c.textMuted} mb-1`}>{excavateData[i].likelihood.assessment} — {excavateData[i].likelihood.reality_check}</p>
+                        <p className={`text-[13px] ${c.textMuted} mb-1`}>{excavateData[i].likelihood.assessment} — {excavateData[i].likelihood.reality_check}</p>
                       )}
                       {excavateData[i].if_it_happened && (
-                        <p className={`text-[10px] ${c.textSecondary} mb-1`}>{t('bdb_if_it_happened')} {excavateData[i].if_it_happened}</p>
+                        <p className={`text-xs ${c.textSecondary} mb-1`}>{t('bdb_if_it_happened')} {excavateData[i].if_it_happened}</p>
                       )}
                       {excavateData[i].hidden_task?.found && excavateData[i].hidden_task.task && (
                         <div className={`mt-2 p-2 rounded-lg ${c.success} border`}>
-                          <p className={`text-[10px] font-bold`}>{t('bdb_hidden_task_found')}</p>
+                          <p className={`text-xs font-bold`}>{t('bdb_hidden_task_found')}</p>
                           <p className={`text-xs font-medium`}>{excavateData[i].hidden_task.task}</p>
-                          {excavateData[i].hidden_task.time_estimate && <span className={`text-[10px]`}>~{excavateData[i].hidden_task.time_estimate}</span>}
-                          {excavateData[i].hidden_task.relief_potential && <p className={`text-[10px] ${c.accentLightText} mt-0.5`}>{t('bdb_relief')} {excavateData[i].hidden_task.relief_potential}</p>}
+                          {excavateData[i].hidden_task.time_estimate && <span className={`text-xs`}>~{excavateData[i].hidden_task.time_estimate}</span>}
+                          {excavateData[i].hidden_task.relief_potential && <p className={`text-xs ${c.accentLightText} mt-0.5`}>{t('bdb_relief')} {excavateData[i].hidden_task.relief_potential}</p>}
                           <button onClick={() => { reclassifyItem('worries', i, 'actions'); setExcavateData(prev => { const n = { ...prev }; delete n[i]; return n; }); }}
-                            className={`block mt-1 text-[10px] px-2 py-0.5 rounded ${c.moveToActionsBtn}`}>
+                            className={`block mt-1 text-xs px-2 py-0.5 rounded ${c.moveToActionsBtn}`}>
                             {t('bdb_move_to_actions')}
                           </button>
                         </div>
@@ -685,16 +680,22 @@ const BrainDumpBuddy = ({ tool }) => {
   // ══════════════════════════════════════════════════
   if (view !== 'results' || !results) {
     return (
-      <div ref={stageRef} className="scroll-mt-24 py-6 px-4">
-        <div className="max-w-xl mx-auto space-y-5">
-
+      <div ref={stageRef} className="scroll-mt-24 pb-6">
           {/* Header */}
-          <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-5`}>
-            <div className={`pb-3 mb-4 border-b border-zinc-500`}>
+          <div>
+            {/* Header — site style (2026-09-27): a pale band of the tool's color
+                bleeding to the card edges, the ground the "Try an example" pill was
+                made for (PF-17c). Screen only. */}
+            <div
+              data-print-hide
+              className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-6"
+              style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+            >
+              <div>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                  <p className={`text-base ${c.textSecondary}`}>
+                  <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                     <span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{t('bdb_tagline')}
                   </p>
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -711,17 +712,20 @@ const BrainDumpBuddy = ({ tool }) => {
                 </button>
               </div>
             </div>
+            </div>
           </div>
+        <div className="max-w-xl mx-auto space-y-5">
+
 
           {/* Status bar — only shown after first dump */}
           {dumpLog.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                   <span className={`text-sm font-medium ${c.text}`}>
                     <span>📊</span> {t('bdb_status_dumps', { count: dumpLog.length })}
                     {dumpLog.length >= 3 && (
-                      <span className={`text-xs ${c.textMuted} ms-1`}>
+                      <span className={`text-[13px] ${c.textMuted} ms-1`}>
                         {' '}{t('bdb_status_avg', { avg: Math.round(dumpLog.reduce((s, d) => s + (d.realTasks || 0), 0) / dumpLog.length) })}
                       </span>
                     )}
@@ -735,7 +739,7 @@ const BrainDumpBuddy = ({ tool }) => {
           )}
 
           {/* Context */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>
               {t('bdb_whats_going_on')} <span className={`font-normal ${c.textMuted}`}>{t('bdb_optional')}</span>
             </label>
@@ -758,7 +762,7 @@ const BrainDumpBuddy = ({ tool }) => {
                   disabled={isVoiceUnsupported}
                   className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.pillActive : c.btnSecondary} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
                   <span className="block text-xs font-medium">{m.icon} {t(m.labelKey)}</span>
-                  <span className={`block text-[10px] mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? t('bdb_input_mode_unsupported') : t(m.descKey)}</span>
+                  <span className={`block text-xs mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? t('bdb_input_mode_unsupported') : t(m.descKey)}</span>
                 </button>
               );
             })}
@@ -766,7 +770,7 @@ const BrainDumpBuddy = ({ tool }) => {
 
           {/* Free text input */}
           {inputMode === 'freetext' && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>
                 {t('bdb_your_dump')} <span className={c.required}>*</span>
               </label>
@@ -781,7 +785,7 @@ const BrainDumpBuddy = ({ tool }) => {
               )}
               <div className="flex items-center justify-between mt-1.5">
                 <div className="flex items-center gap-2">
-                  <p className={`text-[10px] ${c.textMuted}`}>{t('bdb_freetext_hint')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('bdb_freetext_hint')}</p>
                   {voiceSupported && (
                     <button onClick={toggleVoice}
                       className={`text-xs px-2 py-1 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : c.btnSecondary}`}
@@ -790,19 +794,19 @@ const BrainDumpBuddy = ({ tool }) => {
                     </button>
                   )}
                 </div>
-                {wordCount > 0 && <p className={`text-[10px] ${c.textMuted}`}>{t('bdb_words', { count: wordCount })}</p>}
+                {wordCount > 0 && <p className={`text-[13px] ${c.textMuted}`}>{t('bdb_words', { count: wordCount })}</p>}
               </div>
             </div>
           )}
 
           {/* Rapid fire input */}
           {inputMode === 'rapid' && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+            <div className={`border-t ${c.border} pt-5 space-y-3`}>
               {rapidThoughts.length > 0 && (
                 <div className="space-y-1.5 max-h-60 overflow-y-auto">
                   {rapidThoughts.map((rt, idx) => (
                     <div key={idx} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.blockBg}`}>
-                      <span className={`text-[10px] font-bold ${c.textMuted}`}>{idx + 1}</span>
+                      <span className={`text-xs font-bold ${c.textMuted}`}>{idx + 1}</span>
                       <p className={`flex-1 text-sm ${c.text}`}>{rt}</p>
                       <button onClick={() => removeRapidThought(idx)} className={`${c.textMuted} hover:opacity-70 text-xs px-1`}>✕</button>
                     </div>
@@ -833,7 +837,7 @@ const BrainDumpBuddy = ({ tool }) => {
               </div>
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">
-                  <p className={`text-[10px] ${c.textMuted}`}>{t('bdb_rapid_hint')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('bdb_rapid_hint')}</p>
                   {voiceSupported && (
                     <button onClick={toggleVoice}
                       className={`text-xs px-2 py-1 rounded-lg transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : c.btnSecondary}`}
@@ -842,7 +846,7 @@ const BrainDumpBuddy = ({ tool }) => {
                     </button>
                   )}
                 </div>
-                {thoughtCount > 0 && <p className={`text-[10px] ${c.accentLightText} font-bold`}>{t('bdb_thoughts', { count: thoughtCount })}</p>}
+                {thoughtCount > 0 && <p className={`text-xs ${c.accentLightText} font-bold`}>{t('bdb_thoughts', { count: thoughtCount })}</p>}
               </div>
               {/* Interim voice text */}
               {isListening && voiceInterim && (
@@ -853,7 +857,7 @@ const BrainDumpBuddy = ({ tool }) => {
 
           {/* Voice dump mode */}
           {inputMode === 'voice' && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               {/* Mic button */}
               <div className="text-center">
                 <button onClick={toggleVoice}
@@ -867,7 +871,7 @@ const BrainDumpBuddy = ({ tool }) => {
                 <p className={`text-sm font-medium ${c.text} mt-3`}>
                   {isListening ? t('bdb_voice_listening') : t('bdb_voice_tap')}
                 </p>
-                <p className={`text-[10px] ${c.textMuted} mt-1`}>
+                <p className={`text-[13px] ${c.textMuted} mt-1`}>
                   {isListening ? t('bdb_voice_listening_hint') : t('bdb_voice_idle_hint')}
                 </p>
               </div>
@@ -885,8 +889,8 @@ const BrainDumpBuddy = ({ tool }) => {
               {freeText.trim() && (
                 <div className={`${c.dumpBg} border-2 rounded-xl p-4`}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('bdb_captured')}</span>
-                    <span className={`text-[10px] ${c.textMuted}`}>{t('bdb_words', { count: freeText.trim().split(/\s+/).filter(Boolean).length })}</span>
+                    <span className={`text-[13px] font-bold ${c.textMuted}`}>{t('bdb_captured')}</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>{t('bdb_words', { count: freeText.trim().split(/\s+/).filter(Boolean).length })}</span>
                   </div>
                   <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>{freeText}</p>
                 </div>
@@ -917,9 +921,9 @@ const BrainDumpBuddy = ({ tool }) => {
           {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm`}><span>⚠️</span> {error}</p></div>}
 
           {/* Cross-references */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div data-print-hide className={`border-t ${c.border} pt-5`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>{t('bdb_related_tools')}</p>
-            <p className={`text-xs ${c.textSecondary}`}>
+            <p data-print-hide className={`text-xs ${c.textSecondary}`}>
               {t('bdb_xref_setup_pre')}{' '}
               <a href="/ChaosPilot" className={linkStyle}>🚨 {t('bdb_xref_crisis')}</a>{' '}
               {t('bdb_xref_setup_mid')}{' '}
@@ -930,37 +934,37 @@ const BrainDumpBuddy = ({ tool }) => {
 
           {/* Recent dumps */}
           {dumpLog.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🕐</span> {t('bdb_recent_dumps')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}><span>🕐</span> {t('bdb_recent_dumps')}</h3>
               <div className="space-y-2">
                 {dumpLog.slice(0, 6).map(d => {
                   const isExpanded = expandedDumpId === d.id;
                   return (
                     <div key={d.id} className={`rounded-lg ${c.blockBg} overflow-hidden`}>
                       {/* Summary row — tap to expand */}
-                      <button onClick={() => setExpandedDumpId(isExpanded ? null : d.id)}
+                      <button data-print-heading aria-expanded={!!(isExpanded)} onClick={() => setExpandedDumpId(isExpanded ? null : d.id)}
                         className="w-full flex items-center justify-between p-2.5 text-start">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <span className="text-xs flex-shrink-0">{CONTEXTS.find(ct => ct.value === d.context)?.icon || '🧠'}</span>
                           <span className={`text-sm font-medium ${c.text} truncate`}>{t('bdb_dump_to_tasks', { count: d.thoughtsCount, unit: t(d.thoughtsLabel === 'thoughts' ? 'bdb_thoughts_unit' : 'bdb_words_unit'), tasks: d.realTasks })}</span>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ms-2">
-                          <span className={`text-xs ${c.textMuted}`}>{new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                          <Caret open={isExpanded} />
+                          <span className={`text-[13px] ${c.textMuted}`}>{new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                          <span data-print-hide><Caret open={isExpanded} /></span>
                         </div>
                       </button>
                       {/* Expanded: full dump text + completed tasks */}
-                      {isExpanded && (
-                        <div className={`px-3 pb-3 border-t ${c.border} pt-3 space-y-3`}>
+                      {(
+                        <div data-sec-body hidden={!(isExpanded)} className={`px-3 pb-3 border-t ${c.border} pt-3 space-y-3`}>
                           {d.dumpText && (
                             <div>
-                              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('bdb_what_you_dumped')}</p>
+                              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('bdb_what_you_dumped')}</p>
                               <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap leading-relaxed`}>{d.dumpText}</p>
                             </div>
                           )}
                           {d.completedTasks?.length > 0 && (
                             <div>
-                              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('bdb_completed')}</p>
+                              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('bdb_completed')}</p>
                               <div className="space-y-0.5">
                                 {d.completedTasks.map((ct, i) => (
                                   <p key={i} className={`text-xs ${c.textSecondary} flex items-start gap-1.5`}>
@@ -972,7 +976,7 @@ const BrainDumpBuddy = ({ tool }) => {
                             </div>
                           )}
                           {!d.dumpText && !d.completedTasks?.length && (
-                            <p className={`text-xs ${c.textMuted}`}>{t('bdb_blocks_done', { done: d.blocksCompleted, total: d.totalBlocks })}</p>
+                            <p className={`text-[13px] ${c.textMuted}`}>{t('bdb_blocks_done', { done: d.blocksCompleted, total: d.totalBlocks })}</p>
                           )}
                         </div>
                       )}
@@ -996,14 +1000,17 @@ const BrainDumpBuddy = ({ tool }) => {
     const contextInfo = CONTEXTS.find(ct => ct.value === context);
 
     return (
-      <div ref={stageRef} className="scroll-mt-24 py-6 px-4">
-        <div className="max-w-xl mx-auto space-y-5">
-
+      <div ref={stageRef} className="scroll-mt-24 pb-6">
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-5`}>
-            <div className="pb-3 mb-4 border-b border-zinc-500">
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-6"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div>
               <div className="flex items-center justify-between">
-                <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
+                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{t('bdb_tagline')}</p>
                 <div className="flex items-center gap-2">
                   {contextInfo && (
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${c.btnSecondary}`}>
@@ -1016,20 +1023,21 @@ const BrainDumpBuddy = ({ tool }) => {
                   ) : null}
                 </div>
               </div>
-              <p className={`${c.textSecondary} text-sm mt-0.5`}>{t('bdb_tagline')}</p>
             </div>
           </div>
+        <div className="max-w-xl mx-auto space-y-5">
+
 
           {/* Emergency mode result */}
           {r.mode === 'emergency' && (r.breathe || r.one_task || r.one_truth) && (
             <div className={`${c.card} border-2 ${c.border} rounded-xl p-5 space-y-3`}>
-              <h3 className={`text-sm font-bold ${c.text}`}>{t('bdb_emergency_mode')}</h3>
+              <h3 className={`text-base font-bold ${c.text}`}>{t('bdb_emergency_mode')}</h3>
               {r.breathe && <p className={`text-sm ${c.textSecondary} italic`}>{r.breathe}</p>}
               {r.one_task && (
                 <div className={`${c.doFirstActiveCard} border rounded-lg p-4`}>
                   <p className={`text-xs font-bold mb-1`}>{t('bdb_do_one_thing')}</p>
                   <p className={`text-sm font-bold ${c.text}`}>{r.one_task.task}</p>
-                  {r.one_task.time_estimate && <p className={`text-xs ${c.textMuted} mt-0.5`}>~{r.one_task.time_estimate}</p>}
+                  {r.one_task.time_estimate && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>~{r.one_task.time_estimate}</p>}
                   {r.one_task.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.one_task.why}</p>}
                 </div>
               )}
@@ -1046,10 +1054,10 @@ const BrainDumpBuddy = ({ tool }) => {
 
           {/* Overwhelm meter */}
           {r.overwhelm_meter && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <div className="flex items-center gap-2.5 mb-3">
                 <span>✨</span>
-                <h3 className={`text-sm font-bold ${c.text}`}>{t('bdb_your_brain_sorted')}</h3>
+                <h3 className={`text-base font-bold ${c.text}`}>{t('bdb_your_brain_sorted')}</h3>
               </div>
               <p className={`text-sm ${c.textSecondary} mb-3`}>{r.overwhelm_meter.summary}</p>
               {r.overwhelm_meter.counts && (
@@ -1057,7 +1065,7 @@ const BrainDumpBuddy = ({ tool }) => {
                   {Object.entries(r.overwhelm_meter.counts).map(([key, val]) => (
                     <div key={key} className={`${c.blockBg} rounded-lg p-3 text-center`}>
                       <p className={`text-xl font-bold ${c.text}`}>{val}</p>
-                      <p className={`text-[9px] font-bold uppercase ${c.textMuted}`}>{key.replace(/_/g, ' ')}</p>
+                      <p className={`text-xs font-bold uppercase ${c.textMuted}`}>{key.replace(/_/g, ' ')}</p>
                     </div>
                   ))}
                 </div>
@@ -1074,7 +1082,7 @@ const BrainDumpBuddy = ({ tool }) => {
               <div className={`flex-1 h-2 rounded-full ${c.progressBarBg} overflow-hidden`}>
                 <div className="h-full rounded-full transition-all duration-500 bg-cyan-500" style={{ width: `${(done / total) * 100}%` }} />
               </div>
-              <span className={`text-[10px] font-bold ${c.textMuted}`}>{t('bdb_done_count', { done, total })}</span>
+              <span className={`text-xs font-bold ${c.textMuted}`}>{t('bdb_done_count', { done, total })}</span>
             </div>
           )}
 
@@ -1105,23 +1113,23 @@ const BrainDumpBuddy = ({ tool }) => {
                       : (c.doFirstCheckActive)
                   }`}>{doFirstDone && <span className="text-white text-xs">✓</span>}</button>
                 <div className="flex-1">
-                  <p className={`text-[10px] font-bold uppercase mb-1 ${doFirstDone
+                  <p className={`text-[13px] font-bold mb-1 ${doFirstDone
                     ? (c.doFirstDoneLabel)
                     : (c.doFirstActiveLabel)
                   }`}>{doFirstDone ? t('bdb_done_label') : t('bdb_your_one_next_step')}</p>
                   <p className={`text-lg font-bold ${c.text} ${doFirstDone ? 'line-through opacity-50' : ''}`}>{r.do_first.task}</p>
                   {!doFirstDone && r.do_first.why_this_first && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.do_first.why_this_first}</p>}
                   {!doFirstDone && r.do_first.time_estimate && (
-                    <span className={`inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded ${c.accentLight} border`}>~{r.do_first.time_estimate}</span>
+                    <span className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded ${c.accentLight} border`}>~{r.do_first.time_estimate}</span>
                   )}
                   {/* Next up promotion */}
                   {doFirstDone && (() => {
                     const next = getNextAction();
                     return next ? (
                       <div className={`mt-3 pt-3 border-t ${c.border}`}>
-                        <p className={`text-[10px] font-bold uppercase ${c.doFirstActiveLabel} mb-0.5`}>{t('bdb_next_up')}</p>
+                        <p className={`text-[13px] font-bold ${c.doFirstActiveLabel} mb-0.5`}>{t('bdb_next_up')}</p>
                         <p className={`text-sm font-medium ${c.text}`}>{next.task || next}</p>
-                        {next.time_estimate && <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${c.accentLight} border`}>~{next.time_estimate}</span>}
+                        {next.time_estimate && <span className={`inline-block mt-1 text-xs font-bold px-2 py-0.5 rounded ${c.accentLight} border`}>~{next.time_estimate}</span>}
                       </div>
                     ) : (
                       <p className={`mt-2 text-xs font-medium ${c.allDoneText}`}>{t('bdb_all_done')}</p>
@@ -1144,8 +1152,8 @@ const BrainDumpBuddy = ({ tool }) => {
 
           {/* Dependencies */}
           {r.dependencies?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🔗</span> {t('bdb_dependencies')}</h3>
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}><span>🔗</span> {t('bdb_dependencies')}</h3>
               <div className="space-y-2">
                 {r.dependencies.map((dep, i) => (
                   <div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${c.blockBg}`}>
@@ -1172,12 +1180,12 @@ const BrainDumpBuddy = ({ tool }) => {
             </button>
           </div>
 
-          <p className={`text-[10px] ${c.textMuted} text-center`}>{t('bdb_privacy_note')}</p>
+          <p className={`text-[13px] ${c.textMuted} text-center`}>{t('bdb_privacy_note')}</p>
 
-          <p className={`text-[10px] ${c.textMuted} text-center`}>{t('bdb_ai_note')}</p>
+          <p className={`text-[13px] ${c.textMuted} text-center`}>{t('bdb_ai_note')}</p>
 
           {results && (
-            <p className={`text-xs text-center ${c.textMuted}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
               {t('bdb_xref_results_pre')} <a href="/WaitingModeLiberator" className={linkStyle}>🔓 {t('bdb_xref_waiting')}</a> {t('bdb_xref_results_post')}
             </p>
           )}
