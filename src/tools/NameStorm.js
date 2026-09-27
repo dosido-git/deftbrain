@@ -100,26 +100,25 @@ const NameStorm = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    infoBox:       isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    infoBox:       isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     cardInner:     isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
@@ -128,15 +127,13 @@ const NameStorm = ({ tool }) => {
 
   // Tab and chip style helpers (outside c to avoid TDZ)
   const tabStyle = (active) => active
-    ? (isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white')
+    ? (isDark ? 'bg-[#2f6fb0] border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white')
     : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300');
   const chipStyle = (active) => active
-    ? (isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900')
+    ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
     : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400');
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── Input State ───
   const [mode, setMode] = useState('generate'); // 'generate' | 'blend' | 'quick'
@@ -800,7 +797,7 @@ const NameStorm = ({ tool }) => {
             recipe. Fascinating to a naming enthusiast, noise to someone deciding
             whether they like the name. Off unless asked for. */}
         {showConstruction && nameObj.blend_components && (
-          <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1.5 font-medium`}>
+          <p className={`text-xs ${isDark ? 'text-[#a9cdef]' : 'text-[#165b9a]'} mt-1.5 font-medium`}>
             {nameObj.blend_components}
           </p>
         )}
@@ -812,7 +809,7 @@ const NameStorm = ({ tool }) => {
         {nameObj.tld_rationale && (
           <div className={`mt-2 flex flex-wrap gap-x-4 gap-y-1`}>
             {nameObj.verbal_form && (
-              <span className={`text-xs ${c.textMuted}`}>🗣️ <span className="font-medium">"{nameObj.verbal_form}"</span></span>
+              <span className={`text-[13px] ${c.textMuted}`}>🗣️ <span className="font-medium">"{nameObj.verbal_form}"</span></span>
             )}
             {nameObj.email_appearance && (
               <span className={`text-xs font-mono ${c.textMuted}`}>✉️ {nameObj.email_appearance}</span>
@@ -820,7 +817,7 @@ const NameStorm = ({ tool }) => {
           </div>
         )}
         {nameObj.tld_rationale && (
-          <p className={`text-xs ${c.textMuted} mt-1`}>🔗 <span className="italic">{nameObj.tld_rationale}</span></p>
+          <p className={`text-[13px] ${c.textMuted} mt-1`}>🔗 <span className="italic">{nameObj.tld_rationale}</span></p>
         )}
 
         {/* Problem Flags */}
@@ -836,7 +833,7 @@ const NameStorm = ({ tool }) => {
 
         {/* Domain Note */}
         {nameObj.domain_note && showDomainFeatures && (
-          <p className={`text-xs ${c.textMuted} mt-2`}>🌐 {nameObj.domain_note}</p>
+          <p className={`text-[13px] ${c.textMuted} mt-2`}>🌐 {nameObj.domain_note}</p>
         )}
 
         {/* Action Buttons */}
@@ -888,7 +885,7 @@ const NameStorm = ({ tool }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {previewFonts.map((font, idx) => (
                 <div key={idx} className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'} text-center`}>
-                  <p className={`text-xs ${c.textMuted} mb-2`}>{font.name}</p>
+                  <p className={`text-[13px] ${c.textMuted} mb-2`}>{font.name}</p>
                   <p style={{
                     fontFamily: font.family,
                     fontWeight: font.weight,
@@ -903,7 +900,7 @@ const NameStorm = ({ tool }) => {
               ))}
               {/* Favicon mockup */}
               <div className={`p-4 rounded-lg border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'} text-center`}>
-                <p className={`text-xs ${c.textMuted} mb-2`}>{t('ns_favicon')}</p>
+                <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('ns_favicon')}</p>
                 <div className="flex justify-center gap-3 items-center">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${isDark ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white'}`}>
                     {nameObj.name.charAt(0).toUpperCase()}
@@ -964,7 +961,7 @@ const NameStorm = ({ tool }) => {
                     </div>
                     <p className={`text-xs ${c.textSecondary} mt-0.5`}>{v.why_it_works}</p>
                     {v.how_it_addresses_feedback && (
-                      <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5 font-medium`}>→ {v.how_it_addresses_feedback}</p>
+                      <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5 font-medium`}>→ {v.how_it_addresses_feedback}</p>
                     )}
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
@@ -980,13 +977,13 @@ const NameStorm = ({ tool }) => {
 
         {/* ─── Brand Story ─── */}
         {storyData && (
-          <div className={`mt-3 p-4 rounded-lg border-s-4 ${isDark ? 'border-cyan-500 bg-cyan-900/15' : 'border-cyan-400 bg-cyan-50/50'}`}>
+          <div className={`mt-3 p-4 rounded-lg border-s-4 ${isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📖 {t('ns_brand_story_title')}</p>
             {storyData.origin_story && (
               <p className={`text-sm ${c.text} leading-relaxed`}>{storyData.origin_story}</p>
             )}
             {storyData.tagline && (
-              <p className={`text-sm font-semibold ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mt-3 italic`}>"{storyData.tagline}"</p>
+              <p className={`text-sm font-semibold ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'} mt-3 italic`}>"{storyData.tagline}"</p>
             )}
             {storyData.elevator_pitch && (
               <div className="mt-3">
@@ -1070,12 +1067,12 @@ const NameStorm = ({ tool }) => {
                     </div>
                     <p className={`text-xs ${c.textSecondary} mt-0.5`}>{v.why_it_works}</p>
                     {v.tld_rationale && (
-                      <p className={`text-[10px] ${c.textMuted} mt-0.5 italic`}>🔗 {v.tld_rationale}</p>
+                      <p className={`text-[13px] ${c.textMuted} mt-0.5 italic`}>🔗 {v.tld_rationale}</p>
                     )}
                     {Array.isArray(v.problems) && v.problems.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {v.problems.map((p, j) => (
-                          <span key={j} className={`text-[10px] px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>
+                          <span key={j} className={`text-xs px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>
                             ⚠ {p.detail}
                           </span>
                         ))}
@@ -1099,14 +1096,19 @@ const NameStorm = ({ tool }) => {
   // ─── RENDER ───
   return (
     <div className={`space-y-5 ${c.text}`}>
-      {/* ═══ HEADER + MODE TOGGLE CARD ═══ */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      {/* ═══ HEADER + MODE TOGGLE ═══ site style (2026-09-27): a pale band of
+          the tool's color bleeding to the card edges, the ground the "Try an
+          example" pill was made for (PF-17c). Screen only. */}
+      <div data-print-hide>
+        <div
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
+          <div>
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('ns_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -1119,19 +1121,19 @@ const NameStorm = ({ tool }) => {
             </div>
           </div>
         </div>
-        <div className="px-5 pb-2 pt-4">
-          <p className={`text-xs font-semibold ${c.textMuted}`}>{t('ns_how_explore')}</p>
+        <div className="pb-2 pt-5">
+          <p className={`text-[13px] font-semibold ${c.textMuted}`}>{t('ns_how_explore')}</p>
         </div>
-        <div className="px-5 pb-5 flex gap-2">
-          <button onClick={() => { setMode('generate'); setCategory(''); }}
+        <div className="flex gap-2">
+          <button aria-pressed={mode === 'generate'} onClick={() => { setMode('generate'); setCategory(''); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'generate')}`}>
             <span>⚡</span> {t('ns_tab_generate')}
           </button>
-          <button onClick={() => { setMode('blend'); setCategory(''); }}
+          <button aria-pressed={mode === 'blend'} onClick={() => { setMode('blend'); setCategory(''); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'blend')}`}>
             <span>✨</span> {t('ns_tab_blend')}
           </button>
-          <button onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
+          <button aria-pressed={mode === 'quick'} onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'quick')}`}>
             <span>🏷️</span> {t('ns_tab_quick')}
           </button>
@@ -1140,11 +1142,11 @@ const NameStorm = ({ tool }) => {
 
       {/* ═══════════════ INPUT VIEW ═══════════════ */}
       {!results && !quickResults && (
-        <div className="space-y-5">
+        <div data-print-form className="space-y-5">
 
           {/* Persistent Favorites Banner */}
           {favorites.length > 0 && (
-            <div className={`p-4 rounded-xl border ${isDark ? 'border-amber-700 bg-amber-900/15' : 'border-amber-300 bg-amber-50'} flex items-center justify-between flex-wrap gap-2`}>
+            <div data-print-hide className={`p-4 rounded-xl border ${isDark ? 'border-amber-700 bg-amber-900/15' : 'border-amber-300 bg-amber-50'} flex items-center justify-between flex-wrap gap-2`}>
               <span className={`text-sm ${c.text}`}>
                 <span>⭐</span> {t('ns_fav_banner', { count: favorites.length })}
               </span>
@@ -1155,9 +1157,9 @@ const NameStorm = ({ tool }) => {
 
           {/* ─── Quick Mode (ThingNamer) ─── */}
           {mode === 'quick' && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               <div>
-                <p className={`text-sm font-semibold ${c.text} mb-1`}>🏷️ {t('ns_quick_what')} <span className={c.required}>*</span></p>
+                <p className={`text-[15px] font-semibold ${c.text} mb-1`}>🏷️ {t('ns_quick_what')} <span className={c.required}>*</span></p>
                 <textarea value={quickWhatIsIt} onChange={e => setQuickWhatIsIt(e.target.value)}
                   placeholder={t('ns_quick_what_ph')}
                   rows={3} maxLength={500}
@@ -1165,20 +1167,20 @@ const NameStorm = ({ tool }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('ns_quick_vibe')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></p>
+                  <p className={`text-[15px] font-semibold ${c.text} mb-1`}>{t('ns_quick_vibe')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></p>
                   <input type="text" value={quickVibe} onChange={e => setQuickVibe(e.target.value)}
                     placeholder={t('ns_quick_vibe_ph')}
                     className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
                 </div>
                 <div>
-                  <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('ns_quick_constraints')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></p>
+                  <p className={`text-[15px] font-semibold ${c.text} mb-1`}>{t('ns_quick_constraints')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></p>
                   <input type="text" value={quickConstraints} onChange={e => setQuickConstraints(e.target.value)}
                     placeholder={t('ns_quick_constraints_ph')}
                     className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
                 </div>
               </div>
               <div>
-                <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('ns_quick_avoid')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></p>
+                <p className={`text-[15px] font-semibold ${c.text} mb-1`}>{t('ns_quick_avoid')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></p>
                 <input type="text" value={quickAvoid} onChange={e => setQuickAvoid(e.target.value)}
                   placeholder={t('ns_quick_avoid_ph')}
                   className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
@@ -1203,12 +1205,12 @@ const NameStorm = ({ tool }) => {
 
           {/* Generate Mode: Category */}
           {!isBlendMode && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <label className={`block font-semibold ${c.text} mb-3`}>{t('ns_what_needs_name')} <span className={c.required}>*</span></label>
               <div className="space-y-3">
                 {categoryGroups.map(group => (
                   <div key={group.key || 'other'}>
-                    {group.key && <p className={`text-[11px] font-semibold ${c.textMuted} mb-1.5`}>{t(group.key)}</p>}
+                    {group.key && <p className={`text-[13px] font-semibold ${c.textMuted} mb-1.5`}>{t(group.key)}</p>}
                     <div className="flex flex-wrap gap-2">
                       {group.items.map(cat => (
                         <button key={cat.value} onClick={() => setCategory(cat.value)}
@@ -1225,10 +1227,10 @@ const NameStorm = ({ tool }) => {
 
           {/* Blend Mode: Seed Words */}
           {isBlendMode && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
               <div>
-                <label className={`block font-semibold ${c.text} mb-1`}>{t('ns_seed_label')} <span className={c.required}>*</span> <span className={`font-normal text-xs ${c.textMuted}`}>{t('ns_seed_count')}</span></label>
-                <p className={`text-xs ${c.textMuted} mb-3`}>{t('ns_seed_help')}</p>
+                <label className={`block font-semibold ${c.text} mb-1`}>{t('ns_seed_label')} <span className={c.required}>*</span> <span className={`font-normal text-[13px] ${c.textMuted}`}>{t('ns_seed_count')}</span></label>
+                <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ns_seed_help')}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {seedWords.map((word, idx) => (
                     <input key={idx} type="text" value={word}
@@ -1252,9 +1254,9 @@ const NameStorm = ({ tool }) => {
           )}
 
           {/* Vibe */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div>
-              <label className={`block font-semibold ${c.text} mb-3`}>{t('ns_vibe_q')} {!isBlendMode && <span className={c.required}>*</span>}{isBlendMode && <span className={`font-normal text-xs ${c.textMuted}`}>{t('ns_vibe_optional')}</span>}</label>
+              <label className={`block font-semibold ${c.text} mb-3`}>{t('ns_vibe_q')} {!isBlendMode && <span className={c.required}>*</span>}{isBlendMode && <span className={`font-normal text-[13px] ${c.textMuted}`}>{t('ns_vibe_optional')}</span>}</label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {vibeOptions.map(v => (
                   <button key={v.value} onClick={() => toggleVibe(v.value)}
@@ -1274,8 +1276,8 @@ const NameStorm = ({ tool }) => {
           </div>
 
           {/* Constraints + Industry + Competitors + Language */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
-            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('ns_optional_refinements')}</p>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
+            <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('ns_optional_refinements')}</p>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_constraints')}</label>
               <input type="text" value={constraints} onChange={(e) => setConstraints(e.target.value)}
@@ -1295,7 +1297,7 @@ const NameStorm = ({ tool }) => {
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>
                 {t('ns_competitors')}
-                <span className={`font-normal text-xs ${c.textMuted} ms-1`}>({t('optional')})</span>
+                <span className={`font-normal text-[13px] ${c.textMuted} ms-1`}>({t('optional')})</span>
               </label>
               <input type="text" value={competitors} onChange={(e) => setCompetitors(e.target.value)}
                 placeholder={t('ns_competitors_ph')}
@@ -1310,7 +1312,7 @@ const NameStorm = ({ tool }) => {
             {/* Primary audience language */}
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>{t('ns_primary_lang')}</label>
-              <p className={`text-xs ${c.textMuted} mb-2`}>{t('ns_primary_lang_help')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('ns_primary_lang_help')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {languageOptions.map(lang => (
                   <button key={`primary-${lang}`} onClick={() => setPrimaryLanguage(lang)}
@@ -1324,8 +1326,8 @@ const NameStorm = ({ tool }) => {
 
           {/* Domain-specific inputs */}
           {(isDomainMode || (isBlendMode && pairWithDomains)) && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
-              <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>{t('ns_domain_prefs')}</p>
+            <div className={`border-t ${c.border} pt-5 space-y-4`}>
+              <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('ns_domain_prefs')}</p>
 
               {/* Preferred TLDs */}
               <div>
@@ -1355,7 +1357,7 @@ const NameStorm = ({ tool }) => {
                   </div>
                 )}
                 {preferredTLDs.length > 0 && (
-                  <button onClick={() => setPreferredTLDs([])} className={`mt-2 text-xs ${c.textMuted} hover:underline`}>{t('ns_clear_tlds')}</button>
+                  <button onClick={() => setPreferredTLDs([])} className={`mt-2 text-[13px] ${c.textMuted} hover:underline`}>{t('ns_clear_tlds')}</button>
                 )}
               </div>
 
@@ -1385,7 +1387,7 @@ const NameStorm = ({ tool }) => {
 
           {/* Storm History */}
           {stormHistory.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+            <div data-print-hide className={`border-t ${c.border} pt-5`}>
               <button onClick={() => setShowHistory(!showHistory)}
                 className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className="flex items-center gap-2 font-semibold text-sm">
@@ -1402,13 +1404,13 @@ const NameStorm = ({ tool }) => {
                           <span className={`text-xs px-1.5 py-0.5 rounded-full border ${chipStyle(false)}`}>
                             {entry.mode === 'blend' ? t('ns_blend_tag') : `⚡ ${entry.category}`}
                           </span>
-                          <span className={`text-xs ${c.textMuted}`}>
+                          <span className={`text-[13px] ${c.textMuted}`}>
                             {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                           </span>
                         </div>
                         <p className={`text-sm font-medium ${c.text} mt-1`}>{entry.label}</p>
                         {entry.vibeChips?.length > 0 && (
-                          <p className={`text-xs ${c.textMuted} mt-0.5`}>{entry.vibeChips.join(', ')}</p>
+                          <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{entry.vibeChips.join(', ')}</p>
                         )}
                         {entry.topNames?.length > 0 && (
                           <p className={`text-xs ${c.textSecondary} mt-1`}>{t('ns_top_prefix', { names: entry.topNames.join(', ') })}</p>
@@ -1420,7 +1422,7 @@ const NameStorm = ({ tool }) => {
                       </button>
                     </div>
                   ))}
-                  <button onClick={clearHistory} className={`text-xs ${c.textMuted} hover:underline mt-1`}>{t('ns_clear_history')}</button>
+                  <button onClick={clearHistory} className={`text-[13px] ${c.textMuted} hover:underline mt-1`}>{t('ns_clear_history')}</button>
                 </div>
               )}
             </div>
@@ -1448,7 +1450,7 @@ const NameStorm = ({ tool }) => {
             </div>
           )}
 
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('ns_have_name_q')} <a href="/NameAudit" className={`font-semibold ${linkStyle}`}>{t('ns_nameaudit')}</a> {t('ns_nameaudit_stress')}
           </p>
           </div>
@@ -1462,7 +1464,7 @@ const NameStorm = ({ tool }) => {
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
 
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-sm p-4 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <span className={`text-sm font-semibold ${c.text}`}>{isBlendMode ? t('ns_blends_from', { seeds: filledSeeds.join(' + ') }) : isDomainMode ? t('ns_domains') : t('ns_names')}{!isBlendMode ? ` ${t('ns_for', { category })}` : ''}</span>
@@ -1500,7 +1502,7 @@ const NameStorm = ({ tool }) => {
 
           {/* Seed Expansion (blend mode) */}
           {results.seed_expansion && !showFavoritesOnly && !showCompare && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               {/* Not information anyone needs — information curious people enjoy.
                   Those are different things, and only one of them earns the space
                   above a decision. */}
@@ -1514,12 +1516,12 @@ const NameStorm = ({ tool }) => {
                   naming report should carry the whole record, so this is hidden
                   with a class rather than dropped from the DOM. */}
               <div data-print-show className={showSeedExpansion ? '' : 'hidden'}>
-              <p className={`text-xs ${c.textMuted} mt-3 mb-3`}>{t('ns_seed_expansion_help')}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-3 mb-3`}>{t('ns_seed_expansion_help')}</p>
               <div className="space-y-2">
                 {results.seed_expansion.map((seed, idx) => (
                   <div key={idx} className={`flex items-start gap-2 p-2 rounded-lg ${c.cardAlt}`}>
                     <span className={`font-bold text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'} whitespace-nowrap`}>{seed.original}</span>
-                    <span className={`text-xs ${c.textMuted}`}>→</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>→</span>
                     <span className={`text-sm ${c.textSecondary}`}>{Array.isArray(seed.expanded) ? seed.expanded.join(', ') : seed.expanded}</span>
                   </div>
                 ))}
@@ -1557,7 +1559,7 @@ const NameStorm = ({ tool }) => {
                         {Array.isArray(nameData?.problems) && nameData.problems.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {nameData.problems.map((p, i) => (
-                              <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>⚠ {p.detail}</span>
+                              <span key={i} className={`text-xs px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>⚠ {p.detail}</span>
                             ))}
                           </div>
                         )}
@@ -1571,11 +1573,11 @@ const NameStorm = ({ tool }) => {
 
           {/* Say It Out Loud */}
           {results.say_it_out_loud?.length > 0 && !showFavoritesOnly && !showCompare && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                 <span>🔊</span> {t('ns_say_out_loud')}
               </h3>
-              <p className={`text-xs ${c.textMuted} mb-3`}>{t('ns_say_out_loud_help')}</p>
+              <p className={`text-[13px] ${c.textMuted} mb-3`}>{t('ns_say_out_loud_help')}</p>
               {results.say_it_out_loud.map((item, idx) => (
                 <div key={idx} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${c.danger} border`}>
                   <span className="font-semibold text-sm">{item.name}</span>
@@ -1587,7 +1589,7 @@ const NameStorm = ({ tool }) => {
 
           {/* Compare View */}
           {showCompare && favorites.length >= 2 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 <span>⚖️</span> {t('ns_compare_favorites', { count: favorites.length })}
               </h3>
@@ -1620,22 +1622,22 @@ const NameStorm = ({ tool }) => {
 
                         {/* Blend components — see NameCard: enthusiast detail, opt-in */}
                         {showConstruction && obj.blend_components && (
-                          <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} font-medium`}>{obj.blend_components}</p>
+                          <p className={`text-xs ${isDark ? 'text-[#a9cdef]' : 'text-[#165b9a]'} font-medium`}>{obj.blend_components}</p>
                         )}
 
                         {/* Domain info */}
                         {obj.tld_rationale && (
-                          <p className={`text-[10px] ${c.textMuted} italic`}>🔗 {obj.tld_rationale}</p>
+                          <p className={`text-[13px] ${c.textMuted} italic`}>🔗 {obj.tld_rationale}</p>
                         )}
                         {obj.verbal_form && (
-                          <p className={`text-[10px] ${c.textMuted}`}>🗣️ "{obj.verbal_form}"</p>
+                          <p className={`text-[13px] ${c.textMuted}`}>🗣️ "{obj.verbal_form}"</p>
                         )}
 
                         {/* Problems detail */}
                         {Array.isArray(obj.problems) && obj.problems.length > 0 && (
                           <div className="space-y-1">
                             {obj.problems.map((p, i) => (
-                              <span key={i} className={`block text-[10px] px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>⚠ {p.detail}</span>
+                              <span key={i} className={`block text-xs px-1.5 py-0.5 rounded border ${severityStyle(p.severity)}`}>⚠ {p.detail}</span>
                             ))}
                           </div>
                         )}
@@ -1644,7 +1646,7 @@ const NameStorm = ({ tool }) => {
                         {avail && !avail.error && (
                           <div className="flex flex-wrap gap-1 pt-1">
                             {Object.entries(avail.domains || {}).slice(0, 4).map(([domain, status]) => (
-                              <span key={domain} className={`px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+                              <span key={domain} className={`px-1.5 py-0.5 rounded text-xs font-mono border ${
                                 status === 'likely_available' ? (isDark ? 'bg-green-900/30 border-green-700 text-green-300' : 'bg-green-50 border-green-300 text-green-700')
                                 : status === 'taken' ? (isDark ? 'bg-red-900/20 border-red-800 text-red-400' : 'bg-red-50 border-red-200 text-red-500')
                                 : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400' : 'bg-gray-100 border-gray-200 text-gray-400')
@@ -1669,7 +1671,7 @@ const NameStorm = ({ tool }) => {
 
           {/* Favorites View */}
           {showFavoritesOnly && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 <span>⭐</span> {t('ns_your_favorites', { count: favorites.length })}
               </h3>
@@ -1685,7 +1687,7 @@ const NameStorm = ({ tool }) => {
               )}
               {favorites.length > 0 && (
                 <button onClick={() => { if (window.confirm(t('ns_confirm_clear_favs_undo'))) setFavorites([]); }}
-                  className={`mt-3 text-xs ${c.textMuted} hover:underline`}>{t('ns_clear_all_favs')}</button>
+                  className={`mt-3 text-[13px] ${c.textMuted} hover:underline`}>{t('ns_clear_all_favs')}</button>
               )}
             </div>
           )}
@@ -1693,7 +1695,7 @@ const NameStorm = ({ tool }) => {
           {/* Names By Category */}
 
           {!showFavoritesOnly && !showCompare && results.names_by_category?.length > 0 && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <div className={`border-t ${c.border} pt-5`}>
               {/* The whole catalogue sits behind one control. Five picks above
                   are the answer; this is the evidence, for the reader who wants
                   to go looking. Collapsed by default — the goal is confidence,
@@ -1736,7 +1738,7 @@ const NameStorm = ({ tool }) => {
                   </button>
                 )}
                 {dismissed.length > 0 && (
-                  <button onClick={() => setDismissed([])} className={`text-xs ${c.textMuted} hover:underline`}>{t('ns_clear_dismissed')}</button>
+                  <button onClick={() => setDismissed([])} className={`text-[13px] ${c.textMuted} hover:underline`}>{t('ns_clear_dismissed')}</button>
                 )}
               </div>
 
@@ -1747,7 +1749,7 @@ const NameStorm = ({ tool }) => {
                   return (
                     <button key={idx} onClick={() => setActiveCategory(idx)}
                       className={`px-3 py-2 rounded-lg border text-sm font-semibold whitespace-nowrap transition-all ${tabStyle(activeCategory === idx)}`}>
-                      {cat.category} {filteredCount !== cat.names.length && <span className={`text-xs ${c.textMuted}`}>({filteredCount})</span>}
+                      {cat.category} {filteredCount !== cat.names.length && <span className={`text-[13px] ${c.textMuted}`}>({filteredCount})</span>}
                     </button>
                   );
                 })}
@@ -1779,7 +1781,7 @@ const NameStorm = ({ tool }) => {
           )}
 
           {/* Cross-tool reference */}
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {isDomainMode
               ? <>{t('ns_found_fav_domain')} <a href="/NameAudit" className={`font-semibold ${linkStyle}`}>{t('ns_nameaudit')}</a> {t('ns_nameaudit_domain_mode')}</>
               : <>{t('ns_found_fav')} <a href="/NameAudit" className={`font-semibold ${linkStyle}`}>{t('ns_nameaudit')}</a> {t('ns_nameaudit_12d')}</>
@@ -1788,7 +1790,7 @@ const NameStorm = ({ tool }) => {
 
           {/* Disclaimer */}
           <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-zinc-800/50' : 'bg-gray-50'}`}>
-            <p className={`text-xs ${c.textMuted}`}>
+            <p className={`text-[13px] ${c.textMuted}`}>
               {t('ns_avail_disclaimer')}
             </p>
           </div>
@@ -1799,7 +1801,7 @@ const NameStorm = ({ tool }) => {
       {quickResults && (
         <div className="space-y-5">
           {quickResults.directions?.map((dir, di) => (
-            <div key={di} className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <div key={di} className={`border-t ${c.border} pt-5`}>
               <h3 className={`text-lg font-bold mb-4 ${c.text}`}>{dir.direction}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {dir.names?.map((nameObj, ni) => (
@@ -1824,7 +1826,7 @@ const NameStorm = ({ tool }) => {
 
           {quickResults.top_pick && (
             <div className={`p-5 rounded-xl text-center ${isDark ? 'bg-amber-900/20 border border-amber-700/40' : 'bg-amber-50 border border-amber-200'}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>⭐ {t('ns_quick_top_pick_box')}</p>
+              <p className={`text-[13px] font-boldr mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>⭐ {t('ns_quick_top_pick_box')}</p>
               <p className={`text-lg font-black ${c.text}`}>{quickResults.top_pick}</p>
             </div>
           )}

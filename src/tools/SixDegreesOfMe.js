@@ -120,23 +120,20 @@ const SixDegreesOfMe = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -151,12 +148,11 @@ const SixDegreesOfMe = ({ tool }) => {
     successTxt:    isDark ? 'text-emerald-300' : 'text-emerald-800',
     warningTxt:    isDark ? 'text-amber-300' : 'text-amber-800',
     dangerHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-500',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // Bespoke keys for this tool
-    chainNode:     isDark ? 'bg-cyan-900/40 border-cyan-700 text-cyan-100' : 'bg-cyan-50 border-cyan-300 text-cyan-800',
+    chainNode:     isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     chainNodeA:    isDark ? 'bg-amber-900/40 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-800',
     chainNodeB:    isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-100' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     chainConnText: isDark ? 'text-zinc-300' : 'text-gray-600',
@@ -166,7 +162,7 @@ const SixDegreesOfMe = ({ tool }) => {
     profileFilled: isDark ? 'text-emerald-400' : 'text-emerald-600',
     surprisePill:  isDark ? 'bg-sky-900/30 text-sky-300 border-sky-700 hover:bg-sky-900/50' : 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100',
     historyCard:   isDark ? 'bg-zinc-700/50 hover:bg-zinc-700' : 'bg-slate-50 hover:bg-slate-100',
-    tabActive:     isDark ? 'border-cyan-500 text-cyan-400' : 'border-cyan-600 text-cyan-600',
+    tabActive:     isDark ? 'border-[#7fb3e0] text-[#7fb3e0]' : 'border-[#142a43] text-[#165b9a]',
     tabInactive:   isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-gray-400 hover:text-gray-600',
     errorBox:      isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
     errorText:     isDark ? 'text-red-300' : 'text-red-800',
@@ -181,9 +177,7 @@ const SixDegreesOfMe = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Session: Core ──
   const [thingA, setThingA] = useState('');
@@ -510,7 +504,7 @@ const SixDegreesOfMe = ({ tool }) => {
             <span className="text-lg">🪪</span>
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-bold ${c.text}`}>{targetLabel || t('sdm_profile_default_title')}</p>
-              <p className={`text-xs ${c.textMuted}`}>
+              <p className={`text-[13px] ${c.textMuted}`}>
                 {count > 0 ? t('sdm_profile_details_summary', { count, filled }) : t('sdm_profile_add_hint')}
               </p>
             </div>
@@ -530,12 +524,12 @@ const SixDegreesOfMe = ({ tool }) => {
                     className={`w-full flex items-center gap-2 py-1.5 text-start ${c.textSecondary}`}>
                     <span className="text-sm">{cat.emoji}</span>
                     <span className={`text-xs font-semibold flex-1 ${c.text}`}>{t(cat.labelKey)}</span>
-                    {catItems.length > 0 && <span className={`text-[10px] font-bold ${c.profileFilled}`}>✓ {catItems.length}</span>}
+                    {catItems.length > 0 && <span className={`text-xs font-bold ${c.profileFilled}`}>✓ {catItems.length}</span>}
                     <Caret open={isEditing} />
                   </button>
                   {isEditing && (
                     <div className="ms-6 mt-1 space-y-2">
-                      <p className={`text-[10px] ${c.textMuted}`}>{t(cat.hintKey)}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>{t(cat.hintKey)}</p>
                       <div className="flex gap-2">
                         <input type="text" value={catInput} onChange={e => setCatInput(e.target.value)}
                           placeholder={t(cat.phKey)} className={`flex-1 px-2.5 py-1.5 rounded-lg border text-base ${c.input} outline-none`}
@@ -557,7 +551,7 @@ const SixDegreesOfMe = ({ tool }) => {
                         <PendingBtn itemKey={cat.id} pending={pendingIdeas}
                           icon={pendingIdeas === cat.id ? (tool?.icon ?? '🔗') : null}
                           onClick={() => runIdeas(cat.id, () => handleAiQuestions(cat.id))} disabled={loading}
-                          className={`text-[10px] font-semibold ${c.accentTxt}`}>{t('sdm_profile_get_ideas')}</PendingBtn>
+                          className={`text-xs font-semibold ${c.accentTxt}`}>{t('sdm_profile_get_ideas')}</PendingBtn>
                       )}
                     </div>
                   )}
@@ -568,7 +562,7 @@ const SixDegreesOfMe = ({ tool }) => {
             {/* AI questions */}
             {target === 'A' && aiQuestions?.questions?.length > 0 && (
               <div className={`p-3 rounded-xl border ${c.aiQuestionBg}`}>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_profile_think_about')}</p>
+                <p className={`text-[13px] font-boldr ${c.textMuted} mb-2`}>{t('sdm_profile_think_about')}</p>
                 {aiQuestions.questions.map((q, i) => (
                   <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {q}</p>
                 ))}
@@ -611,16 +605,16 @@ const SixDegreesOfMe = ({ tool }) => {
     return (
       <div className={`rounded-2xl border overflow-hidden mb-4 ${c.card}`}>
         {/* Header */}
-        <div className={`px-5 py-3 border-b ${c.border} ${isFlip ? (isDark ? 'bg-cyan-900/30' : 'bg-cyan-50') : ''}`}>
-          <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
+        <div className={`px-5 py-3 border-b ${c.border} ${isFlip ? (isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]') : ''}`}>
+          <p className={`text-[15px] font-semibold ${c.labelText}`}>
             {label || (isFlip ? t('sdm_chain_reverse_path') : t('sdm_chain_the_chain'))}
           </p>
-          <p className={`text-[11px] leading-relaxed mt-2 ${c.textMuted}`}>{t('sdm_not_a_biography')}</p>
+          <p className={`text-[13px] leading-relaxed mt-2 ${c.textMuted}`}>{t('sdm_not_a_biography')}</p>
           {chainData.constraint_note && (
-            <p className={`text-[10px] mt-1 ${c.accentTxt}`}>🎯 {chainData.constraint_note}</p>
+            <p className={`text-xs mt-1 ${c.accentTxt}`}>🎯 {chainData.constraint_note}</p>
           )}
           {chainData.difficulty && (
-            <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            <span className={`inline-block mt-1 text-xs font-bold px-2 py-0.5 rounded-full ${
               chainData.difficulty === 'impossible' ? c.danger :
               chainData.difficulty === 'hard' ? c.warning :
               chainData.difficulty === 'medium' ? c.infoBox :
@@ -693,7 +687,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   <p className={`text-xs font-bold ${c.text}`}>
                     <span className={c.accentTxt}>{step.from}</span>
                     {tag && (
-                      <span className="text-[10px] font-bold uppercase tracking-wide ms-1.5 px-1.5 py-0.5 rounded align-middle"
+                      <span className="text-[13px] font-bold ms-1.5 px-1.5 py-0.5 rounded align-middle"
                         style={{ color: tagColor(tag.tag, isDark), backgroundColor: `${tagColor(tag.tag, isDark)}26`, border: `1px solid ${tagColor(tag.tag, isDark)}66` }}>
                         {t(`sdm_tag_${tag.tag}`)}
                       </span>
@@ -706,7 +700,7 @@ const SixDegreesOfMe = ({ tool }) => {
                     <PendingBtn itemKey={step} pending={pendingWhatIf}
                       icon={pendingWhatIf === step ? (tool?.icon ?? '🔗') : null}
                       onClick={() => runWhatIf(step, () => handleWhatIf(step))} disabled={loading}
-                      className={`text-[10px] font-semibold mt-1 ${c.warningTxt}`}>
+                      className={`text-xs font-semibold mt-1 ${c.warningTxt}`}>
                       {t('sdm_chain_what_if_btn')}
                     </PendingBtn>
                   )}
@@ -719,7 +713,7 @@ const SixDegreesOfMe = ({ tool }) => {
         {/* Insight */}
         {chainData.insight && (!animatingChain || visibleSteps > steps.length) && (
           <div className={`mx-4 mb-4 p-4 rounded-xl border ${c.insightBg}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_chain_insight')}</p>
+            <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('sdm_chain_insight')}</p>
             <h4 className={`text-base font-bold ${c.insightText} mb-2`}>{chainData.insight.title}</h4>
             <p className={`text-sm leading-relaxed ${c.insightBody}`}>{chainData.insight.body}</p>
             {chainData.insight.through_line && (
@@ -745,7 +739,7 @@ const SixDegreesOfMe = ({ tool }) => {
     return (
       <div className={`rounded-2xl border overflow-hidden mb-4 ${c.whatIfBg}`}>
         <div className="px-5 py-3 border-b border-red-200/30">
-          <p className={`text-xs font-bold uppercase tracking-wider ${c.errorText}`}>
+          <p className={`text-[13px] font-boldr ${c.errorText}`}>
             {t('sdm_whatif_header', { from: whatIfStep?.from, to: whatIfStep?.to })}
           </p>
         </div>
@@ -756,7 +750,7 @@ const SixDegreesOfMe = ({ tool }) => {
             <span className="text-xl">{lp.emoji}</span>
             <div>
               <p className={`text-sm font-bold ${lpColor}`}>{t(lp.labelKey)}</p>
-              <p className={`text-xs ${c.textMuted}`}>{t(lp.descKey)}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t(lp.descKey)}</p>
             </div>
           </div>
           {whatIfResult.linchpin_explanation && (
@@ -779,7 +773,7 @@ const SixDegreesOfMe = ({ tool }) => {
         <div className={`p-8 rounded-2xl border ${c.card} text-center`}>
           <p className="text-4xl mb-3">🕸️</p>
           <p className={`text-sm font-bold ${c.text} mb-1`}>{t('sdm_web_growing_title')}</p>
-          <p className={`text-xs ${c.textMuted}`}>
+          <p className={`text-[13px] ${c.textMuted}`}>
             {t('sdm_web_growing_body', { count: chainHistory.length })}
           </p>
         </div>
@@ -796,7 +790,7 @@ const SixDegreesOfMe = ({ tool }) => {
       <div className={`rounded-2xl border overflow-hidden ${c.card}`}>
         <div className={`px-5 py-3 border-b ${c.border}`}>
           <p className={`text-sm font-bold ${c.text}`}>{t('sdm_web_title')}</p>
-          <p className={`text-xs ${c.textMuted}`}>
+          <p className={`text-[13px] ${c.textMuted}`}>
             {t('sdm_web_summary', { nodes: graphData.nodes.length, edges: graphData.edges.length, chains: chainHistory.length })}
           </p>
         </div>
@@ -806,7 +800,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {Object.entries(TAG_COLORS).filter(([tag]) =>
             graphData.nodes.some(n => n.tag === tag)
           ).map(([tag]) => (
-            <span key={tag} className="flex items-center gap-1 text-[10px]">
+            <span key={tag} className="flex items-center gap-1 text-xs">
               <span className="w-2 h-2 rounded-full" style={{ background: tagColor(tag, isDark) }} />
               <span className={c.textMuted}>{t(`sdm_tag_${tag}`)}</span>
             </span>
@@ -869,7 +863,7 @@ const SixDegreesOfMe = ({ tool }) => {
         <div className={`px-5 py-3 border-t ${c.border}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_web_hub_nodes')}</p>
+              <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_web_hub_nodes')}</p>
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => b.count - a.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}
@@ -880,7 +874,7 @@ const SixDegreesOfMe = ({ tool }) => {
               </div>
             </div>
             <div>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_web_islands')}</p>
+              <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_web_islands')}</p>
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => a.count - b.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}>
@@ -904,7 +898,7 @@ const SixDegreesOfMe = ({ tool }) => {
         <div className={`p-8 rounded-2xl border ${c.card} text-center`}>
           <p className="text-4xl mb-3">📖</p>
           <p className={`text-sm font-bold ${c.text} mb-1`}>{t('sdm_story_not_enough_title')}</p>
-          <p className={`text-xs ${c.textMuted}`}>
+          <p className={`text-[13px] ${c.textMuted}`}>
             {t('sdm_story_not_enough_body', { count: chainHistory.length })}
           </p>
         </div>
@@ -916,7 +910,7 @@ const SixDegreesOfMe = ({ tool }) => {
               {storyLoading ? <span><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔗'}</span> {t('sdm_story_writing')}</span>
                 : storyResult ? t('sdm_story_regenerate') : t('sdm_story_write')}
             </button>
-            <p className={`text-xs ${c.textMuted} mt-2`}>
+            <p className={`text-[13px] ${c.textMuted} mt-2`}>
               {t('sdm_story_based_on', { chains: chainHistory.length, concepts: Object.keys(nodeTags).length })}
             </p>
           </div>
@@ -932,7 +926,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {/* Through-lines */}
                 {storyResult.through_lines?.length > 0 && (
                   <div className={`mt-4 p-3 rounded-xl border ${c.insightBg}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_story_through_lines')}</p>
+                    <p className={`text-[13px] font-boldr ${c.textMuted} mb-2`}>{t('sdm_story_through_lines')}</p>
                     {storyResult.through_lines.map((tl, i) => (
                       <p key={i} className={`text-xs ${c.insightText} mb-1`}>• {tl}</p>
                     ))}
@@ -943,7 +937,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   {storyResult.hub_nodes?.length > 0 && (
                     <div className={`p-3 rounded-xl border ${c.card}`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_story_hubs')}</p>
+                      <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_story_hubs')}</p>
                       <div className="flex flex-wrap gap-1">
                         {storyResult.hub_nodes.map((n, i) => (
                           <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.infoBox}`}>{n}</span>
@@ -953,7 +947,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   )}
                   {storyResult.island_nodes?.length > 0 && (
                     <div className={`p-3 rounded-xl border ${c.card}`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_story_isolated')}</p>
+                      <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_story_isolated')}</p>
                       <div className="flex flex-wrap gap-1">
                         {storyResult.island_nodes.map((n, i) => (
                           <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}>{n}</span>
@@ -966,7 +960,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {/* Prediction */}
                 {storyResult.prediction && (
                   <div className={`mt-4 p-3 rounded-xl border ${c.challengeBg}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_story_prediction')}</p>
+                    <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_story_prediction')}</p>
                     <p className={`text-sm font-semibold ${c.accentTxt}`}>{storyResult.prediction}</p>
                   </div>
                 )}
@@ -1005,11 +999,11 @@ const SixDegreesOfMe = ({ tool }) => {
             { id: 'shortest', labelKey: 'sdm_between_mode_shortest_label', descKey: 'sdm_between_mode_shortest_desc' },
             { id: 'shared', labelKey: 'sdm_between_mode_shared_label', descKey: 'sdm_between_mode_shared_desc' },
           ].map(m => (
-            <button key={m.id} onClick={() => setBetweenMode(m.id)}
+            <button aria-pressed={betweenMode === m.id} key={m.id} onClick={() => setBetweenMode(m.id)}
               className={`flex-1 p-3 rounded-xl border text-start transition-all ${
                 betweenMode === m.id ? c.pillActive : c.pillInactive}`}>
               <p className={`text-xs font-bold ${c.text}`}>{t(m.labelKey)}</p>
-              <p className={`text-[10px] ${c.textMuted}`}>{t(m.descKey)}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t(m.descKey)}</p>
             </button>
           ))}
         </div>
@@ -1036,7 +1030,7 @@ const SixDegreesOfMe = ({ tool }) => {
       {betweenResult && (
         <div ref={betweenResultRef} className={`scroll-mt-24 rounded-2xl border overflow-hidden ${c.card}`}>
           <div className={`px-5 py-3 border-b ${c.border}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
+            <p className={`text-[15px] font-semibold ${c.labelText}`}>
               🤝 {betweenNameA || t('sdm_copy_you')} ↔ {betweenNameB || t('sdm_copy_them')}
             </p>
           </div>
@@ -1052,7 +1046,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${c.text}`}>
                       <span className={c.accentTxt}>{step.from}</span> → <span className={c.accentTxt}>{step.to}</span>
-                      {step.person && <span className={`text-[9px] ms-1 ${c.textMuted}`}>({step.person === 'A' ? betweenNameA || t('sdm_copy_you') : step.person === 'B' ? betweenNameB || t('sdm_copy_them') : t('sdm_between_shared_label')})</span>}
+                      {step.person && <span className={`text-xs ms-1 ${c.textMuted}`}>({step.person === 'A' ? betweenNameA || t('sdm_copy_you') : step.person === 'B' ? betweenNameB || t('sdm_copy_them') : t('sdm_between_shared_label')})</span>}
                     </p>
                     <p className={`text-xs ${c.chainConnText}`}>{step.connection}</p>
                   </div>
@@ -1072,7 +1066,7 @@ const SixDegreesOfMe = ({ tool }) => {
                       <div key={i} className="flex items-start gap-2">
                         <span className="text-xs mt-0.5">{step.emoji}</span>
                         <div><p className={`text-xs font-bold ${c.text}`}>{step.from} → {step.to}</p>
-                          <p className={`text-[11px] ${c.textMuted}`}>{step.connection}</p></div>
+                          <p className={`text-[13px] ${c.textMuted}`}>{step.connection}</p></div>
                       </div>
                     ))}
                   </div>
@@ -1084,7 +1078,7 @@ const SixDegreesOfMe = ({ tool }) => {
                       <div key={i} className="flex items-start gap-2">
                         <span className="text-xs mt-0.5">{step.emoji}</span>
                         <div><p className={`text-xs font-bold ${c.text}`}>{step.from} → {step.to}</p>
-                          <p className={`text-[11px] ${c.textMuted}`}>{step.connection}</p></div>
+                          <p className={`text-[13px] ${c.textMuted}`}>{step.connection}</p></div>
                       </div>
                     ))}
                   </div>
@@ -1096,7 +1090,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Insight */}
           {betweenResult.insight && (
             <div className={`mx-4 mb-4 p-4 rounded-xl border ${c.insightBg}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_chain_insight')}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-1`}>{t('sdm_chain_insight')}</p>
               <h4 className={`text-base font-bold ${c.insightText} mb-2`}>{betweenResult.insight.title}</h4>
               <p className={`text-sm leading-relaxed ${c.insightBody}`}>{betweenResult.insight.body}</p>
             </div>
@@ -1129,11 +1123,11 @@ const SixDegreesOfMe = ({ tool }) => {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <Caret open={isExp} />
                       <p className={`text-sm font-bold ${c.text} truncate`}>"{h.thingA}" → "{h.thingB}"</p>
-                      {h.constraint && <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${c.infoBox}`}>{h.constraint}</span>}
+                      {h.constraint && <span className={`text-xs px-1.5 py-0.5 rounded-full ${c.infoBox}`}>{h.constraint}</span>}
                     </div>
-                    <span className={`text-[10px] flex-shrink-0 ms-2 ${c.textMuted}`}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                    <span className={`text-xs flex-shrink-0 ms-2 ${c.textMuted}`}>{new Date(h.createdAt).toLocaleDateString()}</span>
                   </div>
-                  {!isExp && h.insight?.title && <p className={`text-xs ${c.textMuted} mt-1 truncate`}>💡 {h.insight.title}</p>}
+                  {!isExp && h.insight?.title && <p className={`text-[13px] ${c.textMuted} mt-1 truncate`}>💡 {h.insight.title}</p>}
                 </button>
                 {isExp && (
                   <div className={`px-4 pb-4 border-t ${c.border}`}>
@@ -1141,13 +1135,13 @@ const SixDegreesOfMe = ({ tool }) => {
                       <div key={si} className="flex items-start gap-2 mt-2">
                         <span className="text-xs mt-0.5">{step.emoji}</span>
                         <div><p className={`text-xs font-bold ${c.text}`}>{step.from} → {step.to}</p>
-                          <p className={`text-[11px] ${c.textMuted}`}>{step.connection}</p></div>
+                          <p className={`text-[13px] ${c.textMuted}`}>{step.connection}</p></div>
                       </div>
                     ))}
                     {h.insight && (
                       <div className={`mt-3 p-3 rounded-lg border ${c.insightBg}`}>
                         <p className={`text-xs font-bold ${c.insightText}`}>💡 {h.insight.title}</p>
-                        <p className={`text-[11px] ${c.insightBody} mt-1`}>{h.insight.body}</p>
+                        <p className={`text-[13px] ${c.insightBody} mt-1`}>{h.insight.body}</p>
                       </div>
                     )}
                     <div className="flex gap-2 mt-3">
@@ -1184,15 +1178,21 @@ const SixDegreesOfMe = ({ tool }) => {
   // ══════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* Header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
+      {/* Header — site style (2026-09-27): a pale band of the tool's color
+          bleeding to the card edges, the ground the "Try an example" pill was
+          made for (PF-17c), with the tabs under it. Screen only. */}
+      <div
+        data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
+        <div className="pb-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="me-2 text-xl">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{t('sdm_tagline')}</p>
+              {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                <span className="me-2 text-xl">{tool?.icon ?? '🔗'}</span>{t('sdm_tagline')}
+              </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(result || thingA.trim() || thingB.trim() || betweenResult) && (
@@ -1206,11 +1206,11 @@ const SixDegreesOfMe = ({ tool }) => {
       {/* Tabs */}
       <div className="flex gap-1 pt-3 border-b overflow-x-auto" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
         {TABS.map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+          <button key={tab.id} aria-pressed={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}
             className={`px-3 py-2 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap text-start ${
               activeTab === tab.id ? c.tabActive : c.tabInactive}`}>
             <span className="block">{tab.label}</span>
-            {tab.sub && <span className={`block text-[10px] font-normal ${c.textMuted}`}>{tab.sub}</span>}
+            {tab.sub && <span className={`block text-xs font-normal ${c.textMuted}`}>{tab.sub}</span>}
           </button>
         ))}
       </div>
@@ -1227,12 +1227,12 @@ const SixDegreesOfMe = ({ tool }) => {
       {activeTab === 'chain' && (
         <>
           {/* Profile Builder */}
-          <div className="mb-5 scroll-mt-24" ref={profileRef}>
+          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className="mb-5 scroll-mt-24" ref={profileRef}>
             {renderProfileBuilder(profile, setProfile, t('sdm_profile_default_title'), editingCategory, setEditingCategory, categoryInput, setCategoryInput, 'A')}
           </div>
 
           {/* The two ends of the chain */}
-          <div className={`mb-5 p-5 rounded-2xl border ${c.card}`}>
+          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className={`mb-5 p-5 rounded-2xl border ${c.card}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
@@ -1257,8 +1257,8 @@ const SixDegreesOfMe = ({ tool }) => {
             </div>
 
             <div className={`mb-4 rounded-xl p-3 ${c.infoBox}`}>
-              <p className={`text-[11px] font-bold ${c.text} mb-1.5`}>{t('sdm_might_discover')}</p>
-              <ul className={`text-[11px] ${c.textSecondary} space-y-0.5`}>
+              <p className={`text-[13px] font-bold ${c.text} mb-1.5`}>{t('sdm_might_discover')}</p>
+              <ul className={`text-[13px] ${c.textSecondary} space-y-0.5`}>
                 <li>• {t('sdm_discover_1')}</li>
                 <li>• {t('sdm_discover_2')}</li>
                 <li>• {t('sdm_discover_3')}</li>
@@ -1271,11 +1271,11 @@ const SixDegreesOfMe = ({ tool }) => {
                 things might be connected. Reading the pairs is the pitch;
                 one tap fills both boxes. */}
             <div className="mb-4">
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_try_these')}</p>
+              <p className={`text-[13px] font-boldr ${c.textMuted} mb-2`}>{t('sdm_try_these')}</p>
               <div className="flex flex-col gap-1.5">
                 {PAIRS.map((pr, i) => (
                   <button key={i} onClick={() => { setThingA(t(pr.aKey)); setThingB(t(pr.bKey)); }}
-                    className={`text-start text-[11px] px-2.5 py-1.5 rounded-lg border transition-all ${c.pillInactive}`}>
+                    className={`text-start text-[13px] px-2.5 py-1.5 rounded-lg border transition-all ${c.pillInactive}`}>
                     {t(pr.aKey)} <span className={`inline-block rtl:-scale-x-100 ${c.textMuted}`}>→</span> {t(pr.bKey)}
                   </button>
                 ))}
@@ -1287,16 +1287,16 @@ const SixDegreesOfMe = ({ tool }) => {
                 and a button. */}
             <div className="mb-4">
               <button onClick={() => setShowChallenge(v => !v)} aria-expanded={showChallenge}
-                className={`flex items-center gap-1.5 text-[11px] font-bold ${c.accentTxt}`}>
+                className={`flex items-center gap-1.5 text-[13px] font-bold ${c.accentTxt}`}>
                 {t('sdm_make_it_harder')} <Caret open={showChallenge} />
               </button>
               {showChallenge && (<>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2 mt-2`}>{t('sdm_challenge_mode_label')}</p>
+              <p className={`text-[13px] font-boldr ${c.textMuted} mb-2 mt-2`}>{t('sdm_challenge_mode_label')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {CHALLENGES.map(ch => (
-                  <button key={ch.id}
+                  <button aria-pressed={challengeMode === ch.id} key={ch.id}
                     onClick={() => setChallengeMode(challengeMode === ch.id ? null : ch.id)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-lg text-[13px] font-semibold transition-all ${
                       challengeMode === ch.id ? c.pillActive : c.pillInactive}`}
                     title={t(ch.descKey)}>
                     {ch.emoji} {t(ch.labelKey)}
@@ -1304,14 +1304,14 @@ const SixDegreesOfMe = ({ tool }) => {
                 ))}
               </div>
               {challengeMode && (
-                <p className={`text-[10px] mt-1 ${c.accentTxt}`}>
+                <p className={`text-xs mt-1 ${c.accentTxt}`}>
                   🎯 {t(CHALLENGES.find(ch => ch.id === challengeMode)?.descKey)}
                 </p>
               )}
               </>)}
             </div>
 
-            <p className={`text-[11px] ${c.textMuted} mb-3`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} mb-3`}>
               {t('sdm_brainroulette_hint').split('{{link}}').map((part, i, arr) => (
                 <React.Fragment key={i}>
                   {part}
@@ -1348,7 +1348,7 @@ const SixDegreesOfMe = ({ tool }) => {
             </div>
 
             {!thingA.trim() && !thingB.trim() && !result && (
-              <p className={`text-xs ${c.textMuted} mt-3`}>{t('sdm_hint_two_things')}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-3`}>{t('sdm_hint_two_things')}</p>
             )}
 
             {profileItemCount < 3 && (
@@ -1362,7 +1362,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Surprise pairs */}
           {surprisePairs?.length > 0 && (
             <div className={`mb-5 rounded-2xl border p-4 ${c.card}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-3`}>{t('sdm_surprise_try_pairs')}</p>
+              <p className={`text-[15px] font-semibold ${c.labelText} mb-3`}>{t('sdm_surprise_try_pairs')}</p>
               <div className="space-y-2">
                 {surprisePairs.map((pair, i) => (
                   <button key={i} onClick={() => selectSurprisePair(pair)}
@@ -1370,7 +1370,7 @@ const SixDegreesOfMe = ({ tool }) => {
                     <span className={c.accentTxt}>🔗</span>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-bold ${c.text}`}>"{pair.thingA}" → "{pair.thingB}"</p>
-                      <p className={`text-xs ${c.textMuted}`}>{pair.tease}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>{pair.tease}</p>
                     </div>
                     <span className="text-xs">→</span>
                   </button>
@@ -1421,8 +1421,8 @@ const SixDegreesOfMe = ({ tool }) => {
           </div>
 
           {/* Cross-refs */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('sdm_related_tools')}</p>
+          <div data-print-hide className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('sdm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BrainRoulette" className={`text-xs ${linkStyle}`}>{t('sdm_related_brainroulette')}</a>
               <a href="/DreamPatternSpotter" className={`text-xs ${linkStyle}`}>{t('sdm_related_dream')}</a>

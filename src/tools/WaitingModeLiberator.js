@@ -244,47 +244,44 @@ const WaitingModeLiberator = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     textGhostDel:  isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
-    badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    badge:         isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     // ── Bespoke keys ──
     tag:           isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-200',
-    tagActive:     isDark ? 'bg-cyan-900/40 text-cyan-200 border-cyan-600' : 'bg-cyan-100 text-cyan-800 border-cyan-400',
+    tagActive:     isDark ? 'bg-[#1f2530] text-zinc-100 border-[#7fb3e0]' : 'bg-[#eef3f8] text-[#142a43] border-[#142a43]',
     blockBg:       isDark ? 'bg-zinc-700/40' : 'bg-gray-50',
     cardHover:     isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-50',
-    accentLight:   isDark ? 'bg-cyan-900/25 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    accentLightText: isDark ? 'text-cyan-300' : 'text-cyan-800',
+    accentLight:   isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    accentLightText: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     errorText:     isDark ? 'text-red-300' : 'text-red-700',
     hero:          isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200',
     heroText:      isDark ? 'text-zinc-50' : 'text-gray-900',
     heroAccent:    isDark ? 'text-zinc-400' : 'text-gray-500',
-    launch:        isDark ? 'bg-zinc-800 border-cyan-600' : 'bg-white border-cyan-400',
+    launch:        isDark ? 'bg-zinc-800 border-[#7fb3e0]' : 'bg-white border-[#142a43]',
     launchText:    isDark ? 'text-zinc-50' : 'text-gray-900',
-    launchAccent:  isDark ? 'text-cyan-400' : 'text-cyan-700',
+    launchAccent:  isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]',
   };
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ─── State: View ───
   // setup | active | launching | debrief | insights
@@ -459,7 +456,7 @@ const WaitingModeLiberator = ({ tool }) => {
 
   const intensityBadge = (intensity) => {
     if (intensity === 'low') return { bg: isDark ? 'bg-emerald-800/50' : 'bg-emerald-100', text: isDark ? 'text-emerald-300' : 'text-emerald-700', label: t('wml_easy') };
-    if (intensity === 'high') return { bg: isDark ? 'bg-cyan-800/50' : 'bg-cyan-100', text: isDark ? 'text-cyan-300' : 'text-cyan-700', label: t('wml_deep') };
+    if (intensity === 'high') return { bg: isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]', text: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]', label: t('wml_deep') };
     return { bg: isDark ? 'bg-zinc-700/50' : 'bg-slate-100', text: isDark ? 'text-zinc-300' : 'text-slate-600', label: t('wml_medium') };
   };
 
@@ -701,17 +698,20 @@ const WaitingModeLiberator = ({ tool }) => {
     const draftParsed = parseTimeInput(draftTime, draftDayOffset);
     const canCommit   = !!draftParsed;
 
-    return (<div ref={viewTopRef} className="pt-2 pb-6 px-4">
-        <div className="max-w-xl mx-auto space-y-4">
-
+    return (<div ref={viewTopRef} className="pb-6">
           {/* Header — PF-30: no in-card <h2>. ToolPageWrapper already renders the
               tool's name as the page h1, so repeating it here made the visitor
               read the same words twice before reaching an input. The icon moves
-              onto the tagline, which is the line that says something. */}
-          <div className="pb-1">
+              onto the tagline, which is the line that says something. Site style
+              (2026-09-27): a pale band bleeding to the card edges (PF-17c). */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⏳'}</span>{t('wml_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -725,6 +725,8 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           </div>
 
+        <div data-print-form className="max-w-xl mx-auto space-y-4">
+
           {/* Session stats bar */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl px-4 py-2.5 flex items-center justify-between`}>
               <span className={`text-sm ${c.textSecondary}`}>
                 <span>📊</span> {t(sessionLog.length === 1 ? 'wml_sessions_one' : 'wml_sessions_many', { count: sessionLog.length })} · <span className={c.textMuted}>{t('wml_reclaimed', { h: Math.round(sessionLog.reduce((sum, s) => sum + (s.freeMinutes || 0), 0) / 60 * 10) / 10 })}</span>
@@ -732,9 +734,9 @@ const WaitingModeLiberator = ({ tool }) => {
               {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-2.5 py-1.5 rounded-lg font-medium ${c.tagActive} disabled:opacity-40`}>{t('wml_patterns')}</button>
               )} <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title={t('wml_clear_history')}>🗑️</button>
             </div>
-          )} {/* ── EVENT ENTRY ── */} <div className={`${c.card} border rounded-xl p-4 space-y-3`}>
+          )} {/* ── EVENT ENTRY ── */} <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('wml_calendar_q')}</p>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('wml_calendar_sub')}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('wml_calendar_sub')}</p>
 
             {/* Name + Type */} <div className="space-y-2">
               <input
@@ -768,13 +770,13 @@ const WaitingModeLiberator = ({ tool }) => {
                 onClick={commitDraft} disabled={!canCommit} className={`mt-1 px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 transition-all`} >
                 {t('wml_add')}
               </button>
-              {draftTime.trim() && !draftParsed && (<p className={`text-xs ${c.textMuted}`}>{t('wml_time_hint')}</p>
+              {draftTime.trim() && !draftParsed && (<p className={`text-[13px] ${c.textMuted}`}>{t('wml_time_hint')}</p>
               )} {/* The chip sets the day as well as suggesting a time, but the day
                    was set invisibly — the time box shows 10:00 AM whether that
                    is today or Thursday. This says which one out loud, so the
                    preset is doing visible work rather than asking to be
                    trusted. */}
-              {draftParsed && (<p className={`text-xs ${c.textMuted}`}>
+              {draftParsed && (<p className={`text-[13px] ${c.textMuted}`}>
                   {t('wml_resolved', {
                     // "+3d" is the calendar machinery this row exists to get
                     // rid of. Past tomorrow, say the day's name.
@@ -787,7 +789,7 @@ const WaitingModeLiberator = ({ tool }) => {
               )} </div>
 
             {/* ── ADDED EVENTS LIST ── */} {events.length > 0 && (<div className="space-y-2 pt-1">
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted}`}>{t('wml_your_events')}</p>
+                <p className={`text-[13px] font-boldr ${c.textMuted}`}>{t('wml_your_events')}</p>
                 {events.map((ev, idx) => {
                   const typeObj   = APPT_TYPES.find(a => a.id === ev.type);
                   const typeLabel = ev.type === 'other' && ev.customType ? ev.customType : (typeObj ? t(typeObj.labelKey) : '');
@@ -805,13 +807,13 @@ const WaitingModeLiberator = ({ tool }) => {
                             const dOff = parsedDayOffset(at);
                             // Same rule as the entry preview: past tomorrow, a weekday
                             // reads as a day and "+3d" reads as arithmetic.
-                            return dOff > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ms-1.5 ${c.badge}`}>
+                            return dOff > 0 && (<span className={`text-xs font-bold px-1.5 py-0.5 rounded ms-1.5 ${c.badge}`}>
                               {dOff === 1 ? t('wml_tomorrow') : at.toLocaleDateString(undefined, { weekday: 'long' })} </span>
                             );
-                          })()} <span className={`text-xs ${c.textMuted} ms-1.5`}>· {ev.time}</span>
-                          <span className={`text-xs ${c.textMuted} ms-1`}>{t('wml_prep_travel', { prep: ev.prepMinutes, travel: ev.travelMinutes })}</span>
+                          })()} <span className={`text-[13px] ${c.textMuted} ms-1.5`}>· {ev.time}</span>
+                          <span className={`text-[13px] ${c.textMuted} ms-1`}>{t('wml_prep_travel', { prep: ev.prepMinutes, travel: ev.travelMinutes })}</span>
                         </div>
-                        <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '✏️' : '✏️'}</span>
+                        <span className={`text-[13px] ${c.textMuted}`}>{isExpanded ? '✏️' : '✏️'}</span>
                         <button
                           onClick={e => { e.stopPropagation(); removeEvent(ev.id); if (expandedEventId === ev.id) setExpandedEventId(null); }} className={`text-sm ${c.textGhostDel} transition-colors ms-1 flex-shrink-0`} title={t('wml_remove')}
                         >✕</button>
@@ -820,35 +822,35 @@ const WaitingModeLiberator = ({ tool }) => {
                       {/* Expanded: full edit form */} {isExpanded && (<div className={`mt-1 px-3 py-3 rounded-xl ${isDark ? 'bg-zinc-700/40' : 'bg-gray-50'} space-y-3`}>
 
                           {/* Day */} <div>
-                            <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('wml_day')}</p>
+                            <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('wml_day')}</p>
                             <div className="flex gap-1">
-                              {[{offset:0,key:'wml_today'},{offset:1,key:'wml_tomorrow'},{offset:2,key:'wml_plus2days'}].map(d => (<button key={d.offset} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'dayOffset', d.offset); }} className={`px-2 py-1 rounded text-[10px] font-medium border transition-all ${ev.dayOffset === d.offset ? c.tagActive : c.tag}`}>
+                              {[{offset:0,key:'wml_today'},{offset:1,key:'wml_tomorrow'},{offset:2,key:'wml_plus2days'}].map(d => (<button key={d.offset} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'dayOffset', d.offset); }} className={`px-2 py-1 rounded text-xs font-medium border transition-all ${ev.dayOffset === d.offset ? c.tagActive : c.tag}`}>
                                   {t(d.key)} </button>
                               ))} </div>
                           </div>
 
                           {/* Name + time */} <div className="grid grid-cols-2 gap-2">
                             <div>
-                              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('wml_name')}</p>
+                              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('wml_name')}</p>
                               <input
                                 type="text"
                                 value={ev.name} onChange={e => updateEvent(ev.id, 'name', e.target.value)} placeholder={t('wml_name_ph_short')}
                                 className={`w-full px-2.5 py-1.5 rounded-lg border ${c.input} text-xs outline-none`} onClick={e => e.stopPropagation()} />
                             </div>
                             <div>
-                              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('wml_time')}</p>
+                              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('wml_time')}</p>
                               <input
                                 type="text"
                                 value={ev.time} onChange={e => updateEvent(ev.id, 'time', e.target.value)} placeholder={t('wml_time_ph_short')}
                                 className={`w-full px-2.5 py-1.5 rounded-lg border ${c.input} text-xs outline-none ${!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() ? 'border-red-400' : ''}`} onClick={e => e.stopPropagation()} />
-                              {!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() && (<p className={`text-[10px] text-red-400 mt-0.5`}>{t('wml_time_hint_short')}</p>
+                              {!parseTimeInput(ev.time, ev.dayOffset) && ev.time.trim() && (<p className={`text-xs text-red-400 mt-0.5`}>{t('wml_time_hint_short')}</p>
                               )} </div>
                           </div>
 
                           {/* Type pills */} <div>
-                            <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('wml_type')}</p>
+                            <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('wml_type')}</p>
                             <div className="flex flex-wrap gap-1">
-                              {APPT_TYPES.map(a => (<button key={a.id} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'type', ev.type === a.id ? '' : a.id); }} className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border transition-all ${ev.type === a.id ? c.tagActive : c.tag}`}>
+                              {APPT_TYPES.map(a => (<button key={a.id} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'type', ev.type === a.id ? '' : a.id); }} className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border transition-all ${ev.type === a.id ? c.tagActive : c.tag}`}>
                                   <span>{a.icon}</span><span>{t(a.labelKey)}</span>
                                 </button>
                               ))} </div>
@@ -856,15 +858,15 @@ const WaitingModeLiberator = ({ tool }) => {
 
                           {/* Prep + travel */} <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('wml_prep_time')}</p>
+                              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('wml_prep_time')}</p>
                               <div className="flex flex-wrap gap-1">
-                                {PREP_PRESETS.map(p => (<button key={p.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'prepMinutes', p.min); }} className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${ev.prepMinutes === p.min ? c.tagActive : c.tag}`}>{p.min === 0 ? t('wml_preset_none') : t('wml_minutes', { m: p.min })}</button>
+                                {PREP_PRESETS.map(p => (<button key={p.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'prepMinutes', p.min); }} className={`px-2 py-1 rounded text-xs font-medium transition-all ${ev.prepMinutes === p.min ? c.tagActive : c.tag}`}>{p.min === 0 ? t('wml_preset_none') : t('wml_minutes', { m: p.min })}</button>
                                 ))} </div>
                             </div>
                             <div>
-                              <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('wml_travel_time')}</p>
+                              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('wml_travel_time')}</p>
                               <div className="flex flex-wrap gap-1">
-                                {TRAVEL_PRESETS.map(tp => (<button key={tp.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'travelMinutes', tp.min); }} className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${ev.travelMinutes === tp.min ? c.tagActive : c.tag}`}>{tp.min === 0 ? t('wml_preset_none') : t('wml_minutes', { m: tp.min })}</button>
+                                {TRAVEL_PRESETS.map(tp => (<button key={tp.min} onClick={e => { e.stopPropagation(); updateEvent(ev.id, 'travelMinutes', tp.min); }} className={`px-2 py-1 rounded text-xs font-medium transition-all ${ev.travelMinutes === tp.min ? c.tagActive : c.tag}`}>{tp.min === 0 ? t('wml_preset_none') : t('wml_minutes', { m: tp.min })}</button>
                                 ))} </div>
                             </div>
                           </div>
@@ -879,17 +881,17 @@ const WaitingModeLiberator = ({ tool }) => {
                 })} </div>
             )} </div>
 
-          {/* ── HOW YOU'RE DOING ── */} <div className={`${c.card} border rounded-xl p-4 space-y-4`}>
+          {/* ── HOW YOU'RE DOING ── */} <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('wml_context_header')}</p>
             {/* Energy */} <div className="space-y-2">
               <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_energy_q')}</p>
               <div className="flex gap-1.5">
                 {ENERGY_LEVELS.map(e => (<button key={e.id} onClick={() => setEnergy(e.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
                     <span className="block text-base">{e.icon}</span>
-                    <span className={`block text-[9px] font-medium mt-0.5 ${energy === e.id ? '' : c.textMuted}`}>{t(e.labelKey)}</span>
+                    <span className={`block text-xs font-medium mt-0.5 ${energy === e.id ? '' : c.textMuted}`}>{t(e.labelKey)}</span>
                   </button>
                 ))} </div>
-              <p className={`text-xs ${c.textMuted} text-center`}>{t(ENERGY_LEVELS.find(e => e.id === energy)?.descKey)}</p>
+              <p className={`text-[13px] ${c.textMuted} text-center`}>{t(ENERGY_LEVELS.find(e => e.id === energy)?.descKey)}</p>
             </div>
 
             {/* Anxiety slider */} <div className="space-y-2">
@@ -898,9 +900,9 @@ const WaitingModeLiberator = ({ tool }) => {
               </p>
               <input type="range" min="1" max="10" value={anxietyBefore} onChange={e => setAnxietyBefore(parseInt(e.target.value))} className="w-full accent-cyan-500" />
               <div className="flex justify-between">
-                <span className={`text-[10px] ${c.textMuted}`}>{t('wml_chill')}</span>
+                <span className={`text-[13px] ${c.textMuted}`}>{t('wml_chill')}</span>
                 <span className={`text-sm font-bold ${c.text}`}>{anxietyBefore}/10</span>
-                <span className={`text-[10px] ${c.textMuted}`}>{t('wml_dreading')}</span>
+                <span className={`text-[13px] ${c.textMuted}`}>{t('wml_dreading')}</span>
               </div>
               {pastDebriefs.length > 0 && (<p className={`text-xs ${c.accentLightText} ${c.accentLight} rounded-lg px-3 py-2 border`}>
                   <span>📊</span> {t('wml_past_appts', { n: Math.min(pastDebriefs.length, 5), type: events[0]?.type || '', avg: Math.round(pastDebriefs.slice(0, 5).reduce((s, d) => s + (d.anxietyBefore || 5), 0) / Math.min(pastDebriefs.length, 5)), outcome: pastDebriefs.filter(d => ['fine','okay'].includes(d.appointmentReality)).length > pastDebriefs.length / 2 ? t('wml_outcome_fine') : t('wml_outcome_manageable') })}
@@ -912,14 +914,14 @@ const WaitingModeLiberator = ({ tool }) => {
               <div className="flex gap-1.5">
                 {CLOCK_OPTIONS.map(o => (<button key={o.id} onClick={() => setClockChecking(o.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${clockChecking === o.id ? c.tagActive : c.tag}`}>
                     <span className="block text-base">{o.icon}</span>
-                    <span className={`block text-[9px] font-medium mt-0.5 ${clockChecking === o.id ? '' : c.textMuted}`}>{t(o.labelKey)}</span>
+                    <span className={`block text-xs font-medium mt-0.5 ${clockChecking === o.id ? '' : c.textMuted}`}>{t(o.labelKey)}</span>
                   </button>
                 ))} </div>
             </div>
 
             {/* Tasks */} <div className="space-y-1.5">
               <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_tasks_q')} <span className={c.textMuted}>({t('optional')})</span></p>
-              <p className={`text-xs ${c.textMuted} -mt-1`}>{t('wml_tasks_sub')}</p>
+              <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('wml_tasks_sub')}</p>
               <textarea value={userTasks} onChange={e => setUserTasks(e.target.value)} placeholder={t('wml_tasks_ph')}
                 rows={3} className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm resize-none`} />
             </div>
@@ -938,19 +940,19 @@ const WaitingModeLiberator = ({ tool }) => {
           </button>
         </div>
 
-          {!hasAnyTime && (<p className={`text-center text-xs ${c.textMuted}`}>{t('wml_add_one')}</p>
-          )} {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}>⚠️ {error}</p></div>} <p className={`text-center text-xs ${c.textMuted}`}>{t('wml_disclaimer')}</p>
+          {!hasAnyTime && (<p className={`text-center text-[13px] ${c.textMuted}`}>{t('wml_add_one')}</p>
+          )} {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}>⚠️ {error}</p></div>} <p className={`text-center text-[13px] ${c.textMuted}`}>{t('wml_disclaimer')}</p>
 
-          {/* Cross-refs */} <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-xs ${c.textMuted}`}>
+          {/* Cross-refs */} <div data-print-hide className={`border-t ${c.border} pt-5`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('wml_xref_stuck_q')}{' '}
-              <a href="/VirtualBodyDouble" className={`font-medium ${isDark ? 'text-cyan-300' : 'text-cyan-800'} underline`}>👥 {t('wml_xref_vbd')}</a>{' '}
+              <a href="/VirtualBodyDouble" className={`font-medium ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'} underline`}>👥 {t('wml_xref_vbd')}</a>{' '}
               {t('wml_xref_stuck_tail')}
             </p>
           </div>
 
-          {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('wml_recent_sessions')}</h3>
+          {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}>{t('wml_recent_sessions')}</h3>
               <div className="space-y-2">
                 {sessionLog.slice(0, 5).map(s => {
                   const typeIcon = APPT_TYPES.find(a => a.id === s.events?.[0]?.type)?.icon || '📌';
@@ -960,10 +962,10 @@ const WaitingModeLiberator = ({ tool }) => {
                           <span className="text-xs">{typeIcon}</span>
                           <span className={`text-sm font-medium ${c.text}`}>
                             {s.events?.map(e => e.name || (APPT_TYPES.find(a => a.id === e.type) ? t(APPT_TYPES.find(a => a.id === e.type).labelKey) : null) || e.time).join(', ') || '—'} </span>
-                          <span className={`text-xs ${c.textMuted}`}>
+                          <span className={`text-[13px] ${c.textMuted}`}>
                             {s.events?.map(e => e.time).join(', ')} </span>
-                          {s.events?.length > 1 && <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.tag}`}>{t('wml_events_count', { n: s.events.length })}</span>} </div>
-                        <span className={`text-xs ${c.textMuted}`}>
+                          {s.events?.length > 1 && <span className={`text-xs px-1.5 py-0.5 rounded ${c.tag}`}>{t('wml_events_count', { n: s.events.length })}</span>} </div>
+                        <span className={`text-[13px] ${c.textMuted}`}>
                           {t('wml_free_meta', { free: s.freeMinutes, n: s.totalBlocks || 0 })} · {ENERGY_LEVELS.find(e => e.id === s.energy)?.icon || '😐'} {s.debrief ? ` · ${REALITY_OPTIONS.find(r => r.id === s.debrief.reality)?.icon || ''}` : ''} · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} </span>
                       </div>
                       <div className="flex items-center gap-2 ms-2 flex-shrink-0">
@@ -1029,8 +1031,8 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           )} {/* Step progress dots */} {steps.length > 0 && (<div className="flex justify-center gap-2">
               {steps.map((_, i) => (<div key={i} className={`w-3 h-3 rounded-full transition-all ${
-                  i < launchStep ? (isDark ? 'bg-cyan-400' : 'bg-cyan-500')
-                    : i === launchStep && isGuiding ? (isDark ? 'bg-cyan-400 animate-pulse' : 'bg-cyan-500 animate-pulse')
+                  i < launchStep ? (isDark ? 'bg-cyan-400' : 'bg-[#142a43]')
+                    : i === launchStep && isGuiding ? (isDark ? 'bg-cyan-400 animate-pulse' : 'bg-[#142a43] animate-pulse')
                     : (isDark ? 'bg-zinc-600' : 'bg-gray-300')
                 }`} />
               ))} </div>
@@ -1066,25 +1068,25 @@ const WaitingModeLiberator = ({ tool }) => {
               </p>
             )} </div>
 
-          {/* Event timeline */} {results.events_summary?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}><span>📅</span> {t('wml_todays_events')}</p>
+          {/* Event timeline */} {results.events_summary?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted}r mb-2`}><span>📅</span> {t('wml_todays_events')}</p>
               <div className="space-y-2">
                 {results.events_summary.map((ev, i) => (<div key={i} className={`flex items-center gap-3 p-2.5 rounded-lg ${c.blockBg}`}>
                     <span className="text-sm">{APPT_TYPES.find(a => a.id === ev.type)?.icon || '📌'}</span>
-                    <div className="flex-1"><span className={`text-sm font-medium ${c.text}`}>{ev.time}</span><span className={`text-xs ${c.textMuted} ms-2`}>{ev.type || t('wml_event')}</span></div>
-                    <span className={`text-xs ${c.textMuted}`}>{t('wml_prep_at', { time: ev.prep_alarm })}</span>
+                    <div className="flex-1"><span className={`text-sm font-medium ${c.text}`}>{ev.time}</span><span className={`text-[13px] ${c.textMuted} ms-2`}>{ev.type || t('wml_event')}</span></div>
+                    <span className={`text-[13px] ${c.textMuted}`}>{t('wml_prep_at', { time: ev.prep_alarm })}</span>
                   </div>
                 ))} </div>
             </div>
           )} {/* Permission */} {results.permission && (<div className={`${c.accentLight} border rounded-xl p-5`}>
               <p className={`text-sm font-medium ${c.accentLightText} leading-relaxed`}><span className="text-lg me-1">🔓</span> {results.permission}</p>
             </div>
-          )} {anxietyTrack && (<div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}><span>📊</span> {t('wml_track_header')}</p>
+          )} {anxietyTrack && (<div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted}r mb-2`}><span>📊</span> {t('wml_track_header')}</p>
               <div className="flex items-end gap-1.5 mb-2" aria-hidden="true">
                 {anxietyTrack.points.map((pt, i) => (<div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div className={`w-full rounded-t ${pt.wasFine ? 'bg-emerald-400' : 'bg-amber-400'}`} style={{ height: `${Math.max(6, pt.anxiety * 5)}px` }} />
-                    <span className={`text-[9px] ${c.textMuted}`}>{pt.anxiety}</span>
+                    <span className={`text-[13px] ${c.textMuted}`}>{pt.anxiety}</span>
                   </div>
                 ))} </div>
               <p className={`text-sm ${c.textSecondary}`}>
@@ -1092,15 +1094,15 @@ const WaitingModeLiberator = ({ tool }) => {
                   ? t('wml_track_over', { n: anxietyTrack.points.length, avg: anxietyTrack.avg, fine: anxietyTrack.fineCount })
                   : t('wml_track_even', { n: anxietyTrack.points.length, avg: anxietyTrack.avg })}
               </p>
-              <p className={`text-xs ${c.textMuted} mt-1`}>{t('wml_track_today', { today: anxietyBefore })}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('wml_track_today', { today: anxietyBefore })}</p>
             </div>
-          )} {results.reframe && (<div className={`${c.card} border rounded-xl p-4`}>
+          )} {results.reframe && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary} italic`}>💡 {results.reframe}</p>
             </div>
-          )} {results.windows?.length > 0 && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          )} {results.windows?.length > 0 && (<div className={`border-t ${c.border} pt-5 space-y-3`}>
               <div>
-                <h3 className={`text-sm font-bold ${c.text}`}><span>🪟</span> {t('wml_what_fits')}</h3>
-                <p className={`text-xs ${c.textMuted} mt-1`}>{t('wml_one_is_enough')}</p>
+                <h3 className={`text-base font-bold ${c.text}`}><span>🪟</span> {t('wml_what_fits')}</h3>
+                <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('wml_one_is_enough')}</p>
               </div>
               <div className="space-y-3">
                 {results.windows.map((w, i) => {
@@ -1119,7 +1121,7 @@ const WaitingModeLiberator = ({ tool }) => {
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`text-sm ${c.textSecondary}`}>{w.time_label || t('wml_minutes', { m: w.minutes })}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${badge.bg} ${badge.text}`}>{badge.label}</span>
+                        <span className={`text-xs px-1.5 py-0.5 rounded ${badge.bg} ${badge.text}`}>{badge.label}</span>
                       </div>
                       {w.suggestions?.length > 0 && (<div className="mt-3 space-y-1.5">
                           {w.suggestions.map((sug, j) => (<button key={j}
@@ -1129,8 +1131,8 @@ const WaitingModeLiberator = ({ tool }) => {
                               <span>{sug}</span>
                             </button>
                           ))} </div>
-                      )} <p className={`text-xs ${c.textMuted} mt-2`}>{t('wml_pick_any')}</p>
-                      {w.note && <p className={`text-xs ${c.textMuted} mt-1 italic`}>{w.note}</p>}
+                      )} <p className={`text-[13px] ${c.textMuted} mt-2`}>{t('wml_pick_any')}</p>
+                      {w.note && <p className={`text-[13px] ${c.textMuted} mt-1 italic`}>{w.note}</p>}
                       {picked && (<div className="mt-3">
                           <p className={`text-xs ${c.textSecondary} mb-1.5`}>{t('wml_want_help')}</p>
                           <button onClick={() => handleStartWithMe(i)} disabled={loading} className={`w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all disabled:opacity-40`}>
@@ -1141,14 +1143,14 @@ const WaitingModeLiberator = ({ tool }) => {
                   );
                 })} </div>
             </div>
-          )} {/* Prep plans */} {results.prep_plans?.map((pp, i) => (<div key={i} className={`${c.card} border rounded-xl p-5 space-y-2`}>
-              <h3 className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider`}><span>⏰</span> {t('wml_prep_for', { time: pp.event_time, alarm: pp.alarm_time })}</h3>
+          )} {/* Prep plans */} {results.prep_plans?.map((pp, i) => (<div key={i} className={`border-t ${c.border} pt-5 space-y-2`}>
+              <h3 className={`text-[13px] font-bold ${c.textMuted}r`}><span>⏰</span> {t('wml_prep_for', { time: pp.event_time, alarm: pp.alarm_time })}</h3>
               {pp.steps?.map((step, j) => (<div key={j} className={`flex items-start gap-2 p-2 rounded-lg ${c.blockBg}`}>
                   <span className={`text-xs font-bold ${c.textMuted} mt-0.5`}>{j + 1}</span>
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
               ))} </div>
-          ))} {results.worst_case && <div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs ${c.textMuted}`}>{t('wml_safety_net', { text: results.worst_case })}</p></div>} {/* Actions */} <div className="space-y-2">
+          ))} {results.worst_case && <div className={`border-t ${c.border} pt-5`}><p className={`text-[13px] ${c.textMuted}`}>{t('wml_safety_net', { text: results.worst_case })}</p></div>} {/* Actions */} <div className="space-y-2">
             <button onClick={() => setView('debrief')} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>📝</span> {t('wml_done_debrief')}
             </button>
@@ -1157,7 +1159,7 @@ const WaitingModeLiberator = ({ tool }) => {
             </button>
           </div>
 
-          <p className={`text-xs ${c.textMuted} text-center`}>
+          <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('wml_xref_stuck_q')}{' '}
             <a href="/VirtualBodyDouble" className={linkStyle}>👥 {t('wml_xref_vbd')}</a>{' '}
             {t('wml_xref_stuck_tail')}
@@ -1188,7 +1190,7 @@ const WaitingModeLiberator = ({ tool }) => {
             <p className={`${c.textMuted} text-sm`}>{t('wml_debrief_sub')}</p>
           </div>
 
-          {/* Q1: Did you use the time? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          {/* Q1: Did you use the time? */} <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('wml_used_time_q')}</p>
             <div className="grid grid-cols-2 gap-2">
               {TIME_USAGE_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefUsedTime(o.id)} className={`p-3 rounded-xl text-center transition-all border ${debriefUsedTime === o.id ? `${c.tagActive} border-transparent` : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}`}>
@@ -1198,28 +1200,28 @@ const WaitingModeLiberator = ({ tool }) => {
               ))} </div>
           </div>
 
-          {/* Q2: How was the specific event? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          {/* Q2: How was the specific event? */} <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('wml_how_was_q', { label: firstEventLabel })}</p>
             <div className="grid grid-cols-5 gap-1.5">
               {REALITY_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefReality(o.id)} className={`py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
                   <span className="block text-lg">{o.icon}</span>
-                  <span className="block text-[10px] font-medium mt-0.5">{t(o.labelKey)}</span>
+                  <span className="block text-xs font-medium mt-0.5">{t(o.labelKey)}</span>
                 </button>))}
             </div>
           </div>
 
-          {/* Q3: did the alarm do its job? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          {/* Q3: did the alarm do its job? */} <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('wml_clock_after_q')}</p>
-            <p className={`text-xs ${c.textMuted} -mt-2`}>{t('wml_clock_after_sub', { said: t(CLOCK_OPTIONS.find(o => o.id === clockChecking)?.labelKey || 'wml_clock_sometimes').toLowerCase() })}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-2`}>{t('wml_clock_after_sub', { said: t(CLOCK_OPTIONS.find(o => o.id === clockChecking)?.labelKey || 'wml_clock_sometimes').toLowerCase() })}</p>
             <div className="grid grid-cols-3 gap-1.5">
               {CLOCK_AFTER_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefClock(o.id)} className={`py-3 rounded-xl text-center transition-all ${debriefClock === o.id ? c.tagActive : c.tag}`}>
                   <span className="block text-lg">{o.icon}</span>
-                  <span className="block text-[10px] font-medium mt-0.5">{t(o.labelKey)}</span>
+                  <span className="block text-xs font-medium mt-0.5">{t(o.labelKey)}</span>
                 </button>))}
             </div>
           </div>
 
-          {/* Optional note */} <div className={`${c.card} border rounded-xl p-5`}>
+          {/* Optional note */} <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm font-medium ${c.textSecondary} mb-2`}>{t('wml_anything_else')}</p>
             <input type="text" value={debriefNote} onChange={e => setDebriefNote(e.target.value)} placeholder={t('wml_note_ph')}
               className={`w-full p-3 rounded-lg border ${c.input} text-sm`} />
@@ -1233,16 +1235,16 @@ const WaitingModeLiberator = ({ tool }) => {
               {debriefUsedTime && (<p className={`text-sm ${c.textSecondary}`}>
                   <span className="me-1">⏱️</span>{t(`wml_reclaim_${debriefUsedTime}`)}</p>
               )} {/* The discovery. */} {debriefData.anxiety_check && (<div className={`${c.card} border-2 rounded-xl p-5 space-y-3`}>
-                  <h3 className={`text-sm font-bold ${c.text}`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>
+                  <h3 className={`text-base font-bold ${c.text}`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>
                   <div className="flex items-center justify-center gap-6">
                     <div className="text-center">
                       <p className={`text-2xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>{debriefData.anxiety_check.before || anxietyBefore}/10</p>
-                      <p className={`text-[10px] ${c.textMuted} uppercase`}>{t('wml_anxiety_before')}</p>
+                      <p className={`text-[13px] ${c.textMuted} uppercase`}>{t('wml_anxiety_before')}</p>
                     </div>
                     <span className={`text-xl ${c.textMuted}`}>→</span>
                     <div className="text-center">
                       <p className="text-2xl">{REALITY_OPTIONS.find(r => r.id === debriefReality)?.icon || '😐'}</p>
-                      <p className={`text-[10px] ${c.textMuted} uppercase`}>{t(REALITY_OPTIONS.find(r => r.id === debriefReality)?.labelKey || 'wml_what_happened')}</p>
+                      <p className={`text-[13px] ${c.textMuted} uppercase`}>{t(REALITY_OPTIONS.find(r => r.id === debriefReality)?.labelKey || 'wml_what_happened')}</p>
                     </div>
                   </div>
                   {debriefData.anxiety_check.reality_assessment && (<p className={`text-sm ${c.textSecondary} text-center`}>{debriefData.anxiety_check.reality_assessment}</p>
@@ -1252,9 +1254,9 @@ const WaitingModeLiberator = ({ tool }) => {
                   )} {debriefData.anxiety_check.insight && (<p className={`text-sm font-medium ${c.text} text-center italic`}>💡 {debriefData.anxiety_check.insight}</p>
                   )} </div>
               )} {/* Supporting observation, deliberately small. */}
-              {debriefData.clock_check && (<p className={`text-xs ${c.textMuted}`}>
+              {debriefData.clock_check && (<p className={`text-[13px] ${c.textMuted}`}>
                   <span className="me-1">🕰️</span>{debriefData.clock_check}</p>
-              )} {/* Takeaway */} {debriefData.takeaway && (<div className={`${c.card} border rounded-xl p-4`}>
+              )} {/* Takeaway */} {debriefData.takeaway && (<div className={`border-t ${c.border} pt-5`}>
                   <p className={`text-sm ${c.text}`}><span>🎯</span> {t('wml_next_time', { text: debriefData.takeaway })}</p>
                 </div>
               )} {/* Save */} <button onClick={saveSession} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>
@@ -1263,7 +1265,7 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           )} {/* Skip the analysis. Same destination as saving after it: the
                  answers are kept and the tool returns to an empty form. */}
-          {!debriefData && (<button onClick={saveSession} className={`w-full py-2 rounded-lg text-xs ${c.textMuted} underline`}>
+          {!debriefData && (<button onClick={saveSession} className={`w-full py-2 rounded-lg text-[13px] ${c.textMuted} underline`}>
               {t('wml_skip_save')}
             </button>
           )} </div>
@@ -1281,27 +1283,27 @@ const WaitingModeLiberator = ({ tool }) => {
           </div>
 
           {reviewData ? (<>
-              <div className={`${c.card} border rounded-xl p-5`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <div className="grid grid-cols-2 gap-4 text-center">
-                  <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_sessions}</p><p className={`text-xs ${c.textMuted}`}>{t('wml_sessions_label')}</p></div>
-                  <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_minutes_reclaimed ? `${Math.round(reviewData.total_minutes_reclaimed / 60 * 10) / 10}h` : '—'}</p><p className={`text-xs ${c.textMuted}`}>{t('wml_reclaimed_label')}</p></div>
+                  <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_sessions}</p><p className={`text-[13px] ${c.textMuted}`}>{t('wml_sessions_label')}</p></div>
+                  <div><p className={`text-2xl font-bold ${c.text}`}>{reviewData.total_minutes_reclaimed ? `${Math.round(reviewData.total_minutes_reclaimed / 60 * 10) / 10}h` : '—'}</p><p className={`text-[13px] ${c.textMuted}`}>{t('wml_reclaimed_label')}</p></div>
                 </div>
               </div>
 
-              {reviewData.trigger_patterns && (<div className={`${c.card} border rounded-xl p-5 space-y-2`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-2`}><span>🔍</span> {t('wml_what_triggers')}</h3>
+              {reviewData.trigger_patterns && (<div className={`border-t ${c.border} pt-5 space-y-2`}>
+                  <h3 className={`text-base font-bold ${c.text} mb-2`}><span>🔍</span> {t('wml_what_triggers')}</h3>
                   {reviewData.trigger_patterns.worst_trigger && <div className={`p-3 rounded-lg ${c.danger} border`}><p className={`text-xs font-medium ${c.danger}`}>{t('wml_biggest_freeze')}</p><p className={`text-sm ${c.text}`}>{reviewData.trigger_patterns.worst_trigger}</p></div>} {reviewData.trigger_patterns.easiest && <div className={`p-3 rounded-lg ${c.success} border`}><p className={`text-xs font-medium ${c.accentLightText}`}>{t('wml_easiest')}</p><p className={`text-sm ${c.text}`}>{reviewData.trigger_patterns.easiest}</p></div>} {reviewData.trigger_patterns.observation && <p className={`text-sm ${c.textSecondary} mt-2`}>{reviewData.trigger_patterns.observation}</p>} </div>
               )} {/* Anxiety trends (v4) */} {reviewData.anxiety_trends && (<div className={`${c.accentLight} border rounded-xl p-5 space-y-2`}>
-                  <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>
+                  <h3 className={`text-base font-bold ${c.accentLightText} mb-2`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>
                   {reviewData.anxiety_trends.avg_anxiety_before && <p className={`text-sm ${c.accentLightText}`}>{t('wml_avg_anxiety_before', { val: reviewData.anxiety_trends.avg_anxiety_before })}</p>} {reviewData.anxiety_trends.avg_reality && <p className={`text-sm ${c.accentLightText}`}>{t('wml_avg_reality', { val: reviewData.anxiety_trends.avg_reality })}</p>} {reviewData.anxiety_trends.gap && <p className={`text-sm ${c.accentLightText}`}>{t('wml_gap', { val: reviewData.anxiety_trends.gap })}</p>} {reviewData.anxiety_trends.insight && <p className={`text-sm font-medium ${c.launchAccent}`}>💡 {reviewData.anxiety_trends.insight}</p>} </div>
               )} {reviewData.time_insights && (<div className={`${c.accentLight} border rounded-xl p-5 space-y-2`}>
-                  <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>⏱️</span> {t('wml_time_usage')}</h3>
+                  <h3 className={`text-base font-bold ${c.accentLightText} mb-2`}><span>⏱️</span> {t('wml_time_usage')}</h3>
                   {reviewData.time_insights.avg_free_time && <p className={`text-sm ${c.accentLightText}`}>{t('wml_avg_free_time', { val: reviewData.time_insights.avg_free_time })}</p>} {reviewData.time_insights.utilization && <p className={`text-sm ${c.accentLightText}`}>{t('wml_utilization', { val: reviewData.time_insights.utilization })}</p>} {reviewData.time_insights.best_block_length && <p className={`text-sm ${c.accentLightText}`}>{t('wml_best_block', { val: reviewData.time_insights.best_block_length })}</p>} </div>
-              )} {reviewData.energy_patterns && (<div className={`${c.card} border rounded-xl p-5 space-y-2`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-2`}><span>🔋</span> {t('wml_energy_label')}</h3>
+              )} {reviewData.energy_patterns && (<div className={`border-t ${c.border} pt-5 space-y-2`}>
+                  <h3 className={`text-base font-bold ${c.text} mb-2`}><span>🔋</span> {t('wml_energy_label')}</h3>
                   {reviewData.energy_patterns.avg_energy && <p className={`text-sm ${c.textSecondary}`}>{t('wml_typical', { val: reviewData.energy_patterns.avg_energy })}</p>} {reviewData.energy_patterns.observation && <p className={`text-sm ${c.textSecondary}`}>{reviewData.energy_patterns.observation}</p>} </div>
-              )} {reviewData.recommendations?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>💡</span> {t('wml_recommendations')}</h3>
+              )} {reviewData.recommendations?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+                  <h3 className={`text-base font-bold ${c.text} mb-3`}><span>💡</span> {t('wml_recommendations')}</h3>
                   <div className="space-y-3">
                     {reviewData.recommendations.map((r, i) => (<div key={i} className={`p-3 rounded-lg ${c.blockBg}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{r.insight}</p>
@@ -1318,13 +1320,13 @@ const WaitingModeLiberator = ({ tool }) => {
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wml_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
         </div>
       )} {/* One transition, not a menu — see the cross-ref note above. */}
       {results && (
-        <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>
           {t('wml_xref_stuck_q')}{' '}
           <a href="/VirtualBodyDouble" className={linkStyle}>👥 {t('wml_xref_vbd')}</a>{' '}
           {t('wml_xref_stuck_tail')}
