@@ -527,10 +527,16 @@ for name, fpath in tools:
         fails.append(f'S1.1: banned color "{m.group()}" at line {line_n}')
         break
 
-    # S1.1: btnPrimary must use cyan
+    # S1.1: btnPrimary must be the house primary. 2026-09-27: that is now the
+    # home page's navy (light #142a43 / dark #2f6fb0 — src/components/
+    # HomeTheme.css), adopted tool by tool with the site-style rollout; cyan is
+    # still accepted for tools not yet converted. Anything else still fails.
     btn_m = re.search(r'^\s+btnPrimary\s*:.*', c_block, re.MULTILINE)
-    if btn_m and 'cyan' not in btn_m.group(0):
-        fails.append(f'S1.1: btnPrimary not cyan: {btn_m.group(0).strip()[:60]}')
+    if btn_m:
+        _bp = btn_m.group(0)
+        _navy = '#142a43' in _bp and '#2f6fb0' in _bp
+        if 'cyan' not in _bp and not _navy:
+            fails.append(f'S1.1: btnPrimary not the house primary (navy #142a43/#2f6fb0, or legacy cyan): {_bp.strip()[:60]}')
 
     # S1.1i: used-but-undefined c keys (WrongAnswersOnly pattern — silent undefined classNames)
     # Collect all c.xxx references in the component body, then check each is defined either

@@ -126,6 +126,23 @@ const linkStyle = isDark
   : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 ```
 
+**House primary: navy, replacing cyan (2026-09-27, in progress).** The home page's
+navy is becoming the primary color on tool pages too, one tool at a time as each
+gets the site-style treatment (Doctor Visit Prep first). A converted tool uses:
+
+```js
+  input:      isDark ? '… focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : '… focus:border-[#142a43] focus:ring-[#142a43]/15',
+  btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+  // selected pill / choice (pillActive's role):
+  chosen:     isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-50' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
+  // linkStyle: dark 'text-[#7fb3e0] hover:text-[#a9cdef]', light 'text-[#165b9a] hover:text-[#142a43]'
+```
+
+Same values as `src/components/HomeTheme.css`. Audit S1.1 accepts either this navy
+pair or the cyan block above while the rollout runs; any other primary still fails.
+Don't convert a tool piecemeal — button, selected state, focus and links go navy
+together, or the page reads as two systems.
+
 **Undefined key scan — run before and after every edit:**
 ```bash
 grep -oP 'c\.[a-zA-Z]+' ComponentName.js | sed 's/c\.//' | sort -u > /tmp/c_used.txt
