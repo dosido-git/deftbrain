@@ -802,14 +802,14 @@ const HeartOfTheMatter = ({ tool }) => {
     const eligibleForConnect = (entry) => !!(entry.transcript?.trim() || entry.lectures?.length);
     return (
       <div data-print-hide className={`p-4 rounded-2xl border ${c.histBg}`}>
-        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className="text-xl">{tool?.icon ?? '🎯'}</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('rec_past_sessions')}</span>
           <span className={`text-[13px] ${c.textMuted}`}>{validHistory.length}</span>
           <span data-print-hide><Caret open={showHistory} /></span>
         </button>
         {(
-          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
             {validHistory.map(entry => {
               const selected = selectedHistoryIds.includes(entry.id);
               const canSelect = eligibleForConnect(entry);

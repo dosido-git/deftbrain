@@ -78,18 +78,16 @@ export default function EmailUrgencyTriager({ tool }) {
     input: isDark
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500'
       : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-100' : 'bg-red-50 border-red-300 text-red-900',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900',
     success: isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-100' : 'bg-emerald-50 border-emerald-300 text-emerald-900',
-    infoBox: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-100' : 'bg-cyan-50 border-cyan-200 text-cyan-900',
+    infoBox: isDark ? 'bg-[#1f2530] border-[#2c3a4a] text-zinc-100' : 'bg-[#eef3f8] border-[#d4dde8] text-[#142a43]',
     // PF-13 exception — an outline while the form is empty, not a grey smudge.
     labelText: isDark ? 'text-zinc-200' : 'text-gray-700',
     required: isDark ? 'text-amber-400' : 'text-amber-700',
-    btnIdle: isDark
-      ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-      : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle: isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
   };
   // The three urgency tiers are the house semantic colours under the names this
   // tool's config already uses.
@@ -97,9 +95,7 @@ export default function EmailUrgencyTriager({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [mode, setMode] = useState('input');
   const [error, setError] = useState('');
@@ -305,7 +301,7 @@ export default function EmailUrgencyTriager({ tool }) {
             <p className={`font-semibold ${c.text}`}>{email.email_subject}</p>
             <p className={`text-xs mt-1 ${c.textMuted}`}>{tx('from', { sender: email.from })}</p>
             <p className={`text-sm mt-2 ${c.textSecondary}`}>{email.reasoning}</p>
-            <div className={`mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs ${c.textMuted}`}>
+            <div className={`mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[13px] ${c.textMuted}`}>
               {email.deadline_detected && <span>📅 {email.deadline_detected}</span>}
               {email.response_optimization?.estimated_minutes > 0 && (
                 <span>⏱ {tx('minutes', { n: email.response_optimization.estimated_minutes })}</span>
@@ -313,14 +309,14 @@ export default function EmailUrgencyTriager({ tool }) {
             </div>
           </button>
           {hasDetail && (
-            <button type="button" onClick={() => setExpanded(p => ({ ...p, [key]: !p[key] }))} className={`${c.btnSecondary} rounded-lg p-2`}>
-              <Caret open={isOpen} />
+            <button data-print-heading aria-expanded={!!(isOpen)} type="button" onClick={() => setExpanded(p => ({ ...p, [key]: !p[key] }))} className={`${c.btnSecondary} rounded-lg p-2`}>
+              <span data-print-hide><Caret open={isOpen} /></span>
             </button>
           )}
         </div>
 
-        {isOpen && hasDetail && (
-          <div className={`mt-4 pt-4 border-t ${c.border} space-y-3`}>
+        {hasDetail && (
+          <div data-sec-body hidden={!isOpen} className={`mt-4 pt-4 border-t ${c.border} space-y-3`}>
             {email.action_requested && (
               <div><p className={`text-xs font-bold ${c.textMuted}`}>{tx('action')}</p><p className={`text-sm ${c.textSecondary}`}>{email.action_requested}</p></div>
             )}
@@ -366,11 +362,16 @@ export default function EmailUrgencyTriager({ tool }) {
 
   return (
     <div ref={stageRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+          the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+      <div data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '📬'}</span>{tx('tagline')}
             </p>
             <button
@@ -392,9 +393,9 @@ export default function EmailUrgencyTriager({ tool }) {
       </div>
 
       {/* Quiet utilities — capabilities remain, but no six-tab app chrome. */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-3 flex flex-wrap items-center gap-2`}>
-        <button type="button" onClick={() => setShowProfile(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
-          👤 {tx(`role_${profile.role}`)} <Caret open={showProfile} />
+      <div data-print-hide className={`${c.card} border ${c.border} rounded-xl p-3 flex flex-wrap items-center gap-2`}>
+        <button data-print-heading aria-expanded={!!(showProfile)} type="button" onClick={() => setShowProfile(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
+          👤 {tx(`role_${profile.role}`)} <span data-print-hide><Caret open={showProfile} /></span>
         </button>
         {triageLog.length > 0 && (
           <button type="button" onClick={() => setShowHistory(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
@@ -408,8 +409,8 @@ export default function EmailUrgencyTriager({ tool }) {
         )}
       </div>
 
-      {showProfile && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+      {(
+        <div data-print-hide hidden={!showProfile} className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-semibold ${c.textSecondary}`}>{tx('role')}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {ROLES.map(r => (
@@ -426,7 +427,7 @@ export default function EmailUrgencyTriager({ tool }) {
       )}
 
       {showHistory && triageLog.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <div className="space-y-2">
             {triageLog.map(entry => (
               <button
@@ -436,7 +437,7 @@ export default function EmailUrgencyTriager({ tool }) {
                 className={`w-full text-start rounded-lg border ${c.border} p-3 ${c.cardAlt}`}
               >
                 <span className="text-xs font-semibold">{entry.date}</span>
-                <span className={`ms-2 text-xs ${c.textMuted}`}>
+                <span className={`ms-2 text-[13px] ${c.textMuted}`}>
                   {tx('historyCounts', {
                     today: (entry.results?.urgency_analysis || []).filter(e => normalizeTier(e.urgency_tier) === 'now').length,
                     week: (entry.results?.urgency_analysis || []).filter(e => normalizeTier(e.urgency_tier) === 'this_week').length,
@@ -450,13 +451,13 @@ export default function EmailUrgencyTriager({ tool }) {
       )}
 
       {mode === 'input' && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <h3 className="text-lg font-bold">{tx('question')}</h3>
           <p className={`mt-1 text-sm ${c.textSecondary}`}>{tx('intro')}</p>
 
           <label className="block mt-5">
             <span className={`text-sm font-semibold ${c.textSecondary}`}>{tx('pasteLabel')} *</span>
-            <p className={`mt-1 text-xs ${c.textMuted}`}>{tx('pasteHint')}</p>
+            <p className={`mt-1 text-[13px] ${c.textMuted}`}>{tx('pasteHint')}</p>
             <textarea
               value={emailContent}
               onChange={e => setEmailContent(e.target.value)}
@@ -486,7 +487,7 @@ export default function EmailUrgencyTriager({ tool }) {
 
           {error && <div className={`mt-3 rounded-lg border p-3 text-sm ${c.danger}`}>⚠️ {error}</div>}
 
-          <p className={`mt-4 text-center text-xs ${c.textMuted}`}>
+          <p data-print-hide className={`mt-4 text-center text-[13px] ${c.textMuted}`}>
             {tx('xrefInput')}{' '}
             <a href="/VelvetHammer" className={linkStyle}>🔨 {tx('xrefVelvet')}</a>
           </p>
@@ -495,13 +496,13 @@ export default function EmailUrgencyTriager({ tool }) {
 
       {mode === 'results' && results && (
         <div data-copy-results className="space-y-4">
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className="text-lg font-bold">{tx('sorted')}</h3>
             <p className={`mt-1 text-sm ${c.textSecondary}`}>
               {tx('summaryLine', { today: todayCount, week: weekCount, none: optionalCount })}
             </p>
             {summary.total_estimated_minutes > 0 && (
-              <p className={`mt-1 text-xs ${c.textMuted}`}>{tx('timeTotal', { n: summary.total_estimated_minutes })}</p>
+              <p className={`mt-1 text-[13px] ${c.textMuted}`}>{tx('timeTotal', { n: summary.total_estimated_minutes })}</p>
             )}
           </div>
 
@@ -511,16 +512,16 @@ export default function EmailUrgencyTriager({ tool }) {
             if (!emails.length && tier === 'optional') return null;
             return (
               <section key={tier} className="space-y-3">
-                <button
+                <button data-print-heading aria-expanded={!!(showOptional)}
                   type="button"
                   onClick={() => tier === 'optional' && setShowOptional(v => !v)}
                   className={`${c[tier === 'this_week' ? 'week' : tier]} border rounded-xl p-4 w-full text-start ${tier === 'optional' ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   <div className="flex items-center gap-2">
                     <span>{cfg.icon}</span>
-                    <h3 className="font-bold">{tx(cfg.key)}</h3>
+                    <h3 className="text-base font-bold">{tx(cfg.key)}</h3>
                     <span className="text-sm opacity-75">({emails.length})</span>
-                    {tier === 'optional' && <Caret open={showOptional} className="ms-auto" />}
+                    {tier === 'optional' && <span data-print-hide><Caret open={showOptional} className="ms-auto" /></span>}
                   </div>
                   <p className="text-xs mt-1 opacity-75">{tx(`${cfg.key}Sub`)}</p>
                 </button>
@@ -535,12 +536,12 @@ export default function EmailUrgencyTriager({ tool }) {
           })}
 
           {hasBriefing && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <button type="button" onClick={() => setShowMore(v => !v)} className="w-full flex items-center justify-between text-sm font-bold">
-              <span>{tx('biggerPicture')}</span><Caret open={showMore} />
+          <div className={`border-t ${c.border} pt-5`}>
+            <button data-print-heading aria-expanded={!!(showMore)} type="button" onClick={() => setShowMore(v => !v)} className="w-full flex items-center justify-between text-sm font-bold">
+              <span>{tx('biggerPicture')}</span><span data-print-hide><Caret open={showMore} /></span>
             </button>
-            {showMore && (
-              <div className={`mt-4 pt-4 border-t ${c.border} space-y-3 text-sm ${c.textSecondary}`}>
+            {(
+              <div data-sec-body hidden={!(showMore)} className={`mt-4 pt-4 border-t ${c.border} space-y-3 text-sm ${c.textSecondary}`}>
                 {results.anxiety_relief?.permission_to_wait && <p><strong>{tx('canWait')}:</strong> {results.anxiety_relief.permission_to_wait}</p>}
                 {results.anxiety_relief?.what_to_ignore && <p><strong>{tx('ignore')}:</strong> {results.anxiety_relief.what_to_ignore}</p>}
                 {results.batch_insights?.time_block_suggestion && <p><strong>{tx('batchPlan')}:</strong> {results.batch_insights.time_block_suggestion}</p>}
@@ -562,7 +563,7 @@ export default function EmailUrgencyTriager({ tool }) {
           </div>
 
           {/* S5.5 — at the foot of the results, where the next step actually is. */}
-          <p className={`text-center text-xs ${c.textMuted}`}>
+          <p data-print-hide className={`text-center text-[13px] ${c.textMuted}`}>
             {tx('xrefResults')}{' '}
             <a href="/GentlePushGenerator" className={linkStyle}>📨 {tx('xrefGentlePush')}</a>{' · '}
             <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {tx('xrefDifficultTalk')}</a>
@@ -576,7 +577,7 @@ export default function EmailUrgencyTriager({ tool }) {
             ← {tx('backResults')}
           </button>
 
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className="text-lg font-bold">✍️ {tx('replyTo', { subject: composeTarget.email_subject })}</h3>
             <p className={`text-xs mt-1 ${c.textMuted}`}>{tx('from', { sender: composeTarget.from })}</p>
 
@@ -611,7 +612,7 @@ export default function EmailUrgencyTriager({ tool }) {
           </div>
 
           {composeResult && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <div className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.textMuted}`}>{tx('subject')}</p>
               <p className="text-sm mt-1">{composeResult.subject_line}</p>
               <div className={`${c.infoBox} border rounded-lg p-4 mt-4`}>

@@ -96,17 +96,14 @@ function ScamRadar({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -130,9 +127,7 @@ function ScamRadar({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [messageText, setMessageText]       = useState('');
   const [senderContext, setSenderContext]   = useState('');
@@ -277,11 +272,14 @@ function ScamRadar({ tool }) {
 
   // ── Render helpers ──
   const renderHeaderRow = () => (
-    <div className="pb-3 border-b border-zinc-500">
+    <div data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '🎣'}</span>{t('scam_tagline')}
           </p>
           {!results && (
@@ -299,7 +297,7 @@ function ScamRadar({ tool }) {
   );
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+    <div data-print-form className="space-y-4">
       {renderHeaderRow()}
 
       {/* Message text — no message-type taxonomy to fill in first. The
@@ -364,7 +362,7 @@ function ScamRadar({ tool }) {
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
       {/* Pre-result cross-ref */}
-      <p className={`text-xs ${c.textMuted}`}>
+      <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
         {t('scam_xref_pre')} <a href="/FakeReviewDetective" className={linkStyle}>🕵️ {t('scam_fakereview')}</a>.
       </p>
 
@@ -388,8 +386,8 @@ function ScamRadar({ tool }) {
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 {t('scam_recent')}</p>
-            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted} hover:${c.accentTxt}`}>{t('scam_clear')}</button>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>🕓 {t('scam_recent')}</p>
+            <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted} hover:${c.accentTxt}`}>{t('scam_clear')}</button>
           </div>
           <ul className="space-y-2">
             {sessionHistory.map((h, i) => (
@@ -418,7 +416,7 @@ function ScamRadar({ tool }) {
         {/* Recap of the analyzed message — anchors persisted results on revisits */}
         {results.messageText && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('scam_your_situation')}</p>
+            <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuted}`}>📝 {t('scam_your_situation')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{results.messageText.slice(0, 200)}{results.messageText.length > 200 ? '…' : ''}</p>
             {results.senderContext && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{results.senderContext}</p>}
           </div>
@@ -426,7 +424,7 @@ function ScamRadar({ tool }) {
 
         {/* THE READ — verdict + explanation, no numeric confidence */}
         <div className={`border-2 rounded-xl p-5 ${verdictConfig.bg}`}>
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${verdictConfig.txt} opacity-70`}>{t('scam_the_read')}</p>
+          <p className={`text-[13px] font-boldst mb-2 ${verdictConfig.txt} opacity-70`}>{t('scam_the_read')}</p>
           <div className="flex items-center gap-3 mb-2">
             <span className="text-3xl">{verdictConfig.icon}</span>
             <span className={`text-2xl font-black tracking-tight ${verdictConfig.txt}`}>{t(`scam_verdict_${results.verdict?.toLowerCase()}`)}</span>
@@ -440,19 +438,19 @@ function ScamRadar({ tool }) {
             pasted evidence. */}
         {results?.input_conflict?.detected && results.input_conflict?.note && (
           <div className={`border rounded-xl p-4 ${c.warning}`}>
-            <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${c.warningTxt}`}>⚖️ {t('scam_input_conflict')}</p>
+            <p className={`text-[13px] font-bold mb-2 ${c.warningTxt}`}>⚖️ {t('scam_input_conflict')}</p>
             <p className={`text-sm ${c.warningTxt}`}>{results.input_conflict.note}</p>
           </div>
         )}
 
         {/* Safety disclaimer — automated guidance, not financial/legal advice */}
-        <p className={`text-[11px] ${c.textMuted} px-1`}>ⓘ {t('scam_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuted} px-1`}>ⓘ {t('scam_disclaimer')}</p>
 
         {/* WHAT TO DO RIGHT NOW — comes immediately after the read, not after
             a pattern explainer and a full flags checklist. */}
         {results?.what_to_do_now?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>✅ {t('scam_what_to_do_now')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>✅ {t('scam_what_to_do_now')}</p>
             <ul className="space-y-2">
               {results?.what_to_do_now.map((a, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>
@@ -466,8 +464,8 @@ function ScamRadar({ tool }) {
         {/* WHY THIS LOOKS CONCERNING — observation + why it matters, at most
             a handful of items, never a mandatory 8. */}
         {results?.why_concerning?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🚩 {t('scam_why_concerning')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🚩 {t('scam_why_concerning')}</p>
             <ul className="space-y-3">
               {results?.why_concerning.map((f, i) => (
                 <li key={i} className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>
@@ -481,8 +479,8 @@ function ScamRadar({ tool }) {
 
         {/* HOW TO VERIFY IT */}
         {results?.how_to_verify?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔎 {t('scam_how_to_verify')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔎 {t('scam_how_to_verify')}</p>
             <ul className="space-y-2">
               {results?.how_to_verify.map((a, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>
@@ -497,7 +495,7 @@ function ScamRadar({ tool }) {
         {/* IF YOU ALREADY INTERACTED — only when relevant */}
         {interacted?.relevant && interacted.guidance?.length > 0 && (
           <div className={`border rounded-xl p-4 ${c.warning}`}>
-            <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.warningTxt}`}>⚠️ {t('scam_if_interacted')}</p>
+            <p className={`text-[13px] font-bold mb-3 ${c.warningTxt}`}>⚠️ {t('scam_if_interacted')}</p>
             <ul className="space-y-2">
               {interacted.guidance.map((a, i) => (
                 <li key={i} className={`text-sm ${c.warningTxt}`}>• {a}</li>
@@ -508,8 +506,8 @@ function ScamRadar({ tool }) {
 
         {/* WHAT DOESN'T SETTLE IT — a caution, never reassurance */}
         {results?.what_doesnt_settle_it?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🧩 {t('scam_doesnt_settle')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🧩 {t('scam_doesnt_settle')}</p>
             <ul className="space-y-2">
               {results?.what_doesnt_settle_it.map((f, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>• {f}</li>
@@ -520,8 +518,8 @@ function ScamRadar({ tool }) {
 
         {/* AVOID */}
         {results?.avoid?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🚫 {t('scam_avoid')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🚫 {t('scam_avoid')}</p>
             <ul className="space-y-2">
               {results?.avoid.map((a, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>
@@ -538,7 +536,7 @@ function ScamRadar({ tool }) {
         {(results?.scam_pattern?.label || results?.important_unknowns?.length > 0) && (
           <details className={`${c.cardAlt} border ${c.border} rounded-xl p-4 group`}>
             <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
-              <span className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🎣 {t('scam_more_pattern')}</span>
+              <span className={`text-[13px] font-bold ${c.textMuted}`}>🎣 {t('scam_more_pattern')}</span>
               <Caret groupOpen />
             </summary>
             <div className="mt-3 space-y-3">
@@ -550,7 +548,7 @@ function ScamRadar({ tool }) {
               )}
               {results?.important_unknowns?.length > 0 && (
                 <div>
-                  <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-1.5`}>{t('scam_unknowns')}</p>
+                  <p className={`text-[13px] font-bold ${c.textMuted} mb-1.5`}>{t('scam_unknowns')}</p>
                   <ul className="space-y-1">
                     {results?.important_unknowns.map((u, i) => (
                       <li key={i} className={`text-sm ${c.textSecondary}`}>• {u}</li>
@@ -563,8 +561,8 @@ function ScamRadar({ tool }) {
         )}
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('scam_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('scam_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/ComplaintEscalationWriter" className={`text-xs ${linkStyle}`}>📨 {t('scam_complaint')}</a>
             <a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🪄 {t('scam_magicmouth')}</a>
@@ -577,10 +575,10 @@ function ScamRadar({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('scam_top_hint')} <a href="/FakeReviewDetective" className={linkStyle}>🕵️ {t('scam_fakereview')}</a>.</p>}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('scam_top_hint')} <a href="/FakeReviewDetective" className={linkStyle}>🕵️ {t('scam_fakereview')}</a>.</p>}
       {!results && renderInput()}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+        <div>
           {renderHeaderRow()}
         </div>
       ) : null}

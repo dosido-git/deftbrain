@@ -75,15 +75,13 @@ const Bookmark = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -93,27 +91,25 @@ const Bookmark = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific
-    modeActive:    isDark ? 'bg-cyan-700 border-cyan-500 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
+    modeActive:    isDark ? 'bg-cyan-700 border-[#7fb3e0] text-white' : 'bg-[#142a43] border-[#142a43] text-white',
     modeInactive:  isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
-    tip:           isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
-    tipFg:         isDark ? 'text-cyan-200' : 'text-cyan-900',
+    tip:           isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    tipFg:         isDark ? 'text-zinc-100' : 'text-[#142a43]',
     inset:         isDark ? 'bg-zinc-700/40' : 'bg-slate-100',
     charCard:      isDark ? 'bg-zinc-700/30' : 'bg-slate-50',
     threadCard:    isDark ? 'bg-zinc-700/30' : 'bg-slate-50',
     histBg:        isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
-    histAccent:    isDark ? 'text-cyan-400' : 'text-cyan-600',
+    histAccent:    isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnGhost:      isDark ? 'bg-transparent text-zinc-500 hover:bg-zinc-700' : 'bg-transparent text-gray-400 hover:bg-gray-100',
     dangerFg:      isDark ? 'text-red-300' : 'text-red-700',
     successFg:     isDark ? 'text-emerald-300' : 'text-emerald-800',
@@ -122,9 +118,7 @@ const Bookmark = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── useState ──────────────────────────────────────────────
   const [showHistory, setShowHistory] = useState(false);
@@ -280,15 +274,15 @@ const Bookmark = ({ tool }) => {
   // ══════════════════════════════════════════
   const Section = ({ title: sectionTitle, emoji, open, onToggle, badge, children }) => (
     <div className={c.card + ' ' + c.border + ' border rounded-xl overflow-hidden'}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
+      <button data-print-heading aria-expanded={!!(open)} onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={'text-base font-semibold ' + c.text}>{sectionTitle}</span>
           {badge && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={'px-5 pb-5 border-t ' + c.border}>{children}</div>}
+      {<div data-sec-body hidden={!(open)} className={'px-5 pb-5 border-t ' + c.border}>{children}</div>}
     </div>
   );
 
@@ -301,13 +295,16 @@ const Bookmark = ({ tool }) => {
   // renderInput, which unmounts the moment a result exists — so with the
   // output on screen there was no way to start over at all.
   const renderHeaderRow = () => (
-    <div className="pb-3 border-b border-zinc-500">
+    <div data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="me-2 text-xl">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{t('bk_tagline')}</p>
+          {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            <span className="me-2 text-xl">{tool?.icon ?? '🔖'}</span>{t('bk_tagline')}
+          </p>
           {!results && (
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           )}
@@ -323,7 +320,7 @@ const Bookmark = ({ tool }) => {
   );
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+    <div data-print-form className="space-y-4">
       {/* Header */}
       {renderHeaderRow()}
 
@@ -333,7 +330,7 @@ const Bookmark = ({ tool }) => {
           <button key={m.id} onClick={() => { setMediaType(m.id); setError(''); }}
             className={'py-3 px-2 rounded-xl border-2 text-center transition-all ' + (mediaType === m.id ? c.modeActive : c.modeInactive)}>
             <span className="text-sm font-bold block">{t(m.labelKey)}</span>
-            <span className={'text-[10px] block mt-0.5 ' + (mediaType === m.id ? 'text-white/70' : c.textMuted)}>{t(m.descKey)}</span>
+            <span className={'text-xs block mt-0.5 ' + (mediaType === m.id ? 'text-white/70' : c.textMuted)}>{t(m.descKey)}</span>
           </button>
         ))}
       </div>
@@ -380,7 +377,7 @@ const Bookmark = ({ tool }) => {
             <button key={s.value} onClick={() => setSpoilerLevel(s.value)}
               className={'p-3 rounded-xl border-2 text-start transition-all ' + (spoilerLevel === s.value ? c.pillActive : c.card + ' ' + c.border + ' hover:border-gray-400')}>
               <span className={'text-sm font-medium block ' + (spoilerLevel === s.value ? '' : c.textSecondary)}>{t(s.labelKey)}</span>
-              <span className={'text-[10px] ' + c.textMuted}>{t(s.descKey)}</span>
+              <span className={'text-xs ' + c.textMuted}>{t(s.descKey)}</span>
             </button>
           ))}
         </div>
@@ -554,7 +551,7 @@ const Bookmark = ({ tool }) => {
                 <div key={idx} className={'p-4 rounded-xl border ' + c.mustWatchBg}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={'text-sm font-bold ' + c.text}>{g.game}</span>
-                    {g.spoiler_level === 'outcome_unknown' && <span className={'text-[10px] px-2 py-0.5 rounded-full ' + c.badge}>{t('bk_watch_blind')}</span>}
+                    {g.spoiler_level === 'outcome_unknown' && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>{t('bk_watch_blind')}</span>}
                   </div>
                   <p className={'text-xs ' + c.tipFg}>{g.why}</p>
                 </div>
@@ -593,12 +590,12 @@ const Bookmark = ({ tool }) => {
           </div>
         )}
 
-        <p className={'text-[10px] text-center ' + c.textMuted}>
+        <p className={'text-xs text-center ' + c.textMuted}>
           {t('bk_ai_disclaimer')}
         </p>
 
         {/* Cross-references */}
-        <div className={'p-4 rounded-2xl border ' + c.border + ' ' + c.card}>
+        <div data-print-hide className={'p-4 rounded-2xl border ' + c.border + ' ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('bk_related_tools')}</p>
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
             {(results?.media_type === 'show' || results?.media_type === 'game') && (
@@ -619,15 +616,15 @@ const Bookmark = ({ tool }) => {
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('bk_hist_today') : diff === 1 ? t('bk_hist_yesterday') : diff < 7 ? t('bk_hist_days_ago', { n: diff }) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     const typeEmoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' };
     return (
-      <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+      <div data-print-hide className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={'text-base ' + c.histAccent}>🔖</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('bk_past_bookmarks')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => (
               <div key={entry.id} className={'rounded-xl border ' + c.border + ' ' + c.card + ' p-3 flex items-center gap-3'}>
                 <span className="text-base">{typeEmoji[entry.type] || '🔖'}</span>
@@ -660,7 +657,7 @@ const Bookmark = ({ tool }) => {
       )}
       {/* Results state: persistent standalone header with reset, results below */}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div>
           {renderHeaderRow()}
         </div>
       ) : null}

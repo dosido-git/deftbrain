@@ -168,21 +168,20 @@ const VirtualBodyDouble = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -190,19 +189,17 @@ const VirtualBodyDouble = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     // ── Bespoke keys ──
     tag:            isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600 border-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-200',
-    tagActive:      isDark ? 'bg-cyan-900/40 text-cyan-200 border-cyan-600' : 'bg-cyan-100 text-cyan-800 border-cyan-400',
+    tagActive:      isDark ? 'bg-[#1f2530] text-zinc-100 border-[#7fb3e0]' : 'bg-[#eef3f8] text-[#142a43] border-[#142a43]',
     cardHover:      isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-50',
-    accentLight:    isDark ? 'bg-cyan-900/25 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    accentLightText: isDark ? 'text-cyan-300' : 'text-cyan-800',
+    accentLight:    isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    accentLightText: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     errorText:      isDark ? 'text-red-300' : 'text-red-700',
     bubbleBg:       isDark ? 'bg-zinc-700' : 'bg-gray-100',
     bubbleText:     isDark ? 'text-zinc-100' : 'text-gray-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
   // ─── State: View ───
@@ -665,13 +662,16 @@ const VirtualBodyDouble = ({ tool }) => {
   // RENDER: SETUP
   // ══════════════════════════════════════════════════
   if (view === 'setup') {
-    return (<div ref={viewTopRef} className="px-4 py-2">
-        <div className="max-w-xl mx-auto space-y-5">
-
-          {/* Header */} <div className="mb-2 flex items-start justify-between gap-3">
+    return (<div ref={viewTopRef} className="pb-2">
+          {/* Header — site style (2026-09-27): a pale band bleeding to the card edges
+              (PF-17c), outside the narrow column so it can. Screen only. */}
+          <div data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex items-start justify-between gap-3"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
             <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '👥'}</span>{t('vbd_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -683,11 +683,13 @@ const VirtualBodyDouble = ({ tool }) => {
               </button>
             ) : null}
           </div>
-          {/* Status bar — only when there is something to show */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
+        <div className="max-w-xl mx-auto space-y-5">
+
+          {/* Status bar — only when there is something to show */} {sessionLog.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 {sessionLog.length > 0 && (<span className={`text-sm font-medium ${c.text}`}>
-                    <span>📊</span> {tPlural('vbd_sessions_count', sessionLog.length, { count: sessionLog.length })} ·{' '} <span className={`text-xs ${c.textMuted}`}>
+                    <span>📊</span> {tPlural('vbd_sessions_count', sessionLog.length, { count: sessionLog.length })} ·{' '} <span className={`text-[13px] ${c.textMuted}`}>
                       {t('vbd_hours_total', { hours: Math.round(sessionLog.reduce((sum, s) => sum + (s.minutesWorked || 0), 0) / 60 * 10) / 10 })}
                     </span>
                   </span>
@@ -701,7 +703,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 )} </div>
             </div>
           </div>
-          )} {/* Session Mode selector (v4) */} {/* What are you working on — asked first, because it is the answer people already have */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+          )} {/* Session Mode selector (v4) */} {/* What are you working on — asked first, because it is the answer people already have */} <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>{t('vbd_what_working_on')} <span className={c.required}>*</span></label>
               <div className="flex gap-2">
@@ -727,20 +729,20 @@ const VirtualBodyDouble = ({ tool }) => {
                 }} />
               <span className={`text-sm ${c.textSecondary}`}>{t('vbd_put_off')}</span>
             </label>
-            {putOff && <p className={`text-xs ${c.textMuted} -mt-2 ms-6`}>{t('vbd_put_off_note')}</p>}
+            {putOff && <p className={`text-[13px] ${c.textMuted} -mt-2 ms-6`}>{t('vbd_put_off_note')}</p>}
 
             {/* Sub-task breakdown */} {showBreakdown && breakdownData && (<div className={`${c.accentLight} border rounded-xl p-4 space-y-2`}>
                 <div className="flex items-center justify-between">
-                  <p className={`text-xs font-bold ${c.accentLightText} uppercase tracking-wider`}><span>✂️</span> {t('vbd_task_breakdown')}</p>
-                  <button onClick={() => { setShowBreakdown(false); setSubTasks([]); setBreakdownData(null); }} className={`text-xs ${c.textMuted}`}>✕ {t('vbd_clear')}</button>
+                  <p className={`text-[13px] font-bold ${c.accentLightText}r`}><span>✂️</span> {t('vbd_task_breakdown')}</p>
+                  <button onClick={() => { setShowBreakdown(false); setSubTasks([]); setBreakdownData(null); }} className={`text-[13px] ${c.textMuted}`}>✕ {t('vbd_clear')}</button>
                 </div>
                 {breakdownData.strategy_note && <p className={`text-xs ${c.accentLightText} italic`}>{breakdownData.strategy_note}</p>} {breakdownData.sub_tasks?.map((st, i) => (<div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/40' : 'bg-white/70'}`}>
                     <span className={`text-xs font-bold ${c.accentLightText} mt-0.5 w-4`}>{i + 1}</span>
                     <div className="flex-1">
                       <span className={`text-sm ${c.text}`}>{st.label}</span>
-                      <span className={`text-xs ${c.textMuted} ms-2`}>~{st.estimated_minutes}m</span>
+                      <span className={`text-[13px] ${c.textMuted} ms-2`}>~{st.estimated_minutes}m</span>
                       {st.bonus && <span className={`text-xs ms-1 px-1 rounded ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>{t('vbd_bonus')}</span>}
-                      {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>} </div>
+                      {st.tip && <p className={`text-[13px] ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>} </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       st.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
                       st.difficulty === 'hard' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
@@ -773,12 +775,12 @@ const VirtualBodyDouble = ({ tool }) => {
                 carries the interval that suits it — so it is an override rather
                 than a decision, and it waits behind a disclosure. */}
             <div>
-              <button onClick={() => setShowFreq(v => !v)} aria-expanded={showFreq}
+              <button data-print-heading onClick={() => setShowFreq(v => !v)} aria-expanded={showFreq}
                 className={`flex items-center gap-1.5 text-xs font-semibold ${c.textMuted}`}>
-                {t('vbd_advanced_checkins')} <Caret open={showFreq} />
+                {t('vbd_advanced_checkins')} <span data-print-hide><Caret open={showFreq} /></span>
               </button>
-              {showFreq && (
-                <div className="flex flex-wrap gap-2 mt-2">
+              {(
+                <div data-sec-body hidden={!(showFreq)} className="flex flex-wrap gap-2 mt-2">
                   {CHECK_IN_FREQS.map(f => (<button key={f.min} onClick={() => setCheckInFreq(f.min)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${checkInFreq === f.min ? c.tagActive : c.tag}`}>
                       {t(f.labelKey)} </button>
                   ))} </div>
@@ -786,9 +788,9 @@ const VirtualBodyDouble = ({ tool }) => {
             </div>
           </div>
 
-          {/* Choose your companion (v5) */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          {/* Choose your companion (v5) */} <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>{t('vbd_companion_label')}</label>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('vbd_not_sure')}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-1`}>{t('vbd_not_sure')}</p>
             <div className="grid grid-cols-2 gap-2">
               {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); setPutOff(m.id === 'avoidance_buster'); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-start transition-all border ${
                     sessionMode === m.id
@@ -804,7 +806,7 @@ const VirtualBodyDouble = ({ tool }) => {
               ))} </div>
           </div>
 
-          {/* Optional context */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+          {/* Optional context */} <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <p className={`text-xs font-medium ${c.textMuted} uppercase tracking-wider`}>{t('vbd_optional_context')}</p>
             <div>
               <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>{t('vbd_where_are_you')}</label>
@@ -841,9 +843,9 @@ const VirtualBodyDouble = ({ tool }) => {
           {error && (<div className={`${c.danger} border rounded-xl p-4`}>
               <p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p>
             </div>
-          )} <p className={`text-center text-xs ${c.textMuted}`}>{t('vbd_disclaimer_setup')}</p>
+          )} <p className={`text-center text-[13px] ${c.textMuted}`}>{t('vbd_disclaimer_setup')}</p>
 
-          {/* Cross-references */} <div className={`${c.card} border rounded-xl p-4`}>
+          {/* Cross-references */} <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>{t('vbd_related_tools')}</p>
             <div className="flex flex-wrap gap-2">
               {[
@@ -856,8 +858,8 @@ const VirtualBodyDouble = ({ tool }) => {
               ))} </div>
           </div>
 
-          {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🕐</span> {t('vbd_recent_sessions')}</h3>
+          {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`text-base font-bold ${c.text} mb-3`}><span>🕐</span> {t('vbd_recent_sessions')}</h3>
               <div className="space-y-2">
                 {sessionLog.slice(0, 5).map(s => (<div key={s.id} className={`flex items-center justify-between p-2.5 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                     <div className="flex-1 min-w-0">
@@ -865,7 +867,7 @@ const VirtualBodyDouble = ({ tool }) => {
                         <span className="text-xs">{SESSION_MODES.find(m => m.id === s.mode)?.icon || '👥'}</span>
                         <span className={`text-sm font-medium ${c.text} truncate`}>{s.task}</span>
                       </div>
-                      <span className={`text-xs ${c.textMuted}`}>
+                      <span className={`text-[13px] ${c.textMuted}`}>
                         {s.minutesWorked}m · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} {s.subTasksCompleted !== undefined ? ` · ${s.subTasksCompleted}/${s.totalSubTasks} ${t('vbd_tasks_suffix')}` : ''} </span>
                     </div>
                     <div className="flex items-center gap-2 ms-2 flex-shrink-0">
@@ -894,7 +896,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 {companionName || sessionPlan?.session_personality?.name || t('vbd_buddy')} {t('vbd_is_here')}
                 {sessionPlan?.session_personality?.style ? ` · ${sessionPlan.session_personality.style}` : ''} </span>
             </div>
-            <p className={`text-xs ${c.textMuted} -mt-2 mb-3`}>{presenceLine}</p>
+            <p className={`text-[13px] ${c.textMuted} -mt-2 mb-3`}>{presenceLine}</p>
 
             <div className={`text-5xl font-mono font-bold ${c.text} mb-2`}>
               {isOnBreak ? formatTime(breakSecondsRemaining) : formatTime(secondsRemaining)} </div>
@@ -917,8 +919,8 @@ const VirtualBodyDouble = ({ tool }) => {
               )} </div>
           </div>
 
-          {/* Sub-task checklist */} {subTasks.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}>
+          {/* Sub-task checklist */} {subTasks.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+              <p className={`text-[13px] font-bold ${c.textMuted}r mb-2`}>
                 <span>✂️</span> {t('vbd_subtasks_label')} · {subTasksCompleted}/{subTasks.length} </p>
               <div className="space-y-1.5">
                 {subTasks.map((st, i) => (<button key={i} onClick={() => setSubTaskChecked(prev => ({ ...prev, [i]: !prev[i] }))} className={`w-full flex items-center gap-2 p-2 rounded-lg text-start text-sm transition-all ${
@@ -932,17 +934,17 @@ const VirtualBodyDouble = ({ tool }) => {
                     {st} </button>
                 ))} </div>
             </div>
-          )} {/* Chat log */} <div ref={chatLogRef} className={`${c.card} border rounded-xl p-4`} style={{ maxHeight: '360px', overflowY: 'auto' }}
+          )} {/* Chat log */} <div ref={chatLogRef} className={`border-t ${c.border} pt-5`} style={{ maxHeight: '360px', overflowY: 'auto' }}
             onScroll={e => { const l = e.currentTarget; stickToBottomRef.current = l.scrollHeight - l.scrollTop - l.clientHeight < 60; }}>
             <div className="space-y-3">
               {chatLog.map((msg, i) => (<div key={i} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                     msg.from === 'user'
-                      ? (isDark ? 'bg-cyan-700 text-white' : 'bg-cyan-500 text-white')
+                      ? (isDark ? 'bg-cyan-700 text-white' : 'bg-[#142a43] text-white')
                       : `${c.bubbleBg} ${c.bubbleText}`
                   }`}>
                     {msg.emoji && msg.from === 'buddy' && <span className="me-1">{msg.emoji}</span>} <span className="text-sm">{msg.message}</span>
-                    <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-cyan-200' : c.textMuted}`}>{msg.time}</div>
+                    <div className={`text-xs mt-1 ${msg.from === 'user' ? 'text-cyan-200' : c.textMuted}`}>{msg.time}</div>
                   </div>
                 </div>
               ))} {buddyTyping && (<div className="flex justify-start">
@@ -975,13 +977,13 @@ const VirtualBodyDouble = ({ tool }) => {
                 <span>👋</span> {t('vbd_check_in_now')}
               </button>
             </div>
-          )} {/* Stuck data */} {stuckData && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
-              <h3 className={`text-sm font-bold ${c.text}`}><span>🔧</span> {t('vbd_unstick_plan')}</h3>
+          )} {/* Stuck data */} {stuckData && (<div className={`border-t ${c.border} pt-5 space-y-3`}>
+              <h3 className={`text-base font-bold ${c.text}`}><span>🔧</span> {t('vbd_unstick_plan')}</h3>
               {stuckData.micro_steps?.map((step, i) => (<div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                   <span className={`text-xs font-bold ${c.textMuted} mt-0.5`}>{i + 1}</span>
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
-              ))} {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> {t('vbd_try_prefix')} {stuckData.environment_shift}</p>} {stuckData.bailout_option && <p className={`text-xs ${c.textMuted} italic`}>{t('vbd_or_prefix')} {stuckData.bailout_option}</p>} </div>
+              ))} {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> {t('vbd_try_prefix')} {stuckData.environment_shift}</p>} {stuckData.bailout_option && <p className={`text-[13px] ${c.textMuted} italic`}>{t('vbd_or_prefix')} {stuckData.bailout_option}</p>} </div>
           )} </div>
       </div>
     );
@@ -1002,28 +1004,28 @@ const VirtualBodyDouble = ({ tool }) => {
                 <p className={`text-sm ${c.accentTxt} opacity-80`}>{completionData.accomplishment_reframe}</p>
               </div>
             )}
-            <p className={`text-xs ${c.textMuted} mt-4`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} mt-4`}>
               {t('vbd_next_session_q')} <a href="/BrainStateDeejay" className={linkStyle}>🎧 {t('vbd_xref_brainstatedeejay')}</a> {t('vbd_next_session_rest')}
             </p>
           </div>
 
-          {/* Stats */} <div className={`${c.card} border rounded-xl p-5`}>
+          {/* Stats */} <div className={`border-t ${c.border} pt-5`}>
             <div className={`grid ${subTasks.length > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-3 text-center`}>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
-                <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_minutes')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_minutes')}</p>
               </div>
               <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{checkInsDone}</p>
-                <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_checkins')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_checkins')}</p>
               </div>
               {subTasks.length > 0 && (<div>
                   <p className={`text-2xl font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
-                  <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_subtasks')}</p>
+                  <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_subtasks')}</p>
                 </div>
               )} <div>
                 <p className={`text-2xl font-bold ${c.text}`}>{sessionLog.length + 1}</p>
-                <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_total')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_total')}</p>
               </div>
             </div>
           </div>
@@ -1050,20 +1052,20 @@ const VirtualBodyDouble = ({ tool }) => {
                 <div className="flex justify-center gap-6 text-center">
                   <div>
                     <p className={`text-lg font-bold ${c.text}`}>{Math.floor(secondsElapsed / 60)}</p>
-                    <p className={`text-[10px] ${c.textMuted} uppercase`}>{t('vbd_card_min')}</p>
+                    <p className={`text-[13px] ${c.textMuted} uppercase`}>{t('vbd_card_min')}</p>
                   </div>
                   {subTasks.length > 0 && (<div>
                       <p className={`text-lg font-bold ${c.text}`}>{subTasksCompleted}/{subTasks.length}</p>
-                      <p className={`text-[10px] ${c.textMuted} uppercase`}>{t('vbd_card_tasks')}</p>
+                      <p className={`text-[13px] ${c.textMuted} uppercase`}>{t('vbd_card_tasks')}</p>
                     </div>
                   )} <div>
                     <p className={`text-lg font-bold ${c.text}`}>
                       {MOODS.find(m => m.id === mood)?.icon || '😐'} → {MOODS.find(m => m.id === moodAfter)?.icon || '😐'} </p>
-                    <p className={`text-[10px] ${c.textMuted} uppercase`}>{t('vbd_card_mood')}</p>
+                    <p className={`text-[13px] ${c.textMuted} uppercase`}>{t('vbd_card_mood')}</p>
                   </div>
                 </div>
                 <div className={`text-center pt-2 border-t ${c.border}`}>
-                  <p className={`text-[10px] ${c.textMuted}`}>
+                  <p className={`text-[13px] ${c.textMuted}`}>
                     {t('vbd_card_was_here', { name: sessionPlan?.session_personality?.name || t('vbd_buddy') })}
                   </p>
                 </div>
@@ -1071,7 +1073,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 </div>
               </div>
             </div>
-          )} {/* Post-session mood */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+          )} {/* Post-session mood */} <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <p className={`text-sm font-medium ${c.text}`}>{t('vbd_how_feel_now')}</p>
             <div className="flex flex-wrap gap-2">
               {MOODS.map(m => (<button key={m.id} onClick={() => setMoodAfter(m.id)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${moodAfter === m.id ? c.tagActive : c.tag}`}>
@@ -1113,28 +1115,28 @@ const VirtualBodyDouble = ({ tool }) => {
           </div>
 
           {results && (<>
-              <div className={`${c.card} border rounded-xl p-5`}>
+              <div className={`border-t ${c.border} pt-5`}>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{results?.total_sessions}</p>
-                    <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_sessions')}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_sessions')}</p>
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{results?.total_minutes}</p>
-                    <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_minutes')}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_minutes')}</p>
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${c.text}`}>{results?.completion_rate}</p>
-                    <p className={`text-xs ${c.textMuted}`}>{t('vbd_stat_completed')}</p>
+                    <p className={`text-[13px] ${c.textMuted}`}>{t('vbd_stat_completed')}</p>
                   </div>
                 </div>
               </div>
 
               {results?.sweet_spot && (<div className={`${c.accentLight} border rounded-xl p-5`}>
-                  <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>🎯</span> {t('vbd_sweet_spot')}</h3>
+                  <h3 className={`text-base font-bold ${c.accentLightText} mb-2`}><span>🎯</span> {t('vbd_sweet_spot')}</h3>
                   {results?.sweet_spot?.best_duration && <p className={`text-sm ${c.accentLightText}`}>{t('vbd_best_duration')} {results?.sweet_spot?.best_duration}</p>} {results?.sweet_spot?.best_time && <p className={`text-sm ${c.accentLightText}`}>{t('vbd_best_time')} {results?.sweet_spot?.best_time}</p>} {results?.sweet_spot?.best_task_type && <p className={`text-sm ${c.accentLightText}`}>{t('vbd_strongest_with')} {results?.sweet_spot?.best_task_type}</p>} </div>
-              )} {results?.patterns?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🔍</span> {t('vbd_patterns')}</h3>
+              )} {results?.patterns?.length > 0 && (<div className={`border-t ${c.border} pt-5`}>
+                  <h3 className={`text-base font-bold ${c.text} mb-3`}><span>🔍</span> {t('vbd_patterns')}</h3>
                   <div className="space-y-3">
                     {results?.patterns?.map((p, i) => (<div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{p.observation}</p>
@@ -1151,7 +1153,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 </div>
               )}
 
-              <p className={`text-xs text-center ${c.textMuted}`}>
+              <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
                 {t('vbd_insights_xref_q')} <a href="/BrainStateDeejay" className={linkStyle}>🎧 {t('vbd_xref_brainstatedeejay')}</a> {t('vbd_insights_xref_rest')}
               </p>
               </>

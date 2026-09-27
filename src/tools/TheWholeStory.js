@@ -50,27 +50,26 @@ const TheWholeStory = ({ tool }) => {
   const c = {
     card:         isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:      isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:        isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:        isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:         isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:    isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    btnPrimary:   isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary:   isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     border:       isDark ? 'border-zinc-700' : 'border-gray-200',
     success:      isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:      isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:       isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:   isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:   isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive: isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    badge:        isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    badge:        isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     tipBg:        isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     tipText:      isDark ? 'text-amber-300' : 'text-amber-800',
     histBg:       isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
@@ -83,9 +82,7 @@ const TheWholeStory = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [showHistory, setShowHistory] = useState(false);
 
@@ -181,20 +178,20 @@ const TheWholeStory = ({ tool }) => {
   // ══════════════════════════════════════════
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={c.card + ' border rounded-xl overflow-hidden'}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
+      <button data-print-heading aria-expanded={!!(open)} onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={'text-base font-semibold ' + c.text}>{title}</span>
           {badge && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>{badge}</span>}
         </div>
-        <Caret open={open} />
+        <span data-print-hide><Caret open={open} /></span>
       </button>
-      {open && <div className={'px-5 pb-5 border-t ' + c.border}>{children}</div>}
+      {<div data-sec-body hidden={!(open)} className={'px-5 pb-5 border-t ' + c.border}>{children}</div>}
     </div>
   );
 
   const Pill = ({ active, onClick, children }) => (
-    <button onClick={onClick}
+    <button aria-pressed={active} onClick={onClick}
       className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
       {active && <span className="me-1">✓</span>}{children}
     </button>
@@ -283,30 +280,30 @@ const TheWholeStory = ({ tool }) => {
         {/* Versions */}
         {results?.versions?.map((v, idx) => (
           <div key={idx} className={'p-5 rounded-xl border-2 ' + versionBg(idx)}>
-            <button onClick={() => setExpandedVersion(expandedVersion === idx ? -1 : idx)} className="w-full text-start">
+            <button data-print-heading aria-expanded={!!(expandedVersion === idx)} onClick={() => setExpandedVersion(expandedVersion === idx ? -1 : idx)} className="w-full text-start">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>{t('ta_version')} {idx + 1}</span>
                   <span className={'text-sm font-bold ' + c.text}>{v.label}</span>
                 </div>
-                <Caret open={expandedVersion === idx} />
+                <span data-print-hide><Caret open={expandedVersion === idx} /></span>
               </div>
               <p className={'text-xs ' + c.textSecondary + ' italic'}>{v.strategy}</p>
             </button>
 
-            {expandedVersion === idx && (
-              <div className="mt-4 space-y-3">
+            {(
+              <div data-sec-body hidden={!(expandedVersion === idx)} className="mt-4 space-y-3">
                 <div className={'p-4 rounded-xl ' + c.inset}>
                   <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-2'}>📝 {t('ta_what_to_say')}</p>
                   <p className={'text-sm leading-relaxed ' + c.text + ' italic'}>"{v.script}"</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className={'p-3 rounded-lg border ' + c.success}>
-                    <p className={'text-[10px] font-bold uppercase mb-1'}>{t('ta_best_for')}</p>
+                    <p className={'text-[13px] font-bold mb-1'}>{t('ta_best_for')}</p>
                     <p className='text-xs'>{v.when_to_use}</p>
                   </div>
                   <div className={'p-3 rounded-lg border ' + c.danger}>
-                    <p className={'text-[10px] font-bold uppercase mb-1'}>{t('ta_risk')}</p>
+                    <p className={'text-[13px] font-bold mb-1'}>{t('ta_risk')}</p>
                     <p className='text-xs'>{v.risk}</p>
                   </div>
                 </div>
@@ -325,7 +322,7 @@ const TheWholeStory = ({ tool }) => {
                   <p className={'text-sm ' + c.text + ' mb-2 italic'}>"{f.answer}"</p>
                   {f.trap_to_avoid && (
                     <div className={'p-2 rounded-lg border ' + c.danger}>
-                      <p className='text-[10px] font-bold'>🚩 {t('ta_trap_to_avoid')} {f.trap_to_avoid}</p>
+                      <p className='text-xs font-bold'>🚩 {t('ta_trap_to_avoid')} {f.trap_to_avoid}</p>
                     </div>
                   )}
                 </div>
@@ -374,7 +371,7 @@ const TheWholeStory = ({ tool }) => {
         <p className={"text-xs text-center " + c.textMuted}>{t('ta_disclaimer')}</p>
 
         {/* Cross-refs */}
-        <div className={'p-4 rounded-2xl border ' + c.card}>
+        <div data-print-hide className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 {t('ta_related')}</p>
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
             <p>{t('ta_xref_velvet_intro')} <a href="/VelvetHammer" className={linkStyle}>{t('ta_xref_velvet')}</a> {t('ta_xref_velvet_after')}</p>
@@ -392,15 +389,15 @@ const TheWholeStory = ({ tool }) => {
     if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('ta_today') : diff === 1 ? t('ta_yesterday') : diff < 7 ? t('ta_days_ago', { count: diff }) : d.toLocaleDateString(userLocale || 'en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
-      <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+      <div data-print-hide className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>📖</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('ta_history_title')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <Caret open={showHistory} />
+          <span data-print-hide><Caret open={showHistory} /></span>
         </button>
-        {showHistory && (
-          <div className="mt-3 space-y-2">
+        {(
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => (
               <div key={entry.id} className={'rounded-xl border ' + c.card + ' p-3 flex items-center gap-3'}>
                 <div className="flex-1 min-w-0">
@@ -419,12 +416,17 @@ const TheWholeStory = ({ tool }) => {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-3 mb-5">
+      {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+          the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+      <div data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex items-start justify-between gap-3"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div>
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '📖'}</span>{t('ta_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>

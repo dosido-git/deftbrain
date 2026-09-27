@@ -133,15 +133,13 @@ const DateNight = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -166,7 +164,7 @@ const DateNight = ({ tool }) => {
     journalCard:   isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     jarBtnText:    isDark ? 'text-orange-400' : 'text-orange-600',
     jarCard:       isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200',
-    rutText:       isDark ? 'text-cyan-400' : 'text-cyan-600',
+    rutText:       isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     proTipText:    isDark ? 'text-amber-300' : 'text-amber-700',
     quoteCard:     isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     stopCard:      isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
@@ -176,9 +174,7 @@ const DateNight = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
 
   // ─── Input ───
@@ -614,7 +610,7 @@ const DateNight = ({ tool }) => {
       <div className={`${c.headerCard} border-2 rounded-2xl p-5`}>
         <h3 className={`text-xl font-bold ${c.text}`}>{tool?.icon ?? '💘'} {results.vibe_title || t('dn_your_evening')}</h3>
         {results.vibe_description && <p className={`text-sm ${c.textSecondary} mt-1`}>{results.vibe_description}</p>}
-        {results.pace_preference && <p className={`text-xs ${c.textMuteded} mt-1`}>⏱️ {t('dn_pace', { pace: results.pace_preference })}</p>}
+        {results.pace_preference && <p className={`text-[13px] ${c.textMuteded} mt-1`}>⏱️ {t('dn_pace', { pace: results.pace_preference })}</p>}
         {results.narrative_arc && <p className={`text-xs italic ${c.textSecondary} mt-2`}>{results.narrative_arc}</p>}
       </div>
 
@@ -650,14 +646,14 @@ const DateNight = ({ tool }) => {
       {/* Checklist */}
       {checklist && (
         <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
-          <div className="flex justify-between"><h4 className="font-bold text-sm">📋 {t('dn_checklist_title')}</h4><button onClick={() => setChecklist(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">📋 {t('dn_checklist_title')}</h4><button onClick={() => setChecklist(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
           {(checklist.checklist || []).map((item, i) => (
             <button key={i} onClick={() => setChecklistChecked(p => ({ ...p, [i]: !p[i] }))}
               className={`flex items-center gap-2 w-full text-start text-xs ${checklistChecked[i] ? 'line-through opacity-50' : ''}`}>
-              <span className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 text-[10px] ${checklistChecked[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>{checklistChecked[i] ? '✓' : ''}</span>
+              <span className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 text-xs ${checklistChecked[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>{checklistChecked[i] ? '✓' : ''}</span>
               <span className="flex-1">{item.item}</span>
               <span className={c.textMuteded}>{item.timing}</span>
-              {item.priority === 'must' && <span className={`text-[10px] ${c.roseText}`}>●</span>}
+              {item.priority === 'must' && <span className={`text-xs ${c.roseText}`}>●</span>}
             </button>
           ))}
           {checklist.last_minute_reminder && <div className={`${c.warning} border rounded-lg p-2 text-xs mt-2`}>🚪 {checklist.last_minute_reminder}</div>}
@@ -667,7 +663,7 @@ const DateNight = ({ tool }) => {
       {/* Share */}
       {shareData && (
         <div className={`${c.infoCard} border rounded-xl p-4 space-y-2`}>
-          <div className="flex justify-between"><h4 className="text-sm font-bold">{shareData.isSurprise ? <>🎁 {t('dn_mystery_invite')}</> : <>📨 {t('dn_invite')}</>}</h4><button onClick={() => setShareData(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <div className="flex justify-between"><h4 className="text-sm font-bold">{shareData.isSurprise ? <>🎁 {t('dn_mystery_invite')}</> : <>📨 {t('dn_invite')}</>}</h4><button onClick={() => setShareData(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
           <p className={`text-sm whitespace-pre-line`}>{shareData.message}</p>
           {shareData.what_to_tell_them && <div className={`${c.warning} border rounded-lg p-2 text-xs`}>📌 {t('dn_all_they_need')} {shareData.what_to_tell_them}</div>}
           {/* "Send this plan" produced text with no way to send it. This opens
@@ -689,8 +685,8 @@ const DateNight = ({ tool }) => {
           of live mode. The bar is gone on purpose — "about $75 left" is more
           reassuring than a filling rectangle, and it does not imply precision
           the estimate does not have. */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-3`}>{t('dn_at_a_glance')}</p>
+      <div className={`border-t ${c.border} pt-5`}>
+        <p className={`text-[13px] font-bold ${c.textMuteded} mb-3`}>{t('dn_at_a_glance')}</p>
         {/* One strip of facts instead of a stack of label/value rows: the shape
             of the evening — when, what it costs, how you move, what to wear,
             what to do first — readable in one pass. Each cell is icon, a bold
@@ -711,7 +707,7 @@ const DateNight = ({ tool }) => {
             <div key={i} className={i > 0 ? `lg:border-s ${c.border} lg:ps-4` : ''}>
               <span className="text-base leading-none" aria-hidden="true">{cell.icon}</span>
               <dt className={`text-xs font-bold ${c.text} mt-1.5`}>{cell.head}</dt>
-              {cell.sub && <dd className={`text-[11px] ${c.textMuteded} mt-0.5 leading-snug`}>{cell.sub}</dd>}
+              {cell.sub && <dd className={`text-[13px] ${c.textMuteded} mt-0.5 leading-snug`}>{cell.sub}</dd>}
             </div>
           ))}
         </dl>
@@ -738,7 +734,7 @@ const DateNight = ({ tool }) => {
               <div className={`flex-1 ${c.stopCard} border rounded-xl p-4 ${isSwap ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between mb-1">
                   <div>
-                    {/* text-xs, not text-[10px]: in an itinerary the time is
+                    {/* text-xs, not text-xs: in an itinerary the time is
                         wayfinding, not a caption. At 10px it read as a label
                         above the venue rather than the hour you leave. Still a
                         step below the venue name (text-sm), so the hierarchy
@@ -752,22 +748,22 @@ const DateNight = ({ tool }) => {
                         point: an unmarked invented restaurant sends someone
                         across town to a door that isn't there. */}
                     {stop.venue_confirmed === false && (
-                      <p className={`text-[10px] ${c.textMuteded}`}>{t('dn_find_a_place')}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>{t('dn_find_a_place')}</p>
                     )}
                   </div>
                   <span className={`text-sm font-black ${c.roseText}`}>~{fm(stop.estimated_cost)}</span>
                 </div>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed mb-2`}>{stop.description}</p>
-                {stop.dress_vibe && <p className={`text-[10px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
-                {stop.what_worked && <p className={`text-[10px] ${c.roseText} mb-1`}>✨ {stop.what_worked}</p>}
+                {stop.dress_vibe && <p className={`text-[13px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
+                {stop.what_worked && <p className={`text-xs ${c.roseText} mb-1`}>✨ {stop.what_worked}</p>}
                 {stop.pro_tip && (
-                  <p className={`text-[10px] ${c.proTipText} mb-1`}>
+                  <p className={`text-xs ${c.proTipText} mb-1`}>
                     <span className="font-bold">{t('dn_good_to_know')}</span> {stop.pro_tip}
                   </p>
                 )}
-                {stop.anniversary_touch && <p className={`text-[10px] ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
+                {stop.anniversary_touch && <p className={`text-xs ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
                 {stop.for_the_two_of_you && (
-                  <p className={`text-[10px] ${c.roseText} mb-1`}>
+                  <p className={`text-xs ${c.roseText} mb-1`}>
                     <span className="font-bold">{t('dn_for_the_two')}</span> {stop.for_the_two_of_you}
                   </p>
                 )}
@@ -778,12 +774,12 @@ const DateNight = ({ tool }) => {
                     of the exercise — it is shown only when open_at is exactly
                     false, never when the hours are simply unknown. */}
                 {typeof stop.walk_minutes === 'number' && (
-                  <p className={`text-[10px] ${c.textMuteded} mb-1`}>🚶 {t('dn_walk_from_last', { count: stop.walk_minutes })}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mb-1`}>🚶 {t('dn_walk_from_last', { count: stop.walk_minutes })}</p>
                 )}
                 {stop.open_at === false && (
-                  <p className={`text-[10px] font-bold ${c.roseText} mb-1`}>⚠️ {t('dn_may_be_closed')}</p>
+                  <p className={`text-xs font-bold ${c.roseText} mb-1`}>⚠️ {t('dn_may_be_closed')}</p>
                 )}
-                {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 {t('dn_backup')} {stop.plan_b}</p>}
+                {stop.plan_b && <p className={`text-[13px] ${c.textMuteded} mb-1`}>🔄 {t('dn_backup')} {stop.plan_b}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.textMuteded} disabled:opacity-40`}>
                     {isSwap ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span></> : <>🔄 {t('dn_swap')}</>}
@@ -799,12 +795,12 @@ const DateNight = ({ tool }) => {
       {/* Conversation starters / nostalgia */}
       {(results.conversation_starters || results.nostalgia_prompts) && (
         <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-          <button onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-start">
+          <button data-print-heading aria-expanded={!!(expandedConvo)} onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-start">
             <span className={`text-sm font-bold ${c.text}`}>{results.nostalgia_prompts ? <>💭 {t('dn_reflection_prompts')}</> : <>💬 {t('dn_conversation_starters')}</>}</span>
-            <Caret open={expandedConvo} />
+            <span data-print-hide><Caret open={expandedConvo} /></span>
           </button>
-          {expandedConvo && (
-            <div className={`px-4 pb-4 space-y-2 border-t ${c.border} pt-3`}>
+          {(
+            <div data-sec-body hidden={!(expandedConvo)} className={`px-4 pb-4 space-y-2 border-t ${c.border} pt-3`}>
               {(results.nostalgia_prompts || results.conversation_starters || []).map((q, i) => (
                 <div key={i} className={`${c.quoteCard} rounded-lg p-3`}>
                   <p className={`text-xs ${c.textSecondary}`}>{results.nostalgia_prompts ? '💭' : '💬'} {q}</p>
@@ -822,10 +818,10 @@ const DateNight = ({ tool }) => {
           thinks "what if this goes wrong" — and as three repairs it can
           actually make, not prose describing one. */}
       {results.itinerary?.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+        <div className={`border-t ${c.border} pt-5 space-y-3`}>
           <div>
             <p className={`text-sm font-bold ${c.text}`}>{t('dn_if_changes')}</p>
-            <p className={`text-xs ${c.textMuteded}`}>{t('dn_plans_change')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('dn_plans_change')}</p>
           </div>
             { /* restaurant */ }
             <div>
@@ -861,7 +857,7 @@ const DateNight = ({ tool }) => {
           Calibrator. These are chosen by the model from the real catalog,
           against THIS evening. */}
       {nextHelp.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+        <div className={`border-t ${c.border} pt-5 space-y-3`}>
           <p className={`text-sm font-bold ${c.text}`}>{t('dn_anything_else')}</p>
           {nextHelp.map((s) => (
             <a key={s.id} href={`/${s.id}`} className="block group">
@@ -869,7 +865,7 @@ const DateNight = ({ tool }) => {
               {s.why && <span className={`block text-xs ${c.textSecondary}`}>{s.why}</span>}
             </a>
           ))}
-          <a href="/" className={`inline-block text-xs ${c.textMuteded} hover:underline`}>{t('dn_explore_all')}</a>
+          <a href="/" className={`inline-block text-[13px] ${c.textMuteded} hover:underline`}>{t('dn_explore_all')}</a>
         </div>
       )}
 
@@ -878,7 +874,7 @@ const DateNight = ({ tool }) => {
           would get. A direction is a choice the reader understands before
           clicking. */}
       {results.itinerary?.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+        <div className={`border-t ${c.border} pt-5 space-y-2`}>
           <p className={`text-sm font-bold ${c.text}`}>{t('dn_change_feel')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[['relaxed','dn_feel_relaxed','dn_feel_relaxed_d'],
@@ -887,7 +883,7 @@ const DateNight = ({ tool }) => {
               <button key={v} onClick={() => setFeel(feel === v ? '' : v)}
                 className={`text-start p-3 rounded-xl border transition-colors ${feel === v ? c.chipOn : c.chipOff}`}>
                 <span className="block text-xs font-bold">{t(lk)}</span>
-                <span className="block text-[10px] opacity-80">{t(dk)}</span>
+                <span className="block text-xs opacity-80">{t(dk)}</span>
               </button>
             ))}
           </div>
@@ -912,7 +908,7 @@ const DateNight = ({ tool }) => {
           grade three venues to say the plan was good. */}
       <button onClick={() => setShowRate(!showRate)} className={`text-xs font-bold ${c.roseText}`}>{showRate ? <Caret open /> : '⭐'} {t('dn_rate_this')}</button>
       {showRate && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map(s => (
               <button key={s} onClick={() => setOverallRating(s)} aria-label={`${s}`} className={`text-2xl ${s <= overallRating ? '' : 'opacity-30'}`}>⭐</button>
@@ -960,14 +956,22 @@ const DateNight = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Header card */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-2.5">
+      <div>
+        <div>
           {/* ONE flex row with exactly two children: the text column and the
               reset. It used to be two nested rows, both `justify-between`, and
               the outer one had a single child — so its justify-between did
               nothing, the inner row shrank to its content, and the reset landed
               a third of the way across the card instead of at its right edge. */}
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+          {/* Header — site style (2026-09-27): a pale band of the tool's color
+              bleeding to the card edges, the ground the "Try an example" pill was
+              made for (PF-17c). Screen only. */}
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
             {/* min-w-0: a flex item defaults to min-width:auto and refuses to
                 shrink below its content, so on a 375px screen the tagline held
                 its width and shoved the reset button clean off the card. */}
@@ -985,7 +989,7 @@ const DateNight = ({ tool }) => {
                       plan, on budget, anywhere"). Different strings. It also
                       anchors the Try Example pill, which PF-17 places
                       beneath the tagline. */}
-                  <p className={`text-base ${c.textSecondary}`}>
+                  <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                     <span className="me-2 text-xl">{tool?.icon ?? '💘'}</span>{tool?.tagline ?? t('dn_tagline')}
                   </p>
                   {/* Dark ink in BOTH themes. The old rule flipped to white text
@@ -1011,6 +1015,7 @@ const DateNight = ({ tool }) => {
                 </button>
               ) : null}
           </div>
+          </div>
         </div>
       </div>
 
@@ -1031,7 +1036,7 @@ const DateNight = ({ tool }) => {
               price and travel time depends on it, and unlike the rest it has
               no sensible default. Conversation Guidelines #5 — ask the most
               important questions first. */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
               <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
               <input value={location} onChange={e => setLocation(e.target.value)} onBlur={e => warmVenues(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
@@ -1056,14 +1061,14 @@ const DateNight = ({ tool }) => {
                   className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
                 />
                 {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : tPlural('dn_days_away', daysUntil, { count: daysUntil })}</span>}
-                <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-                  🕐 {t('dn_timing_details')} <Caret open={showTiming} />
+                <button data-print-heading aria-expanded={!!(showTiming)} onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
+                  🕐 {t('dn_timing_details')} <span data-print-hide><Caret open={showTiming} /></span>
                 </button>
               </div>
               {/* Start time, length and weather — all three have a working
                   default (7:00 PM, Standard, Not sure), so they stay closed. */}
-              {showTiming && (
-                <div className="mt-3 space-y-3">
+              {(
+                <div data-sec-body hidden={!(showTiming)} className="mt-3 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
@@ -1083,7 +1088,7 @@ const DateNight = ({ tool }) => {
                         these three do — where, when, budget and the kind of
                         night explain themselves, and adding a line to those
                         would be noise. */}
-                    <p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dn_why_weather')}</p>
+                    <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dn_why_weather')}</p>
                     <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
                   </div>
                 </div>
@@ -1092,7 +1097,7 @@ const DateNight = ({ tool }) => {
           </div>
 
           {/* Date type */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className={`border-b ${c.border} pb-3 mb-3`}>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>{tool?.icon ?? '💘'} {t('dn_what_kind')} <span className={c.required}>*</span></p>
             </div>
@@ -1101,20 +1106,20 @@ const DateNight = ({ tool }) => {
                 <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)}
                   className={`p-3 rounded-lg border text-start ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
                   <span className="text-xs font-bold">{t(dt.lk)}</span>
-                  <p className={`text-[10px] mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.textMuteded}`}>{t(dt.dk)}</p>
+                  <p className={`text-xs mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.textMuteded}`}>{t(dt.dk)}</p>
                 </button>
               ))}
             </div>
             {isAnni && (
               <div className="mt-3 flex items-center gap-2">
                 <input type="number" min={1} max={75} value={yearsTogether} onChange={e => setYearsTogether(Math.max(1, parseInt(e.target.value) || 1))} className={`w-20 px-3 py-2 rounded-lg border text-sm text-center ${c.input}`} />
-                <span className={`text-xs ${c.textMuteded}`}>{tPlural('dn_years', yearsTogether)}</span>
+                <span className={`text-[13px] ${c.textMuteded}`}>{tPlural('dn_years', yearsTogether)}</span>
               </div>
             )}
           </div>
 
           {/* Budget */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <div className="flex justify-between mb-2">
               <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>💰 {t('dn_budget')} <span className={c.roseText}>{fm(budget)}</span></p>
               <select value={currency} onChange={e => handleCurrencyChange(e.target.value)} className={`py-1 px-2 border rounded-lg text-xs ${c.input}`}>
@@ -1136,7 +1141,7 @@ const DateNight = ({ tool }) => {
                 <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.chipOn : c.chipOff}`}>{fm(p)}</button>
               ))}
               <label className="flex items-center gap-1.5">
-                <span className={`text-xs ${c.textMuteded}`}>{t('dn_or')}</span>
+                <span className={`text-[13px] ${c.textMuteded}`}>{t('dn_or')}</span>
                 <input
                   type="number"
                   min={0}
@@ -1153,12 +1158,12 @@ const DateNight = ({ tool }) => {
 
 
           {/* Dietary + Restrictions */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-              🍽️ {t('dn_dietary')} {dietary.length > 0 ? `(${dietary.length})` : ''} <Caret open={showDietary} />
+          <div className={`border-t ${c.border} pt-5`}>
+            <button data-print-heading aria-expanded={!!(showDietary)} onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
+              🍽️ {t('dn_dietary')} {dietary.length > 0 ? `(${dietary.length})` : ''} <span data-print-hide><Caret open={showDietary} /></span>
             </button>
-            {showDietary && (
-              <div className="mt-2 space-y-2">
+            {(
+              <div data-sec-body hidden={!(showDietary)} className="mt-2 space-y-2">
                 <Pill options={DIETARY_OPTIONS} value={dietary} setter={toggleDietary} multi />
                 <input value={restrictions} onChange={e => setRestrictions(e.target.value)} placeholder={t('dn_other_restrictions')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
               </div>
@@ -1166,27 +1171,27 @@ const DateNight = ({ tool }) => {
           </div>
 
           {/* Partner prefs */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <button onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-              👫 {t('dn_partner_prefs')} <Caret open={showPartner} />
+          <div className={`border-t ${c.border} pt-5`}>
+            <button data-print-heading aria-expanded={!!(showPartner)} onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
+              👫 {t('dn_partner_prefs')} <span data-print-hide><Caret open={showPartner} /></span>
             </button>
-            {showPartner && (
-              <div className="mt-3 space-y-3">
-                <p className={`text-[10px] ${c.textMuteded}`}>{t('dn_why_partner')}</p>
+            {(
+              <div data-sec-body hidden={!(showPartner)} className="mt-3 space-y-3">
+                <p className={`text-[13px] ${c.textMuteded}`}>{t('dn_why_partner')}</p>
                 <div>
-                  <p className={`text-xs ${c.textMuteded} mb-1`}>{t('dn_partner_likes_q')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dn_partner_likes_q')}</p>
                   <input value={partnerPrefs.partnerLikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerLikes: e.target.value }))} placeholder={t('dn_partner_likes_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
                 </div>
                 <div>
-                  <p className={`text-xs ${c.textMuteded} mb-1`}>{t('dn_partner_dislikes_q')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dn_partner_dislikes_q')}</p>
                   <input value={partnerPrefs.partnerDislikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerDislikes: e.target.value }))} placeholder={t('dn_partner_dislikes_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
                 </div>
                 <div>
-                  <p className={`text-xs ${c.textMuteded} mb-1`}>{t('dn_noise_level')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dn_noise_level')}</p>
                   <Pill options={NOISE_OPTIONS} value={partnerPrefs.noiseLevel} setter={v => setPartnerPrefs(p => ({ ...p, noiseLevel: v }))} />
                 </div>
                 <div>
-                  <p className={`text-xs ${c.textMuteded} mb-1`}>{t('dn_energy_level')}</p>
+                  <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dn_energy_level')}</p>
                   <Pill options={ENERGY_OPTIONS} value={partnerPrefs.energyLevel} setter={v => setPartnerPrefs(p => ({ ...p, energyLevel: v }))} />
                 </div>
               </div>
@@ -1194,9 +1199,9 @@ const DateNight = ({ tool }) => {
           </div>
 
           {/* Last time */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🔁 {t('dn_last_time')} <span className={c.textMuteded}>({t('optional')})</span></p>
-            <p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dn_why_last_time')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dn_why_last_time')}</p>
             <input value={lastTime} onChange={e => setLastTime(e.target.value)} placeholder={t('dn_last_time_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
           </div>
 
@@ -1260,13 +1265,13 @@ const DateNight = ({ tool }) => {
         {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
         {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
         <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
-        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {tPlural('dn_prefs_count', prefs.liked.length, { count: prefs.liked.length })}</span>}
+        {prefs.liked?.length > 0 && <span className={`text-[13px] ${c.textMuteded}`}>🧠 {tPlural('dn_prefs_count', prefs.liked.length, { count: prefs.liked.length })}</span>}
       </div>
 
       {/* Rut result */}
       {rutResult && (
         <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
-          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 {t('dn_pattern_analysis')}</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 {t('dn_pattern_analysis')}</h4><button onClick={() => setRutResult(null)} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
           <p className={`text-sm ${c.textSecondary}`}>{rutResult.pattern_summary}</p>
           {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
           {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>{t('dn_missing')} {rutResult.missing_categories.join(', ')}</p>}
@@ -1281,9 +1286,9 @@ const DateNight = ({ tool }) => {
           <div className="flex justify-between items-center">
             <h4 className={`font-bold text-sm ${c.text}`}>🫙 {t('dn_jar_ideas', { count: dateJar.length })}</h4>
             <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
-            <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
+            <button onClick={() => setShowJar(false)} className={`text-[13px] ${c.textMuteded}`}>✕</button>
           </div>
-          {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}
+          {dateJar.length === 0 && !jarLoading && <p className={`text-[13px] ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}
           {dateJar.map((concept, i) => (
             <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 cursor-pointer hover:opacity-80`}
               onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
@@ -1293,8 +1298,8 @@ const DateNight = ({ tool }) => {
               </div>
               <p className={`text-xs ${c.textSecondary} mt-0.5`}>{concept.description}</p>
               <div className="flex gap-2 mt-1">
-                {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
-                {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
+                {concept.vibe && <span className={`text-[13px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
+                {concept.best_for && <span className={`text-[13px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
               </div>
             </div>
           ))}
@@ -1309,9 +1314,9 @@ const DateNight = ({ tool }) => {
               <div className="flex justify-between">
                 <div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
                   <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || t('dn_default_date')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
+                  <span className={`text-[13px] ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
                 </div>
-                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
+                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button>
               </div>
             </div>
           ))}
@@ -1322,7 +1327,7 @@ const DateNight = ({ tool }) => {
           plan yet, but at the foot of the tool rather than above the form,
           where it was one more thing to read before the primary action. */}
       {!results && (
-        <p className={`text-xs ${c.textMuted}`}>
+        <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
           {t('dn_pre_xref')}{' '}<a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a>{' '}
           {t('dn_pre_xref_after')}
         </p>
@@ -1330,7 +1335,7 @@ const DateNight = ({ tool }) => {
 
       {/* Favorites list */}
       {favorites.length > 0 && !results && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+        <div className={`border-t ${c.border} pt-5`}>
           <p className={`text-xs font-bold ${c.roseText} mb-2`}>❤️ {t('dn_saved_venues', { count: favorites.length })}</p>
           <div className="space-y-1">
             {favorites.slice(0, 6).map((f, i) => (
@@ -1340,8 +1345,8 @@ const DateNight = ({ tool }) => {
               </div>
             ))}
           </div>
-          {favorites.length > 6 && <p className={`text-xs ${c.textMuteded} mt-1`}>{t('dn_more_count', { count: favorites.length - 6 })}</p>}
-          <p className={`text-xs ${c.textMuteded} mt-2`}>{t('dn_factored_in')}</p>
+          {favorites.length > 6 && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('dn_more_count', { count: favorites.length - 6 })}</p>}
+          <p className={`text-[13px] ${c.textMuteded} mt-2`}>{t('dn_factored_in')}</p>
         </div>
       )}
 

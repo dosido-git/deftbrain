@@ -150,18 +150,15 @@ const PlantRescue = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -171,8 +168,7 @@ const PlantRescue = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     critical:      isDark ? 'bg-red-900/20 border-red-700 text-red-200'       : 'bg-red-50 border-red-300 text-red-800',
@@ -183,9 +179,7 @@ const PlantRescue = ({ tool }) => {
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const load = (k) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch { return null; } };
   const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -651,12 +645,17 @@ const PlantRescue = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Main input card ── */}
-      <div ref={formTopRef} className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500">
+      <div ref={formTopRef} data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+        <div>
+          {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+              the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+          <div data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
             <div className="flex items-end justify-between gap-3">
               <div>
-                <p className={`text-base ${c.textSecondary}`}>
+                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🪴'}</span>{tool?.tagline ?? t('pr_tagline')}
                 </p>
                 {/* This tool's headerColor is a deliberately dark navy (see
@@ -692,7 +691,7 @@ const PlantRescue = ({ tool }) => {
               { key: 'care',     label: `🌱 ${t('pr_mode_care')}` },
               { key: 'identify', label: `🔍 ${t('pr_mode_identify')}` },
             ].map(m => (
-              <button key={m.key} onClick={() => handleModeTabClick(m.key)}
+              <button aria-pressed={mode === m.key} key={m.key} onClick={() => handleModeTabClick(m.key)}
                 className={`flex-1 py-2.5 rounded-lg font-medium text-sm border transition-colors ${mode === m.key ? c.pillActive : c.pillInactive}`}>
                 {m.label}
               </button>
@@ -745,7 +744,7 @@ const PlantRescue = ({ tool }) => {
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                 {uploading
                   ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🪴'}</span><p className={`text-sm ${c.text}`}>{t('pr_compressing')}</p></>
-                  : <><span className="text-3xl block mb-2">📤</span><p className={`text-sm ${c.text}`}>{t('pr_upload_cta')}</p><p className={`text-xs ${c.textMuted}`}>{t('pr_upload_formats')}</p></>}
+                  : <><span className="text-3xl block mb-2">📤</span><p className={`text-sm ${c.text}`}>{t('pr_upload_cta')}</p><p className={`text-[13px] ${c.textMuted}`}>{t('pr_upload_formats')}</p></>}
               </div>
             ) : (
               <div className="relative">
@@ -767,7 +766,7 @@ const PlantRescue = ({ tool }) => {
                       className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${isDark ? 'border-zinc-600 hover:border-zinc-400' : 'border-gray-300 hover:border-gray-400'}`}>
                       <input ref={extraPhotoRefs[idx]} type="file" accept="image/*"
                         onChange={e => handleExtraPhoto(idx, e)} className="hidden" />
-                      <span className="text-xl">📸</span><p className={`text-xs ${c.textMuted}`}>{t('pr_optional')}</p>
+                      <span className="text-xl">📸</span><p className={`text-[13px] ${c.textMuted}`}>{t('pr_optional')}</p>
                     </div>
                   ) : (
                     <div className="relative">
@@ -788,7 +787,7 @@ const PlantRescue = ({ tool }) => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {symptomOptions.map(s => (
                   <label key={s.id}
-                    className={`p-2.5 rounded-lg border-2 cursor-pointer flex items-center gap-2 text-sm ${selectedSymptoms.includes(s.id) ? isDark ? 'border-cyan-500 bg-zinc-700' : 'border-cyan-600 bg-slate-50' : isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
+                    className={`p-2.5 rounded-lg border-2 cursor-pointer flex items-center gap-2 text-sm ${selectedSymptoms.includes(s.id) ? isDark ? 'border-[#7fb3e0] bg-zinc-700' : 'border-[#142a43] bg-slate-50' : isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
                     <input type="checkbox" checked={selectedSymptoms.includes(s.id)} onChange={() => toggleSymptom(s.id)} className="sr-only" />
                     <span>{CHANGE_CATEGORY_MAP[s.id]}</span>
                     <span className={selectedSymptoms.includes(s.id) ? 'font-bold' : ''}>{s.label}</span>
@@ -815,7 +814,7 @@ const PlantRescue = ({ tool }) => {
               <label className={`block text-sm font-medium ${c.label} mb-2`}>{t('pr_recent_changes_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {recentChangeOptions.map((o) => (
-                  <label key={o.id} className={`p-2 rounded-lg border-2 cursor-pointer flex items-center gap-2 text-xs ${recentChanges.includes(o.id) ? isDark ? 'border-cyan-500 bg-zinc-700' : 'border-cyan-600 bg-slate-50' : isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
+                  <label key={o.id} className={`p-2 rounded-lg border-2 cursor-pointer flex items-center gap-2 text-xs ${recentChanges.includes(o.id) ? isDark ? 'border-[#7fb3e0] bg-zinc-700' : 'border-[#142a43] bg-slate-50' : isDark ? 'border-zinc-700' : 'border-gray-200'}`}>
                     <input type="checkbox" checked={recentChanges.includes(o.id)} onChange={() => toggleRecentChange(o.id)} className="sr-only" />
                     <span className={recentChanges.includes(o.id) ? 'font-bold' : ''}>{o.label}</span>
                   </label>
@@ -978,7 +977,7 @@ const PlantRescue = ({ tool }) => {
           )}
           </button>
 
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('pr_xref_intro')} <a href="/BikeMedic" className={`text-xs ${linkStyle}`}>🚲 {t('pr_xref_bikemedic')}</a> {t('pr_xref_bikemedic_tail')}
           </p>
 
@@ -992,7 +991,7 @@ const PlantRescue = ({ tool }) => {
 
       {/* ── Collection panel ── */}
       {showCollection && (
-        <div ref={collectionRef} className={`${c.card} border ${c.border} rounded-xl p-5`}>
+        <div ref={collectionRef} className={`border-t ${c.border} pt-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`font-bold ${c.text}`}>🪴 {t('pr_my_plants')}</h3>
             {plantCollection.length >= 2 && (
@@ -1011,12 +1010,12 @@ const PlantRescue = ({ tool }) => {
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <h4 className={`font-bold ${c.text} truncate`}>{pl.name}</h4>
-                      <p className={`text-xs ${c.textMuted}`}>{pl.commonName || pl.species || t('pr_unknown')}</p>
+                      <p className={`text-[13px] ${c.textMuted}`}>{pl.commonName || pl.species || t('pr_unknown')}</p>
                       {pl.checks?.[0] && <p className={`text-xs ${c.textSecondary} truncate`}>{new Date(pl.checks[0].date).toLocaleDateString()} — {pl.checks[0].reported?.slice(0, 60) || t('pr_no_description')}</p>}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button onClick={() => handleCheckAgain(pl)} className={`${c.btnSecondary} px-2 py-1 rounded text-xs`}>{t('pr_check_again')}</button>
-                      <button onClick={() => handleDeletePlant(pl.id)} className={`text-xs ${c.textMuted} hover:text-zinc-400`}>✕</button>
+                      <button onClick={() => handleDeletePlant(pl.id)} className={`text-[13px] ${c.textMuted} hover:text-zinc-400`}>✕</button>
                     </div>
                   </div>
                 </div>
@@ -1051,7 +1050,7 @@ const PlantRescue = ({ tool }) => {
                     {pairs.map((g, i) => (
                       <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
                         <p className={`text-sm ${c.text}`}>{icon} {g.plants?.join(', ')}</p>
-                        <p className={`text-xs ${c.textMuted}`}>{g.why}</p>
+                        <p className={`text-[13px] ${c.textMuted}`}>{g.why}</p>
                       </div>
                     ))}
                   </div>
@@ -1087,27 +1086,27 @@ const PlantRescue = ({ tool }) => {
               </div>
 
               {results?.plant_identification && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-1 ${c.text}`}>{t('pr_identification')}</h3>
                   <p className={`text-lg font-bold ${c.text}`}>{results.plant_identification.best_match}</p>
                   {results.plant_identification.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.plant_identification.scientific_name}</p>}
                   {identityBadge(results.plant_identification.identity_source, results.plant_identification.confidence)}
                   {results.plant_identification.why_it_fits && <p className={`text-sm mt-2 ${c.textSecondary}`}>{results.plant_identification.why_it_fits}</p>}
                   {results.plant_identification.alternatives?.filter((a) => a && a.trim()).length > 0 && (
-                    <div className="mt-2">{results.plant_identification.alternatives.filter((a) => a && a.trim()).map((a, i) => <p key={i} className={`text-xs ${c.textMuted}`}>• {a}</p>)}</div>
+                    <div className="mt-2">{results.plant_identification.alternatives.filter((a) => a && a.trim()).map((a, i) => <p key={i} className={`text-[13px] ${c.textMuted}`}>• {a}</p>)}</div>
                   )}
                 </div>
               )}
 
               {results?.what_you_reported?.filter((r) => r && r.trim()).length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>📋 {t('pr_what_you_reported')}</h3>
                   <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.what_you_reported.filter((r) => r && r.trim()).map((r, i) => <li key={i}>• {r}</li>)}</ul>
                 </div>
               )}
 
               {results?.possible_explanations?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold ${c.text} mb-3`}>❓ {t('pr_could_explain')}</h3>
                   {results.possible_explanations.map((p, i) => (
                     <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}>
@@ -1121,7 +1120,7 @@ const PlantRescue = ({ tool }) => {
 
               {results?.check_first?.length > 0 && (
                 <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
-                  <h3 className="font-bold mb-2 flex items-center gap-2"><span>🔎</span> {t('pr_check_first')}</h3>
+                  <h3 className="text-base font-bold mb-2 flex items-center gap-2"><span>🔎</span> {t('pr_check_first')}</h3>
                   <div className="space-y-3">
                     {results.check_first.map((cfx, i) => (
                       <div key={i}>
@@ -1136,7 +1135,7 @@ const PlantRescue = ({ tool }) => {
               )}
 
               {results?.what_to_do_now?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`text-lg font-bold ${c.text} mb-3`}>✅ {t('pr_can_do_now')}</h3>
                   <div className="space-y-3">
                     {results.what_to_do_now.map((a, idx) => (
@@ -1152,7 +1151,7 @@ const PlantRescue = ({ tool }) => {
 
               {results?.what_improvement_looks_like?.filter((x) => x && x.trim()).length > 0 && (
                 <div className={`${c.success} border-s-4 rounded-e-lg p-5`}>
-                  <h3 className="font-bold mb-2">🌱 {t('pr_improvement_looks_like')}</h3>
+                  <h3 className="text-base font-bold mb-2">🌱 {t('pr_improvement_looks_like')}</h3>
                   <ul className="text-sm space-y-1">{results.what_improvement_looks_like.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
@@ -1177,7 +1176,7 @@ const PlantRescue = ({ tool }) => {
           {/* ═══ CARE MODE ═══ */}
           {mode === 'care' && results?.core_care && (
             <>
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
+              <div className={`border-t ${c.border} pt-5 text-center`}>
                 <div className="text-6xl mb-3">🌿</div>
                 <div className={`text-2xl font-black ${c.text}`}>{results?.plant?.name || t('pr_care_guide_title')}</div>
                 {results?.plant?.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.plant.scientific_name}</p>}
@@ -1196,14 +1195,14 @@ const PlantRescue = ({ tool }) => {
               </div>
 
               {results?.repot_when?.filter((x) => x && x.trim()).length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_repot_when')}</h3>
                   <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.repot_when.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
 
               {results?.when_conditions_change?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-3 ${c.text}`}>{t('pr_when_conditions_change')}</h3>
                   <div className="space-y-2">
                     {results.when_conditions_change.map((w, i) => (
@@ -1218,7 +1217,7 @@ const PlantRescue = ({ tool }) => {
 
               {results?.watch_for?.filter((x) => x && x.trim()).length > 0 && (
                 <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
-                  <h3 className="font-bold mb-2 flex items-center gap-2"><span>👀</span> {t('pr_watch_for')}</h3>
+                  <h3 className="text-base font-bold mb-2 flex items-center gap-2"><span>👀</span> {t('pr_watch_for')}</h3>
                   <ul className="text-sm space-y-1">{results.watch_for.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
@@ -1238,7 +1237,7 @@ const PlantRescue = ({ tool }) => {
               whether a photo exists (see IDENTIFY IMAGE CONSISTENCY). */}
           {mode === 'identify' && results?.identification_evidence && (
             <>
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
+              <div className={`border-t ${c.border} pt-5 text-center`}>
                 <div className="text-6xl mb-3">🔍</div>
                 <div className={`text-2xl font-black ${c.text}`}>{results.identification_evidence.best_match?.common_name || t('pr_identified')}</div>
                 {results.identification_evidence.best_match?.scientific_name && <p className={`text-sm italic ${c.textSecondary}`}>{results.identification_evidence.best_match.scientific_name}</p>}
@@ -1246,27 +1245,27 @@ const PlantRescue = ({ tool }) => {
               </div>
 
               {results.identification_evidence.current_image_observations?.filter((x) => x && x.trim()).length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_image_observations')}</h3>
                   <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.identification_evidence.current_image_observations.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
 
               {results.identification_evidence.distinguishing_visible_features?.filter((x) => x && x.trim()).length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_why_it_fits')}</h3>
                   <ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.identification_evidence.distinguishing_visible_features.filter((x) => x && x.trim()).map((x, i) => <li key={i}>• {x}</li>)}</ul>
                 </div>
               )}
 
               {results.identification_evidence.plausible_alternatives?.length > 0 && (
-                <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <div className={`border-t ${c.border} pt-5`}>
                   <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_could_also_be')}</h3>
                   {results.identification_evidence.plausible_alternatives.map((a, i) => (
                     <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}>
                       <p className={`font-semibold ${c.text}`}>{a.name}</p>
                       {a.why_possible && <p className={`text-sm ${c.textSecondary}`}>{a.why_possible}</p>}
-                      {a.how_to_distinguish && <p className={`text-xs ${c.textMuted}`}>🔎 {a.how_to_distinguish}</p>}
+                      {a.how_to_distinguish && <p className={`text-[13px] ${c.textMuted}`}>🔎 {a.how_to_distinguish}</p>}
                     </div>
                   ))}
                 </div>
@@ -1281,7 +1280,7 @@ const PlantRescue = ({ tool }) => {
 
               {results.safety_note?.show && (
                 <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
-                  <h3 className="font-bold mb-2">⚠️ {t('pr_safety')}</h3>
+                  <h3 className="text-base font-bold mb-2">⚠️ {t('pr_safety')}</h3>
                   <p className="text-sm">{results.safety_note.guidance}</p>
                 </div>
               )}
@@ -1293,7 +1292,7 @@ const PlantRescue = ({ tool }) => {
           )}
 
           {/* Follow-up */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`border-t ${c.border} pt-5`}>
             <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_followup')}</h3>
             <label htmlFor="pr-followup-q" className="sr-only">{t('pr_ask_followup_label')}</label>
             <div className="flex gap-2">
@@ -1314,8 +1313,8 @@ const PlantRescue = ({ tool }) => {
           </div>
 
           {/* Post-result cross-refs */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('pr_related')}</p>
+          <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('pr_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BikeMedic" className={`text-xs ${linkStyle}`}>🚲 {t('pr_xref_bikemedic')}</a>
               <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>🏥 {t('pr_xref_doctor')}</a>

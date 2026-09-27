@@ -1508,12 +1508,12 @@ const SafeWalk = ({ tool }) => {
       {/* ── Recent Routes — demoted to a small utility row ── */}
       {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-3 mt-4`}>
-          <button data-print-heading aria-expanded={!!(showRecent)} onClick={() => setShowRecent(v => !v)} className="w-full flex items-center justify-between">
+          <button aria-expanded={!!(showRecent)} onClick={() => setShowRecent(v => !v)} className="w-full flex items-center justify-between">
             <span className={`text-xs font-bold ${c.text}`}>🕐 {t('sw_recent_routes_count', { count: sessionHistory.length })}</span>
             <span data-print-hide><Caret open={showRecent} /></span>
           </button>
           {(
-            <div data-sec-body hidden={!(showRecent)} className="space-y-1.5 mt-3">
+            <div data-print-hide hidden={!(showRecent)} className="space-y-1.5 mt-3">
               {sessionHistory.map(entry => (
                 <div key={entry.id} className={`px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                   <span className={`${c.textMuted} flex-shrink-0`}>

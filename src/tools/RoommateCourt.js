@@ -736,13 +736,13 @@ const RoommateCourt = ({ tool }) => {
     if (assignHistory.length === 0) return null;
     return (
       <div className={`mt-5 rounded-xl border ${c.border} ${c.cardAltCard} overflow-hidden`}>
-        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-start">
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-start">
           <span className={`text-sm font-bold ${c.text} flex-1`}>📋 {tr('rc_history', 'Rotation History')}</span>
           <span className={`text-[13px] ${c.textMuted}`}>{tr('rc_rounds', '{{n}} round(s)').replace('{{n}}', assignHistory.length)}</span>
           <span data-print-hide><Caret open={showHistory} /></span>
         </button>
         {(
-          <div data-sec-body hidden={!(showHistory)} className="px-4 pb-4 space-y-3">
+          <div data-print-hide hidden={!(showHistory)} className="px-4 pb-4 space-y-3">
             {assignHistory.slice(0, 6).map((round, ri) => (
               <div key={round.id || ri} className={`p-3 rounded-lg border ${c.border}`}>
                 <span className={`text-xs font-bold ${c.textSecondary}`}>{round.date}</span>

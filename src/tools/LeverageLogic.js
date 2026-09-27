@@ -46,14 +46,13 @@ const LeverageLogic = ({ tool }) => {
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-amber-500 focus:ring-amber-500/20',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
     border: isDark ? 'border-zinc-700' : 'border-zinc-200',
@@ -67,9 +66,7 @@ const LeverageLogic = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Views ──
   const [view, setView] = useState('form'); // form | results | counter | prep | email
@@ -340,10 +337,15 @@ const LeverageLogic = ({ tool }) => {
           It lives at the tool root rather than inside the form card because
           this tool has five screens and PF-16's one reset has to be reachable
           from all of them. */}
-      <div className="mb-4 pb-3 border-b border-zinc-500">
+      {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+          the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+      <div data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div className="flex items-center justify-between">
           <div>
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{t('llog_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -368,43 +370,43 @@ const LeverageLogic = ({ tool }) => {
       {/* ════════ FORM ════════ */}
       {view === 'form' && (
         <div className="space-y-5">
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
+          <div className={`border-t ${c.border} pt-5 space-y-5`}>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_q_situation')} <span className={c.required}>*</span></label>
+                <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_situation')} <span className={c.required}>*</span></label>
                 <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('llog_ph_situation')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_q_type')}</label>
+                <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_type')}</label>
                 <div className="grid grid-cols-4 gap-2">
                   {NEG_TYPES.map(nt => (
                     <button key={nt.value} onClick={() => setNegotiationType(nt.value)}
                       className={`p-2 rounded-xl border text-center transition-all ${negotiationType === nt.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                       <span className="text-lg block">{nt.icon}</span>
-                      <span className={`text-[9px] font-bold leading-tight block ${c.text}`}>{t(nt.labelKey)}</span>
+                      <span className={`text-xs font-bold leading-tight block ${c.text}`}>{t(nt.labelKey)}</span>
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('llog_q_your_side')}</label>
-                <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('llog_help_your_side')}</p>
+                <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('llog_q_your_side')}</label>
+                <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('llog_help_your_side')}</p>
                 <textarea value={yourSide} onChange={e => setYourSide(e.target.value)} placeholder={t('llog_ph_your_side', { sym })} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               {/* Asked separately and on purpose. With one leverage question the
                   model had to supply the other side's position itself, which is the
                   one thing it cannot know. */}
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('llog_q_their_side')}</label>
-                <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('llog_help_their_side')}</p>
+                <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('llog_q_their_side')}</label>
+                <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('llog_help_their_side')}</p>
                 <textarea value={theirSide} onChange={e => setTheirSide(e.target.value)} placeholder={t('llog_ph_their_side')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_q_want')}</label>
+                <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_want')}</label>
                 <input type="text" value={desired} onChange={e => setDesired(e.target.value)} placeholder={t('llog_ph_want')} className={`w-full p-3 border-2 rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_urgency')}</label>
+                  <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_urgency')}</label>
                   <div className="flex gap-2">
                     {URGENCY.map(u => (
                       <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{u.icon} {t(u.labelKey)}</button>
@@ -412,7 +414,7 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_relationship')}</label>
+                  <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_relationship')}</label>
                   <div className="flex gap-2">
                     {RELATIONSHIP.map(r => (
                       <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {t(r.labelKey)}</button>
@@ -435,22 +437,22 @@ const LeverageLogic = ({ tool }) => {
               )}
             </div>
             {savedNegotiations.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('llog_past_negotiations')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('llog_past_negotiations')}</p>
                 <div className="space-y-1.5">
                   {savedNegotiations.slice(0, 5).map(h => (
                     <button key={h.id} onClick={() => recallSession(h)} className={`w-full text-start p-2.5 rounded-xl ${c.cardAlt} border`}>
                       <div className="flex items-center justify-between">
                         <p className={`text-xs font-bold ${c.text} truncate flex-1`}>{h.inputs?.situation || h.situation}</p>
-                        <span className={`text-[10px] ${c.textMuted} shrink-0 ms-2`}>{h.date}</span>
+                        <span className={`text-[13px] ${c.textMuted} shrink-0 ms-2`}>{h.date}</span>
                       </div>
-                      {h.approach && <p className={`text-[10px] ${c.textMuted}`}>{t('llog_strategy_label')} {h.approach}</p>}
+                      {h.approach && <p className={`text-[13px] ${c.textMuted}`}>{t('llog_strategy_label')} {h.approach}</p>}
                     </button>
                   ))}
                 </div>
               </div>
             )}
-            <p className={`text-xs ${c.textMuted} text-center`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
               {t('llog_xref_decision')} <a href="/DecisionCoach" className={linkStyle}>🧭 {t('llog_decision_coach')}</a> {t('llog_xref_decision_after')}
             </p>
           </div>
@@ -476,11 +478,11 @@ const LeverageLogic = ({ tool }) => {
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
                 <p className={`text-sm font-black ${c.text} mb-2`}>{results.read.summary}</p>
                 {results.read.type && (
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.read.type}</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.read.type}</span>
                 )}
                 {results.read.standing_on && (
                   <div className={`mt-3 p-3 rounded-xl ${c.cardAlt}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('llog_h_standing_on')}</p>
+                    <p className={`text-[13px] font-boldr mb-1 ${c.textMuted}`}>{t('llog_h_standing_on')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{results.read.standing_on}</p>
                   </div>
                 )}
@@ -494,8 +496,8 @@ const LeverageLogic = ({ tool }) => {
               { key: 'your_position', heading: 'llog_h_your_position', rows: results.your_position },
               { key: 'their_position', heading: 'llog_h_their_position', rows: results.their_position },
             ].map(({ key, heading, rows }) => (
-              <div key={key} className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t(heading)}</p>
+              <div key={key} className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t(heading)}</p>
                 {rows?.length > 0 ? (
                   <div className="space-y-2.5">
                     {rows.map((row, i) => (
@@ -524,14 +526,14 @@ const LeverageLogic = ({ tool }) => {
 
             {/* What matters most */}
             {results.what_matters_most?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('llog_h_matters')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('llog_h_matters')}</p>
                 <div className="space-y-2.5">
                   {results.what_matters_most.map((f, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
                       <div className="flex items-start justify-between gap-2">
                         <p className={`text-sm font-bold ${c.text}`}>{f.factor}</p>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${f.status === 'established'
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full border shrink-0 ${f.status === 'established'
                           ? (isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-700 border-emerald-300')
                           : (isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-800 border-amber-300')}`}>
                           {t(f.status === 'established' ? 'llog_b_established' : 'llog_b_unknown')}
@@ -547,7 +549,7 @@ const LeverageLogic = ({ tool }) => {
             {/* What is not established — the gap the tool exists to keep visible */}
             {results.unknowns?.length > 0 && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-amber-700/50' : 'border-amber-300'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('llog_h_unknowns')}</p>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('llog_h_unknowns')}</p>
                 <div className="space-y-2.5">
                   {results.unknowns.map((u, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
@@ -566,8 +568,8 @@ const LeverageLogic = ({ tool }) => {
 
             {/* How to negotiate */}
             {results.how_to_negotiate && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('llog_h_how')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('llog_h_how')}</p>
                 <p className={`text-sm font-bold ${c.text}`}>{results.how_to_negotiate.approach}</p>
                 {results.how_to_negotiate.rests_on && (
                   <p className={`text-xs mt-1.5 ${c.textSecondary}`}>
@@ -590,14 +592,14 @@ const LeverageLogic = ({ tool }) => {
 
             {/* What to say — each line carries the fact it depends on */}
             {results.what_to_say?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('llog_h_say')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('llog_h_say')}</p>
                 <div className="space-y-2.5">
                   {results.what_to_say.map((sc, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted}`}>{sc.moment}</p>
+                      <p className={`text-[13px] font-boldr ${c.textMuted}`}>{sc.moment}</p>
                       <p className={`text-sm mt-1 ${c.text}`}>{sc.say_this}</p>
-                      {sc.rests_on && <p className={`text-[11px] mt-1.5 ${c.textMuted}`}>{t('llog_l_rests_on')} {sc.rests_on}</p>}
+                      {sc.rests_on && <p className={`text-[13px] mt-1.5 ${c.textMuted}`}>{t('llog_l_rests_on')} {sc.rests_on}</p>}
                     </div>
                   ))}
                 </div>
@@ -606,8 +608,8 @@ const LeverageLogic = ({ tool }) => {
 
             {/* Traps */}
             {results.traps?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('llog_h_traps')}</p>
+              <div className={`border-t ${c.border} pt-5`}>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>{t('llog_h_traps')}</p>
                 <div className="space-y-2.5">
                   {results.traps.map((tr, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
@@ -620,15 +622,15 @@ const LeverageLogic = ({ tool }) => {
             )}
 
             {/* ── Next steps ── */}
-            <div className={`${c.card} border rounded-2xl p-5 space-y-2`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('llog_tools')}</p>
+            <div className={`border-t ${c.border} pt-5 space-y-2`}>
+              <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('llog_tools')}</p>
               <div className="grid grid-cols-2 gap-2">
                 <button onClick={() => setView('counter')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnPrimary}`}>{t('llog_t_counter')}</button>
                 <button onClick={() => setView('email')} className={`py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('llog_t_draft_email')}</button>
                 <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`col-span-2 py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>{t('llog_t_prep')}</button>
               </div>
             </div>
-            <p className={`text-xs ${c.textMuted} text-center pt-1`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted} text-center pt-1`}>
               {t('llog_xref_contrast_q')} <a href="/WhichLife" className={linkStyle}>📊 {t('llog_contrast_report')}</a> {t('llog_xref_contrast_after')}
             </p>
           </div>
@@ -658,8 +660,8 @@ const LeverageLogic = ({ tool }) => {
               <div className="space-y-4">
                 {/* What the words settle and what they leave open — no subtext,
                     no naming the tactic they are supposedly running. */}
-                <div className={`${c.card} border rounded-2xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textSecondary}`}>{t('llog_h_settles')}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('llog_h_settles')}</p>
                   <p className={`text-sm font-bold ${c.text}`}>{counterResults.what_it_settles}</p>
                   {counterResults.what_it_leaves_open && (
                     <p className={`text-xs mt-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
@@ -675,11 +677,11 @@ const LeverageLogic = ({ tool }) => {
                 {counterResults.responses?.length > 0 && (
                   <div className="space-y-3">
                     {counterResults.responses.map((r, i) => (
-                      <div key={i} className={`${c.card} border rounded-2xl p-5`}>
-                        <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{r.approach}</p>
+                      <div key={i} className={`border-t ${c.border} pt-5`}>
+                        <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{r.approach}</p>
                         <p className={`text-sm font-bold ${c.text} mb-2`}>{r.say_this}</p>
-                        {r.use_this_if && <p className={`text-[11px] ${c.textMuted}`}>{t('llog_l_use_if')} {r.use_this_if}</p>}
-                        {r.gives_up && <p className={`text-[11px] mt-1 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('llog_l_gives_up')} {r.gives_up}</p>}
+                        {r.use_this_if && <p className={`text-[13px] ${c.textMuted}`}>{t('llog_l_use_if')} {r.use_this_if}</p>}
+                        {r.gives_up && <p className={`text-[13px] mt-1 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('llog_l_gives_up')} {r.gives_up}</p>}
                       </div>
                     ))}
                   </div>
@@ -705,13 +707,13 @@ const LeverageLogic = ({ tool }) => {
         {view === 'email' && (
           <div className="space-y-5">
             <button onClick={() => setView('results')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('llog_back_strategy')}</button>
-            <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
+            <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]'}`}>
               <p className={`text-lg font-black ${c.text} mb-1`}>{t('llog_email_title')}</p>
               <p className={`text-xs ${c.textSecondary} mb-4`}>{t('llog_email_intro')}</p>
               <div className="space-y-3">
                 <input type="text" value={emailRecipient} onChange={e => setEmailRecipient(e.target.value)} placeholder={t('llog_ph_recipient')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1.5`}>{t('llog_tone')}</p>
+                  <p className={`text-xs font-bold ${c.textMuted} mb-1.5`}>{t('llog_tone')}</p>
                   <div className="flex gap-2">
                     {['professional', 'direct', 'warm'].map(toneOpt => (
                       <button key={toneOpt} onClick={() => setEmailTone(toneOpt)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === toneOpt ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
@@ -740,25 +742,25 @@ const LeverageLogic = ({ tool }) => {
                       <p className={`text-xs font-bold ${c.textSecondary}`}>{draft.version}</p>
                     </div>
                     <div className={`p-2 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-100'} mb-2`}>
-                      <p className={`text-[10px] font-bold ${c.textMuted}`}>{t('llog_subject')}</p>
+                      <p className={`text-xs font-bold ${c.textMuted}`}>{t('llog_subject')}</p>
                       <p className={`text-xs font-bold ${c.text}`}>{draft.subject_line}</p>
                     </div>
                     <div className={`p-3 rounded-lg ${c.cardAlt} border`}>
                       <p className={`text-xs ${c.text} whitespace-pre-line`}>{draft.body}</p>
                     </div>
-                    <p className={`text-[10px] ${c.textMuted} mt-2`}>💡 {draft.tone_note}</p>
+                    <p className={`text-[13px] ${c.textMuted} mt-2`}>💡 {draft.tone_note}</p>
                   </div>
                 ))}
                 {emailResults.keep_out_of_writing?.length > 0 && (
                   <div className={`p-3.5 rounded-xl ${isDark ? 'bg-red-900/15 border border-red-800/30' : 'bg-red-50 border border-red-200'}`}>
                     <p className={`text-xs font-black ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>{t('llog_dont_write')}</p>
-                    {emailResults.keep_out_of_writing.map((d, i) => <p key={i} className={`text-[10px] ${c.textSecondary}`}>• {d}</p>)}
+                    {emailResults.keep_out_of_writing.map((d, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {d}</p>)}
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   {emailResults.before_you_send && (
                     <div className={`${c.cardAlt} border rounded-xl p-3.5`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('llog_l_before_send')}</p>
+                      <p className={`text-[13px] font-boldr mb-1 ${c.textMuted}`}>{t('llog_l_before_send')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{emailResults.before_you_send}</p>
                     </div>
                   )}
@@ -773,15 +775,15 @@ const LeverageLogic = ({ tool }) => {
           <div className="space-y-5">
             <button onClick={() => results ? setView('results') : setView('form')} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('llog_back')}</button>
             {!prepResults && !prepLoading && (
-              <div className={`${c.card} border rounded-2xl p-5 space-y-4`}>
+              <div className={`border-t ${c.border} pt-5 space-y-4`}>
                 <p className={`text-lg font-black ${c.text}`}>{t('llog_prep_title')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{t('llog_prep_intro')}</p>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_prep_know')}</label>
+                  <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_prep_know')}</label>
                   <textarea value={whatYouKnow} onChange={e => setWhatYouKnow(e.target.value)} placeholder={t('llog_ph_prep_know', { sym })} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_prep_unsure')}</label>
+                  <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_prep_unsure')}</label>
                   <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={t('llog_ph_prep_unsure')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <button title={t('cmd_enter')} onClick={fetchPrepCheck} disabled={prepLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>
@@ -824,26 +826,26 @@ const LeverageLogic = ({ tool }) => {
                 </div>
                 {prepResults.one_thing_first && (
                   <div className={`p-4 rounded-xl ${isDark ? 'bg-amber-900/15 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('llog_l_first')}</p>
+                    <p className={`text-[13px] font-boldr mb-1 ${c.textMuted}`}>{t('llog_l_first')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{prepResults.one_thing_first}</p>
                   </div>
                 )}
                 {prepResults.already_solid?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-2`}>{t('llog_strengths')}</p>
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-2`}>{t('llog_strengths')}</p>
                     {prepResults.already_solid.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-0.5`}>✓ {x}</p>)}
                   </div>
                 )}
                 {prepResults.gaps?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl p-5`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-2`}>{t('llog_h_unknowns')}</p>
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-2`}>{t('llog_h_unknowns')}</p>
                     <div className="space-y-2.5">
                       {prepResults.gaps.map((g, i) => (
                         <div key={i} className={`${c.cardAlt} border rounded-xl p-3`}>
                           <p className={`text-xs font-black ${c.text} mb-1`}>{g.gap}</p>
-                          {g.why_it_matters && <p className={`text-[10px] ${c.textSecondary} mb-1`}>{g.why_it_matters}</p>}
+                          {g.why_it_matters && <p className={`text-xs ${c.textSecondary} mb-1`}>{g.why_it_matters}</p>}
                           {g.how_to_find_out && (
-                            <p className={`text-[10px] ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                            <p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
                               {t('llog_l_how_to_find')} {g.how_to_find_out}{g.effort ? ` (${g.effort})` : ''}
                             </p>
                           )}

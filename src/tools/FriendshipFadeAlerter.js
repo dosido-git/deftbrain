@@ -131,15 +131,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -149,8 +147,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -158,9 +155,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [view, setView] = useState('');
   const [form, setForm] = useState(blankPerson());
@@ -469,13 +464,18 @@ const FriendshipFadeAlerter = ({ tool }) => {
   useRegisterActions(buildFullText(), tool?.title || 'Friendship Fade Alerter');
 
   return (
-    <div className={`max-w-4xl mx-auto space-y-4 ${c.text}`}>
+    <div className={`space-y-4 ${c.text}`}>
       {/* ── PF-30 header ── */}
-      <section className={`rounded-2xl border ${c.border} ${c.card} px-5 pt-2.5 pb-5`}>
+      {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+          the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+      <section data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className="text-base">
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '💛'}</span>{tool?.tagline ?? t('ffa_tagline')}
             </p>
             {/* The catalog description above the tool now carries this same
@@ -639,7 +639,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     <div className="text-end flex items-center gap-2">
                       <div>
                         <div className="font-bold">{s.label}</div>
-                        <div className={`text-xs ${c.textMuted}`}>{s.detail}</div>
+                        <div className={`text-[13px] ${c.textMuted}`}>{s.detail}</div>
                       </div>
                       {!managing && <span aria-hidden="true" className={c.textMuted}>›</span>}
                     </div>
@@ -709,13 +709,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
               </div>
               <div>
                 <div className="font-bold">{personStatus(selected).label}</div>
-                <div className={`text-xs ${c.textMuted}`}>{personStatus(selected).detail}</div>
+                <div className={`text-[13px] ${c.textMuted}`}>{personStatus(selected).detail}</div>
               </div>
             </div>
 
             {selected.contextNotes && (
               <div className={`mt-5 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
-                <div className="text-xs font-bold uppercase tracking-wide mb-1">{t('ffa_worth_remembering')}</div>
+                <div className="text-[13px] font-bold mb-1">{t('ffa_worth_remembering')}</div>
                 <div className={c.textSecondary}>{selected.contextNotes}</div>
               </div>
             )}
@@ -789,7 +789,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     );
                   })}
                 </div>
-                <p className={`mt-4 text-center text-sm ${c.textMuted}`}>
+                <p data-print-hide className={`mt-4 text-center text-sm ${c.textMuted}`}>
                   {t('ffa_xref_after')}{' '}
                   <a href="/GratitudeDebtClearer" className={linkStyle}>{t('ffa_related_gratitude')}</a>
                 </p>
@@ -811,7 +811,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
             {(selected.contactLog || []).length > 0 && (
               <div className={`mt-6 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
-                <div className="text-xs font-bold uppercase tracking-wide mb-2">{t('ffa_log_title')}</div>
+                <div className="text-[13px] font-bold mb-2">{t('ffa_log_title')}</div>
                 <ul className="space-y-1.5">
                   {(selected.contactLog || []).slice(0, 6).map((entry, i) => (
                     <li key={i} className="text-sm flex gap-3">
@@ -833,7 +833,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
       </div>
 
       {!results && (
-        <p className={`text-center text-sm ${c.textMuted}`}>
+        <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
           {t('ffa_xref_q')}{' '}
           <a href="/DifficultTalkCoach" className={linkStyle}>{t('ffa_related_difficult_talk')}</a>
         </p>

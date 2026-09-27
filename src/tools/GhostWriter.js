@@ -673,14 +673,14 @@ const GhostWriter = ({ tool }) => {
     };
     return (
       <div className={`border-t ${c.border} pt-5`}>
-        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>✍️</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ghw_past_letters')}</span>
           <span className={`text-[13px] ${c.textMuted}`}>{sessionHistory.length}</span>
           <span data-print-hide><Caret open={showHistory} /></span>
         </button>
         {(
-          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.card} ${c.border} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">

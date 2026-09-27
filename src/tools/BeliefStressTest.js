@@ -37,10 +37,8 @@ const BeliefStressTest = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300'    : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400'    : 'text-gray-500',
     textMuteded:   isDark ? 'text-zinc-400'    : 'text-gray-500',
-    input:         isDark
-      ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     borderHover:   isDark ? 'hover:border-zinc-500' : 'hover:border-gray-400',
@@ -66,9 +64,7 @@ const BeliefStressTest = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [context, setContext] = useState('');
   const [error, setError] = useState('');
@@ -178,12 +174,17 @@ const BeliefStressTest = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Persistent header — shown on every screen (PF-16: reset button top-right) */}
-      <div className="pb-3 border-b border-zinc-500">
+      {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+          the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+      <div data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints "Belief Stress Test" as the
                 page <h1>. The tagline says what the title only names. */}
-            <p className={`text-base ${c.textSecondary}`}>
+            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🔬'}</span>{t('bst_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
@@ -201,7 +202,7 @@ const BeliefStressTest = ({ tool }) => {
       </div>
 
       {!results && (
-          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
+          <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('bst_belief_label')} <span className={c.required}>*</span>
@@ -249,7 +250,7 @@ const BeliefStressTest = ({ tool }) => {
                 One home, directly under the primary action, collapsed with its
                 count so it is a line rather than a list. */}
             {sessionHistory.length > 0 && (
-              <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+              <details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
                 <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                   <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
                     🕐 {t('bst_recent', { n: sessionHistory.length })}
@@ -272,7 +273,7 @@ const BeliefStressTest = ({ tool }) => {
             )}
 
             {/* PF-33 — an offer belongs after the ask, not above the button */}
-            <p className={`text-xs text-center ${c.textMuteded}`}>
+            <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
               {t('bst_pre_xref')}{' '}
               <a href="/TheFinalWord" className={linkStyle}>{t('bst_finalword')}</a> {t('bst_pre_xref_after')}
             </p>
@@ -294,7 +295,7 @@ const BeliefStressTest = ({ tool }) => {
                 <p className="text-xl font-black tracking-tight">{results.verdict.rating_label}</p>
                 <p className="text-sm mt-1 opacity-80">{results.verdict.one_line}</p>
                 {results.belief_type && (
-                  <p className={`text-[10px] font-bold uppercase tracking-wider mt-2 opacity-60`}>{results.belief_type} {t('bst_belief_suffix')}</p>
+                  <p className={`text-[13px] font-boldr mt-2 opacity-60`}>{results.belief_type} {t('bst_belief_suffix')}</p>
                 )}
               </div>
             )}
@@ -308,7 +309,7 @@ const BeliefStressTest = ({ tool }) => {
                   <p className={`text-xs mb-1 ${c.textMuteded}`}><span className="font-semibold">{t('bst_evidence_for')}</span> {results.where_it_holds.the_evidence_for}</p>
                 )}
                 {results.where_it_holds.why_people_hold_it && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('bst_why_spread')}</span> {results.where_it_holds.why_people_hold_it}</p>
+                  <p className={`text-[13px] ${c.textMuteded}`}><span className="font-semibold">{t('bst_why_spread')}</span> {results.where_it_holds.why_people_hold_it}</p>
                 )}
               </div>
             )}
@@ -316,14 +317,14 @@ const BeliefStressTest = ({ tool }) => {
             {/* Stress tests */}
             {results.stress_tests?.length > 0 && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} border ${c.border}`}>
-                <button onClick={() => toggle('tests')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                <button data-print-heading aria-expanded={!!(expanded.tests)} onClick={() => toggle('tests')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-red-300' : 'text-red-700'}`}>
                     🔬 {t('bst_stress_tests')} ({results.stress_tests.length})
                   </p>
-                  <Caret open={expanded.tests} />
+                  <span data-print-hide><Caret open={expanded.tests} /></span>
                 </button>
-                {expanded.tests && (
-                  <div className={`border-t ${c.border}`}>
+                {(
+                  <div data-sec-body hidden={!(expanded.tests)} className={`border-t ${c.border}`}>
                     {results.stress_tests.map((st, i) => {
                       const scfg = SEVERITY_CONFIG[st.severity] || SEVERITY_CONFIG.minor;
                       return (
@@ -333,7 +334,7 @@ const BeliefStressTest = ({ tool }) => {
                             <span className={`text-xs font-semibold ${c.textMuteded}`}>{st.test_label}</span>
                           </div>
                           <p className={`text-sm font-semibold mb-1 ${c.text}`}>{st.the_test}</p>
-                          <p className={`text-xs ${c.textMuteded}`}>{st.what_it_reveals}</p>
+                          <p className={`text-[13px] ${c.textMuteded}`}>{st.what_it_reveals}</p>
                         </div>
                       );
                     })}
@@ -345,12 +346,12 @@ const BeliefStressTest = ({ tool }) => {
             {/* Hidden structure */}
             {results.the_hidden_structure && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} border ${c.border}`}>
-                <button onClick={() => toggle('hidden')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🔦 {t('bst_hidden_structure')}</p>
-                  <Caret open={expanded.hidden} />
+                <button data-print-heading aria-expanded={!!(expanded.hidden)} onClick={() => toggle('hidden')} className="w-full text-start px-5 py-4 flex items-center justify-between">
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>🔦 {t('bst_hidden_structure')}</p>
+                  <span data-print-hide><Caret open={expanded.hidden} /></span>
                 </button>
-                {expanded.hidden && (
-                  <div className={`px-5 pb-4 space-y-3 border-t ${c.border} pt-4`}>
+                {(
+                  <div data-sec-body hidden={!(expanded.hidden)} className={`px-5 pb-4 space-y-3 border-t ${c.border} pt-4`}>
                     {results.the_hidden_structure.what_its_really_saying && (
                       <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bst_really_saying')}</span> {results.the_hidden_structure.what_its_really_saying}</p>
                     )}
@@ -359,7 +360,7 @@ const BeliefStressTest = ({ tool }) => {
                     )}
                     {results.the_hidden_structure.when_it_becomes_harmful && (
                       <div className={`p-3 rounded-xl border ${isDark ? 'bg-red-900/15 border-red-700/40' : 'bg-red-50 border-red-200'}`}>
-                        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-red-300' : 'text-red-700'}`}>{t('bst_when_harmful')}</p>
+                        <p className={`text-[13px] font-bold mb-1 ${isDark ? 'text-red-300' : 'text-red-700'}`}>{t('bst_when_harmful')}</p>
                         <p className={`text-sm ${c.textSecondary}`}>{results.the_hidden_structure.when_it_becomes_harmful}</p>
                       </div>
                     )}
@@ -389,7 +390,7 @@ const BeliefStressTest = ({ tool }) => {
 
             <div className="space-y-2">
               {(results?.stress_tests?.some(st => st.severity === 'fatal')) && (
-                <p className={`text-xs text-center ${c.textMuteded}`}>
+                <p data-print-hide className={`text-xs text-center ${c.textMuteded}`}>
                   {t('bst_fatal_found')}{' '}
                   <a href="/TheFinalWord" className={linkStyle}>{t('bst_finalword')}</a>{' '}
                   {t('bst_finalword_after')}

@@ -130,19 +130,13 @@ const GentlePushGenerator = ({ tool }) => {
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
-    input: isDark
-      ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    btnIdle: isDark
-      ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-      : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
+    btnIdle: isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     border: isDark ? 'border-zinc-700' : 'border-gray-200',
     tag: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
     tagActive: isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-500 text-white',
-    heroCard: isDark
-      ? 'bg-gradient-to-br from-emerald-900/60 to-cyan-900/60 border-emerald-600'
-      : 'bg-gradient-to-br from-emerald-100 to-cyan-100 border-emerald-300',
+    heroCard: isDark ? 'bg-gradient-to-br from-emerald-900/60 to-cyan-900/60 border-emerald-600' : 'bg-gradient-to-br from-emerald-100 to-cyan-100 border-emerald-300',
     heroText: isDark ? 'text-emerald-200' : 'text-emerald-900',
     success: isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning: isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
@@ -154,9 +148,7 @@ const GentlePushGenerator = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [view, setView] = useState('setup'); // setup | pick | active | log | reflection
   const [error, setError] = useState('');
@@ -252,9 +244,12 @@ const GentlePushGenerator = ({ tool }) => {
   };
 
   const renderHeader = (showReset = true) => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+    <div data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-center justify-between gap-3">
-        <p className={`text-base ${c.textSecondary}`}>
+        <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
           <span className="me-2 text-xl">{tool?.icon ?? '🫸'}</span>{t('gpg_tagline')}
         </p>
         {showReset && (
@@ -274,8 +269,8 @@ const GentlePushGenerator = ({ tool }) => {
   );
 
   const renderRelatedTools = () => (
-    <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-      <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('gpg_related_tools')}</p>
+    <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+      <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('gpg_related_tools')}</p>
       <div className="flex flex-wrap gap-3">
         <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('gpg_xref_difficult_talk')}</a>
         <a href="/BeforeTheCrash" className={`text-xs ${linkStyle}`}>{t('gpg_xref_crash_predictor')}</a>
@@ -284,7 +279,7 @@ const GentlePushGenerator = ({ tool }) => {
   );
 
   const renderPostResultRef = () => (
-    <p className={`text-center text-xs ${c.textMuted}`}>
+    <p data-print-hide className={`text-center text-[13px] ${c.textMuted}`}>
       {t('gpg_xref_pre_prefix')}<a href="/DifficultTalkCoach" className={linkStyle}>{t('gpg_xref_difficult_talk')}</a>{t('gpg_xref_pre_suffix')}
     </p>
   );
@@ -310,28 +305,28 @@ const GentlePushGenerator = ({ tool }) => {
 
         {reflectionData.reflection && (
           <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-            <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-2`}>{t('gpg_reflection_label')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('gpg_reflection_label')}</p>
             <p className={`text-sm ${c.text} leading-relaxed`}>{reflectionData.reflection}</p>
           </div>
         )}
 
         {reflectionData.growth_insight && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('gpg_growth_insight_label')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('gpg_growth_insight_label')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{reflectionData.growth_insight}</p>
           </div>
         )}
 
         {reflectionData.scariness_note && (
           <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('gpg_calibration_label')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('gpg_calibration_label')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{reflectionData.scariness_note}</p>
           </div>
         )}
 
         {reflectionData.next_suggestion && (
           <div className={`${c.warning} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold uppercase mb-1`}>{t('gpg_next_time_label')}</p>
+            <p className={`text-[13px] font-bold mb-1`}>{t('gpg_next_time_label')}</p>
             <p className="text-sm">{reflectionData.next_suggestion}</p>
           </div>
         )}
@@ -513,7 +508,7 @@ const GentlePushGenerator = ({ tool }) => {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className={`text-xs font-semibold ${c.text}`}>{t('gpg_push_day_title')} <span className={`font-normal ${c.textMuted}`}>{t('gpg_optional')}</span></p>
-              <p className={`text-[10px] ${c.textMuted}`}>{t('gpg_push_day_hint')}</p>
+              <p className={`text-[13px] ${c.textMuted}`}>{t('gpg_push_day_hint')}</p>
             </div>
             <select value={pushDay} onChange={e => setPushDay(e.target.value)} className={`text-xs p-2 rounded-lg border ${c.input}`}>
               <option value="">{t('gpg_push_day_off')}</option>
@@ -525,7 +520,7 @@ const GentlePushGenerator = ({ tool }) => {
               <button onClick={downloadReminder} className={`text-xs font-semibold ${linkStyle}`}>
                 📅 {t('gpg_add_to_calendar')}
               </button>
-              <p className={`text-[10px] mt-1 ${c.textMuted}`}>{t('gpg_add_to_calendar_hint')}</p>
+              <p className={`text-xs mt-1 ${c.textMuted}`}>{t('gpg_add_to_calendar_hint')}</p>
             </div>
           )}
         </div>
@@ -547,7 +542,7 @@ const GentlePushGenerator = ({ tool }) => {
               <button key={d.value} onClick={() => setDomain(domain === d.value ? '' : d.value)}
                 className={`p-2.5 rounded-xl text-center transition-all ${domain === d.value ? c.tagActive : c.tag}`}>
                 <span className="block text-lg">{d.icon}</span>
-                <span className="block text-[10px] font-medium mt-0.5">{t(d.labelKey)}</span>
+                <span className="block text-xs font-medium mt-0.5">{t(d.labelKey)}</span>
               </button>
             ))}
           </div>
@@ -579,7 +574,7 @@ const GentlePushGenerator = ({ tool }) => {
                 className={`flex-1 py-3 rounded-xl text-center transition-all ${capacity === cap.value ? c.tagActive : c.tag}`}>
                 <span className="block text-lg">{cap.icon}</span>
                 <span className="block text-xs font-medium mt-0.5">{t(cap.labelKey)}</span>
-                <span className={`block text-[9px] mt-0.5 ${capacity === cap.value ? 'text-white/75' : c.textMuted}`}>{t(cap.descKey)}</span>
+                <span className={`block text-xs mt-0.5 ${capacity === cap.value ? 'text-white/75' : c.textMuted}`}>{t(cap.descKey)}</span>
               </button>
             ))}
           </div>
@@ -600,7 +595,7 @@ const GentlePushGenerator = ({ tool }) => {
             returns one screen per view, so "before the result" is a state, not
             a place in the file. */}
         {!results && (
-          <p className={`text-xs text-center ${c.textMuted}`}>
+          <p data-print-hide className={`text-xs text-center ${c.textMuted}`}>
             {t('gpg_xref_pre_prefix')}<a href="/DifficultTalkCoach" className={linkStyle}>{t('gpg_xref_difficult_talk')}</a>{t('gpg_xref_pre_suffix')}
           </p>
         )}
@@ -609,7 +604,7 @@ const GentlePushGenerator = ({ tool }) => {
 
         {pushLog.length > 0 && (
           <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('gpg_recent_pushes')}</h3>
+            <h3 className={`text-base font-bold ${c.text} mb-3`}>🕐 {t('gpg_recent_pushes')}</h3>
             <div className="space-y-2">
               {pushLog.slice(0, 5).map(p => (
                 <div key={p.id} className={`p-3 rounded-lg ${c.cardAlt}`}>
@@ -617,7 +612,7 @@ const GentlePushGenerator = ({ tool }) => {
                     <p className={`text-xs ${c.text} flex-1`}>{p.challenge}</p>
                     <span className="text-xs flex-shrink-0">{p.attempted ? '✓' : '—'}</span>
                   </div>
-                  {p.scariness ? <p className={`text-[10px] ${c.textMuted} mt-1`}>{p.scariness}/5 · {new Date(p.date).toLocaleDateString()}</p> : <p className={`text-[10px] ${c.textMuted} mt-1`}>{new Date(p.date).toLocaleDateString()}</p>}
+                  {p.scariness ? <p className={`text-[13px] ${c.textMuted} mt-1`}>{p.scariness}/5 · {new Date(p.date).toLocaleDateString()}</p> : <p className={`text-[13px] ${c.textMuted} mt-1`}>{new Date(p.date).toLocaleDateString()}</p>}
                 </div>
               ))}
             </div>
@@ -631,7 +626,7 @@ const GentlePushGenerator = ({ tool }) => {
     return (
       <div ref={resultsRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
         {renderHeader()}
-        <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>{t('gpg_back')}</button>
+        <button onClick={() => setView('setup')} className={`text-[13px] ${c.textMuted}`}>{t('gpg_back')}</button>
 
         {acknowledgment && (
           <div className={`${c.heroCard} border-2 rounded-2xl p-5 text-center shadow-sm`}>
@@ -650,8 +645,8 @@ const GentlePushGenerator = ({ tool }) => {
           {pushOptions.map((push, i) => (
             <div key={`${push.approach || 'push'}-${i}`} className={`${c.card} border-2 ${c.border} rounded-xl p-5 space-y-3`}>
               <div className="flex items-start justify-between gap-3">
-                <p className={`text-xs font-bold uppercase tracking-wide ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{push.label || ''}</p>
-                {push.time_frame && <span className={`text-[10px] ${c.textMuted}`}>{push.time_frame}</span>}
+                <p className={`text-[13px] font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{push.label || ''}</p>
+                {push.time_frame && <span className={`text-[13px] ${c.textMuted}`}>{push.time_frame}</span>}
               </div>
               <p className={`text-base font-semibold ${c.text}`}>{push.challenge}</p>
               {push.why_this_size && <p className={`text-xs ${c.textSecondary}`}>{push.why_this_size}</p>}
@@ -709,7 +704,7 @@ const GentlePushGenerator = ({ tool }) => {
     return (
       <div ref={resultsRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
         {renderHeader()}
-        <button onClick={() => setView('pick')} className={`text-xs ${c.textMuted}`}>{t('gpg_pick_different')}</button>
+        <button onClick={() => setView('pick')} className={`text-[13px] ${c.textMuted}`}>{t('gpg_pick_different')}</button>
 
         <div className={`${c.heroCard} border-2 rounded-2xl p-6 space-y-3 shadow-sm`}>
           {activePush.label && <p className={`text-xs font-bold uppercase text-center ${c.heroText}`}>{activePush.label}</p>}
@@ -719,7 +714,7 @@ const GentlePushGenerator = ({ tool }) => {
 
         {activePush.why_this_size && (
           <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t('gpg_why_this_size')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('gpg_why_this_size')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{activePush.why_this_size}</p>
           </div>
         )}
@@ -732,14 +727,14 @@ const GentlePushGenerator = ({ tool }) => {
 
         {activePush.if_too_much && (
           <div className={`${c.warning} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold uppercase mb-1`}>{t('gpg_if_too_big_label')}</p>
+            <p className={`text-[13px] font-bold mb-1`}>{t('gpg_if_too_big_label')}</p>
             <p className="text-sm">{activePush.if_too_much}</p>
           </div>
         )}
 
         <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('gpg_set_reminder_label')}</p>
-          <p className={`text-xs ${c.textMuted} mt-1`}>{t('gpg_set_reminder_hint')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('gpg_set_reminder_label')}</p>
+          <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('gpg_set_reminder_hint')}</p>
         </div>
 
         <div className="space-y-3">
@@ -772,7 +767,7 @@ const GentlePushGenerator = ({ tool }) => {
                 <button key={n} onClick={() => setScariness(n)}
                   className={`flex-1 py-3 rounded-xl text-center ${scariness === n ? c.tagActive : c.tag}`}>
                   <span className="block text-lg">{['', '😌', '😅', '😰', '😬', '🫣'][n]}</span>
-                  <span className="block text-[9px] mt-0.5">{n}/5</span>
+                  <span className="block text-xs mt-0.5">{n}/5</span>
                 </button>
               ))}
             </div>

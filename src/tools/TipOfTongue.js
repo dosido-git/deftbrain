@@ -543,14 +543,14 @@ const TipOfTongue = ({ tool }) => {
     };
     return (
       <div data-print-hide className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🕐</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tot_past_searches')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
           <span data-print-hide><Caret open={showHistory} /></span>
         </button>
         {(
-          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => {
               const restorable = !!(entry.inputs && entry.results);
               return restorable ? (

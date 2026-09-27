@@ -645,7 +645,7 @@ const SkillGapMap = ({ tool }) => {
 
           {savedMaps.length > 0 && (
             <div className={`border-t ${c.border} pt-5`}>
-              <button data-print-heading aria-expanded={!!(expandedSections.saved)} onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
+              <button aria-expanded={!!(expandedSections.saved)} onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_previous', { count: dedupedSavedMaps.length })}</span>
                 <span data-print-hide><Caret open={expandedSections.saved} /></span>
               </button>

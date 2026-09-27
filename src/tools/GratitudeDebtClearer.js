@@ -71,15 +71,13 @@ const GratitudeDebtClearer = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -90,14 +88,12 @@ const GratitudeDebtClearer = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
-    accentSoft:    isDark ? 'bg-cyan-950/30 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
+    accentSoft:    isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [recipientName, setRecipientName] = useState('');
   const [gratitudePoints, setGratitudePoints] = useState('');
@@ -285,10 +281,15 @@ const GratitudeDebtClearer = ({ tool }) => {
 
   return (
     <div className={`max-w-3xl mx-auto space-y-4 ${c.text}`}>
-      <section className={`rounded-2xl border p-5 sm:p-6 ${c.border} ${c.card}`}>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 border-b pb-5 mb-5 border-gray-300/40">
+      <section>
+        {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+            the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+        <div data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div>
-            <h2 className={`font-semibold ${c.text}`}>
+            <h2 className={`text-[17px] leading-snug font-normal ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '💝'}</span>
               {tool?.tagline ?? t('gdc_tagline')}
             </h2>
@@ -309,7 +310,7 @@ const GratitudeDebtClearer = ({ tool }) => {
           )}
         </div>
 
-        <div className="space-y-5">
+        <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-5">
           <div>
             <label className={`block font-semibold mb-2 ${c.text}`}>{t('gdc_who_thanking')} <span className={c.required}>*</span></label>
             <input
@@ -339,16 +340,16 @@ const GratitudeDebtClearer = ({ tool }) => {
             </select>
           </div>
 
-          <button
+          <button data-print-heading aria-expanded={!!(showOptions)}
             type="button"
             onClick={() => setShowOptions(v => !v)}
             className={`text-sm font-semibold ${c.accentTxt}`}
           >
-            <Caret open={showOptions} /> {t('gdc_optional_fit')}
+            <span data-print-hide><Caret open={showOptions} /></span> {t('gdc_optional_fit')}
           </button>
 
-          {showOptions && (
-            <div className={`rounded-xl border p-4 space-y-4 ${c.border} ${c.cardAlt}`}>
+          {(
+            <div data-sec-body hidden={!(showOptions)} className={`rounded-xl border p-4 space-y-4 ${c.border} ${c.cardAlt}`}>
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${c.text}`}>{t('gdc_tone_preference')}</label>
                 <select value={tone} onChange={e => setTone(e.target.value)} className={fieldClass}>
@@ -398,7 +399,7 @@ const GratitudeDebtClearer = ({ tool }) => {
       </section>
 
       {!results && (
-        <p className={`text-center text-sm ${c.textMuted}`}>
+        <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
           {t('gdc_xref_pre')}{' '}
           <a href="/Mend" className={linkStyle}>{t('gdc_xref_mend')}</a>
         </p>
@@ -532,7 +533,7 @@ const GratitudeDebtClearer = ({ tool }) => {
             </details>
           )}
 
-          <p className={`text-center text-sm ${c.textMuted}`}>
+          <p data-print-hide className={`text-center text-sm ${c.textMuted}`}>
             {t('gdc_xref_post')}{' '}
             <a href="/Mend" className={linkStyle}>{t('gdc_xref_mend')}</a>
           </p>

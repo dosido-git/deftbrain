@@ -937,7 +937,7 @@ const MicroAdventureMapper = ({ tool }) => {
 
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.journalBg}`}>
-        <button data-print-heading aria-expanded={!!(showJournal)} onClick={() => setShowJournal(!showJournal)}
+        <button aria-expanded={!!(showJournal)} onClick={() => setShowJournal(!showJournal)}
           className={`w-full flex items-center gap-2 text-start`}>
           <span className={`${c.journalAccent}`}>📖</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('mam_journal_title')}</span>
@@ -946,7 +946,7 @@ const MicroAdventureMapper = ({ tool }) => {
         </button>
 
         {(
-          <div data-sec-body hidden={!(showJournal)} className="mt-3">
+          <div data-print-hide hidden={!(showJournal)} className="mt-3">
             {/* Dedup indicator */}
             <p className={`text-[13px] ${c.textMuted} mb-3`}>
               {t('mam_journal_dedup')}

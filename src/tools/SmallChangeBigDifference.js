@@ -50,21 +50,20 @@ const SmallChangeBigDifference = ({ tool }) => {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -74,9 +73,9 @@ const SmallChangeBigDifference = ({ tool }) => {
     greenText:     isDark ? 'text-emerald-300' : 'text-emerald-800',
     navyBg:        isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-300',
     navyText:      isDark ? 'text-sky-300' : 'text-sky-800',
-    memoryBg:      isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
-    memoryText:    isDark ? 'text-cyan-300' : 'text-cyan-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    memoryBg:      isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    memoryText:    isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     histBg:        isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
     histCard:      isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-gray-200',
@@ -84,9 +83,7 @@ const SmallChangeBigDifference = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // All four outcomes are "useful evidence" (North Star) — none of them is
   // hidden or dismissed. Explicit user request 2026-09-05 to use red for
@@ -286,10 +283,10 @@ const SmallChangeBigDifference = ({ tool }) => {
   // ═══ RENDER HELPERS ═══
   const CheckInForm = () => (
     <div className={`mt-3 pt-3 border-t ${c.border}`}>
-      <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${c.textMuteded}`}>{t('op_how_did_it_go')}</p>
+      <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('op_how_did_it_go')}</p>
       <div className="flex flex-wrap gap-1.5 mb-2">
         {CHECK_IN_STATUSES.map(s => (
-          <button key={s} onClick={() => setDraftStatus(s)}
+          <button aria-pressed={draftStatus === s} key={s} onClick={() => setDraftStatus(s)}
             className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${draftStatus === s ? c.pillActive : c.pillInactive}`}>
             {CHECK_IN_META[s].emoji} {CHECK_IN_META[s].label}
           </button>
@@ -318,7 +315,7 @@ const SmallChangeBigDifference = ({ tool }) => {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <p className={`text-sm font-semibold ${c.text} truncate`}>{exp.recommendation?.change || t('op_session')}</p>
-            <p className={`text-xs ${c.textMuted} mt-0.5`}>
+            <p className={`text-[13px] ${c.textMuted} mt-0.5`}>
               {ROUTINE_AREA_LABEL[exp.experimentContext?.routineArea] || exp.experimentContext?.routineArea} · {dateStr}
             </p>
             {reviewed ? (
@@ -338,7 +335,7 @@ const SmallChangeBigDifference = ({ tool }) => {
                 <button onClick={() => openCheckIn(exp.id)} className={`text-xs font-bold ${linkStyle}`}>{t('op_how_did_it_go')} →</button>
               )
             )}
-            <button onClick={() => removeExperiment(exp.id)} className={`text-xs ${c.textMuted} hover:${c.text}`} aria-label={t('op_remove')}>✕</button>
+            <button onClick={() => removeExperiment(exp.id)} className={`text-[13px] ${c.textMuted} hover:${c.text}`} aria-label={t('op_remove')}>✕</button>
           </div>
         </div>
         {checkingInId === exp.id && <CheckInForm />}
@@ -349,14 +346,19 @@ const SmallChangeBigDifference = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      <div className="max-w-2xl mx-auto">
+      <div>
 
         {/* Header */}
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
+        {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+            the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+        <div data-print-hide
+          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        >
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-base ${c.textSecondary}`}>
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('op_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
@@ -373,7 +375,7 @@ const SmallChangeBigDifference = ({ tool }) => {
         {/* Input */}
         {!results && (
           <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
-            <p className={`text-xs ${c.textMuted}`}>
+            <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
               {t('op_xref_intro')} <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('op_braindump')}</a> {t('op_braindump_after')}
             </p>
             <div>
@@ -432,7 +434,7 @@ const SmallChangeBigDifference = ({ tool }) => {
                 )}
                 {results?.what_i_notice?.why_it_matters && (
                   <div>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>{t('op_why_it_matters_label')}</p>
+                    <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('op_why_it_matters_label')}</p>
                     <p className={`text-sm ${c.textMuted}`}>{results?.what_i_notice?.why_it_matters}</p>
                   </div>
                 )}
@@ -442,11 +444,11 @@ const SmallChangeBigDifference = ({ tool }) => {
             {/* From your recent experiments — optional, only when it actually informed this recommendation */}
             {results?.previous_experiments?.used && results?.previous_experiments?.summary && (
               <div className={`rounded-xl border p-4 ${c.memoryBg}`}>
-                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.memoryText}`}>🧪 {t('op_from_recent_experiments')}</p>
+                <p className={`text-[13px] font-bold mb-1 ${c.memoryText}`}>🧪 {t('op_from_recent_experiments')}</p>
                 <p className={`text-sm ${c.memoryText}`}>{results.previous_experiments.summary}</p>
                 {results?.previous_experiments?.how_it_affected_this_choice && (
                   <div className="mt-2">
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.memoryText} opacity-80`}>{t('op_why_that_changed')}</p>
+                    <p className={`text-[13px] font-bold mb-1 ${c.memoryText} opacity-80`}>{t('op_why_that_changed')}</p>
                     <p className={`text-sm ${c.memoryText}`}>{results.previous_experiments.how_it_affected_this_choice}</p>
                   </div>
                 )}
@@ -455,7 +457,7 @@ const SmallChangeBigDifference = ({ tool }) => {
 
             {/* THE SMALL CHANGE — hero card */}
             {results?.change_to_try && (
-              <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-cyan-800 bg-zinc-800' : 'border-cyan-800 bg-white'}`}>
+              <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#142a43] bg-white'}`}>
                 <div style={{ background: isDark ? 'linear-gradient(135deg, #1e2a3a, #165b9a)' : 'linear-gradient(135deg, #165b9a, #4a6a8a)' }}
                   className="px-6 py-5">
                   <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-2">⚡ {t('op_the_change_label')}</p>
@@ -465,21 +467,21 @@ const SmallChangeBigDifference = ({ tool }) => {
                 <div className="px-6 py-5 space-y-4">
                   {results?.change_to_try?.why_this_one && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>{t('op_why_this_one')}</p>
+                      <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('op_why_this_one')}</p>
                       <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.change_to_try?.why_this_one}</p>
                     </div>
                   )}
 
                   {results?.change_to_try?.how_to_try_it && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>✅ {t('op_how_implement')}</p>
+                      <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>✅ {t('op_how_implement')}</p>
                       <p className={`text-sm ${c.textSecondary}`}>{results?.change_to_try?.how_to_try_it}</p>
                     </div>
                   )}
 
                   {results?.change_to_try?.what_it_may_change && (
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>⚙️ {t('op_what_it_may_change')}</p>
+                      <p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>⚙️ {t('op_what_it_may_change')}</p>
                       <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.change_to_try?.what_it_may_change}</p>
                     </div>
                   )}
@@ -490,7 +492,7 @@ const SmallChangeBigDifference = ({ tool }) => {
             {/* The Math — its own section, shown only when math.show is true */}
             {results?.math?.show && (results?.math?.calculation || results?.math?.meaning) && (
               <div className={`p-4 rounded-xl border ${c.navyBg}`}>
-                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.navyText}`}>📊 {t('op_the_math')}</p>
+                <p className={`text-[13px] font-bold mb-1 ${c.navyText}`}>📊 {t('op_the_math')}</p>
                 {results?.math?.calculation && <p className={`text-sm font-mono font-semibold ${c.navyText}`}>{results.math.calculation}</p>}
                 {results?.math?.meaning && <p className={`text-sm mt-1 ${c.navyText} opacity-90`}>{results.math.meaning}</p>}
               </div>
@@ -499,7 +501,7 @@ const SmallChangeBigDifference = ({ tool }) => {
             {/* Why not start somewhere else — optional, up to 2 alternatives */}
             {results?.why_not_start_elsewhere?.show && results?.why_not_start_elsewhere?.alternatives?.length > 0 && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🤔 {t('op_but_what_about')}</p>
+                <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>🤔 {t('op_but_what_about')}</p>
                 <div className="space-y-3">
                   {results.why_not_start_elsewhere.alternatives.map((alt, i) => (
                     <div key={i}>
@@ -525,7 +527,7 @@ const SmallChangeBigDifference = ({ tool }) => {
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.greenText}`}>👀 {t('op_watch_for')}</p>
                 {results?.what_to_watch_for?.signs_it_may_be_helping?.length > 0 && (
                   <div className="mb-3">
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.greenText}`}>{t('op_watch_helping')}</p>
+                    <p className={`text-[13px] font-bold mb-1 ${c.greenText}`}>{t('op_watch_helping')}</p>
                     <div className="space-y-1">
                       {results.what_to_watch_for.signs_it_may_be_helping.map((s, i) => (
                         <p key={i} className={`text-sm ${c.textSecondary}`}>• {s}</p>
@@ -535,7 +537,7 @@ const SmallChangeBigDifference = ({ tool }) => {
                 )}
                 {results?.what_to_watch_for?.signs_to_rethink_it?.length > 0 && (
                   <div>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.greenText}`}>{t('op_watch_rethink')}</p>
+                    <p className={`text-[13px] font-bold mb-1 ${c.greenText}`}>{t('op_watch_rethink')}</p>
                     <div className="space-y-1">
                       {results.what_to_watch_for.signs_to_rethink_it.map((s, i) => (
                         <p key={i} className={`text-sm ${c.textSecondary}`}>• {s}</p>
@@ -547,8 +549,8 @@ const SmallChangeBigDifference = ({ tool }) => {
             )}
 
             {/* Cross-references */}
-            <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('op_related')}</p>
+            <div data-print-hide className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+              <p className={`text-[13px] font-semibold mb-3 ${c.textMuteded}`}>{t('op_related')}</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'RutBuster', icon: '🎰', label: t('op_xref_chaospilot') },
@@ -569,15 +571,15 @@ const SmallChangeBigDifference = ({ tool }) => {
       {/* ─── Recent Small Changes — sits below the form/results either way, */}
       {/* never as an interstitial right after generating a new result. ─── */}
       {(experiments.length > 0 || legacyHistory.length > 0) ? (
-        <div className={`p-4 rounded-xl border ${c.histBg}`}>
-          <button onClick={() => setShowHistory(p => !p)} className="w-full flex items-center gap-2 text-start">
+        <div data-print-hide className={`p-4 rounded-xl border ${c.histBg}`}>
+          <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(p => !p)} className="w-full flex items-center gap-2 text-start">
             <span>📋</span>
             <span className={`text-sm font-bold ${c.text} flex-1`}>{t('op_recent')}</span>
-            <span className={`text-xs ${c.textMuted}`}>{experiments.length + legacyHistory.length}</span>
-            <Caret open={showHistory} />
+            <span className={`text-[13px] ${c.textMuted}`}>{experiments.length + legacyHistory.length}</span>
+            <span data-print-hide><Caret open={showHistory} /></span>
           </button>
-          {showHistory && (
-            <div className="mt-3 space-y-2">
+          {(
+            <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
               {(showAllExperiments ? experiments : experiments.slice(0, 3)).map(exp => (
                 <ExperimentRow key={exp.id} exp={exp} />
               ))}
@@ -593,7 +595,7 @@ const SmallChangeBigDifference = ({ tool }) => {
                   {legacyHistory.map(s => (
                     <div key={s.id} className="flex items-center justify-between opacity-60">
                       <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('op_session')}</span>
-                      <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                      <span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
                     </div>
                   ))}
                 </div>
@@ -602,7 +604,7 @@ const SmallChangeBigDifference = ({ tool }) => {
           )}
         </div>
       ) : (
-        <div className={`p-4 rounded-xl border ${c.histBg}`}>
+        <div data-print-hide className={`p-4 rounded-xl border ${c.histBg}`}>
           <p className={`text-sm ${c.textMuted}`}>📋 {t('op_recent')} — {t('op_empty_state')}</p>
         </div>
       )}

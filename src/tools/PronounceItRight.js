@@ -616,14 +616,14 @@ const PronounceItRight = ({ tool }) => {
     if (sessionHistory.length === 0) return null;
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.cardAlt}>
-        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🗣️</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('pir_words_looked_up')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
           <span data-print-hide><Caret open={showHistory} /></span>
         </button>
         {(
-          <div data-sec-body hidden={!(showHistory)} className="mt-3 flex flex-wrap gap-1.5">
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 flex flex-wrap gap-1.5">
             {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => { setWord(entry.word); setCategory(entry.category); setResults(null); setBatchResults(null); setBatchMode(false); }}

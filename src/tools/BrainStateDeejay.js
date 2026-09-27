@@ -887,7 +887,7 @@ const BrainStateDeejay = ({ tool }) => {
 
     return (
       <div data-print-hide className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)}
+        <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)}
           className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🎧</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('bsd_past_playlists')}</span>
@@ -896,7 +896,7 @@ const BrainStateDeejay = ({ tool }) => {
         </button>
 
         {(
-          <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
+          <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
             {sessionHistory.map(entry => {
               const isExp = expandedHistId === entry.id;
               return (

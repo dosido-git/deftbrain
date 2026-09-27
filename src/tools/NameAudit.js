@@ -1042,7 +1042,7 @@ const NameAudit = ({ tool }) => {
           {/* Audit History */}
           {auditHistory.length > 0 && (
             <div className={`border-t ${c.border} pt-5`}>
-              <button data-print-heading aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)}
+              <button aria-expanded={!!(showHistory)} onClick={() => setShowHistory(!showHistory)}
                 className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className="flex items-center gap-2 font-semibold text-sm">
                   <span>📜</span> {t('nau_history_title', { count: auditHistory.length })}
@@ -1050,7 +1050,7 @@ const NameAudit = ({ tool }) => {
                 <span data-print-hide><Caret open={showHistory} /></span>
               </button>
               {(
-                <div data-sec-body hidden={!(showHistory)} className="mt-3 space-y-2">
+                <div data-print-hide hidden={!(showHistory)} className="mt-3 space-y-2">
                   {auditHistory.map((entry) => (
                     <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
                       <div className="flex-1 min-w-0">

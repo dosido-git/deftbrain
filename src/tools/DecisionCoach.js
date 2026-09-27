@@ -67,15 +67,14 @@ const DecisionCoach = ({ tool }) => {
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     border: isDark ? 'border-zinc-700' : 'border-zinc-200',
-    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-cyan-500' : 'bg-white border-zinc-300 text-gray-900 placeholder-zinc-400 focus:border-cyan-500',
-    btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-[#7fb3e0]' : 'bg-white border-zinc-300 text-gray-900 placeholder-zinc-400 focus:border-[#142a43]',
+    btnPrimary: isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
@@ -107,16 +106,16 @@ const DecisionCoach = ({ tool }) => {
     timerBg: isDark ? 'bg-red-900/30 border-red-600' : 'bg-red-50 border-red-300',
     timerText: isDark ? 'text-red-300' : 'text-red-700',
     groupPerson: isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
-    groupBar: isDark ? 'bg-cyan-600' : 'bg-cyan-500',
+    groupBar: isDark ? 'bg-[#2f6fb0]' : 'bg-[#142a43]',
     patternCard: isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
     patternHighlight: isDark ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-300',
-    followUpBg: isDark ? 'bg-cyan-900/20 border-cyan-700/40' : 'bg-cyan-50 border-cyan-200',
-    followUpText: isDark ? 'text-cyan-300' : 'text-cyan-800',
+    followUpBg: isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    followUpText: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
     devilFor: isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     devilAgainst: isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
-    chainBg: isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200',
-    chainText: isDark ? 'text-cyan-300' : 'text-cyan-800',
-    chainArrow: isDark ? 'bg-cyan-700 text-white' : 'bg-cyan-500 text-white',
+    chainBg: isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
+    chainText: isDark ? 'text-[#a9cdef]' : 'text-[#142a43]',
+    chainArrow: isDark ? 'bg-cyan-700 text-white' : 'bg-[#142a43] text-white',
     batchCard: isDark ? 'bg-zinc-700/60 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
     templateBtn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300 hover:bg-amber-900/40' : 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100',
     required:   isDark ? 'text-amber-400' : 'text-amber-700',
@@ -125,9 +124,7 @@ const DecisionCoach = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Session ──
   const [activeTab, setActiveTab] = useState('decide');
@@ -461,14 +458,14 @@ const DecisionCoach = ({ tool }) => {
     <div className="flex flex-wrap gap-1.5">
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
-        return (<button key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="me-1">✅</span>}{t(opt.k)}</button>);
+        return (<button aria-pressed={active} key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="me-1">✅</span>}{t(opt.k)}</button>);
       })}
     </div>
   );
 
   const renderSteps = (steps) => {
     if (!steps?.length) return null;
-    return (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-3 ${c.text}`}>{t('dc_do_this_now')}</h3>{steps.map((s, i) => (<div key={i} className="flex items-start gap-3 mb-2"><span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span><p className={`text-sm ${c.stepText} pt-0.5`}>{s}</p></div>))}</div>);
+    return (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-base font-bold mb-3 ${c.text}`}>{t('dc_do_this_now')}</h3>{steps.map((s, i) => (<div key={i} className="flex items-start gap-3 mb-2"><span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span><p className={`text-sm ${c.stepText} pt-0.5`}>{s}</p></div>))}</div>);
   };
 
   // ══════════════════════════════════════════
@@ -476,16 +473,16 @@ const DecisionCoach = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderQuickDecide = () => (
     <div className={`mt-8 p-4 rounded-2xl border ${c.card}`}>
-      <p className={`text-xs font-bold ${c.textSecondary} mb-0.5`}>{t('dc_quick_intro')}</p>
-      <p className={`text-xs ${c.textMuteded} mb-3`}>{t('dc_quick_sub')}</p>
-      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_quick_decide')}</p>
+      <p className={`text-[15px] font-semibold ${c.labelText} mb-0.5`}>{t('dc_quick_intro')}</p>
+      <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('dc_quick_sub')}</p>
+      <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_quick_decide')}</p>
       <div className="grid grid-cols-5 gap-2 mb-2">
-        {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-[10px] font-bold ${c.text}`}>{t(b.k)}</span></button>))}
+        {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-xs font-bold ${c.text}`}>{t(b.k)}</span></button>))}
       </div>
       {templates.length > 0 && (
-        <div><p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_templates')}</p>
+        <div><p className={`text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_templates')}</p>
         <div className="flex flex-wrap gap-1.5">{templates.map(tpl => (
-          <div key={tpl.id} className="flex items-center gap-0.5"><button onClick={() => applyTemplate(tpl)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${c.templateBtn}`}>{tpl.name}</button><button onClick={() => deleteTemplate(tpl.id)} className={`text-[10px] ${c.btnSecondary} px-1`}>✕</button></div>
+          <div key={tpl.id} className="flex items-center gap-0.5"><button onClick={() => applyTemplate(tpl)} className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${c.templateBtn}`}>{tpl.name}</button><button onClick={() => deleteTemplate(tpl.id)} className={`text-xs ${c.btnSecondary} px-1`}>✕</button></div>
         ))}</div></div>
       )}
     </div>
@@ -500,8 +497,8 @@ const DecisionCoach = ({ tool }) => {
           category was removed because the sentence already contains it. */}
       {decideMode !== 'proscons' && (
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{decideMode === 'chain' ? t('dc_label_primary') : t('dc_label_whatdecide')} <span className={c.required}>*</span></label>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('dc_whatdecide_hint')}</p>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{decideMode === 'chain' ? t('dc_label_primary') : t('dc_label_whatdecide')} <span className={c.required}>*</span></label>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('dc_whatdecide_hint')}</p>
           <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else generate([]); } }}
             placeholder={decideMode === 'chain' ? t('dc_ph_chain') : t('dc_ph_whatdecide')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -513,10 +510,10 @@ const DecisionCoach = ({ tool }) => {
           toggle asked for it in the quietest way available. */}
       {decideMode !== 'proscons' && (
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>
             {t('dc_matters_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>({t('optional')})</span>
           </label>
-          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('dc_matters_hint')}</p>
+          <p className={`text-[13px] ${c.textMuteded} mb-2`}>{t('dc_matters_hint')}</p>
           <textarea value={extraContext} onChange={e => setExtraContext(e.target.value)} rows={2}
             placeholder={t('dc_matters_ph')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
@@ -525,12 +522,12 @@ const DecisionCoach = ({ tool }) => {
       {/* How to tackle it — optional, after the question, and defaulted.
           Ignoring it entirely still gets the core product. */}
       <div>
-        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>
+        <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>
           {t('dc_tackle_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>({t('optional')})</span>
         </p>
         <div className="flex flex-wrap gap-1.5">
           {[{ id:'standard',l:t('dc_mode_standard_l') },{ id:'proscons',l:t('dc_mode_proscons_l') },{ id:'devils',l:t('dc_mode_devils_l') },{ id:'chain',l:t('dc_mode_chain_l') }].map(m => (
-            <button key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
+            <button aria-pressed={decideMode === m.id} key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
               className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
               {m.l}
             </button>
@@ -541,10 +538,10 @@ const DecisionCoach = ({ tool }) => {
       {['standard','devils','chain'].includes(decideMode) && (<>
         {decideMode === 'devils' && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_gut')} <span className={c.required}>*</span></label>
+            <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_label_gut')} <span className={c.required}>*</span></label>
             <input type="text" value={gutInstinct} onChange={e => setGutInstinct(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleDevilsAdvocate(); }}
               placeholder={t('dc_ph_gut')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-            <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('dc_gut_hint')}</p>
+            <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('dc_gut_hint')}</p>
           </div>
         )}
       </>)}
@@ -552,7 +549,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Pros & cons input */}
       {decideMode === 'proscons' && (
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_options')} <span className={c.required}>*</span></label>
+          <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_label_options')} <span className={c.required}>*</span></label>
           <div className="space-y-2">
             {prosOptions.map((o, i) => (<div key={i} className="flex gap-2"><input type="text" value={o} onChange={e => { const n=[...prosOptions]; n[i]=e.target.value; setProsOptions(n); }} placeholder={t('dc_ph_option', { n: i+1 })} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />{prosOptions.length > 2 && <button onClick={() => setProsOptions(p => p.filter((_,j) => j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>))}
             {prosOptions.length < 4 && <button onClick={() => setProsOptions(p => [...p, ''])} className={`text-xs font-semibold ${c.histAccent}`}>{t('dc_add_option')}</button>}
@@ -568,28 +565,28 @@ const DecisionCoach = ({ tool }) => {
           <span>⚙️</span>{showMoreOptions ? t('dc_fewer_options') : t('dc_more_options')}
         </button>
         {!showMoreOptions && (constraints.length > 0 || extraContext || capacity !== 'overwhelmed') && (
-          <span className={`text-[10px] font-semibold ${c.histAccent}`}>{t('dc_filters_active')}</span>
+          <span className={`text-xs font-semibold ${c.histAccent}`}>{t('dc_filters_active')}</span>
         )}
       </div>
 
       {showMoreOptions && (<>
       {/* Constraints + Capacity */}
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dc_label_constraints')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('dc_label_constraints')}</label>
         {renderPills(QUICK_CONSTRAINTS, constraints, toggleConstraint, true)}
       </div>
-      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_stuck')}</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
+      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_label_stuck')}</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
 
       {/* Saved preferences — a repeat-visitor convenience, not part of the
           essential flow, so it lives in here rather than under the button. */}
       <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
         <div className="flex items-center gap-2 mb-2">
-          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>{t('dc_saved_prefs')}</label>
-          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? <Caret open /> : t('dc_save_template')}</button>
+          <label className={`text-[13px] font-bold ${c.textSecondary} flex-1`}>{t('dc_saved_prefs')}</label>
+          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-xs font-semibold ${c.histAccent}`}>{showTemplateSave ? <Caret open /> : t('dc_save_template')}</button>
         </div>
         <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder={t('dc_ph_prefs')} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
         {showTemplateSave && (<div className="flex gap-2 mt-2"><label htmlFor="dc-template-name" className="sr-only">{t('dc_template_name_label')}</label><input id="dc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('dc_ph_template_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{t('dc_save')}</button></div>)}
-        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_learned')}</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
+        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dc_learned')}</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
       </div>
 
 
@@ -597,8 +594,8 @@ const DecisionCoach = ({ tool }) => {
       {decideMode === 'standard' && (
         <div className={`p-4 rounded-2xl border ${c.card}`}>
           <div className="flex items-center gap-3">
-            <span>⏱️</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>{t('dc_timer')}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('dc_timer_hint')}</p></div>
-            <div className="flex gap-1">{TIMER_OPTIONS.map(t => (<button key={t.value} onClick={() => setTimerDuration(timerDuration === t.value ? null : t.value)} className={`px-2 py-1 rounded text-[10px] font-bold border ${timerDuration === t.value ? c.pillActive : c.pillInactive}`}>{t.label}</button>))}</div>
+            <span>⏱️</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>{t('dc_timer')}</p><p className={`text-[13px] ${c.textMuteded}`}>{t('dc_timer_hint')}</p></div>
+            <div className="flex gap-1">{TIMER_OPTIONS.map(t => (<button aria-pressed={timerDuration === t.value} key={t.value} onClick={() => setTimerDuration(timerDuration === t.value ? null : t.value)} className={`px-2 py-1 rounded text-xs font-bold border ${timerDuration === t.value ? c.pillActive : c.pillInactive}`}>{t.label}</button>))}</div>
           </div>
         </div>
       )}
@@ -632,8 +629,8 @@ const DecisionCoach = ({ tool }) => {
       <div className={`mb-4 p-4 rounded-2xl border ${timerLocked ? c.prosWinner : urg ? c.timerBg : c.card}`}>
         <div className="flex items-center gap-3 mb-2">
           <span className={`text-lg ${urg && !timerLocked ? 'animate-pulse' : ''}`}>{timerLocked ? '🔒' : urg ? '🚨' : '⏱️'}</span>
-          <div className="flex-1"><p className={`text-xs font-bold ${timerLocked ? c.prosWinText : c.text}`}>{timerLocked ? t('dc_timer_locked') : t('dc_timer_secs', { n: timerRemaining })}</p>{!timerLocked && <p className={`text-[10px] ${urg ? c.timerText : c.textMuteded}`}>{urg ? t('dc_timer_gowith') : t('dc_timer_decide')}</p>}</div>
-          {!timerLocked && <button onClick={cancelTimer} className={`text-[10px] ${c.btnSecondary}`}>{t('dc_cancel')}</button>}
+          <div className="flex-1"><p className={`text-xs font-bold ${timerLocked ? c.prosWinText : c.text}`}>{timerLocked ? t('dc_timer_locked') : t('dc_timer_secs', { n: timerRemaining })}</p>{!timerLocked && <p className={`text-xs ${urg ? c.timerText : c.textMuteded}`}>{urg ? t('dc_timer_gowith') : t('dc_timer_decide')}</p>}</div>
+          {!timerLocked && <button onClick={cancelTimer} className={`text-xs ${c.btnSecondary}`}>{t('dc_cancel')}</button>}
         </div>
         {!timerLocked && <div className={`h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full transition-all duration-1000 ${urg ? 'bg-red-500' : c.prosBar}`} style={{ width: `${pct}%` }} /></div>}
       </div>
@@ -673,7 +670,7 @@ const DecisionCoach = ({ tool }) => {
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
-          <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>
+          <div className={`text-[13px] font-bold mb-3 ${c.decisionText}`}>
             {awaitingAnswer ? t('dc_call_right_now') : t('dc_your_decision')}
           </div>
           <p className={`text-2xl font-bold ${c.decisionHighlight} mb-1`}>{d.choice}</p>
@@ -683,7 +680,7 @@ const DecisionCoach = ({ tool }) => {
           {d.why && <p className={`text-sm ${c.decisionText}`}><strong>{t('dc_why')}</strong> {d.why}</p>}
           {results?.one_thing_that_could_change_this?.question && (
             <div className={`mt-4 pt-4 border-t ${c.border}`}>
-              <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.decisionText}`}>{t('dc_onefact_title')}</p>
+              <p className={`text-[13px] font-bold mb-1 ${c.decisionText}`}>{t('dc_onefact_title')}</p>
               <p className={`text-sm ${c.decisionText}`}>{results.one_thing_that_could_change_this.question}</p>
               {results.one_thing_that_could_change_this.why_it_matters && (
                 <p className={`text-xs mt-1 ${c.textMuteded}`}>{results.one_thing_that_could_change_this.why_it_matters}</p>
@@ -713,7 +710,7 @@ const DecisionCoach = ({ tool }) => {
         </div>
         {decisionBasis.length > 0 && (
           <div className={`p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_basis_title')}</p>
+            <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_basis_title')}</p>
             <dl className="space-y-1.5">
               {decisionBasis.map(([label, value]) => (
                 <div key={label} className="flex flex-col sm:flex-row sm:gap-2">
@@ -725,7 +722,7 @@ const DecisionCoach = ({ tool }) => {
           </div>
         )}
         {!awaitingAnswer && renderSteps(steps)}
-        {!awaitingAnswer && alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {!awaitingAnswer && alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-base font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
         {!awaitingAnswer && results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
 
         {showRejectionPicker ? (
@@ -739,7 +736,7 @@ const DecisionCoach = ({ tool }) => {
                 </button>
               ))}
             </div>
-            <button onClick={() => handleNotThat('')} className={`text-xs ${c.textMuteded} hover:opacity-70`}>{t('dc_skip')}</button>
+            <button onClick={() => handleNotThat('')} className={`text-[13px] ${c.textMuteded} hover:opacity-70`}>{t('dc_skip')}</button>
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
@@ -747,9 +744,9 @@ const DecisionCoach = ({ tool }) => {
             <button onClick={decideAgain} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnDecide}`}><span>🔄</span> {t('dc_new')}</button>
           </div>
         )}
-        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('dc_related')}</p>
+        <p className={`text-[13px] ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('dc_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/DecisionPrism" className={`text-xs ${linkStyle}`}>🔀 {t('dc_xref_spiral')}</a>
           </div>
@@ -766,19 +763,19 @@ const DecisionCoach = ({ tool }) => {
     const cmp = prosResult.comparison || []; const w = prosResult.winner; const mx = Math.max(...cmp.map(o => o.score || 0), 1);
     return (
       <div className="space-y-4 mt-4">
-        {w && (<div className={`p-6 rounded-2xl border-2 ${c.prosWinner}`}><div className={`text-xs font-bold uppercase mb-2 ${c.prosWinText}`}>{t('dc_winner')}</div><p className={`text-2xl font-bold ${c.prosWinText} mb-2`}>{w.choice}</p><p className={`text-sm ${c.prosWinText} opacity-80`}>{w.why}</p>{w.margin && <span className={`inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${w.margin === 'landslide' ? 'bg-emerald-200 text-emerald-800' : w.margin === 'clear' ? 'bg-amber-200 text-amber-800' : 'bg-zinc-200 text-zinc-700'}`}>{w.margin === 'landslide' ? t('dc_margin_landslide') : w.margin === 'clear' ? t('dc_margin_clear') : t('dc_margin_close')}</span>}</div>)}
+        {w && (<div className={`p-6 rounded-2xl border-2 ${c.prosWinner}`}><div className={`text-xs font-bold uppercase mb-2 ${c.prosWinText}`}>{t('dc_winner')}</div><p className={`text-2xl font-bold ${c.prosWinText} mb-2`}>{w.choice}</p><p className={`text-sm ${c.prosWinText} opacity-80`}>{w.why}</p>{w.margin && <span className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${w.margin === 'landslide' ? 'bg-emerald-200 text-emerald-800' : w.margin === 'clear' ? 'bg-amber-200 text-amber-800' : 'bg-zinc-200 text-zinc-700'}`}>{w.margin === 'landslide' ? t('dc_margin_landslide') : w.margin === 'clear' ? t('dc_margin_clear') : t('dc_margin_close')}</span>}</div>)}
         {cmp.map((o, i) => { const isW = o.option === w?.choice; return (
           <div key={i} className={`p-4 rounded-2xl border ${isW ? c.prosWinner : c.prosLoser}`}>
             <div className="flex items-center gap-3 mb-2"><span>{isW ? '🏆' : '💤'}</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{o.option}</p><span className={`text-xs font-bold ${isW ? c.prosWinText : c.textMuteded}`}>{o.score}/100</span></div>
             <div className={`h-2 rounded-full mb-3 ${c.prosBarBg}`}><div className={`h-full rounded-full ${isW ? 'bg-emerald-500' : c.prosBar}`} style={{ width: `${(o.score / mx) * 100}%` }} /></div>
-            <div className="grid grid-cols-2 gap-2"><div>{o.pros?.map((p, j) => <p key={j} className={`text-xs ${c.textSecondary} mb-0.5`}>✅ {p}</p>)}</div><div>{o.cons?.map((x, j) => <p key={j} className={`text-xs ${c.textMuteded} mb-0.5`}>❌ {x}</p>)}</div></div>
+            <div className="grid grid-cols-2 gap-2"><div>{o.pros?.map((p, j) => <p key={j} className={`text-xs ${c.textSecondary} mb-0.5`}>✅ {p}</p>)}</div><div>{o.cons?.map((x, j) => <p key={j} className={`text-[13px] ${c.textMuteded} mb-0.5`}>❌ {x}</p>)}</div></div>
             {o.fit_summary && <p className={`text-xs ${c.hintText} mt-2`}>📐 {o.fit_summary}</p>}
           </div>);
         })}
         {prosResult.tie_breaker && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_tie_breaker')}</p><p className={`text-xs ${c.hintText}`}>{prosResult.tie_breaker}</p></div>}
         {prosResult.no_second_guessing && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-sm ${c.warnText}`}>{prosResult.no_second_guessing}</p></div>}
         <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 {t('dc_new')}</button>
-        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
       </div>
     );
   };
@@ -801,7 +798,7 @@ const DecisionCoach = ({ tool }) => {
         {devilsResult.permission_slip && <div className={`p-5 rounded-2xl border ${c.welcomeBg}`}><p className={`text-sm font-bold ${c.welcomeText}`}>💌 {devilsResult.permission_slip}</p></div>}
         {renderSteps(devilsResult.execution_instructions)}
         <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 {t('dc_new')}</button>
-        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
       </div>
     );
   };
@@ -817,14 +814,14 @@ const DecisionCoach = ({ tool }) => {
         {chainResult.downstream?.map((ds, i) => (
           <div key={i} className={`p-4 rounded-xl border ${c.chainBg}`}><div className="flex items-start gap-3">
             <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.chainArrow}`}>↳</div>
-            <div className="flex-1"><p className={`text-xs font-bold ${c.chainText} mb-0.5`}>{ds.question}</p><p className={`text-sm font-bold ${c.text} mb-1`}>→ {ds.choice}</p><p className={`text-[10px] ${c.textMuteded}`}>{ds.depends_on}</p>{ds.step && <p className={`text-xs ${c.textSecondary} mt-1`}>📋 {ds.step}</p>}</div>
+            <div className="flex-1"><p className={`text-xs font-bold ${c.chainText} mb-0.5`}>{ds.question}</p><p className={`text-sm font-bold ${c.text} mb-1`}>→ {ds.choice}</p><p className={`text-[13px] ${c.textMuteded}`}>{ds.depends_on}</p>{ds.step && <p className={`text-xs ${c.textSecondary} mt-1`}>📋 {ds.step}</p>}</div>
           </div></div>
         ))}
         {chainResult.full_plan && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_full_plan')}</p><p className={`text-xs ${c.hintText}`}>{chainResult.full_plan}</p></div>}
         {renderSteps(chainResult.execution_instructions)}
         {chainResult.no_second_guessing && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-sm ${c.warnText}`}>{chainResult.no_second_guessing}</p></div>}
         <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 {t('dc_new')}</button>
-        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
       </div>
     );
   };
@@ -839,11 +836,11 @@ const DecisionCoach = ({ tool }) => {
   const renderGroupTab = () => (
     <div className="space-y-4">
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_group_decision_label')} <span className={c.required}>*</span></label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_group_decision_label')} <span className={c.required}>*</span></label>
         <input type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder={t('dc_ph_group')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>{t('dc_people')}</label>
+        <label className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>{t('dc_people')}</label>
         {groupPeople.map((p, i) => (
           <div key={i} className={`p-3 rounded-xl border ${c.groupPerson} mb-2`}>
             <div className="flex gap-2 mb-2"><input ref={el => { groupPeopleInputRefs.current[i] = el; }} type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={t('dc_ph_person', { n: i+1 })} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>
@@ -861,13 +858,13 @@ const DecisionCoach = ({ tool }) => {
             <div className={`text-xs font-bold uppercase mb-3 ${c.decisionText}`}>{t('dc_group_decision')}</div>
             <p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{groupResult.group_decision?.choice}</p>
             <p className={`text-sm ${c.decisionText}`}>{groupResult.group_decision?.why}</p>
-            {groupResult.overall_satisfaction && (<div className="mt-3 flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{t('dc_satisfaction')}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${c.groupBar}`} style={{width:`${groupResult.overall_satisfaction}%`}} /></div><span className={`text-xs font-bold ${c.text}`}>{groupResult.overall_satisfaction}%</span></div>)}
+            {groupResult.overall_satisfaction && (<div className="mt-3 flex items-center gap-2"><span className={`text-[13px] ${c.textMuteded}`}>{t('dc_satisfaction')}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${c.groupBar}`} style={{width:`${groupResult.overall_satisfaction}%`}} /></div><span className={`text-xs font-bold ${c.text}`}>{groupResult.overall_satisfaction}%</span></div>)}
           </div>
           {groupResult.person_fit?.map((p, i) => (
             <div key={i} className={`p-4 rounded-xl border ${c.card}`}>
               <div className="flex items-center gap-2 mb-2"><span>👤</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{p.name}</p><span className={`text-xs font-bold ${p.happiness>=70 ? c.prosWinText : c.textMuteded}`}>{p.happiness}%</span></div>
               <div className={`h-1.5 rounded-full mb-2 ${c.prosBarBg}`}><div className={`h-full rounded-full ${p.happiness>=70?'bg-emerald-500':p.happiness>=50?c.prosBar:'bg-red-400'}`} style={{width:`${p.happiness}%`}} /></div>
-              <div className="grid grid-cols-2 gap-1"><div>{p.satisfied?.map((s,j)=><p key={j} className={`text-[10px] ${c.textSecondary}`}>✅ {s}</p>)}</div><div>{p.compromised?.map((x,j)=><p key={j} className={`text-[10px] ${c.textMuteded}`}>⚠️ {x}</p>)}</div></div>
+              <div className="grid grid-cols-2 gap-1"><div>{p.satisfied?.map((s,j)=><p key={j} className={`text-xs ${c.textSecondary}`}>✅ {s}</p>)}</div><div>{p.compromised?.map((x,j)=><p key={j} className={`text-[13px] ${c.textMuteded}`}>⚠️ {x}</p>)}</div></div>
             </div>
           ))}
           {groupResult.diplomatic_pitch && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_how_pitch')}</p><p className={`text-xs ${c.hintText}`}>{groupResult.diplomatic_pitch}</p></div>}
@@ -908,10 +905,10 @@ const DecisionCoach = ({ tool }) => {
       {/* Patterns — the whole of the history analysis now. What the record
           establishes, and an explicit line about what it does not. */}
       <div>
-        <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dc_pat_title')}</h3>
+        <h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dc_pat_title')}</h3>
 
         <div className={`p-4 rounded-2xl border ${c.card} mb-3`}>
-          <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_pat_recent')}</p>
+          <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_pat_recent')}</p>
           <ul className={`text-xs space-y-1 ${c.textSecondary}`}>
             <li>{patternCounts.total} {t('dc_pat_recorded')}</li>
             {patternCounts.quick > 0 && <li>{patternCounts.quick} {t('dc_pat_quick')}</li>}
@@ -923,7 +920,7 @@ const DecisionCoach = ({ tool }) => {
         {patternCounts.user < 3 ? (
           <div className={`p-6 rounded-2xl border ${c.card} text-center`}>
             <p className="text-3xl mb-2">📊</p>
-            <p className={`text-xs ${c.textMuteded}`}>{t('dc_pat_need_more')}</p>
+            <p className={`text-[13px] ${c.textMuteded}`}>{t('dc_pat_need_more')}</p>
           </div>
         ) : (<>
           <button onClick={() => { if (patternsResult && patternsOpen) { setPatternsOpen(false); return; } setPatternsOpen(true); handlePatterns(); }} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>
@@ -932,16 +929,16 @@ const DecisionCoach = ({ tool }) => {
           {patternsResult && patternsOpen && (<div className="space-y-3">
             {!!patternsResult.tended_to_choose?.length && (
               <div className={`p-4 rounded-xl border ${c.patternCard}`}>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_pat_tended')}</p>
+                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_pat_tended')}</p>
                 <ul className={`text-xs space-y-1.5 ${c.textSecondary}`}>
                   {patternsResult.tended_to_choose.map((x, i) => <li key={i}>• {x}</li>)}
                 </ul>
-                {patternCounts.quick > 0 && <p className={`text-[10px] mt-2 ${c.textMuteded}`}>{t('dc_pat_quick_note')}</p>}
+                {patternCounts.quick > 0 && <p className={`text-xs mt-2 ${c.textMuteded}`}>{t('dc_pat_quick_note')}</p>}
               </div>
             )}
             {!!patternsResult.recurring_constraints?.length && (
               <div className={`p-4 rounded-xl border ${c.patternCard}`}>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_pat_constraints')}</p>
+                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_pat_constraints')}</p>
                 <ul className={`text-xs space-y-1.5 ${c.textSecondary}`}>
                   {patternsResult.recurring_constraints.map((x, i) => <li key={i}>• {x}</li>)}
                 </ul>
@@ -949,7 +946,7 @@ const DecisionCoach = ({ tool }) => {
             )}
             {patternsResult.limits && (
               <div className={`p-4 rounded-xl border ${c.patternHighlight}`}>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_pat_limits_title')}</p>
+                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_pat_limits_title')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{patternsResult.limits}</p>
               </div>
             )}
@@ -959,9 +956,9 @@ const DecisionCoach = ({ tool }) => {
 
       {/* Batch — pre-decide the week. A secondary History utility. */}
       <div>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('dc_batch_title')}</h3>
-        <p className={`text-[10px] ${c.textMuteded} mb-3`}>{t('dc_batch_hint')}</p>
-        <label className={`block text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
+        <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('dc_batch_title')}</h3>
+        <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('dc_batch_hint')}</p>
+        <label className={`block text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
         <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm mb-3 ${c.input}`}>
           <option value="dinner">{t('dc_batch_dinners')}</option>
           <option value="lunch">{t('dc_batch_lunches')}</option>
@@ -974,7 +971,7 @@ const DecisionCoach = ({ tool }) => {
 
         {batchCategory === 'custom' && (
           <div className="mb-3">
-            <label htmlFor="dc-batch-custom" className={`block text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_batch_custom_label')} <span className={c.required}>*</span></label>
+            <label htmlFor="dc-batch-custom" className={`block text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_batch_custom_label')} <span className={c.required}>*</span></label>
             <input id="dc-batch-custom" type="text" value={batchCustom} onChange={e => setBatchCustom(e.target.value)}
               placeholder={t('dc_batch_custom_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
@@ -982,7 +979,7 @@ const DecisionCoach = ({ tool }) => {
 
         <div className="flex gap-2 mb-3">
           <div className="flex-1">
-            <label className={`block text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
+            <label className={`block text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
             <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
           </div>
           <button onClick={handleBatch} disabled={loading || (batchCategory === 'custom' && !batchCustom.trim())}
@@ -999,11 +996,11 @@ const DecisionCoach = ({ tool }) => {
           <div className="space-y-2">
             {batchResult.decisions.map((d, i) => (
               <div key={i} className={`p-3 rounded-xl border ${c.batchCard} flex items-center gap-3`}>
-                <span className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black ${c.stepNum}`}>{d.label || `D${d.day}`}</span>
-                <div className="flex-1 min-w-0"><p className={`text-sm font-bold ${c.text} truncate`}>{d.choice}</p><p className={`text-[10px] ${c.textMuteded}`}>{d.why}</p></div>
+                <span className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{d.label || `D${d.day}`}</span>
+                <div className="flex-1 min-w-0"><p className={`text-sm font-bold ${c.text} truncate`}>{d.choice}</p><p className={`text-[13px] ${c.textMuteded}`}>{d.why}</p></div>
               </div>
             ))}
-            {batchResult.variety_note && <p className={`text-[10px] ${c.textMuteded} italic`}>{batchResult.variety_note}</p>}
+            {batchResult.variety_note && <p className={`text-[13px] ${c.textMuteded} italic`}>{batchResult.variety_note}</p>}
           </div>
         )}
       </div>
@@ -1033,16 +1030,16 @@ const DecisionCoach = ({ tool }) => {
                   onChange={() => setCheckedHist(prev => prev.includes(entry.id) ? prev.filter(x => x !== entry.id) : [...prev, entry.id])}
                   aria-label={t('dc_select_row', { q: entry.question })}
                 />
-              <button onClick={() => setExpandedHistId(isExp ? null : entry.id)} className={`w-full flex items-center gap-3 p-3 text-start ${c.card}`}>
+              <button data-print-heading aria-expanded={!!(isExp)} onClick={() => setExpandedHistId(isExp ? null : entry.id)} className={`w-full flex items-center gap-3 p-3 text-start ${c.card}`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.question}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5 flex items-center gap-2 flex-wrap`}>
+                  <div className={`text-[13px] ${c.textMuteded} mt-0.5 flex items-center gap-2 flex-wrap`}>
                     <span>{formatDate(entry.date)}</span><span>·</span><span className="truncate max-w-[120px]">{entry.choice}</span>
                     {entry.rejections > 0 && <span className="text-red-400">🚫×{entry.rejections}</span>}
                     {hasFU && <span className="text-emerald-500">✓</span>}
                   </div>
                 </div>
-                <Caret open={isExp} />
+                <span data-print-hide><Caret open={isExp} /></span>
               </button>
               </div>
               {isExp && (() => {
@@ -1054,17 +1051,17 @@ const DecisionCoach = ({ tool }) => {
                   <div className={`px-3 pb-3 border-t ${c.border} space-y-3 mt-0`}>
                     {/* Full decision card */}
                     <div className={`mt-3 p-4 rounded-xl border-2 ${c.decisionBg}`}>
-                      <div className={`text-[10px] font-bold uppercase tracking-wide mb-1 ${c.decisionText}`}>{t('dc_decision')}</div>
+                      <div className={`text-[13px] font-bold mb-1 ${c.decisionText}`}>{t('dc_decision')}</div>
                       <p className={`text-lg font-bold ${c.decisionHighlight} mb-2`}>{d.choice || entry.choice}</p>
                       {d.why && <p className={`text-xs ${c.decisionText}`}>{d.why}</p>}
                     </div>
                     {/* Steps */}
                     {steps.length > 0 && (
                       <div className={`p-3 rounded-xl border ${c.card}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_steps')}</p>
+                        <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('dc_steps')}</p>
                         {steps.map((s, i) => (
                           <div key={i} className="flex items-start gap-2 mb-1.5">
-                            <span className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black ${c.stepNum}`}>{i + 1}</span>
+                            <span className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span>
                             <p className={`text-xs ${c.stepText} pt-0.5`}>{s}</p>
                           </div>
                         ))}
@@ -1073,7 +1070,7 @@ const DecisionCoach = ({ tool }) => {
                     {/* Ruled out */}
                     {alts.length > 0 && (
                       <div className={`p-3 rounded-xl border ${c.card}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('dc_ruled_out')}</p>
+                        <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('dc_ruled_out')}</p>
                         {alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary} line-through opacity-60`}>{a}</p>)}
                       </div>
                     )}
@@ -1085,7 +1082,7 @@ const DecisionCoach = ({ tool }) => {
                     )}
                     {/* Rejection count */}
                     {entry.rejections > 0 && (
-                      <p className={`text-[10px] ${c.textMuteded}`}>{entry.rejections > 1 ? t('dc_rejected_before_many', { n: entry.rejections }) : t('dc_rejected_before_one', { n: entry.rejections })}</p>
+                      <p className={`text-[13px] ${c.textMuteded}`}>{entry.rejections > 1 ? t('dc_rejected_before_many', { n: entry.rejections }) : t('dc_rejected_before_one', { n: entry.rejections })}</p>
                     )}
                     {/* Action row */}
                     {!hasFU && (
@@ -1104,25 +1101,25 @@ const DecisionCoach = ({ tool }) => {
                         <p className={`text-xs font-bold ${c.followUpText} mb-2`}>{t('dc_fu_what_happened', { choice: entry.choice })}</p>
                         <div className="flex gap-1.5 mb-2">
                           {[{id:'did_it',l:t('dc_fu_did_it')},{id:'didnt_do_it',l:t('dc_fu_didnt')},{id:'changed',l:t('dc_fu_changed')}].map(o => (
-                            <button key={o.id} onClick={() => setFollowUpOutcome(o.id)} className={`flex-1 py-2 rounded-lg text-[10px] font-bold border ${followUpOutcome===o.id?c.pillActive:c.pillInactive}`}>{o.l}</button>
+                            <button aria-pressed={followUpOutcome===o.id} key={o.id} onClick={() => setFollowUpOutcome(o.id)} className={`flex-1 py-2 rounded-lg text-xs font-bold border ${followUpOutcome===o.id?c.pillActive:c.pillInactive}`}>{o.l}</button>
                           ))}
                         </div>
                         {followUpOutcome === 'did_it' && (
-                          <div className="mb-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_fu_satisfaction')}</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
+                          <div className="mb-2"><p className={`text-[13px] ${c.textMuteded} mb-1`}>{t('dc_fu_satisfaction')}</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button aria-pressed={followUpSatisfaction>=n} key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
                         )}
                         {followUpOutcome === 'changed' && <><label htmlFor="dc-followup-actual" className="sr-only">{t('dc_fu_what_instead')}</label><input id="dc-followup-actual" type="text" value={followUpActual} onChange={e => setFollowUpActual(e.target.value)} placeholder={t('dc_fu_what_instead')} className={`w-full mb-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} /></>}
                         {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin inline-block text-xl">{tool?.icon ?? '🎯'}</span>:t('dc_fu_get_feedback')}</button>}
                         {followUpResult && (
                           <div className={`mt-2 p-3 rounded-lg border ${c.card}`}>
                             <p className={`text-xs ${c.textSecondary} mb-2`}>{followUpResult.response}</p>
-                            {followUpResult.insight && <p className={`text-[10px] font-semibold ${c.histAccent}`}>💡 {followUpResult.insight}</p>}
-                            {followUpResult.preference_learned && <p className={`text-[10px] ${c.textMuteded} mt-1`}>🧠 {followUpResult.preference_learned}</p>}
-                            {followUpResult.encouragement && <p className={`text-[10px] ${c.prosWinText} mt-1`}>💪 {followUpResult.encouragement}</p>}
+                            {followUpResult.insight && <p className={`text-xs font-semibold ${c.histAccent}`}>💡 {followUpResult.insight}</p>}
+                            {followUpResult.preference_learned && <p className={`text-[13px] ${c.textMuteded} mt-1`}>🧠 {followUpResult.preference_learned}</p>}
+                            {followUpResult.encouragement && <p className={`text-xs ${c.prosWinText} mt-1`}>💪 {followUpResult.encouragement}</p>}
                           </div>
                         )}
                       </div>
                     )}
-                    {hasFU && <p className={`text-[10px] ${c.prosWinText}`}>✓ {entry.followUp === 'did_it' ? t('dc_fu_tag_did') : entry.followUp === 'didnt_do_it' ? t('dc_fu_tag_didnt') : t('dc_fu_tag_changed', { what: entry.followUp })}</p>}
+                    {hasFU && <p className={`text-xs ${c.prosWinText}`}>✓ {entry.followUp === 'did_it' ? t('dc_fu_tag_did') : entry.followUp === 'didnt_do_it' ? t('dc_fu_tag_didnt') : t('dc_fu_tag_changed', { what: entry.followUp })}</p>}
                   </div>
                 );
               })()}
@@ -1155,10 +1152,15 @@ const DecisionCoach = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Header + streak */}
-      <div className="mb-5 flex items-start justify-between gap-3">
+      {/* Site style (2026-09-27): pale header band bleeding to the card edges,
+          the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
+      <div data-print-hide
+        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex items-start justify-between gap-3"
+        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+      >
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '🎯'}</span>{tool?.tagline ?? t('dc_tagline')}
           </p>
           {activeTab === 'decide' && !results && !prosResult && !devilsResult && !chainResult && (
@@ -1213,12 +1215,12 @@ const DecisionCoach = ({ tool }) => {
           textSecondary (not textMuted): on the cardAlt zinc-700 backdrop the
           muted shade only reaches ~4.1:1 */}
       {(results || prosResult || devilsResult || chainResult) && (
-        <div className={`mt-6 p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
-          <p className={`text-xs ${c.textSecondary}`}>
+        <div data-print-hide className={`mt-6 p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
+          <p data-print-hide className={`text-xs ${c.textSecondary}`}>
             {t('dc_xref_contrast_q')}{' '}<a href="/WhichLife" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
             {t('dc_xref_contrast_tail')}
           </p>
-          <p className={`text-xs mt-2 ${c.textSecondary}`}>
+          <p data-print-hide className={`text-xs mt-2 ${c.textSecondary}`}>
             {t('dc_xref_buy_q')}{' '}<a href="/BuyWise" className={linkStyle}>{t('dc_xref_buywise')}</a>{' '}
             {t('dc_xref_buy_tail')}
           </p>

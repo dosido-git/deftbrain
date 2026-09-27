@@ -17,16 +17,16 @@ function ImportantTerm({ term, c, t }) {
       <p className={`font-bold text-sm ${c.text}`}>{term?.heading}</p>
       {term?.quote && (
         <div className={`${c.card} border ${c.border} rounded-lg p-3`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>{t('cd_contract_language')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('cd_contract_language')}</p>
           <p className={`text-xs ${c.textSecondary} italic`}>“{term.quote}”</p>
         </div>
       )}
       {term?.plain_english && <p className={`text-sm ${c.textSecondary}`}>{term.plain_english}</p>}
-      {term?.practical_effect && <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('cd_practical_effect')}</span> {term.practical_effect}</p>}
+      {term?.practical_effect && <p className={`text-[13px] ${c.textMuted}`}><span className="font-semibold">{t('cd_practical_effect')}</span> {term.practical_effect}</p>}
       {term?.question_to_consider && <p className={`text-xs ${c.accentTxt}`}><span className="font-semibold">{t('cd_question_consider')}</span> {term.question_to_consider}</p>}
       {term?.possible_negotiation_ask && (
         <div className={`${c.infoBox} border rounded-lg px-3 py-2`}>
-          <p className="text-[10px] font-bold uppercase mb-0.5">{t('cd_negotiate_this')}</p>
+          <p className="text-[13px] font-bold mb-0.5">{t('cd_negotiate_this')}</p>
           <p className="text-xs">{term.possible_negotiation_ask}</p>
         </div>
       )}
@@ -64,22 +64,19 @@ function ContractDecoder({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -96,9 +93,7 @@ function ContractDecoder({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [contractText, setContractText] = useState('');
   const [pdfBase64, setPdfBase64]       = useState(null);
@@ -254,11 +249,14 @@ function ContractDecoder({ tool }) {
   // renderInput, which unmounts the moment a result exists — so with the
   // output on screen there was no way to start over at all.
   const renderHeaderRow = () => (
-    <div className="pb-3 border-b border-zinc-500">
+    <div data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '📋'}</span>{t('cd_tagline2')}
           </p>
           {!results && (
@@ -276,7 +274,7 @@ function ContractDecoder({ tool }) {
   );
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+    <div data-print-form className="space-y-4">
       {renderHeaderRow()}
 
       {/* Jurisdiction — contract location, never inferred from visitor locale */}
@@ -288,7 +286,7 @@ function ContractDecoder({ tool }) {
           placeholder={t('cd_juris_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
         />
-        <p className={`text-xs ${c.textMuted} mt-1`}>{t('cd_juris_hint')}</p>
+        <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('cd_juris_hint')}</p>
       </div>
 
       {/* Contract text */}
@@ -309,7 +307,7 @@ function ContractDecoder({ tool }) {
               className={`${c.btnSecondary} px-3 py-2 rounded-xl text-xs font-semibold`}>
               📎 {t('cd_upload')}
             </button>
-            <span className={`text-xs ${c.textMuted}`}>{t('cd_upload_hint')}</span>
+            <span className={`text-[13px] ${c.textMuted}`}>{t('cd_upload_hint')}</span>
             <input type="file" ref={fileInputRef} accept=".pdf,.txt,.md,.rtf,.html" className="hidden"
               onChange={e => handleFile(e.target.files?.[0])} />
           </div>
@@ -323,7 +321,7 @@ function ContractDecoder({ tool }) {
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
         />}
         {!pdfBase64 && contractText.length > 0 && contractText.length < 100 && (
-          <p className={`text-xs ${c.textMuted} mt-1`}>{t('cd_text_short')}</p>
+          <p className={`text-[13px] ${c.textMuted} mt-1`}>{t('cd_text_short')}</p>
         )}
       </div>
 
@@ -347,7 +345,7 @@ function ContractDecoder({ tool }) {
           <span className="inline-block animate-spin flex-shrink-0 text-xl">{tool?.icon ?? '📋'}</span>
           <div>
             <p className={`text-sm font-semibold ${c.text}`}>{t('cd_wait_title')}</p>
-            <p className={`text-xs ${c.textMuted} mt-0.5`}>{t('cd_wait_body')}</p>
+            <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{t('cd_wait_body')}</p>
           </div>
         </div>
       )}
@@ -366,15 +364,15 @@ function ContractDecoder({ tool }) {
       </button>
 
       {sessionHistory.length > 0 && (
-        <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <details data-print-hide className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-            <div className={`flex items-center gap-2 text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>
+            <div className={`flex items-center gap-2 text-[13px] font-bold ${c.textMuted}`}>
               🕓 {t('cd_recent')}
               <Caret groupOpen className="ms-auto" />
             </div>
           </summary>
           <div className="flex justify-end mt-2">
-            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('cd_clear')}</button>
+            <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted}`}>{t('cd_clear')}</button>
           </div>
           <ul className="space-y-2 mt-1">
             {sessionHistory.map((h, i) => (
@@ -395,29 +393,29 @@ function ContractDecoder({ tool }) {
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
         {results?._input?.contractPreview && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>{t('cd_reviewed')}</p>
+            <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuted}`}>{t('cd_reviewed')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{results._input.contractPreview}{results._input.contractChars > 300 ? '…' : ''}</p>
             <p className={`text-xs mt-1.5 ${c.textMuted}`}>{t('cd_chars_analyzed', { count: (results._input.contractChars ?? 0).toLocaleString() })}</p>
           </div>
         )}
 
         {results.summary && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('cd_overview')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('cd_overview')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{results.summary}</p>
           </div>
         )}
 
         {results.important_terms?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>{t('cd_terms')}</p>
+          <div className={`border-t ${c.border} pt-5 space-y-3`}>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('cd_terms')}</p>
             {results.important_terms.map((term, i) => <ImportantTerm key={i} term={term} c={c} t={t} />)}
           </div>
         )}
 
         {results.things_to_clarify?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('cd_clarify')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('cd_clarify')}</p>
             <div className="space-y-3">
               {results.things_to_clarify.map((item, i) => (
                 <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
@@ -430,8 +428,8 @@ function ContractDecoder({ tool }) {
         )}
 
         {results.before_you_sign?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('cd_before_sign')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>{t('cd_before_sign')}</p>
             <ul className="space-y-2">
               {results.before_you_sign.map((item, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>
@@ -448,8 +446,8 @@ function ContractDecoder({ tool }) {
             legal_questions were raised or nothing was cited — see
             contract-decoder.js. */}
         {results.verified_sources?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔎 {t('cd_verified_sources_header')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔎 {t('cd_verified_sources_header')}</p>
             <div className="space-y-2">
               {results.verified_sources.map((src, i) => (
                 <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
@@ -465,17 +463,17 @@ function ContractDecoder({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('cd_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('cd_lease')}</a> {t('cd_xref_lease_tail')}</p>}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>{t('cd_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('cd_lease')}</a> {t('cd_xref_lease_tail')}</p>}
       {!results && renderInput()}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+        <div>
           {renderHeaderRow()}
         </div>
       ) : null}
       {results && renderResults()}
       {results && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('cd_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('cd_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/LeaseTrapDetector" className={`text-xs ${linkStyle}`}>🏠 {t('cd_lease')}</a>
             <a href="/LeverageLogic" className={`text-xs ${linkStyle}`}>⚖️ {t('cd_leverage')}</a>

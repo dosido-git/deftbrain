@@ -43,22 +43,19 @@ function QuoteCheck({ tool }) {
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
+    input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
+    btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -70,8 +67,7 @@ function QuoteCheck({ tool }) {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
+    pillActive:    isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-zinc-100' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
@@ -81,9 +77,7 @@ function QuoteCheck({ tool }) {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
+  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const [repairType, setRepairType]           = useState('appliance');
   const [itemDescription, setItemDescription] = useState('');
@@ -293,11 +287,14 @@ function QuoteCheck({ tool }) {
   // renderInput, which unmounts the moment a result exists — so with the
   // output on screen there was no way to start over at all.
   const renderHeaderRow = () => (
-    <div className="pb-3 border-b border-zinc-500">
+    <div data-print-hide
+      className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
+      style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-base ${c.textSecondary}`}>
+          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '🧾'}</span>{t('qc_tagline')}
           </p>
           {!results && (
@@ -315,7 +312,7 @@ function QuoteCheck({ tool }) {
   );
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
+    <div data-print-form className="space-y-4">
       {renderHeaderRow()}
 
       {/* Repair type */}
@@ -323,7 +320,7 @@ function QuoteCheck({ tool }) {
         <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('qc_type_label')}</label>
         <div className="flex flex-wrap gap-2">
           {REPAIR_TYPES.map(rt => (
-            <button key={rt.id} onClick={() => setRepairType(rt.id)}
+            <button aria-pressed={repairType === rt.id} key={rt.id} onClick={() => setRepairType(rt.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${repairType === rt.id ? c.pillActive : c.pillInactive}`}>
               <span className="me-1">{rt.icon}</span>{rt.label}
             </button>
@@ -336,7 +333,7 @@ function QuoteCheck({ tool }) {
         <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('qc_item_label')} <span className={c.required}>*</span>
         </label>
-        <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('qc_item_hint')}</p>
+        <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('qc_item_hint')}</p>
         <input type="text" value={itemDescription} onChange={e => setItemDescription(e.target.value)}
           placeholder={t('qc_item_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
@@ -384,7 +381,7 @@ function QuoteCheck({ tool }) {
         <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('qc_breakdown_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('qc_breakdown_hint')}</span>
         </label>
-        <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('qc_breakdown_sub')}</p>
+        <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('qc_breakdown_sub')}</p>
         <textarea value={quotedBreakdown} onChange={e => setQuotedBreakdown(e.target.value)}
           placeholder={t('qc_breakdown_ph', { sym })} rows={2}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
@@ -398,7 +395,7 @@ function QuoteCheck({ tool }) {
         </label>
         {!uploadedFile ? (
           <div onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-zinc-700/50' : 'border-gray-300 hover:border-cyan-400 hover:bg-cyan-50'}`}>
+            className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${isDark ? 'border-zinc-600 hover:border-[#7fb3e0] hover:bg-zinc-700/50' : 'border-gray-300 hover:border-[#142a43] hover:bg-[#eef3f8]'}`}>
             <span className="text-2xl block mb-1">📎</span>
             <p className={`text-sm font-medium ${c.text}`}>{t('qc_upload_cta')}</p>
           </div>
@@ -408,7 +405,7 @@ function QuoteCheck({ tool }) {
               <span className="text-xl">{uploadedFile.type === 'application/pdf' ? '📄' : '🖼️'}</span>
               <div>
                 <p className={`text-sm font-semibold ${c.text}`}>{uploadedFile.name}</p>
-                <p className={`text-xs ${c.textMuted}`}>{(uploadedFile.size / 1024).toFixed(1)} {t('qc_kb')}</p>
+                <p className={`text-[13px] ${c.textMuted}`}>{(uploadedFile.size / 1024).toFixed(1)} {t('qc_kb')}</p>
               </div>
             </div>
             <button onClick={removeFile} className={`text-sm ${c.textMuted}`}>✕</button>
@@ -436,7 +433,7 @@ function QuoteCheck({ tool }) {
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
               {t('qc_second_breakdown_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('qc_breakdown_hint')}</span>
             </label>
-            <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('qc_second_breakdown_sub')}</p>
+            <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('qc_second_breakdown_sub')}</p>
             <textarea value={secondQuoteBreakdown} onChange={e => setSecondQuoteBreakdown(e.target.value)}
               placeholder={t('qc_second_breakdown_ph')} rows={2}
               className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
@@ -458,7 +455,7 @@ function QuoteCheck({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-      <p className={`text-xs ${c.textMuted}`}>
+      <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
         🔗 <a href="/LeverageLogic" className={linkStyle}>⚖️ {t('qc_leverage')}</a> <a href="/ContractDecoder" className={linkStyle}>📋 {t('qc_contract')}</a>
       </p>
 
@@ -478,8 +475,8 @@ function QuoteCheck({ tool }) {
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 {t('qc_recent')}</p>
-            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('qc_clear')}</button>
+            <p className={`text-[13px] font-bold ${c.textMuted}`}>🕓 {t('qc_recent')}</p>
+            <button onClick={() => setSessionHistory([])} className={`text-[13px] ${c.textMuted}`}>{t('qc_clear')}</button>
           </div>
           <ul className="space-y-2">
             {sessionHistory.map((h) => {
@@ -501,8 +498,8 @@ function QuoteCheck({ tool }) {
                     </div>
                   </div>
                   <div className="flex gap-3 mt-1.5 ms-6">
-                    <button onClick={() => viewFrom(h)} className={`text-[11px] font-semibold ${c.accentTxt}`}>👁️ {t('qc_view')}</button>
-                    <button onClick={() => recheckFrom(h)} className={`text-[11px] font-semibold ${c.accentTxt}`}>↻ {t('qc_recheck')}</button>
+                    <button onClick={() => viewFrom(h)} className={`text-[13px] font-semibold ${c.accentTxt}`}>👁️ {t('qc_view')}</button>
+                    <button onClick={() => recheckFrom(h)} className={`text-[13px] font-semibold ${c.accentTxt}`}>↻ {t('qc_recheck')}</button>
                   </div>
                 </li>
               );
@@ -525,7 +522,7 @@ function QuoteCheck({ tool }) {
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {results?._input && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('qc_your_situation')}</p>
+            <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuted}`}>📝 {t('qc_your_situation')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{results._input.itemDescription}{results._input.quotedPrice !== '' && results._input.quotedPrice != null ? ` — ${sym}${results._input.quotedPrice}` : ''}</p>
             {results._input.whatWentWrong && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{results._input.whatWentWrong}</p>}
           </div>
@@ -547,15 +544,15 @@ function QuoteCheck({ tool }) {
         {/* Safety note — surfaced right after the verdict, when it applies */}
         {results?.safety_note && (
           <div className={`${c.danger} border rounded-xl p-4`}>
-            <p className="text-xs font-bold uppercase tracking-wide mb-1.5">⚠️ {t('qc_safety_heading')}</p>
+            <p className="text-[13px] font-bold mb-1.5">⚠️ {t('qc_safety_heading')}</p>
             <p className="text-sm">{results.safety_note}</p>
           </div>
         )}
 
         {/* What the quote includes */}
         {qs && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>📋 {t('qc_summary_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>📋 {t('qc_summary_heading')}</p>
             <div className="space-y-1.5">
               {qs.stated_diagnosis && <p className={`text-sm ${c.textSecondary}`}><span className="font-semibold">{t('qc_summary_diagnosis')}:</span> {qs.stated_diagnosis}</p>}
               {qs.proposed_work && <p className={`text-sm ${c.textSecondary}`}><span className="font-semibold">{t('qc_summary_work')}:</span> {qs.proposed_work}</p>}
@@ -565,7 +562,7 @@ function QuoteCheck({ tool }) {
               {qs.warranty && <p className={`text-sm ${c.textSecondary}`}><span className="font-semibold">{t('qc_summary_warranty')}:</span> {qs.warranty}</p>}
               {qs.quoted_total != null && <p className={`text-sm ${c.textSecondary}`}><span className="font-semibold">{t('qc_summary_total')}:</span> {sym}{qs.quoted_total}</p>}
               {qs.itemization_level && (
-                <p className={`text-xs ${c.textMuted} pt-1`}>{t('qc_itemization_level')}: {t(`qc_itemization_${qs.itemization_level}`) || qs.itemization_level}</p>
+                <p className={`text-[13px] ${c.textMuted} pt-1`}>{t('qc_itemization_level')}: {t(`qc_itemization_${qs.itemization_level}`) || qs.itemization_level}</p>
               )}
             </div>
           </div>
@@ -574,7 +571,7 @@ function QuoteCheck({ tool }) {
         {/* Document check — only when the upload and the typed answers disagree */}
         {results?.document_discrepancies?.length > 0 && (
           <div className={`${c.warning} border rounded-xl p-4`}>
-            <p className="text-xs font-bold uppercase tracking-wide mb-2">📎 {t('qc_document_check_heading')}</p>
+            <p className="text-[13px] font-bold mb-2">📎 {t('qc_document_check_heading')}</p>
             <ul className="space-y-1.5">
               {results.document_discrepancies.map((d, i) => (
                 <li key={i} className="text-sm">
@@ -587,8 +584,8 @@ function QuoteCheck({ tool }) {
 
         {/* Does the math work? — only when there was enough to actually check */}
         {arith?.possible && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🧮 {t('qc_arithmetic_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🧮 {t('qc_arithmetic_heading')}</p>
             <p className={`text-sm ${c.textSecondary}`}>
               {t('qc_calculated')} {sym}{arith.calculated_total} — {t('qc_quoted')} {sym}{arith.quoted_total}
               {arith.difference ? ` (${arith.difference > 0 ? '+' : ''}${sym}${arith.difference})` : ''}
@@ -598,8 +595,8 @@ function QuoteCheck({ tool }) {
         )}
 
         {/* Specific concerns */}
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🚩 {t('qc_concerns_heading')}</p>
+        <div className={`border-t ${c.border} pt-5`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🚩 {t('qc_concerns_heading')}</p>
           {results?.specific_concerns?.length > 0 ? (
             <ul className="space-y-2">
               {results.specific_concerns.map((f, i) => (
@@ -612,15 +609,15 @@ function QuoteCheck({ tool }) {
           ) : (
             <div>
               <p className={`text-sm ${c.success} border rounded-lg px-3 py-2`}>{t('qc_concerns_none')}</p>
-              <p className={`text-xs ${c.textMuted} mt-1.5 px-1`}>{t('qc_concerns_none_caveat')}</p>
+              <p className={`text-[13px] ${c.textMuted} mt-1.5 px-1`}>{t('qc_concerns_none_caveat')}</p>
             </div>
           )}
         </div>
 
         {/* What the quote doesn't tell you */}
         {results?.unknowns_that_matter?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>❓ {t('qc_unknowns_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>❓ {t('qc_unknowns_heading')}</p>
             <ul className="space-y-1.5">
               {results.unknowns_that_matter.map((u, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>• {u}</li>
@@ -631,8 +628,8 @@ function QuoteCheck({ tool }) {
 
         {/* Second quote */}
         {sq?.provided && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔄 {t('qc_second_quote_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔄 {t('qc_second_quote_heading')}</p>
             {sq.price_difference != null && (
               <p className={`text-sm font-semibold ${c.textSecondary}`}>{sym}{results._input?.quotedPrice} {t('qc_vs')} {sym}{results._input?.secondQuotePrice} = {sym}{Math.abs(sq.price_difference)} {t('qc_difference')}</p>
             )}
@@ -643,13 +640,13 @@ function QuoteCheck({ tool }) {
 
         {/* Repair or replace */}
         {rvr?.applies && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>♻️ {t('qc_replace_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>♻️ {t('qc_replace_heading')}</p>
             {rvr.assessment && <p className={`text-sm ${c.textSecondary}`}>{rvr.assessment}</p>}
             {rvr.missing_information?.length > 0 && (
               <ul className="mt-2 space-y-1">
                 {rvr.missing_information.map((m, i) => (
-                  <li key={i} className={`text-xs ${c.textMuted}`}>• {m}</li>
+                  <li key={i} className={`text-[13px] ${c.textMuted}`}>• {m}</li>
                 ))}
               </ul>
             )}
@@ -658,8 +655,8 @@ function QuoteCheck({ tool }) {
 
         {/* Questions to ask */}
         {results?.questions_to_ask?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>❓ {t('qc_questions_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>❓ {t('qc_questions_heading')}</p>
             <ul className="space-y-2">
               {results.questions_to_ask.map((q, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary}`}>
@@ -673,15 +670,15 @@ function QuoteCheck({ tool }) {
         {/* What to say */}
         {results?.what_to_say && (
           <div className={`${c.infoBox} border rounded-xl p-4`}>
-            <p className="text-xs font-bold uppercase tracking-wide mb-2">💬 {t('qc_script_heading')}</p>
+            <p className="text-[13px] font-bold mb-2">💬 {t('qc_script_heading')}</p>
             <p className="text-sm">{results.what_to_say}</p>
           </div>
         )}
 
         {/* Second opinion */}
         {results?.second_opinion && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🙋 {t('qc_second_opinion_heading')}</p>
+          <div className={`border-t ${c.border} pt-5`}>
+            <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🙋 {t('qc_second_opinion_heading')}</p>
             <p className={`text-sm ${c.textSecondary}`}>
               {t(`qc_second_opinion_${results.second_opinion.assessment}`) || results.second_opinion.assessment}
               {results.second_opinion.reason && ` — ${results.second_opinion.reason}`}
@@ -689,11 +686,11 @@ function QuoteCheck({ tool }) {
           </div>
         )}
 
-        <p className={`text-xs ${c.textMuted} px-1`}>{t('qc_disclaimer')}</p>
+        <p className={`text-[13px] ${c.textMuted} px-1`}>{t('qc_disclaimer')}</p>
 
         {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('qc_related')}</p>
+        <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('qc_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/LeverageLogic" className={`text-xs ${linkStyle}`}>⚖️ {t('qc_leverage')}</a>
             <a href="/ContractDecoder" className={`text-xs ${linkStyle}`}>📋 {t('qc_contract')}</a>
@@ -709,10 +706,10 @@ function QuoteCheck({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>🔗 <a href="/LeverageLogic" className={linkStyle}>⚖️ {t('qc_leverage')}</a></p>}
+      {!results && <p data-print-hide className={`text-[13px] ${c.textMuted} px-1`}>🔗 <a href="/LeverageLogic" className={linkStyle}>⚖️ {t('qc_leverage')}</a></p>}
       {!results && renderInput()}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+        <div>
           {renderHeaderRow()}
         </div>
       ) : null}

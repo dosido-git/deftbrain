@@ -1637,12 +1637,12 @@ const ReadTheRoom = ({ tool }) => {
         )}
         {sessionHistory.length > 0 && (
           <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>
-            <button data-print-heading aria-expanded={!!(expandedSections.sessionHistory)} onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
+            <button aria-expanded={!!(expandedSections.sessionHistory)} onClick={() => toggleSection('sessionHistory')} className="flex items-center justify-between w-full">
               <h3 className={`text-base font-bold ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
               <span data-print-hide><Caret open={expandedSections.sessionHistory} /></span>
             </button>
             {(
-              <div data-sec-body hidden={!(expandedSections.sessionHistory)} className="mt-3 space-y-1">
+              <div data-print-hide hidden={!(expandedSections.sessionHistory)} className="mt-3 space-y-1">
                 {sessionHistory.slice(0, 20).map((h, i) => (
                   <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
                     <span className={`text-sm ${c.textSecondary}`}>{h.preview}</span>
