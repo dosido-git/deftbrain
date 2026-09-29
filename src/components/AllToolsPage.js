@@ -213,7 +213,7 @@ export default function AllToolsPage({ allTools = [] }) {
       <div id="categories" className="at-controls-sticky">
         <div className="at-shell at-controls">
           <div className="at-category-row" aria-label="Filter tools by category">
-            <button className={`at-chip ${category === 'All' ? 'is-active' : ''}`} onClick={() => chooseCategory('All')}>All <span>{allTools.length}</span></button>
+            <button className={`at-chip ${category === 'All' ? 'is-active' : ''}`} onClick={() => chooseCategory('All')}>All</button>
             {CATEGORY_META.slice(0, 6).map(cat => categoryCounts[cat.name] ? (
               <button key={cat.name} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} onClick={() => chooseCategory(cat.name)}>{cat.emoji} {cat.name}</button>
             ) : null)}
