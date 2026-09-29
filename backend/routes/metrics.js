@@ -502,12 +502,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       : (req.query.range === 'all' ? 'all' : '30d'); // default: past month
     const rangeDays = RANGE_DAYS[rangeParam] || null;
     const rangeText = { '1d': 'yesterday', '7d': 'last 7 days', '14d': 'last 14 days', '30d': 'last 30 days', '90d': 'last 90 days', all: 'all time' }[rangeParam];
-    // "Past day" is the one range whose own name already IS the relative-day
-    // word ("yesterday") that the "vs ... in the previous X" template plugs
-    // in — saying "in the previous yesterday" doubles up on it. Every other
-    // range names a span ("last 7 days") that "in the previous" reads fine in
-    // front of, so this only special-cases '1d'.
-    const isPastDay = rangeParam === '1d';
 
     const allRows = readMetrics();
     const now = new Date();
@@ -550,53 +544,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       runs: todaySoFar.prevRuns,
     };
 
-    // ── previous equal-length window (for Δ). Only defined for a bounded range;
-    // 'all time' has no prior window, so deltas are suppressed there. ──
-    const prevCutoffISO = rangeDays ? backDays(windowStart, rangeDays).toISOString() : null;
-    const prevRows = (rangeDays && cutoffISO)
-      ? allRows.filter(r => { const t = r.at || ''; return t >= prevCutoffISO && t < cutoffISO; })
-      : null;
-    const prevMetrics = prevRows ? (() => {
-      const ev = prevRows.filter(r => r.kind === 'event');
-      const ppv = ev.filter(e => e.event === 'page_view');
-      const psess = ppv.filter(e => e.props && e.props.newSession);
-      return {
-        pv: ppv.length,
-        sessions: psess.length,
-        returning: psess.filter(e => e.props.returning).length,
-        interactive: ev.filter(e => e.event === 'interact').length,
-        runs: ev.filter(e => e.event === 'tool_run').length,
-        delivered: Math.max(0, ev.filter(e => e.event === 'tool_complete').length - ev.filter(e => e.event === 'tool_render_error').length),
-        taken: ev.filter(e => ['print', 'copy', 'share'].includes(e.event)).length,
-        events: ev.length,
-      };
-    })() : null;
-    // Small colored ▲/▼ badge vs the prior window; '' when there's no prior window.
-    // Every Δ compares its window with the equal-length window BEFORE it —
-    // never with another range you might have open in a second tab. Those
-    // ranges nest: the last 14 days sit inside the last 30, so subtracting one
-    // card from the other is not a comparison the dashboard ever makes. The
-    // number that makes that obvious is the prior window's own value, so it
-    // travels with the delta rather than living in a footnote.
-    const prevWindowText = rangeText.replace(/^(last|yesterday)\s?/, '') || rangeText;
-    // With range=yesterday every headline number IS yesterday, so the thing it
-    // is compared with is the day BEFORE yesterday. Saying "vs 9 yesterday"
-    // there read as if the 9 on the card were today's (reported 2026-09-25).
-    const dayBeforeLabel = (isPastDay && prevCutoffISO)
-      ? new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(prevCutoffISO))
-      : null;
-    const prevLabel = isPastDay ? `the day before (${dayBeforeLabel})` : `the previous ${prevWindowText}`;
-    const deltaHtml = (cur, prev) => {
-      if (prev == null) return '';
-      const d = cur - prev;
-      const title = `${prevLabel}: ${prev}`;
-      if (d === 0) return `<span title="${escH(title)}" style="font-size:12px;color:#999;font-weight:400"> ±0</span>`;
-      const up = d > 0;
-      return `<span title="${escH(title)}" style="font-size:12px;font-weight:600;color:${up ? '#15803d' : '#b91c1c'}"> ${up ? '▲' : '▼'} ${up ? '+' : '−'}${Math.abs(d)}</span>`;
-    };
-    // Same text under the number, where it cannot be missed on a touch screen
-    // that has no hover.
-    const vsPrev = (prev) => (prev == null ? null : isPastDay ? `vs ${prev} ${prevLabel}` : `vs ${prev} in ${prevLabel}`);
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
     // Canonical per-tool key = the frontend tool id from the page path
@@ -642,9 +589,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const pv = events.filter(e => e.event === 'page_view');
     const sessions = pv.filter(e => e.props && e.props.newSession);
     const returningSessions = sessions.filter(e => e.props.returning);
-    // Sessions that produced a real user gesture (see analytics.js interact
-    // beacon) — page-loads with no interaction are bots/prefetch, not people.
-    const interactiveSessions = events.filter(e => e.event === 'interact').length;
     const runs = events.filter(e => e.event === 'tool_run');
     const completes = events.filter(e => e.event === 'tool_complete');
     const errors = events.filter(e => e.event === 'tool_error');
@@ -655,7 +599,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // A 200 that rendered as empty cards. Not a crash and not an error — the
     // third way a user gets nothing useful. See lib/completeness.
     const thinResults = events.filter(e => e.event === 'tool_thin_result');
-    const delivered = Math.max(0, completes.length - renderErrors.length);
     const taken = events.filter(e => ['print', 'copy', 'share'].includes(e.event));
 
     // ── Section funnel: how far down a page people actually get. ──
@@ -722,8 +665,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         : '';
       return barRow(name, r.n, secMax, `${pct(r.n, homeViews)} of home views${drop}`);
     }).join('');
-    const closingSeen = (secSeen.closing && secSeen.closing.n) || 0;
-    const helpfulYes = feedback.filter(f => f.helpful).length;
 
     // ── per tool ──
     const tools = {};
@@ -1299,7 +1240,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const fbRows = feedback.slice(-25).reverse().map(f =>
       `<tr><td>${escH(f.tool || '?')}</td><td>${f.helpful ? '👍' : '👎'}</td><td>${escH(f.comment || '')}</td><td style="white-space:nowrap">${escH((f.at || '').slice(0, 10))}</td></tr>`).join('');
 
-    const card = (label, value, sub, delta) => `<div style="background:#fff;border:1px solid #e5e2da;border-radius:10px;padding:14px 18px;min-width:130px"><div style="font-size:26px;font-weight:700;color:#1a2e44">${value}${delta || ''}</div><div style="font-size:12px;color:#666">${label}${sub ? `<br><span style="color:#999">${sub}</span>` : ''}</div></div>`;
 
     res.type('html').send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>DeftBrain metrics</title>
     <meta name="robots" content="noindex,nofollow">
@@ -1327,29 +1267,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         <tr><td style="white-space:nowrap"><b>/</b></td><td>The home page.</td></tr>
       </table>
     </details>
-    <!-- Order (2026-09-26): what people got out of it first, traffic last.
-         Views and sessions stay as denominators and spike detectors, but they
-         mostly count arrivals — bots and bounces included. -->
-    <div class="cards">
-      ${card('delivered', delivered, ('of ' + runs.length + ' tool run' + (runs.length === 1 ? '' : 's') + ' — answered and rendered' + (renderErrors.length ? ` · ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : '') + (thinResults.length ? `, ${thinResults.length} thin` : '')) + (vsPrev(prevMetrics && prevMetrics.delivered) ? ' · ' + vsPrev(prevMetrics && prevMetrics.delivered) : ''), deltaHtml(delivered, prevMetrics && prevMetrics.delivered))}
-      ${card('took it with them', taken.length, ('print + copy + share') + (vsPrev(prevMetrics && prevMetrics.taken) ? ' · ' + vsPrev(prevMetrics && prevMetrics.taken) : ''), deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
-      ${card('return visitors', returningSessions.length, (pct(returningSessions.length, sessions.length) + ' of sessions') + (vsPrev(prevMetrics && prevMetrics.returning) ? ' · ' + vsPrev(prevMetrics && prevMetrics.returning) : ''), deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
-      ${card('interactive', interactiveSessions, (pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human') + (vsPrev(prevMetrics && prevMetrics.interactive) ? ' · ' + vsPrev(prevMetrics && prevMetrics.interactive) : ''), deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
-      ${card('tool runs', runs.length, ('started, incl. failures') + (vsPrev(prevMetrics && prevMetrics.runs) ? ' · ' + vsPrev(prevMetrics && prevMetrics.runs) : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
-      ${card('helpful', helpfulYes + '/' + feedback.length)}
-      ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
-    </div>
-    <div class="cards" style="margin-top:12px;opacity:.75">
-      ${card('sessions', sessions.length, vsPrev(prevMetrics && prevMetrics.sessions), deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
-      ${card('page views', pv.length, vsPrev(prevMetrics && prevMetrics.pv), deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
-    </div>
-    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs ${escH(prevLabel)} (${prevMetrics.events} events in that window)</p>` : ''}
-    <h2>So far today <span style="font-weight:400;font-size:12px;color:#888">(${todaySoFar.hours}h into ${escH(TZ)} — not in the range above)</span></h2>
-    <div class="cards">
-      ${card('tool runs today', todaySoFar.runs, `vs ${todaySoFar.prevRuns} by this time yesterday`, deltaHtml(todaySoFar.runs, todaySoFar.prevRuns))}
-      ${card('sessions today', todaySoFar.sessions, `vs ${todaySoFar.prevSessions} by this time yesterday`, deltaHtml(todaySoFar.sessions, todaySoFar.prevSessions))}
-      ${card('page views today', todaySoFar.views, `vs ${todaySoFar.prevViews} by this time yesterday`, deltaHtml(todaySoFar.views, todaySoFar.prevViews))}
-    </div>
+    <!-- The summary tiles and "So far today" were removed 2026-09-29 at the
+         owner's request: the first two Ledger rows (today and yesterday) carry
+         the same numbers. "helpful" lives in Recent feedback below, and the
+         home-page closing section in "How far down the home page people get". -->
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's ▸ date/label to open the pages and tools behind its numbers beneath it (click again, or Esc, to close).</p>
