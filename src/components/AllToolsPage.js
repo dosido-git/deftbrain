@@ -255,7 +255,7 @@ export default function AllToolsPage({ allTools = [] }) {
         <div className="at-results-heading">
           <div>
             <h2>{query.trim() ? 'Tools that may help with that' : category === 'All' ? 'Explore the toolbox' : category}</h2>
-            <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>
+            <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : category === 'All' ? 'All tools' : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>
           </div>
           {(query || category !== 'All') && <button className="at-reset" onClick={() => { setQuery(''); chooseCategory('All'); }}>Clear filters</button>}
         </div>
