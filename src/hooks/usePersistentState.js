@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export function usePersistentState(key, initialValue) {
   // If the stored value fails to parse (truncated write, browser crash
@@ -34,6 +34,29 @@ export function usePersistentState(key, initialValue) {
     }
   });
 
+  // An answer that arrives after the visitor has left the tool (they clicked
+  // to another page mid-wait) used to be dropped: setState on an unmounted
+  // component does nothing, and the write to storage lives in the effect
+  // below, which no longer runs. Now the setter writes straight to storage
+  // when the component is gone, so the answer is there when they come back.
+  const mountedRef = useRef(true);
+  const initialRef = useRef(initialValue);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+  const setPersistent = useCallback((next) => {
+    if (mountedRef.current) { setState(next); return; }
+    try {
+      let prev;
+      try { const raw = localStorage.getItem(key); prev = raw !== null ? JSON.parse(raw) : initialRef.current; } catch { prev = initialRef.current; }
+      const value = typeof next === 'function' ? next(prev) : next;
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // Storage unavailable or quota exceeded — fail silently
+    }
+  }, [key]);
+
   useEffect(() => {
     if (corruptRef.current) {
       corruptRef.current = false;
@@ -46,5 +69,5 @@ export function usePersistentState(key, initialValue) {
     }
   }, [key, state]);
 
-  return [state, setState];
+  return [state, setPersistent];
 }

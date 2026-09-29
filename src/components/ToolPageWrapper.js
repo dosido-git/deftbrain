@@ -7,7 +7,6 @@ import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import FeedbackTap from './FeedbackTap';
-import WaitNotice from './WaitNotice';
 import { ensurePrintStyles } from './printStyles';
 import SiteHeader from './SiteHeader';
 import './ToolPageSiteStyle.css';
@@ -323,9 +322,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div data-print-hide className="max-w-2xl mx-auto px-4">
             <FeedbackTap tool={detectedTool?.id || tool || toolId || 'unknown'} />
           </div>
-          {/* "Usually takes about N seconds" while an answer is on its way, and
-              a ✓ in the tab title if it lands while the visitor is elsewhere. */}
-          <WaitNotice toolId={detectedTool?.id || tool || toolId} isDark={isDark} />
           {/* "Before You Go" on paper. The sidebar never prints, but this one
               caveat is the part a person needs AFTER they walk away with the
               handout — it's about acting on the result (hours, prices,

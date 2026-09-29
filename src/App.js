@@ -15,6 +15,7 @@ import EmailCapture from './components/EmailCapture';
 import NotFound from './components/NotFound';
 import SharedVerdict from './components/SharedVerdict';
 import AllToolsPage from './components/AllToolsPage';
+import WaitNotice from './components/WaitNotice';
 import OrganizationsPage from './components/OrganizationsPage';
 
 export default function App() {
@@ -50,6 +51,9 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
+            {/* Above the routes so it follows the visitor between pages: how
+                long an answer usually takes, and "it's ready" if they left. */}
+            <WaitNotice />
             <ToolFaq />
             <RelatedLinks />
             <EmailCapture />

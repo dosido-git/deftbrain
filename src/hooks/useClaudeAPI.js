@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
-import { beginWait } from '../utils/waitSignal';
+import { beginWait, summarizeRequest, toolFromPath } from '../utils/waitSignal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -24,7 +24,7 @@ export const useClaudeAPI = () => {
     // Page-wide wait signal (utils/waitSignal): drives the "usually takes…"
     // notice and the "answer ready" tab title in the page frame.
     let waitOutcome = 'error';
-    const endWait = beginWait();
+    const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data) });
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
@@ -87,7 +87,7 @@ export const useClaudeAPI = () => {
     track('tool_run', { tool: endpoint });
     // A streaming answer is visible from its first words, so the wait ends
     // there, not when the last word arrives.
-    const endWait = beginWait();
+    const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data) });
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
