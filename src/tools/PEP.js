@@ -59,7 +59,7 @@ const PEP = ({ tool }) => {
   const [mood, setMood] = useState('');
   const [environment, setEnvironment] = useState('');
   const [context, setContext] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('pep-results', null);
   const [error, setError] = useState('');
   const [sessionAvoid, setSessionAvoid] = useState([]);
   const [showMenu, setShowMenu] = useState(false);

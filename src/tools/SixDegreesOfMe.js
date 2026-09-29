@@ -182,7 +182,7 @@ const SixDegreesOfMe = ({ tool }) => {
   // ── Session: Core ──
   const [thingA, setThingA] = useState('');
   const [thingB, setThingB] = useState('');
-  const [result, setResult] = useState(null);
+  const [result, setResult] = usePersistentState('six-degrees-result', null);
   const [flipResult, setFlipResult] = useState(null);
   const [whatIfResult, setWhatIfResult] = useState(null);
   const [whatIfStep, setWhatIfStep] = useState(null);

@@ -143,7 +143,7 @@ const NameAudit = ({ tool }) => {
   const [industry, setIndustry] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
   const [priority, setPriority] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('name-audit-results', null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
 

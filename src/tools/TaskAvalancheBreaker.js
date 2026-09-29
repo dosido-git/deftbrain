@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
@@ -65,7 +66,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
   const [project, setProject] = useState('');
   const [reasons, setReasons] = useState([]);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = usePersistentState('task-avalanche-breaker-result', null);
   const [showSmaller, setShowSmaller] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [error, setError] = useState('');

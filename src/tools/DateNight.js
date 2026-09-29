@@ -198,11 +198,13 @@ const DateNight = ({ tool }) => {
   const [showTiming, setShowTiming] = useState(false);
   const [showDietary, setShowDietary] = useState(false);
   const [yearsTogether, setYearsTogether] = useState(1);
-  const [showInputs, setShowInputs] = useState(true);
   const [error, setError] = useState('');
 
   // ─── Results ───
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('date-night-results', null);
+  // Show the saved plan, not the form, when there is one (e.g. it landed
+  // after the visitor left mid-wait).
+  const [showInputs, setShowInputs] = useState(() => !results);
   const [swapping, setSwapping] = useState(null);
   const [expandedConvo, setExpandedConvo] = useState(false);
 
@@ -240,7 +242,6 @@ const DateNight = ({ tool }) => {
 
   // ─── Persistent ───
   // Journal capped at 50 (not 5-6): pattern analysis requires enough sessionHistory to detect ruts
-  const [resultsPersist, setResultsPersist] = usePersistentState('date-night-results', null);
   const [dateTypePersist, setDateTypePersist] = usePersistentState('date-night-type', '');
   const [locationPersist, setLocationPersist] = usePersistentState('date-night-location', detectLoc() || '');
   const [journal, setJournal] = usePersistentState('date-night-journal', []);
@@ -253,14 +254,14 @@ const DateNight = ({ tool }) => {
   const [, setSessionHistory] = usePersistentState('date-night-history', []);
   const [showJournal, setShowJournal] = useState(false);
 
-  // Sync persistent dateType/location/results into local state on first render
+  // Sync persistent dateType/location into local state on first render (results
+  // are saved directly, so an answer that lands after the visitor leaves is kept)
   const _dtRef = useRef(false);
-  useEffect(() => { if (!_dtRef.current) { _dtRef.current = true; if (dateTypePersist) setDateType(dateTypePersist); if (locationPersist) setLocation(locationPersist); if (resultsPersist) setResults(resultsPersist); } }, []); // eslint-disable-line
+  useEffect(() => { if (!_dtRef.current) { _dtRef.current = true; if (dateTypePersist) setDateType(dateTypePersist); if (locationPersist) setLocation(locationPersist); } }, []); // eslint-disable-line
 
   // Keep persistent values in sync
   useEffect(() => { setDateTypePersist(dateType); }, [dateType]); // eslint-disable-line
   useEffect(() => { setLocationPersist(location); }, [location]); // eslint-disable-line
-  useEffect(() => { setResultsPersist(results); }, [results]); // eslint-disable-line
 
   const resultsRef = useRef(null);
   const handleRef = useRef(null);

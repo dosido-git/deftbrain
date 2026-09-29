@@ -126,7 +126,7 @@ const Bookmark = ({ tool }) => {
   const [whatYouRemember, setWhatYouRemember] = useState('');
   const [spoilerLevel, setSpoilerLevel] = useState('strict');
   const [specificQuestions, setSpecificQuestions] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('bookmark-results', null);
   const [error, setError] = useState('');
   const [showChars, setShowChars] = useState(true);
   const [showThreads, setShowThreads] = useState(true);

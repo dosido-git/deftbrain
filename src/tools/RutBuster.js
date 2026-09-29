@@ -77,7 +77,7 @@ const RutBuster = ({ tool }) => {
 
   // ── State ──
   const [error,   setError]   = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('rut-buster-results', null);
 
   // ── Refs ──
   const resultsRef      = useRef(null);

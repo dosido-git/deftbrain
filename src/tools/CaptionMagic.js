@@ -118,7 +118,7 @@ const CaptionMagic = ({ tool }) => {
   const [context, setContext] = useState('');
   const [compressing, setCompressing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('caption-magic-results', null);
   const [error, setError] = useState('');
   const [revisingIndex, setRevisingIndex] = useState(null);
   const [adaptResults, setAdaptResults] = useState({});

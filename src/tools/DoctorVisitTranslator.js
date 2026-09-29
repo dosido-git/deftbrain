@@ -184,7 +184,6 @@ const DoctorVisitTranslator = ({ tool }) => {
 
   // ── useState (all first per PF-14) ──
   // MODE: input | results | journal | health | sessionHistory | prep
-  const [mode, setMode] = useState('input');
   // FORM
   const [visitType, setVisitType] = useState('Follow-up');
   const [concerns, setConcerns] = useState('');
@@ -192,8 +191,12 @@ const DoctorVisitTranslator = ({ tool }) => {
   const [doctorName, setDoctorName] = useState('');
   const [currentMedications, setCurrentMedications] = useState('');
   const [documentType, setDocumentType] = useState('visit');
-  // RESULTS (useState per PF-11 — never usePersistentState)
-  const [results, setResults] = useState(null);
+  // RESULTS: saved in this browser, like the catalog's other result states,
+  // so an answer that lands after the visitor leaves is there when they return.
+  const [results, setResults] = usePersistentState('doctor-visit-translator-results', null);
+  // Open on the saved answer when there is one (e.g. it landed after the
+  // visitor left mid-wait), not on an empty form.
+  const [mode, setMode] = useState(() => (results ? 'results' : 'input'));
   const [error, setError] = useState('');
   // UI TOGGLES
   const [secs, setSecs] = useState({

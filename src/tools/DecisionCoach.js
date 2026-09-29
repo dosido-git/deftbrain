@@ -133,7 +133,7 @@ const DecisionCoach = ({ tool }) => {
   const [constraints, setConstraints] = useState([]);
   const [extraContext, setExtraContext] = useState('');
   const [capacity, setCapacity] = useState('overwhelmed');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = usePersistentState('decision-coach-results', null);
   const [error, setError] = useState('');
   const [rejectedChoices, setRejectedChoices] = useState([]);
   const [decideMode, setDecideMode] = useState('standard');
