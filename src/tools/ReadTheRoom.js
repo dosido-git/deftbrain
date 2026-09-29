@@ -413,6 +413,15 @@ const ReadTheRoom = ({ tool }) => {
   const effectiveQuickScenario = quickScenario === 'other' ? quickOther.trim() : (QUICK_SCENARIOS.find(s => s.id === quickScenario)?.label || '');
   const effectivePersonRel  = personRelationship === 'other' ? personRelOther.trim() : personRelationship;
 
+  // "What you told us": a short recap at the top of every result, in the
+  // visitor's own words (option picks shown in their language). Snapshotted
+  // into the result at submit (_recap) so editing the form afterwards can't
+  // make the summary disagree with the answer under it.
+  const relLabel = v => { const r = RELATIONSHIPS.find(x => x.id === v || x.label === v); return r ? t(r.labelKey) : (v || ''); };
+  const recapOf = (...parts) => parts.map(x => (typeof x === 'string' ? x.trim() : '')).filter(Boolean);
+  const eventLabel = eventType === 'other' ? eventOther.trim() : (EVENTS.find(e => e.id === eventType) ? t(EVENTS.find(e => e.id === eventType).labelKey) : '');
+  const quickLabel = quickScenario === 'other' ? quickOther.trim() : (QUICK_SCENARIOS.find(x => x.id === quickScenario) ? t(QUICK_SCENARIOS.find(x => x.id === quickScenario).labelKey) : '');
+
   // ── API Handlers ──
   const handlePrepareEvent = useCallback(async () => {
     const el = effectiveEventType || eventDetails?.trim();
@@ -420,25 +429,25 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader', { eventType: el, eventDetails, people, concerns, topicsToAvoid, comfort, playbook });
-      if (data) { setEventResult(data); addToHistory('prepare:event', el); }
+      if (data) { setEventResult({ ...data, _recap: recapOf(eventLabel, eventDetails !== eventLabel ? eventDetails : '', concerns) }); addToHistory('prepare:event', el); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [effectiveEventType, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, callToolEndpoint, addToHistory, t]);
+  }, [effectiveEventType, eventLabel, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, callToolEndpoint, addToHistory, t]);
 
   const handlePreparePerson = useCallback(async () => {
     if (!personKnow.trim() && !effectivePersonRel) { setError(t('rr_err_person')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-person', { personName, relationship: effectivePersonRel, whatYouKnow: personKnow, context: personContext, yourConcern: personConcern, playbook });
-      if (data) { setPersonResult(data); addToHistory('prepare:person', personName || effectivePersonRel || t('rr_default_someone')); }
+      if (data) { setPersonResult({ ...data, _recap: recapOf([personName.trim(), personRelationship === 'other' ? personRelOther.trim() : relLabel(personRelationship)].filter(Boolean).join(' · '), personKnow, personConcern) }); addToHistory('prepare:person', personName || effectivePersonRel || t('rr_default_someone')); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [personName, effectivePersonRel, personKnow, personContext, personConcern, playbook, callToolEndpoint, addToHistory, t]);
+  }, [personName, personRelationship, personRelOther, effectivePersonRel, personKnow, personContext, personConcern, playbook, callToolEndpoint, addToHistory, t]);
 
   const handlePrepareGroup = useCallback(async () => {
     if (!groupSituation.trim() && !groupChallenge.trim()) { setError(t('rr_err_group')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-group', { situation: groupSituation, groupSize, yourRole: groupRole, challenge: groupChallenge, playbook });
-      if (data) { setGroupResult(data); addToHistory('prepare:group', groupSituation.substring(0, 40) || 'group'); }
+      if (data) { setGroupResult({ ...data, _recap: recapOf(groupSituation, groupChallenge) }); addToHistory('prepare:group', groupSituation.substring(0, 40) || 'group'); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [groupSituation, groupSize, groupRole, groupChallenge, playbook, callToolEndpoint, addToHistory, t]);
 
@@ -447,7 +456,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-culture', { culture: cultureText, situation: cultureSituation, myBackground: cultureMyBg, specificConcern: cultureConcern });
-      if (data) { setCultureResult(data); addToHistory('prepare:culture', cultureText || cultureSituation.substring(0, 30)); }
+      if (data) { setCultureResult({ ...data, _recap: recapOf(cultureText, cultureSituation, cultureConcern) }); addToHistory('prepare:culture', cultureText || cultureSituation.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [cultureText, cultureSituation, cultureMyBg, cultureConcern, callToolEndpoint, addToHistory, t]);
 
@@ -458,16 +467,16 @@ const ReadTheRoom = ({ tool }) => {
     const rl = RELATIONSHIPS.find(r => r.id === quickRelationship)?.label || quickRelationship || 'someone I don\'t know well';
     try {
       const data = await callToolEndpoint('room-reader-quick', { scenario: sl, relationship: rl, playbook, exclude: refresh ? quickExclude : [] });
-      if (data) { setQuickResult(data); if (refresh && data.say) setQuickExclude(prev => [...prev, data.say]); else setQuickExclude(data.say ? [data.say] : []); addToHistory('now:say', `${sl} + ${rl}`); }
+      if (data) { setQuickResult({ ...data, _recap: recapOf([quickLabel, relLabel(quickRelationship)].filter(Boolean).join(' · ')) }); if (refresh && data.say) setQuickExclude(prev => [...prev, data.say]); else setQuickExclude(data.say ? [data.say] : []); addToHistory('now:say', `${sl} + ${rl}`); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [effectiveQuickScenario, quickRelationship, quickExclude, playbook, callToolEndpoint, addToHistory, t]);
+  }, [effectiveQuickScenario, quickLabel, quickRelationship, quickExclude, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleNowStalled = useCallback(async () => {
     if (!stalledWhat.trim()) { setError(t('rr_err_stalled')); return; }
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-stalled', { whatsHappening: stalledWhat, relationship: stalledRelationship });
-      if (data) { setStalledResult(data); addToHistory('now:stalled', stalledWhat.substring(0, 30)); }
+      if (data) { setStalledResult({ ...data, _recap: recapOf(stalledWhat) }); addToHistory('now:stalled', stalledWhat.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [stalledWhat, stalledRelationship, callToolEndpoint, addToHistory, t]);
 
@@ -476,7 +485,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-recover', { whatYouSaid: recoverySaid, context: recoveryContext, relationship: recoveryRelationship });
-      if (data) { setRecoveryResult(data); addToHistory('now:awkward', recoverySaid.substring(0, 30)); }
+      if (data) { setRecoveryResult({ ...data, _recap: recapOf(recoverySaid, recoveryContext) }); addToHistory('now:awkward', recoverySaid.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [recoverySaid, recoveryContext, recoveryRelationship, callToolEndpoint, addToHistory, t]);
 
@@ -485,7 +494,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-exit', { context: exitContext });
-      if (data) { setExitResult(data); addToHistory('now:leave', exitContext.substring(0, 30)); }
+      if (data) { setExitResult({ ...data, _recap: recapOf(exitContext) }); addToHistory('now:leave', exitContext.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [exitContext, callToolEndpoint, addToHistory, t]);
 
@@ -494,7 +503,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-decode', { theyDid, context: decodeContext, relationship: decodeRelationship, yourConcern });
-      if (data) { setDecodeResult(data); addToHistory('decode:meant', theyDid.substring(0, 40)); }
+      if (data) { setDecodeResult({ ...data, _recap: recapOf(theyDid, decodeContext, yourConcern) }); addToHistory('decode:meant', theyDid.substring(0, 40)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [theyDid, decodeContext, decodeRelationship, yourConcern, callToolEndpoint, addToHistory, t]);
 
@@ -503,7 +512,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-depth', { whatsHappening: depthWhat, relationship: depthRelationship });
-      if (data) { setDepthResult(data); addToHistory('decode:depth', depthWhat.substring(0, 30)); }
+      if (data) { setDepthResult({ ...data, _recap: recapOf(depthWhat) }); addToHistory('decode:depth', depthWhat.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [depthWhat, depthRelationship, callToolEndpoint, addToHistory, t]);
 
@@ -520,7 +529,7 @@ const ReadTheRoom = ({ tool }) => {
         emphasis, eventType: afterEvent, whatHappened: afterWhat, whatWentWell: afterWentWell,
         whatFeltAwkward: afterFeltOff, timeline: afterTimeline, overallFeeling: afterFeeling, playbook,
       });
-      if (data) { setAfterResult(data); addToHistory(`after:${emphasis === 'repair' ? 'badly' : 'sense'}`, afterEvent || afterWhat.substring(0, 30) || t('rr_default_event_short')); }
+      if (data) { setAfterResult({ ...data, _recap: recapOf(afterEvent, afterWhat, afterFeltOff) }); addToHistory(`after:${emphasis === 'repair' ? 'badly' : 'sense'}`, afterEvent || afterWhat.substring(0, 30) || t('rr_default_event_short')); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [afterEvent, afterWhat, afterWentWell, afterFeltOff, afterTimeline, afterFeeling, playbook, callToolEndpoint, addToHistory, t]);
 
@@ -529,7 +538,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-followup', { who: followUpWho, context: followUpContext, whatHappened: followUpWhat, goal: followUpGoal, playbook });
-      if (data) { setFollowUpResult(data); addToHistory('after:followup', followUpWho || followUpContext.substring(0, 30)); }
+      if (data) { setFollowUpResult({ ...data, _recap: recapOf(followUpWho, followUpContext, followUpWhat, followUpGoal) }); addToHistory('after:followup', followUpWho || followUpContext.substring(0, 30)); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [followUpWho, followUpContext, followUpWhat, followUpGoal, playbook, callToolEndpoint, addToHistory, t]);
 
@@ -538,7 +547,7 @@ const ReadTheRoom = ({ tool }) => {
     setError('');
     try {
       const data = await callToolEndpoint('room-reader-person-refresh', { personName: person.name, relationship: person.relationship, notes: person.notes, nextContext: personContext, playbook });
-      if (data) { setPersonRefreshResult(data); addToHistory('prepare:person', person.name); }
+      if (data) { setPersonRefreshResult({ ...data, _recap: recapOf(person.name, personContext) }); addToHistory('prepare:person', person.name); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [personContext, playbook, callToolEndpoint, addToHistory, t]);
 
@@ -743,6 +752,14 @@ const ReadTheRoom = ({ tool }) => {
   // ── Input class shorthand ──
   const inp = `px-3 py-2 rounded-lg border text-sm ${c.input}`;
 
+
+  const renderRecap = r => (r?._recap?.length ? (
+    <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+      <p className={`text-[13px] font-semibold mb-1.5 ${c.textMuted}`}>📝 {t('rr_your_situation')}</p>
+      {r._recap.map((line, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>{line}</p>)}
+    </div>
+  ) : null);
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -860,6 +877,7 @@ const ReadTheRoom = ({ tool }) => {
 
           {eventResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(eventResult)}
               <button onClick={() => saveGamePlan(effectiveEventType || eventDetails?.trim() || t('rr_default_event'), eventResult)}
                 className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>
                 {t('rr_save_plan')}
@@ -1003,6 +1021,7 @@ const ReadTheRoom = ({ tool }) => {
 
           {personRefreshResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(personRefreshResult)}
               {personRefreshResult.what_the_history_shows?.length > 0 && (
                 <div className={`${c.warningBox} border rounded-xl p-5 space-y-1`}>
                   <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_history_shows')}</h3>
@@ -1025,6 +1044,7 @@ const ReadTheRoom = ({ tool }) => {
 
           {personResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(personResult)}
               <button onClick={() => saveGamePlan(personName || effectivePersonRel || t('rr_person_default'), personResult)}
                 className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>{t('rr_save_plan')}</button>
               <div className={`${c.warningBox} border rounded-xl p-5`}>
@@ -1077,6 +1097,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {groupResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(groupResult)}
               <div className={`${c.warningBox} border rounded-xl p-5`}>
                 <h3 className={`font-bold ${c.accentTxt}`}>{t('rr_what_you_know')}</h3>
                 <p className={`text-sm ${c.text} mt-1`}>{groupResult.what_you_know}</p>
@@ -1121,6 +1142,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {cultureResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(cultureResult)}
               {cultureResult.norms_worth_checking?.length > 0 && (
                 <div className={`border-t ${c.border} pt-5 space-y-3`}>
                   <h3 className={`font-bold ${c.text}`}>{t('rr_norms_worth_checking')}</h3>
@@ -1175,6 +1197,7 @@ const ReadTheRoom = ({ tool }) => {
 
           {quickResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(quickResult)}
               <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={quickResult.say} accent onSave={(line) => saveLine(line, effectiveQuickScenario)} {...sp} />
                 <p className={`text-[13px] ${c.textMuted}`}>{quickResult.why_it_works}</p>
@@ -1218,6 +1241,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {stalledResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(stalledResult)}
               {stalledResult.my_read?.label && (
                 <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
                   <h3 className={`font-bold ${c.accentTxt}`}>{pinned(STALLED_LABEL_KEY, stalledResult.my_read.label)}</h3>
@@ -1275,6 +1299,7 @@ const ReadTheRoom = ({ tool }) => {
           </div>
           {recoveryResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(recoveryResult)}
               <div className={`border-t ${c.border} pt-5 space-y-2`}>
                 <p className={`text-sm ${c.textSecondary}`}>{recoveryResult.what_happened}</p>
                 {recoveryResult.do_you_need_to_fix_it?.answer && (
@@ -1304,6 +1329,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {exitResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(exitResult)}
               {exitResult.exit_lines?.map((l, i) => (
                 <div key={i} className={`border-t ${c.border} pt-5 space-y-2`}>
                   <ConvoLine label={t('rr_convo_you_say')} emoji="🗣️" text={l.say} accent onSave={(line) => saveLine(line, 'exit')} {...sp} />
@@ -1339,6 +1365,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {decodeResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(decodeResult)}
               {decodeResult.my_read?.label && (
                 <div className={`border-t ${c.border} pt-5 space-y-2`}>
                   <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]'}`}>{pinned(DECODE_LABEL_KEY, decodeResult.my_read.label)}</div>
@@ -1394,6 +1421,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {depthResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(depthResult)}
               {depthResult.my_read?.label && (
                 <div className={`${c.warningBox} border rounded-xl p-5 space-y-2`}>
                   <h3 className={`font-bold ${c.accentTxt}`}>{pinned(DEPTH_LABEL_KEY, depthResult.my_read.label)}</h3>
@@ -1463,6 +1491,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {afterResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(afterResult)}
               {afterResult.honest_read && <div className={`${c.warningBox} border rounded-xl p-5`}><p className={`text-sm ${c.text}`}>{afterResult.honest_read}</p></div>}
               {afterResult.wins?.map((w, i) => (
                 <div key={i} className={`${c.success} border rounded-lg p-3 flex items-start justify-between gap-2`}>
@@ -1531,6 +1560,7 @@ const ReadTheRoom = ({ tool }) => {
           </InputCard>
           {followUpResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              {renderRecap(followUpResult)}
               {followUpResult.timing && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">⏰ {followUpResult.timing}</p></div>}
               {followUpResult.messages?.map((m, i) => (
                 <div key={i} className={`border-t ${c.border} pt-5 space-y-2`}>

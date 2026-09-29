@@ -8,6 +8,7 @@
 // value (e.g. button labels that include an icon) is intentional — keep it inside the string.
 export const roomReader = {
   en: {
+    rr_your_situation: "What you told us",
     rr_add_to_playbook: "Save this as a win",
     rr_after_what: "What happened?",
     rr_aim_for: "What to Aim For",
@@ -282,6 +283,7 @@ export const roomReader = {
     rr_wind_down: "If You Let It Wind Down"
   },
   es: {
+    rr_your_situation: "Lo que nos contaste",
     rr_add_to_playbook: "Guardar esto como un acierto",
     rr_after_what: "¿Qué pasó?",
     rr_aim_for: "A Qué Aspirar",
@@ -556,6 +558,7 @@ export const roomReader = {
     rr_wind_down: "Si Dejas Que Se Apague"
   },
   zh: {
+    rr_your_situation: "你告诉我们的情况",
     rr_add_to_playbook: "把这条存为成功经验",
     rr_after_what: "发生了什么?",
     rr_aim_for: "可以争取的目标",
@@ -830,6 +833,7 @@ export const roomReader = {
     rr_wind_down: "如果让它自然收尾"
   },
   hi: {
+    rr_your_situation: "आपने हमें जो बताया",
     rr_add_to_playbook: "इसे एक सफलता के रूप में सहेजें",
     rr_after_what: "क्या हुआ था?",
     rr_aim_for: "किस बात पर ध्यान देना है",
@@ -1104,6 +1108,7 @@ export const roomReader = {
     rr_wind_down: "अगर इसे यूँ ही खत्म होने देना हो"
   },
   ar: {
+    rr_your_situation: "ما أخبرتنا به",
     rr_add_to_playbook: "حفظ هذا كنجاح مثبت",
     rr_after_what: "ماذا حدث؟",
     rr_aim_for: "الهدف الذي يمكن السعي إليه",
@@ -1378,6 +1383,7 @@ export const roomReader = {
     rr_wind_down: "في حال ترك الحديث ينتهي تدريجيًا"
   },
   pt: {
+    rr_your_situation: "O que você nos contou",
     rr_add_to_playbook: "Salvar isso como um acerto",
     rr_after_what: "O que aconteceu?",
     rr_aim_for: "O Que Buscar",
@@ -1652,6 +1658,7 @@ export const roomReader = {
     rr_wind_down: "Se For Deixar Esfriar"
   },
   fr: {
+    rr_your_situation: "Ce que vous nous avez dit",
     rr_add_to_playbook: "Enregistrer comme réussite",
     rr_after_what: "Que s'est-il passé?",
     rr_aim_for: "L'Objectif Réaliste",
@@ -1926,6 +1933,7 @@ export const roomReader = {
     rr_wind_down: "En Cas d'Arrêt en Douceur"
   },
   de: {
+    rr_your_situation: "Was du uns erzählt hast",
     rr_add_to_playbook: "Als Erfolg speichern",
     rr_after_what: "Was ist passiert?",
     rr_aim_for: "Worauf Es Ankommt",
@@ -2200,6 +2208,7 @@ export const roomReader = {
     rr_wind_down: "Beim Auslaufenlassen"
   },
   ja: {
+    rr_your_situation: "教えてくれたこと",
     rr_add_to_playbook: "うまくいった例として保存",
     rr_after_what: "何が起きましたか?",
     rr_aim_for: "目指せること",
@@ -2474,6 +2483,7 @@ export const roomReader = {
     rr_wind_down: "自然に終わらせるなら"
   },
   ko: {
+    rr_your_situation: "알려주신 내용",
     rr_add_to_playbook: "효과 있었던 방법으로 저장",
     rr_after_what: "무슨 일이 있었나요?",
     rr_aim_for: "목표로 삼을 만한 것",
@@ -2748,6 +2758,7 @@ export const roomReader = {
     rr_wind_down: "자연스럽게 마무리한다면"
   },
   ru: {
+    rr_your_situation: "Что вы нам рассказали",
     rr_add_to_playbook: "Сохранить как удачный приём",
     rr_after_what: "Что произошло?",
     rr_aim_for: "На Что Стоит Ориентироваться",
@@ -3022,6 +3033,7 @@ export const roomReader = {
     rr_wind_down: "Если Дать Разговору Затихнуть"
   },
   th: {
+    rr_your_situation: "สิ่งที่คุณบอกเรา",
     rr_add_to_playbook: "บันทึกไว้เป็นวิธีที่ได้ผล",
     rr_after_what: "เกิดอะไรขึ้น?",
     rr_aim_for: "เป้าหมายที่ตั้งไว้ได้จริง",
@@ -3296,6 +3308,7 @@ export const roomReader = {
     rr_wind_down: "ถ้าจะปล่อยให้จบไปเอง"
   },
   vi: {
+    rr_your_situation: "Những gì bạn đã chia sẻ",
     rr_add_to_playbook: "Lưu lại như một cách đã hiệu quả",
     rr_after_what: "Chuyện gì đã xảy ra?",
     rr_aim_for: "Điều Có Thể Hướng Tới",
