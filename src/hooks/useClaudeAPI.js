@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
+import { beginWait } from '../utils/waitSignal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -20,6 +21,10 @@ export const useClaudeAPI = () => {
     setError(null);
     const _t0 = Date.now();
     track('tool_run', { tool: endpoint });
+    // Page-wide wait signal (utils/waitSignal): drives the "usually takes…"
+    // notice and the "answer ready" tab title in the page frame.
+    let waitOutcome = 'error';
+    const endWait = beginWait();
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
@@ -55,6 +60,7 @@ export const useClaudeAPI = () => {
         throw new Error(json.error);
       }
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
+      waitOutcome = 'ok';
       return json;
 
     } catch (err) {
@@ -62,6 +68,7 @@ export const useClaudeAPI = () => {
       setError(err.message);
       throw err;
     } finally {
+      endWait(waitOutcome);
       setLoading(false);
     }
   };
@@ -78,6 +85,9 @@ export const useClaudeAPI = () => {
     // callToolEndpoint so they share the dashboard's columns.
     const _t0 = Date.now();
     track('tool_run', { tool: endpoint });
+    // A streaming answer is visible from its first words, so the wait ends
+    // there, not when the last word arrives.
+    const endWait = beginWait();
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
@@ -112,11 +122,13 @@ export const useClaudeAPI = () => {
               // An error delivered INSIDE the stream: the response was 200 and
               // the failure arrived as a frame, so nothing else would count it.
               track('tool_error', { tool: endpoint, message: String(parsed.error || '').slice(0, 80) });
+              endWait('error');
               if (onError) onError(parsed.error);
               setLoading(false);
               return;
             }
             if (parsed.chunk) {
+              endWait('ok');
               accumulated += parsed.chunk;
               if (onChunk) onChunk(accumulated);
             }
@@ -125,6 +137,7 @@ export const useClaudeAPI = () => {
               // route provides one (e.g. one-percenter) — callers may prefer
               // it over parsing the accumulated text themselves.
               track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
+              endWait('ok');
               if (onDone) onDone(accumulated, parsed.parsed);
               setLoading(false);
               return;
@@ -137,13 +150,17 @@ export const useClaudeAPI = () => {
 
       // Stream ended without a done event — treat accumulated as final
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
+      endWait('ok');
       if (onDone) onDone(accumulated);
 
     } catch (err) {
       track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
+      endWait('error');
       setError(err.message);
       if (onError) onError(err.message);
     } finally {
+      // endWait is one-shot; this only matters if nothing above ended it.
+      endWait('error');
       setLoading(false);
     }
   };
