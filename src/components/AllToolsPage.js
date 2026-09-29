@@ -71,6 +71,23 @@ export default function AllToolsPage({ allTools = [] }) {
   // location, same action, not just a similar-looking one.
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef(null);
+  const moreRef = useRef(null);
+  const moreBtnRef = useRef(null);
+
+  // The More menu closes on a click or tap anywhere outside it, and on Esc
+  // (which also hands focus back to the More button, so keyboard users are
+  // not left stranded). Listeners exist only while the menu is open.
+  useEffect(() => {
+    if (!categoryOpen) return undefined;
+    const onPointer = e => { if (moreRef.current && !moreRef.current.contains(e.target)) setCategoryOpen(false); };
+    const onKey = e => { if (e.key === 'Escape') { setCategoryOpen(false); moreBtnRef.current?.focus(); } };
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [categoryOpen]);
 
   // Arriving from a link lower on another page (the home page's "Browse all
   // tools"), client-side navigation kept that page's scroll offset and
@@ -217,8 +234,8 @@ export default function AllToolsPage({ allTools = [] }) {
             {CATEGORY_META.slice(0, 6).map(cat => categoryCounts[cat.name] ? (
               <button key={cat.name} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} onClick={() => chooseCategory(cat.name)}>{cat.emoji} {cat.name}</button>
             ) : null)}
-            <div className="at-more-wrap">
-              <button className={`at-chip ${CATEGORY_META.slice(6).some(c => c.name === category) ? 'is-active' : ''}`} onClick={() => setCategoryOpen(v => !v)}>More <span aria-hidden="true">⌄</span></button>
+            <div className="at-more-wrap" ref={moreRef}>
+              <button ref={moreBtnRef} aria-expanded={categoryOpen} aria-haspopup="true" className={`at-chip ${CATEGORY_META.slice(6).some(c => c.name === category) ? 'is-active' : ''}`} onClick={() => setCategoryOpen(v => !v)}>More <span aria-hidden="true">⌄</span></button>
               {categoryOpen && <div className="at-more-menu">
                 {CATEGORY_META.slice(6).map(cat => categoryCounts[cat.name] ? (
                   <button key={cat.name} className={category === cat.name ? 'is-active' : ''} onClick={() => chooseCategory(cat.name)}><span>{cat.emoji}</span>{cat.name}<small>{categoryCounts[cat.name]}</small></button>
