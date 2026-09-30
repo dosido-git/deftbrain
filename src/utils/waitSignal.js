@@ -58,8 +58,61 @@ export function currentWait() {
 // ── Recap: what the visitor typed, for "What you told us" during the wait ──
 // Pulled from the request body, so it works for every tool without per-tool
 // code. Only free text survives: settings, option ids, locale fields, file
-// data and long pasted documents' tails are left out.
+// data and long pasted documents' tails are left out. A value must also be
+// in a text box on the page: a picked option's label ("Work Happy Hour") is
+// sent in English whatever the page language, and would read wrong in the
+// other twelve, but nobody types into a picker.
 const SKIP_KEY = /(^|_)(user)?(language|locale|currency|region)$|mode|action|^type$|tone|level|period|format|style|exclude|history|playbook|image|pdf|base64|file|data$|^id$|Id$|count|size|energy|hours|minutes|budget|age$|rhythm|emphasis|refresh/i;
+
+const norm = str => String(str || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+const TEXT_BOX = 'textarea, input:not([type]), input[type="text"], input[type="search"], [contenteditable="true"]';
+const boxValue = el => norm(el.value !== undefined ? el.value : el.textContent);
+
+// Some tools clear a box once its text is added to a list, or swap the form
+// for a loading screen before the call goes out, so the boxes are also
+// remembered: as they're typed in, and just before any click or key press
+// (capture phase, ahead of the tool's own handler). One entry per stretch of
+// typing in a box; emptying the box starts a new one.
+const remembered = [];          // [{ value }]
+const openEntry = new Map();    // box → its entry still being typed
+const MAX_REMEMBERED = 40;
+
+function remember(el) {
+  if (!el || typeof el.matches !== 'function' || !el.matches(TEXT_BOX)) return;
+  const value = boxValue(el);
+  if (!value) { openEntry.delete(el); return; }
+  const entry = openEntry.get(el);
+  if (entry) { entry.value = value; return; }
+  const fresh = { value };
+  remembered.push(fresh);
+  openEntry.set(el, fresh);
+  if (remembered.length > MAX_REMEMBERED) remembered.shift();
+  if (openEntry.size > MAX_REMEMBERED) openEntry.delete(openEntry.keys().next().value);
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('input', e => remember(e.target), true);
+  const snapshot = () => document.querySelectorAll(TEXT_BOX).forEach(remember);
+  document.addEventListener('pointerdown', snapshot, true);
+  document.addEventListener('keydown', snapshot, true);
+}
+
+// What the visitor has typed into the page (null when there's no page).
+function typedValues() {
+  if (typeof document === 'undefined') return null;
+  return [...document.querySelectorAll(TEXT_BOX)].map(boxValue)
+    .concat(remembered.map(r => r.value))
+    .filter(Boolean);
+}
+
+// Typed, not picked: the text is in a box, or a box's text is in it (a tool
+// that joins two boxes into one field).
+function wasTyped(text, typed) {
+  if (!typed) return true;
+  const n = norm(text);
+  return typed.some(v => v.includes(n) || (v.length >= 12 && n.includes(v)));
+}
 
 function clip(str, n = 140) {
   const s = str.replace(/\s+/g, ' ').trim();
@@ -69,14 +122,16 @@ function clip(str, n = 140) {
 export function summarizeRequest(data) {
   if (!data || typeof data !== 'object') return [];
   const out = [];
+  const typed = typedValues();
   for (const [key, value] of Object.entries(data)) {
     if (out.length >= 2 || SKIP_KEY.test(key)) continue;
     let text = '';
-    if (typeof value === 'string') text = value;
+    if (typeof value === 'string') text = wasTyped(value, typed) ? value : '';
     // A list counts only when it's phrases the visitor wrote (tasks,
     // interests), not a set of picks like ["hurt", "angry"] or ["be_heard"].
     else if (Array.isArray(value) && value.length && value.every(v => typeof v === 'string')
-      && !value.some(v => v.includes('_')) && value.filter(v => /\s/.test(v.trim())).length * 2 >= value.length) {
+      && !value.some(v => v.includes('_')) && value.filter(v => /\s/.test(v.trim())).length * 2 >= value.length
+      && value.every(v => wasTyped(v, typed))) {
       text = value.join(' · ');
     }
     text = (text || '').trim();
