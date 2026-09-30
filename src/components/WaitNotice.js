@@ -12,7 +12,8 @@ import { useTranslation } from '../i18n/useTranslation';
 // tab is hidden, the title shows a ✓ until they come back. If they have moved
 // to another DeftBrain page meanwhile, the note follows them and says the
 // answer is ready, with a link back (the answer itself is saved by
-// usePersistentState even though the tool is no longer on screen).
+// usePersistentState even though the tool is no longer on screen). Closing or
+// reloading the tab mid-wait brings up the browser's "Leave site?" prompt.
 //
 // Mounted once, above the routes, so it survives navigation. Each tool still
 // draws its own spinner; this only adds what the spinner can't say.
@@ -84,6 +85,16 @@ export default function WaitNotice() {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
+  }, [waiting]);
+
+  // Closing or reloading the tab mid-wait would lose the answer (it lives only
+  // in this browser; nothing is kept on the server), so ask first. Browsers
+  // show their own generic "Leave site?" text; it can't be customized.
+  useEffect(() => {
+    if (!waiting) return undefined;
+    const onBeforeUnload = e => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [waiting]);
 
   const box = `pointer-events-auto max-w-md rounded-xl border px-4 py-3 shadow-lg text-sm leading-snug ${
