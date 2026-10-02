@@ -5,7 +5,11 @@ same card in the app's real dark palette (zinc + orange). Flipping the card
 is the theme toggle. Both sides carry everything — neither is the "back".
 
 - Masthead: the dictionary entry — deft (adj.) — skillful, nimble, clever.
-- Tagline: "Practical guidance for everyday life. / No signup. No prompting."
+- Tagline: "Interactive guidance for life’s / awkward, confusing, and curious moments."
+  (2026-10-02: the site-wide positioning line; replaced "Practical guidance for
+  everyday life. / No signup. No prompting." — the box widened 1.62 → 2.05 in to
+  hold the longer second line, still well clear of the email.)
+  Earlier:
   Replaced "Personal AI problem solvers" — the charter's first principle is that
   people have problems, not prompts, and a card that led with the machine was
   arguing against it. The second line survived the rewrite almost intact; it was

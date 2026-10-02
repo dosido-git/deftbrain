@@ -44,7 +44,7 @@ const SITE_URL   = 'https://deftbrain.com';
 // The fallback meta description for any page without its own. Kept in step
 // with public/index.html, and free of the machinery — the homepage already
 // says "guided experiences", and the machinery stays out of it.
-const DEFAULT_DESCRIPTION = "Let's think it through together. 125+ free guided experiences for real life — read a lease, check a repair quote, spot a scam, prepare for a doctor visit. No signup, nothing stored.";
+const DEFAULT_DESCRIPTION = "Interactive guidance for life's awkward, confusing, and curious moments. 120+ free guided experiences — read a lease, check a repair quote, spot a scam, prepare for a doctor visit. No signup, nothing stored.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png`;
 
 // Source of truth: src/data/tool-og-slugs.json — single shared map

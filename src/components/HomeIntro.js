@@ -251,7 +251,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
     <section className="db-home-hero" aria-labelledby="home-title" data-db-section="hero">
       <div className="db-home-hero-copy">
         <h1 id="home-title">Life doesn’t come with instructions.</h1>
-        <p className="db-home-description">Simple AI-powered tools to help you understand a document, prepare for a conversation, make a decision, or explore an idea.</p>
+        <p className="db-home-description">Interactive guidance for life’s awkward, confusing, and curious moments: understanding a document, preparing for a conversation, making a decision, or exploring an idea.</p>
         <p className="db-home-reassurance">Free <span aria-hidden="true">·</span> No account needed <span aria-hidden="true">·</span> <a href="/privacy">Nothing you type is stored on our servers</a></p>
       </div>
       <div className="db-home-hero-art">
