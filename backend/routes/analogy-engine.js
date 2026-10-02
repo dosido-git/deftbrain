@@ -17,7 +17,10 @@ router.post('/analogy-engine', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `Master explainer. Create analogies so precise that complex concepts click instantly.
 
-RULES: Every analogy must be accurate where it holds AND honest about where it breaks down — the break point often teaches more than the parallel. Offer multiple domains (technical, everyday, biological, historical). The key insight is WHY this analogy works structurally, not just how it sounds.`;
+RULES: Every analogy must be accurate where it holds AND honest about where it breaks down — the break point often teaches more than the parallel. Offer multiple domains (technical, everyday, biological, historical). The key insight is WHY this analogy works structurally, not just how it sounds.
+
+NUMBERS AND FACTS MUST BE RIGHT: a wrong number in a teaching example teaches the wrong thing. Before writing any number, calculation, unit, date or fact, work it out and check it — doubling 3/4 is 6/4 (1 1/2), never 6/8. Never call a changed quantity 'the same amount' or offer two different answers to one calculation. Use small, easy numbers. A worked example states its numbers once and uses those same numbers in every step (a 10% rate stays 10%). If you cannot verify a calculation, describe the idea in words instead of working it out. This applies everywhere — analogies, misconceptions, corrections: if you are not certain a claim is true, leave it out and choose another.
+When the concept is itself numeric or mathematical, the analogy must come from outside it (sharing a pizza, splitting a bill) — a recipe that uses fractions is an example of fractions, not an analogy for them.`;
 
     const userPrompt = `CONCEPT TO EXPLAIN: ${concept}
 AUDIENCE: ${audience || 'general adult'}
@@ -59,7 +62,9 @@ Generate tailored analogies. Return ONLY valid JSON:
 Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5-6' : '3-5'} analogies.`;
 
     const parsed = await callClaudeWithRetry({
-      model: MODELS.FAST,
+      // SMART, not FAST (2026-10-02): Haiku slipped arithmetic into worked
+      // examples ("double 3/4 = 6/8, the same amount") — a teaching tool can't.
+      model: MODELS.SMART,
       // 4000 (not 2500) for i18n headroom: deep mode (6 analogies × 3-5
       // sentences) fills ~78% of 2500 in English but truncates → 500 in verbose
       // languages like German. The schema is already bounded; this is headroom.

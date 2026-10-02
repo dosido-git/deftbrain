@@ -72,3 +72,21 @@ cross-ref moved from above the submit button to below it).
 - **`Today's only job` kept.** The owner's structure list for this pass does not
   mention it, but the previous pass on the same file explicitly asked for it and
   this one does not ask for its removal. Worth confirming.
+
+## 2026-10-02 — wrong arithmetic in worked examples (FAST → SMART + accuracy rule)
+
+Owner report: a fractions explanation for a kid said doubling 3/4 cup gives
+"6/8 of a cup (the same amount)" — self-contradictory and wrong (6/4). Fix:
+1. System prompt gains a NUMBERS AND FACTS rule: check every number before
+   writing it, keep a worked example's numbers consistent across steps, no
+   claim you are unsure of (applies to misconceptions too), and for numeric
+   concepts take the analogy from outside the concept.
+2. Model FAST (Haiku) → SMART (Sonnet). Haiku-level arithmetic slips are not
+   acceptable in a teaching tool; ~3× cost per run, ~40s deep mode.
+
+Probe (deep mode): fractions/percentages/compound interest EN + Brüche/Zinseszins
+DE + compound interest AR. Before the second rule tightening, Sonnet still wrote
+"10 soldiers → 11 → another 11 percent" and "rebounding percentages can exceed
+100"; after it, every number checked out. One German word slip remained
+(kürzere vs längere Laufzeit) — wording, not arithmetic. max_tokens 4000 still
+fits (DE deep ~8 KB). Goldens 3/3.
