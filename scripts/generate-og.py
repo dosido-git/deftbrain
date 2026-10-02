@@ -301,9 +301,10 @@ def make_default_card(out_path, logo_img, logo_w):
     # Wordmark
     draw.text((PAD, PAD + 120), 'DeftBrain', font=head_font, fill=(255, 255, 255, 255))
 
-    # The claim as an EYEBROW. It still comes first, so it still earns the nod —
-    # but small and letter-spaced, it reads as a setup rather than as the point.
-    eyebrow = 'BETTER QUESTIONS LEAD TO BETTER DECISIONS'
+    # The eyebrow carries the reassurance a stranger wants before clicking (the
+    # homepage's own "Free · No account needed · Nothing stored" line); the
+    # headline below carries the positioning.
+    eyebrow = 'FREE  ·  NO ACCOUNT  ·  NOTHING YOU TYPE IS STORED'
     x = PAD
     for ch in eyebrow:                      # Pillow has no letter-spacing
         draw.text((x, PAD + 232), ch, font=eyebrow_font, fill=(150, 132, 205, 255))
@@ -315,7 +316,11 @@ def make_default_card(out_path, logo_img, logo_w):
     # The invitation as the HEADLINE — the largest thing on the card after the
     # wordmark, and the brightest. Reading order is unchanged; only the weight
     # moved, so the line a reader remembers is the one addressed to them.
-    draw.text((PAD, PAD + 314), "Let's think it through together", font=lead_font, fill=(226, 220, 248, 255))
+    # The positioning line (owner's pick, 2026-10-02; also the homepage title),
+    # on two lines — at this size it is too wide for one.
+    for n, line in enumerate(("Interactive guidance for life's awkward,",
+                              "confusing, and curious moments.")):
+        draw.text((PAD, PAD + 306 + n * 52), line, font=lead_font, fill=(226, 220, 248, 255))
 
     # Domain only — the bottom-right brain was a second copy of the mark already
     # at top-left, and one is a signature while two is a pattern. The URL was

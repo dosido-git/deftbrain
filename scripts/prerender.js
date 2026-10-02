@@ -45,7 +45,9 @@ const SITE_URL   = 'https://deftbrain.com';
 // with public/index.html, and free of the machinery — the homepage already
 // says "guided experiences", and the machinery stays out of it.
 const DEFAULT_DESCRIPTION = "Interactive guidance for life's awkward, confusing, and curious moments. 120+ free guided experiences — read a lease, check a repair quote, spot a scam, prepare for a doctor visit. No signup, nothing stored.";
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png`;
+// ?v=2: the image was redrawn 2026-10-02; the query makes social sites,
+// which cache share images by URL, fetch the new one.
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png?v=2`;
 
 // Source of truth: src/data/tool-og-slugs.json — single shared map
 // imported by prerender.js, useDocumentHead.js, and generate-og.py.
