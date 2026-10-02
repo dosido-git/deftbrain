@@ -224,10 +224,9 @@ export default function AllToolsPage({ allTools = [] }) {
               />
               {!query && <span className="at-kbd">⌘K</span>}
             </div>
-            <button type="submit" className="at-nav-search-btn">Find a tool →</button>
+            <button type="submit" className="at-nav-search-btn">Search</button>
           </form>
         </div>
-        <p className="at-eyebrow">THE WHOLE TOOLBOX</p>
         <h1>DeftBrain Toolbox</h1>
         {/* Styled like the homepage's own intro line ("DeftBrain is a
             collection of...") — same size/weight/color/max-width — not
@@ -283,7 +282,7 @@ export default function AllToolsPage({ allTools = [] }) {
         </div>
         <form onSubmit={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); syncUrl(query, 'All'); }} className="at-bottom-search">
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Describe your situation…" aria-label="Describe your situation" />
-          <button type="submit">Find a tool →</button>
+          <button type="submit">Search</button>
         </form>
       </section>
     </main>
