@@ -90,3 +90,12 @@ DE + compound interest AR. Before the second rule tightening, Sonnet still wrote
 100"; after it, every number checked out. One German word slip remained
 (kürzere vs längere Laufzeit) — wording, not arithmetic. max_tokens 4000 still
 fits (DE deep ~8 KB). Goldens 3/3.
+
+### Same day, second pass — direction words + genuinely-false myths
+The German "kürzere Laufzeit" (should be längere) slip inverted a correction.
+Added a DIRECTION WORDS check (re-read every comparison word, any language) and
+required each myth to be genuinely false with a correction that contradicts it.
+7 more German deep runs: no inverted comparisons, all arithmetic correct. Still
+seen occasionally: a "myth" whose correction half-concedes it, or an overstated
+correction ("one percentage point → a multiple of the final amount"). That is
+the misconceptions section's residual weak spot.
