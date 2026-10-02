@@ -25,6 +25,7 @@ const fs = require('fs');
 const path = require('path');
 const { getFooterHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
+const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
 
 let marked;
 try {
@@ -50,6 +51,7 @@ const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   ${GA_SNIPPET}
+  ${THEME_SNIPPET}
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -165,7 +167,10 @@ const html = `<!DOCTYPE html>
         <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
       </span>
     </a>
-    <a href="/tools" class="masthead-cta">All tools →</a>
+    <div class="masthead-actions">
+      <a href="/tools" class="masthead-cta">All tools →</a>
+      ${THEME_TOGGLE_HTML}
+    </div>
   </header>
 
   <main>

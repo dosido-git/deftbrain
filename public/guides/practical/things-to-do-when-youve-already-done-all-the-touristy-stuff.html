@@ -26,6 +26,25 @@
       gtag('config', 'G-0MLY19QEW6');
     })();
   </script>
+  <!-- Theme — the visitor's saved light/dark choice, before first paint.
+       Canonical source: scripts/lib/themeSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      var root = document.documentElement, theme;
+      try { theme = localStorage.getItem('app-theme'); } catch (e) {}
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', theme);
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-theme-toggle]');
+        if (!btn) return;
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('app-theme', next); } catch (e) {}
+      });
+    })();
+  </script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,7 +121,10 @@
       <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
     </form>
     <script src="/search/deft-search.js" defer></script>
-    <a href="/tools" class="masthead-cta">All tools →</a>
+    <div class="masthead-actions">
+      <a href="/tools" class="masthead-cta">All tools →</a>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+    </div>
   </header>
 
   <main>

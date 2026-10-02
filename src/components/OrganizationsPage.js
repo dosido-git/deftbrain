@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BrandMark from './BrandMark';
+import { useTheme } from '../hooks/useTheme';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import './OrganizationsPage.css';
 
@@ -45,18 +46,26 @@ export default function OrganizationsPage({ allTools = [] }) {
   const showcase = SHOWCASE_IDS.map(id => byId[id]).filter(Boolean);
   const audienceTools = (AUDIENCE_TOOLS[audience] || []).map(id => byId[id]).filter(Boolean);
 
+  const { isDark, toggleTheme } = useTheme();
+  // The sand page color reaches the body (and overscroll) through a class;
+  // src/styles/index.css gives it its light and dark values.
   useEffect(() => {
-    const previous = document.body.style.background;
-    document.body.style.background = '#faf8f5';
+    document.body.classList.add('db-sand-page');
     document.title = 'DeftBrain for Organizations | Practical everyday guidance';
-    return () => { document.body.style.background = previous; };
+    return () => { document.body.classList.remove('db-sand-page'); };
   }, []);
 
   return (
     <main className="org-page">
       <nav className="org-nav" aria-label="Primary">
-        <a href="/" className="org-brand-link"><BrandMark size="sm" /></a>
-        <div className="org-nav-links"><Link to="/tools">Tools</Link><a href="/guides">Guides</a><a href="/about">About</a></div>
+        <a href="/" className="org-brand-link"><BrandMark size="sm" isDark={isDark} /></a>
+        <div className="org-nav-links"><Link to="/tools">Tools</Link><a href="/guides">Guides</a><a href="/about">About</a>
+          <button type="button" className="org-theme-toggle" onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+            <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
+          </button>
+        </div>
       </nav>
 
       <section className="org-hero org-shell">

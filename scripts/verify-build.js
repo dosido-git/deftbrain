@@ -149,6 +149,10 @@ if (toolCount > 0) {
 // scripts/lib/gaSnippet.js — otherwise dev/preview traffic lands in Google
 // Analytics (it did, on the hub, category and privacy pages, until 2026-09-25).
 const { GA_HOST_TEST } = require('./lib/gaSnippet');
+// Same walk: every page a visitor can land on carries the theme snippet
+// (scripts/lib/themeSnippet.js), or a visitor who chose dark mode lands on
+// a light page (About, Privacy, Terms and every guide did, until 2026-10-02).
+const { THEME_MARKER } = require('./lib/themeSnippet');
 (function walkBuiltHtml(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const abs = path.join(dir, entry.name);
@@ -157,6 +161,10 @@ const { GA_HOST_TEST } = require('./lib/gaSnippet');
     const html = fs.readFileSync(abs, 'utf8');
     if (html.includes('googletagmanager.com') && !html.includes(GA_HOST_TEST)) {
       failures.push(`GA UNGUARDED: ${path.relative(ROOT, abs)} loads gtag without the gaSnippet.js host guard`);
+    }
+    // Redirect stubs and fragments have no <head> to theme.
+    if (/<head[\s>]/i.test(html) && /<body[\s>]/i.test(html) && !THEME_MARKER.test(html)) {
+      failures.push(`NO THEME: ${path.relative(ROOT, abs)} lacks the themeSnippet.js dark-mode switch`);
     }
   }
 })(BUILD);

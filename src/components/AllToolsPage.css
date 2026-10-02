@@ -147,3 +147,38 @@
   .at-card,.at-card-image,.at-arrow{transition:none!important}
   .at-card:hover .at-card-image{transform:none}
 }
+
+/* Dark mode — html[data-theme="dark"], set by src/hooks/useTheme.js and, for
+   a first paint without a flash, by the theme snippet in public/index.html.
+   Light values above are untouched; these sit on the same zinc surfaces as
+   the homepage's dark tokens (HomeTheme.css), so moving between home, the
+   catalog and a tool stays in one palette. */
+:root[data-theme="dark"] .at-page{--sand:#18181b;--sand2:#27272a;--line:#3f3f46;--navy:#f4f4f5;--blue:#7fb3e0;--gold:#e0b872;--muted:#a8a29e;color-scheme:dark}
+:root[data-theme="dark"] .at-site-header{background:rgba(24,24,27,.96)}
+:root[data-theme="dark"] .at-nav-search-field input{background:#18181b;border-color:#71717a}
+:root[data-theme="dark"] .at-nav-search-field input:focus{box-shadow:0 0 0 2px rgba(127,179,224,.35)}
+:root[data-theme="dark"] .at-nav-search-field input::placeholder,
+:root[data-theme="dark"] .at-bottom-search input::placeholder{color:#a1a1aa}
+:root[data-theme="dark"] .at-kbd{color:#a1a1aa;background:#27272a;border-color:#3f3f46}
+:root[data-theme="dark"] .at-nav-search-btn{background:#2f6fb0}
+:root[data-theme="dark"] .at-lede{color:#d6d3d1}
+:root[data-theme="dark"] .at-controls-sticky{background:rgba(24,24,27,.95)}
+:root[data-theme="dark"] .at-chip{background:#232326;color:#d6d3d1}
+:root[data-theme="dark"] .at-chip:hover{border-color:#71717a}
+:root[data-theme="dark"] .at-chip.is-active{background:#2f6fb0;border-color:#2f6fb0;color:#fff}
+:root[data-theme="dark"] .at-more-menu{background:#232326;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+:root[data-theme="dark"] .at-more-menu small{color:#a1a1aa}
+:root[data-theme="dark"] .at-mode{background:#27272a}
+:root[data-theme="dark"] .at-mode>span,
+:root[data-theme="dark"] .at-mode button{color:#a8a29e}
+:root[data-theme="dark"] .at-mode button.is-active{background:#3f3f46;color:#7fb3e0;box-shadow:none}
+:root[data-theme="dark"] .at-card{background:#232326;border-color:#3f3f46;box-shadow:none}
+:root[data-theme="dark"] .at-card:hover{border-color:#52525b;box-shadow:0 12px 28px rgba(0,0,0,.45)}
+:root[data-theme="dark"] .at-card-image-wrap{background:#27272a}
+:root[data-theme="dark"] .at-card-fallback{background:linear-gradient(145deg,#1f2530,#2a221d)}
+:root[data-theme="dark"] .at-empty{border-color:#52525b;background:rgba(35,35,38,.6)}
+:root[data-theme="dark"] .at-last-call{background:#1f2530}
+:root[data-theme="dark"] .at-bottom-search{background:#18181b}
+/* Light/dark switch — same round 🌙/☀️ button as the static pages' header. */
+.at-theme-toggle{appearance:none;border:1px solid var(--line);background:transparent;border-radius:999px;width:34px;height:34px;display:inline-grid;place-items:center;font-size:16px;line-height:1;padding:0;cursor:pointer}
+.at-theme-toggle:hover{border-color:var(--gold)}

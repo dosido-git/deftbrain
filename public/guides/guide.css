@@ -482,3 +482,157 @@ h1            { animation-delay: .10s; }
   .cite-actions { gap: .4rem; }
   .cite-btn { flex: 1 1 auto; text-align: center; }
 }
+
+/* ============================================================
+   Dark mode — every static page (guides, guide hubs, /tools/{category},
+   About, Privacy, Terms) loads this sheet, so their dark styles live here.
+   html[data-theme] is set before first paint by the theme snippet
+   (scripts/lib/themeSnippet.js) from the same saved choice the React app
+   uses, so a visitor who picked dark anywhere sees dark everywhere.
+   Light values above are untouched. The palette is the homepage's dark one
+   (src/components/HomeTheme.css): zinc page/surfaces, warm light text.
+   A few blocks carry inline light styles from their generator (the email
+   capture, the idea form, the footer nav, the crawlable tool index); those
+   rules need !important to win over a style attribute.
+   ============================================================ */
+
+/* Header toggle (scripts/lib/themeSnippet.js THEME_TOGGLE_HTML). The icon is
+   drawn here from html[data-theme] so it is right on the first frame. */
+.theme-toggle {
+  appearance: none; border: 1px solid var(--rule); background: transparent;
+  border-radius: 999px; width: 34px; height: 34px; cursor: pointer;
+  display: inline-grid; place-items: center; font-size: 16px; line-height: 1; padding: 0;
+}
+.theme-toggle::before { content: "\1F319"; }            /* 🌙 in light mode */
+.theme-toggle:hover { border-color: var(--accent2); }
+.theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.masthead-actions { display: flex; align-items: center; gap: 14px; }
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink:    #efeae3;
+  --ink2:   #d6d3d1;
+  --ink3:   #a8a29e;
+  --paper:  #18181b;
+  --warm:   #232326;
+  --accent: #e8935e;
+  --accent2:#e8935e;
+  --rule:   #3f3f46;
+  --deft-blue: #85afd6;
+  --brain-gold:#d9a04e;
+  --muted:  #a8a29e;
+}
+:root[data-theme="dark"] .theme-toggle::before { content: "\2600\FE0F"; }  /* ☀️ */
+
+/* Guide pages */
+:root[data-theme="dark"] .cta-block { background: #232326; border: 1px solid #3f3f46; }
+:root[data-theme="dark"] .cta-btn { background: #c94f2c; }
+:root[data-theme="dark"] .cta-btn:hover { background: #b04425; }
+:root[data-theme="dark"] .cta-subtext { color: #a8a29e; }
+:root[data-theme="dark"] .cite-box { background: #232326; border-color: #3f3f46; }
+:root[data-theme="dark"] .cite-title { color: #efeae3; }
+:root[data-theme="dark"] .cite-url, :root[data-theme="dark"] .cite-note { color: #a8a29e; }
+:root[data-theme="dark"] .cite-btn { background: #18181b; color: #efeae3; border-color: #52525b; }
+:root[data-theme="dark"] .cite-btn:hover { background: #27272a; border-color: #71717a; }
+:root[data-theme="dark"] .cite-btn.is-copied { background: #1f3a2a; border-color: #3f7a55; color: #a7e0b8; }
+:root[data-theme="dark"] .step-art svg { filter: brightness(.92); }
+
+/* About, Privacy, Terms (their own .prose block sets these per page) */
+:root[data-theme="dark"] .prose h1, :root[data-theme="dark"] .prose h2,
+:root[data-theme="dark"] .prose h3, :root[data-theme="dark"] .prose strong,
+:root[data-theme="dark"] .prose th { color: #efeae3; }
+:root[data-theme="dark"] .prose p, :root[data-theme="dark"] .prose ul,
+:root[data-theme="dark"] .prose ol, :root[data-theme="dark"] .prose li { color: #d6d3d1; }
+:root[data-theme="dark"] .prose em { color: #a8a29e; }
+:root[data-theme="dark"] .prose a { color: #85afd6; }
+:root[data-theme="dark"] .prose a:hover { color: #efeae3; }
+:root[data-theme="dark"] .prose code { background: #27272a; color: #efeae3; }
+:root[data-theme="dark"] .prose hr { border-top-color: #3f3f46; }
+:root[data-theme="dark"] .prose th, :root[data-theme="dark"] .prose td { border-bottom-color: #3f3f46; }
+:root[data-theme="dark"] .prose th { background: #232326; }
+
+/* Shared chrome from src/seo/chrome.js (inline-styled, hence !important) */
+:root[data-theme="dark"] .db-capture { background: #1f1f22 !important; border-color: #3f3f46 !important; }
+:root[data-theme="dark"] .db-capture p { color: #d6d3d1 !important; }
+:root[data-theme="dark"] .db-capture p:first-child { color: #d9a04e !important; }
+:root[data-theme="dark"] #db-cap-email, :root[data-theme="dark"] #db-idea-input {
+  background: #18181b !important; color: #f4f4f5 !important; border-color: #71717a !important;
+}
+:root[data-theme="dark"] #db-cap-email::placeholder, :root[data-theme="dark"] #db-idea-input::placeholder { color: #a1a1aa; }
+:root[data-theme="dark"] #db-cap-btn, :root[data-theme="dark"] #db-idea-form button { background: #2f6fb0 !important; }
+:root[data-theme="dark"] #db-cap-msg, :root[data-theme="dark"] #db-idea-msg { color: #d6d3d1 !important; }
+/* "No tool for your problem?" — the two lines above the idea form. */
+:root[data-theme="dark"] div:has(> #db-idea-form) > p { color: #d6d3d1 !important; }
+:root[data-theme="dark"] .footer-nav a,
+:root[data-theme="dark"] .db-tool-index a { color: #85afd6 !important; }
+:root[data-theme="dark"] .db-tool-index details { border-top-color: #3f3f46 !important; }
+:root[data-theme="dark"] .db-tool-index summary { color: #a8a29e !important; }
+
+/* Guide hubs: /guides, /guides/{category}, /guides/by-tool
+   (scripts/build-guides-indexes.js) */
+:root[data-theme="dark"] .tabs { border-bottom-color: #3f3f46; }
+:root[data-theme="dark"] .tabs a { color: #a8a29e; }
+:root[data-theme="dark"] .tabs a.active, :root[data-theme="dark"] .category-card .cat-name,
+:root[data-theme="dark"] .index-outro a, :root[data-theme="dark"] .tool-name a,
+:root[data-theme="dark"] .tool-guides a, :root[data-theme="dark"] .cat-guides-list a { color: #85afd6; }
+:root[data-theme="dark"] .group-heading, :root[data-theme="dark"] .tool-meta,
+:root[data-theme="dark"] .tool-guides .cat-tag { color: #a8a29e; }
+:root[data-theme="dark"] .category-card { background: #232326; border-color: #3f3f46; }
+:root[data-theme="dark"] .category-card .cat-desc, :root[data-theme="dark"] .category-card .cat-examples,
+:root[data-theme="dark"] .index-outro, :root[data-theme="dark"] .cat-back { color: #d6d3d1; }
+:root[data-theme="dark"] .index-outro, :root[data-theme="dark"] .tool-section,
+:root[data-theme="dark"] .cat-guides-list li, :root[data-theme="dark"] .hub-topic { border-color: #3f3f46; }
+:root[data-theme="dark"] .gh-page {
+  --gh-ink: #efeae3; --gh-muted: #a8a29e; --gh-blue: #85afd6; --gh-blue2: #1f3a58; --gh-line: #3f3f46;
+}
+:root[data-theme="dark"] .gh-hero-deck { color: #d6d3d1; }
+:root[data-theme="dark"] .gh-search-box, :root[data-theme="dark"] .gh-final-search form {
+  background: #18181b; border-color: #52525b; box-shadow: none;
+}
+:root[data-theme="dark"] .gh-search-box input, :root[data-theme="dark"] .gh-final-search input,
+:root[data-theme="dark"] .gh-library-search input { background: #18181b; color: #f4f4f5; border-color: #52525b; }
+:root[data-theme="dark"] .gh-search-box button, :root[data-theme="dark"] .gh-final-search button { background: #2f6fb0; }
+:root[data-theme="dark"] .gh-door:hover { background: #232326; box-shadow: none; }
+:root[data-theme="dark"] .gh-door-mark { color: #a1a1aa; }
+:root[data-theme="dark"] .gh-feature-section { background: #1f2530; }
+:root[data-theme="dark"] .gh-feature-card, :root[data-theme="dark"] .gh-curiosity-card,
+:root[data-theme="dark"] .gh-filter-toggle, :root[data-theme="dark"] .gh-sort-toggle,
+:root[data-theme="dark"] .gh-category-panel button, :root[data-theme="dark"] .gh-load-more {
+  background: #232326; border-color: #3f3f46;
+}
+:root[data-theme="dark"] .gh-feature-main { background: #1f3a58; }
+:root[data-theme="dark"] .gh-curiosity-card:nth-child(even) { background: #27272a; }
+:root[data-theme="dark"] .gh-library { background: #18181b; }
+:root[data-theme="dark"] .gh-sticky-controls { background: rgba(24,24,27,.96); }
+:root[data-theme="dark"] .gh-sort-toggle.active { background: #1f3a58; border-color: #2f6fb0; }
+:root[data-theme="dark"] .gh-category-panel { border-bottom-color: #3f3f46; }
+:root[data-theme="dark"] .gh-category-panel button.active { background: #efeae3; color: #18181b; border-color: #efeae3; }
+:root[data-theme="dark"] .gh-tool-hits { background: #1f2530; border-color: #2c3a4a; }
+:root[data-theme="dark"] .gh-guide-item { border-bottom-color: #3f3f46; }
+:root[data-theme="dark"] .gh-tool-bridge { background: #1f2530; }
+
+/* Tool category pages: /tools/{category} (scripts/build-tools-category-pages.js) */
+:root[data-theme="dark"] .tcp-page {
+  --tcp-navy: #f4f4f5; --tcp-blue: #85afd6; --tcp-gold: #e0b872; --tcp-muted: #a8a29e;
+  --tcp-line: #3f3f46; --tcp-sand2: #27272a;
+}
+:root[data-theme="dark"] .tcp-desc { color: #d6d3d1; }
+:root[data-theme="dark"] .tcp-card { background: #232326; border-color: #3f3f46; box-shadow: none; }
+:root[data-theme="dark"] .tcp-card:hover { border-color: #52525b; box-shadow: 0 12px 28px rgba(0,0,0,.45); }
+:root[data-theme="dark"] .tcp-card-image-wrap { background: #27272a; }
+:root[data-theme="dark"] .tcp-card-fallback { background: linear-gradient(145deg,#1f2530,#2a221d); }
+
+/* Header search box and its results panel (public/search/deft-search.js
+   injects white-backed styles; its text already follows --ink). */
+:root[data-theme="dark"] .ds-box { background: #18181b; border-color: #52525b; }
+:root[data-theme="dark"] .ds-box span { color: #a8a29e; }
+:root[data-theme="dark"] .ds-panel { background: #232326; border-color: #3f3f46; box-shadow: 0 12px 32px rgba(0,0,0,.5); }
+:root[data-theme="dark"] .ds-item:hover, :root[data-theme="dark"] .ds-item:focus { background: #27272a; }
+
+/* About page sign-off */
+:root[data-theme="dark"] .signature-glyph { color: #efeae3; }
+:root[data-theme="dark"] .signature-caption { color: #a8a29e; }
+
+/* Footer links wrap on a phone (src/seo/chrome.js sets display:flex inline
+   with no wrap, so the row ran ~100px off a 375px screen). */
+.footer-nav { flex-wrap: wrap; }

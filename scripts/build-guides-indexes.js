@@ -24,6 +24,7 @@ const fs   = require('fs');
 const path = require('path');
 const { getFooterHTML, getSearchFormHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
+const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
 
 const ROOT       = path.join(__dirname, '..');
 const SPECS_DIR  = path.join(ROOT, 'guides');
@@ -265,6 +266,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
 <html lang="en">
 <head>
   ${GA_SNIPPET}
+  ${THEME_SNIPPET}
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -494,7 +496,10 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
       </span>
     </a>
     ${search ? getSearchFormHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}
-    <a href="/tools" class="masthead-cta">All tools →</a>
+    <div class="masthead-actions">
+      <a href="/tools" class="masthead-cta">All tools →</a>
+      ${THEME_TOGGLE_HTML}
+    </div>
   </header>`;
 }
 

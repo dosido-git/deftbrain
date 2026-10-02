@@ -25,6 +25,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const { getFooterHTML, getToolList, getToolIndexHTML, getSearchFormHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
+const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
 
 // ── Guides keep-list (SEO concentration, 2026-07) ──
 // Mirrors the tools policy in prerender.js: every guide keeps a real, standalone
@@ -254,6 +255,7 @@ function renderGuide(spec, siblings) {
 <html lang="en">
 <head>
   ${GA_SNIPPET}
+  ${THEME_SNIPPET}
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -324,7 +326,10 @@ ${stepsJsonLd}
       </span>
     </a>
     ${getSearchFormHTML({ tools: 4, guides: 5 })}
-    <a href="/tools" class="masthead-cta">All tools →</a>
+    <div class="masthead-actions">
+      <a href="/tools" class="masthead-cta">All tools →</a>
+      ${THEME_TOGGLE_HTML}
+    </div>
   </header>
 
   <main>

@@ -32,7 +32,7 @@ export default function App() {
       <LocaleProvider>
         <PremiumProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-white font-sans flex flex-col">
+          <div className="db-app-root min-h-screen bg-white font-sans flex flex-col">
             <div className="flex-1">
               <Routes>
                 <Route path="/" element={

@@ -22,6 +22,20 @@ body {
   color: #1d1d1f;
 }
 
+/* Dark mode for the page itself: html[data-theme] is set before first paint
+   by the theme snippet in public/index.html and kept by src/hooks/useTheme.js.
+   Without this the app's root and body stay light around any component that
+   does not paint its own background (and flash light while a page loads).
+   color-scheme gives native controls and scrollbars their dark versions. */
+:root[data-theme="dark"] { color-scheme: dark; }
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] .db-app-root { background-color: #18181b; color: #f4f4f5; }
+
+/* Pages that want the warm sand page color behind everything (All Tools,
+   Organizations) add this class to <body> while they are mounted. */
+body.db-sand-page { background: #faf8f5; }
+:root[data-theme="dark"] body.db-sand-page { background: #18181b; }
+
 /* ============================================
    TWEMOJI ICON STYLES
    ============================================ */

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
+import { useTheme } from '../hooks/useTheme';
 import { CATEGORY_META } from '../data/categoryMeta';
 import { buildSearchIndex, searchTools } from '../utils/toolSearch';
 import './AllToolsPage.css';
@@ -94,10 +95,12 @@ export default function AllToolsPage({ allTools = [] }) {
   // landed mid-catalog. Start at the top.
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
+  const { isDark, toggleTheme } = useTheme();
+  // The sand page color reaches the body (and overscroll) through a class;
+  // src/styles/index.css gives it its light and dark values.
   useEffect(() => {
-    const previous = document.body.style.background;
-    document.body.style.background = '#faf8f5';
-    return () => { document.body.style.background = previous; };
+    document.body.classList.add('db-sand-page');
+    return () => { document.body.classList.remove('db-sand-page'); };
   }, []);
 
   // ⌘K focuses the search box — same shortcut the homepage's own copy of
@@ -171,7 +174,7 @@ export default function AllToolsPage({ allTools = [] }) {
               onClick — plain, it's an inert <div>. Unlike the homepage's own
               header (DashBoard.js), this page really is somewhere else, so
               it needs a real navigation, not a state reset. */}
-          <Link to="/" aria-label="DeftBrain — home"><BrandMark direction="left" size="md" isDark={false} showTagline={true} /></Link>
+          <Link to="/" aria-label="DeftBrain — home"><BrandMark direction="left" size="md" isDark={isDark} showTagline={true} /></Link>
           <div className="at-header-right">
             <nav className="at-nav" aria-label="Primary">
               <Link to="/tools" aria-current="page">Tools</Link>
@@ -183,7 +186,12 @@ export default function AllToolsPage({ allTools = [] }) {
               <a href="/guides">Guides</a>
               <a href="/about">About</a>
             </nav>
-            <LocaleSelectors dark={false} showCurrency={false} />
+            <LocaleSelectors dark={isDark} showCurrency={false} />
+            <button type="button" className="at-theme-toggle" onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+              <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
+            </button>
           </div>
         </div>
       </header>
