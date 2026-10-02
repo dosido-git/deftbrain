@@ -65,7 +65,6 @@ export default function AllToolsPage({ allTools = [] }) {
   const initialCategory = params.get('category') || 'All';
   const [query, setQuery] = useState(initialQ);
   const [category, setCategory] = useState(initialCategory);
-  const [mode, setMode] = useState('topic');
   const [categoryOpen, setCategoryOpen] = useState(false);
   // Matches the homepage's persistent nav search exactly (narrow-then-
   // expand on focus/content) — owner asked for the same box, same
@@ -145,16 +144,13 @@ export default function AllToolsPage({ allTools = [] }) {
     let list = base.map(tool => ({ ...tool, _categories: categoriesFor(tool) }));
     if (category !== 'All') list = list.filter(tool => tool._categories.includes(category));
 
-    if (mode === 'az') return list.sort(alpha);
-    if (query.trim()) return list; // already best-first
-
-    const catOrder = Object.fromEntries(CATEGORY_META.map((cat, i) => [cat.name, i]));
-    return list.sort((a,b) => {
-      const ai = Math.min(...a._categories.map(c => catOrder[c] ?? 999), 999);
-      const bi = Math.min(...b._categories.map(c => catOrder[c] ?? 999), 999);
-      return ai - bi || alpha(a,b);
-    });
-  }, [allTools, searchIndex, category, mode, query]);
+    // A search lists best matches first; otherwise A–Z, the one order a
+    // visitor needs no explanation for. The category chips above do the
+    // browsing by topic (a topic-grouped sort with no visible groups,
+    // labelled "For me", was removed 2026-10-02 as confusing).
+    if (query.trim()) return list;
+    return list.sort(alpha);
+  }, [allTools, searchIndex, category, query]);
 
   const syncUrl = (nextQ, nextCategory) => {
     const next = {};
@@ -249,11 +245,6 @@ export default function AllToolsPage({ allTools = [] }) {
                 ) : null)}
               </div>}
             </div>
-          </div>
-          <div className="at-mode" aria-label="Browse order">
-            <span>Browse by</span>
-            <button className={mode === 'topic' ? 'is-active' : ''} onClick={() => setMode('topic')}>Topic</button>
-            <button className={mode === 'az' ? 'is-active' : ''} onClick={() => setMode('az')}>A–Z</button>
           </div>
         </div>
       </div>
