@@ -65,7 +65,7 @@ export default function AllToolsPage({ allTools = [] }) {
   const initialCategory = params.get('category') || 'All';
   const [query, setQuery] = useState(initialQ);
   const [category, setCategory] = useState(initialCategory);
-  const [mode, setMode] = useState('forme');
+  const [mode, setMode] = useState('topic');
   const [categoryOpen, setCategoryOpen] = useState(false);
   // Matches the homepage's persistent nav search exactly (narrow-then-
   // expand on focus/content) — owner asked for the same box, same
@@ -253,7 +253,7 @@ export default function AllToolsPage({ allTools = [] }) {
           </div>
           <div className="at-mode" aria-label="Browse order">
             <span>Browse by</span>
-            <button className={mode === 'forme' ? 'is-active' : ''} onClick={() => setMode('forme')}>For me</button>
+            <button className={mode === 'topic' ? 'is-active' : ''} onClick={() => setMode('topic')}>Topic</button>
             <button className={mode === 'az' ? 'is-active' : ''} onClick={() => setMode('az')}>A–Z</button>
           </div>
         </div>
