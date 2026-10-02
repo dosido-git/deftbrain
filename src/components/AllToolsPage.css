@@ -4,7 +4,8 @@
 .at-page{--sand:#faf8f5;--sand2:#f3efe8;--line:#e3dbcf;--navy:#1e2a3a;--blue:#165b9a;--gold:#c8872e;--muted:#6e6659;background:var(--sand);color:var(--navy);min-height:100vh}
 .at-shell{width:min(1240px,calc(100% - 40px));margin-inline:auto}
 .at-site-header{border-bottom:1px solid var(--line);background:rgba(250,248,245,.96)}
-.at-site-header-inner{min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+/* 12px above and below the logo: the homepage header's own py-3. */
+.at-site-header-inner{min-height:82px;padding-block:12px;display:flex;align-items:center;justify-content:space-between;gap:24px}
 .at-header-right{display:flex;align-items:center;gap:24px}
 .at-nav{display:flex;gap:22px;font-size:12px;font-weight:700}
 .at-nav a{color:var(--blue);text-decoration:none}
@@ -113,7 +114,7 @@
 }
 @media(max-width:760px){
   .at-shell{width:min(100% - 28px,1240px)}
-  .at-site-header-inner{min-height:72px;align-items:flex-start;padding-block:10px}
+  .at-site-header-inner{min-height:72px;align-items:flex-start;padding-block:12px}
   .at-header-right{flex-direction:column-reverse;align-items:flex-end;gap:6px}
   .at-nav{gap:14px}
   .at-hero-top-row{flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:20px}
