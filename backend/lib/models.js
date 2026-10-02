@@ -51,6 +51,12 @@ const ACKNOWLEDGED_NEWER = [
   // migration (re-budget the 3 DEEP routes, re-verify goldens, re-check the
   // <60s latency bar). Remove this line when that migration is done.
   'claude-opus-5',
+  // Seen 2026-10-02, NOT yet evaluated: owner chose to silence the daily email
+  // and schedule the upgrade as its own project. Same verbosity risk as the
+  // 5.0 notes above (max_tokens truncation on the big-schema routes, golden
+  // re-verification, cost/latency). Remove a line when its migration is done.
+  'claude-sonnet-5-5',  // released 2026-09-28 (SMART candidate)
+  'claude-opus-5-5',    // released 2026-09-21 (DEEP candidate)
 ];
 
 // ── Price table, USD per million tokens ─────────────────────────────────
