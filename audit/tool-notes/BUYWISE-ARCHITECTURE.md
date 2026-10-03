@@ -82,3 +82,13 @@ isn't viable synchronously (above). Accept it, or pursue async grounding.
    golden sample). Gates won't catch quality regression.
 3. If you touch the model string, the audit allowlist is in
    `audit/backend_audit_v1_7.py` (`ALLOWED_MODELS`).
+
+## 2026-10-03 — number check added (owner request)
+lib/factCheck.js withNumberCheck runs on /fast (after the merge — the only
+place the three parallel groups' numbers meet), the /buy-wise fallback,
+/budget and /quote. BUYWISE_NUMBER_RULE: estimates are left alone unless two
+places disagree on the same figure or a range contradicts its own stated
+percentage. Cost: /fast went ~57s -> ~73-80s (same inputs, FACT_CHECK=off vs
+on), i.e. past the old <60s bar — accepted by the owner. 5 probe runs, 0 fixes
+needed. If latency matters more later, FACT_CHECK=off is global; a
+BuyWise-only opt-out would be a one-line change.

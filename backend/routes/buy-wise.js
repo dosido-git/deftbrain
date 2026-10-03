@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
+
+const BUYWISE_NUMBER_RULE = 'BuyWise prices, discounts and ranges are estimates — leave them, unless two places give different figures for the same thing, or a range does not match its own stated percentage off the price (e.g. 10-20% off 50 is 40-45, not 42-48).';
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites, attachSourceUrls } = require('../lib/groundedFacts');
 
@@ -306,6 +309,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
       return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
     }
     // Same rule as the fan-out path: show only what this answer actually used.
+    await withNumberCheck(parsed, { label: 'buy-wise', context: visitorContext(req.body), extraRules: BUYWISE_NUMBER_RULE, userLanguage });
     parsed.verified_facts = grounded ? (stripCites(groundedData(buyWiseFactsKey(fallbackFactsArgs))) || null) : null;
     res.json(parsed);
 
@@ -563,6 +567,9 @@ ${schema}`;
     // Only what the analysis actually saw. The background refresh can land
     // after the prompt was built, and showing the buyer facts that did not
     // inform the answer would be the same overclaim in a new costume.
+    // The three groups write in parallel and never see each other's numbers;
+    // this is the one place they are read together.
+    await withNumberCheck(merged, { label: 'buy-wise/fast', context: visitorContext(req.body), extraRules: BUYWISE_NUMBER_RULE, userLanguage });
     merged.verified_facts = groundedForGroups ? (stripCites(groundedData(buyWiseFactsKey(factsArgs))) || null) : null;
 
     return res.json(merged);
@@ -638,6 +645,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
     if (!parsed.top_pick) {
       return res.status(500).json({ error: 'Could not analyze the budget. Please try again.' });
     }
+    await withNumberCheck(parsed, { label: 'buy-wise-budget', context: visitorContext(req.body), extraRules: BUYWISE_NUMBER_RULE, userLanguage });
     res.json(parsed);
 
   } catch (error) {
@@ -1074,6 +1082,7 @@ Return ONLY valid JSON:
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze the quote. Please try again.' });
     }
+    await withNumberCheck(parsed, { label: 'buy-wise-quote', context: visitorContext(req.body), extraRules: BUYWISE_NUMBER_RULE, userLanguage });
     res.json(parsed);
 
   } catch (error) {
