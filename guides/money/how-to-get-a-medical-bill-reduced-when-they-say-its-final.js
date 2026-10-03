@@ -42,7 +42,7 @@ module.exports = {
   cta: {
     glyph:    '🏴‍☠️',
     headline: "Find the path past the 'final' bill",
-    body:     "Rulebook Breaker maps every available reduction path for medical debt — financial assistance, Medicare-rate settlement, collections-stage negotiation, billing advocates, and bankruptcy thresholds — with the specific scripts and timing for each.",
+    body:     "Not So Fast! maps every available reduction path for medical debt — financial assistance, Medicare-rate settlement, collections-stage negotiation, billing advocates, and bankruptcy thresholds — with the specific scripts and timing for each.",
     features: [
       "Financial assistance re-application guidance",
       "Medicare-rate settlement scripts",
@@ -50,10 +50,10 @@ module.exports = {
       "Billing advocate referrals",
       "Bankruptcy-threshold analysis",
     ],
-    toolId:   'RulebookBreaker',
-    toolName: 'Rulebook Breaker',
+    toolId:   'NotSoFast',
+    toolName: 'Not So Fast!',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

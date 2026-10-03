@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "33d4f266df36097ed454c68092667d8419986797",
-  "lastmod": "2026-10-02"
+  "hash": "4221342d7bd465744df2bab4f03fae0c1c1188a8",
+  "lastmod": "2026-10-03"
  },
  "static:about": {
   "hash": "69a73addcca9bbab96b51c5aaadb7f4eccb15495",
@@ -192,8 +192,8 @@
   "lastmod": "2026-09-21"
  },
  "static:tools": {
-  "hash": "30de59e5e4c50f4639099f0b913e75cc20f10816",
-  "lastmod": "2026-10-02"
+  "hash": "71927f6fc711e16656b101b525b10939d7becd9a",
+  "lastmod": "2026-10-03"
  },
  "category:home-daily-life": {
   "hash": "97f2f464cf59914a29a4738a6edd351664ff8b8c",
@@ -252,7 +252,7 @@
   "lastmod": "2026-10-02"
  },
  "static:organizations": {
-  "hash": "f95bce3b420e6fc2a7436d9a09a08a378c3a0e0f",
-  "lastmod": "2026-10-02"
+  "hash": "0c1077ad19ce94a220f17552fb3195118556a785",
+  "lastmod": "2026-10-03"
  }
 }

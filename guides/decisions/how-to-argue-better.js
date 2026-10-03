@@ -7,16 +7,16 @@ module.exports = {
   category:      'decisions',
   categoryLabel: 'Decisions',
 
-  title:         "How to Argue Better",
-  titleHtml:     "How to <em>Argue Better</em>",
-  shortTitle:    "How to Argue Better",
+  title:         "How to Argue Smarter",
+  titleHtml:     "How to <em>Argue Smarter</em>",
+  shortTitle:    "How to Argue Smarter",
   navTitle:      "How to argue better — five rules that change how you reason",
 
   description:   "Most people argue to win, which is why most arguments produce nothing. Five rules that change how you reason in disagreement — and reliably leave you smarter on the other side.",
   deck:          "Most people argue to win, which is why most arguments produce nothing. Five rules that change how you reason in disagreement — and reliably leave you smarter on the other side.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `Most arguments don't go anywhere. Two people each defend the position they walked in with, neither updates, both leave annoyed, and the argument either stops or restarts a week later with the exact same shape. The participants treat this as a failure of the other person — they were stubborn, they wouldn't listen, they didn't engage with the real point. Sometimes that's true. Often the failure is structural: nobody was actually arguing in the way arguments would need to be argued for either side to learn anything.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Practice arguing better against the strongest opposition",
-    body:     "Argue Better lets you state any position and face the steelman version of the opposing case — multi-turn, with fallacy flags, coaching angles, strategic concession, and five debate formats from Socratic to Lincoln-Douglas.",
+    body:     "Argue Smarter lets you state any position and face the steelman version of the opposing case — multi-turn, with fallacy flags, coaching angles, strategic concession, and five debate formats from Socratic to Lincoln-Douglas.",
     features: [
       "Steelman opposing case",
       "Real-time fallacy flags",
@@ -57,7 +57,7 @@ module.exports = {
       "Strategic concession + coaching angles",
       "Blind-spot tracking across debates",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

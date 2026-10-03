@@ -42,7 +42,7 @@ module.exports = {
   cta: {
     glyph:    '🏴‍☠️',
     headline: "Walk into the supervisor call with the script and the framing",
-    body:     "Rulebook Breaker drafts the specific language that makes supervisor escalations work — the framing that opens authority, the requests that produce specific responses, and the defensible reasons supervisors can act on.",
+    body:     "Not So Fast! drafts the specific language that makes supervisor escalations work — the framing that opens authority, the requests that produce specific responses, and the defensible reasons supervisors can act on.",
     features: [
       "Supervisor-call framing scripts",
       "Defensible-yes language",
@@ -50,10 +50,10 @@ module.exports = {
       "Authority-scope questions",
       "Multi-tier escalation routing",
     ],
-    toolId:   'RulebookBreaker',
-    toolName: 'Rulebook Breaker',
+    toolId:   'NotSoFast',
+    toolName: 'Not So Fast!',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

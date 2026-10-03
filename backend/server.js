@@ -488,6 +488,23 @@ const LEGACY_REDIRECTS = {
 const MERGED_GUIDE_REDIRECTS = {
   '/guides/meetings/how-to-politely-decline-a-meeting':      '/guides/workplace/how-to-politely-decline-a-meeting',
   '/guides/meetings/how-to-politely-decline-a-meeting.html': '/guides/workplace/how-to-politely-decline-a-meeting',
+  // 2026-10-03: seven guides retired with Subscription Tamer (deleted
+  // 2026-09-13). They were about tracking and judging subscriptions, which no
+  // current tool does; none were in Google's index. Sent to the Money hub.
+  '/guides/money/how-to-calculate-if-a-subscription-is-actually-worth-it':     '/guides/money',
+  '/guides/money/how-to-calculate-if-a-subscription-is-actually-worth-it.html': '/guides/money',
+  '/guides/money/how-to-audit-all-your-subscriptions-in-10-minutes':           '/guides/money',
+  '/guides/money/how-to-audit-all-your-subscriptions-in-10-minutes.html':      '/guides/money',
+  '/guides/money/how-to-avoid-free-trial-billing-traps':                       '/guides/money',
+  '/guides/money/how-to-avoid-free-trial-billing-traps.html':                  '/guides/money',
+  '/guides/money/how-to-find-recurring-charges-hidden-on-your-statement':      '/guides/money',
+  '/guides/money/how-to-find-recurring-charges-hidden-on-your-statement.html': '/guides/money',
+  '/guides/money/how-to-tell-if-a-subscription-is-actually-worth-it':          '/guides/money',
+  '/guides/money/how-to-tell-if-a-subscription-is-actually-worth-it.html':     '/guides/money',
+  '/guides/money/how-to-stop-paying-for-subscriptions-you-forgot-about':       '/guides/money',
+  '/guides/money/how-to-stop-paying-for-subscriptions-you-forgot-about.html':  '/guides/money',
+  '/guides/money/signs-you-have-subscription-creep':                           '/guides/money',
+  '/guides/money/signs-you-have-subscription-creep.html':                      '/guides/money',
 };
 // Two loops, not one merged object: scripts/check-renames.js locates the tool
 // map by the literal `Object.entries(LEGACY_REDIRECTS)`.
@@ -545,7 +562,10 @@ app.use('/guides', (req, res, next) => {
 // param string too (Express path matching ignores the query string), so
 // /tools?category=Money hits this same handler.
 app.get('/tools', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  // Prerendered by scripts/prerender.js (2026-10-03) with this page's own head
+  // and body; index.html is the HOMEPAGE variant, so it is only a fallback.
+  const own = path.join(__dirname, '..', 'build', 'tools.html');
+  res.sendFile(fs.existsSync(own) ? own : path.join(__dirname, '..', 'build', 'index.html'));
 });
 
 // /organizations (OrganizationsPage.js, added 2026-09-23) — same reasoning
@@ -554,7 +574,10 @@ app.get('/tools', (req, res) => {
 // serves it with a 404 status (soft-404 to crawlers) even though the SPA
 // itself renders fine once the JS loads.
 app.get('/organizations', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  // Prerendered by scripts/prerender.js (2026-10-03) with this page's own head
+  // and body; index.html is the HOMEPAGE variant, so it is only a fallback.
+  const own = path.join(__dirname, '..', 'build', 'organizations.html');
+  res.sendFile(fs.existsSync(own) ? own : path.join(__dirname, '..', 'build', 'index.html'));
 });
 
 // Per-category tool pages (/tools/{slug}, added 2026-09-22) — unlike /tools

@@ -42,7 +42,7 @@ module.exports = {
   cta: {
     glyph:    '🏴‍☠️',
     headline: "Find what they can do that they didn't say",
-    body:     "Rulebook Breaker maps the specific escalation paths most agents won't volunteer — exception processes, executive offices, regulators, chargebacks — for any company and situation you're dealing with.",
+    body:     "Not So Fast! maps the specific escalation paths most agents won't volunteer — exception processes, executive offices, regulators, chargebacks — for any company and situation you're dealing with.",
     features: [
       "Exception-process identification",
       "Executive-office escalation paths",
@@ -50,10 +50,10 @@ module.exports = {
       "Magic-phrase scripts",
       "Worth-it vs not-worth-it analysis",
     ],
-    toolId:   'RulebookBreaker',
-    toolName: 'Rulebook Breaker',
+    toolId:   'NotSoFast',
+    toolName: 'Not So Fast!',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

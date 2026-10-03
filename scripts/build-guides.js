@@ -27,6 +27,8 @@ const { getFooterHTML, getToolList, getToolIndexHTML, getSearchFormHTML } = requ
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
 
+const LIVE_TOOL_IDS = new Set(getToolList().map(t => t.id));
+
 // ── Guides keep-list (SEO concentration, 2026-07) ──
 // Mirrors the tools policy in prerender.js: every guide keeps a real, standalone
 // page that is FULLY LIVE FOR USERS, and the 440 outside the keep-list carry
@@ -121,6 +123,12 @@ function validate(spec, source) {
   const { toolId, toolName, headline, body, features, glyph } = spec.cta;
   if (!toolId || !/^[A-Z][A-Za-z0-9]+$/.test(toolId)) {
     throw new Error(`${source}: cta.toolId must be PascalCase (got '${toolId}')`);
+  }
+  // A guide's tool must still exist under that id (2026-10-03). Renames and
+  // deletions left 44 guides linking to old ids — 39 through a redirect hop,
+  // 5 to a 404 — with nothing to notice, because the guide still built.
+  if (!LIVE_TOOL_IDS.has(toolId)) {
+    throw new Error(`${source}: cta.toolId '${toolId}' is not a live tool in src/data/tools.js — renamed or deleted? Point the guide at the current tool (see audit/RENAMES.md).`);
   }
   if (!toolName || !headline || !body || !glyph) {
     throw new Error(`${source}: cta missing required subfield`);

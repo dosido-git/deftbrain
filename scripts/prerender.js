@@ -70,6 +70,95 @@ function getOgImage(toolId) {
   return slug ? `${SITE_URL}/og/${slug}.png` : DEFAULT_OG_IMAGE;
 }
 
+// ─── Static React routes: /tools and /organizations (2026-10-03) ─────────────
+// These two pages are React routes with no file of their own, so the server
+// used to send build/index.html — the HOMEPAGE variant — for them. Crawlers
+// therefore saw the homepage's title and description, a canonical pointing at
+// the homepage, and no <h1>: /tools (the page that links every category) read
+// as a duplicate of /. Each now gets its own file with its own head and a
+// static body that mirrors what the React page renders (no cloaking); React
+// replaces #root on load as it does for tool pages.
+// MUST match the runtime titles in AllToolsPage.js / OrganizationsPage.js.
+function loadCategoryMeta() {
+  const src  = fs.readFileSync(path.join(ROOT, 'src', 'data', 'categoryMeta.js'), 'utf8');
+  const body = src.replace(/\bexport\s+const\b/g, 'const');
+  // eslint-disable-next-line no-new-func
+  return new Function(`${body}\n;return typeof CATEGORY_META !== 'undefined' ? CATEGORY_META : [];`)();
+}
+
+function injectPageMeta(template, { pathName, title, description }) {
+  const canonical = `${SITE_URL}/${pathName}`;
+  const t = escapeHtml(title), d = escapeHtml(description), u = escapeHtml(canonical), img = escapeHtml(DEFAULT_OG_IMAGE);
+  const metaBlock = [
+    `<title>${t}</title>`,
+    `<meta name="robots" content="index, follow" />`,
+    `<meta name="description" content="${d}" />`,
+    `<link rel="canonical" href="${u}" />`,
+    `<meta property="og:title" content="${t}" />`,
+    `<meta property="og:description" content="${d}" />`,
+    `<meta property="og:url" content="${u}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:site_name" content="${SITE_NAME}" />`,
+    `<meta property="og:image" content="${img}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${t}" />`,
+    `<meta name="twitter:description" content="${d}" />`,
+    `<meta name="twitter:image" content="${img}" />`,
+    `<meta name="twitter:site" content="@deftbrain" />`,
+    `<meta name="author" content="DeftBrain.com" />`,
+  ].join('\n    ');
+  let html = template;
+  html = html.replace(/<title>[^<]*<\/title>/gi, '');
+  html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="author"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="(robots|googlebot)"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
+  html = html.replace(/<link\s+rel="canonical"[^>]*>/gi, '');
+  html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
+  return html.replace('</head>', `    ${metaBlock}\n  </head>`);
+}
+
+const STATIC_H1 = 'font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a';
+const STATIC_H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
+
+function toolsPageHTML(categories, countLabel) {
+  const e = escapeHtml;
+  const cats = categories.map(c =>
+    `<li style="margin:.4rem 0;line-height:1.55"><a href="/tools/${e(c.slug)}">${e(c.name)}</a> — ${e(c.desc || '')}</li>`).join('');
+  return `<main class="seo-prerender" style="max-width:860px;margin:0 auto;padding:2rem 1rem">`
+    + `<h1 style="${STATIC_H1}">DeftBrain Toolbox</h1>`
+    + `<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">There’s probably a tool for that! ${e(countLabel)} free guided experiences for life’s awkward, confusing, and curious moments.</p>`
+    + `<h2 style="${STATIC_H2}">Browse by topic</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`
+    + `</main>`;
+}
+
+function organizationsPageHTML() {
+  return `<main class="seo-prerender" style="max-width:860px;margin:0 auto;padding:2rem 1rem">`
+    + `<h1 style="${STATIC_H1}">Practical help for the things life throws at your people.</h1>`
+    + `<p style="line-height:1.6;margin:0 0 1rem">DeftBrain gives employees, members, patrons, and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>`
+    + `<h2 style="${STATIC_H2}">Help that doesn't fit neatly into a benefits category.</h2>`
+    + `<p style="line-height:1.6;margin:0">People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain gives them somewhere to start.</p>`
+    + `<h2 style="${STATIC_H2}">Simple enough for anyone to use.</h2>`
+    + `<ol style="padding-left:1.25rem;margin:0"><li>Choose what's going on. No prompt writing.</li><li>Answer a few thoughtful questions.</li><li>Get practical guidance: clear thinking, useful questions, and real options to weigh.</li></ol>`
+    + `<p style="line-height:1.6;margin:1rem 0 0"><a href="/tools">Explore all DeftBrain tools</a> · <a href="mailto:Org@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization</a></p>`
+    + `</main>`;
+}
+
+// Runtime twins: useDocumentHead calls in AllToolsPage.js / OrganizationsPage.js.
+const STATIC_PAGES = {
+  tools: {
+    title: 'DeftBrain Toolbox — Free Guided Experiences, A–Z | DeftBrain',
+    description: (count) => `Browse ${count} free guided experiences, A–Z or by topic: read a lease, check a repair quote, spot a scam, prepare for a hard conversation.`,
+  },
+  organizations: {
+    title: 'For Organizations — Practical Everyday Guidance | DeftBrain',
+    description: () => 'Give employees, members, patrons, and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
+  },
+};
+
 // ─── Parse tools.js ───────────────────────────────────────────────────────────
 
 // tools.js is ESM data (export const tools = [...]) with no imports/JSX. We
@@ -708,6 +797,25 @@ async function main() {
   } catch (err) {
     console.error(`  FAIL  / homepage  ->  ${err.message}`);
     failed++;
+  }
+
+  // /tools and /organizations — see STATIC_PAGES above.
+  const countLabel = `${Math.floor(tools.length / 10) * 10}+`;
+  const categories = loadCategoryMeta();
+  for (const [pathName, body] of [['tools', toolsPageHTML(categories, countLabel)], ['organizations', organizationsPageHTML()]]) {
+    try {
+      const meta = STATIC_PAGES[pathName];
+      const html = injectToolIndex(
+        injectPageMeta(template, { pathName, title: meta.title, description: meta.description(countLabel) })
+          .replace('<div id="root"></div>', `<div id="root">${body}</div>`),
+        getToolIndexHTML(tools));
+      fs.writeFileSync(path.join(BUILD_DIR, `${pathName}.html`), html, 'utf8');
+      console.log(`  OK  /${pathName}`);
+      succeeded++;
+    } catch (err) {
+      console.error(`  FAIL  /${pathName}  ->  ${err.message}`);
+      failed++;
+    }
   }
 
   console.log(`\nDone: ${succeeded} pages generated, ${failed} failed\n`);

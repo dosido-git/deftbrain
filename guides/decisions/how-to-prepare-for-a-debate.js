@@ -16,7 +16,7 @@ module.exports = {
   deck:          "Most debate prep focuses on memorizing your own arguments. Real prep is about predicting the opposition. Here's the five-step protocol used by competitive debaters.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `You have a debate coming up. It might be a formal one — a class assignment, a competition, a public forum — or a meeting where you'll be defending a position you know will be challenged. Either way, you've got a finite amount of prep time and an unclear sense of what to do with it. The instinct is to write down all your arguments, memorize a few good lines, and walk in confident. This is the wrong instinct, and it's why most prepared debaters still get caught flat-footed.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Prep for any debate against the steelman",
-    body:     "Argue Better's Devil's Advocate Prep mode drills your position by generating the five hardest questions you'll face — with angles, landmines to avoid, and openers — then lets you jump straight into a full practice debate in any of five formats.",
+    body:     "Argue Smarter's Devil's Advocate Prep mode drills your position by generating the five hardest questions you'll face — with angles, landmines to avoid, and openers — then lets you jump straight into a full practice debate in any of five formats.",
     features: [
       "Devil's Advocate Prep mode",
       "Steelman objection generation",
@@ -57,7 +57,7 @@ module.exports = {
       "Fallacy flags mid-debate",
       "Multi-turn rehearsal at three challenge levels",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

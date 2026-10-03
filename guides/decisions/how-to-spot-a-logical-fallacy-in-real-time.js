@@ -16,7 +16,7 @@ module.exports = {
   deck:          "Knowing fallacies on a list is one thing; catching them mid-conversation is another. Here are five fallacies that show up most in live arguments — and the verbal tells that flag them.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `You've read the lists. You know what an ad hominem is, what a straw man looks like, the difference between affirming the consequent and denying the antecedent. The list-knowledge has been with you for years. The catch is that in a real argument, with the conversation moving fast, you almost never catch fallacies as they happen. You catch them three hours later in the shower, when the conversation is over and the moment to push back has passed. The list didn't help.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Train fallacy detection until it's automatic",
-    body:     "Argue Better's Fallacy Gym drills real-time fallacy recognition — spot the fallacy at easy, medium, or hard difficulty, build a streak, and get specific feedback on why you were right or wrong. Then test the skill in a live debate with fallacy flags.",
+    body:     "Argue Smarter's Fallacy Gym drills real-time fallacy recognition — spot the fallacy at easy, medium, or hard difficulty, build a streak, and get specific feedback on why you were right or wrong. Then test the skill in a live debate with fallacy flags.",
     features: [
       "Fallacy Gym training mode",
       "Three difficulty levels with streak tracking",
@@ -57,7 +57,7 @@ module.exports = {
       "Fallacy flags in live debates",
       "Post-debate fallacy analysis on your scorecard",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

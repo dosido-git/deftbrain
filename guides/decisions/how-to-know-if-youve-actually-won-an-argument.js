@@ -16,7 +16,7 @@ module.exports = {
   deck:          "Winning an argument and out-talking someone look similar in the moment and feel different a week later. Here's how to tell which one you did — and why it matters.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `The argument ended a few minutes ago. You think you won. The other person stopped pushing back, conceded the point, walked away looking thoughtful. You're left with the satisfying feeling of having made your case. And then a small uncertainty starts to creep in: did they actually agree, or did they just decide it wasn't worth continuing? Did you win the argument, or did you just outlast them? The two outcomes look identical in the moment and turn out to mean very different things.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Pressure-test your wins before declaring victory",
-    body:     "Argue Better's post-debate scorecard scores your sharpness and names your blind spots, and an Audience Verdict judges who was actually more persuasive to an undecided observer — not who talked loudest. The Highlight Reel then finds the patterns across all your debates, including your Debater Type.",
+    body:     "Argue Smarter's post-debate scorecard scores your sharpness and names your blind spots, and an Audience Verdict judges who was actually more persuasive to an undecided observer — not who talked loudest. The Highlight Reel then finds the patterns across all your debates, including your Debater Type.",
     features: [
       "Sharpness score + blind spots after every debate",
       "Audience Verdict: who really persuaded an undecided observer",
@@ -57,7 +57,7 @@ module.exports = {
       "Highlight Reel pattern analysis",
       "Debater Type classification",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

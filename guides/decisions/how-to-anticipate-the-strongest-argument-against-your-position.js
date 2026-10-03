@@ -16,7 +16,7 @@ module.exports = {
   deck:          "Steelmanning your own opposition is a skill, not an instinct. Here's the five-step method for predicting the strongest case a smart opponent would make — before they make it.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `You hold a position you've thought about. Maybe deeply. You've considered some objections; you've worked through some counterarguments; you feel reasonably solid. Then you encounter someone who disagrees with you — at a conference, in a meeting, in an article — and they make a point you genuinely hadn't considered. Not a weak point you can dismiss. A real one. The position you walked in with is now on its back foot, and you're realizing you'd been arguing with strawmen of the opposition, not the opposition itself.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Face the strongest version of the opposing case",
-    body:     "Argue Better generates the steelman against any position you state — multi-turn, in five debate formats, with fallacy flags and a Rematch mode that targets the documented blind spots from your previous debates.",
+    body:     "Argue Smarter generates the steelman against any position you state — multi-turn, in five debate formats, with fallacy flags and a Rematch mode that targets the documented blind spots from your previous debates.",
     features: [
       "Steelman opposing case",
       "Five debate formats",
@@ -57,7 +57,7 @@ module.exports = {
       "Real-time fallacy flags",
       "Devil's Advocate Prep for real-world stakes",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

@@ -16,7 +16,7 @@ module.exports = {
   deck:          "The goal isn't suppressing feelings — it's keeping them from running the argument. Here's how to stay clear-headed when an argument gets heated, without faking calm you don't have.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `You're in an argument and you can feel it happening — the heart rate climbing, the chest tightening, the tone shifting from analytical to defensive. You know that the version of you that's about to argue isn't the version that argues well. You also know that telling yourself to calm down doesn't work, has never worked, and is mildly insulting. The argument is going to keep happening; the question is whether you can keep your composure inside it well enough to actually engage with the substance.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Practice arguing under pressure without the cost",
-    body:     "Argue Better lets you practice high-stakes arguments — multi-turn, against the strongest opposing case — at a temperature you control, with three challenge levels from curious to no-mercy. Stress-test your composure on a steelman before stress-testing it in real life.",
+    body:     "Argue Smarter lets you practice high-stakes arguments — multi-turn, against the strongest opposing case — at a temperature you control, with three challenge levels from curious to no-mercy. Stress-test your composure on a steelman before stress-testing it in real life.",
     features: [
       "Steelman opposing case",
       "Challenge level you control",
@@ -57,7 +57,7 @@ module.exports = {
       "Multi-turn practice",
       "Strategic concession coaching",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

@@ -16,7 +16,7 @@ module.exports = {
   deck:          "Asymmetric arguments are different from symmetric ones. Here's how to hold your own — or update productively — when the other person is faster, more credentialed, or more experienced.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-03',
 
   ledes: [
     `You're in an argument with someone who's smarter than you. Or at least more credentialed, more articulate, faster on their feet, more experienced in the specific area you're disagreeing about. The asymmetry is real and you can feel it in real time — they're connecting points you hadn't seen connected, citing things you hadn't read, framing the question in ways that make your view look small. The instinct is to either fold quickly or get loud to compensate. Both are bad responses.`,
@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Practice against an opponent who won't go easy",
-    body:     "Argue Better generates the strongest opposing case at the challenge level you choose — up to no-mercy, no softening. Practice the asymmetric argument before the real one, with fallacy flags, coaching angles, and strategic concession.",
+    body:     "Argue Smarter generates the strongest opposing case at the challenge level you choose — up to no-mercy, no softening. Practice the asymmetric argument before the real one, with fallacy flags, coaching angles, and strategic concession.",
     features: [
       "Steelman at full strength",
       "Three challenge levels up to no-mercy",
@@ -57,7 +57,7 @@ module.exports = {
       "Coaching angles when you're stuck",
       "Strategic concession coaching",
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
 };

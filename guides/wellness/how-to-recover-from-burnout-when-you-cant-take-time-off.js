@@ -22,7 +22,7 @@ module.exports = {
   cta: {
     glyph:    '🔮',
     headline: "Rebuild capacity inside the life you actually have",
-    body:     "Crash Predictor finds the small drains you can cut, the rituals you can protect, and the timeline your real schedule can support — without pretending you can take a sabbatical.",
+    body:     "Before the Crash finds the small drains you can cut, the rituals you can protect, and the timeline your real schedule can support — without pretending you can take a sabbatical.",
     features: [
       "Small-drain audit",
       "Recovery scheduling",
@@ -30,9 +30,9 @@ module.exports = {
       "Agency rebuilding",
       "Progress tracking"
     ],
-    toolId:   'CrashPredictor',
-    toolName: 'Crash Predictor',
+    toolId:   'BeforeTheCrash',
+    toolName: 'Before the Crash',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-03',
 };

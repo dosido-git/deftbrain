@@ -42,7 +42,7 @@ module.exports = {
   cta: {
     glyph:    '🏴‍☠️',
     headline: "Find the path past the first-tier no",
-    body:     "Rulebook Breaker maps the undocumented escalation ladder for any institution — the loopholes, the magic phrases, the regulatory bodies that have real teeth — for when the official answer is 'nothing we can do' and you know that's wrong.",
+    body:     "Not So Fast! maps the undocumented escalation ladder for any institution — the loopholes, the magic phrases, the regulatory bodies that have real teeth — for when the official answer is 'nothing we can do' and you know that's wrong.",
     features: [
       "Escalation-ladder mapping",
       "First-tier-no recognition",
@@ -50,10 +50,10 @@ module.exports = {
       "Regulatory body identification",
       "Real-no vs first-tier-no analysis",
     ],
-    toolId:   'RulebookBreaker',
-    toolName: 'Rulebook Breaker',
+    toolId:   'NotSoFast',
+    toolName: 'Not So Fast!',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

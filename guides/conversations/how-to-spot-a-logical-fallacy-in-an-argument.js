@@ -10,7 +10,7 @@ module.exports = {
   deck:          "Their argument feels off but you cannot say why. Here is how to name the move they just pulled, fast enough to actually use it.",
   ledes: [
     `Your uncle just said something at dinner that sounded confident, sounded reasonable, and sounded completely wrong. The whole table nodded. You opened your mouth, and nothing came out, because you cannot quite name what is broken about what he said. By the time you figure it out — usually in the car ride home — the conversation has moved three topics on. This is the fallacy problem in real time. They feel persuasive in the moment specifically because they slip past the part of your brain that catches errors, and your error-catcher only comes online twenty minutes later when it is no longer useful.<br/><br/>The list of named fallacies is long, vaguely Latin, and largely useless if all you do is memorize it. The skill is not knowing the names. The skill is hearing the structure of an argument fast enough to notice the substitution, the leap, or the bait — in real time, in plain English, while someone is still talking. That is a trainable skill, and it is much closer to pattern recognition than to philosophy class.`,
-    `Here are the moves that show up in almost every bad argument you will encounter, and how Argue Better's Fallacy Gym trains your ear to catch them while they are happening.`,
+    `Here are the moves that show up in almost every bad argument you will encounter, and how Argue Smarter's Fallacy Gym trains your ear to catch them while they are happening.`,
   ],
   steps: [
     { name: 'Listen for the swap: did the conclusion match the evidence?', body: 'The most common move is not a logical error in the strict sense — it is a swap. They give evidence for one claim and then assert a different, larger claim as if the evidence proved that one too. "This study showed coffee drinkers live longer, therefore you should drink coffee." The study showed an association in one population; the conclusion is a personal recommendation. Different claims, same sentence. Once you start listening for the gap between what was actually demonstrated and what got concluded, you will find it everywhere.' },
@@ -22,7 +22,7 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Face the strongest version of the other side, before you have to face the real one.",
-    body:     "Argue Better is the intellectual sparring partner that will not let you off easy. Fallacy Gym trains you to spot logical errors at easy, medium, or hard difficulty, with streak tracking and specific feedback on why you were right or wrong. Then take it live: state a position, get hit with the steelman, and watch the fallacy flags in real time.",
+    body:     "Argue Smarter is the intellectual sparring partner that will not let you off easy. Fallacy Gym trains you to spot logical errors at easy, medium, or hard difficulty, with streak tracking and specific feedback on why you were right or wrong. Then take it live: state a position, get hit with the steelman, and watch the fallacy flags in real time.",
     features: [
       "Fallacy Gym: spot-the-fallacy training with streak tracking",
       "Specific feedback on every call — why you were right or wrong",
@@ -30,9 +30,9 @@ module.exports = {
       "Source check any claim while you argue — yours or theirs",
       "Highlight Reel: your most common fallacy, with exercises to fix it"
     ],
-    toolId:   'ArgueBetter',
-    toolName: 'Argue Better',
+    toolId:   'ArgueSmarter',
+    toolName: 'Argue Smarter',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-03',
 };

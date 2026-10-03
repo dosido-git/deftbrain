@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
 import { useTheme } from '../hooks/useTheme';
+import { useDocumentHead } from '../hooks/useDocumentHead';
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { CATEGORY_META } from '../data/categoryMeta';
 import { buildSearchIndex, searchTools } from '../utils/toolSearch';
 import './AllToolsPage.css';
@@ -95,6 +97,13 @@ export default function AllToolsPage({ allTools = [] }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const { isDark, toggleTheme } = useTheme();
+  // Same head as scripts/prerender.js STATIC_PAGES.tools — keep in sync. This
+  // page used to set none, so it kept the homepage's title after navigation.
+  useDocumentHead({
+    title: 'DeftBrain Toolbox — Free Guided Experiences, A–Z',
+    description: `Browse ${TOOL_COUNT_LABEL} free guided experiences, A–Z or by topic: read a lease, check a repair quote, spot a scam, prepare for a hard conversation.`,
+    canonicalPath: '/tools',
+  });
   // The sand page color reaches the body (and overscroll) through a class;
   // src/styles/index.css gives it its light and dark values.
   useEffect(() => {

@@ -42,7 +42,7 @@ module.exports = {
   cta: {
     glyph:    '🏴‍☠️',
     headline: "Find the path past the 'non-refundable' label",
-    body:     "Rulebook Breaker maps the specific moves that recover fees companies have labeled non-refundable — reasonable-cost arguments, regulator paths, chargeback framing — calibrated to the industry and circumstances of your specific case.",
+    body:     "Not So Fast! maps the specific moves that recover fees companies have labeled non-refundable — reasonable-cost arguments, regulator paths, chargeback framing — calibrated to the industry and circumstances of your specific case.",
     features: [
       "Industry-specific refund paths",
       "Reasonable-cost argument scripts",
@@ -50,10 +50,10 @@ module.exports = {
       "Chargeback framing language",
       "Defensible-vs-unrecoverable analysis",
     ],
-    toolId:   'RulebookBreaker',
-    toolName: 'Rulebook Breaker',
+    toolId:   'NotSoFast',
+    toolName: 'Not So Fast!',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

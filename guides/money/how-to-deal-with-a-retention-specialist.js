@@ -40,20 +40,19 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '⚔️',
-    headline: "Get the script before you make the call",
-    body:     "Subscription Tamer's Negotiate view arms you with a service-specific retention script — step-by-step dialogue and the magic phrases that close the call cleanly — whether you want out entirely or just a better price.",
+    glyph:    '📞',
+    headline: "Rehearse the call before you make it",
+    body:     "Bill Rescue plays the retention specialist so you can practice saying no — or holding out for a better price — with a coach's note after each exchange. Choose hard mode if you expect them to cite policy and offer a bad deal first.",
     features: [
-      "Service-specific retention scripts",
-      "Step-by-step dialogue with magic phrases",
-      "Works for a discount or a clean exit",
-      "Price-hike alerts with one-click negotiate links",
-      "Cancellation tracking with running savings",
+      "Practice with a realistic rep",
+      "Works for a clean exit or a lower price",
+      "Coaching after every exchange",
+      "Hard mode for stubborn reps"
     ],
-    toolId:   'SubscriptionTamer',
-    toolName: 'Subscription Tamer',
+    toolId:   'BillRescue',
+    toolName: 'Bill Rescue',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

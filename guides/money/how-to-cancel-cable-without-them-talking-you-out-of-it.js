@@ -40,20 +40,19 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '⚔️',
-    headline: "Walk into the call with the script already written",
-    body:     "Subscription Tamer's Negotiate view scripts the retention call service by service — the step-by-step dialogue and the magic phrases that keep it on track — while cost-per-use math tells you whether the discount they'll inevitably offer is actually worth taking.",
+    glyph:    '📞',
+    headline: "Practice the call before they practice on you",
+    body:     "Bill Rescue's rehearsal plays the retention rep — offers, pushback, and all — and coaches you after each exchange, so the real call is the second time you have heard every move. Hard mode is there for when you expect them to dig in.",
     features: [
-      "Service-specific retention scripts",
-      "Step-by-step call dialogue with magic phrases",
-      "Cost-per-use math to judge the counter-offer",
-      "Honest keep/cancel verdict before you dial",
-      "Savings tracker once you cancel",
+      "Rehearse against a rep who pushes back",
+      "Hard mode for a rep who won't let go",
+      "Coaching after every exchange",
+      "Built for phone, internet, and cable bills"
     ],
-    toolId:   'SubscriptionTamer',
-    toolName: 'Subscription Tamer',
+    toolId:   'BillRescue',
+    toolName: 'Bill Rescue',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

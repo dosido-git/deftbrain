@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BrandMark from './BrandMark';
 import { useTheme } from '../hooks/useTheme';
+import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import './OrganizationsPage.css';
 
@@ -47,11 +48,16 @@ export default function OrganizationsPage({ allTools = [] }) {
   const audienceTools = (AUDIENCE_TOOLS[audience] || []).map(id => byId[id]).filter(Boolean);
 
   const { isDark, toggleTheme } = useTheme();
+  // Same head as scripts/prerender.js STATIC_PAGES.organizations — keep in sync.
+  useDocumentHead({
+    title: 'For Organizations — Practical Everyday Guidance',
+    description: 'Give employees, members, patrons, and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
+    canonicalPath: '/organizations',
+  });
   // The sand page color reaches the body (and overscroll) through a class;
   // src/styles/index.css gives it its light and dark values.
   useEffect(() => {
     document.body.classList.add('db-sand-page');
-    document.title = 'DeftBrain for Organizations | Practical everyday guidance';
     return () => { document.body.classList.remove('db-sand-page'); };
   }, []);
 

@@ -22,7 +22,7 @@ module.exports = {
   cta: {
     glyph:    '🔮',
     headline: "Spot your burnout pattern before the crash",
-    body:     "Crash Predictor reads the signs you've been ignoring — the dropped habits, the irritation creep, the weekend recovery debt — and tells you how close to the wall you actually are.",
+    body:     "Before the Crash reads the signs you've been ignoring — the dropped habits, the irritation creep, the weekend recovery debt — and tells you how close to the wall you actually are.",
     features: [
       "Pattern detection",
       "Recovery-debt tracking",
@@ -30,9 +30,9 @@ module.exports = {
       "Time-to-crash estimate",
       "Recovery suggestions"
     ],
-    toolId:   'CrashPredictor',
-    toolName: 'Crash Predictor',
+    toolId:   'BeforeTheCrash',
+    toolName: 'Before the Crash',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-03',
 };

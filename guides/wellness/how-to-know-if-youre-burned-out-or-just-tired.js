@@ -22,7 +22,7 @@ module.exports = {
   cta: {
     glyph:    '🔮',
     headline: "Find out if you're tired or trending toward burnout",
-    body:     "Crash Predictor runs the tests rest alone can't — weekend bounce, enjoyment dampening, slope detection — and tells you whether you need a long weekend or a structural change.",
+    body:     "Before the Crash runs the tests rest alone can't — weekend bounce, enjoyment dampening, slope detection — and tells you whether you need a long weekend or a structural change.",
     features: [
       "Tired-vs-burnout diagnosis",
       "Trajectory analysis",
@@ -30,9 +30,9 @@ module.exports = {
       "Intervention guidance",
       "Pattern history"
     ],
-    toolId:   'CrashPredictor',
-    toolName: 'Crash Predictor',
+    toolId:   'BeforeTheCrash',
+    toolName: 'Before the Crash',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-03',
 };

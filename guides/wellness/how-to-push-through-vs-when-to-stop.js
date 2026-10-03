@@ -22,7 +22,7 @@ module.exports = {
   cta: {
     glyph:    '🔮',
     headline: "Know whether to push through or step off — before you find out the hard way",
-    body:     "Crash Predictor tests the signals that distinguish strategic effort from accumulating injury — deadline-reality, degradation type, rest-responsiveness — and tells you whether the next push will pay back.",
+    body:     "Before the Crash tests the signals that distinguish strategic effort from accumulating injury — deadline-reality, degradation type, rest-responsiveness — and tells you whether the next push will pay back.",
     features: [
       "Push-vs-stop diagnostic",
       "Cost-ceiling planning",
@@ -30,9 +30,9 @@ module.exports = {
       "Rest-response test",
       "Strategic-effort scoring"
     ],
-    toolId:   'CrashPredictor',
-    toolName: 'Crash Predictor',
+    toolId:   'BeforeTheCrash',
+    toolName: 'Before the Crash',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-03',
 };

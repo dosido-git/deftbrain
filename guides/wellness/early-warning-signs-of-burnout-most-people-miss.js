@@ -22,7 +22,7 @@ module.exports = {
   cta: {
     glyph:    '🔮',
     headline: "See the early signs you've been ignoring",
-    body:     "Crash Predictor catches the small patterns that show up weeks before the wall — the initiation drop, the decision drag, the lengthening decompression — and tells you what to do while small fixes still work.",
+    body:     "Before the Crash catches the small patterns that show up weeks before the wall — the initiation drop, the decision drag, the lengthening decompression — and tells you what to do while small fixes still work.",
     features: [
       "Early-pattern detection",
       "Behavior-drift tracking",
@@ -30,9 +30,9 @@ module.exports = {
       "Decompression metrics",
       "Personalized intervention"
     ],
-    toolId:   'CrashPredictor',
-    toolName: 'Crash Predictor',
+    toolId:   'BeforeTheCrash',
+    toolName: 'Before the Crash',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-03',
 };

@@ -40,20 +40,19 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '⚔️',
-    headline: "Get the script that actually closes the account",
-    body:     "Subscription Tamer's Negotiate view gives you a service-specific retention script — step-by-step dialogue with the magic phrases that get past the runaround — plus per-subscription cancellation steps, and a tracker that logs your savings once the account is finally dead.",
+    glyph:    '📞',
+    headline: "Rehearse the cancellation call before you make it",
+    body:     "Bill Rescue lets you practice the call against a billing rep who pushes back, with a coach's note after every exchange. If charges keep coming after you have cancelled, it drafts a formal dispute letter for those specific charges.",
     features: [
-      "Service-specific retention scripts",
-      "Step-by-step dialogue with magic phrases",
-      "Cancellation steps per subscription",
-      "Status tracking: active, cancelling, paused, cancelled",
-      "Running savings since cancellation",
+      "Practice the call with a realistic rep",
+      "A harder mode for reps who won't take no",
+      "Coaching after every exchange",
+      "Dispute letters for charges you didn't agree to"
     ],
-    toolId:   'SubscriptionTamer',
-    toolName: 'Subscription Tamer',
+    toolId:   'BillRescue',
+    toolName: 'Bill Rescue',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };

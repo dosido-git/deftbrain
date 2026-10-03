@@ -120,13 +120,22 @@ function hubLastmod(cat, hash) {
 function hubHashes() {
   const generatorHash = sha(fs.readFileSync(path.join(__dirname, 'build-guides-indexes.js'), 'utf8'));
   const keepData = JSON.parse(fs.readFileSync(path.join(ROOT, 'guides', 'keep-list.json'), 'utf8'));
-  return Object.fromEntries(CATEGORIES.map(cat => [cat, hubContentHash(cat, generatorHash, keepData)]));
+  const byCat = Object.fromEntries(CATEGORIES.map(cat => [cat, hubContentHash(cat, generatorHash, keepData)]));
+  // /guides and /guides/by-tool list every category, so they change when any
+  // hub does. They were promised in this file's header but never emitted
+  // (found by a full-site crawl, 2026-10-03).
+  const all = CATEGORIES.map(cat => byCat[cat]).join('|');
+  return { ...byCat, [INDEX_HUB]: sha(`index|${all}`), [BY_TOOL_HUB]: sha(`by-tool|${all}`) };
 }
+
+const INDEX_HUB = '_index';
+const BY_TOOL_HUB = '_by-tool';
+const hubPath = key => key === INDEX_HUB ? '/guides' : key === BY_TOOL_HUB ? '/guides/by-tool' : `/guides/${key}`;
 
 function buildHubEntries() {
   const hashes = hubHashes();
-  return CATEGORIES.map(cat => ({
-    loc:        `${BASE_URL}/guides/${cat}`,
+  return Object.keys(hashes).map(cat => ({
+    loc:        `${BASE_URL}${hubPath(cat)}`,
     lastmod:    hubLastmod(cat, hashes[cat]),
     changefreq: 'weekly',
     priority:   '0.9',
@@ -140,7 +149,7 @@ function buildHubEntries() {
 // today, daily" pattern this replaced.
 function runCheck() {
   const hashes = hubHashes();
-  const bumped = CATEGORIES.filter(cat => !hubState[cat] || hubState[cat].hash !== hashes[cat]);
+  const bumped = Object.keys(hashes).filter(cat => !hubState[cat] || hubState[cat].hash !== hashes[cat]);
   if (bumped.length === 0) {
     console.log(`✅ guides-sitemap-state: committed lastmod state matches content (${CATEGORIES.length} hubs).`);
     return 0;

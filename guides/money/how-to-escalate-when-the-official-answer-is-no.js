@@ -42,7 +42,7 @@ module.exports = {
   cta: {
     glyph:    '🏴‍☠️',
     headline: "Find the external path that has actual teeth",
-    body:     "Rulebook Breaker maps the regulators, courts, and external escalation paths that match your specific industry and dispute — with the complaint templates, filing instructions, and tactical sequencing for each.",
+    body:     "Not So Fast! maps the regulators, courts, and external escalation paths that match your specific industry and dispute — with the complaint templates, filing instructions, and tactical sequencing for each.",
     features: [
       "Regulator-by-industry routing",
       "Chargeback reason-code selection",
@@ -50,10 +50,10 @@ module.exports = {
       "BBB and AG complaint templates",
       "Settlement-offer evaluation",
     ],
-    toolId:   'RulebookBreaker',
-    toolName: 'Rulebook Breaker',
+    toolId:   'NotSoFast',
+    toolName: 'Not So Fast!',
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-03',
 };
