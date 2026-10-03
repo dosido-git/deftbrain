@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
@@ -402,6 +403,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
+    await withNumberCheck(parsed, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage });
     const verifiedSources = groundedData(billFactsCacheKey)?.sources;
     res.json({
       ...stripCites(parsed),
@@ -482,6 +484,8 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!result.priority_order) {
       return res.status(500).json({ error: 'Could not generate your bill triage. Please try again.' });
     }
+    // Triage splits a budget across bills — the totals have to add up.
+    await withNumberCheck(result, { label: 'bill-rescue/triage', context: visitorContext(req.body), userLanguage });
     return res.json(result);
 
   } catch (error) {

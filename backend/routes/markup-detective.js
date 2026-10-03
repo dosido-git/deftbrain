@@ -5,6 +5,7 @@ const router = express.Router();
 // Server-side only — not bundled by webpack
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -89,6 +90,14 @@ Rules:
       return res.status(500).json({ error: 'Incomplete analysis returned. Please try again.' });
     }
 
+    // Its own rules (breakdown sums to 100% and to the price; multiplier =
+    // price / true cost) are exactly what a model gets wrong — recompute them.
+    await withNumberCheck(data, {
+      label: 'markup-detective',
+      context: visitorContext(req.body),
+      extraRules: 'cost_breakdown percents must sum to 100 and amounts to price_paid; markup_multiplier = price_paid / true_cost to 1 decimal.',
+      userLanguage,
+    });
     return res.json(data);
 
   } catch (err) {

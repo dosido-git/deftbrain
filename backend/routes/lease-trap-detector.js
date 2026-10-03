@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
@@ -394,6 +395,7 @@ ${criticalRules}`;
     // ran and cited something for this jurisdiction; absent (not an empty
     // array) when there's nothing to show, so the frontend's `?.length > 0`
     // check has one thing to test instead of two.
+    await withNumberCheck(parsed, { label: 'lease-trap-detector', context: visitorContext(req.body), userLanguage });
     const verifiedSources = groundedData(tenantLawCacheKey)?.sources;
     res.json({
       ...stripCites(parsed),

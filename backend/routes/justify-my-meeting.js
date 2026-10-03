@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
@@ -479,6 +480,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     pinVerdict(parsed, VERDICTS, 'NOT ENOUGH TO TELL');
     if (parsed.better_format) parsed.better_format.recommendation = pinTo(parsed.better_format.recommendation, FORMATS, 'Other');
     parsed.time_footprint = timeFootprint(duration, attendees, null);
+    await withNumberCheck(parsed, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -670,6 +672,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       meetings_counted_for_person_hours: counted,
       meetings_missing_numbers: incomplete,
     };
+    await withNumberCheck(parsed, { label: 'justify-my-meeting/week', context: visitorContext(req.body), userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {

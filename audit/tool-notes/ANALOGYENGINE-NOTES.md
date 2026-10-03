@@ -114,3 +114,10 @@ Probe on saved flawed outputs: caught "rate in the exponent" (DE), the
 GPA-denominator muddle — but not every run catches every one (recall varies
 run to run). A first version that only asked for fixes returned [] on known
 errors; the forced per-claim "checks" step is what made it work. Do not drop it.
+
+### 2026-10-03 — checker moved to the shared lib
+backend/lib/factCheck.js checkNumbers / withNumberCheck now serves this tool
+(facts: true, removable myths) and ten other number-heavy tools. Field NAMES
+must be shown to the checker: without them it "corrected" myths into true
+statements. A "work" (recomputation) field per check is what made recall
+reliable.

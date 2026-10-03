@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 
@@ -376,6 +377,13 @@ ${NO_QUOTE_RULE}`;
       label: 'recipe-chaos-solver-scale',
       promise: 'Scale the supplied recipe correctly — mathematically where scaling is linear, flagged rather than auto-adjusted where it is not.',
       supplied: `RECIPE:\n${recipeText}\n\nORIGINAL SERVINGS: ${originalServings}\nTARGET SERVINGS: ${targetServings}`,
+      userLanguage,
+    });
+    // Scaling is pure arithmetic: every quantity must be the original x the factor.
+    await withNumberCheck(parsed, {
+      label: 'recipe-chaos-solver-scale',
+      context: `${visitorContext(req.body)}\nScale factor: ${(targetServings / originalServings).toFixed(2)}x`,
+      extraRules: 'Each scaled quantity must equal the original quantity times the scale factor, unless the answer explicitly says that ingredient should not scale linearly.',
       userLanguage,
     });
 

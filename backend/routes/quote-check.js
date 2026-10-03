@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 
@@ -293,6 +294,10 @@ CODES VS SENTENCES: the only ALL_CAPS values in this schema are the fields whose
     if (rvr && rvr.applies && !rvr.assessment && !(Array.isArray(rvr.missing_information) && rvr.missing_information.length)) {
       rvr.applies = false;
     }
+
+    // The model does its own arithmetic_check on the quote; recompute it and
+    // every other figure before the visitor relies on it.
+    await withNumberCheck(parsed, { label: 'quote-check', context: visitorContext(req.body), userLanguage });
 
     res.json({
       understanding:          parsed.understanding ?? '',

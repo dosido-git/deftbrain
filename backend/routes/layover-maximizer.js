@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_INVENTED_AUTHORITY = `NEVER USE CONFIDENT SPECIFICITY YOU CANNOT SUPPORT. Not "consistently fresh", not "nearly always empty at 9 AM", not "signal is stronger there", not "consistently rated the top lounge". Those read as observed fact and none of them is checkable. Say what a place reliably IS, not what it is reliably like on a Tuesday.
@@ -303,6 +304,9 @@ AT MOST 4 steps in best_plan, 4 food, 3 lounges, 5 pro_tips.`;
       }, { label: 'layover-maximizer:stay' }),
     ]);
     const parsed = { ...stayPart, ...leavePart };
+    // Before the code-computed clock times below, which then overwrite
+    // whatever the check touched there — subtraction stays in code.
+    await withNumberCheck(parsed, { label: 'layover-maximizer', context: visitorContext(req.body), userLanguage });
     // The model supplies the judgement (what, and how long before); the clock
     // time is subtraction, and subtraction belongs here.
     if (parsed.time_math) parsed.time_math.return_by_time = clockOrNull(parsed.time_math.return_by_time);
