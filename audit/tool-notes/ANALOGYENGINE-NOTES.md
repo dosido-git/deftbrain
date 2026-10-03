@@ -102,3 +102,15 @@ the misconceptions section's residual weak spot.
 
 ### Same day, third pass — misconceptions capped at 2-3 (was 2-4)
 Owner call after the residual weak spot above. Goldens 3/3.
+
+### 2026-10-03 — fact-check pass
+After generation a second SMART call ("analogy-engine-factcheck") recomputes
+every number/claim ("checks" list) and returns targeted "fixes" (whole-field
+replacements on a path whitelist, or removal of a false misconception, never
+emptying the section). Applied server-side; fails OPEN (any error → original
+answer). Cost ≈ +$0.03/run, latency ≈ +16-28s (deep ≈ 60-70s total).
+Probe on saved flawed outputs: caught "rate in the exponent" (DE), the
+10→11→"11 percent" soldiers, the false "rebounding % > 100" myth and a
+GPA-denominator muddle — but not every run catches every one (recall varies
+run to run). A first version that only asked for fixes returned [] on known
+errors; the forced per-claim "checks" step is what made it work. Do not drop it.
