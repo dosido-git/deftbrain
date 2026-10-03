@@ -99,3 +99,6 @@ required each myth to be genuinely false with a correction that contradicts it.
 seen occasionally: a "myth" whose correction half-concedes it, or an overstated
 correction ("one percentage point → a multiple of the final amount"). That is
 the misconceptions section's residual weak spot.
+
+### Same day, third pass — misconceptions capped at 2-3 (was 2-4)
+Owner call after the residual weak spot above. Goldens 3/3.
