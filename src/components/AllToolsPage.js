@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import SiteHeader from './SiteHeader';
 import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
+import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import { CATEGORY_META } from '../data/categoryMeta';
 import { buildSearchIndex, searchTools } from '../utils/toolSearch';
 import './AllToolsPage.css';
@@ -96,6 +97,21 @@ export default function AllToolsPage({ allTools = [] }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const { isDark, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const [finderText, setFinderText] = useState('');
+  const submitFinder = (e) => {
+    e.preventDefault();
+    const text = finderText.trim();
+    if (!text) return;
+    if (TOOL_FINDER_PAUSED) {
+      // Tool Finder switched off: fall back to searching this page.
+      setQuery(text);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      syncUrl(text, 'All');
+      return;
+    }
+    navigate(`/ToolFinder?q=${encodeURIComponent(text)}`);
+  };
   // Same head as scripts/prerender.js STATIC_PAGES.tools — keep in sync. This
   // page used to set none, so it kept the homepage's title after navigation.
   useDocumentHead({
@@ -255,15 +271,19 @@ export default function AllToolsPage({ allTools = [] }) {
         )}
       </section>
 
+      {/* Tool Finder (renamed 2026-10-04, owner: was "Still looking? /
+          Didn't find what you needed?", which sat right above the site-wide
+          ideas box asking the same thing). What's typed here goes to the Tool
+          Finder tool (/ToolFinder?q=), which reads a description and suggests
+          tools, rather than re-filtering the page the visitor just searched. */}
       <section className="at-shell at-last-call">
         <div>
-          <p className="at-eyebrow">STILL LOOKING?</p>
-          <h2>Didn’t find what you needed?</h2>
-          <p>Tell DeftBrain what’s going on. You don’t need to know which tool to ask for.</p>
+          <h2>Tool Finder</h2>
+          <p>Describe what’s going on in your own words, and Tool Finder will suggest the tools that fit. You don’t need to know which one to ask for.</p>
         </div>
-        <form onSubmit={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); syncUrl(query, 'All'); }} className="at-bottom-search">
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Describe your situation…" aria-label="Describe your situation" />
-          <button type="submit">Search</button>
+        <form onSubmit={submitFinder} className="at-bottom-search">
+          <input value={finderText} onChange={e => setFinderText(e.target.value)} placeholder="Describe your situation…" aria-label="Describe your situation" />
+          <button type="submit">Find tools</button>
         </form>
       </section>
     </main>
