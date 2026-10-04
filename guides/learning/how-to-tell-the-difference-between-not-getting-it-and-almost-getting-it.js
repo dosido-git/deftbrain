@@ -17,17 +17,17 @@ module.exports = {
     { name: 'Look at a worked example and predict the next step', body: 'Find a worked example and stop halfway through. Try to predict the next step before reading it. If your prediction is approximately right or even wrong-but-close, you are almost-getting-it. If you cannot generate a prediction at all, you are blank. Predicting is a stronger test of understanding than recognizing — many students recognize each step when they see it but cannot generate the steps themselves. The prediction test reveals which one you are doing.' },
     { name: 'For almost-got-it: do more examples, not more theory', body: 'When you are almost-getting-it, the fix is consolidation through examples — practice problems, varied applications, working through the concept in different contexts. More theory will not help; you have the theory. You need repetitions to lock it in. Three different examples of the same concept usually do what an additional reread of the textbook cannot. Volume of practice, not depth of explanation.' },
     { name: 'For blank: back up to the prerequisite', body: 'When you are completely blank, the fix is backing up. There is a prerequisite missing, and no amount of practice on the surface concept will help until the prerequisite is in place. The instinct to keep grinding on the unfamiliar concept is wrong — you are trying to add a brick with no foundation. Find the prerequisite first. Once it is in place, the surface concept usually moves quickly from blank to almost-got-it to got-it.' },
-    { name: 'Use Missing Link to place yourself on the spectrum', body: 'Tell Missing Link the concept and where you are. The output diagnoses whether you are blank, almost-getting-it, or already-got-it-but-not-confident. It then prescribes the corresponding move — backfill the prerequisite, do practice problems, or test against application questions. Knowing which mode to be in is half the gain. The other half is doing the right exercises for that mode.' }
+    { name: 'Use Missing Link to place yourself on the spectrum', body: 'Tell Missing Link the concept and what you do understand. Each prerequisite in the chain it builds comes with a quick self-test you mark as can\'t answer, unsure, or got it — a direct read on where you sit for each piece. Can\'t answer points to a building block to backfill; unsure points to practice problems; got it on everything means the next step is application questions. Knowing which mode to be in is half the gain. The other half is doing the right exercises for that mode.' }
   ],
   cta: {
-    glyph:    '🔍',
+    glyph:    '⛓️',
     headline: "Find where your understanding actually broke.",
-    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it teaches that one, and your way forward unsticks.",
+    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it names the kind of gap, gives a short refresher, and lays out a three-step study plan.",
     features: [
       "Prerequisite-tracing diagnosis",
-      "Plain-language explanation of the missing piece",
-      "Builds the bridge to the original concept",
-      "Works for any subject"
+      "A quick self-test for each prerequisite",
+      "A three-step study plan for the gap",
+      "Deep Dive with worked examples and practice problems"
     ],
     toolId:   'MissingLink',
     toolName: 'Missing Link',

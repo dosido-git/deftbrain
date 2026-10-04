@@ -20,18 +20,17 @@ module.exports = {
     { name: 'Plan for slower than you want', body: 'Recovery without time off takes weeks longer than you think it will. The temptation is to push, see modest improvement, and treat the modest improvement as success — then return to the load that caused it. Don\'t. Every week of partial recovery only restores a fraction of capacity. Plan for three to six months of running below your previous output. Tell yourself that timeline up front. Trying to recover faster than the available time allows is how people recover, relapse, and burn out worse a second time.' }
   ],
   cta: {
-    glyph:    '🔮',
+    glyph:    '⚡',
     headline: "Rebuild capacity inside the life you actually have",
-    body:     "Before the Crash finds the small drains you can cut, the rituals you can protect, and the timeline your real schedule can support — without pretending you can take a sabbatical.",
+    body:     "Before the Crash will not plan your recovery, but it shows whether it is working: a one-minute daily check-in on energy, sleep, stress, and mood, compared across your own history, so you can see which small changes are actually moving the numbers.",
     features: [
-      "Small-drain audit",
-      "Recovery scheduling",
-      "Realistic timelines",
-      "Agency rebuilding",
-      "Progress tracking"
+      "A one-minute daily check-in",
+      "Notes for what you changed that day",
+      "Your own history, compared over time",
+      "Longer-term patterns across your history"
     ],
     toolId:   'BeforeTheCrash',
-    toolName: 'Before the Crash',
+    toolName: "Before the Crash",
   },
   published: '2026-04-29',
   modified:  '2026-10-03',

@@ -20,18 +20,17 @@ module.exports = {
     { name: 'Try the small-test recovery', body: 'Pick two days. Genuinely rest. Then notice what happens when you go back. Tired comes back to baseline; burnout snaps back to the same low place within hours of returning. If two days off restored you, the work is hard but tolerable and you need more frequent rest of the same kind. If two days off felt great and Monday morning you were back where you started, the rest isn\'t the problem — the work-recovery ratio is. That\'s burnout\'s signature.' }
   ],
   cta: {
-    glyph:    '🔮',
-    headline: "Find out if you're tired or trending toward burnout",
-    body:     "Before the Crash runs the tests rest alone can't — weekend bounce, enjoyment dampening, slope detection — and tells you whether you need a long weekend or a structural change.",
+    glyph:    '⚡',
+    headline: "See whether rest is actually working",
+    body:     "Before the Crash does not diagnose burnout. It gives you a one-minute daily check-in and compares your own history over time, so you can see whether a weekend actually brought your energy back or the same dip keeps returning.",
     features: [
-      "Tired-vs-burnout diagnosis",
-      "Trajectory analysis",
-      "Recovery-response prediction",
-      "Intervention guidance",
-      "Pattern history"
+      "A one-minute daily check-in",
+      "Your own history, compared over time",
+      "Mark the days you hit a wall",
+      "Patterns marked 'worth watching' until they hold up"
     ],
     toolId:   'BeforeTheCrash',
-    toolName: 'Before the Crash',
+    toolName: "Before the Crash",
   },
   published: '2026-04-29',
   modified:  '2026-10-03',

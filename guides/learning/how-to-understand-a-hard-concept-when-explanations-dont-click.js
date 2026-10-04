@@ -17,17 +17,17 @@ module.exports = {
     { name: 'Identify what the explanation assumes you already know', body: 'Read the breaking sentence carefully. What words or ideas does it use as if they were already familiar? A math explanation that says "applying the chain rule" assumes you know what the chain rule is. A coding explanation that says "this returns a promise" assumes you know what a promise is. List the assumed concepts. Each one is a candidate for the prerequisite you are missing.' },
     { name: 'Test each candidate prerequisite quickly', body: 'Take each assumed concept from the list and ask yourself: can I explain this one in a sentence? If you cannot, that is the prerequisite. Often there is more than one, and they form a chain — each prerequisite has its own prerequisites. Trace backward until you reach a concept you genuinely understand. The boundary between what you know and what you do not is the place to start learning.' },
     { name: 'Learn the prerequisite, then come back', body: 'Find an explanation of the prerequisite, learn it, then return to the original concept. Most of the time, the original concept now reads cleanly. The explanations that did not click before were not bad — they were correctly assuming the prerequisite. With the prerequisite in hand, the same explanation works. This is why concepts often suddenly "click" — usually one missing piece moved into place.' },
-    { name: 'Use Missing Link to trace the prerequisite chain automatically', body: 'Tell Missing Link the concept you are stuck on plus where you are stuck. It works backward to find the most likely missing prerequisite, teaches that piece in plain language, and then bridges back to the original concept. Faster and more accurate than trial-and-error backtracking. Often surprising — the missing piece is rarely where you expected it to be.' }
+    { name: 'Use Missing Link to trace the prerequisite chain automatically', body: 'Tell Missing Link the concept you are stuck on plus where you are stuck. It works backward through the prerequisite chain, marks the most likely missing piece and the kind of gap it is, and gives a short refresher plus a three-step study plan back to the original concept. Faster and more accurate than trial-and-error backtracking. Often surprising — the missing piece is rarely where you expected it to be.' }
   ],
   cta: {
-    glyph:    '🔍',
+    glyph:    '⛓️',
     headline: "Find where your understanding actually broke.",
-    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it teaches that one, and your way forward unsticks.",
+    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it names the kind of gap, gives a short refresher, and lays out a three-step study plan.",
     features: [
       "Prerequisite-tracing diagnosis",
-      "Plain-language explanation of the missing piece",
-      "Builds the bridge to the original concept",
-      "Works for any subject"
+      "A quick self-test for each prerequisite",
+      "A three-step study plan for the gap",
+      "Deep Dive with worked examples and practice problems"
     ],
     toolId:   'MissingLink',
     toolName: 'Missing Link',

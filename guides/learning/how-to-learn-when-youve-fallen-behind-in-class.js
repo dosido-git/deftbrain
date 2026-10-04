@@ -17,17 +17,17 @@ module.exports = {
     { name: 'Pick the two most-referenced earlier concepts and master those first', body: 'Of the prerequisites you identified, two or three usually keep coming back. Those are the load-bearing concepts. Learn those properly — go to the original chapter, work through examples, do practice problems. Spending a focused four hours on the two right concepts beats spending twenty hours skimming everything. The other early material can stay vague; you only need it if it shows up later, and most of it does not.' },
     { name: 'Skip the chapters that the current material does not use', body: 'Course syllabuses include topics that turn out not to be on the exam or in the rest of the course. Instructors do this for completeness; you do not have time for completeness. Look at past exam questions or the assignment patterns to see which earlier topics are actually being tested or used. Skip the others. If they come up, you can learn them then. Trying to cover everything at this stage is the trap that prevents recovery.' },
     { name: 'Catch up with another student or a tutor for one focused session', body: 'An hour with someone who actually understands the material — a classmate ahead of you, a TA, a tutor — saves an enormous amount of solo time. Come with specific questions: \'I do not understand step 3 in this problem set,\' not \'I am lost.\' Specific questions get specific answers. Vague questions get explanations of the entire course. Even one well-prepared session can move you from week 4 to week 8 worth of understanding.' },
-    { name: 'Use Missing Link to identify the load-bearing prerequisite', body: 'Drop the current material and your stuck point into Missing Link. It traces back to the specific earlier concept you are missing — usually one or two, not a whole semester. It teaches that piece directly. The output is the targeted catch-up plan: the two things you actually need to learn before next week, in priority order. Most students who fall behind never recover because they try to redo everything. Targeted catch-up actually works.' }
+    { name: 'Use Missing Link to identify the load-bearing prerequisite', body: 'Drop the current material and your stuck point into Missing Link. It traces back through the prerequisites to the earlier concept you are most likely missing — usually one or two, not a whole semester — then gives a short refresher and a three-step study plan, with a Deep Dive for worked examples and practice problems on that specific gap. Most students who fall behind never recover because they try to redo everything. Targeted catch-up actually works.' }
   ],
   cta: {
-    glyph:    '🔍',
+    glyph:    '⛓️',
     headline: "Find where your understanding actually broke.",
-    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it teaches that one, and your way forward unsticks.",
+    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it names the kind of gap, gives a short refresher, and lays out a three-step study plan.",
     features: [
       "Prerequisite-tracing diagnosis",
-      "Plain-language explanation of the missing piece",
-      "Builds the bridge to the original concept",
-      "Works for any subject"
+      "A quick self-test for each prerequisite",
+      "A three-step study plan for the gap",
+      "Deep Dive with worked examples and practice problems"
     ],
     toolId:   'MissingLink',
     toolName: 'Missing Link',

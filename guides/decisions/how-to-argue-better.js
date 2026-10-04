@@ -7,9 +7,9 @@ module.exports = {
   category:      'decisions',
   categoryLabel: 'Decisions',
 
-  title:         "How to Argue Smarter",
-  titleHtml:     "How to <em>Argue Smarter</em>",
-  shortTitle:    "How to Argue Smarter",
+  title:         "How to Argue Better",
+  titleHtml:     "How to <em>Argue Better</em>",
+  shortTitle:    "How to Argue Better",
   navTitle:      "How to argue better — five rules that change how you reason",
 
   description:   "Most people argue to win, which is why most arguments produce nothing. Five rules that change how you reason in disagreement — and reliably leave you smarter on the other side.",

@@ -17,17 +17,17 @@ module.exports = {
     { name: 'Hard because abstract — find the concrete version', body: 'Some concepts feel hard because they are genuinely abstract — there is no physical thing you can point to. Probability, statistics, recursion, monads, fields in physics. These often become tractable when you find a concrete instance to reason from. Probability gets easier with dice. Recursion gets easier with the directory-of-folders example. Find or build a concrete example you can manipulate, and the abstract concept follows. The difficulty often lives in trying to grasp it abstractly first.' },
     { name: 'Hard because conventionally badly taught — switch teachers', body: 'Some topics are not actually hard but are taught in ways that make them hard. Calculus is famous for this. Many students struggle with the standard textbook approach and find it trivial when shown a different framing. If you are stuck on a topic that other people seem to find easy, the issue may be the explanation, not the topic. Try a different teacher, a different book, a video with different examples. The right framing for your brain may be different from the standard.' },
     { name: 'Hard because the field has built-in jargon walls', body: 'Some fields are gatekept by jargon — research papers, legal documents, academic philosophy. The underlying ideas are often clear once translated. The difficulty is the unfamiliarity of the language. The fix is not to study the topic harder but to learn the vocabulary first. A glossary or a beginner-aimed primer breaks the jargon wall in days; without it, you can grind on the texts forever and not progress.' },
-    { name: 'Use Missing Link to identify which kind of hard you have', body: 'Tell Missing Link the topic and your specific stuck point. The output diagnoses what kind of difficulty is in play — prerequisite-shaped, abstract-shaped, badly-taught-shaped, jargon-shaped — and recommends the corresponding move. Different difficulties need different responses, and the wrong response wastes weeks. Diagnosing first saves the time of trying the wrong fix repeatedly.' }
+    { name: 'Use Missing Link to identify which kind of hard you have', body: 'Tell Missing Link the topic and your specific stuck point. The output names the kind of gap it finds — conceptual (you can follow the steps but not why they work), procedural (you get the idea but not the sequence), definitional (a word is doing work nobody explained), or notational (the symbols are in the way) — and gives a refresher and study plan for that kind. Different difficulties need different responses, and the wrong response wastes weeks. Diagnosing first saves the time of trying the wrong fix repeatedly.' }
   ],
   cta: {
-    glyph:    '🔍',
+    glyph:    '⛓️',
     headline: "Find where your understanding actually broke.",
-    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it teaches that one, and your way forward unsticks.",
+    body:     "Tell Missing Link what you are stuck on and it works backward to find the missing prerequisite — the specific concept underneath the one you cannot grasp. Then it names the kind of gap, gives a short refresher, and lays out a three-step study plan.",
     features: [
       "Prerequisite-tracing diagnosis",
-      "Plain-language explanation of the missing piece",
-      "Builds the bridge to the original concept",
-      "Works for any subject"
+      "A quick self-test for each prerequisite",
+      "A three-step study plan for the gap",
+      "Deep Dive with worked examples and practice problems"
     ],
     toolId:   'MissingLink',
     toolName: 'Missing Link',

@@ -40,18 +40,17 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🏴‍☠️',
+    glyph:    '🚪',
     headline: "Find the external path that has actual teeth",
-    body:     "Not So Fast! maps the regulators, courts, and external escalation paths that match your specific industry and dispute — with the complaint templates, filing instructions, and tactical sequencing for each.",
+    body:     "Not So Fast! maps the escalation ladder for your specific dispute — the internal steps, the regulator that applies and how to file with it, and the last resorts — with an honest read on the likely odds and when to stop.",
     features: [
-      "Regulator-by-industry routing",
-      "Chargeback reason-code selection",
-      "Small claims court guidance",
-      "BBB and AG complaint templates",
-      "Settlement-offer evaluation",
+      "An escalation ladder in the order to try it",
+      "The regulator that applies and how to file",
+      "Last resorts, for when the ladder runs out",
+      "Likely odds, and when to stop"
     ],
     toolId:   'NotSoFast',
-    toolName: 'Not So Fast!',
+    toolName: "Not So Fast!",
   },
 
   published: '2026-04-27',

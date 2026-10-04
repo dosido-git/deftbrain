@@ -20,18 +20,17 @@ module.exports = {
     { name: 'Track the recovery debt, not the work load', body: 'Most people track work hours and miss burnout. Burnout doesn\'t come from how much you work — it comes from how much you work minus how much you recover. Keep a simple ledger: what depleted you this week, what restored you. If the depletion column has been bigger than the restoration column for three weeks, the wall is close. The fix isn\'t more work-life balance in the abstract — it\'s putting specific recovery into the next week before the depletion compounds further.' }
   ],
   cta: {
-    glyph:    '🔮',
-    headline: "Spot your burnout pattern before the crash",
-    body:     "Before the Crash reads the signs you've been ignoring — the dropped habits, the irritation creep, the weekend recovery debt — and tells you how close to the wall you actually are.",
+    glyph:    '⚡',
+    headline: "Learn your own pattern before the crash",
+    body:     "Before the Crash is a one-minute daily check-in. Mark the days you hit a wall, and it compares what changed in the days before — sleep, stress, workload, the habits that dropped — so your own warning signs become visible. It compares what you log; it does not diagnose or predict.",
     features: [
-      "Pattern detection",
-      "Recovery-debt tracking",
-      "Personalized warning signs",
-      "Time-to-crash estimate",
-      "Recovery suggestions"
+      "A one-minute daily check-in",
+      "Mark the days you hit a wall",
+      "See what changed in the days before",
+      "Longer-term patterns across your history"
     ],
     toolId:   'BeforeTheCrash',
-    toolName: 'Before the Crash',
+    toolName: "Before the Crash",
   },
   published: '2026-04-29',
   modified:  '2026-10-03',

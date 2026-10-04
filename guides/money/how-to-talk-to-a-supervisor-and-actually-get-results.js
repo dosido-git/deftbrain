@@ -40,18 +40,17 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🏴‍☠️',
-    headline: "Walk into the supervisor call with the script and the framing",
-    body:     "Not So Fast! drafts the specific language that makes supervisor escalations work — the framing that opens authority, the requests that produce specific responses, and the defensible reasons supervisors can act on.",
+    glyph:    '🚪',
+    headline: "Walk into the supervisor call knowing what to ask for",
+    body:     "Not So Fast! shows who can actually decide on your problem, what that system responds to, and what to say next — so the supervisor call starts with a request they have the authority to grant.",
     features: [
-      "Supervisor-call framing scripts",
-      "Defensible-yes language",
-      "Specific-request templates",
-      "Authority-scope questions",
-      "Multi-tier escalation routing",
+      "Who can actually decide",
+      "What this system responds to",
+      "What to say next, and why it works",
+      "An escalation ladder if the supervisor says no"
     ],
     toolId:   'NotSoFast',
-    toolName: 'Not So Fast!',
+    toolName: "Not So Fast!",
   },
 
   published: '2026-04-27',

@@ -40,18 +40,17 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🏴‍☠️',
+    glyph:    '🚪',
     headline: "Find the path past the 'non-refundable' label",
-    body:     "Not So Fast! maps the specific moves that recover fees companies have labeled non-refundable — reasonable-cost arguments, regulator paths, chargeback framing — calibrated to the industry and circumstances of your specific case.",
+    body:     "Not So Fast! looks at your specific fee and maps the paths past the 'non-refundable' label — overlooked options, what to say next, the regulator that applies, and an honest read on the likely odds and when to stop.",
     features: [
-      "Industry-specific refund paths",
-      "Reasonable-cost argument scripts",
-      "Regulator identification by transaction type",
-      "Chargeback framing language",
-      "Defensible-vs-unrecoverable analysis",
+      "Overlooked options and how to invoke them",
+      "What to say next, and why it works",
+      "The regulator that applies and how to file",
+      "Likely odds, and when to stop"
     ],
     toolId:   'NotSoFast',
-    toolName: 'Not So Fast!',
+    toolName: "Not So Fast!",
   },
 
   published: '2026-04-27',

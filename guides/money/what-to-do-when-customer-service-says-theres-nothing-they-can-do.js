@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🏴‍☠️',
+    glyph:    '🚪',
     headline: "Find what they can do that they didn't say",
-    body:     "Not So Fast! maps the specific escalation paths most agents won't volunteer — exception processes, executive offices, regulators, chargebacks — for any company and situation you're dealing with.",
+    body:     "Not So Fast! maps the options most agents will not volunteer — overlooked exceptions, the escalation ladder, the regulator that applies — for your company and situation, with an honest read on the likely odds and when to stop.",
     features: [
-      "Exception-process identification",
-      "Executive-office escalation paths",
-      "Regulator-by-industry routing",
-      "Magic-phrase scripts",
-      "Worth-it vs not-worth-it analysis",
+      "Overlooked options and how to invoke them",
+      "An escalation ladder in the order to try it",
+      "The regulator that applies and how to file",
+      "What to say next, and why it works",
+      "Likely odds, and when to stop"
     ],
     toolId:   'NotSoFast',
-    toolName: 'Not So Fast!',
+    toolName: "Not So Fast!",
   },
 
   published: '2026-04-27',

@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🏴‍☠️',
+    glyph:    '🚪',
     headline: "Find the path past the first-tier no",
-    body:     "Not So Fast! maps the undocumented escalation ladder for any institution — the loopholes, the magic phrases, the regulatory bodies that have real teeth — for when the official answer is 'nothing we can do' and you know that's wrong.",
+    body:     "Not So Fast! maps the escalation ladder for the institution you are dealing with — the overlooked options, what to say next, and the regulators that carry weight — for when the official answer is 'nothing we can do' and you think that is wrong.",
     features: [
-      "Escalation-ladder mapping",
-      "First-tier-no recognition",
-      "Magic-phrase scripts by industry",
-      "Regulatory body identification",
-      "Real-no vs first-tier-no analysis",
+      "Why the answer was no",
+      "An escalation ladder in the order to try it",
+      "What to say next, and why it works",
+      "The regulator that applies and how to file",
+      "Likely odds, and when to stop"
     ],
     toolId:   'NotSoFast',
-    toolName: 'Not So Fast!',
+    toolName: "Not So Fast!",
   },
 
   published: '2026-04-27',

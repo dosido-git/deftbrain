@@ -17,17 +17,17 @@ module.exports = {
     { name: 'Pull definitions and key terms first', body: 'Scan the transcript for sentences that define or name things. \'X is the process of...\', \'we call this Y\', \'this is known as Z.\' Copy each definition into the definitions bucket with the term. Most exam questions hinge on knowing what the term actually means in the context of this class — not the Google definition, but the version your professor used. Get those exact wordings down.' },
     { name: 'Extract processes and mechanisms in numbered steps', body: 'When the professor explains how something works — a chemical reaction, a historical sequence, a legal procedure, a policy mechanism — convert their explanation into numbered steps. Step 1, step 2, step 3. The original transcript will have these embedded in flowing prose. Pull them out. Numbered processes are the easiest format to memorize and the most likely format for short-answer questions.' },
     { name: 'Capture comparisons in tables', body: 'Anywhere the professor compared two or more things, pull it into a small comparison table. Three columns: feature, X, Y. This forces you to surface the actual axes of difference rather than just listing facts about each. Comparison questions on exams are answered well by people who studied with comparison tables and badly by people who studied each thing separately.' },
-    { name: 'Use Heart of the Matter to do all of this in one pass', body: 'Paste the transcript into Heart of the Matter and pick Study Guide mode. It produces sectioned output organized into definitions, processes, key concepts, and questions — the structure above, automatically. Treat the output as a strong first draft, not the final product. Edit it: add the comparisons it missed, fix anything wrong. Five minutes of editing on top of Heart of the Matter\'s output beats ninety minutes of structuring from scratch.' }
+    { name: 'Use Heart of the Matter to do most of this in one pass', body: 'Paste the transcript into Heart of the Matter and pick Understand mode. It produces sectioned output — the concepts to know, key definitions, and processes and formulas with the common mistake for each — most of the structure above, automatically. Write the questions yourself; that step is part of the learning. Treat the output as a strong first draft, not the final product. Edit it: add the comparisons it missed, fix anything wrong. Five minutes of editing on top of Heart of the Matter\'s output beats ninety minutes of structuring from scratch.' }
   ],
   cta: {
-    glyph:    '🧠',
+    glyph:    '🎯',
     headline: "Turn 90 minutes of lecture into 15 minutes of study material.",
-    body:     "Paste a transcript and pick a mode: distilled bullets, structured study guide, practice questions, or cross-lecture themes. Heart of the Matter flags what the professor signaled as testable.",
+    body:     "Paste a transcript, or upload a PDF or recording, and pick a mode: ranked key points, a plain breakdown of the core concepts, or themes across several lectures. Everything stays grounded in what you supplied.",
     features: [
-      "Four modes: Distill, Study Guide, Test Prep, Connect",
-      "Catches \"this will be on the test\" signals",
-      "Handles imperfect auto-captions",
-      "Practice questions with explanations"
+      "Three modes: Distill, Understand, Connect",
+      "Ranked key points, 5 to 20 per lecture",
+      "Paste text, or upload a PDF or audio recording",
+      "Connect finds themes across 2 to 5 lectures"
     ],
     toolId:   'HeartOfTheMatter',
     toolName: 'Heart of the Matter',

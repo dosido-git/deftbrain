@@ -17,17 +17,17 @@ module.exports = {
     { name: 'The repetition signal — same idea, three different framings', body: 'If a concept comes back three times in a single lecture, said three different ways, the professor is telegraphing that it is testable. Once is normal. Twice is reinforcement. Three times is a flag. The exam question will probably use one of the three framings, and your job is to recognize the underlying concept regardless of which framing they pick. Track repeats explicitly — make a tally in the margin of your notes.' },
     { name: 'The "students always struggle with" tell', body: 'Any sentence that includes \'this is where people get tripped up,\' \'students always confuse these,\' \'this is the part that costs people points\' is a guarantee. The professor is telling you the question they have written specifically because students fail on it. Memorize the distinction or process they were explaining at that moment. This is the easiest signal to act on and almost nobody actually does.' },
     { name: 'Worked examples are the question template', body: 'When the professor walks through a problem in detail — solves it, shows the steps, explains why each step — that example is the template for an exam question. Same structure, different numbers, different scenario. Copy the worked example exactly into your notes, including the steps the professor narrated out loud. Then practice doing it with different numbers. If you can only do it with the original numbers, you have not actually studied it.' },
-    { name: 'Run the transcript through Test Prep mode for predicted questions', body: 'Paste any lecture transcript into Heart of the Matter, pick Test Prep mode, and choose the format your actual exam uses — multiple choice, short answer, or essay. The output is ten predicted questions calibrated to the lecture\'s emphasis and signals. They are not psychic, but they are eerily close to what professors actually ask, because professors all use the same signals. Practicing on them is closer to taking the real exam than re-reading your notes is.' }
+    { name: 'Turn the lecture\'s own emphasis into your practice questions', body: 'Paste the lecture transcript into Heart of the Matter and pick Distill mode for the points the lecture emphasized most, ranked. Turn each one into a question in the format your exam uses — multiple choice, short answer, or essay — and answer it without your notes. No tool can honestly predict your exam, but practicing on what the lecture actually stressed is closer to the real test than re-reading is.' }
   ],
   cta: {
-    glyph:    '🧠',
+    glyph:    '🎯',
     headline: "Turn 90 minutes of lecture into 15 minutes of study material.",
-    body:     "Paste a transcript and pick a mode: distilled bullets, structured study guide, practice questions, or cross-lecture themes. Heart of the Matter flags what the professor signaled as testable.",
+    body:     "Paste a transcript, or upload a PDF or recording, and pick a mode: ranked key points, a plain breakdown of the core concepts, or themes across several lectures. Everything stays grounded in what you supplied.",
     features: [
-      "Four modes: Distill, Study Guide, Test Prep, Connect",
-      "Catches \"this will be on the test\" signals",
-      "Handles imperfect auto-captions",
-      "Practice questions with explanations"
+      "Three modes: Distill, Understand, Connect",
+      "Ranked key points, 5 to 20 per lecture",
+      "Paste text, or upload a PDF or audio recording",
+      "Connect finds themes across 2 to 5 lectures"
     ],
     toolId:   'HeartOfTheMatter',
     toolName: 'Heart of the Matter',

@@ -20,18 +20,17 @@ module.exports = {
     { name: 'Your post-work decompression gets longer', body: 'You used to finish work and be a person within fifteen minutes. Now there\'s an hour where you\'re physically done but psychologically still at work — scrolling, half-watching TV, snacking, not present. The transition cost has gone up. This is one of the most reliable early signs because it\'s measurable: how long does it take you to genuinely arrive at home? When that number drifts up, your work is consuming more of your day than the calendar says it is.' }
   ],
   cta: {
-    glyph:    '🔮',
+    glyph:    '⚡',
     headline: "See the early signs you've been ignoring",
-    body:     "Before the Crash catches the small patterns that show up weeks before the wall — the initiation drop, the decision drag, the lengthening decompression — and tells you what to do while small fixes still work.",
+    body:     "Before the Crash is a one-minute daily check-in — energy, sleep, stress, mood, and the warning signs you choose to track. Mark the days you hit a wall, and it compares what changed in the days before them, so the early signs that are specific to you start to show.",
     features: [
-      "Early-pattern detection",
-      "Behavior-drift tracking",
-      "Sensitivity calibration",
-      "Decompression metrics",
-      "Personalized intervention"
+      "A one-minute daily check-in",
+      "Mark the days you hit a wall",
+      "See what changed in the days before",
+      "Longer-term patterns across your history"
     ],
     toolId:   'BeforeTheCrash',
-    toolName: 'Before the Crash',
+    toolName: "Before the Crash",
   },
   published: '2026-04-29',
   modified:  '2026-10-03',

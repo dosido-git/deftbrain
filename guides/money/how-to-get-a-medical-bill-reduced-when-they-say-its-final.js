@@ -40,18 +40,17 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🏴‍☠️',
+    glyph:    '🚪',
     headline: "Find the path past the 'final' bill",
-    body:     "Not So Fast! maps every available reduction path for medical debt — financial assistance, Medicare-rate settlement, collections-stage negotiation, billing advocates, and bankruptcy thresholds — with the specific scripts and timing for each.",
+    body:     "Not So Fast! looks at your specific bill and maps the paths past 'final' — the overlooked options that apply to it, who can actually approve a reduction, what to say on the call, and the regulator to involve if they will not move.",
     features: [
-      "Financial assistance re-application guidance",
-      "Medicare-rate settlement scripts",
-      "Collections-stage negotiation",
-      "Billing advocate referrals",
-      "Bankruptcy-threshold analysis",
+      "Who can actually decide",
+      "Overlooked options and how to invoke them",
+      "What to say next, and why it works",
+      "The regulator that applies and how to file"
     ],
     toolId:   'NotSoFast',
-    toolName: 'Not So Fast!',
+    toolName: "Not So Fast!",
   },
 
   published: '2026-04-27',

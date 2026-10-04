@@ -17,17 +17,17 @@ module.exports = {
     { name: 'Track repetition — three times means it is on the test', body: 'If a professor mentions a concept once, it is context. Twice, it is important. Three times — sometimes phrased differently each time — and it is almost certainly on the exam. Watch for repetition more than for time spent. A point made once and reinforced two more times during examples or Q&A weighs more than a long tangent that never comes back. Repetition is a confidence signal.' },
     { name: 'Mark the comparisons and contrasts', body: 'Anything framed as \'X versus Y,\' \'the difference between,\' or \'people often confuse these\' is exam material. Comparison questions are a professor\'s favorite format because they test whether you understand the distinction, not just the words. Mitosis vs meiosis. Monetary vs fiscal policy. Civil vs criminal. If they spent time distinguishing two things, that distinction is on the test.' },
     { name: 'Note the worked examples — those become the question', body: 'When a professor walks through a numerical or step-by-step example, write it down with the exact numbers. Then change the numbers. Exam questions are almost always isomorphic to lecture examples — same structure, different inputs. The example was the dress rehearsal. If you can do the example with new numbers, you can do the question. If you cannot, you have not actually studied that topic, no matter how long you stared at it.' },
-    { name: 'Use a transcript tool to surface signals you missed', body: 'Even when you are paying attention, you miss signals — your mind wanders for thirty seconds and the professor said \'this is the most important slide today\' while you were thinking about lunch. Paste the transcript into Heart of the Matter, pick Distill mode, and read the Professor Signals section. It catches the meta-phrases, repetition, and emphasis you missed in real time. The output is the lecture you would have heard if you had perfect attention for sixty straight minutes.' }
+    { name: 'Use a transcript tool to surface signals you missed', body: 'Even when you are paying attention, you miss signals — your mind wanders for thirty seconds and the professor said \'this is the most important slide today\' while you were thinking about lunch. Paste the transcript into Heart of the Matter and pick Distill mode. It ranks the points the lecture itself treats as most important — what the speaker repeats, emphasizes, and builds on — so the slide you missed while thinking about lunch is still in the list. It works only from what you paste and will not fill gaps with outside material.' }
   ],
   cta: {
-    glyph:    '🧠',
+    glyph:    '🎯',
     headline: "Turn 90 minutes of lecture into 15 minutes of study material.",
-    body:     "Paste a transcript and pick a mode: distilled bullets, structured study guide, practice questions, or cross-lecture themes. Heart of the Matter flags what the professor signaled as testable.",
+    body:     "Paste a transcript, or upload a PDF or recording, and pick a mode: ranked key points, a plain breakdown of the core concepts, or themes across several lectures. Everything stays grounded in what you supplied.",
     features: [
-      "Four modes: Distill, Study Guide, Test Prep, Connect",
-      "Catches \"this will be on the test\" signals",
-      "Handles imperfect auto-captions",
-      "Practice questions with explanations"
+      "Three modes: Distill, Understand, Connect",
+      "Ranked key points, 5 to 20 per lecture",
+      "Paste text, or upload a PDF or audio recording",
+      "Connect finds themes across 2 to 5 lectures"
     ],
     toolId:   'HeartOfTheMatter',
     toolName: 'Heart of the Matter',

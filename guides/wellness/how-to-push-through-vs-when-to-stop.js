@@ -20,18 +20,17 @@ module.exports = {
     { name: 'Set the cost ceiling in advance', body: 'Before you decide to push, name the price you\'re willing to pay. "I\'ll push for three more days but I\'m taking the weekend." "I\'ll skip exercise this week but not next." When the price has a ceiling, pushing through is a strategic choice. When it doesn\'t, pushing through becomes the default and the cost compounds invisibly. The people who survive intense periods aren\'t the ones who push hardest — they\'re the ones who priced their pushes and stopped on schedule.' }
   ],
   cta: {
-    glyph:    '🔮',
-    headline: "Know whether to push through or step off — before you find out the hard way",
-    body:     "Before the Crash tests the signals that distinguish strategic effort from accumulating injury — deadline-reality, degradation type, rest-responsiveness — and tells you whether the next push will pay back.",
+    glyph:    '⚡',
+    headline: "Know what tends to come before you hit the wall",
+    body:     "Before the Crash tracks energy, sleep, stress, and the warning signs you choose, and compares the days before the ones you marked as a crash. The next time you are deciding whether to push, you can check it against what usually came first for you.",
     features: [
-      "Push-vs-stop diagnostic",
-      "Cost-ceiling planning",
-      "Degradation tracking",
-      "Rest-response test",
-      "Strategic-effort scoring"
+      "A one-minute daily check-in",
+      "Mark the days you hit a wall",
+      "See what changed in the days before",
+      "It compares your patterns; it does not diagnose"
     ],
     toolId:   'BeforeTheCrash',
-    toolName: 'Before the Crash',
+    toolName: "Before the Crash",
   },
   published: '2026-04-29',
   modified:  '2026-10-03',
