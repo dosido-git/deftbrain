@@ -491,6 +491,14 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
   ${search ? getPageSearchHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}`;
 }
 
+// The guide count as an extent, not a figure (owner, 2026-10-04: "I am
+// intending to communicate an extent, not a number"): rounded down to the
+// hundred, so it reads "over 500" and stays true as guides come and go. Same
+// idea as TOOL_COUNT_LABEL ("120+") for tools.
+function guideFloor(n) {
+  return n >= 100 ? Math.floor(n / 100) * 100 : Math.floor(n / 10) * 10;
+}
+
 function renderFooter() {
   return `
 ${getFooterHTML()}
@@ -730,7 +738,6 @@ function renderGuidesHome(specs, keepSet) {
     <section class="gh-section gh-shell">
       <div class="gh-section-head">
         <div><p class="gh-kicker">DISCOVER</p><h2>Things you might be glad you know.</h2></div>
-        <p>Not everything useful starts with a search.</p>
       </div>
       <div class="gh-curiosity-row">
         ${curiosityHtml}
@@ -741,7 +748,7 @@ function renderGuidesHome(specs, keepSet) {
       <div class="gh-shell">
         <div class="gh-library-intro">
           <p class="gh-kicker">THE LIBRARY</p>
-          <h2>Browse all ${specs.length} guides.</h2>
+          <h2>Browse over ${guideFloor(specs.length)} guides.</h2>
           <p>Search a situation, choose a subject, or browse alphabetically.</p>
         </div>
         <div class="gh-sticky-controls">
@@ -753,7 +760,7 @@ function renderGuidesHome(specs, keepSet) {
           <button class="gh-sort-toggle active" id="sortAZ" type="button">A–Z</button>
         </div>
         <div class="gh-category-panel" id="categoryPanel">
-          <button type="button" data-cat="all" class="active">All <span>${specs.length}</span></button>
+          <button type="button" data-cat="all" class="active">All <span>${guideFloor(specs.length)}+</span></button>
           ${categoryPanelHtml}
         </div>
         <div class="gh-tool-hits" id="toolHits" hidden></div>
