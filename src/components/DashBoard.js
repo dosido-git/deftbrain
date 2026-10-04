@@ -2,8 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import BrandMark from './BrandMark';
-import LocaleSelectors from './LocaleSelectors';
+import SiteHeader from './SiteHeader';
 import { useTheme } from '../hooks/useTheme';
 import HomeIntro from './HomeIntro';
 import ToolFinderWizard from './ToolFinderWizard';
@@ -458,89 +457,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         }`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
-      <header className="db-home-header w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
-        {(isSearching || showCatalog) && <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
-          DeftBrain — AI-Powered Tools for Everyday Life
-        </h1>}
-        {/* Brand left, locale controls right — the header is now the single,
-            consistent home for language/currency everywhere (tool pages carry
-            their own via ToolPageWrapper; the footer copy was removed). */}
-        {/* The compact brand and language control wrap safely at narrow
-            widths; the mobile menu keeps all navigation reachable. */}
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          {/* Was unclickable — a plain <div> (BrandMark only wraps itself in
-              a <button> when given onClick). backToHome (not a <Link to="/">)
-              is the right fix here specifically: this header already IS on
-              "/", so a Link to the current route wouldn't reset the active
-              search/catalog state; backToHome does exactly that (same
-              function the "← Back" button during a search already uses)
-              and additionally scrolls to top. */}
-          {/* md + tagline restored 2026-09-27 (owner): the 09-26 redesign had
-              dropped to the small mark with no "deft (adj.)" definition. */}
-          <BrandMark direction="left" size="md" isDark={isDark} showTagline={true} onClick={backToHome} />
-          <div className="flex items-center justify-end gap-5">
-            <nav className="hidden md:flex items-center gap-5 text-[12px] font-semibold" style={{ color: CLR.navy600 }} aria-label="Primary">
-              <Link to="/tools" className="hover:underline underline-offset-4">Tools</Link>
-              {/* In-page anchor to the Categories card in HomeIntro.js below
-                  (id="categories"), not a route — matches the same pattern
-                  /tools' own nav already uses for its category picker.
-                  backToHome first: the Categories card only renders on the
-                  plain homepage view (!isSearching && !showCatalog), so if
-                  a search or the catalog is currently showing, jumping
-                  straight to #categories would either scroll to nothing or
-                  land on a stale position from before that view swapped in. */}
-              <button
-                type="button"
-                onClick={() => { backToHome(); window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }}
-                className="hover:underline underline-offset-4"
-              >Categories</button>
-              {/* Plain <a>, not <Link>: /guides and /about are static prerendered
-                  pages (public/about.html; guides built by scripts/prerender.js),
-                  not React Router routes. A <Link> here does a client-side SPA
-                  transition, which falls through to the catch-all /:toolId route
-                  and 404s via NotFound — full page nav is required, matching the
-                  same convention Footer.js and RelatedLinks.js already use for
-                  these exact pages.
-                  !no-underline (not plain no-underline): Firefox was still
-                  showing its default <a> underline at rest here (confirmed
-                  live, 2026-09-19) while Chrome/Safari correctly showed none
-                  — a plain class and the UA default apparently don't resolve
-                  the same way across engines. !important on both states
-                  removes the ambiguity instead of relying on cascade order. */}
-              <a href="/guides" className="!no-underline hover:!underline underline-offset-4">Guides</a>
-              <a href="/about" className="!no-underline hover:!underline underline-offset-4">About</a>
-            </nav>
-            <div className="flex items-center gap-2">
-            <LocaleSelectors dark={isDark} showCurrency={false} />
-            {/* Light/dark switch (2026-09-27). The home page follows the same
-                saved setting as the tool pages, which each have their own
-                switch; without this one, someone on a dark device had to
-                open a tool to get a light home page. Same size and border as
-                the language pill beside it. */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              className={`inline-flex items-center justify-center min-h-[32px] min-w-[32px] px-2 rounded-lg border text-sm transition-colors ${
-                isDark ? 'bg-zinc-800 border-zinc-600 hover:border-zinc-400' : 'bg-white border-slate-300 hover:border-slate-400'
-              }`}
-            >
-              <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-            </button>
-            </div>
-            <details className="db-home-mobile-menu">
-              <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
-              <nav aria-label="Mobile navigation" onClick={e => { e.currentTarget.closest('details').open = false; }}>
-                <Link to="/tools">Tools</Link>
-                <button type="button" onClick={() => { backToHome(); window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }}>Categories</button>
-                <a href="/guides">Guides</a>
-                <a href="/about">About</a>
-              </nav>
-            </details>
-          </div>
-        </div>
-      </header>
+      {/* The shared site header (SiteHeader.js, 2026-10-04): the same one, at
+          the same size, on every page. Here the brand resets the home view
+          (it already is "/") and Categories scrolls to the category card. */}
+      {(isSearching || showCatalog) && <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
+        DeftBrain — Interactive guidance for life’s awkward, confusing, and curious moments
+      </h1>}
+      <SiteHeader
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
+        showCurrency={false}
+        onBrandClick={backToHome}
+        onCategories={() => { backToHome(); window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }}
+      />
         {/* The rethought intro. Replaces HeroPitch's rotating triplet and the
             two-CTA row: both assumed a visitor already knew they wanted a
             tool. Hidden while searching — someone mid-query wants results,

@@ -17,7 +17,7 @@
 .db-home h2 { font-size: clamp(25px, 2.6vw, 32px); line-height: 1.2; margin: 0; }
 .db-home h3 { font-size: 19px; line-height: 1.25; margin: 0; }
 .db-home a:focus-visible, .db-home button:focus-visible,
-.db-home summary:focus-visible, .db-home-header :is(a, button, summary):focus-visible {
+.db-home summary:focus-visible {
   outline: 3px solid var(--h-focus); outline-offset: 4px;
 }
 .db-home-hero { display: grid; grid-template-columns: 1.15fr 1fr; border: 1px solid var(--home-border); border-radius: 16px; overflow: hidden; background: var(--h-surface); }
@@ -82,22 +82,12 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
    overhang; previews still drop below a tile, since clip doesn't make the
    other axis scroll the way overflow:hidden would. */
 .db-home-explore { margin-top: 36px; overflow-x: clip; }
-.db-home-mobile-menu { display: none; position: relative; color: var(--h-navy); }
-.db-home-mobile-menu summary { cursor: pointer; list-style: none; min-width: 44px; min-height: 44px; display: grid; place-items: center; font-size: 25px; }
-.db-home-mobile-menu summary::-webkit-details-marker { display: none; }
-.db-home-mobile-menu nav { position: absolute; inset-inline-end: 0; top: 100%; z-index: 40; min-width: 180px; background: var(--h-surface); border: 1px solid var(--h-border); border-radius: 10px; box-shadow: 0 8px 30px #142a4320; padding: 6px; }
-.db-home-mobile-menu nav > * { display: block; width: 100%; text-align: start; padding: 12px; font-size: 16px; text-decoration: none !important; }
-.db-home-mobile-menu nav > *:hover { background: var(--h-pill-hover); border-radius: 6px; }
 @media (max-width: 1023px) {
   .db-home-hero { grid-template-columns: 1.35fr 1fr; }
   .db-home-hero-copy { padding: 26px; }
   .db-home-situations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 767px) {
-  .db-home-header > div:first-of-type { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .db-home-header > div:first-of-type > div { gap: 8px; margin-inline-start: auto; }
-  .db-home-header > div:first-of-type > button { gap: 6px; }
-  .db-home-mobile-menu { display: block; }
   .db-home-hero { display: block; border: 0; background: transparent; }
   .db-home-hero-copy { padding: 12px 0 4px; }
   .db-home-hero-art { display: none; }

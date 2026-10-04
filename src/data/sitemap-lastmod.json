@@ -8,7 +8,7 @@
   "lastmod": "2026-10-04"
  },
  "static:privacy": {
-  "hash": "f518c3c8813ada35cdcbca56fcf540e4f21d083e",
+  "hash": "66916c62d7b151a398b4e487710bbaa9c8f3d7b6",
   "lastmod": "2026-10-04"
  },
  "static:terms": {
@@ -192,8 +192,8 @@
   "lastmod": "2026-10-04"
  },
  "static:tools": {
-  "hash": "71927f6fc711e16656b101b525b10939d7becd9a",
-  "lastmod": "2026-10-03"
+  "hash": "58bcdd0dcdc2bd5f779da8a701fa7f76784fff13",
+  "lastmod": "2026-10-04"
  },
  "category:home-daily-life": {
   "hash": "8dc648148c8e73b86c48cc73eb94d1e21724c80c",
@@ -252,7 +252,7 @@
   "lastmod": "2026-10-04"
  },
  "static:organizations": {
-  "hash": "0c1077ad19ce94a220f17552fb3195118556a785",
-  "lastmod": "2026-10-03"
+  "hash": "c392f66c28e1544dc03fe3f854a1e6ece8bede55",
+  "lastmod": "2026-10-04"
  }
 }

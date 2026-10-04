@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import BrandMark from './BrandMark';
-import LocaleSelectors from './LocaleSelectors';
+import SiteHeader from './SiteHeader';
 import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
@@ -173,33 +172,15 @@ export default function AllToolsPage({ allTools = [] }) {
 
   return (
     <main className="at-page">
-      <header className="at-site-header">
-        <div className="at-shell at-site-header-inner">
-          {/* BrandMark only wraps itself in a clickable <button> when given
-              onClick — plain, it's an inert <div>. Unlike the homepage's own
-              header (DashBoard.js), this page really is somewhere else, so
-              it needs a real navigation, not a state reset. */}
-          <Link to="/" aria-label="DeftBrain — home"><BrandMark direction="left" size="md" isDark={isDark} showTagline={true} /></Link>
-          <div className="at-header-right">
-            <nav className="at-nav" aria-label="Primary">
-              <Link to="/tools" aria-current="page">Tools</Link>
-              {/* In-page anchor, not a route — there's no dedicated
-                  /categories page anywhere in the app, and this page
-                  already has the category picker built in a few hundred
-                  pixels down. Scrolls straight to it. */}
-              <a href="#categories">Categories</a>
-              <a href="/guides">Guides</a>
-              <a href="/about">About</a>
-            </nav>
-            <LocaleSelectors dark={isDark} showCurrency={false} />
-            <button type="button" className="at-theme-toggle" onClick={toggleTheme}
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-              <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* The shared site header (SiteHeader.js, 2026-10-04). Categories
+          scrolls to this page's own category picker below. */}
+      <SiteHeader
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
+        showCurrency={false}
+        current="/tools"
+        onCategories={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+      />
 
       <section className="at-hero at-shell">
         {/* Home + search share one row (owner asked for Home kept

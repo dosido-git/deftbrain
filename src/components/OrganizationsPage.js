@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import BrandMark from './BrandMark';
+import SiteHeader from './SiteHeader';
 import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
@@ -63,16 +63,8 @@ export default function OrganizationsPage({ allTools = [] }) {
 
   return (
     <main className="org-page">
-      <nav className="org-nav" aria-label="Primary">
-        <a href="/" className="org-brand-link"><BrandMark size="sm" isDark={isDark} /></a>
-        <div className="org-nav-links"><Link to="/tools">Tools</Link><a href="/guides">Guides</a><a href="/about">About</a>
-          <button type="button" className="org-theme-toggle" onClick={toggleTheme}
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-            <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-          </button>
-        </div>
-      </nav>
+      {/* The shared site header (SiteHeader.js, 2026-10-04). */}
+      <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} showCurrency={false} />
 
       <section className="org-hero org-shell">
         <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>

@@ -1,56 +1,77 @@
 // src/components/SiteHeader.js
 //
-// The site header as the home page shows it — brand on the left, then Tools /
-// Categories / Guides / About, the locale controls and the light/dark switch
-// on the right, with a ☰
-// menu below md — for pages outside the home page. PILOT (2026-09-27): used by
-// ToolPageWrapper for the tools in SITE_STYLE_PILOT only, to judge whether tool
-// pages should share the home page's look. If it's adopted, DashBoard's own
-// copy of this header should move onto this component too.
+// The site header for every React page — home, toolbox, organizations and
+// every tool (2026-10-04). The static pages (guides, guide hubs, tool
+// category pages, About, Privacy, Terms) render the same markup from
+// getSiteHeaderHTML() in src/seo/chrome.js. Both read their links from
+// src/data/siteNav.json and are styled only by public/site-header.css, which
+// public/index.html links. Keep this markup and chrome.js's identical; the
+// one difference is the language selector, which only these pages have
+// (the static pages are English-only).
 //
-// Categories is a link to /#categories (HomeIntro scrolls to it on arrival),
-// not an in-page button: off the home page there's no card to scroll to.
+// Props:
+//   isDark        — for LocaleSelectors (its colors are not CSS-driven)
+//   onToggleTheme — the light/dark switch; the icon itself comes from CSS
+//   showCurrency  — passed to LocaleSelectors
+//   onBrandClick  — home only: reset the home view instead of navigating to /
+//   onCategories  — pages with their own category picker (home, toolbox):
+//                   scroll to it instead of going to /#categories
+//   current       — href of the page's own nav item, for aria-current
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import BrandMark from './BrandMark';
 import LocaleSelectors from './LocaleSelectors';
-import './SiteHeader.css';
+import SITE_NAV from '../data/siteNav.json';
 
-export default function SiteHeader({ isDark = false, showCurrency = true, onToggleTheme }) {
+function Brand({ onBrandClick }) {
+  const inner = (
+    <>
+      <img src="/pBrain-r.png" alt="" className="sh-brand-img" height="64" />
+      <span className="sh-brand-word">
+        <span className="sh-brand-text">Deft<span>Brain</span></span>
+        <span className="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+      </span>
+    </>
+  );
+  return onBrandClick
+    ? <button type="button" className="site-header-brand" aria-label="DeftBrain home" onClick={onBrandClick}>{inner}</button>
+    : <Link to="/" className="site-header-brand" aria-label="DeftBrain home">{inner}</Link>;
+}
+
+function NavItems({ onCategories, current }) {
+  return SITE_NAV.links.map(link => {
+    if (link.key === 'categories' && onCategories) {
+      return <button key={link.href} type="button" onClick={onCategories}>{link.label}</button>;
+    }
+    const aria = current === link.href ? { 'aria-current': 'page' } : {};
+    // Static pages (/guides, /about) are not routes: a full page load.
+    return link.route
+      ? <Link key={link.href} to={link.href} {...aria}>{link.label}</Link>
+      : <a key={link.href} href={link.href} {...aria}>{link.label}</a>;
+  });
+}
+
+export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency = true, onBrandClick, onCategories, current }) {
   return (
-    <header className={`site-header${isDark ? ' site-header--dark' : ''}`} data-print-hide>
+    <header className="site-header" data-print-hide>
       <div className="site-header-inner">
-        <Link to="/" className="site-header-brand" aria-label="DeftBrain home">
-          {/* Small mark WITH the definition — a step down from the home page's
-              medium mark, the size tool pages used before this header. */}
-          <BrandMark direction="left" size="sm" isDark={isDark} showTagline />
-        </Link>
+        <Brand onBrandClick={onBrandClick} />
         <div className="site-header-end">
           <nav className="site-header-nav" aria-label="Primary">
-            <Link to="/tools">Tools</Link>
-            <Link to="/#categories">Categories</Link>
-            {/* Plain <a>: /guides and /about are static pages, not routes. */}
-            <a href="/guides">Guides</a>
-            <a href="/about">About</a>
+            <NavItems onCategories={onCategories} current={current} />
           </nav>
           <div className="site-header-controls">
             <LocaleSelectors dark={isDark} showCurrency={showCurrency} />
             {onToggleTheme && (
               <button type="button" className="site-header-theme" onClick={onToggleTheme}
                 aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-                <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
-              </button>
+                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} />
             )}
           </div>
           <details className="site-header-menu">
             <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
             <nav aria-label="Mobile navigation" onClick={e => { e.currentTarget.closest('details').open = false; }}>
-              <Link to="/tools">Tools</Link>
-              <Link to="/#categories">Categories</Link>
-              <a href="/guides">Guides</a>
-              <a href="/about">About</a>
+              <NavItems onCategories={onCategories} current={current} />
             </nav>
           </details>
         </div>
