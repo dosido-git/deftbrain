@@ -23,9 +23,9 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { getFooterHTML, getToolList, getToolIndexHTML, getSearchFormHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getToolList, getToolIndexHTML, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
-const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
+const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
 const LIVE_TOOL_IDS = new Set(getToolList().map(t => t.id));
 
@@ -325,20 +325,9 @@ ${stepsJsonLd}
 </head>
 <body>
 
-  <header class="masthead">
-    <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
-      <span class="masthead-logo-word">
-        <span class="masthead-logo-text">Deft<span>Brain</span></span>
-        <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
-      </span>
-    </a>
-    ${getSearchFormHTML({ tools: 4, guides: 5 })}
-    <div class="masthead-actions">
-      <a href="/tools" class="masthead-cta">All tools →</a>
-      ${THEME_TOGGLE_HTML}
-    </div>
-  </header>
+  ${getSiteHeaderHTML()}
+
+  ${getPageSearchHTML({ tools: 4, guides: 5 })}
 
   <main>
     <div class="container">

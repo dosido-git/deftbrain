@@ -22,9 +22,9 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { getFooterHTML, getSearchFormHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
-const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
+const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
 const ROOT       = path.join(__dirname, '..');
 const SPECS_DIR  = path.join(ROOT, 'guides');
@@ -487,20 +487,8 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
 </head>
 <body>
 
-  <header class="masthead">
-    <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
-      <span class="masthead-logo-word">
-        <span class="masthead-logo-text">Deft<span>Brain</span></span>
-        <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
-      </span>
-    </a>
-    ${search ? getSearchFormHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}
-    <div class="masthead-actions">
-      <a href="/tools" class="masthead-cta">All tools →</a>
-      ${THEME_TOGGLE_HTML}
-    </div>
-  </header>`;
+  ${getSiteHeaderHTML()}
+  ${search ? getPageSearchHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}`;
 }
 
 function renderFooter() {

@@ -23,9 +23,9 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getFooterHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
-const { THEME_SNIPPET, THEME_TOGGLE_HTML } = require('./lib/themeSnippet');
+const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
 let marked;
 try {
@@ -159,19 +159,7 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
 
-  <header class="masthead">
-    <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
-      <span class="masthead-logo-word">
-        <span class="masthead-logo-text">Deft<span>Brain</span></span>
-        <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
-      </span>
-    </a>
-    <div class="masthead-actions">
-      <a href="/tools" class="masthead-cta">All tools →</a>
-      ${THEME_TOGGLE_HTML}
-    </div>
-  </header>
+  ${getSiteHeaderHTML()}
 
   <main>
     <div class="container prose">

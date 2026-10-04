@@ -240,4 +240,45 @@ function getSearchFormHTML({ tools = 3, guides = 6, placeholder = 'Search tools 
     <script src="/search/deft-search.js" defer></script>`;
 }
 
-module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList, getSearchFormHTML };
+// Site header for every static page (2026-10-04) — guides, guide hubs, the
+// guides index, tool category pages, About, Privacy and Terms. The same
+// header the tool pages show (src/components/SiteHeader.js): small brand mark
+// with its definition, then Tools / Categories / Guides / About and the
+// light/dark switch, with a ☰ menu below 768px. One definition, so the static
+// pages cannot drift apart again (they had three variants of an older
+// masthead). No language selector: these pages exist in English only. The
+// switch is wired by scripts/lib/themeSnippet.js via [data-theme-toggle];
+// styles live in public/guides/guide.css (.site-header).
+function getSiteHeaderHTML() {
+  const links = '<a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/about">About</a>';
+  return `<header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-header-brand" aria-label="DeftBrain home">
+        <img src="/pBrain-r.png" alt="" class="sh-brand-img" height="64">
+        <span class="sh-brand-word">
+          <span class="sh-brand-text">Deft<span>Brain</span></span>
+          <span class="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+        </span>
+      </a>
+      <div class="site-header-end">
+        <nav class="site-header-nav" aria-label="Primary">${links}</nav>
+        <div class="site-header-controls">
+          <button type="button" class="theme-toggle site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+        </div>
+        <details class="site-header-menu">
+          <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation">${links}</nav>
+        </details>
+      </div>
+    </div>
+  </header>`;
+}
+
+// The search box that used to sit in the guide pages' masthead, now at the
+// top of the page body (the header carries navigation only, as on the home
+// page and the toolbox).
+function getPageSearchHTML(opts) {
+  return `<div class="page-search">${getSearchFormHTML(opts)}</div>`;
+}
+
+module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList, getSearchFormHTML, getSiteHeaderHTML, getPageSearchHTML };

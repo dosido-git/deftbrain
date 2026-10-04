@@ -152,17 +152,25 @@
 </head>
 <body>
 
-  <header class="masthead">
-    <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
-      <span class="masthead-logo-word">
-        <span class="masthead-logo-text">Deft<span>Brain</span></span>
-        <span class="masthead-logo-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
-      </span>
-    </a>
-    <div class="masthead-actions">
-      <a href="/tools" class="masthead-cta">All tools →</a>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-header-brand" aria-label="DeftBrain home">
+        <img src="/pBrain-r.png" alt="" class="sh-brand-img" height="64">
+        <span class="sh-brand-word">
+          <span class="sh-brand-text">Deft<span>Brain</span></span>
+          <span class="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+        </span>
+      </a>
+      <div class="site-header-end">
+        <nav class="site-header-nav" aria-label="Primary"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/about">About</a></nav>
+        <div class="site-header-controls">
+          <button type="button" class="theme-toggle site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+        </div>
+        <details class="site-header-menu">
+          <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/about">About</a></nav>
+        </details>
+      </div>
     </div>
   </header>
 
