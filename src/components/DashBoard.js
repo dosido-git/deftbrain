@@ -572,7 +572,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                         pointer devices only and until something is typed. */}
                     {!navQuery && <kbd className="db-home-finder-kbd" aria-hidden="true">{SHORTCUT_LABEL}</kbd>}
                     </div>
-                    <button type="submit">Find a tool <span aria-hidden="true">→</span></button>
+                    <button type="submit">Search <span aria-hidden="true">→</span></button>
                   </div>
                   <p id="home-tool-process">Choose a tool <span aria-hidden="true">→</span> Answer a few questions <span aria-hidden="true">→</span> Get practical guidance</p>
                 </form>

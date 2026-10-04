@@ -26,7 +26,7 @@
 
 /* Straight port of the homepage's persistent nav search (DashBoard.js) —
    same sizes, same colors, same narrow(220px)-then-expand(420px) behavior,
-   same "Find a tool →" button. #d5cab8/#1e2a3a/#f3efe8/#e8e1d5 below are
+   same "Search →" button. #d5cab8/#1e2a3a/#f3efe8/#e8e1d5 below are
    that component's own CLR.sand300/navy700/sand100/sand200 values, copied
    rather than approximated, since the ask was an identical box. */
 .at-nav-search{display:flex;gap:8px}
