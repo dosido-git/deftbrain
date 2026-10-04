@@ -686,3 +686,33 @@ h1            { animation-delay: .10s; }
 /* About, Terms and Privacy open straight onto their h1; the old masthead's
    own padding used to supply this gap. */
 .site-header + main > .container.prose { padding-top: 40px; }
+
+/* ── Site footer bar (2026-10-04) ──
+   getSiteFooterBar() in src/seo/chrome.js — a port of src/components/Footer.js
+   (max-w-7xl, pt-8 pb-6, brand left, links · copyright right, stacked and
+   centered below 640px), so static and React pages end the same way.
+   The generic `footer` rule above still targets every <footer>; these
+   undo it where it does not apply. */
+footer.site-footer, footer.db-tool-index { display: block; padding: 0; }
+.site-footer { background: #faf8f5; border-top: 1px solid #e8e1d5; }
+.site-footer-inner { max-width: 1280px; margin: 0 auto; padding: 32px 16px 24px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; }
+@media (min-width: 640px) { .site-footer-inner { flex-direction: row; padding-inline: 24px; } }
+@media (min-width: 1024px) { .site-footer-inner { padding-inline: 32px; } }
+.site-footer-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.site-footer-brand img { height: 64px; width: auto; object-fit: contain; }
+.site-footer-word { font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 600; color: #165b9a; }
+.site-footer-word span { color: #c8872e; }
+.site-footer-end { display: flex; flex-direction: column; align-items: center; gap: 16px; font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: #5a544a; }
+@media (min-width: 640px) { .site-footer-end { flex-direction: row; } }
+.site-footer .footer-nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 16px; row-gap: 0; }
+.site-footer .footer-nav a { display: inline-block; padding: 6px 0; color: #165b9a; text-decoration: none; transition: color .15s; }
+.site-footer .footer-nav a:hover { color: #1a2e44; }
+.site-footer-dot { display: none; }
+@media (min-width: 640px) { .site-footer-dot { display: inline; } }
+.site-footer .footer-copy { font-size: 14px; color: inherit; }
+:root[data-theme="dark"] .site-footer { background: #18181b; border-top-color: #27272a; }
+:root[data-theme="dark"] .site-footer-end { color: #a1a1aa; }
+:root[data-theme="dark"] .site-footer-word { color: #e4e4e7; }
+:root[data-theme="dark"] .site-footer-word span { color: #fb923c; }
+:root[data-theme="dark"] .site-footer .footer-nav a { color: #d4d4d8 !important; }
+:root[data-theme="dark"] .site-footer .footer-nav a:hover { color: #f4f4f5 !important; }

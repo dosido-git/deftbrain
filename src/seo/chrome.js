@@ -208,21 +208,43 @@ function getFooterHTML() {
         .catch(function(){ msg.textContent='Something went wrong \\u2014 try again.'; btn.disabled=false; btn.textContent='Send'; });
     });
   })();
-  </script>\n  <footer>
-    <a href="/" class="footer-brand" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="footer-brand-img" height="64" style="width:auto;height:64px;object-fit:contain;">
-      <span class="footer-brand-text">Deft<span>Brain</span></span>
-    </a>
-    <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
-      <a href="/tools" style="color:#165b9a;text-decoration:none;">All Tools</a>
-      <a href="/guides" style="color:#165b9a;text-decoration:none;">Guides</a>
-      <a href="/organizations" style="color:#165b9a;text-decoration:none;">Organizations</a>
-      <a href="/about" style="color:#165b9a;text-decoration:none;">About</a>
-      <a href="/privacy" style="color:#165b9a;text-decoration:none;">Privacy</a>
-      <a href="/terms" style="color:#165b9a;text-decoration:none;">Terms</a>
-      <a href="mailto:hello@deftbrain.com" style="color:#165b9a;text-decoration:none;">Contact</a>
-    </nav>
-    <span class="footer-copy">© ${year} DeftBrain · deftbrain.com</span>
+  </script>\n  ${getSiteFooterBar(year)}`;
+}
+
+// Whether the Tool Finder link shows, read from the same flag Footer.js uses.
+function toolFinderPaused() {
+  try {
+    const src = fs.readFileSync(path.join(__dirname, '..', 'data', 'toolFinderPaused.js'), 'utf8');
+    return /TOOL_FINDER_PAUSED\s*=\s*true/.test(src);
+  } catch { return false; }
+}
+
+// The footer bar (2026-10-04): the same links, order, layout and colors as
+// src/components/Footer.js, so a static page and a React page end the same
+// way. Styles in public/guides/guide.css (.site-footer); keep both in sync.
+function getSiteFooterBar(year = new Date().getFullYear()) {
+  const links = [
+    ['All Tools', '/tools'],
+    ...(toolFinderPaused() ? [] : [['Find a Tool', '/ToolFinder']]),
+    ['Guides', '/guides'],
+    ['Organizations', '/organizations'],
+    ['About', '/about'],
+    ['Privacy', '/privacy'],
+    ['Terms', '/terms'],
+    ['Contact', 'mailto:hello@deftbrain.com'],
+  ].map(([label, href]) => `<a href="${href}">${label}</a>`).join('');
+  return `<footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">
+        <img src="/pBrain-r.png" alt="" height="64">
+        <span class="site-footer-word">Deft<span>Brain</span></span>
+      </a>
+      <div class="site-footer-end">
+        <nav class="footer-nav" aria-label="Footer">${links}</nav>
+        <span class="site-footer-dot" aria-hidden="true">·</span>
+        <span class="footer-copy">© ${year} DeftBrain · deftbrain.com</span>
+      </div>
+    </div>
   </footer>`;
 }
 
@@ -281,4 +303,4 @@ function getPageSearchHTML(opts) {
   return `<div class="page-search">${getSearchFormHTML(opts)}</div>`;
 }
 
-module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList, getSearchFormHTML, getSiteHeaderHTML, getPageSearchHTML };
+module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList, getSearchFormHTML, getSiteHeaderHTML, getPageSearchHTML, getSiteFooterBar };
