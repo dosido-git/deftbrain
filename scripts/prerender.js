@@ -805,6 +805,17 @@ async function main() {
     failed++;
   }
 
+  // About and Terms are hand-written in public/, so their copy of the shared
+  // crawlable tool index is added here, at build time, rather than pasted in
+  // and left to go stale (2026-10-04: every page now ends with it).
+  for (const name of ['about.html', 'terms.html']) {
+    const file = path.join(BUILD_DIR, name);
+    if (fs.existsSync(file)) {
+      fs.writeFileSync(file, injectToolIndex(fs.readFileSync(file, 'utf8'), getToolIndexHTML(tools)), 'utf8');
+      console.log(`  OK  /${name.replace('.html', '')} (tool index)`);
+    }
+  }
+
   // /tools and /organizations — see STATIC_PAGES above.
   const countLabel = `${Math.floor(tools.length / 10) * 10}+`;
   const categories = loadCategoryMeta();

@@ -35,6 +35,12 @@ body {
    Organizations) add this class to <body> while they are mounted. */
 body.db-sand-page { background: #faf8f5; }
 :root[data-theme="dark"] body.db-sand-page { background: #18181b; }
+/* The crawlable tool index at the foot of every page (src/seo/chrome.js)
+   carries light-mode inline colors; static pages darken it in guide.css,
+   and React pages (home, tools, toolbox) need the same (2026-10-04). */
+:root[data-theme="dark"] .db-tool-index a { color: #85afd6 !important; }
+:root[data-theme="dark"] .db-tool-index details { border-top-color: #3f3f46 !important; }
+:root[data-theme="dark"] .db-tool-index summary { color: #a8a29e !important; }
 
 /* ============================================
    TWEMOJI ICON STYLES

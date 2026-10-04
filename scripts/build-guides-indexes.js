@@ -22,7 +22,7 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { getFooterHTML, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getSiteHeaderHTML, getPageSearchHTML, getToolIndexHTML, getToolList } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
@@ -494,6 +494,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
 function renderFooter() {
   return `
 ${getFooterHTML()}
+${getToolIndexHTML(getToolList())}
 
 </body>
 </html>`;
