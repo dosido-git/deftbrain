@@ -18,8 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
-import toolsKeepList from '../data/tools-keep-list.json';
-import Caret from './Caret';
 
 // Fetch the guides manifest once, cached at module scope across navigations.
 let _cache = null;
@@ -134,55 +132,11 @@ export default function RelatedLinks() {
   let body = null;
 
   if (seg === '') {
-    // Homepage: the focus tools (mirrors getFeaturedToolsHTML) + one
-    // guide per tool, up to 10 (mirrors getHomepageGuidesHTML).
-    const featured = (toolsKeepList.focus || [])
-      .map(id => tools.find(t => t.id === id))
-      .filter(Boolean)
-      .map(t => ({ href: `/${t.id}`, text: t.title }));
-    const byTool = {};
-    for (const g of guides) (byTool[g.toolId] = byTool[g.toolId] || []).push(g);
-    const picks = [];
-    for (const list of Object.values(byTool)) if (list[0] && picks.length < 10) picks.push(list[0]);
-    const links = picks.map(g => ({ href: `/guides/${g.category}/${g.slug}`, text: g.title }));
-    // py-2 -my-2: this link measured 13px tall at 390px, far under WCAG 2.2 AA's
-    // 24px floor. Padding raises the hit box; the negative margin keeps the
-    // surrounding line height unchanged.
-    const hub = (
-      <> — <a href="/guides" className={`${c.link} inline-block py-2 -my-2`}>browse all {guides.length} &rarr;</a></>
-    );
-    // The 18 category hubs absorb 381 consolidation redirects and, until
-    // 2026-08-08, had one inbound internal link each — none of them from here,
-    // the highest-authority page. Mirrors getHubsHTML in prerender.js.
-    const allHubs = hubLinks([...new Set(guides.map(g => g.category))].sort());
-    // Collapsed by default on the homepage: unlike a tool page's own Related
-    // Guides/Related Tools (still the always-visible Block below, unchanged),
-    // these three blocks are catalog-wide SEO surface area a first-time
-    // visitor did not come for. PF-34: the disclosure triangle is Caret, not
-    // a hand-rolled glyph — <details className="group"> is what groupOpen
-    // rotates against.
-    const DisclosureBlock = ({ label, links, hub }) => (links.length === 0 ? null : (
-      <details className={`group mb-3 border-b ${c.border} pb-3`}>
-        <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden text-[11px] uppercase tracking-[0.1em] font-bold ${c.head} py-2 flex items-center gap-2`}>
-          <Caret groupOpen />
-          <span>{label}{hub}</span>
-        </summary>
-        <nav aria-label={label} className="pt-1 pl-5">
-          <div className="flex flex-wrap gap-x-4 gap-y-0 text-sm leading-relaxed">
-            {links.map(l => (
-              <a key={l.href} href={l.href} className={`${c.link} no-underline transition-colors inline-block py-1.5`}>{l.text}</a>
-            ))}
-          </div>
-        </nav>
-      </details>
-    ));
-    body = (
-      <>
-        <DisclosureBlock label="Some of our most popular tools" links={featured} />
-        <DisclosureBlock label="Guides" links={links} hub={hub} />
-        <DisclosureBlock label="Browse guides by topic" links={allHubs} />
-      </>
-    );
+    // Homepage: nothing (2026-10-04, owner). The three collapsed blocks that
+    // were here (popular tools, a guide sample, guides by topic) repeated what
+    // the page already shows — Explore by category, the header's Guides link —
+    // and the home page now ends with its FAQ, then SiteEnd and the footer.
+    return null;
   } else {
     const tool = tools.find(t => t.id === seg);
     if (!tool) return null; // unknown route (e.g. NotFound)

@@ -1,147 +1,37 @@
 /**
- * Footer — Site-wide footer component
- * ────────────────────────────────────
- * Branded footer rendering on every page. Includes logo + wordmark,
- * "Guides" link, and copyright line.
+ * Footer — the last thing on every React page (2026-10-04). The static pages
+ * render the same markup from getSiteFooterBar() in src/seo/chrome.js. Links
+ * come from src/data/siteNav.json (`footer`); styles only from
+ * public/site-footer.css, light and dark. Keep this markup and chrome.js's
+ * identical.
  *
- * Designed to accept additional links (privacy, terms, contact)
- * by appending to the links array as they exist.
+ * The Tiny Startups badge is NOT here by choice (2026-07-30): their
+ * verification never completed, so it sits as static HTML on /about.
  */
 import React from 'react';
-import { useTheme } from '../hooks/useTheme';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
+import SITE_NAV from '../data/siteNav.json';
 
-const Footer = () => {
-  const { isDark } = useTheme();
-
-  const c = {
-    bg:        isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
-    border:    isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
-    text:      isDark ? 'text-zinc-400' : 'text-[#5a544a]',
-    // Two-tone wordmark, matching the site-wide standard (2026-09-22): blue
-    // "Deft" + gold "Brain" — see BrandMark.js. (Previously split at the
-    // letter "D" instead of the word boundary; before that, an all-ochre
-    // "DeftBrain", two brand marks on one page.)
-    deftBlue:  isDark ? 'text-zinc-200'   : 'text-[#165b9a]',
-    brainGold: isDark ? 'text-orange-400' : 'text-[#c8872e]',
-    link:      isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#165b9a] hover:text-[#1a2e44]',
-  };
-
+export default function Footer() {
   const year = new Date().getFullYear();
-
-  // Right-side links (extensible — append future links here)
-  const links = [
-    // Added with AllToolsPage.js (2026-09-22) — also the fix for a real
-    // orphan-checker failure: /tools is client-rendered (App.js's <Route>,
-    // no prerendered file), so scripts/check-orphans.js could only find it
-    // via a real <a href> in some page's own STATIC prerendered HTML, not
-    // via the React <Link>/navigate() calls elsewhere that only exist once
-    // the JS has loaded. Footer.js renders on every page's prerender, same
-    // reason /about, /privacy and /terms below are reachable network-wide
-    // rather than only from the homepage.
-    { label: 'All Tools',   href: '/tools' },
-    ...(TOOL_FINDER_PAUSED ? [] : [{ label: 'Find a Tool', href: '/ToolFinder' }]),
-    { label: 'Guides',      href: '/guides' },
-    { label: 'Organizations', href: '/organizations' },
-    { label: 'About',       href: '/about' },
-    { label: 'Privacy',     href: '/privacy' },
-    { label: 'Terms',       href: '/terms' },
-    { label: 'Contact',     href: 'mailto:hello@deftbrain.com' },
-  ];
-
-  // Directory/trust badges (extensible — append future ones here as
-  // submissions from audit/DIRECTORY-SUBMISSIONS.md go live, e.g. Product
-  // Hunt, G2). Sitewide placement so the dofollow link fires on every page,
-  // not just one.
-  //
-  // The SaaSHub "Approved" badge was removed site-wide (2026-09-19) at the
-  // user's request — array left empty rather than deleting the rendering
-  // block below, so a future badge just slots back in here.
-  const badges = [];
-
-  // Prints. This used to carry `print:hidden`, so a printed page ended with
-  // the last tool row and no site name, URL, or legal links — exactly what a
-  // reader on paper needs, having no address bar. Tool pages hide their chrome
-  // via data-print-hide, which this deliberately does not use.
-  //
-  // 2026-08-20: data-print-hide was added here anyway, while removing a whole
-  // page of navigation from tool print-outs — the interlink block, the
-  // newsletter and the tools index all genuinely did not belong on paper, and
-  // this got swept up with them. It is not chrome. Reverted the same day. If
-  // you are here to hide it again: the paragraph above is the reason not to.
-  //
-  // 2026-09-27: one exception, and only by marker — data-site-tail. A tool page
-  // printed as a handout (ToolPageWrapper sets data-print-handout, pilot tools
-  // only) drops the footer, newsletter and related links, and ends with the
-  // wrapper's own one-line "DeftBrain · deftbrain.com" instead. Every other
-  // printout keeps this footer.
-  //
-  // A normal JS comment, not a JSX one: a {/* */} between `return (` and the
-  // root element is a second child of the return and does not compile.
+  // Plain <a>: several targets (/guides, /about, /privacy, /terms) are static
+  // pages, not routes, so every footer link is a full page load.
+  const links = SITE_NAV.footer.filter(l => !(l.key === 'toolFinder' && TOOL_FINDER_PAUSED));
   return (
-    <footer data-site-tail className={`${c.bg} border-t ${c.border}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-
-          {/* Left: brand */}
-          <a
-            href="/"
-            className="flex items-center gap-3"
-            aria-label="DeftBrain — home"
-          >
-            {/* Standard footer size (2026-09-22) — matches the size already
-                used on the bottom of every guide/static page
-                (public/guides/guide.css's .footer-brand-img/.footer-brand),
-                bumped up from this component's previous 48px/18px. */}
-            <img
-              src="/pBrain-r.png"
-              alt=""
-              className="h-16 w-auto object-contain"
-              height="64"
-            />
-            <span className="text-sm font-semibold">
-              <span className={c.deftBlue}>Deft</span><span className={c.brainGold}>Brain</span>
-            </span>
-          </a>
-
-          {/* Right: links + copyright */}
-          <div className={`flex flex-col sm:flex-row items-center gap-4 text-sm ${c.text}`}>
-            {/* py-1.5 pads each link to a ≥32px tap target (mobile a11y);
-                gap-y-0 compensates so the visual rhythm barely changes. */}
-            <nav className="flex flex-wrap justify-center gap-x-4 gap-y-0">
-              {links.map(link => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={`${c.link} transition-colors inline-block py-1.5`}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-            <span className="hidden sm:inline">·</span>
-            <span>© {year} DeftBrain · deftbrain.com</span>
-          </div>
-
+    <footer className="site-footer" data-site-tail>
+      <div className="site-footer-inner">
+        <a href="/" className="site-footer-brand" aria-label="DeftBrain — home">
+          <img src="/pBrain-r.png" alt="" height="64" />
+          <span className="site-footer-word">Deft<span>Brain</span></span>
+        </a>
+        <div className="site-footer-end">
+          <nav className="site-footer-nav" aria-label="Footer">
+            {links.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
+          </nav>
+          <span className="site-footer-dot" aria-hidden="true">·</span>
+          <span>© {year} DeftBrain · deftbrain.com</span>
         </div>
-
-        {/* The Tiny Startups badge is NOT here by choice (2026-07-30): their
-            verification never completed, so it sits as static HTML on /about at
-            ~60% size rather than as a site-wide outbound link. See
-            audit/DIRECTORY-SUBMISSIONS.xlsx for the reasoning. */}
-        {badges.length > 0 && (
-          <div className="flex flex-wrap justify-center items-center gap-4 mt-4">
-            {badges.map(b => (
-              <a key={b.key} href={b.href} target="_blank" rel="noopener noreferrer" aria-label={b.alt}>
-                <img src={b.src} alt={b.alt} className="max-w-[150px] h-auto" />
-              </a>
-            ))}
-          </div>
-        )}
-
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

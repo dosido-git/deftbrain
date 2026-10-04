@@ -17,6 +17,7 @@
 //   onCategories  — pages with their own category picker (home, toolbox):
 //                   scroll to it instead of going to /#categories
 //   current       — href of the page's own nav item, for aria-current
+//   large         — the home page's larger brand mark (owner, 2026-10-04)
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -51,9 +52,9 @@ function NavItems({ onCategories, current }) {
   });
 }
 
-export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency = true, onBrandClick, onCategories, current }) {
+export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency = true, onBrandClick, onCategories, current, large = false }) {
   return (
-    <header className="site-header" data-print-hide>
+    <header className={`site-header${large ? ' site-header--large' : ''}`} data-print-hide>
       <div className="site-header-inner">
         <Brand onBrandClick={onBrandClick} />
         <div className="site-header-end">

@@ -52,6 +52,8 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
 .db-home-situation p { margin-block: 10px 0; margin-inline: 0 16px; font-size: 15px; }
 .db-home-card-arrow { position: absolute; inset-inline-end: 12px; bottom: 12px; font-size: 24px; }
 .db-home-demo { padding: 24px 28px 28px; border: 1px solid var(--h-demo-border); border-radius: 16px; background: var(--h-demo-bg); }
+.db-home-demo-label { margin: 4px 0 0; font-size: 14px; color: var(--h-muted, #5a544a); }
+.db-home-demo-label strong { color: var(--h-navy); }
 .db-home-demo-intro { margin: 6px 0 18px; }
 .db-home-demo-steps { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; list-style: none; padding: 0; margin: 0; }
 .db-home-demo-steps > li { min-width: 0; display: flex; flex-direction: column; }

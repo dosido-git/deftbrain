@@ -34,6 +34,14 @@
 .sh-brand-word { display: flex; flex-direction: column; justify-content: center; }
 .sh-brand-text { font-family: inherit; font-weight: 800; font-size: 20px; line-height: 1; letter-spacing: -.025em; color: var(--sh-deft); }
 @media (min-width: 640px) { .sh-brand-text { font-size: 24px; } }
+/* The home page's larger mark (SiteHeader `large`): the home page introduces
+   the brand, so it carries it bigger than every page after it. */
+.site-header--large .sh-brand-img { height: 80px; }
+.site-header--large .sh-brand-text { font-size: 24px; }
+@media (min-width: 640px) {
+  .site-header--large .sh-brand-img { height: 96px; }
+  .site-header--large .sh-brand-text { font-size: 30px; }
+}
 .sh-brand-text span { color: var(--sh-brain); }
 .sh-brand-tag { display: block; margin: 6px 0 0; max-width: 36ch; font-family: inherit; font-size: 12px; font-weight: 400; line-height: 1.375; letter-spacing: .02em; color: var(--sh-deft); }
 .sh-brand-tag b { font-weight: 700; }

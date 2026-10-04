@@ -1,5 +1,6 @@
 /* The shared site header — the one stylesheet every page uses for it. */
 @import url("/site-header.css");
+@import url("/site-footer.css");
 
 /* ============================================================
    DeftBrain — Shared Guide Stylesheet
@@ -390,28 +391,7 @@ h2 {
   line-height: 1.45;
 }
 
-/* ── Footer ── */
-footer {
-  border-top: 1px solid var(--rule);
-  padding: 24px var(--col);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-/* Standard footer size (2026-09-22) — this stylesheet's own footer is
-   THE reference size every other footer on the site (React's Footer.js)
-   now matches, so it only needed recoloring: blue "Deft" + gold "Brain",
-   same site-wide split as the masthead above, still no tagline. */
-.footer-brand {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--deft-blue);
-  text-decoration: none;
-}
-.footer-brand-text span { color: var(--brain-gold); }
-.footer-copy { font-size: 12px; color: var(--ink3); }
+/* ── Footer ── styled in /site-footer.css (imported at the top). */
 
 /* ── Entrance animation ── */
 @keyframes fadeUp {
@@ -554,22 +534,6 @@ h1            { animation-delay: .10s; }
 :root[data-theme="dark"] .prose th, :root[data-theme="dark"] .prose td { border-bottom-color: #3f3f46; }
 :root[data-theme="dark"] .prose th { background: #232326; }
 
-/* Shared chrome from src/seo/chrome.js (inline-styled, hence !important) */
-:root[data-theme="dark"] .db-capture { background: #1f1f22 !important; border-color: #3f3f46 !important; }
-:root[data-theme="dark"] .db-capture p { color: #d6d3d1 !important; }
-:root[data-theme="dark"] .db-capture p:first-child { color: #d9a04e !important; }
-:root[data-theme="dark"] #db-cap-email, :root[data-theme="dark"] #db-idea-input {
-  background: #18181b !important; color: #f4f4f5 !important; border-color: #71717a !important;
-}
-:root[data-theme="dark"] #db-cap-email::placeholder, :root[data-theme="dark"] #db-idea-input::placeholder { color: #a1a1aa; }
-:root[data-theme="dark"] #db-cap-btn, :root[data-theme="dark"] #db-idea-form button { background: #2f6fb0 !important; }
-:root[data-theme="dark"] #db-cap-msg, :root[data-theme="dark"] #db-idea-msg { color: #d6d3d1 !important; }
-/* "No tool for your problem?" — the two lines above the idea form. */
-:root[data-theme="dark"] div:has(> #db-idea-form) > p { color: #d6d3d1 !important; }
-:root[data-theme="dark"] .footer-nav a,
-:root[data-theme="dark"] .db-tool-index a { color: #85afd6 !important; }
-:root[data-theme="dark"] .db-tool-index details { border-top-color: #3f3f46 !important; }
-:root[data-theme="dark"] .db-tool-index summary { color: #a8a29e !important; }
 
 /* Guide hubs: /guides, /guides/{category}, /guides/by-tool
    (scripts/build-guides-indexes.js) */
@@ -636,9 +600,6 @@ h1            { animation-delay: .10s; }
 :root[data-theme="dark"] .signature-glyph { color: #efeae3; }
 :root[data-theme="dark"] .signature-caption { color: #a8a29e; }
 
-/* Footer links wrap on a phone (src/seo/chrome.js sets display:flex inline
-   with no wrap, so the row ran ~100px off a 375px screen). */
-.footer-nav { flex-wrap: wrap; }
 
 /* The site header is styled in /site-header.css (imported at the top). */
 
@@ -650,32 +611,4 @@ h1            { animation-delay: .10s; }
    own padding used to supply this gap. */
 .site-header + main > .container.prose { padding-top: 40px; }
 
-/* ── Site footer bar (2026-10-04) ──
-   getSiteFooterBar() in src/seo/chrome.js — a port of src/components/Footer.js
-   (max-w-7xl, pt-8 pb-6, brand left, links · copyright right, stacked and
-   centered below 640px), so static and React pages end the same way.
-   The generic `footer` rule above still targets every <footer>; these
-   undo it where it does not apply. */
-footer.site-footer, footer.db-tool-index { display: block; padding: 0; }
-.site-footer { background: #faf8f5; border-top: 1px solid #e8e1d5; }
-.site-footer-inner { max-width: 1280px; margin: 0 auto; padding: 32px 16px 24px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; }
-@media (min-width: 640px) { .site-footer-inner { flex-direction: row; padding-inline: 24px; } }
-@media (min-width: 1024px) { .site-footer-inner { padding-inline: 32px; } }
-.site-footer-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.site-footer-brand img { height: 64px; width: auto; object-fit: contain; }
-.site-footer-word { font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 600; color: #165b9a; }
-.site-footer-word span { color: #c8872e; }
-.site-footer-end { display: flex; flex-direction: column; align-items: center; gap: 16px; font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: #5a544a; }
-@media (min-width: 640px) { .site-footer-end { flex-direction: row; } }
-.site-footer .footer-nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 16px; row-gap: 0; }
-.site-footer .footer-nav a { display: inline-block; padding: 6px 0; color: #165b9a; text-decoration: none; transition: color .15s; }
-.site-footer .footer-nav a:hover { color: #1a2e44; }
-.site-footer-dot { display: none; }
-@media (min-width: 640px) { .site-footer-dot { display: inline; } }
-.site-footer .footer-copy { font-size: 14px; color: inherit; }
-:root[data-theme="dark"] .site-footer { background: #18181b; border-top-color: #27272a; }
-:root[data-theme="dark"] .site-footer-end { color: #a1a1aa; }
-:root[data-theme="dark"] .site-footer-word { color: #e4e4e7; }
-:root[data-theme="dark"] .site-footer-word span { color: #fb923c; }
-:root[data-theme="dark"] .site-footer .footer-nav a { color: #d4d4d8 !important; }
-:root[data-theme="dark"] .site-footer .footer-nav a:hover { color: #f4f4f5 !important; }
+/* The site footer and the ideas/newsletter band above it are styled in /site-footer.css (imported at the top). */

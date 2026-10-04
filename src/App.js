@@ -11,7 +11,7 @@ import DashBoard from './components/DashBoard';
 import Footer from './components/Footer';
 import RelatedLinks from './components/RelatedLinks';
 import ToolFaq from './components/ToolFaq';
-import EmailCapture from './components/EmailCapture';
+import SiteEnd from './components/SiteEnd';
 import NotFound from './components/NotFound';
 import SharedVerdict from './components/SharedVerdict';
 import AllToolsPage from './components/AllToolsPage';
@@ -56,7 +56,7 @@ export default function App() {
             <WaitNotice />
             <ToolFaq />
             <RelatedLinks />
-            <EmailCapture />
+            <SiteEnd />
             <Footer />
           </div>
         </BrowserRouter>

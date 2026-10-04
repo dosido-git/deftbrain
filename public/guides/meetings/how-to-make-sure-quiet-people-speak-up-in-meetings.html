@@ -357,74 +357,54 @@
     </div>
   </main>
 
-  <div class="db-capture" style="border-top:1px solid #e8e1d5;border-bottom:1px solid #e8e1d5;background:#f2ece1">
-    <div style="max-width:1280px;margin:0 auto;padding:18px 20px;font-family:'DM Sans',system-ui,sans-serif">
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px">
-        <div style="flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px">
-          <p style="flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
-          <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:0">One useful tool a month &mdash; the one worth knowing about before life demands it.</p>
-        </div>
-        <form id="db-cap-form" style="display:flex;flex-wrap:nowrap;gap:8px;flex:0 1 380px;min-width:280px">
-          <label for="db-cap-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Email address</label>
-          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email"
-            style="flex:1;min-width:0;padding:8px 14px;border-radius:8px;border:1px solid #d8d0c2;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;outline:none">
-          <button id="db-cap-btn" type="submit"
-            style="flex-shrink:0;padding:8px 20px;border-radius:8px;border:0;background:#1a2e44;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Subscribe</button>
+<section class="site-end" aria-label="Ideas and newsletter">
+    <div class="site-end-inner">
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128161; Missing something?</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Tell us what you&rsquo;re dealing with. We read every one, and the best become new tools.</p>
+        <form class="site-end-form" id="db-idea-form">
+          <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
+          <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
+          <button id="db-idea-btn" type="submit">Send</button>
         </form>
-        <p id="db-cap-msg" style="flex-basis:100%;text-align:right;font-size:14px;font-weight:500;color:#1a2e44;margin:0"></p>
+        <p class="site-end-msg" id="db-idea-msg" role="status"></p>
+      </div>
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128238; Newsletter</p>
+        <p class="site-end-text"><strong>One useful tool a month</strong> &mdash; the one worth knowing about before life demands it.</p>
+        <form class="site-end-form" id="db-cap-form">
+          <label class="sr-only-se" for="db-cap-email">Email address</label>
+          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email">
+          <button id="db-cap-btn" type="submit">Subscribe</button>
+        </form>
+        <p class="site-end-msg" id="db-cap-msg" role="status"></p>
       </div>
     </div>
-  </div>
+  </section>
   <script>
   (function(){
-    var f=document.getElementById('db-cap-form'); if(!f) return;
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      var btn=document.getElementById('db-cap-btn'), msg=document.getElementById('db-cap-msg');
-      btn.disabled=true; btn.textContent='Sending\u2026';
-      fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({email:document.getElementById('db-cap-email').value,source:location.pathname})})
-        .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
-        .then(function(x){
-          if(x.ok&&x.d.ok){ f.style.display='none';
-            msg.textContent = x.d.already ? 'You\u2019re already on the list. The Operator admires the enthusiasm.'
-                                          : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; }
-          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \u2014 try again.';
-            btn.disabled=false; btn.textContent='Subscribe'; }
-        })
-        .catch(function(){ msg.textContent='Something went wrong \u2014 try again.';
-          btn.disabled=false; btn.textContent='Subscribe'; });
-    });
-  })();
-  </script>
-  <div style="text-align:center;margin:2.5rem auto 0;max-width:30rem;padding:0 1rem;font-family:'DM Sans',system-ui,sans-serif;">
-    <p style="font-size:1rem;font-weight:700;color:#1a2e44;margin:0;">No tool for your problem?</p>
-    <p style="font-size:0.9rem;color:#5a544a;margin:0.25rem 0 0.75rem;">Describe it &mdash; we build fast.</p>
-    <form id="db-idea-form" style="display:flex;gap:8px;">
-      <label for="db-idea-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Describe your problem</label>
-      <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?"
-        style="flex:1;min-width:0;padding:10px 16px;border-radius:12px;border:1px solid #e8e1d5;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;">
-      <button id="db-idea-btn" type="submit"
-        style="padding:10px 20px;border-radius:12px;border:0;background:#1a2e44;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Send</button>
-    </form>
-    <p id="db-idea-msg" style="font-size:14px;font-weight:500;color:#1a2e44;margin:8px 0 0;"></p>
-  </div>
-  <script>
-  (function(){
-    var f=document.getElementById('db-idea-form'); if(!f) return;
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      var btn=document.getElementById('db-idea-btn'), msg=document.getElementById('db-idea-msg');
-      var text=document.getElementById('db-idea-input').value.trim(); if(!text) return;
-      btn.disabled=true; btn.textContent='Sending\u2026';
-      fetch('/api/idea',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({problem:text,source:'guide-footer',path:location.pathname})})
-        .then(function(r){
-          if(r.ok){ f.style.display='none'; msg.textContent='\uD83D\uDE4F Got it \u2014 thank you. If we build it, it ships fast.'; }
-          else { msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent='Send'; }
-        })
-        .catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent='Send'; });
-    });
+    function wire(formId, btnId, msgId, label, send, done){
+      var f=document.getElementById(formId); if(!f) return;
+      f.addEventListener('submit', function(e){
+        e.preventDefault();
+        var btn=document.getElementById(btnId), msg=document.getElementById(msgId);
+        btn.disabled=true; btn.textContent='Sending\u2026';
+        send().then(function(x){
+          if(x.ok){ f.style.display='none'; msg.textContent=done(x.d); }
+          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; }
+        }).catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; });
+      });
+    }
+    function post(url, body){
+      return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok&&(d.ok!==false),d:d};});});
+    }
+    wire('db-idea-form','db-idea-btn','db-idea-msg','Send',
+      function(){ return post('/api/idea',{problem:document.getElementById('db-idea-input').value.trim(),source:'site-end',path:location.pathname}); },
+      function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; });
+    wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
+      function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
+      function(d){ return d&&d.already ? 'You\u2019re already on the list. The Operator admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });
   })();
   </script>
   <footer class="site-footer">
@@ -434,168 +414,11 @@
         <span class="site-footer-word">Deft<span>Brain</span></span>
       </a>
       <div class="site-footer-end">
-        <nav class="footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:hello@deftbrain.com">Contact</a></nav>
+        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:hello@deftbrain.com">Contact</a></nav>
         <span class="site-footer-dot" aria-hidden="true">·</span>
-        <span class="footer-copy">© 2026 DeftBrain · deftbrain.com</span>
+        <span>© 2026 DeftBrain · deftbrain.com</span>
       </div>
     </div>
-  </footer>
-
-  <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
-    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}
-    /* This strip lives outside #root, so it survives hydration and no
-       React print rule reaches it — a tool print-out ended with a whole
-       page of site navigation. DashBoard carries its own copy of this
-       rule for the same reason; here it travels with the markup, so
-       every page that emits the strip suppresses it on paper. */
-    @media print{.db-tool-index{display:none!important}}</style>
-    <details style="border-top:1px solid #e8e1d5;padding-top:14px;margin-bottom:14px">
-      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">Browse tools by category</summary>
-      <nav style="font-size:13px;line-height:1.5;margin-top:14px">
-        <a href="/tools/career" style="color:#165b9a;text-decoration:none">Career</a>
-        <a href="/tools/conversations" style="color:#165b9a;text-decoration:none">Conversations</a>
-        <a href="/tools/decisions" style="color:#165b9a;text-decoration:none">Decisions</a>
-        <a href="/tools/health-wellness" style="color:#165b9a;text-decoration:none">Health &amp; Wellness</a>
-        <a href="/tools/home-daily-life" style="color:#165b9a;text-decoration:none">Home &amp; Daily Life</a>
-        <a href="/tools/ideas-imagination" style="color:#165b9a;text-decoration:none">Ideas &amp; Imagination</a>
-        <a href="/tools/just-for-fun" style="color:#165b9a;text-decoration:none">Just for Fun</a>
-        <a href="/tools/learning" style="color:#165b9a;text-decoration:none">Learning</a>
-        <a href="/tools/money" style="color:#165b9a;text-decoration:none">Money</a>
-        <a href="/tools/relationships" style="color:#165b9a;text-decoration:none">Relationships</a>
-        <a href="/tools/self-reflection" style="color:#165b9a;text-decoration:none">Self &amp; Reflection</a>
-        <a href="/tools/tasks" style="color:#165b9a;text-decoration:none">Tasks</a>
-        <a href="/tools/travel-events" style="color:#165b9a;text-decoration:none">Travel &amp; Events</a>
-        <a href="/tools/work-meetings" style="color:#165b9a;text-decoration:none">Work &amp; Meetings</a>
-      </nav>
-    </details><details style="border-top:1px solid #e8e1d5;padding-top:14px">
-      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
-      <nav style="font-size:13px;line-height:1.5;margin-top:14px">
-        <a href="/MentalHealthNavigator" style="color:#165b9a;text-decoration:none">Mental Health Navigator</a>
-        <a href="/GriefGuide" style="color:#165b9a;text-decoration:none">GriefGuide</a>
-        <a href="/ConceptCoach" style="color:#165b9a;text-decoration:none">Concept Coach</a>
-        <a href="/SleepArchitect" style="color:#165b9a;text-decoration:none">Sleep Architect</a>
-        <a href="/CultureBriefing" style="color:#165b9a;text-decoration:none">Culture Briefing</a>
-        <a href="/ContractDecoder" style="color:#165b9a;text-decoration:none">Contract Decoder</a>
-        <a href="/ScamRadar" style="color:#165b9a;text-decoration:none">Scam Radar</a>
-        <a href="/DoctorVisitPrep" style="color:#165b9a;text-decoration:none">Doctor Visit Prep</a>
-        <a href="/DriveHome" style="color:#165b9a;text-decoration:none">Drive Home</a>
-        <a href="/ToolFinder" style="color:#165b9a;text-decoration:none">Tool Finder</a>
-        <a href="/CrowdWisdom" style="color:#165b9a;text-decoration:none">Crowd Wisdom</a>
-        <a href="/FutureProof" style="color:#165b9a;text-decoration:none">Future Proof</a>
-        <a href="/MarkupDetective" style="color:#165b9a;text-decoration:none">Markup Detective</a>
-        <a href="/SignalVsNoise" style="color:#165b9a;text-decoration:none">Signal vs. Noise</a>
-        <a href="/BreakMyPlan" style="color:#165b9a;text-decoration:none">Break My Plan?</a>
-        <a href="/RutBuster" style="color:#165b9a;text-decoration:none">Rut Buster</a>
-        <a href="/SmallChangeBigDifference" style="color:#165b9a;text-decoration:none">Small Change, Big Difference</a>
-        <a href="/BeliefStressTest" style="color:#165b9a;text-decoration:none">Belief Stress Test</a>
-        <a href="/GetNoticed" style="color:#165b9a;text-decoration:none">Get Noticed</a>
-        <a href="/BeforeHello" style="color:#165b9a;text-decoration:none">Before Hello</a>
-        <a href="/NotSoFast" style="color:#165b9a;text-decoration:none">Not So Fast!</a>
-        <a href="/TruthBomb" style="color:#165b9a;text-decoration:none">Truth Bomb</a>
-        <a href="/AnalogyEngine" style="color:#165b9a;text-decoration:none">Analogy Engine</a>
-        <a href="/ColdOpenCraft" style="color:#165b9a;text-decoration:none">Cold Open Craft</a>
-        <a href="/ToastWriter" style="color:#165b9a;text-decoration:none">Toast Writer</a>
-        <a href="/HobbyMatch" style="color:#165b9a;text-decoration:none">Hobby Match</a>
-        <a href="/ProcedureProbe" style="color:#165b9a;text-decoration:none">Procedure Probe</a>
-        <a href="/UpsellShield" style="color:#165b9a;text-decoration:none">Upsell Shield</a>
-        <a href="/HecklerPrep" style="color:#165b9a;text-decoration:none">Heckler Prep</a>
-        <a href="/PartyArchitect" style="color:#165b9a;text-decoration:none">Party Architect</a>
-        <a href="/WhereDidTheTimeGo" style="color:#165b9a;text-decoration:none">Where Did the Time Go?</a>
-        <a href="/Giftology" style="color:#165b9a;text-decoration:none">Giftology</a>
-        <a href="/AwkwardSilenceFiller" style="color:#165b9a;text-decoration:none">Awkward Silence Filler</a>
-        <a href="/TipOfTongue" style="color:#165b9a;text-decoration:none">Tip of Tongue</a>
-        <a href="/MagicMouth" style="color:#165b9a;text-decoration:none">Magic Mouth (M²)</a>
-        <a href="/NameThatFeeling" style="color:#165b9a;text-decoration:none">Name That Feeling</a>
-        <a href="/WhatsMyVibe" style="color:#165b9a;text-decoration:none">What</a>
-        <a href="/TheRunthrough" style="color:#165b9a;text-decoration:none">The Run-Through</a>
-        <a href="/WhichLife" style="color:#165b9a;text-decoration:none">Which Life?</a>
-        <a href="/ComebackCooker" style="color:#165b9a;text-decoration:none">Comeback Cooker</a>
-        <a href="/AlternatePath" style="color:#165b9a;text-decoration:none">Alternate Path</a>
-        <a href="/PlotHoleFinder" style="color:#165b9a;text-decoration:none">Plot Hole Finder</a>
-        <a href="/FanTheory" style="color:#165b9a;text-decoration:none">Fan Theory</a>
-        <a href="/RoastMe" style="color:#165b9a;text-decoration:none">Roast Me</a>
-        <a href="/TimeWarp" style="color:#165b9a;text-decoration:none">Time Warp</a>
-        <a href="/WrongAnswersOnly" style="color:#165b9a;text-decoration:none">Wrong Answers Only</a>
-        <a href="/SocialBatteryAdvisor" style="color:#165b9a;text-decoration:none">Social Battery Advisor</a>
-        <a href="/PronounceItRight" style="color:#165b9a;text-decoration:none">Pronounce It Right</a>
-        <a href="/TheDebrief" style="color:#165b9a;text-decoration:none">The Debrief</a>
-        <a href="/HeartOfTheMatter" style="color:#165b9a;text-decoration:none">Heart of the Matter</a>
-        <a href="/TheWholeStory" style="color:#165b9a;text-decoration:none">The Whole Story</a>
-        <a href="/DocumentDetective" style="color:#165b9a;text-decoration:none">Document Detective</a>
-        <a href="/ContextCollapse" style="color:#165b9a;text-decoration:none">Context Collapse</a>
-        <a href="/Bookmark" style="color:#165b9a;text-decoration:none">Bookmark</a>
-        <a href="/DecoderRing" style="color:#165b9a;text-decoration:none">Decoder Ring</a>
-        <a href="/DecisionPrism" style="color:#165b9a;text-decoration:none">Decision Prism</a>
-        <a href="/MiseEnPlace" style="color:#165b9a;text-decoration:none">Mise en Place</a>
-        <a href="/GhostWriter" style="color:#165b9a;text-decoration:none">Ghost Writer</a>
-        <a href="/CaptionMagic" style="color:#165b9a;text-decoration:none">Caption Magic</a>
-        <a href="/PEP" style="color:#165b9a;text-decoration:none">PEP — Personal Energy Planner</a>
-        <a href="/BatchFlow" style="color:#165b9a;text-decoration:none">Batch Flow</a>
-        <a href="/LazyWorkoutAdapter" style="color:#165b9a;text-decoration:none">Lazy Workout Adapter</a>
-        <a href="/JargonAssassin" style="color:#165b9a;text-decoration:none">Jargon Assassin</a>
-        <a href="/ArgueSmarter" style="color:#165b9a;text-decoration:none">Argue Smarter</a>
-        <a href="/ResearchDecoder" style="color:#165b9a;text-decoration:none">Research Decoder</a>
-        <a href="/ReadTheRoom" style="color:#165b9a;text-decoration:none">Read the Room</a>
-        <a href="/MoneyDiplomat" style="color:#165b9a;text-decoration:none">Money Diplomat</a>
-        <a href="/SkillGapMap" style="color:#165b9a;text-decoration:none">Skill Gap Map</a>
-        <a href="/HistoryToday" style="color:#165b9a;text-decoration:none">History Today</a>
-        <a href="/BragSheetBuilder" style="color:#165b9a;text-decoration:none">Brag Sheet Builder</a>
-        <a href="/LayoverMaximizer" style="color:#165b9a;text-decoration:none">Layover Maximizer</a>
-        <a href="/TheFinalWord" style="color:#165b9a;text-decoration:none">The Final Word</a>
-        <a href="/NameAudit" style="color:#165b9a;text-decoration:none">Name Audit</a>
-        <a href="/NameStorm" style="color:#165b9a;text-decoration:none">Name Storm</a>
-        <a href="/GratitudeDebtClearer" style="color:#165b9a;text-decoration:none">Gratitude Debt Clearer</a>
-        <a href="/DifficultTalkCoach" style="color:#165b9a;text-decoration:none">Difficult Talk Coach</a>
-        <a href="/ComplaintEscalationWriter" style="color:#165b9a;text-decoration:none">Complaint Escalation Writer</a>
-        <a href="/PlainTalk" style="color:#165b9a;text-decoration:none">Plain Talk</a>
-        <a href="/FocusSoundArchitect" style="color:#165b9a;text-decoration:none">Focus Sound Architect</a>
-        <a href="/FocusPocus" style="color:#165b9a;text-decoration:none">Focus Pocus</a>
-        <a href="/DecisionCoach" style="color:#165b9a;text-decoration:none">Decision Coach</a>
-        <a href="/SixDegreesOfMe" style="color:#165b9a;text-decoration:none">Six Degrees of Me</a>
-        <a href="/BrainRoulette" style="color:#165b9a;text-decoration:none">Brain Roulette</a>
-        <a href="/FinalWish" style="color:#165b9a;text-decoration:none">Final Wish</a>
-        <a href="/BikeMedic" style="color:#165b9a;text-decoration:none">Bike Medic</a>
-        <a href="/PlantRescue" style="color:#165b9a;text-decoration:none">Plant Rescue</a>
-        <a href="/ConflictCoach" style="color:#165b9a;text-decoration:none">Conflict Coach</a>
-        <a href="/TaskAvalancheBreaker" style="color:#165b9a;text-decoration:none">Task Avalanche Breaker</a>
-        <a href="/PetBehaviorDecoder" style="color:#165b9a;text-decoration:none">Pet Behavior Decoder</a>
-        <a href="/FakeReviewDetective" style="color:#165b9a;text-decoration:none">Fake Review Detective</a>
-        <a href="/BeforeTheCrash" style="color:#165b9a;text-decoration:none">Before the Crash</a>
-        <a href="/DreamPatternSpotter" style="color:#165b9a;text-decoration:none">Dream Pattern Spotter</a>
-        <a href="/MeetingHijackStopper" style="color:#165b9a;text-decoration:none">Meeting Hijack Stopper</a>
-        <a href="/DoctorVisitTranslator" style="color:#165b9a;text-decoration:none">Doctor Visit Translator</a>
-        <a href="/EmailUrgencyTriager" style="color:#165b9a;text-decoration:none">Email Urgency Triager</a>
-        <a href="/LeaseTrapDetector" style="color:#165b9a;text-decoration:none">Lease Trap Detector</a>
-        <a href="/FriendshipFadeAlerter" style="color:#165b9a;text-decoration:none">Friendship Fade Alerter</a>
-        <a href="/TripRecon" style="color:#165b9a;text-decoration:none">Trip Recon</a>
-        <a href="/LeverageLogic" style="color:#165b9a;text-decoration:none">Leverage Logic</a>
-        <a href="/JustifyMyMeeting" style="color:#165b9a;text-decoration:none">Justify My Meeting</a>
-        <a href="/RecipeChaosSolver" style="color:#165b9a;text-decoration:none">Recipe Chaos Solver</a>
-        <a href="/BillRescue" style="color:#165b9a;text-decoration:none">Bill Rescue</a>
-        <a href="/Mend" style="color:#165b9a;text-decoration:none">Mend</a>
-        <a href="/MicroAdventureMapper" style="color:#165b9a;text-decoration:none">Micro-Adventure Mapper</a>
-        <a href="/DateNight" style="color:#165b9a;text-decoration:none">Date Night</a>
-        <a href="/ChaosPilot" style="color:#165b9a;text-decoration:none">Chaos Pilot</a>
-        <a href="/VirtualBodyDouble" style="color:#165b9a;text-decoration:none">Virtual Body Double</a>
-        <a href="/WaitingModeLiberator" style="color:#165b9a;text-decoration:none">Waiting Mode Liberator</a>
-        <a href="/BrainDumpBuddy" style="color:#165b9a;text-decoration:none">Brain Dump Buddy</a>
-        <a href="/GentlePushGenerator" style="color:#165b9a;text-decoration:none">Gentle Push Generator</a>
-        <a href="/BrainStateDeejay" style="color:#165b9a;text-decoration:none">Brain State Deejay</a>
-        <a href="/VelvetHammer" style="color:#165b9a;text-decoration:none">Velvet Hammer</a>
-        <a href="/MissingLink" style="color:#165b9a;text-decoration:none">Missing Link</a>
-        <a href="/BuyWise" style="color:#165b9a;text-decoration:none">Buy Wise</a>
-        <a href="/SafeWalk" style="color:#165b9a;text-decoration:none">Safe Walk</a>
-        <a href="/RoommateCourt" style="color:#165b9a;text-decoration:none">Roommate Court</a>
-        <a href="/RentersDepositSaver" style="color:#165b9a;text-decoration:none">Renter</a>
-        <a href="/LaundroMat" style="color:#165b9a;text-decoration:none">LaundroMat</a>
-        <a href="/NerveCheck" style="color:#165b9a;text-decoration:none">Nerve Check</a>
-        <a href="/PaperworkPath" style="color:#165b9a;text-decoration:none">Paperwork Path</a>
-        <a href="/QuoteCheck" style="color:#165b9a;text-decoration:none">Quote Check</a>
-        <a href="/TicketTackler" style="color:#165b9a;text-decoration:none">Ticket Tackler</a>
-        <a href="/WhatsThatMean" style="color:#165b9a;text-decoration:none">What</a>
-        <a href="/SomeoneSaidItBetter" style="color:#165b9a;text-decoration:none">Someone Said It Better</a>
-      </nav>
-    </details>
   </footer>
 
 </body>

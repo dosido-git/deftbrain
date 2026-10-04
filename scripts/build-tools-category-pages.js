@@ -27,7 +27,7 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { getFooterHTML, getSiteHeaderHTML, getToolIndexHTML, getToolList } = require('../src/seo/chrome');
+const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { categoriesFor } = require('./lib/toolCategories');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
@@ -170,7 +170,6 @@ function renderHead({ title, description, canonicalPath }) {
 function renderFooter() {
   return `
 ${getFooterHTML()}
-${getToolIndexHTML(getToolList())}
 
 </body>
 </html>`;

@@ -50,165 +50,65 @@ function getToolList() {
   return out;
 }
 
-// Parse src/data/categoryMeta.js for { name, slug } of the 14 permanent tool
-// categories. Same plain-regex-over-source approach as getToolList() above,
-// for the same reason: these build-time scripts are CommonJS and
-// categoryMeta.js is a bundler-free ES module — no `import`/`require` of it
-// works here. `slug:` always follows that entry's own `name:` before the
-// next entry's `name:` can appear, so a non-greedy match between them can't
-// cross into a neighboring category.
-function getCategoryList() {
-  const file = path.join(__dirname, '..', 'data', 'categoryMeta.js');
-  const content = fs.readFileSync(file, 'utf8');
-  const out = [];
-  const re = /name:\s*'([^']+)'[\s\S]*?slug:\s*'([^']+)'/g;
-  let m;
-  while ((m = re.exec(content))) out.push({ name: m[1], slug: m[2] });
-  return out;
+function getFooterHTML() {
+  return `${getSiteEndHTML()}\n  ${getSiteFooterBar()}`;
 }
 
-// A real, crawlable <a href> index of every tool. Injected into the static HTML
-// of the homepage, every tool page, and every guide — placed OUTSIDE the React
-// root so hydration ignores it. Fixes the orphaned-tools internal-linking problem
-// (the SPA's homepage tool links are client-rendered, so crawlers saw none).
-function getToolIndexHTML(tools, relatedHTML = '') {
-  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const links = tools
-    .map(t => `<a href="/${t.id}" style="color:#165b9a;text-decoration:none">${esc(t.title)}</a>`)
-    .join('\n        ');
-  // Optional per-page "Related tools" block (visible) renders above the full
-  // index — see prerender.js getRelatedHTML(). When empty (homepage, guides),
-  // the footer is byte-identical to the index-only version, so those outputs
-  // don't change. Tool pages pass a relevance-ranked set.
-  const related = relatedHTML ? `${relatedHTML}\n    ` : '';
-  // Collapsed <details> disclosure: visually one tidy line ("All DeftBrain tools ▸"),
-  // but every link stays in the DOM and crawlable (Google indexes and follows links
-  // inside collapsed <details>). User-accessible, not hidden — so it keeps the
-  // internal-linking SEO value without the wall-of-links look on every page.
-  // The <nav> must NOT carry an inline `display` — an inline style always wins over
-  // the browser's default `details:not([open]) > *:not(summary){display:none}` rule,
-  // which silently forced this open (full link wall visible) on every single page
-  // load site-wide. The flex layout is applied only for the [open] state instead.
-  // Category-page links (2026-09-22) — the 14 /tools/{slug} pages
-  // (scripts/build-tools-category-pages.js) get their own collapsed block,
-  // above the flat per-tool index, so every page in this shared chrome
-  // links to every category page: the exact "add a real link to the shared
-  // chrome" fix already used once this session for /tools itself, applied
-  // again here to avoid the new pages being orphaned in the static-HTML
-  // link graph check-orphans.js walks.
-  const categories = getCategoryList();
-  const categoryLinks = categories
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map(cat => `<a href="/tools/${cat.slug}" style="color:#165b9a;text-decoration:none">${esc(cat.name)}</a>`)
-    .join('\n        ');
-  const categoriesBlock = categories.length ? `<details style="border-top:1px solid #e8e1d5;padding-top:14px;margin-bottom:14px">
-      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">Browse tools by category</summary>
-      <nav style="font-size:13px;line-height:1.5;margin-top:14px">
-        ${categoryLinks}
-      </nav>
-    </details>` : '';
-  return `
-  <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
-    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}
-    /* This strip lives outside #root, so it survives hydration and no
-       React print rule reaches it — a tool print-out ended with a whole
-       page of site navigation. DashBoard carries its own copy of this
-       rule for the same reason; here it travels with the markup, so
-       every page that emits the strip suppresses it on paper. */
-    @media print{.db-tool-index{display:none!important}}</style>
-    ${related}${categoriesBlock}<details style="border-top:1px solid #e8e1d5;padding-top:14px">
-      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
-      <nav style="font-size:13px;line-height:1.5;margin-top:14px">
-        ${links}
-      </nav>
-    </details>
-  </footer>`;
-}
-
-// Static twin of src/components/EmailCapture.js — same copy, same endpoint,
-// vanilla JS (these pages have no React). Keep the two in sync.
-//
-// 2026-09-16: matches the React component's compact single-row redesign —
-// no more inset white card, band shrunk to a slim strip, copy shortened.
-// flex-wrap (not a media query) does the stacking-on-narrow job here, since
-// this is crawler/no-JS-client chrome, not the interactive React page — a
-// close visual match is the goal, not a pixel-exact breakpoint mirror.
-function getCaptureHTML() {
-  return `  <div class="db-capture" style="border-top:1px solid #e8e1d5;border-bottom:1px solid #e8e1d5;background:#f2ece1">
-    <div style="max-width:1280px;margin:0 auto;padding:18px 20px;font-family:'DM Sans',system-ui,sans-serif">
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px">
-        <div style="flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px">
-          <p style="flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
-          <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:0">One useful tool a month &mdash; the one worth knowing about before life demands it.</p>
-        </div>
-        <form id="db-cap-form" style="display:flex;flex-wrap:nowrap;gap:8px;flex:0 1 380px;min-width:280px">
-          <label for="db-cap-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Email address</label>
-          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email"
-            style="flex:1;min-width:0;padding:8px 14px;border-radius:8px;border:1px solid #d8d0c2;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;outline:none">
-          <button id="db-cap-btn" type="submit"
-            style="flex-shrink:0;padding:8px 20px;border-radius:8px;border:0;background:#1a2e44;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Subscribe</button>
+// The band every page ends with, just above the footer (2026-10-04): the
+// ideas box on the left, the newsletter on the right; stacked on a phone.
+// Same markup as src/components/SiteEnd.js; styled by public/site-footer.css.
+// Copy here and in SiteEnd.js must match.
+function getSiteEndHTML() {
+  return `<section class="site-end" aria-label="Ideas and newsletter">
+    <div class="site-end-inner">
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128161; Missing something?</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Tell us what you&rsquo;re dealing with. We read every one, and the best become new tools.</p>
+        <form class="site-end-form" id="db-idea-form">
+          <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
+          <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
+          <button id="db-idea-btn" type="submit">Send</button>
         </form>
-        <p id="db-cap-msg" style="flex-basis:100%;text-align:right;font-size:14px;font-weight:500;color:#1a2e44;margin:0"></p>
+        <p class="site-end-msg" id="db-idea-msg" role="status"></p>
+      </div>
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128238; Newsletter</p>
+        <p class="site-end-text"><strong>One useful tool a month</strong> &mdash; the one worth knowing about before life demands it.</p>
+        <form class="site-end-form" id="db-cap-form">
+          <label class="sr-only-se" for="db-cap-email">Email address</label>
+          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email">
+          <button id="db-cap-btn" type="submit">Subscribe</button>
+        </form>
+        <p class="site-end-msg" id="db-cap-msg" role="status"></p>
       </div>
     </div>
-  </div>
+  </section>
   <script>
   (function(){
-    var f=document.getElementById('db-cap-form'); if(!f) return;
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      var btn=document.getElementById('db-cap-btn'), msg=document.getElementById('db-cap-msg');
-      btn.disabled=true; btn.textContent='Sending\\u2026';
-      fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({email:document.getElementById('db-cap-email').value,source:location.pathname})})
-        .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
-        .then(function(x){
-          if(x.ok&&x.d.ok){ f.style.display='none';
-            msg.textContent = x.d.already ? 'You\\u2019re already on the list. The Operator admires the enthusiasm.'
-                                          : 'Check your inbox \\u2014 confirm the email and you\\u2019re in.'; }
-          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \\u2014 try again.';
-            btn.disabled=false; btn.textContent='Subscribe'; }
-        })
-        .catch(function(){ msg.textContent='Something went wrong \\u2014 try again.';
-          btn.disabled=false; btn.textContent='Subscribe'; });
-    });
+    function wire(formId, btnId, msgId, label, send, done){
+      var f=document.getElementById(formId); if(!f) return;
+      f.addEventListener('submit', function(e){
+        e.preventDefault();
+        var btn=document.getElementById(btnId), msg=document.getElementById(msgId);
+        btn.disabled=true; btn.textContent='Sending\\u2026';
+        send().then(function(x){
+          if(x.ok){ f.style.display='none'; msg.textContent=done(x.d); }
+          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \\u2014 try again.'; btn.disabled=false; btn.textContent=label; }
+        }).catch(function(){ msg.textContent='Something went wrong \\u2014 try again.'; btn.disabled=false; btn.textContent=label; });
+      });
+    }
+    function post(url, body){
+      return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok&&(d.ok!==false),d:d};});});
+    }
+    wire('db-idea-form','db-idea-btn','db-idea-msg','Send',
+      function(){ return post('/api/idea',{problem:document.getElementById('db-idea-input').value.trim(),source:'site-end',path:location.pathname}); },
+      function(){ return '\\uD83D\\uDE4F Got it \\u2014 thank you.'; });
+    wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
+      function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
+      function(d){ return d&&d.already ? 'You\\u2019re already on the list. The Operator admires the enthusiasm.' : 'Check your inbox \\u2014 confirm the email and you\\u2019re in.'; });
   })();
   </script>`;
-}
-
-function getFooterHTML() {
-  const year = new Date().getFullYear();
-  return getCaptureHTML() + `\n  <div style="text-align:center;margin:2.5rem auto 0;max-width:30rem;padding:0 1rem;font-family:'DM Sans',system-ui,sans-serif;">
-    <p style="font-size:1rem;font-weight:700;color:#1a2e44;margin:0;">No tool for your problem?</p>
-    <p style="font-size:0.9rem;color:#5a544a;margin:0.25rem 0 0.75rem;">Describe it &mdash; we build fast.</p>
-    <form id="db-idea-form" style="display:flex;gap:8px;">
-      <label for="db-idea-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Describe your problem</label>
-      <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?"
-        style="flex:1;min-width:0;padding:10px 16px;border-radius:12px;border:1px solid #e8e1d5;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;">
-      <button id="db-idea-btn" type="submit"
-        style="padding:10px 20px;border-radius:12px;border:0;background:#1a2e44;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Send</button>
-    </form>
-    <p id="db-idea-msg" style="font-size:14px;font-weight:500;color:#1a2e44;margin:8px 0 0;"></p>
-  </div>
-  <script>
-  (function(){
-    var f=document.getElementById('db-idea-form'); if(!f) return;
-    f.addEventListener('submit', function(e){
-      e.preventDefault();
-      var btn=document.getElementById('db-idea-btn'), msg=document.getElementById('db-idea-msg');
-      var text=document.getElementById('db-idea-input').value.trim(); if(!text) return;
-      btn.disabled=true; btn.textContent='Sending\\u2026';
-      fetch('/api/idea',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({problem:text,source:'guide-footer',path:location.pathname})})
-        .then(function(r){
-          if(r.ok){ f.style.display='none'; msg.textContent='\\uD83D\\uDE4F Got it \\u2014 thank you. If we build it, it ships fast.'; }
-          else { msg.textContent='Something went wrong \\u2014 try again.'; btn.disabled=false; btn.textContent='Send'; }
-        })
-        .catch(function(){ msg.textContent='Something went wrong \\u2014 try again.'; btn.disabled=false; btn.textContent='Send'; });
-    });
-  })();
-  </script>\n  ${getSiteFooterBar(year)}`;
 }
 
 // Whether the Tool Finder link shows, read from the same flag Footer.js uses.
@@ -223,16 +123,10 @@ function toolFinderPaused() {
 // src/components/Footer.js, so a static page and a React page end the same
 // way. Styles in public/guides/guide.css (.site-footer); keep both in sync.
 function getSiteFooterBar(year = new Date().getFullYear()) {
-  const links = [
-    ['All Tools', '/tools'],
-    ...(toolFinderPaused() ? [] : [['Find a Tool', '/ToolFinder']]),
-    ['Guides', '/guides'],
-    ['Organizations', '/organizations'],
-    ['About', '/about'],
-    ['Privacy', '/privacy'],
-    ['Terms', '/terms'],
-    ['Contact', 'mailto:hello@deftbrain.com'],
-  ].map(([label, href]) => `<a href="${href}">${label}</a>`).join('');
+  const paused = toolFinderPaused();
+  const links = require('../data/siteNav.json').footer
+    .filter(l => !(l.key === 'toolFinder' && paused))
+    .map(l => `<a href="${l.href}">${l.label}</a>`).join('');
   return `<footer class="site-footer">
     <div class="site-footer-inner">
       <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">
@@ -240,9 +134,9 @@ function getSiteFooterBar(year = new Date().getFullYear()) {
         <span class="site-footer-word">Deft<span>Brain</span></span>
       </a>
       <div class="site-footer-end">
-        <nav class="footer-nav" aria-label="Footer">${links}</nav>
+        <nav class="site-footer-nav" aria-label="Footer">${links}</nav>
         <span class="site-footer-dot" aria-hidden="true">·</span>
-        <span class="footer-copy">© ${year} DeftBrain · deftbrain.com</span>
+        <span>© ${year} DeftBrain · deftbrain.com</span>
       </div>
     </div>
   </footer>`;
@@ -301,4 +195,4 @@ function getPageSearchHTML(opts) {
   return `<div class="page-search">${getSearchFormHTML(opts)}</div>`;
 }
 
-module.exports = { getFooterHTML, getCaptureHTML, getToolList, getToolIndexHTML, getCategoryList, getSearchFormHTML, getSiteHeaderHTML, getPageSearchHTML, getSiteFooterBar };
+module.exports = { getFooterHTML, getToolList, getSearchFormHTML, getSiteHeaderHTML, getPageSearchHTML, getSiteFooterBar, getSiteEndHTML };

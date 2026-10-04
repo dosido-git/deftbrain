@@ -1,9 +1,59 @@
 {
-  "_note": "The site header's links, in order. Read by src/components/SiteHeader.js (React pages) and getSiteHeaderHTML() in src/seo/chrome.js (static pages); styled by public/site-header.css. 'categories' scrolls to the category picker on pages that have one.",
+  "_note": "The site header's and footer's links, in order. Read by src/components/SiteHeader.js and Footer.js (React pages) and getSiteHeaderHTML()/getSiteFooterBar() in src/seo/chrome.js (static pages); styled by public/site-header.css and public/site-footer.css. 'categories' scrolls to the category picker on pages that have one; 'toolFinder' hides while src/data/toolFinderPaused.js says so.",
   "links": [
-    { "label": "Tools", "href": "/tools", "route": true },
-    { "label": "Categories", "href": "/#categories", "route": true, "key": "categories" },
-    { "label": "Guides", "href": "/guides" },
-    { "label": "About", "href": "/about" }
+    {
+      "label": "Tools",
+      "href": "/tools",
+      "route": true
+    },
+    {
+      "label": "Categories",
+      "href": "/#categories",
+      "route": true,
+      "key": "categories"
+    },
+    {
+      "label": "Guides",
+      "href": "/guides"
+    },
+    {
+      "label": "About",
+      "href": "/about"
+    }
+  ],
+  "footer": [
+    {
+      "label": "All Tools",
+      "href": "/tools"
+    },
+    {
+      "label": "Find a Tool",
+      "href": "/ToolFinder",
+      "key": "toolFinder"
+    },
+    {
+      "label": "Guides",
+      "href": "/guides"
+    },
+    {
+      "label": "Organizations",
+      "href": "/organizations"
+    },
+    {
+      "label": "About",
+      "href": "/about"
+    },
+    {
+      "label": "Privacy",
+      "href": "/privacy"
+    },
+    {
+      "label": "Terms",
+      "href": "/terms"
+    },
+    {
+      "label": "Contact",
+      "href": "mailto:hello@deftbrain.com"
+    }
   ]
 }

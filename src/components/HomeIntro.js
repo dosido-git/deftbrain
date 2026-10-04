@@ -283,6 +283,10 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
 
     {byId.has('DoctorVisitPrep') && <section className="db-home-demo db-home-section" aria-labelledby="home-demo-title" data-db-section="demo">
       <h2 id="home-demo-title">See how it works</h2>
+      {/* Labelled as one example (2026-10-04, owner): with no label the
+          Doctor Visit Prep walkthrough read as what DeftBrain is, not as one
+          of many tools working the same way. */}
+      <p className="db-home-demo-label">An example, using one tool: <strong>Doctor Visit Prep</strong></p>
       {/* The "you don't have to figure out what to ask" point moved here from
           the hero (2026-09-27): it's the claim this demo shows, and the hero
           said it a second time right above the finder's own steps line. */}
@@ -380,23 +384,5 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
     </section>
 
-    <section className="py-8 text-center" data-db-section="closing">
-      <h2 className="text-[22px] sm:text-[25px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>You don’t have to figure everything out alone.</h2>
-      <p className="mt-1.5 text-sm" style={{color:MUTED}}>Read one, or run a tool — whichever fits.</p>
-      {/* Plain <a>, not <Link>: /guides and /guides/:category are static
-          prerendered pages (built by scripts/prerender.js), not React Router
-          routes — a <Link> here would fall through to the catch-all
-          /:toolId route and 404, same convention as the privacy link above
-          and Footer.js/RelatedLinks.js. */}
-      <nav aria-label="Guides" className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-semibold">
-        <a href="/guides/conversations" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Conversations</a>
-        <a href="/guides/money" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Money</a>
-        <a href="/guides/workplace" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Workplace</a>
-        <a href="/guides/home" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Home</a>
-        <a href="/guides/wellness" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Wellness</a>
-        <a href="/guides/health" className="!no-underline hover:!underline underline-offset-4" style={{color:NAVY}}>Health</a>
-        <a href="/guides" className="font-bold underline underline-offset-4" style={{color:NAVY}}>Browse all guides →</a>
-      </nav>
-    </section>
   </main>;
 }

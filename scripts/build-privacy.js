@@ -23,7 +23,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getFooterHTML, getSiteHeaderHTML, getToolIndexHTML, getToolList } = require('../src/seo/chrome');
+const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
@@ -168,7 +168,6 @@ ${bodyHtml}
   </main>
 
 ${getFooterHTML()}
-${getToolIndexHTML(getToolList())}
 
 </body>
 </html>

@@ -23,7 +23,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { getFooterHTML, getToolList, getToolIndexHTML, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getToolList, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
@@ -46,9 +46,6 @@ const GUIDES_KEEP_LIST = (() => {
   if (!set.size) throw new Error('guides/keep-list.json parsed to an empty set');
   return set;
 })();
-// Crawlable all-tools index appended to every guide — spreads internal authority
-// from the (ranking) guides to all tool pages. Computed once.
-const TOOL_INDEX_HTML = getToolIndexHTML(getToolList());
 
 const ROOT          = path.join(__dirname, '..');
 const SPECS_DIR     = path.join(ROOT, 'guides');
@@ -488,7 +485,6 @@ ${relatedCards}
   </main>
 
 ${getFooterHTML()}
-${TOOL_INDEX_HTML}
 
 </body>
 </html>

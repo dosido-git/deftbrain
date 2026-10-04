@@ -53,7 +53,6 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png?v=2`;
 // imported by prerender.js, useDocumentHead.js, and generate-og.py.
 // Adding a new tool? Add its slug entry there.
 const TOOL_OG_SLUGS = require(path.join(ROOT, 'src', 'data', 'tool-og-slugs.json'));
-const { getToolIndexHTML } = require(path.join(ROOT, 'src', 'seo', 'chrome'));
 
 // ── Tools keep-list (SEO concentration, 2026-07) ──
 // Union of focus+keepers = the INDEXABLE tool set. Every other tool page stays
@@ -325,23 +324,6 @@ function loadHubNames() {
 }
 const HUB_NAMES = loadHubNames();
 
-// Homepage → all 18 hubs. Eighteen links from the highest-authority page.
-function getHubsHTML() {
-  const cats = Object.keys(HUB_NAMES);
-  if (cats.length < 2) return '';
-  const links = cats.sort((a, b) => HUB_NAMES[a].localeCompare(HUB_NAMES[b]))
-    .map(c => `<a href="/guides/${c}" style="color:#165b9a;text-decoration:none;font-weight:500">${escapeHtml(HUB_NAMES[c])}</a>`)
-    .join('\n        ');
-  return `<details class="db-hubs" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Browse guides by topic</summary>
-      <nav aria-label="Guide categories" style="padding:.25rem 0 0 1rem">
-        <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
-          ${links}
-        </div>
-      </nav>
-    </details>`;
-}
-
 // Tool page → the hub(s) its own guides live in. Derived from the guides
 // themselves, so the link is always topically relevant and never hand-mapped.
 function getToolHubsHTML(guides) {
@@ -393,48 +375,12 @@ function getRelatedGuidesHTML(guides, n = 4) {
 const HOME_H1 = '<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">Life doesn’t come with instructions.</h1>'
   + '<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">Interactive guidance for life’s awkward, confusing, and curious moments: understanding a document, preparing for a conversation, making a decision, or exploring an idea.</p>';
 
-function getFeaturedToolsHTML(tools) {
-  const featured = (TOOLS_KEEP_LIST.focus || [])
-    .map(id => tools.find(t => t.id === id))
-    .filter(Boolean);
-  if (!featured.length) return '';
-  const items = featured.map(t => {
-    const blurb = t.tagline || t.seoTitle || '';
-    return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
-  }).join('\n        ');
-  return `<details class="db-featured-tools" style="max-width:760px;margin:0 auto;padding:1rem 1.25rem 0">
-      <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Some of our most popular tools</summary>
-      <nav aria-label="Featured tools">
-        <ul style="list-style:none;padding:0;margin:.5rem 0 0">
-          ${items}
-        </ul>
-      </nav>
-    </details>`;
-}
-
-// Homepage guides block — the homepage is the highest-authority page and linked to
-// ZERO guides. This surfaces a topically-varied sample (one guide per tool) plus a
-// prominent link to the /guides hub, so authority flows home → hub → all guides.
-function getHomepageGuidesHTML(guidesByTool, n = 10) {
-  const picks = [];
-  let total = 0;
-  for (const list of Object.values(guidesByTool)) {
-    total += list.length;
-    if (list[0] && picks.length < n) picks.push(list[0]); // one per tool → topic variety
-  }
-  if (!picks.length) return '';
-  const links = picks
-    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#165b9a;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
-    .join('\n        ');
-  return `<details class="db-home-guides" style="margin:0 0 12px">
-      <summary style="cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;padding:.5rem 0">Guides — browse all ${total}</summary>
-      <nav aria-label="Guides" style="padding:.25rem 0 0 1rem">
-        <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
-          ${links}
-          <a href="/guides" style="color:#165b9a;font-weight:600">Browse all guides &rarr;</a>
-        </div>
-      </nav>
-    </details>`;
+function getHomeStaticHTML(categories) {
+  const e = escapeHtml;
+  const cats = categories.map(c =>
+    `<li style="margin:.3rem 0"><a href="/tools/${e(c.slug)}">${e(c.name)}</a></li>`).join('');
+  return `<nav aria-label="Primary" style="margin:0 0 1.5rem"><a href="/tools">Tools</a> · <a href="/guides">Guides</a> · <a href="/about">About</a> · <a href="/organizations">Organizations</a></nav>`
+    + `<h2 style="font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a">Explore by category</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`;
 }
 
 // ─── HTML injection ───────────────────────────────────────────────────────────
@@ -581,17 +527,13 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   return html;
 }
 
-// Crawlable all-tools index — see src/seo/chrome.js getToolIndexHTML(). Injected
-// OUTSIDE #root so React ignores it on hydration (no cloaking). Fixes the
-// orphaned-tools internal-linking problem the SPA created.
-function injectToolIndex(html, indexHtml) {
-  // Idempotent: strip any previously-injected index first. prerender writes the
-  // footer into build/index.html (the homepage), which is ALSO the template for
-  // tool pages — so if prerender runs against a build/ that already has a footer
-  // (a re-run, or Railway caching the build dir across deploys), it would double
-  // up. Removing existing copies first guarantees exactly one, every time.
-  const cleaned = html.replace(/\s*<footer class="db-tool-index"[\s\S]*?<\/footer>/g, '');
-  return cleaned.replace('</body>', `${indexHtml}\n</body>`);
+// The crawlable all-tools index that used to follow every footer is gone
+// (2026-10-04, owner: "everything unnecessary or repetitive"). Every page's
+// header links Tools and Categories, the home page's HTML links the 14
+// category pages, each category page links its tools, and the sitemaps list
+// everything. This only strips a copy a cached build/ may still hold.
+function stripToolIndex(html) {
+  return html.replace(/\s*<footer class="db-tool-index"[\s\S]*?<\/footer>/g, '');
 }
 
 // Static, tool-specific body content. The CRA shell ships an empty <div id="root">,
@@ -729,7 +671,6 @@ async function main() {
   console.log(`Loaded ${guideCount} guides across ${Object.keys(guidesByTool).length} tools.`);
   // Homepage gets the all-tools index + a guides block (home → /guides hub);
   // tool pages also get per-tool "Related tools" + "Related guides" blocks.
-  const homeGuides = getHomepageGuidesHTML(guidesByTool);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
@@ -776,9 +717,7 @@ async function main() {
       const relatedBlocks = getRelatedHTML(relatedTools(tool, tools))
         + getRelatedGuidesHTML(guidesByTool[tool.id])
         + getToolHubsHTML(guidesByTool[tool.id]);
-      const html = injectToolIndex(
-        injectBody(injectMeta(template, tool), tool, relatedBlocks),
-        getToolIndexHTML(tools));
+      const html = stripToolIndex(injectBody(injectMeta(template, tool), tool, relatedBlocks));
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
@@ -788,32 +727,19 @@ async function main() {
     }
   }
 
-  // Inject the same crawlable tool index into the homepage's static HTML — the
-  // highest-authority page, and the one Google saw with zero outbound tool links.
+  // The homepage's static HTML: what the page itself shows a reader (its
+  // heading, the site's sections, Explore by category), so a crawler's first
+  // read links what a person can see — and the 14 category pages, from which
+  // every tool is one more link away (2026-10-04).
   try {
-    // Home "Start here" (focus tools) + "Guides" blocks go INSIDE #root (React
-    // replaces them per-route → no leak onto tool pages); the all-tools index
-    // stays outside #root. Featured first = first-position links for the 18.
-    const homepageHtml = injectToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1}${getFeaturedToolsHTML(tools)}${homeGuides}${getHubsHTML()}</div>`),
-      getToolIndexHTML(tools));
+    const homepageHtml = stripToolIndex(
+      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1}${getHomeStaticHTML(loadCategoryMeta())}</div>`));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
-    console.log('  OK  / (homepage tool index)');
+    console.log('  OK  / (homepage)');
     succeeded++;
   } catch (err) {
     console.error(`  FAIL  / homepage  ->  ${err.message}`);
     failed++;
-  }
-
-  // About and Terms are hand-written in public/, so their copy of the shared
-  // crawlable tool index is added here, at build time, rather than pasted in
-  // and left to go stale (2026-10-04: every page now ends with it).
-  for (const name of ['about.html', 'terms.html']) {
-    const file = path.join(BUILD_DIR, name);
-    if (fs.existsSync(file)) {
-      fs.writeFileSync(file, injectToolIndex(fs.readFileSync(file, 'utf8'), getToolIndexHTML(tools)), 'utf8');
-      console.log(`  OK  /${name.replace('.html', '')} (tool index)`);
-    }
   }
 
   // /tools and /organizations — see STATIC_PAGES above.
@@ -822,10 +748,9 @@ async function main() {
   for (const [pathName, body] of [['tools', toolsPageHTML(categories, countLabel)], ['organizations', organizationsPageHTML()]]) {
     try {
       const meta = STATIC_PAGES[pathName];
-      const html = injectToolIndex(
+      const html = stripToolIndex(
         injectPageMeta(template, { pathName, title: meta.title, description: meta.description(countLabel) })
-          .replace('<div id="root"></div>', `<div id="root">${body}</div>`),
-        getToolIndexHTML(tools));
+          .replace('<div id="root"></div>', `<div id="root">${body}</div>`));
       fs.writeFileSync(path.join(BUILD_DIR, `${pathName}.html`), html, 'utf8');
       console.log(`  OK  /${pathName}`);
       succeeded++;
