@@ -387,6 +387,12 @@ function getRelatedGuidesHTML(guides, n = 4) {
 // very bottom, under the whole catalog it was meant to introduce, offering 18
 // choices. The links carry the SEO value; the heading text carries none, so
 // naming it honestly costs nothing.
+// The homepage's static HTML had no <h1> (Bing Site Scan, 2026-10-04) — the
+// React hero has one, but React replaces #root on load. Same text as
+// HomeIntro.js's <h1 id="home-title"> plus its positioning line; keep in sync.
+const HOME_H1 = '<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">Life doesn’t come with instructions.</h1>'
+  + '<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">Interactive guidance for life’s awkward, confusing, and curious moments: understanding a document, preparing for a conversation, making a decision, or exploring an idea.</p>';
+
 function getFeaturedToolsHTML(tools) {
   const featured = (TOOLS_KEEP_LIST.focus || [])
     .map(id => tools.find(t => t.id === id))
@@ -789,7 +795,7 @@ async function main() {
     // replaces them per-route → no leak onto tool pages); the all-tools index
     // stays outside #root. Featured first = first-position links for the 18.
     const homepageHtml = injectToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${getFeaturedToolsHTML(tools)}${homeGuides}${getHubsHTML()}</div>`),
+      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1}${getFeaturedToolsHTML(tools)}${homeGuides}${getHubsHTML()}</div>`),
       getToolIndexHTML(tools));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage tool index)');
