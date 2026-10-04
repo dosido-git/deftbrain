@@ -7,13 +7,15 @@
        src/seo/chrome.js; public/guides/guide.css @imports this file.
    Both read their links from src/data/siteNav.json. Change the header here,
    in those two renderers' shared markup, and nowhere else.
-   Colors follow html[data-theme], which both kinds of page set the same way. */
+   Colors follow html[data-theme], which both kinds of page set the same way.
+   The menu links are blue in both modes (owner, 2026-10-04): navy #1e3a58 in
+   light, the brand's light blue #85afd6 in dark, never white. */
 
 .site-header { --sh-ink: #1e3a58; --sh-line: #e8e1d5; --sh-bg: #faf8f5; --sh-pop: #fffdf9; --sh-hover: #f0ebf7;
   --sh-deft: #165b9a; --sh-brain: #c8872e;
   position: sticky; top: 0; z-index: 20; background: var(--sh-bg); border-bottom: 1px solid var(--sh-line);
   font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; }
-:root[data-theme="dark"] .site-header { --sh-ink: #e4e4e7; --sh-line: #3f3f46; --sh-bg: #18181b; --sh-pop: #27272a; --sh-hover: #3f3f46;
+:root[data-theme="dark"] .site-header { --sh-ink: #85afd6; --sh-line: #3f3f46; --sh-bg: #18181b; --sh-pop: #27272a; --sh-hover: #3f3f46;
   --sh-deft: #85afd6; --sh-brain: #d9a04e; }
 
 /* Nothing in the header is underlined at rest, in any browser. Safari can
