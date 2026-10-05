@@ -357,7 +357,7 @@ The trap is that visible chores get split fairly and invisible chores get done b
     <div class="site-end-inner">
       <div class="site-end-part">
         <p class="site-end-kicker">&#128161; Missing something?</p>
-        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Tell us what you&rsquo;re dealing with. We read every one, and the best become new tools.</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Tell us what you&rsquo;re dealing with. We read every suggestion, and the best become new tools.</p>
         <form class="site-end-form" id="db-idea-form">
           <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
           <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
@@ -379,14 +379,17 @@ The trap is that visible chores get split fairly and invisible chores get done b
   </section>
   <script>
   (function(){
-    function wire(formId, btnId, msgId, label, send, done){
+    function wire(formId, btnId, msgId, label, send, done, resetAfter){
       var f=document.getElementById(formId); if(!f) return;
       f.addEventListener('submit', function(e){
         e.preventDefault();
         var btn=document.getElementById(btnId), msg=document.getElementById(msgId);
         btn.disabled=true; btn.textContent='Sending\u2026';
         send().then(function(x){
-          if(x.ok){ f.style.display='none'; msg.textContent=done(x.d); }
+          if(x.ok){
+            f.style.display='none'; msg.textContent=done(x.d);
+            if(resetAfter) setTimeout(function(){ f.reset(); f.style.display=''; msg.textContent=''; btn.disabled=false; btn.textContent=label; }, resetAfter);
+          }
           else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; }
         }).catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; });
       });
@@ -397,7 +400,7 @@ The trap is that visible chores get split fairly and invisible chores get done b
     }
     wire('db-idea-form','db-idea-btn','db-idea-msg','Send',
       function(){ return post('/api/idea',{problem:document.getElementById('db-idea-input').value.trim(),source:'site-end',path:location.pathname}); },
-      function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; });
+      function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; }, 6000);
     wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
       function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
       function(d){ return d&&d.already ? 'You\u2019re already on the list. The Operator admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });

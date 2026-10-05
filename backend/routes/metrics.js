@@ -71,14 +71,18 @@ function reqExcludedByList(req) {
 // Known bots / crawlers / uptime monitors — their hits are noise, not users.
 const BOT_UA = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|pinterest|redditbot|whatsapp|telegrambot|discordbot|semrush|ahrefs|mj12|dotbot|petalbot|dataforseo|headlesschrome|python-requests|curl|wget|go-http|axios|node-fetch|uptime|monitor|pingdom|statuscake|gtmetrix|lighthouse|inspectiontool/i;
 
-function isExcluded(req) {
+function isBotRequest(req) {
   // Bot / crawler / monitor traffic by UA — never counts.
   const ua = req.headers['user-agent'] || '';
   if (!ua || BOT_UA.test(ua)) return true;
   const ip = requestIp(req);
   // Cloud/datacenter IPs (AWS/GCP/Oracle/DO) — bots wearing a browser UA that
   // the UA filter can't catch. See lib/datacenterIp + build-datacenter-ranges.
-  if (ip && isDatacenterIp(ip)) return true;
+  return !!(ip && isDatacenterIp(ip));
+}
+
+function isExcluded(req) {
+  if (isBotRequest(req)) return true;
   // Operator self-exclusion (METRICS_EXCLUDE_IPS) — matches any hop in the chain,
   // mapped-form tolerant, so a rotating last hop doesn't defeat it.
   if (reqExcludedByList(req)) return true;
@@ -192,7 +196,9 @@ router.post('/feedback', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
 // the key, the email just doesn't fire. Tight limits: humans submit once.
 const IDEA_LIMITS = { perMinute: 3, perDay: 10 };
 router.post('/idea', rateLimit(IDEA_LIMITS, 'idea:'), (req, res) => {
-  if (isExcluded(req)) return res.status(204).end();
+  // Bots only — NOT the operator IP list. An idea is a message, not a metric;
+  // the operator's own submissions used to vanish here silently (2026-10-04).
+  if (isBotRequest(req)) return res.status(204).end();
   const { problem, source, query, path } = req.body || {};
   const text = (problem || '').toString().trim().slice(0, 1000);
   if (!text) return res.status(400).json({ error: 'Describe the problem first.' });
