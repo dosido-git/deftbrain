@@ -373,7 +373,7 @@ function getRelatedGuidesHTML(guides, n = 4) {
 // React hero has one, but React replaces #root on load. Same text as
 // HomeIntro.js's <h1 id="home-title"> plus its positioning line; keep in sync.
 const HOME_H1 = '<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">Life doesn’t come with instructions.</h1>'
-  + '<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">Interactive guidance for life’s awkward, confusing, and curious moments: understanding a document, preparing for a conversation, making a decision, or exploring an idea.</p>';
+  + '<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">Interactive guidance for life’s awkward, confusing, and curious moments.</p>';
 
 function getHomeStaticHTML(categories) {
   const e = escapeHtml;

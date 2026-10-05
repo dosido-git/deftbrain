@@ -67,29 +67,12 @@ export default function AllToolsPage({ allTools = [] }) {
   const initialCategory = params.get('category') || 'All';
   const [query, setQuery] = useState(initialQ);
   const [category, setCategory] = useState(initialCategory);
-  const [categoryOpen, setCategoryOpen] = useState(false);
   // Matches the homepage's persistent nav search exactly (narrow-then-
   // expand on focus/content) — owner asked for the same box, same
   // location, same action, not just a similar-looking one.
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef(null);
-  const moreRef = useRef(null);
-  const moreBtnRef = useRef(null);
 
-  // The More menu closes on a click or tap anywhere outside it, and on Esc
-  // (which also hands focus back to the More button, so keyboard users are
-  // not left stranded). Listeners exist only while the menu is open.
-  useEffect(() => {
-    if (!categoryOpen) return undefined;
-    const onPointer = e => { if (moreRef.current && !moreRef.current.contains(e.target)) setCategoryOpen(false); };
-    const onKey = e => { if (e.key === 'Escape') { setCategoryOpen(false); moreBtnRef.current?.focus(); } };
-    document.addEventListener('pointerdown', onPointer);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('pointerdown', onPointer);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [categoryOpen]);
 
   // Arriving from a link lower on another page (the home page's "Browse all
   // tools"), client-side navigation kept that page's scroll offset and
@@ -184,7 +167,7 @@ export default function AllToolsPage({ allTools = [] }) {
   };
 
   const submitSearch = e => { e.preventDefault(); syncUrl(query, category); };
-  const chooseCategory = next => { setCategory(next); setCategoryOpen(false); syncUrl(query, next); };
+  const chooseCategory = next => { setCategory(next); syncUrl(query, next); };
 
   return (
     <main className="at-page">
@@ -239,18 +222,13 @@ export default function AllToolsPage({ allTools = [] }) {
       <div id="categories" className="at-controls-sticky">
         <div className="at-shell at-controls">
           <div className="at-category-row" aria-label="Filter tools by category">
-            <button className={`at-chip ${category === 'All' ? 'is-active' : ''}`} onClick={() => chooseCategory('All')}>All</button>
-            {CATEGORY_META.slice(0, 6).map(cat => categoryCounts[cat.name] ? (
-              <button key={cat.name} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} onClick={() => chooseCategory(cat.name)}>{cat.emoji} {cat.name}</button>
+            {/* Every category as a chip, wrapping onto two rows — no More
+                menu (owner, 2026-10-04): the home page's category buttons land
+                here filtered, and the chosen one has to be visible. */}
+            <button className={`at-chip at-chip-all ${category === 'All' ? 'is-active' : ''}`} onClick={() => chooseCategory('All')}>All</button>
+            {CATEGORY_META.map(cat => categoryCounts[cat.name] ? (
+              <button key={cat.name} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} aria-pressed={category === cat.name} onClick={() => chooseCategory(cat.name)}>{cat.emoji} {cat.name}</button>
             ) : null)}
-            <div className="at-more-wrap" ref={moreRef}>
-              <button ref={moreBtnRef} aria-expanded={categoryOpen} aria-haspopup="true" className={`at-chip ${CATEGORY_META.slice(6).some(c => c.name === category) ? 'is-active' : ''}`} onClick={() => setCategoryOpen(v => !v)}>More <span aria-hidden="true">⌄</span></button>
-              {categoryOpen && <div className="at-more-menu">
-                {CATEGORY_META.slice(6).map(cat => categoryCounts[cat.name] ? (
-                  <button key={cat.name} className={category === cat.name ? 'is-active' : ''} onClick={() => chooseCategory(cat.name)}><span>{cat.emoji}</span>{cat.name}<small>{categoryCounts[cat.name]}</small></button>
-                ) : null)}
-              </div>}
-            </div>
           </div>
         </div>
       </div>
@@ -258,7 +236,7 @@ export default function AllToolsPage({ allTools = [] }) {
       <section className="at-shell at-results">
         <div className="at-results-heading">
           <div>
-            <h2>{query.trim() ? 'Tools that may help with that' : category === 'All' ? 'Explore the toolbox' : category}</h2>
+            {!query.trim() && <h2>{category === 'All' ? 'All' : category}</h2>}
             <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : category === 'All' ? 'All tools' : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>
           </div>
           {(query || category !== 'All') && <button className="at-reset" onClick={() => { setQuery(''); chooseCategory('All'); }}>Clear filters</button>}

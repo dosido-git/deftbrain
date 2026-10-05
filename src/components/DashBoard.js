@@ -491,7 +491,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                       value={navQuery}
                       onChange={e => setNavQuery(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Escape') { setNavQuery(''); e.currentTarget.blur(); } }}
-                      placeholder="For example, I need to question a bill"
+                      placeholder="E.g., a difficult talk, planning a date, detecting a scam, getting ready for a Dr.’s appt., making a decision."
                       aria-describedby="home-tool-process"
                       type="search"
                       required

@@ -251,7 +251,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
     <section className="db-home-hero" aria-labelledby="home-title" data-db-section="hero">
       <div className="db-home-hero-copy">
         <h1 id="home-title">Life doesn’t come with instructions.</h1>
-        <p className="db-home-description">Interactive guidance for life’s awkward, confusing, and curious moments: understanding a document, preparing for a conversation, making a decision, or exploring an idea.</p>
+        <p className="db-home-description">Interactive guidance for life’s awkward, confusing, and curious moments.</p>
         <p className="db-home-reassurance">Free <span aria-hidden="true">·</span> No account needed <span aria-hidden="true">·</span> <a href="/privacy">Nothing you type is stored on our servers</a></p>
       </div>
       <div className="db-home-hero-art">
@@ -328,14 +328,16 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
       <nav aria-label="Tool categories" className="db-home-category-list">
         {CATEGORY_META.filter(cat => categoryCounts[cat.name]).map(cat => (
-          // Category pages are prerendered documents, not SPA routes.
-          <a key={cat.slug} href={`/tools/${cat.slug}`} title={cat.example}>
+          // Opens the toolbox filtered to this category, its chip highlighted
+          // (owner, 2026-10-04). The prerendered home HTML still links the
+          // /tools/{slug} category pages for crawlers (scripts/prerender.js).
+          <Link key={cat.slug} to={`/tools?category=${encodeURIComponent(cat.name)}`} title={cat.example}>
             <span aria-hidden="true">{cat.emoji}</span> {cat.name}
             <span className="db-home-category-count">{categoryCounts[cat.name]}</span>
-          </a>
+          </Link>
         ))}
       </nav>
-      <p className="db-home-guide-intro">Prefer to read first? Our guides explain common questions in everyday language. <a href="/guides">Browse guides →</a></p>
+      <p className="db-home-guide-intro">Just want some quick info? Check out our helpful collection of <a href="/guides">Guides →</a></p>
     </section>
 
     <div className="db-home-explore" data-db-section="scramble"><ToolScramble allTools={allTools} onBrowse={onBrowse} /></div>

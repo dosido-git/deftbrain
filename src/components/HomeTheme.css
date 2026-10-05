@@ -28,7 +28,7 @@
   --h-navy: #142a43;     --h-muted: #655f56;     --h-border: #e4ddd2;
   --h-surface: #fffdf9;  --h-art-bg: #eee8df;
   --h-finder-bg: #fff1e4; --h-finder-border: #dfbfa0;
-  --h-input-bg: #ffffff; --h-input-border: #a49b90; --h-input-text: #142a43; --h-placeholder: #655f56;
+  --h-input-bg: #ffffff; --h-input-border: #a49b90; --h-input-text: #142a43; --h-placeholder: #9b948b;
   --h-btn-bg: #142a43;   --h-btn-hover: #234568;  --h-btn-text: #ffffff;
   --h-focus: #165b9a;
   --h-demo-bg: #f0ebf7;  --h-demo-border: #d9d1e8; --h-step-dot: #d6c7ef; --h-example-bg: #fffdfd;
@@ -48,7 +48,7 @@
   --h-navy: #efeae3;     --h-muted: #a8a29e;     --h-border: #3f3f46;
   --h-surface: #232326;  --h-art-bg: #27272a;
   --h-finder-bg: #2a221d; --h-finder-border: #5c4636;
-  --h-input-bg: #18181b; --h-input-border: #71717a; --h-input-text: #f4f4f5; --h-placeholder: #a1a1aa;
+  --h-input-bg: #18181b; --h-input-border: #71717a; --h-input-text: #f4f4f5; --h-placeholder: #71717a;
   --h-btn-bg: #2f6fb0;   --h-btn-hover: #3a7cc0;  --h-btn-text: #ffffff;
   --h-focus: #7fb3e0;
   --h-demo-bg: #221f2b;  --h-demo-border: #3b3548; --h-step-dot: #4a3f66; --h-example-bg: #18181b;

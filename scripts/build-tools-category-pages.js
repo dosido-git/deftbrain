@@ -70,6 +70,15 @@ function loadTools() {
 // React page; this is a static generator with no client JS to fall back
 // with, so the equivalent check happens at BUILD time instead — read the
 // file straight off disk and only ever emit an <img> tag when it's there.
+// The page's heading (owner, 2026-10-04): "<Category> Tools", nothing more —
+// no description or example line under it. Plural category names read better
+// singular in front of "Tools" ("Relationship Tools", not "Relationships
+// tools"); the description still feeds the meta description for search.
+const SINGULAR = { Relationships: 'Relationship', Conversations: 'Conversation', Decisions: 'Decision', Tasks: 'Task' };
+function heading(name) {
+  return `${SINGULAR[name] || name} Tools`;
+}
+
 function hasScrambleArt(toolId) {
   return fs.existsSync(path.join(ROOT, 'public', 'scramble', `${toolId}.webp`));
 }
@@ -134,10 +143,7 @@ function renderHead({ title, description, canonicalPath }) {
     .tcp-eyebrow .tcp-emoji{font-size:16px;letter-spacing:normal}
     .tcp-page h1{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-weight:700;font-size:32px;line-height:1.05;letter-spacing:-.03em;margin:0}
     @media(min-width:640px){.tcp-page h1{font-size:40px}}
-    .tcp-desc{font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.55;color:#142a43;margin:14px 0 0;max-width:620px}
-    @media(min-width:640px){.tcp-desc{font-size:16px}}
-    .tcp-example{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:16px;color:var(--tcp-muted);margin:14px 0 0;padding-left:14px;border-left:3px solid var(--tcp-line)}
-    .tcp-count{font-family:'DM Sans',system-ui,sans-serif;font-size:11px;color:var(--tcp-muted);margin:26px 0 14px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+    .tcp-count{font-family:'DM Sans',system-ui,sans-serif;font-size:14px;color:var(--tcp-muted);margin:26px 0 14px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
     .tcp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 18px;margin-top:8px}
     .tcp-card{display:block;background:#fff;border:1px solid #e5ded4;border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 2px 10px rgba(30,42,58,.035);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
     .tcp-card:hover{transform:translateY(-3px);border-color:#cfc3b3;box-shadow:0 12px 28px rgba(30,42,58,.10)}
@@ -193,7 +199,7 @@ function renderCategoryPage(meta, toolsInCat) {
   }).join('\n');
 
   return renderHead({
-    title: `${meta.name} tools — DeftBrain`,
+    title: `${heading(meta.name)} — DeftBrain`,
     description: meta.desc,
     canonicalPath: `/tools/${meta.slug}`,
   }) + `
@@ -205,11 +211,7 @@ function renderCategoryPage(meta, toolsInCat) {
 
       <div class="tcp-eyebrow"><span class="tcp-emoji" aria-hidden="true">${escHtml(meta.emoji)}</span><span>${escHtml(meta.name)}</span></div>
 
-      <h1>${escHtml(meta.name)} tools</h1>
-
-      <p class="tcp-desc">${escHtml(meta.desc)}</p>
-
-      ${meta.example ? `<p class="tcp-example">“${escHtml(meta.example)}”</p>` : ''}
+      <h1>${escHtml(heading(meta.name))}</h1>
 
       <p class="tcp-count">${sorted.length} tool${sorted.length === 1 ? '' : 's'}</p>
 
@@ -217,7 +219,7 @@ function renderCategoryPage(meta, toolsInCat) {
 ${cardsHtml}
       </div>
 
-      <p class="tcp-outro">Looking for something else? <a href="/tools">Browse all tools</a> or see <a href="/guides">our guides</a>.</p>
+      <p class="tcp-outro"><a href="/ToolFinder">Try Tool Finder →</a></p>
 
     </div>
   </main>
