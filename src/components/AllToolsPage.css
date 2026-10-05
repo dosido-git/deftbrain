@@ -60,6 +60,7 @@
 .at-category-row{display:flex;align-items:center;gap:7px;min-width:0;flex-wrap:wrap}
 .at-chip{border:1px solid var(--line);background:#fff;color:#514c45;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:750;white-space:nowrap;cursor:pointer}
 .at-chip:hover{border-color:#b7aa98}
+a.at-chip{display:inline-block;text-decoration:none !important}
 .at-chip.is-active{background:var(--blue);border-color:var(--blue);color:#fff}
 /* "All" reads larger than the categories beside it (owner, 2026-10-04). */
 .at-chip.at-chip-all{font-size:14px;padding:7px 16px}

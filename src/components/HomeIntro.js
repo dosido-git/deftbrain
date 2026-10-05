@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Caret from './Caret';
 import { CATEGORY_META } from '../data/categoryMeta';
 import './HomeIntro.css';
@@ -217,7 +217,15 @@ function ToolScramble({ allTools, onBrowse }) {
 
 // The finder is supplied by DashBoard so submitting, Escape, and the
 // keyboard shortcut keep using the existing search state and matching logic.
+// A plain click on a category opens the toolbox filtered to it; a modified
+// click (new tab/window) or a crawler follows the real href to the category
+// page, which lists the same tools (owner, 2026-10-04).
+export function isPlainClick(e) {
+  return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
+
 export default function HomeIntro({ allTools = [], onBrowse, finder }) {
+  const navigate = useNavigate();
   const byId = useMemo(() => new Map(allTools.map(tool => [tool.id, tool])), [allTools]);
   const categoryCounts = useMemo(() => {
     const counts = {};
@@ -328,13 +336,14 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
       <nav aria-label="Tool categories" className="db-home-category-list">
         {CATEGORY_META.filter(cat => categoryCounts[cat.name]).map(cat => (
-          // Opens the toolbox filtered to this category, its chip highlighted
-          // (owner, 2026-10-04). The prerendered home HTML still links the
-          // /tools/{slug} category pages for crawlers (scripts/prerender.js).
-          <Link key={cat.slug} to={`/tools?category=${encodeURIComponent(cat.name)}`} title={cat.example}>
+          // A real link to the category page (/tools/{slug}) — what crawlers
+          // and new tabs follow — but a plain click opens the toolbox filtered
+          // to this category, its chip highlighted (owner, 2026-10-04).
+          <a key={cat.slug} href={`/tools/${cat.slug}`} title={cat.example}
+            onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); navigate(`/tools?category=${encodeURIComponent(cat.name)}`); }}>
             <span aria-hidden="true">{cat.emoji}</span> {cat.name}
             <span className="db-home-category-count">{categoryCounts[cat.name]}</span>
-          </Link>
+          </a>
         ))}
       </nav>
       <p className="db-home-guide-intro">Just want some quick info? Check out our helpful collection of <a href="/guides">Guides →</a></p>

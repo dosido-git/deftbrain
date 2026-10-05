@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import SiteHeader from './SiteHeader';
+import { isPlainClick } from './HomeIntro';
 import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
@@ -225,9 +226,13 @@ export default function AllToolsPage({ allTools = [] }) {
             {/* Every category as a chip, wrapping onto two rows — no More
                 menu (owner, 2026-10-04): the home page's category buttons land
                 here filtered, and the chosen one has to be visible. */}
-            <button className={`at-chip at-chip-all ${category === 'All' ? 'is-active' : ''}`} onClick={() => chooseCategory('All')}>All</button>
+            {/* Real links to each category page (/tools/{slug}) for crawlers
+                and new tabs; a plain click filters this page instead. */}
+            <a href="/tools" className={`at-chip at-chip-all ${category === 'All' ? 'is-active' : ''}`} aria-current={category === 'All' ? 'true' : undefined}
+              onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory('All'); }}>All</a>
             {CATEGORY_META.map(cat => categoryCounts[cat.name] ? (
-              <button key={cat.name} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} aria-pressed={category === cat.name} onClick={() => chooseCategory(cat.name)}>{cat.emoji} {cat.name}</button>
+              <a key={cat.name} href={`/tools/${cat.slug}`} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} aria-current={category === cat.name ? 'true' : undefined}
+                onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory(cat.name); }}>{cat.emoji} {cat.name}</a>
             ) : null)}
           </div>
         </div>
