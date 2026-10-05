@@ -174,6 +174,23 @@ export default function AllToolsPage({ allTools = [] }) {
     }).filter(Boolean);
   }, [allTools]);
   const showShelves = category === 'All' && !query.trim();
+
+  // A category's related guides (2026-10-05), so one subject has one place:
+  // its tools, then a few guides. Built by scripts/lib/guideShelves.js into
+  // public/search/guide-shelves.json; fetched once, the first time a category
+  // is shown. Missing or failed, the section is simply not drawn.
+  const [guideShelves, setGuideShelves] = useState(null);
+  const wantGuides = category !== 'All' && !query.trim();
+  useEffect(() => {
+    if (!wantGuides || guideShelves) return undefined;
+    let live = true;
+    fetch('/search/guide-shelves.json')
+      .then(r => (r.ok ? r.json() : {}))
+      .then(data => { if (live) setGuideShelves(data); })
+      .catch(() => { if (live) setGuideShelves({}); });
+    return () => { live = false; };
+  }, [wantGuides, guideShelves]);
+  const guideShelf = wantGuides && guideShelves ? guideShelves[category] : null;
   const finderHref = q => `/ToolFinder${q.trim() ? `?q=${encodeURIComponent(q.trim())}` : ''}`;
 
   const syncUrl = (nextQ, nextCategory) => {
@@ -281,6 +298,20 @@ export default function AllToolsPage({ allTools = [] }) {
               <div className="at-grid">{visible.map(tool => <ToolCard key={tool.id} tool={tool} />)}</div>
             ) : (
               <div className="at-empty"><div>⌕</div><h2>No close match yet.</h2><p>Try describing the situation in different words, or browse the categories above.</p></div>
+            )}
+            {guideShelf && guideShelf.guides.length > 0 && (
+              <div className="at-guides">
+                <div className="at-results-heading"><h2>{category} guides</h2></div>
+                <ul className="at-guide-list">
+                  {guideShelf.guides.map(g => <li key={g.href}><a href={g.href}>{g.title}</a></li>)}
+                </ul>
+                <p className="at-guide-more">
+                  More guides:{' '}
+                  {guideShelf.hubs.length
+                    ? guideShelf.hubs.map((h, i) => <React.Fragment key={h.href}>{i > 0 && ' · '}<a href={h.href}>{h.label}</a></React.Fragment>)
+                    : <a href="/guides">Browse all guides</a>}
+                </p>
+              </div>
             )}
             {/* One search box (2026-10-05): the bottom Tool Finder box is gone,
                 and Tool Finder is offered here, carrying what was typed. */}

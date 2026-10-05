@@ -24,6 +24,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { buildGuideShelves } = require('./lib/guideShelves');
+const { categoriesFor } = require('./lib/toolCategories');
 
 const ROOT = path.join(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'public', 'search');
@@ -122,6 +124,8 @@ function main() {
   fs.writeFileSync(path.join(OUT_DIR, 'tools.json'), JSON.stringify(toolRows));
   fs.writeFileSync(path.join(OUT_DIR, 'guides.json'), JSON.stringify(guideRows));
   fs.writeFileSync(path.join(OUT_DIR, 'deft-search.js'), browserJs);
+  // The guides each tool category shows (src/components/AllToolsPage.js).
+  fs.writeFileSync(path.join(OUT_DIR, 'guide-shelves.json'), JSON.stringify(buildGuideShelves(tools, categoriesFor)));
   console.log(`🔎  Search assets: ${toolRows.length} tools, ${guideRows.length} guides (one entry per guide, cross-listed ones once) → public/search/`);
 }
 
