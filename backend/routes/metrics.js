@@ -336,12 +336,13 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     <input id="key" type="password" placeholder="metrics key" autocomplete="off" spellcheck="false">
     <label><input id="remember" type="checkbox" checked> remember</label>
     <select id="range" onchange="onRange()">
-      <option value="1d">Past day</option>
-      <option value="7d">Past week</option>
-      <option value="14d">Past 2 weeks</option>
-      <option value="30d" selected>Past month</option>
-      <option value="90d">Past 3 months</option>
-      <option value="all">All time</option>
+      <option value="today">Today so far</option>
+      <option value="1d">Yesterday</option>
+      <option value="7d">Last 7 full days</option>
+      <option value="14d">Last 14 full days</option>
+      <option value="30d" selected>Last 30 full days</option>
+      <option value="90d">Last 90 full days</option>
+      <option value="all">All time (incl. today)</option>
     </select>
     <button onclick="load()">Load</button>
     <button class="ghost" onclick="openReport()">open report ↗</button>
@@ -504,18 +505,23 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     };
 
     const RANGE_DAYS = { '1d': 1, '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
+    // Ranges are whole days ending yesterday (so a part-day never sits beside
+    // full ones), except 'today' — local midnight to now — and 'all', which
+    // includes today. The labels say so (2026-10-04: "Past day" read as the
+    // last 24 hours and hid today's runs and errors).
     const rangeParam = RANGE_DAYS[req.query.range] ? String(req.query.range)
-      : (req.query.range === 'all' ? 'all' : '30d'); // default: past month
+      : (req.query.range === 'all' || req.query.range === 'today' ? req.query.range : '30d'); // default: last 30 full days
     const rangeDays = RANGE_DAYS[rangeParam] || null;
-    const rangeText = { '1d': 'yesterday', '7d': 'last 7 days', '14d': 'last 14 days', '30d': 'last 30 days', '90d': 'last 90 days', all: 'all time' }[rangeParam];
+    const rangeText = { today: 'today so far', '1d': 'yesterday', '7d': 'last 7 full days', '14d': 'last 14 full days', '30d': 'last 30 full days', '90d': 'last 90 full days', all: 'all time, including today' }[rangeParam];
 
     const allRows = readMetrics();
     const now = new Date();
     const todayStart = dayStart(now);
-    const windowEnd = rangeDays ? todayStart : null;                    // exclusive
-    const windowStart = rangeDays ? backDays(todayStart, rangeDays) : null;
+    const isToday = rangeParam === 'today';
+    const windowEnd = rangeDays ? todayStart : (isToday ? now : null);  // exclusive
+    const windowStart = rangeDays ? backDays(todayStart, rangeDays) : (isToday ? todayStart : null);
     const cutoffISO = windowStart ? windowStart.toISOString() : null;
-    const endISO = windowEnd ? windowEnd.toISOString() : null;
+    const endISO = windowEnd ? new Date(windowEnd.getTime() + (isToday ? 1 : 0)).toISOString() : null;
     const rows = cutoffISO
       ? allRows.filter(r => { const t = r.at || ''; return t >= cutoffISO && t < endISO; })
       : allRows;
@@ -683,6 +689,19 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     for (const e of thinResults) bump(toolOf(e), 'thin');
     for (const e of taken) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'taken'); }
     for (const f of feedback) bump(f.tool || '?', f.helpful ? 'yes' : 'no');
+    // Recent errors (2026-10-04): the last 10 failures with their message —
+    // the Tools table only counts them, so a one-off had to be guessed at.
+    // Drawn from every record, not the range: an error is worth seeing
+    // whichever range is picked.
+    const recentErrors = allRows
+      .filter(r => r.kind === 'event' && (r.event === 'tool_error' || r.event === 'tool_render_error'))
+      .slice(-10).reverse();
+    const errorRows = recentErrors.map(e => {
+      const when = e.at ? new Date(e.at).toLocaleString('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
+      const kind = e.event === 'tool_render_error' ? 'render' : 'server';
+      const msg = (e.props && (e.props.message || e.props.where)) || '—';
+      return `<tr><td>${escH(when)}</td><td>${escH(toolOf(e))}</td><td>${kind}</td><td>${escH(String(msg))}</td></tr>`;
+    }).join('');
     const toolRows = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs).slice(0, 40)
       .map(([t, v]) => {
         const avgMs = v.ms.length ? Math.round(v.ms.reduce((a, b) => a + b, 0) / v.ms.length / 100) / 10 : null;
@@ -1254,7 +1273,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e2da;border-radius:8px;font-size:13px}
     th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #f0ede6} th{background:#faf8f5;font-weight:600}
     .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
-    <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${windowStart ? ` · ${escH(fmtDay(windowStart))} → ${escH(fmtDay(new Date(windowEnd.getTime() - 1)))} (${escH(TZ)}, complete days)` : ''}${rows.length ? '' : ' · no data in this range'}</span></h1>
+    <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${windowStart && !isToday ? ` · ${escH(fmtDay(windowStart))} → ${escH(fmtDay(new Date(windowEnd.getTime() - 1)))} (${escH(TZ)}, complete days)` : ''}${isToday ? ` · ${escH(fmtDay(now))} (${escH(TZ)}, so far)` : ''}${rows.length ? '' : ' · no data in this range'}</span></h1>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
@@ -1353,6 +1372,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Recent errors <span style="font-weight:400;font-size:12px;color:#888">(last 10, any date)</span></h2>
+    <table><tr><th>when</th><th>tool</th><th>kind</th><th>message</th></tr>${errorRows || '<tr><td colspan=4 style="color:#888">No errors recorded.</td></tr>'}</table>
     <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
     <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
