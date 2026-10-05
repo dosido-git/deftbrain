@@ -563,6 +563,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // with views on ONE row — and multi-endpoint calls (the-crux/study-guide…)
     // fold into their parent tool. Fall back to the backend endpoint string
     // (props.tool) only when the path isn't a tool page.
+    // A browser that reports "Failed to fetch" / "Load failed" / NetworkError
+    // never got a reply: the visitor closed or left the page mid-request, or
+    // lost their connection. Not a server fault, so counted as "left early"
+    // rather than an error (2026-10-04: a History Today visitor who left
+    // during a 55-second wait read as a server error).
+    const LEFT_EARLY_RE = /failed to fetch|load failed|networkerror|network connection was lost|aborted|the operation was aborted/i;
+    const isLeftEarly = r => r.event === 'tool_error' && LEFT_EARLY_RE.test(String((r.props && r.props.message) || ''));
     const toolOf = r => {
       const seg = (r.path || '').split('/')[1];
       if (seg && /^[A-Z]/.test(seg)) return seg;
@@ -680,11 +687,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 
     // ── per tool ──
     const tools = {};
-    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
+    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, left: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
     for (const e of pv) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'views'); }
     for (const e of runs) bump(toolOf(e), 'runs');
     for (const e of completes) { const t = toolOf(e); bump(t, 'completes'); if (e.props && e.props.ms) tools[t].ms.push(e.props.ms); }
-    for (const e of errors) bump(toolOf(e), 'errors');
+    for (const e of errors) bump(toolOf(e), isLeftEarly(e) ? 'left' : 'errors');
     for (const e of renderErrors) bump(toolOf(e), 'renderErrors');
     for (const e of thinResults) bump(toolOf(e), 'thin');
     for (const e of taken) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'taken'); }
@@ -698,12 +705,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       .slice(-10).reverse();
     const errorRows = recentErrors.map(e => {
       const when = e.at ? new Date(e.at).toLocaleString('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
-      const kind = e.event === 'tool_render_error' ? 'render' : 'server';
+      const kind = e.event === 'tool_render_error' ? 'render' : isLeftEarly(e) ? 'left early' : 'server';
       const msg = (e.props && (e.props.message || e.props.where)) || '—';
       return `<tr><td>${escH(when)}</td><td>${escH(toolOf(e))}</td><td>${kind}</td><td>${escH(String(msg))}</td></tr>`;
     }).join('');
-    const toolRows = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs).slice(0, 40)
-      .map(([t, v]) => {
+    const toolRow = ([t, v]) => {
         const avgMs = v.ms.length ? Math.round(v.ms.reduce((a, b) => a + b, 0) / v.ms.length / 100) / 10 : null;
         // A render error is louder than a server error: the request looked
         // fine and the user still got nothing, so it stays red at any count.
@@ -711,8 +717,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           ? `<td style="color:#b91c1c;font-weight:700">${v.renderErrors}</td>`
           : '<td>0</td>';
         const tx = v.thin ? `<td style="color:#b45309;font-weight:700">${v.thin}</td>` : '<td>0</td>';
-        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
-      }).join('');
+        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
+      };
+    // Tools somebody ran first; tools only viewed fold below (2026-10-04).
+    const sortedTools = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs || b[1].views - a[1].views);
+    const toolRows = sortedTools.filter(([, v]) => v.runs > 0).map(toolRow).join('');
+    const viewedOnly = sortedTools.filter(([, v]) => v.runs === 0);
+    const viewedOnlyRows = viewedOnly.map(toolRow).join('');
 
     // ── LLM usage by route ──
     // One 'llm_usage' record per model call, written by lib/claude.js and keyed
@@ -918,54 +929,41 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           .map(([to, n]) => `${escH(to)} <b>${n}</b>`).join(' · ');
         return `<tr><td>${escH(from)}</td><td>${total}</td><td>${seen ? pct(total, seen) : '—'}</td><td>${list}</td></tr>`;
       }).join('');
-
-    // Variant depth. `auto` counts result sets (the tool opens on one variant
-    // by itself), so it is the denominator: of the people who got a result,
-    // how many opened a different take on it. A tool whose alternates are
-    // never clicked is spending generation time on output nobody reads.
-    const variantBy = {};
-    for (const e of events) {
-      if (e.event !== 'variant_view' || !e.props || !e.props.tool || !e.props.variant) continue;
-      const tool = String(e.props.tool).slice(0, 40);
-      const row = variantBy[tool] = variantBy[tool] || { auto: 0, clicks: {} };
-      if (e.props.how === 'auto') row.auto += 1;
-      else {
-        const v = String(e.props.variant).slice(0, 40);
-        row.clicks[v] = (row.clicks[v] || 0) + 1;
-      }
-    }
-    const variantRows = Object.entries(variantBy)
-      .sort((a, b) => b[1].auto - a[1].auto)
-      .map(([tool, row]) => {
-        const total = Object.values(row.clicks).reduce((a, b) => a + b, 0);
-        const list = Object.entries(row.clicks).sort((a, b) => b[1] - a[1])
-          .map(([v, n]) => `${escH(v)} <b>${n}</b>`).join(' · ') || '<span style="color:#888">none</span>';
-        return `<tr><td>${escH(tool)}</td><td>${row.auto}</td><td>${total}</td><td>${row.auto ? pct(total, row.auto) : '\u2014'}</td><td>${list}</td></tr>`;
-      }).join('');
+    // ("Variants explored" removed 2026-10-04: it never recorded any data.)
 
     const interactAll = events.filter(e => e.event === 'interact');
     const interactLocated = interactAll.filter(e => e.location);
     for (const e of interactLocated) locInteract[e.location] = (locInteract[e.location] || 0) + 1;
     const interactAttributable = interactLocated.length > 0;
     const interactUnattributed = interactAll.length - interactLocated.length;
-    const topLang = l => {
-      const m = locLangs[l] || {};
-      const [best, n] = Object.entries(m).sort((a, b) => b[1] - a[1])[0] || ['?', 0];
-      const tot = Object.values(m).reduce((a, b) => a + b, 0) || 1;
-      // barRow renders `extra` as raw HTML, and `lang` arrives in a client-POSTed
-      // props object — escape it. The dashboard is key-gated, but stored XSS in
-      // an admin panel is still stored XSS.
+    // Grouped by country (2026-10-04): a location is "BR" or "City, ST, US",
+    // so US visitors scattered over dozens of one-session city rows and the
+    // country looked tiny next to Google Analytics. Cities list inside.
+    const countryOf = l => { const parts = String(l).split(',').map(x => x.trim()); return parts[parts.length - 1] || l; };
+    const byCountry = {};
+    for (const [l, n] of Object.entries(locs)) {
+      const c = countryOf(l);
+      const g = byCountry[c] || (byCountry[c] = { n: 0, ia: 0, langs: {}, cities: {} });
+      g.n += n; g.ia += locInteract[l] || 0;
+      for (const [lang, k] of Object.entries(locLangs[l] || {})) g.langs[lang] = (g.langs[lang] || 0) + k;
+      if (l !== c) g.cities[l.replace(new RegExp(',\\s*' + c + '$'), '')] = n;
+    }
+    // `lang` arrives in a client-POSTed props object and barRow renders raw
+    // HTML, so it is escaped (stored XSS in an admin panel is still XSS).
+    const countryLang = g => {
+      const [best, n] = Object.entries(g.langs).sort((a, b) => b[1] - a[1])[0] || ['?', 0];
+      const tot = Object.values(g.langs).reduce((a, b) => a + b, 0) || 1;
       return `${escH(best)} (${Math.round(n / tot * 100)}%)`;
     };
-    const locMax = Math.max(1, ...Object.values(locs));
-    const locRows = Object.entries(locs).sort((a, b) => b[1] - a[1]).slice(0, 20)
-      .map(([l, n]) => {
-        if (!interactAttributable) return barRow(l, n, locMax, topLang(l));
-        const ia = locInteract[l] || 0;
-        const flag = ia === 0 && n >= 3
-          ? ' <span style="color:#b45309;font-weight:600">no interaction</span>'
-          : '';
-        return barRow(l, n, locMax, `${ia} interactive · ${topLang(l)}${flag}`);
+    const locMax = Math.max(1, ...Object.values(byCountry).map(g => g.n));
+    const locRows = Object.entries(byCountry).sort((a, b) => b[1].n - a[1].n).slice(0, 20)
+      .map(([c, g]) => {
+        const cities = Object.entries(g.cities).sort((a, b) => b[1] - a[1]).slice(0, 4)
+          .map(([city, n]) => `${escH(city)} ${n}`).join(' · ');
+        const cityNote = cities ? ` <span style="color:#888">· ${cities}</span>` : '';
+        if (!interactAttributable) return barRow(c, g.n, locMax, countryLang(g) + cityNote);
+        const flag = g.ia === 0 && g.n >= 3 ? ' <span style="color:#b45309;font-weight:600">no interaction — likely bots</span>' : '';
+        return barRow(c, g.n, locMax, `${g.ia} interactive · ${countryLang(g)}${flag}${cityNote}`);
       }).join('');
     const locKnown = Object.values(locs).reduce((a, b) => a + b, 0);
 
@@ -1043,7 +1041,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       } else if (e.event === 'interact') { b.interactive++; }
       else if (e.event === 'tool_run') { b.runs++; b.tools[toolOf(e)] = (b.tools[toolOf(e)] || 0) + 1; }
       else if (e.event === 'tool_complete') { b.completes++; }
-      else if (e.event === 'tool_error') { b.errors++; }
+      else if (e.event === 'tool_error') { if (!isLeftEarly(e)) b.errors++; }
       else if (e.event === 'tool_render_error') { b.renderErrors++; }
       else if (['print', 'copy', 'share'].includes(e.event)) { b.taken++; }
     }
@@ -1272,11 +1270,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     h1{font-size:20px} h2{font-size:15px;margin:28px 0 8px;color:#1a2e44}
     table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e2da;border-radius:8px;font-size:13px}
     th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #f0ede6} th{background:#faf8f5;font-weight:600}
-    .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
+    .cards{display:flex;gap:12px;flex-wrap:wrap}
+    h2.sec{font-size:19px;margin:40px 0 4px;padding-top:16px;border-top:2px solid #e5e2da;color:#1a2e44}
+    .secsub{font-weight:400;font-size:12px;color:#888}
+    details.fold{margin:12px 0;background:#fff;border:1px solid #e5e2da;border-radius:8px;padding:8px 12px}
+    details.fold > summary{cursor:pointer;font-weight:600;font-size:13px;color:#1a2e44}
+    details.fold[open] > summary{margin-bottom:8px}</style></head><body>
     <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${windowStart && !isToday ? ` · ${escH(fmtDay(windowStart))} → ${escH(fmtDay(new Date(windowEnd.getTime() - 1)))} (${escH(TZ)}, complete days)` : ''}${isToday ? ` · ${escH(fmtDay(now))} (${escH(TZ)}, so far)` : ''}${rows.length ? '' : ' · no data in this range'}</span></h1>
-    <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
-    <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
-    <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
     <details style="margin:10px 0 4px;font-size:12.5px;background:#fff;border:1px solid #e5e2da;border-radius:8px;padding:8px 12px">
       <summary style="cursor:pointer;font-weight:600;color:#1a2e44">Key — what each number means</summary>
       <table style="border:0;margin-top:6px;font-size:12.5px">
@@ -1292,20 +1292,18 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         <tr><td style="white-space:nowrap"><b>/</b></td><td>The home page.</td></tr>
       </table>
     </details>
-    <!-- The summary tiles and "So far today" were removed 2026-09-29 at the
-         owner's request: the first two Ledger rows (today and yesterday) carry
-         the same numbers. "helpful" lives in Recent feedback below, and the
-         home-page closing section in "How far down the home page people get". -->
-    <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
-    <h2>Ledger <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
+    <h2 class="sec">1 · At a glance <span class="secsub">today and the days before it — click a day for its pages and tools</span></h2>
+    <h2>Day by day <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Three separate lists — daily, then weekly, then monthly — rather than summary rows interleaved with the days that make them up. Weeks run Monday–Sunday. A bold row is a week or month summary — "so far" for the one still in progress. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days last time, never a full one). ⚠️ flags sessions with zero tool runs, or an error rate above 25% on 5+ runs — hover it for why. Click any row's ▸ date/label to open the pages and tools behind its numbers beneath it (click again, or Esc, to close).</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th>sessions</th><th>views</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <details class="fold"><summary>Weekly and monthly totals</summary>
       <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th>sessions</th><th>views</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th>sessions</th><th>views</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      </details>
     </div>
     <script>
       window.__ledgerDetail = ${JSON.stringify(ledgerDetail)};
@@ -1367,53 +1365,37 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         });
       })();
     </script>
+    <h2 class="sec">2 · Needs attention</h2>
+    <h2>Recent errors <span style="font-weight:400;font-size:12px;color:#888">(last 10, any date)</span></h2>
+    <table><tr><th>when</th><th>tool</th><th>kind</th><th>message</th></tr>${errorRows || '<tr><td colspan=4 style="color:#888">No errors recorded.</td></tr>'}</table>
+    <h2>Tool ideas${ideas.length ? ` (${ideas.length})` : ''}</h2>
+    <table><tr><th>problem</th><th>source</th><th>query</th><th>date</th></tr>${ideaRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
+    <h2>Recent feedback</h2>
+    <table><tr><th>tool</th><th></th><th>comment</th><th>date</th></tr>${fbRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
+
+    <h2 class="sec">3 · What people do</h2>
     <h2>How far down the home page people get</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${currentLayout ? ` for the current layout (<code>${escH(currentLayout)}</code>)` : ''}${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate it and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
-    <h2>Tools</h2>
-    <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
-    <h2>Recent errors <span style="font-weight:400;font-size:12px;color:#888">(last 10, any date)</span></h2>
-    <table><tr><th>when</th><th>tool</th><th>kind</th><th>message</th></tr>${errorRows || '<tr><td colspan=4 style="color:#888">No errors recorded.</td></tr>'}</table>
-    <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
-    <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
-    <h2>Prompt-cache viability — 5-minute vs. 1-hour TTL</h2>
-    <p style="font-size:12px;margin:0 0 6px">Caching is <b>off unless a route is listed in <code>PROMPT_CACHE_ROUTES</code></b> (Railway variable; comma-separated route slugs, <code>*</code> = all). Currently on for: <b>${escH(process.env.PROMPT_CACHE_ROUTES || 'none')}</b>. Add a tool only if it stays above the ~22% break-even below.</p>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token at the 5-minute tier, ~2x at the 1-hour tier; a hit costs 0.1x either way. This counts a run as a would-be hit when the same tool ran again within the TTL. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further — treat these as an upper bound on what switching could achieve, not a guarantee.</p>
-    <div style="display:flex;gap:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:280px">
-        <p style="font-size:13px;margin:0 0 6px"><b>5 min:</b> <b>${cache5.wouldHit} of ${cache5.runs} runs</b> (${cache5.rate}%) would have hit. ${escH(cache5.verdict)}</p>
-        <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache5.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
-      </div>
-      <div style="flex:1;min-width:280px">
-        <p style="font-size:13px;margin:0 0 6px"><b>1 hour (hypothetical):</b> <b>${cache60.wouldHit} of ${cache60.runs} runs</b> (${cache60.rate}%) would have hit. ${escH(cache60.verdict)}</p>
-        <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache60.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
-      </div>
-    </div>
+    <h2>Tools <span style="font-weight:400;font-size:12px;color:#888">— tools somebody ran</span></h2>
+    <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
+    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>left early</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
-    <h2>Variants explored</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">When a tool returns several takes on one result, how often does anyone open a second one. "results" counts result sets (the tool auto-selects the first take); "switched" counts deliberate moves to another. A low rate means the alternates cost generation time nobody spends.</p>
-    <table><tr><th>tool</th><th>results</th><th>switched</th><th>rate</th><th>which ones</th></tr>${variantRows || '<tr><td colspan="5" style="color:#888">No data yet \u2014 variant tracking went live 2026-08-16, so anything before that reports nothing. This is MISSING DATA, not zero exploration.</td></tr>'}</table>
-    <h2>Sources (sessions · runs attributed)</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
-    <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
     <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.${guideBeaconLive ? '' : ' <span style="color:#b45309">Guide pages only began reporting on 2026-08-02 — before that this could only ever read 0.</span>'}</p>
 
+    <h2 class="sec">4 · How people find DeftBrain</h2>
+    <h2>Sources (sessions · runs attributed)</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
+    <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Guides <span style="font-weight:400;font-size:12px;color:#888">— 552 pages; 112 indexable, the rest live but noindexed</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Guide pages are static HTML and began reporting on 2026-08-02; earlier windows show nothing regardless of real traffic.</p>
     <h3 style="font-size:14px;margin:12px 0 4px">By category</h3>
     <table>${guideCatRows || '<tr><td style="color:#888">No guide views in this window.</td></tr>'}</table>
     <h3 style="font-size:14px;margin:16px 0 4px">Most-read guides</h3>
     <table>${guideTopRows || '<tr><td style="color:#888">No guide views in this window.</td></tr>'}</table>
-    <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
-    <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
-    <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
-    <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s)</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px"><b>This is an approximation, not true cohort retention.</b> It plots the share of each week's sessions that self-reported (via the browser's own localStorage timestamp) as having first visited within the last 7 days — a proxy for "people are coming back within a week," not "of last week's specific visitors, how many came back," which this anonymous, no-persistent-ID design cannot answer. A real cohort number would need a stable (even if anonymous/hashed) per-browser identifier, which nothing here sends today by design.</p>
-    <table><tr><th>week of</th><th>sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? retentionWeeks.map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#165b9a;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Locations (sessions)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved. ${interactAttributable
       ? '&ldquo;Interactive&rdquo; = sessions that produced a real gesture; a country with sessions but none of them, or a browser language that does not match the country, is very likely proxy traffic rather than readers.'
@@ -1427,11 +1409,41 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">OS</h3><table>${osRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
       <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">Browser</h3><table>${browserRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
     </div>
-    <h2>Recent feedback</h2>
-    <table><tr><th>tool</th><th></th><th>comment</th><th>date</th></tr>${fbRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
-
-    <h2>Tool ideas${ideas.length ? ` (${ideas.length})` : ''}</h2>
-    <table><tr><th>problem</th><th>source</th><th>query</th><th>date</th></tr>${ideaRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
+    <h2 class="sec">5 · Do they come back</h2>
+    <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
+    <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
+    <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s)</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px"><b>This is an approximation, not true cohort retention.</b> It plots the share of each week's sessions that self-reported (via the browser's own localStorage timestamp) as having first visited within the last 7 days — a proxy for "people are coming back within a week," not "of last week's specific visitors, how many came back," which this anonymous, no-persistent-ID design cannot answer. A real cohort number would need a stable (even if anonymous/hashed) per-browser identifier, which nothing here sends today by design.</p>
+    <table><tr><th>week of</th><th>sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? retentionWeeks.map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#165b9a;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2 class="sec">6 · What it costs</h2>
+    <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
+    <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
+    <details class="fold"><summary>Prompt-cache viability — would caching save money?</summary>
+    <h2>Prompt-cache viability — 5-minute vs. 1-hour TTL</h2>
+    <p style="font-size:12px;margin:0 0 6px">Caching is <b>off unless a route is listed in <code>PROMPT_CACHE_ROUTES</code></b> (Railway variable; comma-separated route slugs, <code>*</code> = all). Currently on for: <b>${escH(process.env.PROMPT_CACHE_ROUTES || 'none')}</b>. Add a tool only if it stays above the ~22% break-even below.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token at the 5-minute tier, ~2x at the 1-hour tier; a hit costs 0.1x either way. This counts a run as a would-be hit when the same tool ran again within the TTL. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further — treat these as an upper bound on what switching could achieve, not a guarantee.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <p style="font-size:13px;margin:0 0 6px"><b>5 min:</b> <b>${cache5.wouldHit} of ${cache5.runs} runs</b> (${cache5.rate}%) would have hit. ${escH(cache5.verdict)}</p>
+        <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache5.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
+      </div>
+      <div style="flex:1;min-width:280px">
+        <p style="font-size:13px;margin:0 0 6px"><b>1 hour (hypothetical):</b> <b>${cache60.wouldHit} of ${cache60.runs} runs</b> (${cache60.rate}%) would have hit. ${escH(cache60.verdict)}</p>
+        <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cache60.table || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
+      </div>
+    </div>
+    </details>
+    <h2 class="sec">7 · History</h2>
+    <details class="fold"><summary>Daily trend chart</summary>
+    <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
+    </details>
+    <details class="fold"><summary>Diagnostics — data store, bot filters, testing without being counted</summary>
+    <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
+    <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
+    <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
+    </details>
     </body></html>`);
   } catch (err) {
     console.error('metrics report failed:', err.message);
