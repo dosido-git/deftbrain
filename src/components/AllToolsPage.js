@@ -265,7 +265,7 @@ export default function AllToolsPage({ allTools = [] }) {
           <p>Describe what’s going on in your own words, and Tool Finder will suggest the tools that fit. You don’t need to know which one to ask for.</p>
         </div>
         <form onSubmit={submitFinder} className="at-bottom-search">
-          <input value={finderText} onChange={e => setFinderText(e.target.value)} placeholder="Describe your situation…" aria-label="Describe your situation" />
+          <input value={finderText} onChange={e => setFinderText(e.target.value)} placeholder="Describe a situation…" aria-label="Describe a situation" />
           <button type="submit">Find tools</button>
         </form>
       </section>
