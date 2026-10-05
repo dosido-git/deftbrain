@@ -175,24 +175,11 @@ a.at-chip{display:inline-block;text-decoration:none !important}
 .at-theme-toggle{appearance:none;border:1px solid var(--line);background:transparent;border-radius:999px;width:34px;height:34px;display:inline-grid;place-items:center;font-size:16px;line-height:1;padding:0;cursor:pointer}
 .at-theme-toggle:hover{border-color:var(--gold)}
 
-/* Shelves (2026-10-05): "All" shows each category with a few tools. */
-.at-shelf{margin-bottom:44px}
-.at-shelf .at-results-heading{align-items:baseline;margin-bottom:14px}
-a.at-reset{text-decoration:none}
-a.at-reset:hover{text-decoration:underline}
-.at-finder-hint{margin:28px 0 66px;color:var(--muted);font-size:13px;text-align:center}
-.at-finder-hint a{color:var(--blue);font-weight:800;text-decoration:none}
-.at-results{padding-bottom:40px}
-/* A shelf holds 4: at 3 columns the 4th would sit alone on a row. */
-@media(max-width:1050px) and (min-width:761px){.at-shelf .at-grid>:nth-child(4){display:none}}
-
-/* A category's related guides, under its tools (2026-10-05). */
+/* A category's guides, under its tools (2026-10-05). */
 .at-guides{margin-top:44px}
 .at-guide-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;border-top:1px solid var(--line)}
 .at-guide-list li{border-bottom:1px solid var(--line)}
 .at-guide-list a{display:block;padding:12px 0;color:var(--navy);text-decoration:none;font-size:14px;line-height:1.4}
 .at-guide-list a:hover{color:var(--blue);text-decoration:underline}
-.at-guide-more{margin:14px 0 0;color:var(--muted);font-size:13px}
-.at-guide-more a{color:var(--blue);font-weight:800;text-decoration:none}
-.at-guide-more a:hover{text-decoration:underline}
+.at-guide-toggle{display:inline-flex;align-items:center;gap:6px;margin-top:14px;border:0;background:transparent;padding:0;color:var(--blue);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
 @media(max-width:640px){.at-guide-list{grid-template-columns:1fr}}

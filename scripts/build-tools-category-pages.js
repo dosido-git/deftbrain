@@ -173,8 +173,11 @@ function renderHead({ title, description, canonicalPath }) {
     .tcp-guide-list li{border-bottom:1px solid var(--tcp-line)}
     .tcp-guide-list a{display:block;padding:12px 0;color:var(--tcp-navy);text-decoration:none;font-size:14px;line-height:1.4}
     .tcp-guide-list a:hover{color:var(--tcp-blue);text-decoration:underline}
-    .tcp-guide-more{margin:14px 0 0;color:var(--tcp-muted);font-size:13px}
-    .tcp-guide-more a{color:var(--tcp-blue);font-weight:800;text-decoration:none}
+    .tcp-guide-more summary{list-style:none;display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--tcp-blue);font-size:13px;font-weight:800;cursor:pointer}
+    .tcp-guide-more summary::-webkit-details-marker{display:none}
+    .tcp-caret{font-size:16px;line-height:1;transition:transform .15s}
+    .tcp-guide-more[open] .tcp-caret{transform:rotate(180deg)}
+    .tcp-guide-list--rest{border-top:0;margin-top:0}
     @media(max-width:640px){.tcp-guide-list{grid-template-columns:1fr}}
   </style>
 </head>
@@ -195,17 +198,24 @@ ${getFooterHTML()}
 // the /tools page shows for the category (scripts/lib/guideShelves.js).
 function renderGuides(meta, shelf) {
   if (!shelf || !shelf.guides.length) return '';
-  const items = shelf.guides.map(g => `          <li><a href="${escHtml(g.href)}">${escHtml(g.title)}</a></li>`).join('\n');
-  const more = shelf.hubs.length
-    ? shelf.hubs.map(h => `<a href="${escHtml(h.href)}">${escHtml(h.label)}</a>`).join(' · ')
-    : '<a href="/guides">Browse all guides</a>';
+  const SHOWN = 6;
+  const li = g => `          <li><a href="${escHtml(g.href)}">${escHtml(g.title)}</a></li>`;
+  const first = shelf.guides.slice(0, SHOWN).map(li).join('\n');
+  const rest = shelf.guides.slice(SHOWN).map(li).join('\n');
+  // The rest open in place, a native <details> (no script on these pages).
+  const more = rest ? `
+        <details class="tcp-guide-more">
+          <summary>Show more ${escHtml(meta.name)} guides <span class="tcp-caret" aria-hidden="true">▼</span></summary>
+          <ul class="tcp-guide-list tcp-guide-list--rest">
+${rest}
+          </ul>
+        </details>` : '';
   return `
       <section class="tcp-guides" aria-labelledby="tcp-guides-h">
         <h2 id="tcp-guides-h">${escHtml(meta.name)} guides</h2>
         <ul class="tcp-guide-list">
-${items}
-        </ul>
-        <p class="tcp-guide-more">More guides: ${more}</p>
+${first}
+        </ul>${more}
       </section>
 `;
 }
@@ -220,9 +230,9 @@ function renderCategoryPage(meta, toolsInCat, guideShelf) {
           <div class="tcp-card-image-wrap">${image}</div>
           <div class="tcp-card-copy">
             <div class="tcp-card-title-row">
-              <h2>${escHtml(t.tagline || t.title)}</h2><span class="tcp-arrow" aria-hidden="true">→</span>
+              <h2>${escHtml(t.title)}</h2><span class="tcp-arrow" aria-hidden="true">→</span>
             </div>
-            <p>${escHtml(t.title)}</p>
+            <p>${escHtml(t.tagline || t.description || '')}</p>
           </div>
         </a>`;
   }).join('\n');

@@ -44,7 +44,6 @@ const FOLDER_TO_CATEGORY = {
   learning: 'Learning',
 };
 
-const SHELF_SIZE = 6;
 
 function loadSpecs() {
   const dir = path.join(ROOT, 'guides');
@@ -79,10 +78,10 @@ function hrefFor(spec, keepSet) {
 }
 
 /**
- * { [toolCategoryName]: { guides: [{title, href}], hubs: [{label, href}] } }
- * hubs are the guide folders that map to the category, for "More … guides".
+ * { [toolCategoryName]: { guides: [{title, href}] } }, every matching guide in
+ * order; the pages show the first few and put the rest behind a disclosure.
  */
-function buildGuideShelves(tools, categoriesFor, size = SHELF_SIZE) {
+function buildGuideShelves(tools, categoriesFor) {
   const keepSet = loadKeepSet();
   // A guide filed in two folders counts once: its copy with its own page first.
   const isKept = spec => keepSet.has(`${spec.category}/${spec.slug}`);
@@ -105,16 +104,9 @@ function buildGuideShelves(tools, categoriesFor, size = SHELF_SIZE) {
       ranked.push({ spec, rank: inFolder && viaTool ? 0 : viaTool ? 1 : 2, kept });
     }
     ranked.sort((a, b) => a.rank - b.rank || (b.kept - a.kept) || strip(a.spec.title).localeCompare(strip(b.spec.title)));
-    const hubs = Object.entries(FOLDER_TO_CATEGORY)
-      .filter(([, cat]) => cat === name)
-      .map(([folder]) => {
-        const label = (specs.find(s => s.category === folder) || {}).categoryLabel || folder[0].toUpperCase() + folder.slice(1);
-        return { label, href: `/guides/${folder}` };
-      });
-    if (!ranked.length && !hubs.length) continue;
+    if (!ranked.length) continue;
     shelves[name] = {
-      guides: ranked.slice(0, size).map(({ spec }) => ({ title: spec.title, href: hrefFor(spec, keepSet) })),
-      hubs,
+      guides: ranked.map(({ spec }) => ({ title: spec.title, href: hrefFor(spec, keepSet) })),
     };
   }
   return shelves;

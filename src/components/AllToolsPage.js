@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import SiteHeader from './SiteHeader';
 import { isPlainClick } from './HomeIntro';
 import { useTheme } from '../hooks/useTheme';
@@ -7,8 +7,8 @@ import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import { CATEGORY_META } from '../data/categoryMeta';
-import KEEP_LIST from '../data/tools-keep-list.json';
 import { buildSearchIndex, searchTools } from '../utils/toolSearch';
+import Caret from './Caret';
 import './AllToolsPage.css';
 
 const LEGACY_MAP = {
@@ -36,16 +36,6 @@ function alpha(a, b) {
   return strip(a.title).localeCompare(strip(b.title));
 }
 
-// Shelf order (2026-10-05): the focus tools first, then the keepers, then the
-// rest A–Z — the same tools tools-keep-list.json already ranks as the best.
-const SHELF_RANK = new Map([...(KEEP_LIST.focus || []), ...(KEEP_LIST.keepers || [])].map((id, i) => [id, i]));
-const SHELF_SIZE = 4;
-function shelfOrder(a, b) {
-  const ra = SHELF_RANK.has(a.id) ? SHELF_RANK.get(a.id) : Infinity;
-  const rb = SHELF_RANK.has(b.id) ? SHELF_RANK.get(b.id) : Infinity;
-  return ra === rb ? alpha(a, b) : ra - rb;
-}
-
 function ToolCard({ tool }) {
   const [imageFailed, setImageFailed] = useState(false);
   return (
@@ -65,11 +55,9 @@ function ToolCard({ tool }) {
       </div>
       <div className="at-card-copy">
         <div className="at-card-title-row">
-          {/* What it does first, its name second (2026-10-05): a coined name
-              like "Not So Fast!" says nothing to someone with a problem. */}
-          <h2>{tool.tagline || tool.title}</h2><span className="at-arrow" aria-hidden="true">→</span>
+          <h2>{tool.title}</h2><span className="at-arrow" aria-hidden="true">→</span>
         </div>
-        <p>{tool.title}</p>
+        <p>{tool.tagline || tool.description}</p>
       </div>
     </Link>
   );
@@ -94,6 +82,21 @@ export default function AllToolsPage({ allTools = [] }) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const { isDark, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const [finderText, setFinderText] = useState('');
+  const submitFinder = (e) => {
+    e.preventDefault();
+    const text = finderText.trim();
+    if (!text) return;
+    if (TOOL_FINDER_PAUSED) {
+      // Tool Finder switched off: fall back to searching this page.
+      setQuery(text);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      syncUrl(text, 'All');
+      return;
+    }
+    navigate(`/ToolFinder?q=${encodeURIComponent(text)}`);
+  };
   // Same head as scripts/prerender.js STATIC_PAGES.tools — keep in sync. This
   // page used to set none, so it kept the homepage's title after navigation.
   useDocumentHead({
@@ -158,28 +161,14 @@ export default function AllToolsPage({ allTools = [] }) {
     return list.sort(alpha);
   }, [allTools, searchIndex, category, query]);
 
-  // "All" with no search is a set of shelves, one per category (2026-10-05):
-  // the whole range at a glance, a few tools each, rather than 124 cards A–Z.
-  // A tool on an earlier shelf is passed over on later ones where possible,
-  // so the shelves show more different tools.
-  const shelves = useMemo(() => {
-    const shown = new Set();
-    return CATEGORY_META.map(cat => {
-      const tools = allTools.filter(tool => categoriesFor(tool).includes(cat.name)).sort(shelfOrder);
-      if (!tools.length) return null;
-      const fresh = tools.filter(tool => !shown.has(tool.id));
-      const picked = [...fresh, ...tools.filter(tool => shown.has(tool.id))].slice(0, SHELF_SIZE);
-      picked.forEach(tool => shown.add(tool.id));
-      return { cat, tools: picked, total: tools.length };
-    }).filter(Boolean);
-  }, [allTools]);
-  const showShelves = category === 'All' && !query.trim();
-
-  // A category's related guides (2026-10-05), so one subject has one place:
-  // its tools, then a few guides. Built by scripts/lib/guideShelves.js into
-  // public/search/guide-shelves.json; fetched once, the first time a category
-  // is shown. Missing or failed, the section is simply not drawn.
+  // A category's guides, under its tools (2026-10-05), so one subject has
+  // one place. Built by scripts/lib/guideShelves.js into
+  // public/search/guide-shelves.json; fetched the first time a category is
+  // shown. Missing or failed, the section is simply not drawn. The first few
+  // show; the rest open in place (owner: no second page to visit for more).
+  const GUIDES_SHOWN = 6;
   const [guideShelves, setGuideShelves] = useState(null);
+  const [allGuides, setAllGuides] = useState(false);
   const wantGuides = category !== 'All' && !query.trim();
   useEffect(() => {
     if (!wantGuides || guideShelves) return undefined;
@@ -190,8 +179,8 @@ export default function AllToolsPage({ allTools = [] }) {
       .catch(() => { if (live) setGuideShelves({}); });
     return () => { live = false; };
   }, [wantGuides, guideShelves]);
+  useEffect(() => { setAllGuides(false); }, [category]);
   const guideShelf = wantGuides && guideShelves ? guideShelves[category] : null;
-  const finderHref = q => `/ToolFinder${q.trim() ? `?q=${encodeURIComponent(q.trim())}` : ''}`;
 
   const syncUrl = (nextQ, nextCategory) => {
     const next = {};
@@ -238,7 +227,7 @@ export default function AllToolsPage({ allTools = [] }) {
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 onKeyDown={e => { if (e.key === 'Escape') { setQuery(''); e.currentTarget.blur(); } }}
-                placeholder="Describe a situation…"
+                placeholder="Describe what you’re dealing with…"
                 aria-label="What do you need help with?"
               />
               {!query && <span className="at-kbd">⌘K</span>}
@@ -272,56 +261,49 @@ export default function AllToolsPage({ allTools = [] }) {
       </div>
 
       <section className="at-shell at-results">
-        {showShelves ? shelves.map(({ cat, tools, total }) => (
-          <div key={cat.name} className="at-shelf">
-            <div className="at-results-heading">
-              <h2>{cat.emoji} {cat.name}</h2>
-              {total > tools.length && (
-                <a href={`/tools/${cat.slug}`} className="at-reset"
-                  onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory(cat.name); window.scrollTo(0, 0); }}>
-                  See all {cat.name} tools →
-                </a>
-              )}
-            </div>
-            <div className="at-grid">{tools.map(tool => <ToolCard key={tool.id} tool={tool} />)}</div>
+        <div className="at-results-heading">
+          <div>
+            {!query.trim() && <h2>{category === 'All' ? 'All' : category}</h2>}
+            <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : category === 'All' ? 'All tools' : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>
           </div>
-        )) : (
-          <>
-            <div className="at-results-heading">
-              <div>
-                {!query.trim() && <h2>{category}</h2>}
-                <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>
-              </div>
-              <button className="at-reset" onClick={() => { setQuery(''); chooseCategory('All'); }}>{query.trim() ? 'Clear search' : 'Show all categories'}</button>
-            </div>
-            {visible.length ? (
-              <div className="at-grid">{visible.map(tool => <ToolCard key={tool.id} tool={tool} />)}</div>
-            ) : (
-              <div className="at-empty"><div>⌕</div><h2>No close match yet.</h2><p>Try describing the situation in different words, or browse the categories above.</p></div>
-            )}
-            {guideShelf && guideShelf.guides.length > 0 && (
-              <div className="at-guides">
-                <div className="at-results-heading"><h2>{category} guides</h2></div>
-                <ul className="at-guide-list">
-                  {guideShelf.guides.map(g => <li key={g.href}><a href={g.href}>{g.title}</a></li>)}
-                </ul>
-                <p className="at-guide-more">
-                  More guides:{' '}
-                  {guideShelf.hubs.length
-                    ? guideShelf.hubs.map((h, i) => <React.Fragment key={h.href}>{i > 0 && ' · '}<a href={h.href}>{h.label}</a></React.Fragment>)
-                    : <a href="/guides">Browse all guides</a>}
-                </p>
-              </div>
-            )}
-            {/* One search box (2026-10-05): the bottom Tool Finder box is gone,
-                and Tool Finder is offered here, carrying what was typed. */}
-            {query.trim() && !TOOL_FINDER_PAUSED && (
-              <p className="at-finder-hint">
-                Not quite it? <Link to={finderHref(query)}>Ask Tool Finder →</Link> Describe the situation in your own words and it suggests the tools that fit.
-              </p>
-            )}
-          </>
+          {(query || category !== 'All') && <button className="at-reset" onClick={() => { setQuery(''); chooseCategory('All'); }}>Clear filters</button>}
+        </div>
+
+        {visible.length ? (
+          <div className="at-grid">{visible.map(tool => <ToolCard key={tool.id} tool={tool} />)}</div>
+        ) : (
+          <div className="at-empty"><div>⌕</div><h2>No close match yet.</h2><p>Try describing the situation in different words, or browse the categories above.</p></div>
         )}
+
+        {guideShelf && guideShelf.guides.length > 0 && (
+          <div className="at-guides">
+            <div className="at-results-heading"><h2>{category} guides</h2></div>
+            <ul className="at-guide-list">
+              {(allGuides ? guideShelf.guides : guideShelf.guides.slice(0, GUIDES_SHOWN)).map(g => <li key={g.href}><a href={g.href}>{g.title}</a></li>)}
+            </ul>
+            {guideShelf.guides.length > GUIDES_SHOWN && (
+              <button type="button" className="at-guide-toggle" aria-expanded={allGuides} onClick={() => setAllGuides(v => !v)}>
+                {allGuides ? `Show fewer ${category} guides` : `Show more ${category} guides`} <Caret open={allGuides} />
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Tool Finder (renamed 2026-10-04, owner: was "Still looking? /
+          Didn't find what you needed?", which sat right above the site-wide
+          ideas box asking the same thing). What's typed here goes to the Tool
+          Finder tool (/ToolFinder?q=), which reads a description and suggests
+          tools, rather than re-filtering the page the visitor just searched. */}
+      <section className="at-shell at-last-call">
+        <div>
+          <h2>Tool Finder</h2>
+          <p>Describe what’s going on in your own words, and Tool Finder will suggest the tools that fit. You don’t need to know which one to ask for.</p>
+        </div>
+        <form onSubmit={submitFinder} className="at-bottom-search">
+          <input value={finderText} onChange={e => setFinderText(e.target.value)} placeholder="Describe a situation…" aria-label="Describe a situation" />
+          <button type="submit">Find tools</button>
+        </form>
       </section>
     </main>
   );
