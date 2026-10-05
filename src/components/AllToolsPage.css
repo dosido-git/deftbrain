@@ -181,5 +181,7 @@ a.at-chip{display:inline-block;text-decoration:none !important}
 .at-guide-list li{border-bottom:1px solid var(--line)}
 .at-guide-list a{display:block;padding:12px 0;color:var(--navy);text-decoration:none;font-size:14px;line-height:1.4}
 .at-guide-list a:hover{color:var(--blue);text-decoration:underline}
-.at-guide-toggle{display:inline-flex;align-items:center;gap:6px;margin-top:14px;border:0;background:transparent;padding:0;color:var(--blue);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+.at-guide-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:14px}
+.at-guide-all{border:0;background:transparent;padding:0;color:var(--muted);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:inherit}
+.at-guide-toggle{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;padding:0;color:var(--blue);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
 @media(max-width:640px){.at-guide-list{grid-template-columns:1fr}}

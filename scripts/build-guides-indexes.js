@@ -23,6 +23,9 @@
 const fs   = require('fs');
 const path = require('path');
 const { getFooterHTML, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
+const { categoriesFor } = require('./lib/toolCategories');
+const { buildGuideShelves } = require('./lib/guideShelves');
+const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
@@ -155,44 +158,13 @@ const CATEGORY_META = {
 // `.group` itself was left in place rather than editing all 18 entries to
 // strip a harmless, possibly-still-useful-someday field.
 
-// ── Guides homepage — editorial front page (2026-09-22) ────────────────────
-// Owner supplied a full redesign: hero+search, 6 curated "door" entry
-// points, 2 featured picks, 5 curiosity picks, then a live searchable
-// library of all 552 guides. Ported the design in; the DATA underneath is
-// generated fresh from `specs`/KEEP_SET every build, same as the rest of
-// this script — the supplied file had all of it baked into one static JSON
-// blob, which drifts the moment a guide is added, renamed, or moves between
-// kept/consolidated (audit/REWRITE-INSTALL-KIT.md: "a supplied rewrite is a
-// draft, not a patch"). Only the EDITORIAL CHOICES below are hardcoded —
-// which raw categories group into which door, and which specific guides are
-// featured/curiosity picks — the same hardcoded-groupings pattern
-// CATEGORY_META itself already uses for GROUP_ORDER.
-
-// Six broad entry points, each grouping several of the 18 raw categories.
-// Copy and grouping as supplied.
-const DOOR_GROUPS = [
-  { mark: '01', name: 'Money & Decisions',       desc: "Spend, compare, negotiate, and make choices with fewer surprises.", categories: ['money', 'decisions'] },
-  { mark: '02', name: 'Home & Everyday Life',     desc: "Renting, repairs, cooking, pets, travel, and the practical stuff nobody hands you a manual for.", categories: ['home', 'practical', 'cooking', 'pets', 'travel'] },
-  { mark: '03', name: 'Health & Care',            desc: "Understand appointments, questions, care decisions, and the language around your health.", categories: ['health', 'wellness'] },
-  { mark: '04', name: 'People & Communication',   desc: "Relationships, conflict, apologies, boundaries, and conversations that are hard to get right.", categories: ['conversations', 'apologies'] },
-  { mark: '05', name: 'Work & Career',            desc: "Jobs, meetings, presentations, workplace language, and professional decisions.", categories: ['career', 'workplace', 'meetings', 'presentations', 'speeches'] },
-  { mark: '06', name: 'Learning & Planning',      desc: "Learn faster, organize what matters, and make sense of unfamiliar territory.", categories: ['learning', 'planning'] },
-];
-
-// Editorial picks name WHICH guides — every rendered detail (title, href,
-// description) comes from the live spec at build time, so a rename or a
-// kept/consolidated flip is picked up automatically instead of going stale.
-const FEATURED_PICKS = [
-  { category: 'health',    slug: 'how-to-get-a-second-opinion' },
-  { category: 'decisions', slug: 'how-to-think-through-a-job-offer-when-youre-torn' },
-];
-const CURIOSITY_PICKS = [
-  { category: 'wellness',  slug: 'why-do-i-dream-about-people-i-havent-seen-in-years' },
-  { category: 'practical', slug: 'why-do-my-bike-brakes-squeak' },
-  { category: 'workplace', slug: 'what-does-per-my-last-email-mean' },
-  { category: 'travel',    slug: 'is-a-90-minute-layover-long-enough' },
-  { category: 'home',      slug: 'how-to-tell-if-a-plant-is-overwatered-or-underwatered' },
-];
+// ── Guides homepage (2026-10-05 rebuild) ────────────────────────────────────
+// Was: 6 "door" buttons that filtered a library further down, featured and
+// curiosity picks, and a library with 18 guide categories — three different
+// maps of the same subjects, and nothing a visitor could open as a page. Now:
+// search, then the SAME 14 categories the tools use (src/data/categoryMeta.js),
+// in the same order, each with the same guide list its /tools/{slug} page
+// shows (scripts/lib/guideShelves.js). One set of categories everywhere.
 
 // Kept guides have their own standalone page; consolidated ones render as an
 // anchored section on their category hub (see renderCategoryPage) — same
@@ -201,16 +173,6 @@ function hrefFor(spec, keepSet) {
   return keepSet.has(`${spec.category}/${spec.slug}`)
     ? `/guides/${spec.category}/${spec.slug}`
     : `/guides/${spec.category}#${spec.slug}`;
-}
-
-// Editorial picks reference a real guide by category+slug rather than a
-// baked href/title/description — this is what makes that safe: a pick whose
-// guide was renamed or removed is skipped with a warning instead of
-// rendering (or silently shipping) a broken link.
-function findPick(specs, pick, label) {
-  const spec = specs.find(s => s.category === pick.category && s.slug === pick.slug);
-  if (!spec) console.warn(`  ⚠ guides-home: ${label} pick not found, skipped — ${pick.category}/${pick.slug}`);
-  return spec;
 }
 
 function escHtml(s) {
@@ -634,66 +596,67 @@ const GUIDES_HOME_STYLE = `
       .gh-hero-sub{font-size:14px}
     }`;
 
+// categoryMeta.js and tools.js are plain ES-module data files with no imports:
+// strip `export const` and evaluate, as build-tools-category-pages.js does.
+function loadModuleData(relPath, exportName) {
+  const body = fs.readFileSync(path.join(ROOT, relPath), 'utf8').replace(/\bexport\s+const\b/g, 'const');
+  // eslint-disable-next-line no-new-func
+  return new Function(`${body}\n;return typeof ${exportName} !== 'undefined' ? ${exportName} : [];`)();
+}
+
+const GUIDES_BROWSE_STYLE = `
+    .gh-browse{padding:8px 0 40px}
+    .gh-browse-head h2{font-family:var(--gh-serif);font-weight:500;letter-spacing:-.025em;font-size:clamp(28px,4vw,40px);margin:0 0 16px}
+    .gh-jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px}
+    .gh-jump a{border:1px solid var(--gh-line);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--gh-ink);text-decoration:none;white-space:nowrap}
+    .gh-jump a:hover{border-color:var(--gh-blue);color:var(--gh-blue)}
+    .gh-cat{padding:26px 0 30px;border-top:1px solid var(--gh-line);scroll-margin-top:20px}
+    .gh-cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px}
+    .gh-cat-head h3{font-family:var(--gh-serif);font-weight:500;font-size:clamp(22px,3vw,28px);margin:0}
+    .gh-cat-head a{font-size:13px;font-weight:800;color:var(--gh-blue);text-decoration:none;white-space:nowrap}
+    .gh-cat-head a:hover{text-decoration:underline}
+    .gh-results{padding:0 0 40px}
+    .gh-results[hidden]{display:none}
+    .gh-results-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px}
+    .gh-results-head p{margin:0;color:var(--gh-muted);font-size:15px}
+    .gh-results-head button{border:0;background:transparent;color:var(--gh-blue);font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:0}
+    .gh-by-tool-note{margin:10px 0 70px;color:var(--gh-muted);font-size:14px}
+    .gh-by-tool-note a{color:var(--gh-blue);font-weight:700}
+    .gh-page{--gl-ink:var(--gh-ink);--gl-link:var(--gh-blue);--gl-muted:var(--gh-muted);--gl-line:var(--gh-line)}${GUIDE_LIST_STYLE}`;
+
 function renderGuidesHome(specs, keepSet) {
-  const categoryCounts = {};
-  for (const spec of specs) categoryCounts[spec.category] = (categoryCounts[spec.category] || 0) + 1;
+  const categories = loadModuleData(path.join('src', 'data', 'categoryMeta.js'), 'CATEGORY_META');
+  const tools = loadModuleData(path.join('src', 'data', 'tools.js'), 'tools');
+  const shelves = buildGuideShelves(tools, categoriesFor);
+  const shown = categories.filter(c => c.slug && shelves[c.name] && shelves[c.name].guides.length);
 
-  const doorHtml = DOOR_GROUPS.map(door => {
-    const count = door.categories.reduce((sum, cat) => sum + (categoryCounts[cat] || 0), 0);
-    return `<button class="gh-door" type="button" data-categories="${escHtml(door.categories.join(','))}">
-          <span class="gh-door-mark">${door.mark}</span>
-          <h3>${escHtml(door.name)}</h3>
-          <p>${escHtml(door.desc)}</p>
-          <span class="gh-door-link">Explore ${count} guide${count === 1 ? '' : 's'} →</span>
-        </button>`;
-  }).join('\n        ');
+  const jumpHtml = shown.map(c => `<a href="#${escHtml(c.slug)}">${escHtml(c.emoji.trim())} ${escHtml(c.name)}</a>`).join('\n        ');
+  const sectionsHtml = shown.map(c => `
+      <section class="gh-cat" id="${escHtml(c.slug)}" aria-labelledby="gh-cat-${escHtml(c.slug)}">
+        <div class="gh-cat-head">
+          <h3 id="gh-cat-${escHtml(c.slug)}">${escHtml(c.emoji.trim())} ${escHtml(c.name)}</h3>
+          <a href="/tools/${escHtml(c.slug)}">${escHtml(c.name)} tools →</a>
+        </div>
+${guideListHtml(shelves[c.name].guides, '        ')}
+      </section>`).join('\n');
 
-  const [featureMainPick, featureSecondaryPick] = FEATURED_PICKS.map((p, i) => findPick(specs, p, `featured #${i + 1}`));
-  const featureMainHtml = featureMainPick ? `<a class="gh-feature-card gh-feature-main" href="${escHtml(hrefFor(featureMainPick, keepSet))}">
-            <span class="gh-feature-eyebrow">${escHtml(CATEGORY_META[featureMainPick.category]?.name || featureMainPick.category)}</span>
-            <h3>${escHtml(featureMainPick.title)}</h3>
-            <p>${escHtml(featureMainPick.description || '')}</p>
-            <span class="gh-read-link">Read guide →</span>
-          </a>` : '';
-  const featureSecondaryHtml = featureSecondaryPick ? `<a class="gh-feature-card" href="${escHtml(hrefFor(featureSecondaryPick, keepSet))}">
-            <span class="gh-feature-eyebrow">${escHtml(CATEGORY_META[featureSecondaryPick.category]?.name || featureSecondaryPick.category)}</span>
-            <h3>${escHtml(featureSecondaryPick.title)}</h3>
-            <p>${escHtml(featureSecondaryPick.description || '')}</p>
-            <span class="gh-read-link">Read guide →</span>
-          </a>` : '';
-
-  const curiosityHtml = CURIOSITY_PICKS
-    .map((p, i) => findPick(specs, p, `curiosity #${i + 1}`))
-    .filter(Boolean)
-    .map(spec => `<a class="gh-curiosity-card" href="${escHtml(hrefFor(spec, keepSet))}">
-          <span class="gh-feature-eyebrow">${escHtml(CATEGORY_META[spec.category]?.name || spec.category)}</span>
-          <h3>${escHtml(spec.title)}</h3>
-          <span>Take a look →</span>
-        </a>`).join('\n        ');
-
-  // Alphabetical, not GROUP_ORDER — this is a flat scanning list, not the
-  // grouped editorial page renderByCategory used to be.
-  const categoryPanelHtml = Object.entries(CATEGORY_META)
-    .filter(([catKey]) => categoryCounts[catKey])
-    .sort((a, b) => a[1].name.localeCompare(b[1].name))
-    .map(([catKey, meta]) => `<button type="button" data-cat="${escHtml(catKey)}">${escHtml(meta.name)} <span>${categoryCounts[catKey]}</span></button>`)
-    .join('');
-
-  const guidesData = JSON.stringify(specs.map(spec => ({
-    slug: spec.slug,
-    category: spec.category,
-    categoryLabel: CATEGORY_META[spec.category]?.name || spec.category,
-    title: spec.title,
-    description: spec.description || '',
-    href: hrefFor(spec, keepSet),
-  })));
+  // Search data: one entry per guide (a guide filed in two folders once).
+  const seen = new Set();
+  const guidesData = JSON.stringify(specs
+    .filter(spec => !seen.has(spec.slug) && seen.add(spec.slug))
+    .map(spec => ({
+      slug: spec.slug,
+      title: spec.title,
+      description: spec.description || '',
+      href: hrefFor(spec, keepSet),
+    })));
 
   return renderHead({
     title: 'Guides for Everyday Life | DeftBrain',
     description: 'Clear, practical DeftBrain guides for everyday questions about money, health, home, relationships, work, travel, and more.',
     canonicalPath: '/guides',
-    extraStyle: GUIDES_HOME_STYLE,
-    // The guides home has its own search (hero + library) — see below.
+    extraStyle: GUIDES_HOME_STYLE + GUIDES_BROWSE_STYLE,
+    // The guides home has its own search, in the hero.
     search: false,
   }) + `
 
@@ -702,8 +665,8 @@ function renderGuidesHome(specs, keepSet) {
       <p class="gh-kicker">DEFTBRAIN GUIDES</p>
       <h1>Guides for everyday life.</h1>
       <p class="gh-hero-deck">Clear explanations for the things nobody teaches you.</p>
-      <p class="gh-hero-sub">Money, health, home, relationships, technology, work, and all the other things you're somehow expected to know.</p>
-      <form class="gh-hero-search" id="heroSearch">
+      <p class="gh-hero-sub">Money, health, home, relationships, work, and all the other things you're somehow expected to know.</p>
+      <form class="gh-hero-search" id="heroSearch" role="search">
         <label for="q">What would you like to understand?</label>
         <div class="gh-search-box">
           <input id="q" autocomplete="off" placeholder="Try &ldquo;security deposit,&rdquo; &ldquo;medical bill,&rdquo; or &ldquo;talking to my boss&rdquo;&hellip;">
@@ -712,174 +675,74 @@ function renderGuidesHome(specs, keepSet) {
       </form>
     </section>
 
-    <section class="gh-section gh-shell">
-      <div class="gh-section-head">
-        <div><p class="gh-kicker">EXPLORE</p><h2>Where should we start?</h2></div>
-        <p>Pick an area, or just wander. You don't need to know the right category first.</p>
+    <section class="gh-results gh-shell" id="results" hidden aria-live="polite">
+      <div class="gh-results-head">
+        <p id="resultNote"></p>
+        <button type="button" id="clearSearch">Clear search</button>
       </div>
-      <div class="gh-door-grid">
-        ${doorHtml}
-      </div>
+      <div class="gh-tool-hits" id="toolHits" hidden></div>
+      <ul class="gl-list" id="resultList"></ul>
     </section>
 
-    <section class="gh-section gh-feature-section">
-      <div class="gh-shell">
-        <div class="gh-section-head">
-          <div><p class="gh-kicker">WORTH KNOWING</p><h2>A few good places to begin.</h2></div>
-          <p>Useful ideas, explained without making them harder than they need to be.</p>
-        </div>
-        <div class="gh-feature-grid">
-          ${featureMainHtml}
-          ${featureSecondaryHtml}
-        </div>
-      </div>
-    </section>
-
-    <section class="gh-section gh-shell">
-      <div class="gh-section-head">
-        <div><p class="gh-kicker">DISCOVER</p><h2>Things you might be glad you know.</h2></div>
-      </div>
-      <div class="gh-curiosity-row">
-        ${curiosityHtml}
-      </div>
-    </section>
-
-    <section class="gh-library gh-section" id="library">
-      <div class="gh-shell">
-        <div class="gh-library-intro">
-          <p class="gh-kicker">THE LIBRARY</p>
-          <h2>Browse over ${guideFloor(specs.length)} guides.</h2>
-          <p>Search a situation, choose a subject, or browse alphabetically.</p>
-        </div>
-        <div class="gh-sticky-controls">
-          <div class="gh-library-search">
-            <input id="libraryQ" placeholder="Search guides…">
-            <button id="clearSearch" type="button" aria-label="Clear search">×</button>
-          </div>
-          <button class="gh-filter-toggle" id="filterToggle" type="button">All subjects ▾</button>
-          <button class="gh-sort-toggle active" id="sortAZ" type="button">A–Z</button>
-        </div>
-        <div class="gh-category-panel" id="categoryPanel">
-          <button type="button" data-cat="all" class="active">All <span>${guideFloor(specs.length)}+</span></button>
-          ${categoryPanelHtml}
-        </div>
-        <div class="gh-tool-hits" id="toolHits" hidden></div>
-        <p class="gh-result-note" id="resultNote"></p>
-        <div class="gh-guide-list" id="guideList"></div>
-        <button class="gh-load-more" id="loadMore" type="button">Show more guides</button>
-        <p class="gh-by-tool-note">Prefer to browse by tool instead? <a href="/guides/by-tool">See every guide grouped by tool →</a></p>
-      </div>
-    </section>
-
-    <section class="gh-tool-bridge">
-      <div class="gh-shell gh-bridge-inner">
-        <div><p class="gh-kicker">READY TO DO SOMETHING ABOUT IT?</p><h2>Understanding is the start. DeftBrain tools help with the next step.</h2></div>
-        <a href="/tools">Explore tools →</a>
-      </div>
-    </section>
-
-    <section class="gh-final-search gh-shell">
-      <h2>Still wondering about something?</h2>
-      <p>Describe what you're curious about. We'll look through the whole guide library.</p>
-      <form id="bottomSearch">
-        <input placeholder="Why does my mechanic always…">
-        <button type="submit">Find a guide →</button>
-      </form>
+    <section class="gh-browse gh-shell" id="browse">
+      <div class="gh-browse-head"><h2>Browse over ${guideFloor(specs.length)} guides by category</h2></div>
+      <nav class="gh-jump" aria-label="Jump to a category">
+        ${jumpHtml}
+      </nav>
+${sectionsHtml}
+      <p class="gh-by-tool-note">Prefer to browse by tool? <a href="/guides/by-tool">See every guide grouped by tool →</a></p>
     </section>
   </main>
+  ${GUIDE_LIST_NOSCRIPT}
+  ${GUIDE_LIST_SCRIPT}
 
   <script>window.DEFT_GUIDES=${guidesData};</script>
   <script src="/search/deft-search.js"></script>
   <script>
   (()=>{
+    // Search: ranked by the shared matcher (/search/deft-search.js, the same
+    // one the home page and every guide page use), with the tool or two that
+    // best fit shown above the guides. If that can't load, a plain word match.
+    // An empty box puts the categories back.
     const all=window.DEFT_GUIDES||[];
-    const list=document.querySelector('#guideList');
-    const q=document.querySelector('#libraryQ');
+    const q=document.querySelector('#q');
+    const results=document.querySelector('#results');
+    const list=document.querySelector('#resultList');
     const note=document.querySelector('#resultNote');
-    const load=document.querySelector('#loadMore');
-    const panel=document.querySelector('#categoryPanel');
-    const toggle=document.querySelector('#filterToggle');
-    let cat='all',shown=36;
-    const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');
-    function matches(g){
-      const query=norm(q.value).trim();
-      const inCat=cat==='all'||g.category===cat;
-      if(!inCat)return false;
-      if(!query)return true;
-      const hay=norm([g.title,g.description,g.categoryLabel].join(' '));
-      const words=query.split(/\\s+/).filter(Boolean);
-      return hay.includes(query)||words.every(w=>hay.includes(w));
-    }
-    function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-    // A search is ranked by the shared matcher (/search/deft-search.js —
-    // the same one the home page and every guide page use), best first, with
-    // the tool or two that best fit shown above the guides: someone reading
-    // about a problem is one step from doing something about it. With no
-    // query, or if search can't load, it's the plain A-Z list.
     const toolHits=document.querySelector('#toolHits');
+    const browse=document.querySelector('#browse');
     const byHref=new Map(all.map(g=>[g.href,g]));
+    const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');
     let seq=0;
-    function paint(arr,query){
-      list.innerHTML=arr.slice(0,shown).map(g=>\`<a class="gh-guide-item" id="\${g.slug}" href="\${g.href}"><span class="gh-cat">\${esc(g.categoryLabel)}</span><h3>\${esc(g.title)}</h3><p>\${esc(g.description||'')}</p></a>\`).join('');
-      note.textContent=\`\${arr.length} guide\${arr.length===1?'':'s'}\${query?' matching "'+query+'"':''}\`;
-      load.style.display=arr.length>shown?'block':'none';
+    function paint(arr,query,tools){
+      list.innerHTML=arr.slice(0,48).map(g=>\`<li><a href="\${g.href}">\${esc(g.title)}</a></li>\`).join('');
+      note.textContent=arr.length?\`Guides matching “\${query}”\`:\`No guides match “\${query}” yet. Try other words, or browse below.\`;
+      toolHits.innerHTML=tools.length?'<p>Tools that can help</p>'+tools.map(t=>\`<a href="/\${esc(t.id)}"><b>\${esc(t.title)}</b> <span>— \${esc(t.tagline)}</span></a>\`).join(''):'';
+      toolHits.hidden=!tools.length;
+      results.hidden=false;
     }
-    function render(reset=false){
-      if(reset)shown=36;
+    function run(){
       const query=q.value.trim();
       const mine=++seq;
-      const plain=()=>{toolHits.hidden=true;paint(all.filter(matches).sort((a,b)=>a.title.replace(/^The /i,'').localeCompare(b.title.replace(/^The /i,''))),query);};
-      if(!query||!window.DeftSearch)return plain();
+      if(!query){results.hidden=true;return;}
+      const plain=()=>{const words=norm(query).split(/\\s+/).filter(Boolean);paint(all.filter(g=>{const hay=norm(g.title+' '+g.description);return words.every(w=>hay.includes(w));}),query,[]);};
+      if(!window.DeftSearch)return plain();
       window.DeftSearch.search(query).then(res=>{
         if(mine!==seq)return;
-        // A guide cross-listed in two categories is ONE search result; try
-        // each of its links so the category filter still finds it.
         const seen=new Set();
-        const arr=res.guides.map(g=>[g.href,...(g.alt||[])].map(h=>byHref.get(h)).find(x=>x&&(cat==='all'||x.category===cat))).filter(g=>g&&!seen.has(g.slug)&&seen.add(g.slug));
-        const tools=res.tools.slice(0,2);
-        toolHits.innerHTML=tools.length?'<p>Tools that can help</p>'+tools.map(t=>\`<a href="/\${esc(t.id)}"><b>\${esc(t.title)}</b> <span>— \${esc(t.tagline)}</span></a>\`).join(''):'';
-        toolHits.hidden=!tools.length;
-        paint(arr,query);
+        const arr=res.guides.map(g=>[g.href,...(g.alt||[])].map(h=>byHref.get(h)).find(Boolean)).filter(g=>g&&!seen.has(g.slug)&&seen.add(g.slug));
+        paint(arr,query,res.tools.slice(0,2));
       }).catch(()=>{if(mine===seq)plain();});
     }
-    q.addEventListener('input',()=>render(true));
-    document.querySelector('#clearSearch').onclick=()=>{q.value='';q.focus();render(true)};
-    toggle.onclick=()=>panel.classList.toggle('open');
-    panel.addEventListener('click',e=>{
-      const b=e.target.closest('[data-cat]');
-      if(!b)return;
-      cat=b.dataset.cat;
-      panel.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));
-      toggle.textContent=(cat==='all'?'All subjects':b.childNodes[0].textContent.trim())+' ▾';
-      panel.classList.remove('open');
-      render(true);
-    });
-    load.onclick=()=>{shown+=36;render()};
-    function sendSearch(input){
-      const v=input.value.trim();
-      q.value=v;
-      document.querySelector('#library').scrollIntoView({behavior:'smooth'});
-      render(true);
-      setTimeout(()=>q.focus(),450);
-    }
-    document.querySelector('#heroSearch').onsubmit=e=>{e.preventDefault();sendSearch(document.querySelector('#q'))};
-    document.querySelector('#bottomSearch').onsubmit=e=>{e.preventDefault();sendSearch(e.currentTarget.querySelector('input'))};
-    document.querySelectorAll('.gh-door').forEach(d=>d.onclick=()=>{
-      const cs=d.dataset.categories.split(',');
-      cat='__group__';
-      q.value='';
-      const arr=all.filter(g=>cs.includes(g.category)).sort((a,b)=>a.title.localeCompare(b.title));
-      shown=36;
-      list.innerHTML=arr.slice(0,shown).map(g=>\`<a class="gh-guide-item" href="\${g.href}"><span class="gh-cat">\${esc(g.categoryLabel)}</span><h3>\${esc(g.title)}</h3><p>\${esc(g.description||'')}</p></a>\`).join('');
-      note.textContent=\`\${arr.length} guides in this area\`;
-      load.style.display='none';
-      document.querySelector('#library').scrollIntoView({behavior:'smooth'});
-    });
+    let t;
+    q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(run,180);});
+    document.querySelector('#heroSearch').onsubmit=e=>{e.preventDefault();run();results.scrollIntoView({behavior:'smooth',block:'start'});};
+    document.querySelector('#clearSearch').onclick=()=>{q.value='';run();q.focus();};
     // /guides?q=… (the "All matching guides" link in the guide pages' search)
-    // opens the library already searched.
+    // opens the page already searched.
     const fromUrl=new URLSearchParams(location.search).get('q');
-    if(fromUrl)q.value=fromUrl;
-    render(true);
+    if(fromUrl){q.value=fromUrl;run();}
   })();
   </script>
 ${renderFooter()}`;

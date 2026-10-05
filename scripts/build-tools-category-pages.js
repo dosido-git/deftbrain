@@ -30,6 +30,7 @@ const path = require('path');
 const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { categoriesFor } = require('./lib/toolCategories');
 const { buildGuideShelves } = require('./lib/guideShelves');
+const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
@@ -169,16 +170,7 @@ function renderHead({ title, description, canonicalPath }) {
     @media(max-width:470px){.tcp-grid{grid-template-columns:1fr}.tcp-card{display:grid;grid-template-columns:42% 58%;min-height:140px}.tcp-card-image-wrap{aspect-ratio:auto;height:100%}.tcp-card-copy{min-height:0;display:flex;flex-direction:column;justify-content:center}}
     .tcp-guides{margin-top:48px;font-family:'DM Sans',system-ui,sans-serif}
     .tcp-guides h2{font-family:Georgia,'Times New Roman',serif;font-size:25px;margin:0 0 14px;color:var(--tcp-navy)}
-    .tcp-guide-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;border-top:1px solid var(--tcp-line)}
-    .tcp-guide-list li{border-bottom:1px solid var(--tcp-line)}
-    .tcp-guide-list a{display:block;padding:12px 0;color:var(--tcp-navy);text-decoration:none;font-size:14px;line-height:1.4}
-    .tcp-guide-list a:hover{color:var(--tcp-blue);text-decoration:underline}
-    .tcp-guide-more summary{list-style:none;display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--tcp-blue);font-size:13px;font-weight:800;cursor:pointer}
-    .tcp-guide-more summary::-webkit-details-marker{display:none}
-    .tcp-caret{font-size:16px;line-height:1;transition:transform .15s}
-    .tcp-guide-more[open] .tcp-caret{transform:rotate(180deg)}
-    .tcp-guide-list--rest{border-top:0;margin-top:0}
-    @media(max-width:640px){.tcp-guide-list{grid-template-columns:1fr}}
+    .tcp-page{--gl-ink:var(--tcp-navy);--gl-link:var(--tcp-blue);--gl-muted:var(--tcp-muted);--gl-line:var(--tcp-line)}${GUIDE_LIST_STYLE}
   </style>
 </head>
 <body>
@@ -198,24 +190,10 @@ ${getFooterHTML()}
 // the /tools page shows for the category (scripts/lib/guideShelves.js).
 function renderGuides(meta, shelf) {
   if (!shelf || !shelf.guides.length) return '';
-  const SHOWN = 6;
-  const li = g => `          <li><a href="${escHtml(g.href)}">${escHtml(g.title)}</a></li>`;
-  const first = shelf.guides.slice(0, SHOWN).map(li).join('\n');
-  const rest = shelf.guides.slice(SHOWN).map(li).join('\n');
-  // The rest open in place, a native <details> (no script on these pages).
-  const more = rest ? `
-        <details class="tcp-guide-more">
-          <summary>Show more ${escHtml(meta.name)} guides <span class="tcp-caret" aria-hidden="true">▼</span></summary>
-          <ul class="tcp-guide-list tcp-guide-list--rest">
-${rest}
-          </ul>
-        </details>` : '';
   return `
       <section class="tcp-guides" aria-labelledby="tcp-guides-h">
         <h2 id="tcp-guides-h">${escHtml(meta.name)} guides</h2>
-        <ul class="tcp-guide-list">
-${first}
-        </ul>${more}
+${guideListHtml(shelf.guides, '        ')}
       </section>
 `;
 }
@@ -263,6 +241,8 @@ ${renderGuides(meta, guideShelf)}
 
     </div>
   </main>
+  ${GUIDE_LIST_NOSCRIPT}
+  ${GUIDE_LIST_SCRIPT}
 ${renderFooter()}`;
 }
 

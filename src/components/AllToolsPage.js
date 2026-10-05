@@ -165,10 +165,13 @@ export default function AllToolsPage({ allTools = [] }) {
   // one place. Built by scripts/lib/guideShelves.js into
   // public/search/guide-shelves.json; fetched the first time a category is
   // shown. Missing or failed, the section is simply not drawn. The first few
-  // show; the rest open in place (owner: no second page to visit for more).
-  const GUIDES_SHOWN = 6;
+  // show; "Show 12 more" adds a dozen at a time and "Show all" opens the rest
+  // (owner: no second page to visit for more). Same behavior as the static
+  // pages' scripts/lib/guideListHtml.js.
+  const GUIDES_FIRST = 6;
+  const GUIDES_STEP = 12;
   const [guideShelves, setGuideShelves] = useState(null);
-  const [allGuides, setAllGuides] = useState(false);
+  const [guidesShown, setGuidesShown] = useState(GUIDES_FIRST);
   const wantGuides = category !== 'All' && !query.trim();
   useEffect(() => {
     if (!wantGuides || guideShelves) return undefined;
@@ -179,7 +182,7 @@ export default function AllToolsPage({ allTools = [] }) {
       .catch(() => { if (live) setGuideShelves({}); });
     return () => { live = false; };
   }, [wantGuides, guideShelves]);
-  useEffect(() => { setAllGuides(false); }, [category]);
+  useEffect(() => { setGuidesShown(GUIDES_FIRST); }, [category]);
   const guideShelf = wantGuides && guideShelves ? guideShelves[category] : null;
 
   const syncUrl = (nextQ, nextCategory) => {
@@ -279,12 +282,19 @@ export default function AllToolsPage({ allTools = [] }) {
           <div className="at-guides">
             <div className="at-results-heading"><h2>{category} guides</h2></div>
             <ul className="at-guide-list">
-              {(allGuides ? guideShelf.guides : guideShelf.guides.slice(0, GUIDES_SHOWN)).map(g => <li key={g.href}><a href={g.href}>{g.title}</a></li>)}
+              {guideShelf.guides.slice(0, guidesShown).map(g => <li key={g.href}><a href={g.href}>{g.title}</a></li>)}
             </ul>
-            {guideShelf.guides.length > GUIDES_SHOWN && (
-              <button type="button" className="at-guide-toggle" aria-expanded={allGuides} onClick={() => setAllGuides(v => !v)}>
-                {allGuides ? `Show fewer ${category} guides` : `Show more ${category} guides`} <Caret open={allGuides} />
-              </button>
+            {guideShelf.guides.length > GUIDES_FIRST && (
+              <div className="at-guide-controls">
+                {guidesShown < guideShelf.guides.length ? (
+                  <>
+                    <button type="button" className="at-guide-toggle" onClick={() => setGuidesShown(n => n + GUIDES_STEP)}>Show {GUIDES_STEP} more <Caret open={false} /></button>
+                    <button type="button" className="at-guide-all" onClick={() => setGuidesShown(guideShelf.guides.length)}>Show all</button>
+                  </>
+                ) : (
+                  <button type="button" className="at-guide-toggle" onClick={() => setGuidesShown(GUIDES_FIRST)}>Show fewer <Caret open /></button>
+                )}
+              </div>
             )}
           </div>
         )}
