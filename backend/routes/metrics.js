@@ -557,7 +557,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     };
 
     const feedback = rows.filter(r => r.kind === 'feedback');
-    const ideas = rows.filter(r => r.kind === 'idea');
+    // Dismissed ideas (2026-10-04): the sink is append-only, so dismissing
+    // writes an 'idea_dismiss' record naming the idea's timestamp and the
+    // report hides it from then on. Read from every record, not the range.
+    const dismissedIdeas = new Set(allRows.filter(r => r.kind === 'idea_dismiss' && r.ref).map(r => r.ref));
+    const ideas = rows.filter(r => r.kind === 'idea' && !dismissedIdeas.has(r.at));
     // Canonical per-tool key = the frontend tool id from the page path
     // (PascalCase, e.g. /TheCrux → "TheCrux"), so runs/completes/errors line up
     // with views on ONE row — and multi-endpoint calls (the-crux/study-guide…)
@@ -1257,7 +1261,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const browserRows = Object.entries(browserCounts).sort((a, b) => b[1] - a[1]).map(([k, n]) => barRow(k, n, browserMax, pct(n, deviceKnown))).join('');
 
     const ideaRows = ideas.slice(-50).reverse().map(r =>
-      `<tr><td>${escH(r.problem || '')}</td><td>${escH(r.source || '')}</td><td>${escH(r.query || '')}</td><td style="white-space:nowrap">${escH((r.at || '').slice(0, 10))}</td></tr>`
+      `<tr><td>${escH(r.problem || '')}</td><td>${escH(r.source || '')}</td><td>${escH(r.query || '')}</td><td style="white-space:nowrap">${escH((r.at || '').slice(0, 10))}</td><td><button type="button" class="idea-dismiss" data-at="${escH(r.at || '')}" title="Hide this idea from the report">Dismiss</button></td></tr>`
     ).join('');
 
     const fbRows = feedback.slice(-25).reverse().map(f =>
@@ -1369,7 +1373,23 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Recent errors <span style="font-weight:400;font-size:12px;color:#888">(last 10, any date)</span></h2>
     <table><tr><th>when</th><th>tool</th><th>kind</th><th>message</th></tr>${errorRows || '<tr><td colspan=4 style="color:#888">No errors recorded.</td></tr>'}</table>
     <h2>Tool ideas${ideas.length ? ` (${ideas.length})` : ''}</h2>
-    <table><tr><th>problem</th><th>source</th><th>query</th><th>date</th></tr>${ideaRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
+    <table><tr><th>problem</th><th>source</th><th>query</th><th>date</th><th></th></tr>${ideaRows || '<tr><td colspan=5 style="color:#888">None yet.</td></tr>'}</table>
+    <script>
+      // Dismiss a tool idea: the report runs in the dashboard's same-origin
+      // iframe, so it borrows the key the dashboard already holds and asks it
+      // to reload once the dismissal is recorded.
+      document.addEventListener('click', function (e) {
+        var b = e.target.closest && e.target.closest('.idea-dismiss');
+        if (!b) return;
+        var keyEl = window.parent && window.parent.document.getElementById('key');
+        var key = keyEl ? keyEl.value.trim() : '';
+        if (!key) { alert('Enter the metrics key in the dashboard first.'); return; }
+        b.disabled = true; b.textContent = 'Dismissing…';
+        fetch('/api/metrics/ideas/dismiss', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-metrics-key': key }, body: JSON.stringify({ at: b.getAttribute('data-at') }) })
+          .then(function (r) { if (!r.ok) throw new Error(r.status); var row = b.closest('tr'); if (row) row.remove(); })
+          .catch(function () { b.disabled = false; b.textContent = 'Dismiss'; alert('Could not dismiss — try again.'); });
+      });
+    </script>
     <h2>Recent feedback</h2>
     <table><tr><th>tool</th><th></th><th>comment</th><th>date</th></tr>${fbRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
 
@@ -1507,6 +1527,17 @@ router.post('/metrics/reset', rateLimit(METRIC_LIMITS, 'metrics-reset:'), (req, 
     console.error('[metrics-reset]', err);
     res.status(500).json({ error: 'Reset failed: ' + err.message });
   }
+});
+
+// POST /api/metrics/ideas/dismiss — hide one tool idea from the report
+// (2026-10-04). Key-gated like the report; append-only, like every record.
+router.post('/metrics/ideas/dismiss', rateLimit(METRIC_LIMITS, 'metrics-dismiss:'), (req, res) => {
+  const KEY = process.env.METRICS_KEY;
+  if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
+  const at = String((req.body && req.body.at) || '').slice(0, 40);
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(at)) return res.status(400).json({ error: 'Which idea? (its timestamp)' });
+  logMetric('idea_dismiss', { ref: at });
+  return res.json({ ok: true });
 });
 
 module.exports = router;
