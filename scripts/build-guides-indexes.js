@@ -360,7 +360,13 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
       padding-bottom: 1.5rem;
       border-bottom: 1px solid #e8e1d5;
     }
-    .tool-section:last-child { border-bottom: none; }
+    .tool-section:last-of-type { border-bottom: none; }
+    /* The closing line, styled like the guides page's "Prefer to browse by
+       tool?" note (.gh-by-tool-note), with less room below (2026-10-05). */
+    .by-tool-outro { text-align: center; margin: 0.5rem 0 1.75rem; font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; color: #657483; }
+    .by-tool-outro a { color: #2467a8; font-weight: 700; }
+    :root[data-theme="dark"] .by-tool-outro { color: #a8a29e; }
+    :root[data-theme="dark"] .by-tool-outro a { color: #85afd6; }
     .tool-name {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.6rem;
@@ -827,7 +833,7 @@ ${group.items.map(g => {
       <p class="deck">Every guide grouped by the tool it pairs with. Each tool name links to the tool itself; each guide title links to the guide.</p>
 ${renderTabs('tool')}
 ${body}
-      <p class="index-outro">Looking for a guide on a topic instead? Switch to the <a href="/guides">by-category view</a>.</p>
+      <p class="by-tool-outro">Prefer to browse by category? <a href="/guides">See every guide by category →</a></p>
 
     </div>
   </main>
