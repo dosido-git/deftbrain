@@ -308,7 +308,7 @@ export default function AllToolsPage({ allTools = [] }) {
       <section className="at-shell at-last-call">
         <div>
           <h2>Tool Finder</h2>
-          <p>Describe what’s going on in your own words, and Tool Finder will suggest the tools that fit. You don’t need to know which one to ask for.</p>
+          <p>Describe what’s going on in your own words. Tool Finder will suggest the tools that fit.</p>
         </div>
         <form onSubmit={submitFinder} className="at-bottom-search">
           <input value={finderText} onChange={e => setFinderText(e.target.value)} placeholder="Describe a situation…" aria-label="Describe a situation" />

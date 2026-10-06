@@ -323,7 +323,62 @@ function reportThinResult({ tool, missing, expected, path } = {}) {
   });
 }
 
+// ── Surge alerts (2026-10-05) ──────────────────────────────────────────────
+// lib/surge.js calls this when surge mode switches on and off by itself (not
+// when SURGE_MODE=on was set by hand). One "surging" email, then one "over"
+// email with what happened; a surge that flaps on and off again inside the
+// cooldown does not mail again, and its "over" is only sent for a surge whose
+// start was mailed. Same transport and recipient as the crash alerts.
+const SURGE_COOLDOWN_MS = Number(process.env.SURGE_ALERT_COOLDOWN_MS) || 30 * 60 * 1000;
+let surgeMailedAt = 0;
+let surgeMailedStart = 0;
+
+function reportSurge(on, info = {}) {
+  const key = process.env.RESEND_API_KEY;
+  const now = Date.now();
+  const when = new Date(now).toLocaleString('en-US', { timeZone: process.env.METRICS_TZ || 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
+  if (on) {
+    if (now - surgeMailedAt < SURGE_COOLDOWN_MS) return { mailed: false, reason: 'cooldown' };
+    if (!key) return { mailed: false, reason: 'no-key' };
+    surgeMailedAt = now;
+    surgeMailedStart = now;
+    const r = info.refusals || {};
+    send(key, '🌊 DeftBrain is surging — surge mode is on', [
+      `Surge mode switched itself on at ${when}.`,
+      ``,
+      `Why:       ${esc(info.reason) || '—'}`,
+      `In flight: ${info.inflight ?? '—'} model calls`,
+      `Refused in the last minute: Sonnet ${r.sonnet ?? 0} · Opus ${r.opus ?? 0} · Haiku ${r.haiku ?? 0}`,
+      ``,
+      `What it is doing: overloaded calls move to the next model down, the number-check pass is skipped,`,
+      `prompt caching is on for every tool, and visitors who still can't be served are told kindly and retried.`,
+      ``,
+      `Live state:  https://deftbrain.com/api/health/surge`,
+      `Metrics:     your metrics report (Recent errors shows any "busy" answers)`,
+      ``,
+      `Nothing to do unless it keeps going. To hold surge mode on through a known spike, set SURGE_MODE=on in Railway (Variables → Apply);`,
+      `delete it afterwards. If refusals keep climbing, check the Anthropic console's Rate limits page.`,
+      `You'll get one more email when it's over.`,
+    ].join('\n'));
+    return { mailed: true, reason: 'on' };
+  }
+  if (!surgeMailedStart || !key) return { mailed: false, reason: 'not-mailed' };
+  const mins = Math.max(1, Math.round((now - surgeMailedStart) / 60000));
+  surgeMailedStart = 0;
+  send(key, '✅ DeftBrain surge is over', [
+    `Surge mode switched itself off at ${when}, after about ${mins} minute${mins === 1 ? '' : 's'}.`,
+    ``,
+    `During the surge:`,
+    `  Calls moved to a smaller model:  ${info.overflows ?? 0}`,
+    `  Visitors told "busy" (after retries): ${info.busy ?? 0}`,
+    ``,
+    (info.busy ? `Some visitors could not be served. If that number is large, consider SURGE_MODE=on before the next big post.` : `Everyone who asked got an answer.`),
+  ].join('\n'));
+  return { mailed: true, reason: 'off' };
+}
+
 module.exports = {
+  reportSurge,
   reportRenderCrash,
   reportToolError,
   reportThinResult,

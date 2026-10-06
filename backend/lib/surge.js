@@ -33,6 +33,7 @@
 
 const { AsyncLocalStorage } = require('async_hooks');
 const { MODELS } = require('./models');
+const { reportSurge } = require('./alerts');
 
 const WINDOW_MS = 60 * 1000;      // how far back refusals count
 const OVERLOAD_TRIGGER = 3;       // refusals for one family within WINDOW_MS
@@ -43,6 +44,10 @@ const BUSY_MESSAGE = 'Lots of people are here right now, so this one could not f
 let inflight = 0;
 let surgeUntil = 0;
 let wasSurging = false;
+let surgeReason = '';
+// Counted from the moment surge switches on, for the "it's over" email.
+let overflows = 0;
+let busyAnswers = 0;
 const refusals = { opus: [], sonnet: [], haiku: [] };
 
 function mode() { return String(process.env.SURGE_MODE || '').toLowerCase(); }
@@ -80,12 +85,24 @@ function familyStrained(family) {
   return prune(refusals[family]).length >= OVERLOAD_TRIGGER;
 }
 
+function refusalCounts() {
+  return Object.fromEntries(Object.entries(refusals).map(([k, v]) => [k, prune(v).length]));
+}
+
+// An automatic switch on or off: log it and email the owner (lib/alerts.js —
+// one email when it starts, one when it ends). A surge forced by SURGE_MODE=on
+// never comes through here, so setting it by hand sends nothing.
 function logTransition(now) {
-  if (now !== wasSurging) {
-    wasSurging = now;
-    console.warn(now
-      ? `[surge] ON — inflight=${inflight} refusals sonnet=${refusals.sonnet.length} opus=${refusals.opus.length} haiku=${refusals.haiku.length}`
-      : '[surge] off — back to normal');
+  if (now === wasSurging) return;
+  wasSurging = now;
+  if (now) {
+    overflows = 0;
+    busyAnswers = 0;
+    console.warn(`[surge] ON — ${surgeReason}; inflight=${inflight} refusals sonnet=${refusals.sonnet.length} opus=${refusals.opus.length} haiku=${refusals.haiku.length}`);
+    try { reportSurge(true, { reason: surgeReason, inflight, refusals: refusalCounts() }); } catch (_) { /* never let alerting break a request */ }
+  } else {
+    console.warn(`[surge] off — back to normal (overflows=${overflows}, busy=${busyAnswers})`);
+    try { reportSurge(false, { overflows, busy: busyAnswers }); } catch (_) { /* never let alerting break a request */ }
   }
 }
 
@@ -94,7 +111,13 @@ function isSurging() {
   if (m === 'on') return true;
   if (m === 'off') return false;
   const now = Date.now();
-  if (inflight >= inflightLimit() || Object.keys(refusals).some(familyStrained)) surgeUntil = now + HOLD_MS;
+  const strained = Object.keys(refusals).filter(familyStrained);
+  if (inflight >= inflightLimit() || strained.length) {
+    surgeUntil = now + HOLD_MS;
+    if (!wasSurging) surgeReason = strained.length
+      ? `${strained.join(' + ')} refused as overloaded ${OVERLOAD_TRIGGER}+ times in a minute`
+      : `${inflight} model calls in flight (limit ${inflightLimit()})`;
+  }
   const on = now < surgeUntil;
   logTransition(on);
   return on;
@@ -140,6 +163,7 @@ function withSurge(create) {
       const next = fallbackFor(request.model);
       if (!next || !swappable(request)) throw err;
       console.warn(`[surge] ${request.model} refused (overloaded) — overflowing to ${next}`);
+      overflows++;
       try {
         return await create({ ...request, model: next }, ...rest);
       } catch (err2) {
@@ -165,6 +189,7 @@ function busyMiddleware(req, res, next) {
   const json = res.json.bind(res);
   res.json = (body) => {
     if (scope.overloaded && res.statusCode >= 500 && !res.headersSent) {
+      busyAnswers++;
       res.status(503);
       res.set('Retry-After', '20');
       return json({ error: BUSY_MESSAGE, code: 'busy' });
@@ -179,8 +204,13 @@ function surgeStatus() {
     surging: isSurging(),
     mode: mode() || 'auto',
     inflight,
-    refusalsLastMinute: Object.fromEntries(Object.entries(refusals).map(([k, v]) => [k, prune(v).length])),
+    refusalsLastMinute: refusalCounts(),
   };
 }
+
+// Surge ends by time (HOLD_MS after the last trigger), which nothing would
+// notice on a quiet server; this check is what sends the "it's over" email.
+const ticker = setInterval(() => { if (mode() !== 'on' && mode() !== 'off') isSurging(); }, 30 * 1000);
+if (ticker.unref) ticker.unref();
 
 module.exports = { withSurge, isSurging, busyMiddleware, surgeStatus, BUSY_MESSAGE, _test: { familyOf, fallbackFor, isOverload } };
