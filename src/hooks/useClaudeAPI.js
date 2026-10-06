@@ -2,8 +2,15 @@ import { useState } from 'react';
 import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
 import { beginWait, summarizeRequest, toolFromPath } from '../utils/waitSignal';
+import { signalBusy } from '../utils/busySignal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Surge mode (2026-10-05): a run the server answers 503 { code: 'busy' } is
+// waited out and tried again this many times before the visitor is told —
+// a slower answer beats an error. The wait follows the server's Retry-After.
+const BUSY_RETRIES = 2;
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 export const useClaudeAPI = () => {
   const [loading, setLoading] = useState(false);
@@ -27,13 +34,24 @@ export const useClaudeAPI = () => {
     const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data) });
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency })
-      });
+      let response;
+      for (let attempt = 0; ; attempt++) {
+        response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency })
+        });
+        if (response.status !== 503 || attempt >= BUSY_RETRIES) break;
+        const peek = await response.clone().json().catch(() => ({}));
+        if (peek.code !== 'busy') break;
+        // Busy: say "you're in line", wait, try again.
+        signalBusy('waiting');
+        track('tool_busy_retry', { tool: endpoint, attempt: attempt + 1 });
+        const retryAfter = Number(response.headers.get('Retry-After')) || 20;
+        await sleep(Math.min(60, retryAfter) * 1000);
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -45,6 +63,7 @@ export const useClaudeAPI = () => {
         // text. Existing callers only read .message and are unaffected.
         err.status = response.status;
         if (typeof errorData.code === 'string') err.code = errorData.code;
+        if (err.code === 'busy') signalBusy('failed');
         throw err;
       }
 
@@ -61,6 +80,7 @@ export const useClaudeAPI = () => {
       }
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       waitOutcome = 'ok';
+      signalBusy('clear');
       return json;
 
     } catch (err) {
@@ -98,6 +118,7 @@ export const useClaudeAPI = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        if (errorData.code === 'busy') signalBusy('failed');
         throw new Error(errorData.error || `Server error: ${response.status}`);
       }
 

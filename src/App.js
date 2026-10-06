@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import RelatedLinks from './components/RelatedLinks';
 import ToolFaq from './components/ToolFaq';
 import SiteEnd from './components/SiteEnd';
+import BusyNotice from './components/BusyNotice';
 import NotFound from './components/NotFound';
 import SharedVerdict from './components/SharedVerdict';
 import AllToolsPage from './components/AllToolsPage';
@@ -57,6 +58,7 @@ export default function App() {
             <ToolFaq />
             <RelatedLinks />
             <SiteEnd />
+            <BusyNotice />
             <Footer />
           </div>
         </BrowserRouter>

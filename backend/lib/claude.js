@@ -7,6 +7,7 @@ const { withEpistemics } = require('./epistemics');
 const { currentRoute, currentIsTestClient } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
+const { withSurge } = require('./surge');
 const { withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
@@ -114,6 +115,12 @@ anthropic.messages.create = function (params, ...rest) {
   const dateLine = `CURRENT DATE: Today is ${today}. Reason from this date as "now" — treat model years, product ages, prices, recency, availability, and any reference to "current"/"this year"/"new" accordingly. Do not assume an earlier year.`;
   return _messagesCreate({ ...params, __dateLine: dateLine }, ...rest);
 };
+
+// Surge mode (2026-10-05) — the OUTERMOST layer, so it sees every call in the
+// product: overflow to the next model down when a family is refused as
+// overloaded, and the per-request "overload touched this" mark the /api busy
+// middleware reads. See lib/surge.js.
+anthropic.messages.create = withSurge(anthropic.messages.create.bind(anthropic.messages));
 
 /**
  * Repair literal control characters inside JSON string values.

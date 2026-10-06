@@ -19,6 +19,7 @@
 //
 // Fail-open by construction: this wraps a working answer, and a net that can
 // drop the answer is worse than no net. Callers should still try/catch.
+const { isSurging } = require('./surge');
 const { callClaudeWithRetry, withLanguage } = require('./claude');
 const { MODELS } = require('./models');
 
@@ -320,7 +321,10 @@ function visitorContext(body, max = 2000) {
 }
 
 // Fail-open wrapper for routes: never lets the check cost the visitor their answer.
+// Skipped while the site is surging (lib/surge.js): it doubles a run's model
+// calls, and under load a slightly less checked answer beats no answer.
 async function withNumberCheck(draft, opts) {
+  if (isSurging()) return draft;
   try { await checkNumbers(draft, opts); }
   catch (err) { console.warn(`[${opts?.label}] number check skipped: ${err.message}`); }
   return draft;

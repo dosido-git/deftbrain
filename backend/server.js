@@ -660,6 +660,14 @@ app.use('/api', (req, res, next) => {
 // (Health check moved to the very top — before the canonical redirect — so
 // Railway's deploy probe can't be answered with a 301. See top of file.)
 
+// ── Surge mode: a kind "busy" answer (lib/surge.js) ──
+// A request that failed because the model API was overloaded answers 503
+// { code: 'busy' } with a plain message instead of the route's generic 500;
+// the browser waits and retries (src/hooks/useClaudeAPI.js).
+const { busyMiddleware, surgeStatus } = require('./lib/surge');
+app.use('/api', busyMiddleware);
+app.get('/api/health/surge', (req, res) => res.json(surgeStatus()));
+
 // ── Mount all tool routes from /routes directory ──
 const routes = require('./routes');
 app.use('/api', routes);

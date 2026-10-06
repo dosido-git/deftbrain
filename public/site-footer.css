@@ -41,6 +41,13 @@
 .site-end.site-end-card { border: 1px solid var(--se-line); border-radius: 12px; padding: 18px 20px; text-align: start; }
 .site-end.site-end-card--accent { border-color: var(--se-accent); }
 
+/* BusyNotice (src/components/BusyNotice.js): the site-end card, pinned to the
+   bottom of the screen while the site is overloaded (surge mode, 2026-10-05). */
+.busy-notice { position: fixed; z-index: 60; inset-inline: 12px; bottom: 12px; display: flex; justify-content: center; pointer-events: none; }
+.busy-notice .site-end-card { position: relative; width: 100%; max-width: 30rem; padding-inline-end: 40px; box-shadow: 0 10px 30px rgba(20,42,67,.18); pointer-events: auto; }
+.busy-notice-link { border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--se-btn-hover); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.busy-notice-close { position: absolute; top: 8px; inset-inline-end: 10px; border: 0; background: none; font-size: 20px; line-height: 1; color: var(--se-body); cursor: pointer; }
+
 /* ── Footer bar ── a port of what src/components/Footer.js used to draw
    (max-w-7xl, brand left, links · copyright right, stacked and centered
    below 640px). `footer.site-footer` beats guide.css's generic footer rule. */
