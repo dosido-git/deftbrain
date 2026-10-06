@@ -19,7 +19,7 @@
 //   current       — href of the page's own nav item, for aria-current
 //   large         — the home page's larger brand mark (owner, 2026-10-04)
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import LocaleSelectors from './LocaleSelectors';
 import SITE_NAV from '../data/siteNav.json';
@@ -53,8 +53,25 @@ function NavItems({ onCategories, current }) {
 }
 
 export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency = true, onBrandClick, onCategories, current, large = false }) {
+  // Keep --site-header-h (public/site-header.css scroll-padding-top) equal to
+  // this pinned header's height, so jumps to a section land below it rather
+  // than under it. Same job as the script chrome.js writes for static pages.
+  const ref = useRef(null);
+  useEffect(() => {
+    const h = ref.current;
+    if (!h) return undefined;
+    const set = () => document.documentElement.style.setProperty('--site-header-h', `${h.getBoundingClientRect().height}px`);
+    set();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', set);
+      return () => window.removeEventListener('resize', set);
+    }
+    const ro = new ResizeObserver(set);
+    ro.observe(h);
+    return () => ro.disconnect();
+  }, []);
   return (
-    <header className={`site-header${large ? ' site-header--large' : ''}`} data-print-hide>
+    <header ref={ref} className={`site-header${large ? ' site-header--large' : ''}`} data-print-hide>
       <div className="site-header-inner">
         <Brand onBrandClick={onBrandClick} />
         <div className="site-header-end">

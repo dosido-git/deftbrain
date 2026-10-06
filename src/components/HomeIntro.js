@@ -238,7 +238,11 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
   // the categories section rather than the top of the home page.
   useEffect(() => {
     if (window.location.hash === '#categories') {
-      window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ block: 'start' }), 60);
+      const go = () => document.getElementById('categories')?.scrollIntoView({ block: 'start' });
+      window.setTimeout(go, 60);
+      // Images above it finish loading after that first jump and push the
+      // section down; aim again once they have (2026-10-05).
+      if (document.readyState !== 'complete') window.addEventListener('load', go, { once: true });
     }
   }, []);
   const allSituations = useMemo(() => SITUATIONS.filter(item => byId.has(item.toolId)), [byId]);

@@ -71,6 +71,12 @@ var CSS = [
   '.ds-box{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--rule,#e0dbd2);border-radius:999px;padding:0 14px}',
   '.ds-box:focus-within{border-color:var(--deft-blue,#165b9a);box-shadow:0 0 0 3px rgba(22,91,154,.12)}',
   '.ds-box span{color:var(--ink3,#6b6760);font-size:14px}',
+  // ⌘K chip, as on the toolbox and the guides page (2026-10-05); hidden once
+  // something is typed, and on a phone, where there is no keyboard shortcut.
+  '.ds-box .ds-kbd{flex-shrink:0;font-size:10px;font-weight:600;letter-spacing:.2px;color:#6e6659;background:#f3efe8;border:1px solid #e8e1d5;border-radius:4px;padding:1px 4px;pointer-events:none}',
+  '.ds-box .ds-kbd[hidden]{display:none}',
+  '@media(max-width:640px){.ds-box .ds-kbd{display:none}}',
+  ':root[data-theme="dark"] .ds-box .ds-kbd{color:#a1a1aa;background:#27272a;border-color:#3f3f46}',
   '.ds-input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:14px;padding:9px 0;color:var(--ink,#1a1816)}',
   '.ds-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--rule,#e0dbd2);border-radius:12px;box-shadow:0 12px 32px rgba(26,24,22,.14);max-height:70vh;overflow:auto;z-index:50;padding:6px 0;text-align:start}',
   '.ds-panel[hidden]{display:none}',
@@ -155,7 +161,10 @@ function mount(form) {
     loadTools(); loadGuides(); // warm up while they finish typing
     if (input.value.trim() && panel.innerHTML) open();
   });
+  var kbd = form.querySelector('.ds-kbd');
+  function syncKbd() { if (kbd) kbd.hidden = !!input.value; }
   input.addEventListener('input', function () {
+    syncKbd();
     clearTimeout(timer);
     timer = setTimeout(run, 120);
   });
@@ -169,7 +178,9 @@ function mount(form) {
   form.addEventListener('keydown', function (e) {
     var links = Array.prototype.slice.call(panel.querySelectorAll('a'));
     var i = links.indexOf(document.activeElement);
-    if (e.key === 'Escape') { close(); input.focus(); }
+    // Esc from a result goes back to the box; Esc in the box resets it.
+    if (e.key === 'Escape' && document.activeElement !== input) { close(); input.focus(); }
+    else if (e.key === 'Escape') { input.value = ''; syncKbd(); panel.innerHTML = ''; close(); input.blur(); }
     else if (e.key === 'ArrowDown' && links.length) { e.preventDefault(); links[Math.min(i + 1, links.length - 1)].focus(); }
     else if (e.key === 'ArrowUp' && i >= 0) { e.preventDefault(); if (i === 0) input.focus(); else links[i - 1].focus(); }
   });
@@ -183,6 +194,14 @@ function init() {
   if (!forms.length) return;
   injectCss();
   Array.prototype.forEach.call(forms, mount);
+  // ⌘K / Ctrl+K focuses the page's search box (the first one), as on the
+  // toolbox and the guides page.
+  var first = forms[0].querySelector('input');
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k' && first) {
+      e.preventDefault(); first.focus(); first.select();
+    }
+  });
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();

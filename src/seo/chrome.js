@@ -153,7 +153,7 @@ function getSiteFooterBar(year = new Date().getFullYear()) {
 // leans on guides (the reader came to read) but still leads with a tool or two.
 function getSearchFormHTML({ tools = 3, guides = 6, placeholder = 'Search tools and guides…' } = {}) {
   return `<form class="ds-form" role="search" data-deft-search data-tools="${Number(tools)}" data-guides="${Number(guides)}" action="/tools">
-      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"></div>
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
       <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
     </form>
     <script src="/search/deft-search.js" defer></script>`;
@@ -188,7 +188,17 @@ function getSiteHeaderHTML() {
         </details>
       </div>
     </div>
-  </header>`;
+  </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>`;
 }
 
 // The search box that used to sit in the guide pages' masthead, now at the

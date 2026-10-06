@@ -11,6 +11,13 @@
    The menu links are blue in both modes (owner, 2026-10-04): navy #1e3a58 in
    light, the brand's light blue #85afd6 in dark, never white. */
 
+/* The header is pinned (sticky), so a jump to a section — the Categories
+   link, the guides page's category chips, any #anchor or scrollIntoView —
+   would land under it. Stop that far below it instead: --site-header-h is the
+   header's measured height, kept current by SiteHeader.js and by the script
+   chrome.js writes after the static header (2026-10-05). */
+html { scroll-padding-top: calc(var(--site-header-h, 96px) + 12px); }
+
 .site-header { --sh-ink: #1e3a58; --sh-line: #e8e1d5; --sh-bg: #faf8f5; --sh-pop: #fffdf9; --sh-hover: #f0ebf7;
   --sh-deft: #165b9a; --sh-brain: #c8872e;
   position: sticky; top: 0; z-index: 20; background: var(--sh-bg); border-bottom: 1px solid var(--sh-line);
