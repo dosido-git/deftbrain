@@ -174,9 +174,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const [recents, setRecents]               = useState(() => loadFromStorage(STORAGE_KEYS.recents));
   const searchRef     = useRef(null);
   const resultsRef    = useRef(null);
-  const stripScrollRef = useRef(null);
-  const pillRefsMap    = useRef({});
-  const catalogRef     = useRef(null); // full tool catalog target
 
   // Browsing "all tools" moved to a real route (2026-09-22, /tools —
   // AllToolsPage.js) instead of this plain state flip: the flip had no
@@ -280,16 +277,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     })),
   [allTools]);
 
-  // Category counts (tool counted once per category it belongs to)
-  const categoryCounts = useMemo(() => {
-    const counts = {};
-    toolsWithCategories.forEach(t => {
-      t.resolvedCategories.forEach(cat => {
-        counts[cat] = (counts[cat] || 0) + 1;
-      });
-    });
-    return counts;
-  }, [toolsWithCategories]);
 
   const searchIndex = useMemo(() => buildSearchIndex(toolsWithCategories, t => t.resolvedCategories), [toolsWithCategories]);
 
@@ -401,29 +388,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const didMountRef = useRef(false);
   useEffect(() => {
     if (!didMountRef.current) { didMountRef.current = true; return; }   // not on first paint
-    // ALL lands on the strip too, exactly like a category. It used to jump to
-    // top:0, so switching between ALL and a category threw you to a different
-    // anchor each time and the toolbar moved under the cursor.
-    const scroll = stripScrollRef.current;
-    if (activeCategory === 'All') {
-      // Rewind the strip as well, so the category list starts from the left
-      // rather than wherever the last selection had scrolled it to.
-      scroll?.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      // Bring the active pill into view horizontally within the strip.
-      const pill = pillRefsMap.current[activeCategory];
-      if (scroll && pill) scroll.scrollTo({ left: pill.offsetLeft - 8, behavior: 'smooth' });
-    }
-    // Land on the STRIP, not the results below it. This used to target
-    // resultsRef, which put the results header at the top of the viewport and
-    // pushed the category toolbar off-screen — so after filtering you could
-    // not see which category was active, or switch to another, without
-    // scrolling back up.
-    const el = catalogRef.current;
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY - 20;
-      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-    }
+    // A category heading in the results filters to that category (or back to
+    // all): bring the results header, with its banner, into view. (The
+    // category strip this used to land on was removed 2026-10-05.)
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [activeCategory]);
 
   const isSearching  = searchTerm.trim().length > 0;
@@ -432,7 +400,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   return (
     <div className="db-root w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
-      <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}
+      <style>{`
         /* PRINT. Measured three ways before settling here.
 
            1. break-after:avoid on the heading — Chrome ignores it next to the
@@ -529,12 +497,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             mounted or it vanishes mid-query, which is why it sits here rather
             than in HomeIntro. Back button is the visible way out of this view
             — see backToHome above. */}
-        <div className="flex items-center justify-between gap-2 mt-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
           <button type="button" onClick={backToHome} className="group flex items-center gap-1.5 text-[12px] font-semibold flex-shrink-0" style={{ color: CLR.navy600 }}>
             <span className="inline-block group-hover:-translate-x-1 transition-transform">←</span>
             <span>Back to home</span>
           </button>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2 min-w-0 max-w-full">
             <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
             <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
           </div>
@@ -624,75 +592,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         </>
       )}
 
-      {/* ═══════════ CATEGORY STRIP ═══════════ */}
-      <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingInlineStart: 12, scrollMarginTop: 20 }}>
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
-           style={{ color: CLR.navy500 }}>Categories</p>
-      </div>
-      <div className="mb-3 db-nav-strip" style={{
-        background: CLR.navy500,
-        borderRadius: 14,
-        padding: '10px 12px',
-        boxShadow: `0 2px 12px ${CLR.navy500}40`,
-        overflow: 'hidden',
-      }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-        {/* Fixed anchors — never scroll */}
-        <div style={{ display: 'flex', gap: 5, flexShrink: 0, alignItems: 'center' }}>
-          <TilePill label="ALL"   emoji="🏠" count={toolsWithCategories.length} hideCount highlight
-            isActive={activeCategory === 'All'}       onClick={() => selectCategory('All')} />
-          {/* "Faves ⭐ 0" is a dead pill for every first-time visitor and eats
-              scarce strip width on mobile — it appears once something's faved. */}
-          {favorites.length > 0 && (
-            <TilePill label="Faves" emoji="⭐" count={favorites.length}
-              isActive={activeCategory === 'Favorites'} onClick={() => selectCategory('Favorites')} />
-          )}
-          <div style={{ width: 1, background: 'rgba(255,255,255,0.12)', flexShrink: 0, margin: '0 3px', alignSelf: 'stretch' }} />
-        </div>
-        {/* Scrollable categories + fade hint */}
-        <div style={{ position: 'relative', flex: 1, minWidth: 0, overflow: 'hidden' }}>
-          <div ref={stripScrollRef} className="db-strip-scroll" style={{
-            display: 'flex',
-            gap: 5,
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            paddingInlineEnd: 40,
-          }}>
-            {CATEGORY_META.map(cat => {
-              const count = categoryCounts[cat.name] || 0;
-              if (!count) return null;
-              return (
-                <span key={cat.name} ref={el => { if (el) pillRefsMap.current[cat.name] = el; }}
-                      style={{ display: 'inline-flex', flexShrink: 0 }}>
-                  <TilePill
-                    label={cat.name}
-                    emoji={cat.emoji}
-                    tag={cat.tag}
-                    count={count}
-                    title={cat.sub}
-                    isActive={activeCategory === cat.name}
-                    onClick={() => selectCategory(activeCategory === cat.name ? 'All' : cat.name)}
-                  />
-                </span>
-              );
-            })}
-          </div>
-          {/* Fade-to-container + chevron scroll hint */}
-          <div style={{
-            position: 'absolute', right: 0, top: 0, bottom: 0, width: 48,
-            background: `linear-gradient(to right, ${CLR.navy500}00, ${CLR.navy500} 65%)`,
-            pointerEvents: 'none', zIndex: 2,
-            display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-            paddingInlineEnd: 2,
-          }}>
-            {/* 13px @ 45% was invisible in practice — 9 of 12 categories hide
-                behind this scroll on a phone, so the hint has to be seen. */}
-            <span style={{ fontSize: 17, fontWeight: 700, color: 'rgba(255,255,255,0.85)', lineHeight: 1 }}>›</span>
-          </div>
-        </div>
-      </div>
-      </div>
+      {/* The category strip that sat here (ALL · Faves · 14 category pills,
+          filtering the search results) was removed 2026-10-05 (owner): only
+          search results reached it, and browsing by category is the toolbox's
+          job (/tools). */}
 
       {/* ═══════════ RESULTS HEADER ═══════════ */}
       <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
@@ -869,7 +772,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 // ════════════════════════════════════════════════════════════
 function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) {
   return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', minWidth: 0, flex: '1 1 auto', maxWidth: '100%' }}>
       <span style={{
         position: 'absolute', left: 7, fontSize: 11,
         pointerEvents: 'none', color: CLR.warm500, lineHeight: 1,
@@ -883,7 +786,8 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
         style={{
           paddingInlineStart: 22, paddingInlineEnd: searchTerm ? 22 : 36,
           paddingTop: 5, paddingBottom: 5,
-          width: searchTerm ? 320 : 160,
+          // Shrinks on a phone instead of pushing the page sideways (2026-10-05).
+          width: searchTerm ? 320 : 160, maxWidth: '100%', minWidth: 0,
           border: `1.5px solid ${CLR.sand300}`,
           borderRadius: 8,
           background: CLR.surface,
@@ -995,43 +899,6 @@ function SortBtn({ sortMode, setSortMode, hasRecents }) {
         );
       })}
     </div>
-  );
-}
-
-// ════════════════════════════════════════════════════════════
-// TILE PILL (All / Favorites)
-// ════════════════════════════════════════════════════════════
-function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, highlight = false, title, tag }) {
-  return (
-    <button
-      onClick={onClick}
-      title={title || label}
-      className="flex flex-col justify-center px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
-      style={{
-        background: isActive ? CLR.gold300   : CLR.navyBand,
-        color:      isActive ? CLR.onGold    : 'rgba(255,255,255,0.85)',
-        border:     `1.5px solid ${isActive ? CLR.gold500 : highlight ? CLR.gold500 : 'rgba(255,255,255,0.08)'}`,
-      }}
-    >
-      <span className="flex items-center gap-1.5">
-        <span style={{ whiteSpace: 'nowrap' }}>{emoji} {label}</span>
-        {!hideCount && <span style={{
-          fontSize: 9, fontWeight: 800, padding: '0 4px',
-          borderRadius: 4,
-          background: isActive ? CLR.gold500           : 'rgba(255,255,255,0.12)',
-          color:      isActive ? '#fff'                : 'rgba(255,255,255,0.55)',
-        }}>{count}</span>}
-      </span>
-      {/* Plain-language tag under the playful name — lets a first-time visitor
-          scan without tapping. Reserves the second line even when absent
-          (ALL/Faves) so pill heights stay uniform across the row. */}
-      <span style={{
-        fontSize: 8.5, fontWeight: 600, lineHeight: 1.1, marginTop: 1,
-        letterSpacing: '0.02em', textTransform: 'lowercase',
-        color: isActive ? 'rgba(30,42,58,0.62)' : 'rgba(255,255,255,0.5)',
-        minHeight: 10, whiteSpace: 'nowrap', textAlign: 'start',
-      }}>{tag || ''}</span>
-    </button>
   );
 }
 
