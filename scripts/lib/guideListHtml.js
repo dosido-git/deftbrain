@@ -5,7 +5,7 @@
 // (src/components/AllToolsPage.js) draws the same thing its own way; keep the
 // behavior the same:
 //
-//   the first GUIDES_FIRST titles show; "Show 12 more ▼" adds GUIDES_STEP at a
+//   the first GUIDES_FIRST titles show; "Load more ▼" adds GUIDES_STEP at a
 //   time; "Show all" opens the rest; once all show, "Show fewer ▲" folds back.
 //
 // Every title is in the HTML (the hidden ones carry `hidden`), so crawlers and
@@ -28,7 +28,7 @@ function guideListHtml(guides, indent = '      ') {
     `${indent}  <li${i >= GUIDES_FIRST ? ' hidden' : ''}><a href="${esc(g.href)}">${esc(g.title)}</a></li>`).join('\n');
   const controls = guides.length > GUIDES_FIRST ? `
 ${indent}<div class="gl-controls">
-${indent}  <button type="button" class="gl-more">Show ${GUIDES_STEP} more <span aria-hidden="true">▼</span></button>
+${indent}  <button type="button" class="gl-more">Load more <span aria-hidden="true">▼</span></button>
 ${indent}  <button type="button" class="gl-all">Show all</button>
 ${indent}  <button type="button" class="gl-fewer" hidden>Show fewer <span aria-hidden="true">▲</span></button>
 ${indent}</div>` : '';

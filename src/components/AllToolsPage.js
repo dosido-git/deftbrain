@@ -165,7 +165,7 @@ export default function AllToolsPage({ allTools = [] }) {
   // one place. Built by scripts/lib/guideShelves.js into
   // public/search/guide-shelves.json; fetched the first time a category is
   // shown. Missing or failed, the section is simply not drawn. The first few
-  // show; "Show 12 more" adds a dozen at a time and "Show all" opens the rest
+  // show; "Load more" adds a dozen at a time and "Show all" opens the rest
   // (owner: no second page to visit for more). Same behavior as the static
   // pages' scripts/lib/guideListHtml.js.
   const GUIDES_FIRST = 6;
@@ -288,7 +288,7 @@ export default function AllToolsPage({ allTools = [] }) {
               <div className="at-guide-controls">
                 {guidesShown < guideShelf.guides.length ? (
                   <>
-                    <button type="button" className="at-guide-toggle" onClick={() => setGuidesShown(n => n + GUIDES_STEP)}>Show {GUIDES_STEP} more <Caret open={false} /></button>
+                    <button type="button" className="at-guide-toggle" onClick={() => setGuidesShown(n => n + GUIDES_STEP)}>Load more <Caret open={false} /></button>
                     <button type="button" className="at-guide-all" onClick={() => setGuidesShown(guideShelf.guides.length)}>Show all</button>
                   </>
                 ) : (

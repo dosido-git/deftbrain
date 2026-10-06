@@ -453,14 +453,6 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
   ${search ? getPageSearchHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}`;
 }
 
-// The guide count as an extent, not a figure (owner, 2026-10-04: "I am
-// intending to communicate an extent, not a number"): rounded down to the
-// hundred, so it reads "over 500" and stays true as guides come and go. Same
-// idea as TOOL_COUNT_LABEL ("120+") for tools.
-function guideFloor(n) {
-  return n >= 100 ? Math.floor(n / 100) * 100 : Math.floor(n / 10) * 10;
-}
-
 function renderFooter() {
   return `
 ${getFooterHTML()}
@@ -605,14 +597,37 @@ function loadModuleData(relPath, exportName) {
 }
 
 const GUIDES_BROWSE_STYLE = `
+    /* Hero, tightened (owner, 2026-10-05): the toolbox's heading size and
+       search box (src/components/AllToolsPage.css .at-hero h1 / .at-nav-search),
+       the box wider here. Overrides GUIDES_HOME_STYLE's larger hero. */
+    .gh-hero{padding:12px 0 28px}
+    .gh-hero h1{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-weight:700;font-size:30px;line-height:.98;letter-spacing:-.035em}
+    @media(min-width:640px){.gh-hero h1{font-size:34px}}
+    @media(min-width:1024px){.gh-hero h1{font-size:38px}}
+    .gh-hero-search{margin:10px auto 0;max-width:640px}
+    .gh-hero-search label{font-size:16px;margin:0 0 8px}
+    .gh-find{display:flex;gap:8px}
+    .gh-find-field{position:relative;flex:1;min-width:0}
+    .gh-find-field input{width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #d5cab8;padding:10px 44px 10px 14px;font-size:12px;font-family:inherit;font-weight:600;color:var(--gh-ink);background:#fff;outline:none}
+    .gh-find-field input:focus{box-shadow:0 0 0 2px rgba(30,42,58,.15)}
+    .gh-find-field input::placeholder{color:#999185}
+    .gh-kbd{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:600;letter-spacing:.2px;color:#6e6659;background:#f3efe8;border:1px solid #e8e1d5;border-radius:4px;padding:1px 4px;pointer-events:none}
+    .gh-kbd[hidden]{display:none}
+    .gh-find button{border:0;border-radius:8px;padding:10px 16px;font-size:11px;font-weight:800;color:#fff;background:#1e2a3a;white-space:nowrap;cursor:pointer;font-family:inherit}
+    @media(max-width:640px){.gh-kbd{display:none}}
+    :root[data-theme="dark"] .gh-find-field input{background:#18181b;border-color:#71717a;color:#f4f4f5}
+    :root[data-theme="dark"] .gh-find-field input:focus{box-shadow:0 0 0 2px rgba(127,179,224,.35)}
+    :root[data-theme="dark"] .gh-find-field input::placeholder{color:#71717a}
+    :root[data-theme="dark"] .gh-kbd{color:#a1a1aa;background:#27272a;border-color:#3f3f46}
+    :root[data-theme="dark"] .gh-find button{background:#2f6fb0}
     .gh-browse{padding:8px 0 40px}
-    .gh-browse-head h2{font-family:var(--gh-serif);font-weight:500;letter-spacing:-.025em;font-size:clamp(28px,4vw,40px);margin:0 0 16px}
-    .gh-jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px}
+    .gh-browse-head h2{font-family:var(--gh-serif);font-weight:500;letter-spacing:-.025em;font-size:25px;margin:0 0 12px}
+    .gh-jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
     .gh-jump a{border:1px solid var(--gh-line);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--gh-ink);text-decoration:none;white-space:nowrap}
     .gh-jump a:hover{border-color:var(--gh-blue);color:var(--gh-blue)}
-    .gh-cat{padding:26px 0 30px;border-top:1px solid var(--gh-line);scroll-margin-top:20px}
-    .gh-cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px}
-    .gh-cat-head h3{font-family:var(--gh-serif);font-weight:500;font-size:clamp(22px,3vw,28px);margin:0}
+    .gh-cat{padding:10px 0 14px;scroll-margin-top:20px}
+    .gh-cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:6px}
+    .gh-cat-head h3{font-family:var(--gh-serif);font-weight:500;font-size:19px;margin:0}
     .gh-cat-head a{font-size:13px;font-weight:800;color:var(--gh-blue);text-decoration:none;white-space:nowrap}
     .gh-cat-head a:hover{text-decoration:underline}
     .gh-results{padding:0 0 40px}
@@ -662,15 +677,15 @@ ${guideListHtml(shelves[c.name].guides, '        ')}
 
   <main class="gh-page">
     <section class="gh-hero gh-shell">
-      <p class="gh-kicker">DEFTBRAIN GUIDES</p>
       <h1>Guides for everyday life.</h1>
-      <p class="gh-hero-deck">Clear explanations for the things nobody teaches you.</p>
-      <p class="gh-hero-sub">Money, health, home, relationships, work, and all the other things you're somehow expected to know.</p>
       <form class="gh-hero-search" id="heroSearch" role="search">
         <label for="q">What would you like to understand?</label>
-        <div class="gh-search-box">
-          <input id="q" autocomplete="off" placeholder="Try &ldquo;security deposit,&rdquo; &ldquo;medical bill,&rdquo; or &ldquo;talking to my boss&rdquo;&hellip;">
-          <button type="submit">Find guides</button>
+        <div class="gh-find">
+          <div class="gh-find-field">
+            <input id="q" autocomplete="off" placeholder="Try &ldquo;security deposit,&rdquo; &ldquo;medical bill,&rdquo; or &ldquo;talking to my boss&rdquo;&hellip;">
+            <span class="gh-kbd" id="qKbd" aria-hidden="true">⌘K</span>
+          </div>
+          <button type="submit">Search</button>
         </div>
       </form>
     </section>
@@ -685,7 +700,7 @@ ${guideListHtml(shelves[c.name].guides, '        ')}
     </section>
 
     <section class="gh-browse gh-shell" id="browse">
-      <div class="gh-browse-head"><h2>Browse over ${guideFloor(specs.length)} guides by category</h2></div>
+      <div class="gh-browse-head"><h2>Browse our library.</h2></div>
       <nav class="gh-jump" aria-label="Jump to a category">
         ${jumpHtml}
       </nav>
@@ -736,13 +751,18 @@ ${sectionsHtml}
       }).catch(()=>{if(mine===seq)plain();});
     }
     let t;
-    q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(run,180);});
+    const kbd=document.querySelector('#qKbd');
+    const syncKbd=()=>{kbd.hidden=!!q.value;};
+    q.addEventListener('input',()=>{syncKbd();clearTimeout(t);t=setTimeout(run,180);});
+    // ⌘K / Ctrl+K focuses the search, as on the toolbox; Esc clears it.
+    window.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();q.focus();q.select();}});
+    q.addEventListener('keydown',e=>{if(e.key==='Escape'){q.value='';syncKbd();run();q.blur();}});
     document.querySelector('#heroSearch').onsubmit=e=>{e.preventDefault();run();results.scrollIntoView({behavior:'smooth',block:'start'});};
-    document.querySelector('#clearSearch').onclick=()=>{q.value='';run();q.focus();};
+    document.querySelector('#clearSearch').onclick=()=>{q.value='';syncKbd();run();q.focus();};
     // /guides?q=… (the "All matching guides" link in the guide pages' search)
     // opens the page already searched.
     const fromUrl=new URLSearchParams(location.search).get('q');
-    if(fromUrl){q.value=fromUrl;run();}
+    if(fromUrl){q.value=fromUrl;syncKbd();run();}
   })();
   </script>
 ${renderFooter()}`;
