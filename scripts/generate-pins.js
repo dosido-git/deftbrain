@@ -30,30 +30,31 @@ const FONTS_DIR = path.join(__dirname, 'fonts');
 const BRAIN_PATH = path.join(ROOT, 'public', 'pBrain-r.png');
 const OUT_DIR = path.join(ROOT, 'docs', 'marketing', 'pins');
 
-// The starter set from docs/marketing/quora-and-pinterest-plan.md, by board.
+// The starter set, by board. Board names follow the site's own categories
+// (src/data/categoryMeta.js), so Pinterest and deftbrain.com use one map (2026-10-06).
 const PIN_SET = {
-  'Renting & Moving': [
+  'Home & Daily Life': [
     'home/apartment-move-in-checklist',
     'home/how-to-protect-your-security-deposit-before-you-even-move-in',
     'home/automatic-renewal-clause-in-a-lease',
     'money/splitting-rent-with-different-room-sizes',
   ],
-  'Money & Bills': [
+  'Money': [
     'money/how-to-read-an-itemized-hospital-bill',
     'money/how-to-negotiate-a-medical-bill',
     'money/how-to-dispute-a-bill-you-dont-recognize',
     'money/how-to-push-back-on-bank-fees',
   ],
-  'Travel Tips': [
+  'Travel & Events': [
     'travel/is-a-60-minute-layover-enough',
     'travel/can-you-leave-the-airport-during-a-layover',
     'travel/how-to-sleep-in-an-airport-during-a-long-layover',
   ],
-  'Career & Job Search': [
+  'Career': [
     'career/how-to-explain-a-layoff-gap',
     'career/how-to-write-self-review-bullets-that-get-you-the-raise',
   ],
-  'Everyday Life Skills': [
+  'Conversations': [
     'home/how-to-split-household-chores-fairly',
     'home/how-to-talk-to-your-roommate-about-a-problem',
   ],
