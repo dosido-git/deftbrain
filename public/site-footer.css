@@ -35,6 +35,12 @@
 .site-end-msg:empty { display: none; }
 .sr-only-se { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
+/* The same look as a boxed card, for IdeaPrompt (src/components/IdeaPrompt.js)
+   where a page asks for a missing tool mid-page (search with no match,
+   Tool Finder, 404). accent = the 404's promoted gold frame. */
+.site-end.site-end-card { border: 1px solid var(--se-line); border-radius: 12px; padding: 18px 20px; text-align: start; }
+.site-end.site-end-card--accent { border-color: var(--se-accent); }
+
 /* ── Footer bar ── a port of what src/components/Footer.js used to draw
    (max-w-7xl, brand left, links · copyright right, stacked and centered
    below 640px). `footer.site-footer` beats guide.css's generic footer rule. */

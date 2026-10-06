@@ -81,7 +81,7 @@ export default function SiteEnd() {
       <div className="site-end-inner">
         <Part
           kicker="💡 Missing something?"
-          intro={<><strong>Didn’t find what you need?</strong> Tell us what you’re dealing with. We read every suggestion, and the best become new tools.</>}
+          intro={<><strong>Didn’t find what you need?</strong> Suggest a tool. We read every suggestion, and the best become new tools.</>}
           label="What are you trying to deal with?" placeholder="What are you trying to deal with?"
           type="text" button="Send" maxLength={1000} onSend={sendIdea} resetAfter={IDEA_RESET_MS}
         />

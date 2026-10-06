@@ -63,7 +63,7 @@ function getSiteEndHTML() {
     <div class="site-end-inner">
       <div class="site-end-part">
         <p class="site-end-kicker">&#128161; Missing something?</p>
-        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Tell us what you&rsquo;re dealing with. We read every suggestion, and the best become new tools.</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Suggest a tool. We read every suggestion, and the best become new tools.</p>
         <form class="site-end-form" id="db-idea-form">
           <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
           <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">

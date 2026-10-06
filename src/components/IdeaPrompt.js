@@ -48,21 +48,17 @@ export default function IdeaPrompt({ source = 'unknown', query = '', compact = f
   }, [problem, sending, source, query]);
 
   const c = {
-    // accent: promoted placement (404) — brand-gold frame + faint warm tint
-    wrap:  accent
-      ? (isDark ? 'border-orange-400/80 bg-orange-400/5' : 'border-[#c8872e] bg-[#c8872e]/5')
-      : (isDark ? 'border-zinc-700' : 'border-gray-200'),
-    title: isDark ? 'text-zinc-100' : 'text-gray-900',
-    body:  isDark ? 'text-zinc-400' : 'text-gray-500',
-    input: isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400',
-    send:  isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
-    link:  isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700',
+    body: isDark ? 'text-zinc-400' : 'text-gray-500',
+    link: isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700',
   };
 
+  // The full box wears the site-end look (owner, 2026-10-05): the same card,
+  // type, field and button as the ideas and newsletter boxes every page ends
+  // with — public/site-footer.css (.site-end-*), loaded on every page.
   if (done) {
     return (
-      <div className={`text-center text-sm py-3 ${c.body} ${className}`}>
-        🙏 Got it — thank you. If we build it, it ships fast.
+      <div className={`site-end site-end-card ${className}`}>
+        <p className="site-end-msg" role="status">🙏 Got it — thank you. If we build it, it ships fast.</p>
       </div>
     );
   }
@@ -79,21 +75,21 @@ export default function IdeaPrompt({ source = 'unknown', query = '', compact = f
   }
 
   return (
-    <div className={`rounded-xl border p-4 max-w-md mx-auto ${c.wrap} ${className}`}>
-      <p className={`text-sm font-bold ${c.title}`}>No tool for your problem?</p>
-      <p className={`text-xs mt-0.5 mb-3 ${c.body}`}>Describe it — we build fast.</p>
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={problem}
-          onChange={e => setProblem(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') submit(); }}
-          placeholder="What are you trying to deal with?"
-          className={`flex-1 px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 ${c.input}`}
-        />
-        <button onClick={submit} disabled={!problem.trim()} className={`${c.send} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
-          Send
-        </button>
+    <div className={`site-end site-end-card${accent ? ' site-end-card--accent' : ''} max-w-md mx-auto ${className}`}>
+      <div className="site-end-part">
+        <p className="site-end-text"><strong>No tool for your problem?</strong> Describe it — we build fast.</p>
+        <form className="site-end-form" onSubmit={e => { e.preventDefault(); submit(); }}>
+          <label className="sr-only-se" htmlFor={`idea-${source}`}>What are you trying to deal with?</label>
+          <input
+            id={`idea-${source}`}
+            type="text"
+            value={problem}
+            onChange={e => setProblem(e.target.value)}
+            placeholder="What are you trying to deal with?"
+            maxLength={1000}
+          />
+          <button type="submit" disabled={!problem.trim()}>Send</button>
+        </form>
       </div>
     </div>
   );
