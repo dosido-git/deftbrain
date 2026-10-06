@@ -60,6 +60,35 @@ const PIN_SET = {
   ],
 };
 
+// Tool pins (2026-10-06): a pin that leads straight to a tool, about one for
+// every three guide pins. `gets` is what the tool gives you, taken from the
+// tool's own feature list (its guides' cta.features), so nothing is promised
+// that the tool doesn't do. `example` is an excerpt of a real saved result
+// (tools.js exampleOutput) where the tool has one.
+const TOOL_PINS = [
+  { id: 'RentersDepositSaver', name: "Renter's Deposit Saver", board: 'Home & Daily Life',
+    head: 'Protect your security deposit on move-in day',
+    sub: 'Walk through your apartment once. Leave with the record that settles a move-out dispute.',
+    gets: ['Room-by-room walkthrough', 'A photo shot list', 'A formal condition report', 'A cover letter for your landlord, with your state\'s deposit rights'] },
+  { id: 'LeaseTrapDetector', name: 'Lease Trap Detector', board: 'Home & Daily Life',
+    head: 'Find the clauses hiding in your lease',
+    sub: 'Paste or upload a lease. See what to question before you sign.',
+    example: { verdict: 'High risk: 4 major concerns', label: 'From a real example: 3 things to fix before signing',
+      items: ['Remove the automatic 10% rent increase on renewal', 'Make the one-sided attorney\'s fees clause mutual', 'Bring the deposit down to the state\'s legal limit'] } },
+  { id: 'BillRescue', name: 'Bill Rescue', board: 'Money',
+    head: 'A bill isn\'t a verdict. It\'s a puzzle.',
+    sub: 'Tell it what the bill says and what happened. Get a plan for questioning it.',
+    gets: ['Itemized-bill error spotting', 'Scripts and letters for each step', 'Financial assistance templates', 'Practice the billing call first'] },
+  { id: 'LayoverMaximizer', name: 'Layover Maximizer', board: 'Travel & Events',
+    head: 'Will you make your connection?',
+    sub: 'Enter the airport, terminals, and your passport situation. Get the real time math.',
+    gets: ['A YES / NO / RISKY verdict, with the math', 'Gate-to-gate directions', 'A lounge finder matched to your cards', 'The worst case, and what then'] },
+  { id: 'MoneyDiplomat', name: 'Money Diplomat', board: 'Money',
+    head: 'The right number for awkward money moments',
+    sub: 'Tips, splits, rent, gifts, paying someone back: the amount and the words.',
+    gets: ['Amounts that fit your budget and country', 'Scripts for the conversation, not just the math', 'Practice mode for the hard ones', 'Quick math for tips and splits'] },
+];
+
 // Site palette (public/guides/guide.css): paper, ink, rule, accent, blue.
 const C = { paper: '#f7f4ef', ink: '#1a1816', ink2: '#4a4640', muted: '#6b6760', rule: '#e0dbd2', accent: '#c94f2c', blue: '#165b9a', card: '#ffffff' };
 
@@ -133,6 +162,47 @@ function answerPin(spec, brain) {
   ] });
 }
 
+function toolPin(t, brain) {
+  const check = (txt) => el('div', { gap: '22px', alignItems: 'flex-start' }, [
+    el('div', { width: '50px', height: '50px', flexShrink: 0, borderRadius: '999px', backgroundColor: C.blue, color: '#fff', fontSize: '28px', fontWeight: 500, alignItems: 'center', justifyContent: 'center' }, [
+      // Drawn, not typed: the pin fonts have no ✓ glyph.
+      { type: 'svg', props: { width: 26, height: 26, viewBox: '0 0 24 24', children: [
+        { type: 'path', props: { d: 'M5 12.5l4.5 4.5L19 7.5', stroke: '#fff', strokeWidth: 3.2, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' } },
+      ] } },
+    ]),
+    el('div', { flex: 1, fontSize: '36px', lineHeight: 1.3, color: C.ink, paddingTop: '2px' }, txt),
+  ]);
+  const card = t.example
+    ? el('div', { flexDirection: 'column', marginTop: '48px', backgroundColor: C.card, borderRadius: '24px', padding: '34px 36px', gap: '22px' }, [
+        el('div', { fontSize: '26px', color: C.muted, letterSpacing: '1px' }, t.example.label),
+        el('div', { fontSize: '38px', fontWeight: 500, color: C.accent }, t.example.verdict),
+        ...t.example.items.map(check),
+      ])
+    : el('div', { flexDirection: 'column', marginTop: '48px', backgroundColor: C.card, borderRadius: '24px', padding: '34px 36px', gap: '24px' }, [
+        el('div', { fontSize: '26px', color: C.muted, letterSpacing: '1px' }, 'What you get'),
+        ...t.gets.map(check),
+      ]);
+  return el('div', { width: '1000px', height: '1500px', flexDirection: 'column', padding: '72px 76px 64px', backgroundColor: C.paper, fontFamily: 'DM Sans', color: C.ink }, [
+    el('div', { alignItems: 'center', gap: '16px', fontSize: '30px', fontWeight: 500 }, [
+      { type: 'img', props: { src: brain, width: 76, height: 76 } },
+      el('div', {}, [{ type: 'span', props: { children: 'Deft' } }, { type: 'span', props: { style: { color: C.accent }, children: 'Brain' } }]),
+    ]),
+    el('div', { marginTop: '96px', fontSize: '26px', letterSpacing: '5px', textTransform: 'uppercase', color: C.accent, fontWeight: 500 }, `Free tool · ${t.name}`),
+    el('div', { flex: 1, flexDirection: 'column', justifyContent: 'center', paddingBottom: '40px' }, [
+      el('div', { fontFamily: 'Playfair Display', fontWeight: 700, fontSize: `${headlineSize(t.head)}px`, lineHeight: 1.06, letterSpacing: '-1.5px' }, t.head),
+      el('div', { marginTop: '32px', fontSize: '36px', lineHeight: 1.4, color: C.ink2 }, t.sub),
+      card,
+    ]),
+    el('div', { flexDirection: 'column', gap: '26px' }, [
+      el('div', { height: '2px', width: '100%', backgroundColor: C.rule }, []),
+      el('div', { justifyContent: 'space-between', alignItems: 'center' }, [
+        el('div', { fontSize: '28px', color: C.muted }, 'Free · no account needed'),
+        el('div', { backgroundColor: C.blue, color: '#fff', fontSize: '30px', fontWeight: 500, padding: '16px 30px', borderRadius: '999px' }, 'deftbrain.com'),
+      ]),
+    ]),
+  ]);
+}
+
 function csvCell(s) { return `"${String(s).replace(/"/g, '""')}"`; }
 
 async function main() {
@@ -170,6 +240,20 @@ async function main() {
       made++;
     }
     console.log(`  ✓ ${spec.slug}`);
+  }
+  // Tool pins: always with the full starter set; with named guides only when
+  // --tools is passed.
+  if (!args.length || process.argv.includes('--tools')) {
+    for (const t of TOOL_PINS) {
+      const svg = await satori(toolPin(t, brain), { width: 1000, height: 1500, fonts });
+      const png = new Resvg(svg, { fitTo: { mode: 'width', value: 1000 } }).render().asPng();
+      const name = `tool-${t.id}.png`;
+      fs.writeFileSync(path.join(OUT_DIR, name), png);
+      const link = `https://deftbrain.com/${t.id}?utm_source=pinterest&utm_campaign=tool-${t.id}`;
+      rows.push([name, t.board, t.head.slice(0, 100), `${t.sub} Free, no account needed.`, link].map(csvCell).join(','));
+      made++;
+      console.log(`  ✓ tool ${t.id}`);
+    }
   }
   fs.writeFileSync(path.join(OUT_DIR, 'pins.csv'), rows.join('\n') + '\n');
   console.log(`📌 ${made} pins + pins.csv → ${path.relative(ROOT, OUT_DIR)}/`);
