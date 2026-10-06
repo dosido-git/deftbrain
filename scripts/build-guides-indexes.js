@@ -600,12 +600,12 @@ const GUIDES_BROWSE_STYLE = `
     /* Hero, tightened (owner, 2026-10-05): the toolbox's heading size and
        search box (src/components/AllToolsPage.css .at-hero h1 / .at-nav-search),
        the box wider here. Overrides GUIDES_HOME_STYLE's larger hero. */
-    .gh-hero{padding:12px 0 28px}
+    .gh-hero{padding:28px 0 32px}
     .gh-hero h1{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-weight:700;font-size:30px;line-height:.98;letter-spacing:-.035em}
     @media(min-width:640px){.gh-hero h1{font-size:34px}}
     @media(min-width:1024px){.gh-hero h1{font-size:38px}}
-    .gh-hero-search{margin:10px auto 0;max-width:640px}
-    .gh-hero-search label{font-size:16px;margin:0 0 8px}
+    .gh-hero-search{margin:20px auto 0;max-width:640px}
+    .gh-hero-search label{font-size:16px;margin:0 0 12px}
     .gh-find{display:flex;gap:8px}
     .gh-find-field{position:relative;flex:1;min-width:0}
     .gh-find-field input{width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #d5cab8;padding:10px 44px 10px 14px;font-size:12px;font-family:inherit;font-weight:600;color:var(--gh-ink);background:#fff;outline:none}
@@ -679,7 +679,7 @@ ${guideListHtml(shelves[c.name].guides, '        ')}
     <section class="gh-hero gh-shell">
       <h1>Guides for everyday life.</h1>
       <form class="gh-hero-search" id="heroSearch" role="search">
-        <label for="q">What would you like to understand?</label>
+        <label for="q">What would you like to explore?</label>
         <div class="gh-find">
           <div class="gh-find-field">
             <input id="q" autocomplete="off" placeholder="Try &ldquo;security deposit,&rdquo; &ldquo;medical bill,&rdquo; or &ldquo;talking to my boss&rdquo;&hellip;">
