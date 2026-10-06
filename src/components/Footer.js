@@ -26,7 +26,11 @@ export default function Footer() {
         </a>
         <div className="site-footer-end">
           <nav className="site-footer-nav" aria-label="Footer">
-            {links.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
+            {/* External profiles (Pinterest) open in a new tab; rel="me" ties the
+                profile to this site for anyone checking. */}
+            {links.map(l => l.external
+              ? <a key={l.href} href={l.href} target="_blank" rel="me noopener noreferrer">{l.label}</a>
+              : <a key={l.href} href={l.href}>{l.label}</a>)}
           </nav>
           <span className="site-footer-dot" aria-hidden="true">·</span>
           <span>© {year} DeftBrain · deftbrain.com</span>

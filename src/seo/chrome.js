@@ -129,7 +129,9 @@ function getSiteFooterBar(year = new Date().getFullYear()) {
   const paused = toolFinderPaused();
   const links = require('../data/siteNav.json').footer
     .filter(l => !(l.key === 'toolFinder' && paused))
-    .map(l => `<a href="${l.href}">${l.label}</a>`).join('');
+    .map(l => l.external
+      ? `<a href="${l.href}" target="_blank" rel="me noopener noreferrer">${l.label}</a>`
+      : `<a href="${l.href}">${l.label}</a>`).join('');
   return `<footer class="site-footer">
     <div class="site-footer-inner">
       <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">

@@ -52,6 +52,11 @@
       "href": "/terms"
     },
     {
+      "label": "Pinterest",
+      "href": "https://www.pinterest.com/DeftBrainHQ/",
+      "external": true
+    },
+    {
       "label": "Contact",
       "href": "mailto:hello@deftbrain.com"
     }
