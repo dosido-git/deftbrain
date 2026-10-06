@@ -42,6 +42,9 @@ const FONTS_DIR     = path.join(__dirname, 'fonts');
 const BRAIN_PATH    = path.join(ROOT, 'public', 'pBrain-r.png');
 
 const FORCE = process.argv.includes('--force');
+// --missing: only guides with no PNG yet (new guides), whatever the mtimes —
+// a guide rebuild touches every HTML file, which would redraw all of them.
+const MISSING_ONLY = process.argv.includes('--missing');
 
 // ── Fonts ──────────────────────────────────────────────────
 function loadFont(filename) {
@@ -283,6 +286,7 @@ async function main() {
     const slug = path.basename(guidePath, '.html');
     const outPath = path.join(OG_OUT_DIR, `${slug}.png`);
 
+    if (MISSING_ONLY && fs.existsSync(outPath)) { skipped++; continue; }
     // Incremental: skip if PNG newer than HTML (and --force not passed)
     if (!FORCE && fs.existsSync(outPath)) {
       const htmlMtime = fs.statSync(guidePath).mtimeMs;
