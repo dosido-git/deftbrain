@@ -23,7 +23,7 @@ module.exports = {
     },
     {
       name: "Pick two or three asks, not eight",
-      body: "A negotiation with three asks reads as careful. A negotiation with eight reads as a problem. Identify the changes that actually matter — usually a fee that's too high, a clause that overrides a standard right, or a deposit term that's unreasonable — and let the rest go. The cosmetic clauses that bother you but don't cost anything? Skip them. You're trading the small ones to win the big ones, and the landlord is keeping score.",
+      body: "A negotiation with three asks reads as careful. A negotiation with eight reads as a problem. Identify the changes that actually matter — usually a fee that's too high, a clause that overrides a standard right, or a deposit term that's unreasonable — and let the rest go. The cosmetic clauses that bother you but don't cost anything? Skip them. You're trading the small ones to win the big ones, and the landlord is keeping score. A shorter notice period on an [automatic renewal clause](/guides/home/automatic-renewal-clause-in-a-lease) is one of the most useful asks, because missing that deadline can mean another full year.",
     },
     {
       name: "Frame asks as questions, not demands",
@@ -61,5 +61,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-05',
 };

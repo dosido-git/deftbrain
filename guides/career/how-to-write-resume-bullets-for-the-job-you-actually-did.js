@@ -16,7 +16,7 @@ module.exports = {
   deck:          "Most people write resume bullets that match their title rather than their actual work. Five steps for bullets that reflect the scope you really had — without overstating.",
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-05',
 
   ledes: [
     `Your title says one thing. The work you did says another. Maybe you were a senior on the org chart but were leading the team's biggest initiative as if you were a manager. Maybe you were called a coordinator and were running a function. Maybe your title hadn't been updated in two years while your responsibilities had grown into the next level. Now you're writing your resume and you're staring at the gap between the title that's printed on the offer letter and the work you actually delivered.`,
@@ -42,7 +42,7 @@ module.exports = {
     },
     {
       name: "Know when the gap between title and work is a signal worth surfacing",
-      body: "Sometimes the gap between your title and your work is so large that it becomes the story rather than a footnote. The pattern: your title doesn't reflect what you did, the company didn't promote you to match the work, and you left (or are leaving) partly because of that. In these cases, the resume can quietly tell that story without complaining. The framing that works: clean bullets describing the actual scope at each role, listed at the level the work was done, without artificially adjusting the title line. The reader who knows the industry will recognize the level of the work and ask about the title gap in the interview, where you can address it directly: 'My title was Senior, but the scope I owned matched what we'd call Lead at most companies — that's part of why I started looking.' This framing positions the gap as honest information rather than as either complaint or overclaim. Hiring managers respect candidates who describe their work accurately, even when the official title was a mismatch. The title-work gap is real and common; pretending it isn't makes the resume less informative, not more credible.",
+      body: "Sometimes the gap between your title and your work is so large that it becomes the story rather than a footnote. The pattern: your title doesn't reflect what you did, the company didn't promote you to match the work, and you left (or are leaving) partly because of that. In these cases, the resume can quietly tell that story without complaining. The framing that works: clean bullets describing the actual scope at each role, listed at the level the work was done, without artificially adjusting the title line. The reader who knows the industry will recognize the level of the work and ask about the title gap in the interview, where you can address it directly: 'My title was Senior, but the scope I owned matched what we'd call Lead at most companies — that's part of why I started looking.' This framing positions the gap as honest information rather than as either complaint or overclaim. Hiring managers respect candidates who describe their work accurately, even when the official title was a mismatch. The title-work gap is real and common; pretending it isn't makes the resume less informative, not more credible. If the gap on your résumé is a stretch of time after a layoff, see [how to explain a layoff gap](/guides/career/how-to-explain-a-layoff-gap).",
     },
   ],
 

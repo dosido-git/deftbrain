@@ -237,7 +237,11 @@ h2 {
   font-size: 13px;
   color: var(--muted, #6b6a66);
 }
+/* Step titles are h2 since 2026-10-05 (the page's real section headings —
+   they were h3 under the h1, with the tool box as the only h2). Same look. */
+.step-body h2,
 .step-body h3 {
+  line-height: inherit;
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
   font-size: 16px;
@@ -307,7 +311,10 @@ h2 {
   color: var(--accent2);
   margin-bottom: 12px;
 }
-.cta-block h2 {
+.cta-block h2,
+.cta-block .cta-headline {
+  font-weight: 700;
+  line-height: 1.25;
   font-family: 'Playfair Display', serif;
   font-size: clamp(22px, 3.5vw, 30px);
   color: #f7f4ef;
@@ -612,3 +619,14 @@ h1            { animation-delay: .10s; }
 .site-header + main > .container.prose { padding-top: 40px; }
 
 /* The site footer and the ideas/newsletter band above it are styled in /site-footer.css (imported at the top). */
+
+/* Short answer under the deck (2026-10-05): an optional numbered list or
+   small table a guide spec can carry (answerList / answerTable), so the
+   page's first content is the answer itself. */
+.answer-list { margin: 4px 0 18px 1.25em; font-size: 16px; line-height: 1.55; color: var(--ink2); }
+.answer-list li { margin-bottom: 4px; }
+.answer-table { width: 100%; border-collapse: collapse; margin: 4px 0 20px; font-size: 14px; color: var(--ink2); }
+.answer-table th, .answer-table td { text-align: start; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.answer-table th { font-weight: 600; color: var(--ink); }
+.step-body p a, .lede a { color: var(--deft-blue, #165b9a); text-decoration: underline; text-underline-offset: 2px; }
+:root[data-theme="dark"] .step-body p a, :root[data-theme="dark"] .lede a { color: #85afd6; }

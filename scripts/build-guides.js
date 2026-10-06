@@ -168,10 +168,14 @@ function renderGuide(spec, siblings) {
 
   // JSON-LD steps — JSON.stringify handles quote/unicode escaping correctly
   const stepsJsonLd = spec.steps
-    .map(s => `      {"@type":"HowToStep","name":${jsonLd(s.name)},"text":${jsonLd(s.body)}}`)
+    .map(s => `      {"@type":"HowToStep","name":${jsonLd(s.name)},"text":${jsonLd(s.body.replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, '$1'))}}`)
     .join(',\n');
 
   // Body: steps with optional callout inserted after step N
+  // Inline links in step bodies and ledes (2026-10-05): [label](/path) —
+  // site-relative paths only. Text is escaped first, so nothing else becomes
+  // markup. stripLinks gives the plain text for JSON-LD and meta.
+  const rich = (t) => esc(t).replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, (m, label, href) => `<a href="${href}">${label}</a>`);
   const stepsHtml = spec.steps.map((s, i) => {
     // Optional per-step artwork. Raw SVG, NOT escaped — these strings are
     // authored in the spec files, which are ours; nothing here comes from a
@@ -184,8 +188,8 @@ function renderGuide(spec, siblings) {
     let block = `      <div class="step">
         <div class="step-num">${i+1}</div>
         <div class="step-body">
-          <h3>${esc(s.name)}</h3>${art}
-          <p>${esc(s.body)}</p>
+          <h2>${esc(s.name)}</h2>${art}
+          <p>${rich(s.body)}</p>
         </div>
       </div>`;
     if (spec.callout && spec.callout.afterStep === i+1) {
@@ -200,7 +204,15 @@ function renderGuide(spec, siblings) {
 
   // Ledes may contain <br/> for intra-paragraph breaks. Escape everything
   // (XSS-safe), then re-permit ONLY the <br> tag — nothing else survives.
-  const escLede = (p) => esc(p).replace(/&lt;br\s*\/?&gt;/gi, '<br/>');
+  const escLede = (p) => rich(p).replace(/&lt;br\s*\/?&gt;/gi, '<br/>');
+  // Optional short answer right under the deck: a numbered list or a small
+  // table, for the reader who wants the answer first (and for search
+  // snippets, which lift exactly this). Plain text cells, escaped.
+  const answerHtml = (spec.answerList && spec.answerList.length
+    ? `      <ol class="answer-list">\n${spec.answerList.map(x => `        <li>${esc(x)}</li>`).join('\n')}\n      </ol>\n`
+    : '') + (spec.answerTable && spec.answerTable.rows
+    ? `      <table class="answer-table">\n        <thead><tr>${spec.answerTable.head.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr></thead>\n        <tbody>\n${spec.answerTable.rows.map(r => `          <tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('\n')}\n        </tbody>\n      </table>\n`
+    : '');
   const ledesHtml = spec.ledes
     .map(p => `      <p class="lede">${escLede(p)}</p>`)
     .join('\n');
@@ -232,7 +244,10 @@ function renderGuide(spec, siblings) {
     let overlap = 0;
     b.forEach(w => { if (selfBag.has(w)) overlap++; });
     const sameTool = s.cta?.toolId && spec.cta?.toolId && s.cta.toolId === spec.cta.toolId;
-    return { s, score: (sameTool ? 100 : 0) + overlap };
+    // Prefer guides that can rank (on the keep-list, so not noindexed): a link
+    // to an indexable page passes value to a page that can use it (2026-10-05).
+    const indexable = GUIDES_KEEP_LIST.has(`${s.category}/${s.slug}`);
+    return { s, score: (sameTool ? 100 : 0) + (indexable ? 50 : 0) + overlap };
   // Tie-break on slug so the order never depends on directory-read order.
   }).sort((a, b) => b.score - a.score || a.s.slug.localeCompare(b.s.slug));
 
@@ -338,7 +353,7 @@ ${stepsJsonLd}
       <h1>${h1Html}</h1>
 
       <p class="deck">${esc(spec.deck)}</p>
-
+${answerHtml}
       <p class="meta-line">Updated ${formatDate(spec.modified)} · By the DeftBrain team</p>
 
 ${ledesHtml}
@@ -349,7 +364,7 @@ ${stepsHtml}
 
       <div class="cta-block" data-glyph="${spec.cta.glyph}">
         <div class="cta-eyebrow">Try it now — free</div>
-        <h2>${esc(spec.cta.headline)}</h2>
+        <p class="cta-headline">${esc(spec.cta.headline)}</p>
         <p>${esc(spec.cta.body)}</p>
         <div class="cta-features">
 ${featuresHtml}
