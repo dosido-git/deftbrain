@@ -4208,6 +4208,39 @@ Not every data role is the same distance from your current one. 'Data Analyst' a
 
 Even after the skills and portfolio are in place, the job hunt itself takes time. Plan for three to six months of interviewing — most career switchers underestimate this final stretch. The total honest timeline is therefore: tools (2-3 months), portfolio (2 months, overlapping the tail of tool-learning), deeper projects (2-3 months, with applications going out alongside), interview process (3-6 months, running in parallel with the later project work). Because the phases overlap rather than stack end-to-end, twelve months from decision to landed offer is realistic. Six months is the floor — and only for people with a real head start who run every track in parallel; eighteen is the ceiling for most. The variance is why the plan matters.
 
+### How to Explain a Layoff Gap (On Your Résumé and Out Loud)
+
+URL: https://deftbrain.com/guides/career/how-to-explain-a-layoff-gap
+Updated: 2026-10-05
+
+A layoff followed by a gap is one of the most common stories in hiring right now. Here is how to put it on a résumé, how to say it in an interview, and what recruiters are actually listening for.
+
+A layoff usually has nothing to do with how well someone did the job. Whole teams, departments, and projects get cut. But the gap that follows can still feel like something to hide, and the effort to hide it is often what makes it look worse: vague dates, a long silence on LinkedIn, or an answer in an interview that goes on for two minutes when one sentence would have done.
+
+Recruiters see this story constantly. What they listen for is not whether there was a gap, but whether the explanation is short, calm, and true, and whether the person sounds ready for the job in front of them.
+
+What follows: the résumé, the one-sentence answer, how to account for the time, what changes with longer gaps, and the mistakes that draw attention.
+
+**On the résumé: dates, and one short line**
+
+Give the real end date for the last job; month and year is standard, and hiding the gap with year-only dates tends to be noticed. Under that job, a short line such as "Position eliminated in company-wide restructuring" or "Role eliminated in a layoff affecting 15% of staff" answers the question before it is asked. If you did real work during the gap, such as freelance projects, contract work, a course with a credential, or caregiving, it can go on the résumé with dates like any other entry. Only include what actually happened, because anything listed is fair game in an interview.
+
+**The one-sentence answer**
+
+A good spoken answer has three parts and takes about fifteen seconds: what happened, what you have been doing, and why this role. For example: "My role was eliminated when the company cut its marketing team last spring. Since then I've done two freelance projects and finished a data analytics certificate, and I've been looking specifically for a role like this one, where I can do both." Then stop and let the interviewer ask more if they want to. Most will move on.
+
+**Accounting for the time honestly**
+
+The time does not need to be filled with impressive projects. Job searching is work, and saying so is fine. Other true things that count: caring for a family member, a move, recovering from burnout, learning a skill, volunteering, or deliberately taking a few months to decide on a direction. What matters is that the answer is honest and that it ends pointed forward, at the job you are interviewing for, rather than back at the layoff.
+
+**Longer gaps**
+
+A gap of a few months after a layoff barely registers with most recruiters, especially in a slow hiring market. As it stretches toward a year or more, it helps to show that skills are current: a recent course, a project, freelance or contract work, or industry involvement such as events and professional groups. A short summary at the top of the résumé that leads with experience and strengths moves attention to what you bring before anyone looks at dates.
+
+**What tends to draw attention**
+
+Criticizing the former employer, even when it is deserved, makes interviewers wonder how you would talk about them. Over-explaining reads as anxiety. Inventing a job or stretching dates is risky because background checks confirm employment dates. And apologizing for the gap frames it as a failure, when a layoff is a business decision. A calm, brief, true answer is usually all it takes for the conversation to move on to what you can do.
+
 ### How to Transition From Engineering to Product Management
 
 URL: https://deftbrain.com/guides/career/how-to-transition-from-engineering-to-product-management
@@ -5543,6 +5576,39 @@ Three setup tasks have downstream consequences if delayed: (1) Get the utilities
 
 The rest of the typical move-in checklist — unpacking schedules, neighborhood orientation, decorating plans, grocery runs, address changes — is real work, but it's work you can do at your own pace. Most of it doesn't have time-sensitive consequences. You don't have to unpack every box in a week. You don't need to know your favorite local restaurant by Friday. You can change your address with the bank next month if you forget this week. The cost of doing these slowly is small. The cost of skipping the four steps above is large. Spending move-in day on the high-stakes tasks and letting everything else wait is not a productivity failure; it's the right priority order. Most people get this backwards because the long checklists make every item look equally urgent. They're not.
 
+### Automatic Renewal Clause in a Lease (What It Means and the Deadline That Matters)
+
+URL: https://deftbrain.com/guides/home/automatic-renewal-clause-in-a-lease
+Updated: 2026-10-05
+
+An automatic renewal clause can quietly sign you up for another full year. Here is how these clauses work, the wording to look for, and how the notice deadline decides whether you are free to leave.
+
+Most people assume a lease simply ends on its end date. Many leases do not. An automatic renewal clause says the lease continues, sometimes month to month and sometimes for a whole new term, unless one side gives notice by a certain date. That date is often 30, 60, or even 90 days before the lease ends, which means the real decision about staying or leaving can come months earlier than it feels like it should.
+
+The clause is usually short and easy to skim past. It matters most at the moment you are least thinking about the lease: when you have found a new place, or a job in another city, and discover you missed a deadline you did not know about.
+
+What follows: the kinds of renewal clauses, the wording that signals one, the notice deadline, what some states require of landlords, and the options before and after you sign.
+
+**The three kinds of renewal**
+
+Month-to-month continuation: after the term ends, the lease rolls over one month at a time. This is common and fairly gentle, because either side can usually end it with a month's notice. Renewal for the same full term: the lease renews for another six or twelve months if nobody gives notice in time. This is the one that causes trouble, because missing the deadline can commit you to a full year. Renewal at new terms: the lease renews, often with a rent increase the landlord announces in advance. Each of these reads a little differently, so the exact wording is what tells you which one you have.
+
+**The wording to look for**
+
+Search the lease for phrases such as "shall automatically renew," "shall be extended," "renewal term," "successive periods," "unless either party gives written notice," and "no less than 60 days prior to the expiration." Also look for a holdover clause, which says what happens if you stay after the lease ends; it sometimes sets a much higher rent. If the lease says renewal is automatic but does not say for how long, the length of the renewal is a fair question to ask in writing before you sign.
+
+**The notice deadline is the real decision date**
+
+Count back from the lease end date by the notice period. A lease ending July 31 with a 60-day notice requirement means the notice has to arrive by about June 1, and some leases count from when the notice is received rather than sent. Check how notice must be given: in writing, by certified mail, through a tenant portal, or to a specific address. A text message to the property manager may not count if the lease names another method. Putting the deadline in your calendar on the day you sign, with a reminder a few weeks before, is the simplest protection there is.
+
+**Some states make landlords remind you**
+
+Rules vary a lot by state, and some states limit these clauses. New York, for example, generally will not enforce an automatic renewal clause against a tenant unless the landlord sends a written reminder about it shortly before the tenant's notice deadline. Wisconsin has a similar reminder requirement. Other states have no specific rule, and the clause is enforced as written. Your state's tenant rights guide, usually published by the attorney general or a housing agency, says which applies. If you missed a deadline, it is worth checking whether the landlord met their side of it before assuming you are bound.
+
+**Options before and after signing**
+
+Before signing, renewal terms are often negotiable: asking for month-to-month continuation instead of a full-term renewal, or a 30-day notice period instead of 60 or 90, is a reasonable request, and landlords agree more often than people expect. After signing, sending notice early is allowed in most leases and removes the risk entirely. If you have already missed the deadline, possibilities include asking the landlord for a release, offering to find a replacement tenant, checking whether the lease allows subletting or an early termination fee, and checking your state's reminder rules. Which one fits depends on the landlord, the market, and the exact clause.
+
 ### How to Negotiate a Lease Before Signing (Without Losing the Apartment)
 
 URL: https://deftbrain.com/guides/home/how-to-negotiate-a-lease-before-signing
@@ -6042,6 +6108,39 @@ If the first agent says no, ask politely whether you can speak with a supervisor
 
 Direct ask, specific date and amount, with 'as a courtesy' built in. This is the entire opening line — no preamble about why the fee was unfair, no apology for asking. Brevity is what makes it work.
 
+### How to Read an Itemized Hospital Bill (Line by Line, Without a Medical Degree)
+
+URL: https://deftbrain.com/guides/money/how-to-read-an-itemized-hospital-bill
+Updated: 2026-10-05
+
+An itemized hospital bill looks like code because it is code. Here is what each column means, the errors that show up most often, and how to check the bill against what your insurer says you owe.
+
+The first bill from a hospital is usually a summary: one total, maybe a few categories, and a due date. That summary is not the bill you can check. The itemized bill is, and you generally have to ask for it. When it arrives it can run several pages of dates, four-digit numbers, five-character codes, abbreviations, and prices with no obvious logic.
+
+It reads that way because it was written for the insurer's systems, not for you. Once you know what the columns mean, it becomes something you can actually check, and checking it is worthwhile: errors such as duplicate charges, wrong quantities, and services you never received are common enough that people who look often find something.
+
+What follows: how to get the right document, what each column means, the errors worth looking for, and how to compare the bill with your insurer's statement.
+
+**Ask for the itemized bill, with codes**
+
+Call the hospital's billing office and ask for an itemized statement that includes the billing codes, not just descriptions. A summary bill only lists totals by category. The itemized version lists every charge on its own line. Ask for the medical records for the same stay if you want to confirm services, since the itemized bill shows what was charged and the records show what was done. Hospitals provide itemized bills on request. While you review it, you can ask in writing that the account be put on hold rather than sent to collections; many billing offices agree. Note the date and the name of the person you spoke with.
+
+**What each column means**
+
+Most itemized bills share the same columns. Date of service: the day the charge happened. Revenue code: a four-digit number for the department, such as 0250 for pharmacy, 0300 for laboratory, 0450 for the emergency room, and 0360 for operating room services. CPT or HCPCS code: a five-character code for the specific service or supply (for example, 99283 is a mid-level emergency visit). Description: often abbreviated almost beyond recognition. Units: how many of that item or service. Charge: the hospital's list price, which is usually far above what any insurer actually pays. You can look up any CPT or HCPCS code with a quick search, and the description that comes back is usually much clearer than the bill's.
+
+**The errors that show up most often**
+
+Duplicate charges: the same code on the same date twice, which can be legitimate (two separate doses) but is often a double entry. Wrong units: 10 tablets billed as 100, or a day of a monitor billed as several. Charges dated after you left, or before you arrived. Services you did not receive, such as a medication you declined or a test that was cancelled. A room charge for the day of discharge: many hospitals do not charge for it, and Medicare does not pay for it, so it is worth asking about. A higher emergency visit level than the visit felt like: the five levels run from 99281 to 99285, and the level changes the price considerably. Unbundling: separate charges for supplies or steps that are normally included in a single procedure charge.
+
+**Check the bill against your insurer's statement**
+
+If you have insurance, your insurer sends an Explanation of Benefits (EOB) for the same stay. It is not a bill. It shows what the hospital charged, what the insurer allowed, what it paid, and what it says you owe. The amount on the hospital's bill should match the EOB's patient responsibility. If the bill asks for more, ask the billing office why, because a common cause is a charge that is still being processed or was billed incorrectly. A line the insurer denied is worth a closer look too: a denial for a coding reason can sometimes be fixed by the hospital resubmitting with the right code, rather than by you paying it.
+
+**Prices, assistance, and what a review can change**
+
+Hospitals in the U.S. have been required since 2021 to publish their standard charges, including what they have negotiated with insurers and what they accept as a cash price. Those figures give a sense of whether a charge is out of line. Nonprofit hospitals, which are most hospitals, must also have a written financial assistance policy, and many people who qualify never apply; eligibility often reaches well above the poverty line. A review can end in several ways: a corrected bill, a reduced balance, a payment plan with no interest, assistance that covers part or all of it, or confirmation that the bill is right. Each of those is more information than you had when the envelope arrived.
+
 ### How to Spot a Bad Deal That Looks Good (Before You Click Buy)
 
 URL: https://deftbrain.com/guides/money/how-to-spot-a-bad-deal-that-looks-good
@@ -6165,6 +6264,39 @@ Click through to the reviewer's profile. If they reviewed twelve unrelated produ
 **It addresses a competitor's known weakness conspicuously**
 
 If the leading competitor is famous for a specific flaw — say, the cable always breaks — and the review for the alternative product spends a paragraph noting how solid the cable is, that's targeted marketing copy. Real users don't write paragraphs about features they didn't have a problem with. They might mention it briefly. They don't anchor a review around solving a competitor's well-known flaw, because they're not thinking about the competitor at all.
+
+### Splitting Rent With Different Room Sizes (Three Fair Methods, With the Math)
+
+URL: https://deftbrain.com/guides/money/splitting-rent-with-different-room-sizes
+Updated: 2026-10-05
+
+Splitting rent evenly stops feeling fair the moment one bedroom is bigger or has its own bathroom. Here are three methods roommates use, worked through with real numbers.
+
+An even split is simple, and when the rooms are about the same it is usually the fairest option. But when one bedroom is half again as big, has the private bathroom, or gets the only window that is not facing a wall, an even split means one person quietly subsidizes another. That rarely causes a fight on move-in day. It tends to come out months later, in an argument about something else.
+
+There is no single correct formula. There are a few reasonable ones, and the useful part is choosing one together before anyone moves in, so the number feels like an agreement rather than a favor.
+
+What follows: three methods, each worked through with the same example, plus the details people often forget.
+
+**The example**
+
+Two roommates share a $2,400-a-month apartment of 1,000 square feet. Bedroom A is 180 square feet. Bedroom B is 120 square feet. The remaining 700 square feet (kitchen, living room, hallway, shared bathroom) is used by both. An even split would be $1,200 each. The methods below give different answers for the same apartment, which is exactly why it helps to agree on one in advance.
+
+**Method 1: split by bedroom size only**
+
+Divide the rent in proportion to the bedrooms. Together the bedrooms are 300 square feet, so A has 60% and B has 40%: $1,440 and $960. This is simple, but it treats the shared space as if it belonged to whoever has the bigger bedroom, and both people use the kitchen and living room equally. For most apartments this method overcharges the larger room, which is why it is less common than the next one.
+
+**Method 2: shared space evenly, bedrooms by size**
+
+Split the cost of the shared space evenly and the cost of the bedrooms by size. The shared 700 square feet is 70% of the apartment, or $1,680, so each person pays $840 for it. The bedrooms are the other 30%, or $720, split 60/40: $432 for A and $288 for B. Totals: A pays $1,272 and B pays $1,128. The difference, $144 a month, reflects the extra 60 square feet of private space. Many roommates find this one feels fair because it matches how the apartment is actually used.
+
+**Method 3: adjust for features, or let each person bid**
+
+Size is not the only thing that matters. A private bathroom, a walk-in closet, a balcony, a parking spot, or a quieter side of the building can be worth more than square footage. One approach is to agree on a monthly value for each feature, say $75 for a private bathroom, and add it to that room's share while subtracting it from the other. Another is bidding: each person writes down the most they would pay for each room, and the rooms and amounts are set so that nobody would rather swap. Free online rent-division calculators run this kind of bidding for you.
+
+**Details worth agreeing on too**
+
+Utilities and internet are usually split evenly, since use is hard to measure, though a person working from home all day sometimes pays a bit more. The deposit is often split in the same proportion as the rent. And it helps to agree in writing on what happens when someone moves out, who finds the replacement, and whether the split is revisited if circumstances change. Writing the agreed numbers down, even in a shared note, keeps the conversation from having to happen twice.
 
 ### What to Use Now That Fakespot Is Gone
 
@@ -6802,6 +6934,39 @@ Sleeping through a flight is the worst-case outcome. Set at least three alarms �
 **Consider lounges and transit hotels if sleep matters**
 
 If your trip depends on you being functional the next day, paying for sleep is often the right call. Most major airports have day-rate transit hotels (you book by the hour, not the night) that run $30 to $100 for 6 hours. Lounges with sleep pods or recliners (Priority Pass, card-linked, or paid) are another option. The mental cost of arriving at your destination in a fog from a sleepless terminal night is sometimes higher than the cost of just buying real sleep.
+
+### Is a 60-Minute Layover Enough? (When It Works and When It Is a Gamble)
+
+URL: https://deftbrain.com/guides/travel/is-a-60-minute-layover-enough
+Updated: 2026-10-05
+
+An hour can be plenty or nowhere near enough. Here is what decides it: the kind of connection, the airport, your ticket, your bags, and what happens if you miss the second flight.
+
+Sixty minutes sounds tight, and sometimes it is. But airlines sell hour-long connections every day, and many of them work without anyone breaking into a run. The difference between an easy hour and an impossible one comes down to a handful of facts about the trip, most of which you can check before you book.
+
+An hour is a different question from 90 minutes, because there is much less room for anything to go slightly wrong: a late arrival, a slow walk off the plane, a long line at passport control. So the factors below matter more, and the margin for each one is thinner.
+
+What follows: the factors that decide whether an hour is enough, and how to think about the risk.
+
+**One ticket or two**
+
+This matters more than anything else. When both flights are on one ticket, the airline has agreed the connection is possible: it only sells connections that meet the airport's published minimum connection time. If the first flight is late and you miss the second, the airline is responsible for rebooking you. When the flights are on separate tickets, nobody has checked the connection, and missing the second flight usually means buying a new ticket. A 60-minute connection on separate tickets is a gamble most travelers come to regret.
+
+**Domestic, international, and passport control**
+
+A domestic connection within the same terminal is the easiest case, and an hour is often enough. Arriving on an international flight into the United States is the hardest: you clear immigration, collect your bags, clear customs, recheck the bags, and go through security again, even when you are only connecting. An hour for that is very tight at most large airports. In Europe, flying between the Schengen area and elsewhere adds a passport check between terminals, which can take a few minutes or most of an hour depending on the time of day.
+
+**The airport and the walk**
+
+Some airports are compact, and a connection means a short walk. Others put connecting gates in different terminals linked by trains or buses, and the transfer alone can take 20 to 30 minutes. A terminal map from the airport's website shows the distance between your arrival and departure gates, and the airline's app usually shows the departure gate a few hours ahead. Boarding typically closes 10 to 20 minutes before departure, so the time you actually have is the layover minus that.
+
+**Bags, seats, and the first flight's record**
+
+Traveling with only a carry-on removes one of the biggest variables, especially on international arrivals. A seat near the front of the first plane can save several minutes getting off. And the first flight's on-time record matters: a flight that is regularly 20 minutes late turns a 60-minute layover into a 40-minute one. Flight-tracking sites show recent arrival times for a given flight number, which gives a realistic picture rather than the schedule's.
+
+**What happens if you miss it**
+
+On a single ticket, a missed connection caused by a delay usually means being rebooked on the next available flight, so the real cost depends on when that flight is. If there are several flights a day, missing one is an inconvenience. If it is the last flight of the day, it can mean a night at the airport or a hotel, and airlines differ in what they cover. Weighing the layover against the cost of missing it, not only against the odds, is what turns this from a guess into a decision.
 
 ## Wellness
 
