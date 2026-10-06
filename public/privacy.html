@@ -173,6 +173,16 @@
       </div>
     </div>
   </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
 
   <main>
     <div class="container prose">

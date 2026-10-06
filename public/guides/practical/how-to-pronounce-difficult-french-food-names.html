@@ -129,9 +129,19 @@
       </div>
     </div>
   </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
 
   <div class="page-search"><form class="ds-form" role="search" data-deft-search data-tools="4" data-guides="5" action="/tools">
-      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search tools and guides…" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"></div>
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search tools and guides…" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
       <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
     </form>
     <script src="/search/deft-search.js" defer></script></div>
@@ -358,7 +368,7 @@ French food names defeat English speakers consistently because French phonetics 
     <div class="site-end-inner">
       <div class="site-end-part">
         <p class="site-end-kicker">&#128161; Missing something?</p>
-        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Tell us what you&rsquo;re dealing with. We read every suggestion, and the best become new tools.</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Suggest a tool. We read every suggestion, and the best become new tools.</p>
         <form class="site-end-form" id="db-idea-form">
           <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
           <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
