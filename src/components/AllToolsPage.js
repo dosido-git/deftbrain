@@ -31,6 +31,22 @@ function categoriesFor(tool) {
   return [];
 }
 
+// Back from a guide lands where the visitor left (2026-10-05): the page saves
+// its scroll position and how many category guides were loaded when the
+// visitor leaves it, and restores them on a Back/Forward arrival to the same
+// URL. sessionStorage only; a failed read or write just means no restore.
+const VIEW_KEY = 'deft:tools-view';
+function savedView() {
+  try {
+    const nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
+    if (nav.type !== 'back_forward') return null;
+    const v = JSON.parse(sessionStorage.getItem(VIEW_KEY) || 'null');
+    if (!v || v.url !== window.location.pathname + window.location.search) return null;
+    if (Date.now() - v.at > 60 * 60 * 1000) return null;
+    return v;
+  } catch (_) { return null; }
+}
+
 function alpha(a, b) {
   const strip = s => String(s || '').replace(/^The\s+/i, '');
   return strip(a.title).localeCompare(strip(b.title));
@@ -79,7 +95,9 @@ export default function AllToolsPage({ allTools = [] }) {
   // Arriving from a link lower on another page (the home page's "Browse all
   // tools"), client-side navigation kept that page's scroll offset and
   // landed mid-catalog. Start at the top.
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  // ...unless this is a Back/Forward arrival with a saved view (see savedView).
+  const restoreRef = useRef(savedView());
+  useEffect(() => { if (!restoreRef.current) window.scrollTo(0, 0); }, []);
 
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -171,7 +189,7 @@ export default function AllToolsPage({ allTools = [] }) {
   const GUIDES_FIRST = 6;
   const GUIDES_STEP = 12;
   const [guideShelves, setGuideShelves] = useState(null);
-  const [guidesShown, setGuidesShown] = useState(GUIDES_FIRST);
+  const [guidesShown, setGuidesShown] = useState(() => (restoreRef.current && restoreRef.current.shown) || GUIDES_FIRST);
   const wantGuides = category !== 'All' && !query.trim();
   useEffect(() => {
     if (!wantGuides || guideShelves) return undefined;
@@ -182,8 +200,38 @@ export default function AllToolsPage({ allTools = [] }) {
       .catch(() => { if (live) setGuideShelves({}); });
     return () => { live = false; };
   }, [wantGuides, guideShelves]);
-  useEffect(() => { setGuidesShown(GUIDES_FIRST); }, [category]);
+  // A new category starts at the first few guides — but not on the first
+  // render, when a restored view may have set more.
+  const lastCategoryRef = useRef(category);
+  useEffect(() => {
+    if (lastCategoryRef.current === category) return;
+    lastCategoryRef.current = category;
+    setGuidesShown(GUIDES_FIRST);
+  }, [category]);
+  // Save the view on the way out; restore the scroll once the page is drawn
+  // (after the category's guides have arrived, when there are any).
+  const shownRef = useRef(guidesShown);
+  shownRef.current = guidesShown;
+  useEffect(() => {
+    const save = () => {
+      try {
+        sessionStorage.setItem(VIEW_KEY, JSON.stringify({
+          url: window.location.pathname + window.location.search,
+          y: window.scrollY, shown: shownRef.current, at: Date.now(),
+        }));
+      } catch (_) { /* no restore, nothing else */ }
+    };
+    window.addEventListener('pagehide', save);
+    return () => window.removeEventListener('pagehide', save);
+  }, []);
   const guideShelf = wantGuides && guideShelves ? guideShelves[category] : null;
+  useEffect(() => {
+    const v = restoreRef.current;
+    if (!v) return;
+    if (wantGuides && !guideShelves) return; // wait for the guide list to be drawn
+    restoreRef.current = null;
+    window.requestAnimationFrame(() => window.scrollTo(0, v.y));
+  }, [wantGuides, guideShelves]);
 
   const syncUrl = (nextQ, nextCategory) => {
     const next = {};

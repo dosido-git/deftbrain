@@ -131,3 +131,16 @@ span[class*="emoji"] {
   40%  { transform: rotate(360deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Links that open in a new tab carry a small ↗ (2026-10-05): links inside a
+   tool (ToolRenderer's [data-tool-body] handler opens them in a new tab) and
+   the related links under a tool. The alt text after "/" is what a screen
+   reader announces instead of the arrow. Links wrapping an image don't get it. */
+[data-tool-body] a[href^="/"]:not([href^="//"]):not([href^="/api"]):not([download]):not(:has(img))::after,
+a.db-newtab::after {
+  content: "\00a0\2197";
+  content: "\00a0\2197" / " (opens in a new tab)";
+  font-size: .85em;
+  text-decoration: none;
+  display: inline-block;
+}

@@ -97,11 +97,29 @@ const ToolRenderer = ({ college }) => {
     );
   }
 
+  // Links inside a tool open in a new tab (owner, 2026-10-05): leaving the
+  // page mid-tool, or from its results, would lose the visitor's work. One
+  // capture-phase handler covers every tool's links (360+ of them, plain <a>
+  // and router <Link> alike) without touching the tool files; a modified click
+  // (⌘/Ctrl/Shift, middle button) keeps the browser's own behaviour. The ↗
+  // marker is CSS (src/styles/index.css, [data-tool-body]).
+  const openOutside = (e) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target && e.target.closest && e.target.closest('a[href]');
+    if (!a || a.target || a.hasAttribute('download')) return;
+    const href = a.getAttribute('href') || '';
+    if (!href.startsWith('/') || href.startsWith('//') || href.startsWith('/api') || href.split(/[?#]/)[0] === `/${toolId}`) return;
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(href, '_blank', 'noopener');
+  };
+
   return (
     <ToolPageWrapper 
       tool={toolData}
       toolId={toolId}
     >
+      <div data-tool-body style={{ display: 'contents' }} onClickCapture={openOutside}>
       <Suspense fallback={
         <div className="p-20 flex flex-col items-center justify-center space-y-4">
           <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -115,6 +133,7 @@ const ToolRenderer = ({ college }) => {
         </ToolErrorBoundary>
         {STATIC_CONTENT_COHORT_2.has(toolId) && <PublicProductDemo tool={toolData} />}
       </Suspense>
+      </div>
     </ToolPageWrapper>
   );
 };

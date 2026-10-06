@@ -53,18 +53,35 @@ const GUIDE_LIST_STYLE = `
 
 const GUIDE_LIST_NOSCRIPT = '<noscript><style>.gl-list li[hidden]{display:block!important}.gl-controls{display:none!important}</style></noscript>';
 
+// Back from a guide lands where the visitor left (2026-10-05): how many
+// guides each list showed and the scroll position are saved when the page is
+// left, and restored on a Back/Forward arrival (sessionStorage, per path).
+// When the browser restores the page whole from its back-forward cache, none
+// of this is needed and the saved copy is simply unused.
 const GUIDE_LIST_SCRIPT = `<script>
   (()=>{
+    const KEY='deft:gl:'+location.pathname;
+    const lists=[];
     document.querySelectorAll('[data-gl]').forEach(box=>{
       const items=[...box.querySelectorAll('.gl-list li')];
       const more=box.querySelector('.gl-more'),all=box.querySelector('.gl-all'),fewer=box.querySelector('.gl-fewer');
+      const list={n:${GUIDES_FIRST},show:()=>{}};
+      lists.push(list);
       if(!more)return;
-      let n=${GUIDES_FIRST};
-      const show=k=>{n=Math.min(k,items.length);items.forEach((li,i)=>{li.hidden=i>=n});const done=n>=items.length;more.hidden=done;all.hidden=done;fewer.hidden=!done;};
-      more.onclick=()=>show(n+${GUIDES_STEP});
-      all.onclick=()=>show(items.length);
-      fewer.onclick=()=>{show(${GUIDES_FIRST});box.scrollIntoView({block:'nearest'});};
+      list.show=k=>{list.n=Math.min(k,items.length);items.forEach((li,i)=>{li.hidden=i>=list.n});const done=list.n>=items.length;more.hidden=done;all.hidden=done;fewer.hidden=!done;};
+      more.onclick=()=>list.show(list.n+${GUIDES_STEP});
+      all.onclick=()=>list.show(items.length);
+      fewer.onclick=()=>{list.show(${GUIDES_FIRST});box.scrollIntoView({block:'nearest'});};
     });
+    window.addEventListener('pagehide',()=>{try{sessionStorage.setItem(KEY,JSON.stringify({y:scrollY,n:lists.map(l=>l.n),at:Date.now()}))}catch(e){}});
+    try{
+      const nav=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0])||{};
+      const v=JSON.parse(sessionStorage.getItem(KEY)||'null');
+      if(nav.type==='back_forward'&&v&&Date.now()-v.at<3600000){
+        (v.n||[]).forEach((k,i)=>{if(lists[i]&&k>${GUIDES_FIRST})lists[i].show(k)});
+        requestAnimationFrame(()=>scrollTo(0,v.y));
+      }
+    }catch(e){}
   })();
   </script>`;
 

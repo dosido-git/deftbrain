@@ -118,7 +118,9 @@ export default function RelatedLinks() {
           compensates so the visual rhythm barely changes. */}
       <div className="flex flex-wrap gap-x-4 gap-y-0 text-sm leading-relaxed">
         {links.map(l => (
-          <a key={l.href} href={l.href} className={`${c.link} no-underline transition-colors inline-block py-1.5`}>{l.text}</a>
+          // A new tab (2026-10-05): these sit under a tool's results, and leaving
+          // in the same tab would lose them. ↗ comes from .db-newtab's CSS.
+          <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className={`db-newtab ${c.link} no-underline transition-colors inline-block py-1.5`}>{l.text}</a>
         ))}
       </div>
     </nav>
