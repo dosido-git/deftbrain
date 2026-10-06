@@ -13,7 +13,11 @@
 //   2. LIGHTER RUNS. While surging, the second "number check" pass
 //      (lib/factCheck.js withNumberCheck) is skipped, which halves the calls
 //      the 10+ number-heavy tools make.
-//   3. A KIND "BUSY" ANSWER. If a request still fails because of overload, the
+//   3. PROMPT CACHING ON. Every route's fixed instructions are cached (the
+//      5-minute kind) while surging — lib/claude.js. Off on normal days, when
+//      most cached prompts would expire unread (PROMPT_CACHE_ROUTES still
+//      opts single routes in permanently).
+//   4. A KIND "BUSY" ANSWER. If a request still fails because of overload, the
 //      /api middleware (busyMiddleware below) turns the route's generic 500
 //      into a 503 with code "busy" and a plain message; the browser
 //      (src/hooks/useClaudeAPI.js) waits and retries before showing it.

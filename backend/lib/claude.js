@@ -7,7 +7,7 @@ const { withEpistemics } = require('./epistemics');
 const { currentRoute, currentIsTestClient } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
-const { withSurge } = require('./surge');
+const { withSurge, isSurging } = require('./surge');
 const { withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
@@ -86,7 +86,12 @@ anthropic.messages.create = function (params, ...rest) {
   // separated route slugs, e.g. "debate-me,room-reader"; "*" = every route)
   // turns it back on where the metrics report's "cache net" column shows it
   // pays. Unset = no caching anywhere.
-  const cached = promptCacheOn(currentRoute());
+  //
+  // ...and every route while the site is surging (lib/surge.js, 2026-10-05):
+  // a surge is many visitors on the same few tools within minutes, exactly
+  // when a 5-minute cache pays, and cache reads don't count against the
+  // per-minute input-token allowance, so it adds headroom as well as saving.
+  const cached = promptCacheOn(currentRoute()) || isSurging();
   const system = [
     { type: 'text', text: stableText, ...(cached ? { cache_control: { type: 'ephemeral' } } : {}) },
     ...(volatileText ? [{ type: 'text', text: volatileText }] : []),
