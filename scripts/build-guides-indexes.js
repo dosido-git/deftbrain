@@ -626,7 +626,7 @@ const GUIDES_BROWSE_STYLE = `
     :root[data-theme="dark"] .gh-find-field input::placeholder{color:#71717a}
     :root[data-theme="dark"] .gh-kbd{color:#a1a1aa;background:#27272a;border-color:#3f3f46}
     :root[data-theme="dark"] .gh-find button{background:#2f6fb0}
-    .gh-browse{padding:8px 0 40px}
+    .gh-browse{padding:8px 0 0}
     .gh-browse-head h2{font-family:var(--gh-serif);font-weight:500;letter-spacing:-.025em;font-size:25px;margin:0 0 12px}
     .gh-jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
     .gh-jump a{border:1px solid var(--gh-line);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--gh-ink);text-decoration:none;white-space:nowrap}
@@ -641,7 +641,7 @@ const GUIDES_BROWSE_STYLE = `
     .gh-results-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px}
     .gh-results-head p{margin:0;color:var(--gh-muted);font-size:15px}
     .gh-results-head button{border:0;background:transparent;color:var(--gh-blue);font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:0}
-    .gh-by-tool-note{margin:10px 0 70px;color:var(--gh-muted);font-size:14px}
+    .gh-by-tool-note{margin:10px 0 28px;color:var(--gh-muted);font-size:14px}
     .gh-by-tool-note a{color:var(--gh-blue);font-weight:700}
     .gh-page{--gl-ink:var(--gh-ink);--gl-link:var(--gh-blue);--gl-muted:var(--gh-muted);--gl-line:var(--gh-line)}${GUIDE_LIST_STYLE}`;
 
