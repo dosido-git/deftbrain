@@ -166,10 +166,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     const q = navQuery.trim();
     if (q) setSearchTerm(q);
   }, [navQuery, setSearchTerm]);
-  // 'category' | 'alpha' | 'recent'. Was a two-state toggle whose second
-  // state claimed to be "Most Used" — see recencyRank for why that was never
-  // something this app could know.
-  const [sortMode, setSortMode]             = useState('category');
   const [favorites, setFavorites]           = useState(() => loadFromStorage(STORAGE_KEYS.favorites));
   const [recents, setRecents]               = useState(() => loadFromStorage(STORAGE_KEYS.recents));
   const searchRef     = useRef(null);
@@ -228,17 +224,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     document.body.style.background = CLR.sand50;
     return () => { document.body.style.background = previous; };
   }, []);
-
-  // Recency rank, NOT frequency. `recents` is written deduplicated and capped
-  // at 20 (see openTool), so a tool opened fifty times and one opened once are
-  // indistinguishable — there is no visit count anywhere in this app. This was
-  // called usageFrequency and drove a control labelled "Most Used", which was
-  // a claim the data could not support.
-  const recencyRank = useMemo(() => {
-    const rank = {};
-    recents.forEach((id, idx) => { rank[id] = idx; });
-    return rank;
-  }, [recents]);
 
   // ── Spotlight: 6 under-discovered tools (not on the SEO keep-list = the
   // buried 85), rotated weekly + deterministically. Validation instrument:
@@ -302,33 +287,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     list = [...list];
     const strip = s => String(s || '').replace(/^The\s+/i, '');
     const byTitle = (a, b) => strip(a.title).localeCompare(strip(b.title));
-    if (sortMode === 'recent') {
-      // Everything unvisited ties, so fall through to the alphabet rather than
-      // leaving 100+ tools in whatever order the catalog happens to define.
-      // The old comparator returned 0 for every such pair, which is why this
-      // mode did nothing at all for anyone who had not used the site before.
-      list.sort((a, b) => {
-        const ra = recencyRank[a.id] ?? Infinity;
-        const rb = recencyRank[b.id] ?? Infinity;
-        return ra === rb ? byTitle(a, b) : ra - rb;
-      });
-    } else if (sortMode === 'alpha') {
-      // A genuine flat A–Z across the whole catalog. This did not exist
-      // before: the mode CALLED "A–Z" sorted by category first and was only
-      // alphabetical within a category.
-      list.sort(byTitle);
-    } else {
-      const catOrder = {};
-      CATEGORY_META.forEach((cm, i) => { catOrder[cm.name] = i; });
-      list.sort((a, b) => {
-        const aCat = catOrder[a.primaryCategory] ?? 999;
-        const bCat = catOrder[b.primaryCategory] ?? 999;
-        if (aCat !== bCat) return aCat - bCat;
-        return byTitle(a, b);
-      });
-    }
+    // Category order, A–Z within each. (The Category / A–Z / Recent control
+    // was removed 2026-10-05: this view now only shows search results, which
+    // are always best match first, so it never did anything.)
+    const catOrder = {};
+    CATEGORY_META.forEach((cm, i) => { catOrder[cm.name] = i; });
+    list.sort((a, b) => {
+      const aCat = catOrder[a.primaryCategory] ?? 999;
+      const bCat = catOrder[b.primaryCategory] ?? 999;
+      if (aCat !== bCat) return aCat - bCat;
+      return byTitle(a, b);
+    });
     return list;
-  }, [toolsWithCategories, searchIndex, activeCategory, searchTerm, favorites, sortMode, recencyRank]);
+  }, [toolsWithCategories, searchIndex, activeCategory, searchTerm, favorites]);
 
   // Group tools by category for the "All" view.
   //
@@ -345,7 +316,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   // `showCategoryHeadings` is false whenever there is a search term, so
   // command-K renders the flat `filteredTools`, which is one entry per tool
   // (it is a .filter() over a .map() of allTools; nothing duplicates).
-  const showCategoryHeadings = activeCategory === 'All' && sortMode === 'category' && !searchTerm.trim();
+  const showCategoryHeadings = activeCategory === 'All' && !searchTerm.trim();
   const groupedTools = useMemo(() => {
     if (!showCategoryHeadings) return null;
     const groups = [];
@@ -504,7 +475,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           </button>
           <div className="flex flex-wrap items-center justify-end gap-2 min-w-0 max-w-full">
             <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-            <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
           </div>
         </div>
 
@@ -843,61 +813,6 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
           letterSpacing: 0.2,
         }}>⌘K</span>
       )}
-    </div>
-  );
-}
-
-// Three named orderings, shown at once, rather than a two-state toggle whose
-// label named the CURRENT state ("A–Z" while already sorted A–Z) in a control
-// that reads as naming its action. Nobody could tell what clicking would do,
-// and one of the two states described something the app could not measure.
-//
-// A radiogroup, not a row of buttons: these are mutually exclusive options,
-// and aria-checked is what tells a screen reader which one is live. The old
-// control exposed no state at all beyond a title attribute, which never
-// reaches a touch device.
-const SORT_OPTIONS = [
-  { id: 'category', label: 'Category', hint: 'Grouped by category, A–Z within each' },
-  { id: 'alpha',    label: 'A–Z',      hint: 'Every tool, alphabetical' },
-  { id: 'recent',   label: 'Recent',   hint: 'The tools you opened most recently' },
-];
-
-function SortBtn({ sortMode, setSortMode, hasRecents }) {
-  return (
-    <div
-      role="radiogroup"
-      aria-label="Sort tools"
-      className="flex items-center rounded-lg overflow-hidden flex-shrink-0"
-      style={{ border: `1px solid ${CLR.sand200}`, background: CLR.surface }}
-    >
-      {SORT_OPTIONS.map((o, i) => {
-        const active = sortMode === o.id;
-        // Recent has nothing to order until this browser has opened something.
-        // Disabled and explained, rather than silently returning the list
-        // untouched — which is exactly how the old version behaved for every
-        // first-time visitor.
-        const disabled = o.id === 'recent' && !hasRecents;
-        return (
-          <button
-            key={o.id}
-            role="radio"
-            aria-checked={active}
-            aria-disabled={disabled || undefined}
-            disabled={disabled}
-            onClick={() => !disabled && setSortMode(o.id)}
-            title={disabled ? 'Nothing opened yet on this device' : o.hint}
-            className="px-2.5 py-1.5 text-[11px] font-semibold transition-colors"
-            style={{
-              background: active ? CLR.navyBand : 'transparent',
-              color: active ? '#fff' : disabled ? CLR.sand300 : CLR.warm700,
-              cursor: disabled ? 'default' : 'pointer',
-              borderInlineStart: i ? `1px solid ${CLR.sand200}` : 'none',
-            }}
-          >
-            {o.label}
-          </button>
-        );
-      })}
     </div>
   );
 }
