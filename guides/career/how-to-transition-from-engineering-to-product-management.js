@@ -34,7 +34,7 @@ module.exports = {
     },
     {
       name: "Use your tech credibility as the wedge",
-      body: "Most career switchers are fighting their lack of credentials. You have the opposite problem — you have credentials, just for the wrong job. The smart pivot uses the technical fluency as a wedge: pitch yourself for technical PM roles, infrastructure PM, dev-tools PM, or the PM seat on the most engineering-heavy product in your company. The hiring bar for these roles is essentially 'good engineer who can also do the PM work,' which is exactly the candidate you'd be.",
+      body: "Most career switchers are fighting their lack of credentials. You have the opposite problem — you have credentials, just for the wrong job. The smart pivot uses the technical fluency as a wedge: pitch yourself for technical PM roles, infrastructure PM, dev-tools PM, or the PM seat on the most engineering-heavy product in your company. The hiring bar for these roles is essentially 'good engineer who can also do the PM work,' which is exactly the candidate you'd be. When an interviewer asks why you're leaving engineering, [The Whole Story](/TheWholeStory) helps you tell the real reason in a way that fits who's asking.",
     },
     {
       name: "Make the move internally if you can",

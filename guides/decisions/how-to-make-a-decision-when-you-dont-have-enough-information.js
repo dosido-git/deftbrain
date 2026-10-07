@@ -38,7 +38,7 @@ module.exports = {
     },
     {
       name: "Pick the option that fails gracefully",
-      body: "When the future is genuinely uncertain, the best decision isn't the one with the highest expected value — it's the one whose worst case is most survivable. If option A goes great, both A and B turn out well; if things go badly, A leaves you in a worse position than B. Take B. People who make good decisions under uncertainty consistently optimize for graceful failure rather than maximum upside, because they know they can't predict which world they'll end up in.",
+      body: "When the future is genuinely uncertain, the best decision isn't the one with the highest expected value — it's the one whose worst case is most survivable. If option A goes great, both A and B turn out well; if things go badly, A leaves you in a worse position than B. Take B. People who make good decisions under uncertainty consistently optimize for graceful failure rather than maximum upside, because they know they can't predict which world they'll end up in. To test the option you're leaning toward, [Argue Smarter](/ArgueSmarter) makes the strongest honest case against it.",
     },
     {
       name: "Decide the deadline for your decision",

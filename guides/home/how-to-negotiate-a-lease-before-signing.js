@@ -19,7 +19,7 @@ module.exports = {
   steps: [
     {
       name: "Negotiate before you've signed, not after you've moved in",
-      body: "Your leverage peaks the day before you sign and drops to nearly zero the day after. Before signing, the landlord has a unit they need to fill and a verbal commitment from you. After signing, you're locked in and they have all the time in the world. Whatever you want changed, ask now. 'I'll bring it up if it becomes a problem' is almost always the wrong move — once you're inside, the lease is the lease.",
+      body: "Your leverage peaks the day before you sign and drops to nearly zero the day after. Before signing, the landlord has a unit they need to fill and a verbal commitment from you. After signing, you're locked in and they have all the time in the world. Whatever you want changed, ask now. 'I'll bring it up if it becomes a problem' is almost always the wrong move — once you're inside, the lease is the lease. If something in your rental history needs explaining — a broken lease, several moves in a few years — [The Whole Story](/TheWholeStory) helps you explain it honestly to a landlord.",
     },
     {
       name: "Pick two or three asks, not eight",

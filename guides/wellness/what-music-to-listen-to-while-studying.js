@@ -19,7 +19,7 @@ module.exports = {
   steps: [
     {
       name: "Identify whether the task uses your language brain",
-      body: "If you're reading, writing, or memorizing words, your verbal processing system is busy. Music with lyrics in a language you understand competes with that system and slows you down measurably. (Vocals in a language you don't speak are less disruptive for many people — the research there is mixed — but for verbal work, instrumental is still the safe default.) For language-heavy tasks, instrumental only. For math, code, or visual-spatial tasks, lyrics matter much less and can sometimes even help by occupying the parts of your brain that otherwise wander.",
+      body: "If you're reading, writing, or memorizing words, your verbal processing system is busy. Music with lyrics in a language you understand competes with that system and slows you down measurably. (Vocals in a language you don't speak are less disruptive for many people — the research there is mixed — but for verbal work, instrumental is still the safe default.) For language-heavy tasks, instrumental only. For math, code, or visual-spatial tasks, lyrics matter much less and can sometimes even help by occupying the parts of your brain that otherwise wander. If the trouble is a concept that won't click rather than focus, [Missing Link](/MissingLink) finds the earlier idea it depends on.",
     },
     {
       name: "Match tempo to the task's energy demands",

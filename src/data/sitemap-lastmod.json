@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "c5cec45850e0aa3212e5071b3df88a4545570f8b",
+  "hash": "a4128c106be3e92681dacd028bac43e84ff8ff64",
   "lastmod": "2026-10-07"
  },
  "static:about": {
@@ -20,8 +20,8 @@
   "lastmod": "2026-10-04"
  },
  "tool:ArgueSmarter": {
-  "hash": "07847dc0ecd471c38b55d9eb44c31debfeb82aaa",
-  "lastmod": "2026-10-04"
+  "hash": "96ca4a2f88a6d5b338d847fbb0f1fab232cc2e7b",
+  "lastmod": "2026-10-07"
  },
  "tool:AwkwardSilenceFiller": {
   "hash": "c2e3692f58584fcfc2909c2c5923a5fc80480a10",
@@ -92,8 +92,8 @@
   "lastmod": "2026-10-04"
  },
  "tool:Mend": {
-  "hash": "1e0d5e94c2e0f868d518ba34f101e7d9b65530aa",
-  "lastmod": "2026-09-21"
+  "hash": "ded0a3a280d5f495f9ae97b48ad22d210c265c79",
+  "lastmod": "2026-10-07"
  },
  "tool:MentalHealthNavigator": {
   "hash": "10ae892c7d303f919e30026ebc5081e52a55a473",
@@ -168,16 +168,16 @@
   "lastmod": "2026-08-19"
  },
  "tool:NotSoFast": {
-  "hash": "fd4cdc48f25a598e6d19cca850730c6ea00bf5ac",
-  "lastmod": "2026-10-04"
+  "hash": "9ec380dc1ff3c15de14a71df21c3096df249db4a",
+  "lastmod": "2026-10-07"
  },
  "tool:TheWholeStory": {
-  "hash": "53c9a52a2bdb2d7f73384f014a5f9fc79fbe6121",
-  "lastmod": "2026-10-04"
+  "hash": "a7995586ae79804d00f8b7e7513efbc0d54a46eb",
+  "lastmod": "2026-10-07"
  },
  "tool:MissingLink": {
-  "hash": "dfc45d001001429b217e9c864fbefa79e820c8de",
-  "lastmod": "2026-10-04"
+  "hash": "ea5a093ea1831e3dd60c539e304711fb18931efb",
+  "lastmod": "2026-10-07"
  },
  "tool:PhraseDecoder": {
   "hash": "0cd452c1fcd73352a3f151107d3687088b7f3823",

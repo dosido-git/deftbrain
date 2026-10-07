@@ -19,7 +19,7 @@ module.exports = {
   steps: [
     {
       name: "Start with what they already know",
-      body: "Open with the part they're definitely familiar with, even if it's not the actual topic. 'You know how when you forward an email, the original is still there?' Then build the new thing on top. They feel oriented before they feel asked to stretch. The opposite — opening with the unfamiliar concept and asking them to follow — turns the conversation into a quiz.",
+      body: "Open with the part they're definitely familiar with, even if it's not the actual topic. 'You know how when you forward an email, the original is still there?' Then build the new thing on top. They feel oriented before they feel asked to stretch. The opposite — opening with the unfamiliar concept and asking them to follow — turns the conversation into a quiz. When the confusion is your own, [Missing Link](/MissingLink) traces which earlier idea a concept depends on and finds the one that's missing.",
     },
     {
       name: "Use 'we' for the parts that are hard",

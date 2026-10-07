@@ -1171,6 +1171,76 @@ export const tools = [
   icon: "🚪",
   categories: ['Decisions', 'Home & Daily Life', 'Learning', 'Money'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "Discovered – not indexed" page real substance.
+  exampleOutput: {
+    title: "See what Not So Fast! gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the situation below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The situation",
+    sampleText: "Health insurance. Denied claim for procedure my doctor says was medically necessary. Already appealed once and got denied again.",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Why this happened",
+        tone: "neutral",
+        text: "Two-level denials often reflect a review process that is checklist-driven at both stages, not a final judgment by someone with full clinical discretion.",
+      },
+      {
+        label: "Common reasons for a denial like this",
+        tone: "neutral",
+        items: [
+          "The procedure code used does not match the insurer's criteria for the listed diagnosis code",
+          "The clinical documentation submitted did not explicitly address the insurer's specific medical necessity criteria language",
+          "The reviewing clinician at the appeals stage was not a specialist in the relevant field",
+          "The insurer's coverage policy excludes the specific procedure variant billed, even if a related procedure is covered",
+          "A required prior authorization step was missing or retroactively contested",
+        ],
+      },
+      {
+        label: "Where the power is",
+        tone: "yellow",
+        text: "The insurer's Medical Director (or Associate Medical Director for the relevant specialty) is the first internal actor with documented authority to grant an exception; above that, an external Independent Review Organization assigned by your state regulator has binding authority the insurer cannot override.",
+      },
+      {
+        label: "The escalation ladder",
+        tone: "green",
+        items: [
+          "1. Request Peer-to-Peer Review with Medical Director: Have your treating physician call the insurer's provider line and request a peer-to-peer clinical review with the Medical Director or a specialist reviewer in the relevant field — not a general appeals rep.",
+          "2. Request External Independent Medical Review: File a formal request for External Review (also called Independent Review) through your state insurance department or directly with the insurer, who is required to provide this option after two internal denials.",
+          "3. File a Complaint with Your State Insurance Department: Submit a written complaint to your state's insurance regulatory department, attaching both denial letters, your doctor's medical necessity letter, and your external review request if filed.",
+          "4. Employer Benefits Administrator (if employer-sponsored plan): If your insurance is through an employer, contact your HR or benefits department and request that they escalate the denial through their account representative at the insurer.",
+        ],
+      },
+      {
+        label: "A route most people miss",
+        tone: "green",
+        items: [
+          "Expedited External Review for urgent or ongoing medical situations: Ask the insurer in writing for expedited external review and have your doctor document that delay poses a health risk — most states require a decision within 72 hours under expedited rules.",
+        ],
+      },
+      {
+        label: "Words that route your request differently",
+        tone: "neutral",
+        items: [
+          "“I am requesting the name and specialty of the physician who reviewed my appeal” — when speaking with the insurer after the second denial.",
+          "“Please provide the specific clinical criteria used to determine that this procedure does not meet medical necessity” — in any written communication requesting the denial rationale.",
+          "“I am formally requesting external independent review as provided under my plan and applicable state law” — in the written request you send after the second internal denial.",
+        ],
+      },
+      {
+        label: "Honest assessment: medium chance",
+        tone: "yellow",
+        text: "A well-documented peer-to-peer review combined with a formal external review request gives a genuine path to reversal, particularly if the treating physician can directly address the insurer's stated criteria — success is possible but not certain.",
+      },
+      {
+        label: "The first move",
+        tone: "green",
+        text: "Call your doctor's office today and ask them to request a peer-to-peer review with the insurer's Medical Director, while you simultaneously request the specific clinical criteria used to deny the claim in writing.",
+      },
+    ],
+    disclaimer: "General information, not legal advice. Appeal rights and deadlines depend on your state and on whether your plan is insured or self-funded — your denial letter says which rules apply.",
+  },
   description: "We'll help you understand the appeals process, identify overlooked options, find the right escalation path, and prepare for conversations with the people who can actually make decisions.",
   guide: {
       overview: "Every formal system has informal architecture. Not So Fast! maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
@@ -1191,6 +1261,12 @@ export const tools = [
         "The regulatory angle works even if the complaint goes nowhere — it signals seriousness",
         "The win-likelihood assessment tells you if this battle is worth the time investment",
         "Pair with MagicMouth to script the actual phone calls"
+      ],
+
+      pitfalls: [
+        "It maps the routes that exist; it can't promise an outcome, and its honest assessment says so when the odds are low",
+        "Deadlines vary by state, country, contract and plan — the dates on your own denial letter or contract are the ones that count",
+        "The ladder runs from the lightest step to the heaviest; going straight to a regulator over a small issue can cost goodwill you may need later",
       ]
     }
 },
@@ -2819,6 +2895,66 @@ export const tools = [
   icon: "📖",
   categories: ['Career', 'Conversations'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "Discovered – not indexed" page real substance.
+  exampleOutput: {
+    title: "See what The Whole Story gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the story below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The real story",
+    sampleText: "I have a 2-year gap on my resume from 2021-2023. The truth is I was dealing with burnout and took time off to figure out what I wanted. I did some freelance work here and there but nothing consistent.",
+    context: "Real run, 2026-10-07 — telling it to: a job interviewer; tone: professional. The tool's own built-in example.",
+    sections: [
+      {
+        label: "The reframe",
+        tone: "neutral",
+        text: "A deliberate pause to recalibrate is often a sign of good judgment; what matters now is that you're back, clear about what you want, and the work you've done since then (even if freelance) proves you stayed engaged.",
+      },
+      {
+        label: "Version: Freelance & Growth Story",
+        tone: "green",
+        items: [
+          "What to say: “From 2021 to 2023, I transitioned to project-based freelance work that kept me active in the space while giving me flexibility to take on projects that genuinely interested me. I worked on a few different things—nothing I need to hide, just varied work that didn't add up to a straight-line resume. What mattered was I stayed current, and I learned a lot about what kind of work energizes me versus what drains me. That clarity is why I'm here now, looking to bring that focus and energy to a team like yours.”",
+          "When it fits: Works with almost any interviewer because it emphasizes output and stays in professional language. Safe middle ground. Use this if you're unsure of the interviewer's values.",
+          "The risk: Vague reference to varied work without specifics can sound evasive. They may press for details and catch you being unclear about what you actually did. Only use this if you can name actual projects or client names.",
+        ],
+      },
+      {
+        label: "Version: Self-Awareness Play",
+        tone: "green",
+        items: [
+          "What to say: “Between 2021 and 2023, I hit a wall with burnout and made the intentional choice to step back rather than crash harder. I did some freelance projects to stay sharp, but mostly I focused on understanding what was driving that burnout and what I actually wanted from my career. That time away was clarifying—I came back with much better boundaries and a clearer sense of what kind of role and environment I thrive in. I'm stronger for it.”",
+          "When it fits: With interviewers who seem thoughtful, companies with strong mental health messaging, or roles where you'll be pitching yourself as self-aware and intentional",
+          "The risk: If the interviewer is old-school or comes from a hustle-culture background, mentioning burnout directly might trigger bias. They may see it as weakness rather than wisdom.",
+        ],
+      },
+      {
+        label: "Version: Sabbatical Frame",
+        tone: "green",
+        items: [
+          "What to say: “I took a sabbatical from 2021 to 2023 to step back from full-time work and figure out what I wanted to focus on long-term. During that time I did freelance work across a few projects, and more importantly, I invested in myself—learning, thinking, and getting clear about my next chapter. I'm back now with a much stronger sense of direction and I'm excited to bring that focus to a role like this one.”",
+          "When it fits: With companies that value autonomy and self-direction, or interviews where the tone is already collaborative and relaxed. Works well for startups and growth-stage companies.",
+          "The risk: If the role involves heavy collaboration or you're returning to a traditional industry (finance, law, etc.), sabbatical language can sound too leisurely or like you're overqualified and might leave again.",
+        ],
+      },
+      {
+        label: "Likely follow-up: “Can you tell me more about the freelance work you did during that time?”",
+        tone: "neutral",
+        items: [
+          "A way to answer: “I took on projects in [specific domain/skill area], mostly contract work for [types of companies or specific names if you have them]. It wasn't a continuous role, which is exactly what I needed at the time, but it kept me engaged with the work itself. The projects ranged from [example 1] to [example 2], so I got exposure to different sides of the business.”",
+          "The trap: Don't stay vague or say you can't remember details. Have 2-3 actual projects or clients you can name. Don't trash your previous employer or make it sound like you were hiding from anything.",
+        ],
+      },
+      {
+        label: "Likely follow-up: “Won't you just leave again if things get tough?”",
+        tone: "neutral",
+        items: [
+          "A way to answer: “Not the same way. What I learned is that I need to set boundaries *before* I'm at a breaking point—not wait until I'm fried. I'm looking for a role and a team where I can be honest about my capacity, and I'm confident about that now. I wouldn't take this role if I didn't believe I could sustain it.”",
+          "The trap: Don't over-promise or make it sound like you'll never take time off again (that's not credible). Don't get defensive. Own that you made a call that worked for you and you've learned from it.",
+        ],
+      },
+    ],
+  },
   description: "Some stories are hard to tell. Share the real story—even the messy parts—and we'll help you explain it honestly and strategically.",
   guide: {
     overview: "The Whole Story takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
@@ -2840,6 +2976,12 @@ export const tools = [
       "Follow-up prep includes 'trap to avoid' warnings — things that sound natural but hurt your case",
       "Body language tips are tailored to your specific situation and audience, not generic advice",
       "Try the same story with different audiences to see how framing shifts — it's eye-opening"
+    ],
+
+    pitfalls: [
+      "It frames the true story and won't invent jobs, dates or credentials — an invented detail is usually what unravels under a follow-up question",
+      "Scripts can include placeholders like [specific project]; they work only once those are filled with real details",
+      "Each version comes with its risk — which one fits depends on who is asking, so the risk is worth reading as closely as the script",
     ]
   }
 },
@@ -3613,6 +3755,68 @@ tagline: "Work with the energy you have.",
   icon: "🥊",
   categories: ['Conversations', 'Just for Fun', 'Learning'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "Discovered – not indexed" page real substance.
+  exampleOutput: {
+    title: "See what Argue Smarter gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from the opening move of an actual practice debate on the position below, unedited.",
+    sampleLabel: "Your position",
+    sampleText: "Requiring people back in the office four days a week costs more than it recovers — you lose your best people first, and the ones who stay are the ones with the fewest options.",
+    context: "Real run, 2026-10-07 — challenge level: curious; format: Socratic. You answer, and it keeps pressing. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The strongest criticism",
+        tone: "red",
+        text: "The claim that 'best people leave first' may be true in some contexts and false in others, but the position treats it as universal without examining what determines who actually has outside options in a given role, industry, or labor market moment.",
+      },
+      {
+        label: "Where the debate turns",
+        tone: "yellow",
+        text: "Whether 'most mobile' and 'most valuable' are the same population determines whether the whole argument holds.",
+      },
+      {
+        label: "Opening challenge",
+        tone: "neutral",
+        text: "I love this argument and I think it has real force — but let me poke at it a little, the way a friend who's read too much organizational research might. Here's what I keep coming back to: when you say 'best people,' what are you actually measuring? Is it the people with the most LinkedIn connections? The ones who get the most recruiter calls? The ones whose output is highest? Because those might not be the same person, and the argument kind of needs them to be the same person to really land. So I guess my first gentle question is: what does 'best' mean to you here, and how confident are you that 'most mobile' and 'most valuable' are tracking the same population? Then there's the second half — 'the ones who stay have the fewest options.' That's a really vivid image, and it might be exactly right. But I wonder if you've stress-tested it. What about people who stay because they genuinely prefer in-person work, or because their role is deeply collaborative, or because they have strong relationships at that specific company that are genuinely hard to replicate elsewhere? Are those people captured by 'fewest options,' or does that framing kind of write them out of the picture? And then there's the recovery side of the ledger. Your position assumes the costs outweigh the recoveries — but have you spelled out what the recovery side actually contains? There might be things there worth naming before dismissing them.",
+      },
+      {
+        label: "Key challenges",
+        tone: "neutral",
+        items: [
+          "Logical: The claim that your best people leave first assumes that labor market mobility and job performance are strongly correlated, but that link hasn't been established in the argument. Why it matters: If the most mobile workers are not reliably the highest performers — just the most credentialed or networked — the whole cascade falls apart.",
+          "Empirical: The 'fewest options' characterization of those who stay may be a narrative frame rather than an empirical description, potentially writing off people who have genuine preferences for in-person work or strong firm-specific ties. Why it matters: If a meaningful portion of stayers are high performers who simply prefer the office, the morale and talent-quality story gets much more complicated.",
+          "Logical: The position doesn't specify what the 'recovery' side of the cost-benefit ledger contains, which makes it hard to evaluate whether it's truly negative without knowing what's being weighed against it. Why it matters: An argument that costs exceed recoveries without naming the recoveries is structurally incomplete, even if directionally correct.",
+          "Empirical: The labor market conditions of late 2026 may look meaningfully different from the period when most remote-work retention data was generated, which could shift who has options and who doesn't. Why it matters: If outside options have narrowed for even highly skilled workers, the 'best people leave first' mechanism may be weaker now than when the intuition was formed.",
+        ],
+      },
+      {
+        label: "What your argument gets right",
+        tone: "green",
+        items: [
+          "The directional intuition — that rigid location mandates create friction that disproportionately affects workers with outside options — is structurally coherent and worth taking seriously.",
+          "The point about adverse selection among those who stay is genuinely underappreciated in most corporate conversations about return-to-office mandates.",
+        ],
+      },
+      {
+        label: "The question to answer",
+        tone: "neutral",
+        text: "If you learned that at a specific company, the employees who returned without complaint had measurably higher performance reviews than those who left — would that change your argument, or would you reframe it, and what would that tell you about which part of your position you're most attached to?",
+      },
+    ],
+  },
+  faq: [
+    { q: "How can I practice debating on my own?",
+      a: "State a position you hold and Argue Smarter takes the other side, then responds to each of your answers. You choose the format — freeform, Socratic, Lincoln-Douglas, cross-examination or Oxford — and how hard it pushes. At the end you get a scorecard with your blind spots and the fallacies on both sides named." },
+    { q: "How do I find the weak points in my own argument?",
+      a: "Have someone make the strongest honest case against it — not a caricature. The real example on this page shows that for a return-to-office argument: the single strongest criticism, the point the whole debate turns on, and four specific challenges, each with why it matters." },
+    { q: "Can it argue my side so I can hear the other one?",
+      a: "Yes. Mid-debate you can switch sides and argue the position you were just defending against, which is often the fastest way to see where your own case is thin." },
+    { q: "Is it trying to change my mind?",
+      a: "No. It argues its side forcefully because that's what sharpens your thinking, and it names what your argument gets right as well. Plenty of people finish a debate holding the same view, with better reasons for it." },
+    { q: "Can it help me prepare for a real meeting or presentation?",
+      a: "Devil's Advocate Prep takes your position, your audience and what's at stake, and gives you the hardest questions they're likely to ask, with ways in and things to avoid. From there you can start a full practice debate." },
+  ],
   description: "The strongest arguments are usually the ones we haven't heard yet. State your position and you'll get the strongest case against it — not to prove you wrong, but to help you think more clearly.",
   guide: {
     overview: "Argue Smarter is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
@@ -6109,6 +6313,74 @@ tagline: "Work with the energy you have.",
   icon: "⚖️",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "Discovered – not indexed" page real substance.
+  exampleOutput: {
+    title: "See what Mend gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the situation below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "What happened",
+    sampleText: "I missed my best friend's birthday dinner. I knew the date for weeks. I'd been working long hours and let myself get sucked into a Friday-evening fire drill at work; by the time I looked up it was 9pm and dinner was over. I texted with apologies, but my friend's reply was short. We haven't talked in five days. (Best friend of 12 years. They were turning 40, invited only 8 people, and I was supposed to give a toast. It wasn't the first time I've prioritized work this year.)",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Level 3: This needs repair, not just words.",
+        tone: "red",
+        text: "Your friendship isn't broken — twelve years of showing up doesn't dissolve in one night. But this wasn't just a missed dinner; you missed a toast you promised at a milestone they built around eight people. The silence tells you they're not brushing it off, and that's actually useful — it means they still care enough to feel it.",
+      },
+      {
+        label: "Today's job: Ask for a real conversation.",
+        tone: "green",
+        items: [
+          "Everything else — explaining, apologizing, promising — needs to happen out loud, not in a thread where they read it alone and you can't hear each other.",
+          "Not yet: No more apology texts.",
+          "Not yet: Not a long explanation message.",
+          "Not yet: No gifts or gestures yet.",
+        ],
+      },
+      {
+        label: "Why it landed the way it did",
+        tone: "neutral",
+        items: [
+          "Missing the dinner confirmed a pattern they'd already named. Two conversations where they gently said 'I feel you slipping' made this birthday the test case — and the result felt like an answer.",
+          "The toast made it personal, not just logistical. You weren't just a guest they could seat someone else in for; you were supposed to stand up and say something true about them in front of everyone they love.",
+          "A 9pm text after dinner ended is the floor, not a credit. It was the right instinct, but it landed after the moment was already gone, which meant it read more like damage control than real remorse.",
+          "Turning 40 with only eight people means every seat is a statement. The smallness of that list is what made your absence so visible — there was no crowd to absorb it.",
+        ],
+      },
+      {
+        label: "Words to use",
+        tone: "green",
+        items: [
+          "“I don't want to do this over text anymore — can we talk, either on the phone or in person, whenever you're ready?” — Send this today as your one message — it's not an apology, it's an open door.",
+          "“I missed one of the most important nights of your year, and I missed it because I let the wrong thing win. I'm so sorry, and I want to say that properly — not in a message.” — For the actual conversation when you're face to face or on the phone.",
+          "“I know a toast I never gave doesn't come back. I want to make sure you know what I would have said, and I want to say it to you directly.” — If they agree to talk and you want to honor what was specifically lost.",
+        ],
+      },
+      {
+        label: "What not to say",
+        tone: "red",
+        items: [
+          "“You know how insane work has been — I honestly lost track of time.” — They've already heard the work explanation twice this year; leading with it again makes the apology about your circumstances instead of their hurt.",
+          "“I texted you as soon as I realized.” — Framing the 9pm text as quick action makes it sound like you want credit, when the reality is dinner was already over.",
+          "“I feel terrible — I've barely slept over this.” — Your guilt is real, but centering it puts them in the position of managing your feelings instead of being heard.",
+          "“I know you're probably still upset, but...” — The 'but' erases whatever came before it, and 'probably' minimizes what the five-day silence is already telling you.",
+        ],
+      },
+      {
+        label: "The roadmap",
+        tone: "neutral",
+        items: [
+          "Today: Send the one short message asking to talk.",
+          "During the conversation: Name the pattern, not just the night.",
+          "During the conversation: Say what the toast would have been.",
+          "During the conversation: Let them respond without jumping to fix it.",
+          "During the conversation: Propose one specific, concrete change.",
+          "Afterward: Follow through on that change visibly.",
+        ],
+      },
+    ],
+  },
   description: "Not every mistake needs the same apology, and getting the size wrong in either direction makes it worse. Describe what happened and you'll find out what this actually needs — the words to say, the ones that make it worse, and one thing to do today. It corrects over-apologizing as readily as under-apologizing.",
   guide: {
     overview: "Many people over-apologize for minor things ('sorry to bother you' for legitimate questions) or under-apologize for genuine harm. This tool analyzes actual harm vs your responsibility to determine appropriate apology level (1-5) and provides calibrated templates.",
@@ -6666,6 +6938,82 @@ tagline: "Work with the energy you have.",
   icon: "⛓️",
   categories: ['Learning'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "Discovered – not indexed" page real substance.
+  exampleOutput: {
+    title: "See what Missing Link gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the concept below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The concept you're stuck on",
+    sampleText: "Recursion",
+    context: "Real run, 2026-10-07 — subject: Computer Science; level: undergraduate. The tool's own built-in example.",
+    sections: [
+      {
+        label: "What it depends on, in order",
+        tone: "neutral",
+        items: [
+          "1. Functions and return values — chance this is the gap: low",
+          "2. The call stack — chance this is the gap: high",
+          "3. Base case vs. recursive case — chance this is the gap: high",
+          "4. Trusting the recursive leap — chance this is the gap: medium",
+          "5. Recursion itself — chance this is the gap: low",
+        ],
+      },
+      {
+        label: "The likely gap: the call stack",
+        tone: "yellow",
+        text: "A very common pattern when students say recursion feels impossible to follow is that they are trying to track the logic of the function without a model of what the machine is doing underneath. Without understanding that each call is a separate, paused frame with its own variables — waiting for the call below it to finish before it can continue — recursion looks like the function is somehow running in parallel with itself, which is disorienting. This trips up a lot of people before they ever get to worrying about base cases.",
+      },
+      {
+        label: "How sure it is: medium",
+        tone: "neutral",
+        items: [
+          "The call stack is a very common gap at the undergraduate level for students new to recursion, and it directly explains the most frequently reported symptom of not being able to follow what the function does.",
+          "The student gave only the concept name and no description of exactly where they get lost, so it is not possible to confirm whether the confusion is about execution order, base cases, or something else.",
+          "If the student already has a solid call-stack model, the gap is more likely to be the recursive leap — the diagnosis could shift with one more piece of information about what specifically feels wrong.",
+        ],
+      },
+      {
+        label: "The quick refresher",
+        tone: "green",
+        text: "When your program calls a function, it creates a little box — called a stack frame — that holds that function's inputs and local variables. The program then pauses whatever it was doing and works inside that new box. When the function returns a value, that box is destroyed and the program resumes exactly where it paused, now holding the returned value. Recursion stacks these boxes on top of each other: each recursive call creates a new frame, pauses the one above it, and the whole tower unwinds from the bottom up once the base case is reached — each returning frame hands its value up to the frame that called it.",
+      },
+      {
+        label: "The common confusion",
+        tone: "neutral",
+        text: "Students often imagine the function re-running from the top each time and overwriting its own variables. In reality, each call gets its own completely separate copy of the local variables. The version of the function at level 3 of the stack has no idea what level 2 stored in its variables — they are separate boxes.",
+      },
+      {
+        label: "If that's not it",
+        tone: "neutral",
+        items: [
+          "Trusting the recursive leap: You understand the call stack and can draw it, you can identify the base case and recursive case correctly, but you still feel you have to trace every nested call to convince yourself the function works — writing recursive functions from scratch feels impossible even on simple problems.",
+          "Base case vs. recursive case: You can follow a recursive function someone else wrote when it is short, but when you try to write your own you either end up with infinite recursion or you are not sure what condition to check to stop the calls.",
+        ],
+      },
+      {
+        label: "Study plan (2-4 hours across 2 study sessions)",
+        tone: "green",
+        items: [
+          "Build the call stack mental model: take factorial(4) or sum([1,2,3]) and draw every frame by hand — the input value going in, the recursive call pausing that frame, and the return value coming back up. Do this without running the code first.",
+          "Add print statements before and after the recursive call in a function, run it, and check that the output matches your hand-drawn stack exactly. If it does, your model is accurate.",
+          "Return to whatever recursive problem or explanation first confused you. This time, instead of reading the whole function at once, identify just the base case and just the recursive case, then ask: what does one frame do with the value returned from the frame below it?",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "Why can't I understand recursion?",
+      a: "Often the trouble isn't recursion itself but something it depends on — most commonly the call stack: the way each call waits, with its own copy of the variables, until the call below it returns. The real example on this page traces that chain for recursion and shows the refresher Missing Link gives." },
+    { q: "How do I figure out what I'm missing when I don't understand something?",
+      a: "Work backwards. Every concept rests on earlier ones, and the confusion usually starts at one of those rather than at the topic you keep re-reading. Missing Link lists what your concept depends on, in order, and points to the link most likely to be missing — with a quick question you can use to check each one." },
+    { q: "What is a prerequisite or knowledge gap?",
+      a: "It's an earlier idea a topic quietly assumes you already have. When it's missing, the new topic feels impossible however many times you read it. Missing Link also says what kind of gap it is — a missing mental model, a missing procedure, or a missing definition — because each one is filled differently." },
+    { q: "Does it work for subjects besides math and programming?",
+      a: "Yes. Its built-in examples include supply and demand in economics, biology and statistics, at levels from high school up. Name the concept, and add the subject and your level if you know them." },
+    { q: "What if it points to the wrong gap?",
+      a: "It says how sure it is, and why, and lists the next most likely gaps with the symptoms that would point to each. Describing exactly where you get lost sharpens the diagnosis, and you can ask for a worked example or a visual of any step." },
+  ],
   description: "Name the concept you're stuck on. Missing Link traces backwards through everything it depends on and finds the exact point where your understanding broke — the missing building block, not the hard part you keep re-reading.",
   guide: {
     overview: "Missing Link solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. Missing Link traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
@@ -6689,6 +7037,12 @@ tagline: "Work with the energy you have.",
       "The likely gap is usually 2-3 steps back from where you think the problem is",
       "Deep Dive practice problems go easy → hard — if you nail the easy one, the gap is probably elsewhere",
       "Works for any subject: STEM, humanities, social sciences, languages — anything with prerequisite knowledge"
+    ],
+
+    pitfalls: [
+      "With only the name of a concept to go on, its confidence is lower — a sentence about where you get lost (\"I follow the code until the function calls itself\") makes the diagnosis much sharper",
+      "It finds the missing building block and gives you a way in; it doesn't replace a course, a textbook or practice problems",
+      "If several links in the chain feel shaky, the earliest one is usually the place to start — later ones often settle once it's in place",
     ]
   }
 },

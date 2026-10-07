@@ -43,7 +43,7 @@ const TOOL_ALIASES = {
 // 2026-09-23) uses the shared component instead, rendered once below.
 // Not part of the experiment: tools given a real example later, as page
 // content in its own right (2026-10-07, "Discovered – not indexed" pages).
-const EXAMPLE_OUTPUT_TOOLS = new Set(['WhatsThatMean', 'SomeoneSaidItBetter']);
+const EXAMPLE_OUTPUT_TOOLS = new Set(['WhatsThatMean', 'SomeoneSaidItBetter', 'MissingLink', 'NotSoFast', 'TheWholeStory', 'ArgueSmarter', 'Mend']);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 
 const ToolRenderer = ({ college }) => {
