@@ -100,7 +100,8 @@ Exactly four strategies. Nothing else.`;
         supplied: `THE MESSAGE THEY RECEIVED: ${receivedMessage}
 WHAT THEY ARE TEMPTED TO SEND: ${userDraft || '(not supplied)'}
 RELATIONSHIP: ${relationship || '(not supplied)'}${personLabel ? ` (${personLabel})` : ''}
-THE GOAL THEY SELECTED: ${goalsText || '(not specified)'}`,
+THE GOAL THEY SELECTED: ${goalsText || '(not specified)'}
+IN THEIR OWN WORDS: ${actualGoal || '(not supplied)'}`,
         promise: 'Four responses the visitor can send directly to the other person, each pursuing the goal they selected.',
         guard: router.outputGuard,
         requiredNonEmpty: parsed.strategies.map((_, i) => `strategies[${i}].response_text`),
@@ -132,11 +133,12 @@ router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, r
     ctx.push(`Relationship: ${relationship || 'Unknown'}${personLabel ? ` (${personLabel})` : ''}`);
     ctx.push(`Original message: ${receivedMessage?.slice(0, 200) || 'Not provided'}`);
     if (actualGoal) ctx.push(`Goal: ${actualGoal}`);
-    if (originalAnalysis.message_analysis?.triggers_identified?.length) {
-      ctx.push(`Phrases that landed hardest: ${originalAnalysis.message_analysis.triggers_identified.join(' / ')}`);
+    // Keys of the current /conflict-coach response (message_read, strategies).
+    if (typeof originalAnalysis.message_read === 'string' && originalAnalysis.message_read.trim()) {
+      ctx.push(`What the message turns on: ${originalAnalysis.message_read}`);
     }
-    if (originalAnalysis.response_strategies?.length) {
-      ctx.push(`Strategies suggested: ${originalAnalysis.response_strategies.map(s => s.strategy).join(', ')}`);
+    if (Array.isArray(originalAnalysis.strategies) && originalAnalysis.strategies.length) {
+      ctx.push(`Strategies suggested: ${originalAnalysis.strategies.map(s => s?.title).filter(Boolean).join(', ')}`);
     }
 
     const systemPrompt = `You are an expert conflict resolution coach. A user already received an analysis and has a follow-up question.

@@ -321,7 +321,17 @@ function t(userLanguage, key) {
 
 function compactString(value, max = 800) {
   if (typeof value !== 'string') return '';
-  return value.trim().slice(0, max);
+  const s = value.trim();
+  if (s.length <= max) return s;
+  // A bare slice cut main_concern mid-word ("...flagged your", 2026-10-07).
+  // Back off to the last sentence end, else the last space, else hard-cut
+  // (languages written without spaces).
+  const cut = s.slice(0, max);
+  const sentenceEnd = Math.max(...['. ', '! ', '? ', '。', '！', '？', '؟ '].map(p => cut.lastIndexOf(p)));
+  if (sentenceEnd >= max * 0.5) return cut.slice(0, sentenceEnd + 1).trim();
+  const space = cut.lastIndexOf(' ');
+  if (space >= max * 0.5) return `${cut.slice(0, space).replace(/[,;:\s]+$/, '')}…`;
+  return `${cut}…`;
 }
 
 // The model returns the literal string 'null' or 'None' often enough that a

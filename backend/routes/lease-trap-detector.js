@@ -396,6 +396,11 @@ ${criticalRules}`;
     // array) when there's nothing to show, so the frontend's `?.length > 0`
     // check has one thing to test instead of two.
     await withNumberCheck(parsed, { label: 'lease-trap-detector', context: visitorContext(req.body), userLanguage });
+    // Re-pin after the number check: it rewrites numeric fields and must not
+    // be able to move the count off the list it counts.
+    if (Array.isArray(parsed.red_flags) && parsed.overall_assessment) {
+      parsed.overall_assessment.major_concerns_count = parsed.red_flags.length;
+    }
     const verifiedSources = groundedData(tenantLawCacheKey)?.sources;
     res.json({
       ...stripCites(parsed),

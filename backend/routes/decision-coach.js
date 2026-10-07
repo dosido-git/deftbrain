@@ -87,6 +87,11 @@ async function guardResult(parsed, body, label) {
     userLanguage: body.userLanguage,
     locale: withLocaleContext(body.userLocale, body.userCurrency, body.userRegion),
   });
+  // A guard repair can blank a step rather than remove it; an empty string
+  // renders as an empty numbered circle (2026-10-07 wave).
+  if (Array.isArray(parsed.execution_instructions)) {
+    parsed.execution_instructions = parsed.execution_instructions.filter(s => typeof s === 'string' && s.trim());
+  }
   return parsed;
 }
 
