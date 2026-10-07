@@ -799,6 +799,85 @@ export const tools = [
   icon: "🏷️",
   categories: ['Just for Fun', 'Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Markup Detective gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the item below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The item",
+    sampleText: "Hospital aspirin charged at $25/tablet on a bill",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples. Figures are estimates.",
+    sections: [
+      {
+        label: "Paid $25 · about 500× the cost of the pill",
+        tone: "red",
+        text: "The pill costs pennies, but the line item is really a packaging label stuck onto the hospital's nursing, pharmacy, and overhead costs — which is why it reconciles to $25 even though no single aspirin ever cost that.",
+      },
+      {
+        label: "What it actually costs",
+        tone: "neutral",
+        items: [
+          "The tablet itself: about $0.02 to $0.05 for the tablet itself",
+          "At a pharmacy: roughly $0.03 to $0.10 per tablet at a pharmacy or supermarket (a 200-count bottle commonly runs a few dollars)",
+        ],
+      },
+      {
+        label: "Where the $25 goes (estimated)",
+        tone: "yellow",
+        items: [
+          "The tablet itself (acquisition cost): $0.04",
+          "Pharmacy handling, dispensing, and verification labor: $5.00",
+          "Nursing administration and documentation time: $6.00",
+          "Facility overhead allocation (space, utilities, regulatory, licensing): $7.00",
+          "Cost-shifting / uncompensated-care recovery built into the chargemaster: $5.00",
+          "Margin / institutional surplus: $1.96",
+        ],
+      },
+      {
+        label: "How the pricing works on you",
+        tone: "neutral",
+        items: [
+          "The price nobody is expected to actually pay: The chargemaster figure is a list price that insurers negotiate down from and self-pay patients can often contest. Posting a high number anchors every downstream negotiation above the real reimbursement, so the $25 is less a price than a starting point. What it is worth to the hospital: it sets the ceiling for every payer conversation.",
+          "The receipt you see only after it is impossible to refuse: Unlike a store shelf, the price of this tablet is not shown at the point of consumption — you learn it on the bill, long after the pill was swallowed. Pricing disclosed after the decision cannot be comparison-shopped, which is part of why unbundled line items like a single aspirin can carry numbers that would never survive on a pharmacy shelf.",
+          "Charging for the whole hospital through one small object: The aspirin is a vehicle for recovering fixed costs that have no tidy line of their own — 24/7 staffing, licensed pharmacy infrastructure, and care for patients who never pay. Attaching those costs to discrete billable items lets the institution spread overhead across everything it touches, so the pill carries far more than the pill.",
+        ],
+      },
+      {
+        label: "How the industry prices it",
+        tone: "neutral",
+        items: [
+          "Hospital chargemaster prices are internal list rates that frequently bear little relationship to what any payer actually pays; negotiated insurer rates and cash-pay settlements are commonly a fraction of the posted figure, so a line-item price is not the same as a market price.",
+          "Many inpatient stays are reimbursed as a bundled case rate (such as a DRG) rather than itemized, which means individual line items like a single aspirin may be itemized for the statement without each one being separately collected — the detailed bill and the amount ultimately paid can be two different numbers.",
+          "Hospitals in the US are generally required to post standard charges and a list of shoppable-service prices publicly, so the chargemaster that produced the $25 figure is often something a patient has a right to request and review.",
+        ],
+      },
+      {
+        label: "How to pay less",
+        tone: "green",
+        items: [
+          "Request a fully itemized bill (not a summary) and specifically flag the aspirin line — ask the billing office to justify or remove line items for over-the-counter medications you could have taken yourself.",
+          "Ask whether your stay was reimbursed as a bundled case rate; if so, question why OTC items are being charged separately on top of the bundle.",
+          "If you are self-pay or uninsured, ask directly for the cash price, the financial-assistance / charity-care policy, and a prompt-pay discount — posted charges are routinely negotiable for individuals.",
+          "For planned admissions, bring your own clearly-labeled OTC medications and ask in advance whether the hospital permits self-administration, which can keep items like aspirin off the bill entirely.",
+          "Have your insurer's explanation of benefits reviewed against the itemized bill — you generally owe the negotiated/allowed amount, not the chargemaster list price, and discrepancies are worth disputing.",
+        ],
+      },
+    ],
+    disclaimer: "Cost splits are estimates of how a price like this is built up, not figures from any particular hospital.",
+  },
+  faq: [
+    { q: "Why does a hospital charge $25 for an aspirin?",
+      a: "The pill costs a few cents; the line item carries pharmacy handling, nursing time, overhead and the hospital's list-price system. The real example on this page breaks that $25 down and explains the pricing behind it." },
+    { q: "What is a markup?",
+      a: "The gap between what something costs to make or supply and what you're charged, often shown as a multiple. Markup Detective estimates the real cost, a fair price, and where the rest of the money goes." },
+    { q: "What can I check?",
+      a: "Anything with a price: a latte, a bottle of restaurant wine, a hospital line item, printer ink, concert fees. Adding the price you paid and where gets a more precise breakdown." },
+    { q: "Are the numbers exact?",
+      a: "No — they're informed estimates of how prices like this are usually built up, not a specific company's accounts. They're meant to show where the money goes, not to prove a particular charge wrong." },
+    { q: "Does it show how to pay less?",
+      a: "Yes. Each result ends with specific ways to get the same thing for less, or to question the charge — for a hospital bill, starting with the itemized statement." },
+  ],
   description: "Ever wonder why a $5 coffee costs $5 or hospital aspirin costs $25? Describe any product or service, and Markup Detective will show you where the money goes and why the price may be much higher than you expected.",
   guide: {
     overview: "MarkupDetective is pricing forensics for everyday life. Pick any product or service, and it shows you exactly where your money goes — what percentage is raw materials vs. labor vs. brand premium vs. pure profit. Includes the psychological pricing tactics being used on you, industry secrets about how things are really priced, and specific ways to get the same thing for less.",
@@ -819,6 +898,12 @@ export const tools = [
       "The pricing-practice section explains how the industry actually sets its prices",
       "The comparison shows what the same thing usually costs away from this particular venue or channel",
       "Save money tips are specific to each item, not generic advice"
+    ],
+
+    pitfalls: [
+      "The cost breakdown is an estimate of a typical structure, not an audit of the seller's books",
+      "A high markup isn't automatically unfair — rent, labor and risk are real costs; the breakdown shows which part is which",
+      "For a medical bill you want to dispute, Bill Rescue goes further than a markup estimate",
     ]
   }
 },
@@ -1903,6 +1988,64 @@ export const tools = [
   icon: "💬",
   categories: ['Conversations', 'Relationships', 'Work & Meetings'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Awkward Silence Filler gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the moment below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The moment",
+    sampleText: "First date at a wine bar. We've been talking for 40 minutes and just hit a lull. We matched on a dating app, both into hiking and travel.",
+    context: "Real run, 2026-10-07 — relationship: a date; feeling: nervous. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "First, the silence itself",
+        tone: "green",
+        text: "Forty minutes in, a comfortable quiet is actually a sign you're not performing for each other anymore — it means you've moved past the nervous stage where every second has to be filled.",
+      },
+      {
+        label: "Read the room",
+        tone: "neutral",
+        text: "If they're making eye contact and their shoulders are relaxed toward you, they're comfortable; if they're scanning the room or checking their phone, they might need a low-pressure opener to restart without pressure.",
+      },
+      {
+        label: "Things to say, and where they lead",
+        tone: "neutral",
+        items: [
+          "Observation: “I'm realizing I have no idea what wine you actually like — are you one of those people with strong opinions, or is it more 'if it tastes good, it works'?” — Naturally into what they do like (food, flavors, travel food experiences), which connects back to your shared hiking interest.",
+          "Shared experience: “Have you ever been on a hike where you realized halfway through you were completely unprepared — like wrong shoes or something?” — Into stories about specific hikes, lessons learned, maybe somewhere they want to go that they're nervous about.",
+          "Genuine curiosity: “When you're planning a trip, are you the person who researches every detail, or do you like to show up and figure it out?” — Into travel philosophy, adventure tolerance, what makes a trip feel good to them — reveals values.",
+          "Humor: “What's the most pretentious thing you've ever caught yourself doing at a place like this?” — Into a lighter, more playful tone; you're both admitting you're a little nervous, which releases tension.",
+        ],
+      },
+      {
+        label: "What not to say",
+        tone: "red",
+        items: [
+          "Don't apologize for the silence itself ('Sorry, I'm terrible at this')—it makes them feel like they need to fix you or reassure you instead of just being present.",
+          "Don't ask generic rapid-fire questions to fill the gap ('So what's your family like, where do you work, what's your biggest fear')—you'll both feel like you're on an interview panel.",
+          "Don't mention another date or person you've been on ('This reminds me of this other coffee date I went on')—it takes the focus off them and signals your mind is elsewhere.",
+        ],
+      },
+      {
+        label: "A graceful exit, if you want one",
+        tone: "neutral",
+        text: "“I'm really glad we did this. I've had a genuinely good time talking with you. I should probably head out, but I hope you have a great rest of your week.”",
+      },
+    ],
+  },
+  faq: [
+    { q: "What do you say when a conversation goes quiet?",
+      a: "Often nothing — a pause can mean you're comfortable. When you do want to restart, an observation about where you are or a question about something they've already mentioned works better than a new topic out of nowhere. The real example on this page shows openers for a quiet moment on a first date, with where each one tends to lead." },
+    { q: "What are good conversation starters on a first date?",
+      a: "Ones built on what you already know about each other — a shared interest, the place you're in — rather than interview questions. Awkward Silence Filler gives several, each with the likely reply and a follow-up, so the conversation keeps going on its own." },
+    { q: "Does it work for work situations too?",
+      a: "Yes — an elevator with a senior boss, a networking event, a team lunch, a client dinner. You choose who you're with and how nervous you are, and it adjusts how safe or playful the openers are." },
+    { q: "What if I just want to leave?",
+      a: "Every result includes a graceful exit line, and there's a quick panic button for a single thing to say right now." },
+    { q: "Is silence always a bad sign?",
+      a: "No. The tool starts by reframing the silence itself, because a lull forty minutes into a good conversation usually means the nerves have worn off, not that it's going badly." },
+  ],
   description: "Not every silence needs rescuing. But when it does, we'll help you find something natural to say.",
   guide: {
     overview: "Awkward silences happen. This tool provides 5-7 conversation fillers appropriate for your specific context - safe, low-risk things to say that restart conversation without forcing it. Ranges from environmental observations to light questions to polite exits.",
@@ -2033,6 +2176,12 @@ export const tools = [
       "Say what it definitely isn't. Ruling out an obvious near-match can narrow the search quickly.",
       "When and where you encountered it can be especially useful — a coffee shop, TV episode, vacation, store, or approximate year.",
       "If one result is close, say so. Knowing what almost fits often reveals which direction to search next."
+    ],
+
+    pitfalls: [
+      "It can match on the clues you give and still get a detail of the answer wrong — use the “how to check” step before you rely on it",
+      "Your memory may have changed a detail (the wrong gender, the wrong decade); if nothing fits, say which part you're least sure of",
+      "Low-confidence matches are there to jog your memory, not as answers in their own right",
     ]
   },
 },
@@ -2354,6 +2503,66 @@ export const tools = [
   icon: "🌀",
   categories: ['Ideas & Imagination'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Alternate Path gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the change below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The change",
+    sampleText: "What if the printing press was invented 500 years earlier? (c. 940 CE — movable type spreads through Europe five centuries early.)",
+    context: "Real run, 2026-10-07 — reach: the following decades; tone: plausible. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The point where history splits",
+        tone: "neutral",
+        text: "Around 940 CE, a craftsman in the Rhineland — working in the orbit of Ottonian monastic scriptoria — assembles a workable movable-type press from carved wooden type blocks and a screw-press frame adapted from wine-making, producing reproducible pages at roughly fifty times the speed of a copyist.",
+      },
+      {
+        label: "What actually happened",
+        tone: "neutral",
+        text: "Movable type printing arrived in Europe only around 1440 CE with Gutenberg's press, after centuries in which manuscript culture kept literacy and textual authority tightly controlled by monastic and clerical institutions. The slow circulation of texts meant that theological, scientific, and legal knowledge remained largely inaccessible outside cathedral schools and monasteries.",
+      },
+      {
+        label: "The alternate timeline",
+        tone: "yellow",
+        items: [
+          "940-970 CE: Ottonian monasteries and cathedral schools in Cologne, Mainz, and Reims begin ordering printed liturgical texts and psalters, slashing the cost of a psalter from a year of a monk's labor to roughly a week of press time. Because: The press's first customers are the same institutions that already purchase manuscripts in bulk — the church — and liturgical texts are the most standardized content available, making them ideal for uniform type-setting.",
+          "970-1000 CE: Cheaper printed texts reach merchant families in Cologne and Bruges, and vernacular primers in Old High German and early Old French begin circulating — literacy among urban laypeople rises noticeably within a single generation. Because: Once printed books exist and their price falls, the economic barrier to owning a text drops far enough that prosperous non-clerical households can acquire them, and printers quickly discover that vernacular texts sell to a wider audience than Latin ones.",
+          "990-1020 CE: A cluster of theological disputes that in real history would have simmered quietly inside monasteries instead erupts into open public argument, as printed pamphlets carrying competing positions on predestination and the Eucharist circulate through market towns from Saxony to Burgundy. Because: Lay literacy now exists alongside cheap printing, which means doctrinal disagreements can leave the monastery and reach a reading public before bishops can suppress them through manuscript control — the same dynamic that powered the Reformation, arriving four centuries early.",
+          "1010-1040 CE: Pope Benedict VIII, confronted with printed pamphlets spreading unauthorized theological opinion, issues a formal condemnation of unlicensed printing in 1013 CE — the first press-censorship decree in history — and demands that bishops appoint examiners to approve texts before printing. Because: An institution whose authority rests partly on controlling access to sacred texts will predictably attempt to regulate the new technology once it threatens that control, and the papacy of the early eleventh century already had both the organizational reach and the doctrinal motivation to act.",
+        ],
+      },
+      {
+        label: "The biggest surprise",
+        tone: "green",
+        text: "The most unexpected but logical consequence is that the Roman Catholic Church's attempt to license the press in 1013 CE inadvertently accelerates the growth of secular municipal institutions by giving city councils a concrete political reason to sponsor independent presses — making urban self-governance structurally stronger four centuries before it fully emerged in our timeline.",
+      },
+      {
+        label: "The butterfly moment",
+        tone: "neutral",
+        text: "The decision by Rhineland printers in the 960s to produce vernacular-language primers alongside Latin liturgical texts — a purely commercial choice to expand the paying audience — is the smallest change with the largest downstream effect, because it creates lay literacy as a social fact before the church has organized any response to it.",
+      },
+      {
+        label: "Plausibility: 6/10",
+        tone: "neutral",
+        text: "By October 2026 in this timeline, the Western world has had roughly 1,080 years of print culture rather than 580 — long enough that the Enlightenment, or something recognizable as its equivalent, may have arrived in the twelfth or thirteenth century rather than the eighteenth. Daily life would be shaped by layers of institutional consequence too deep to summarize simply, but one vivid detail stands out: the concept of an 'oral tradition' in European cultures would be an artifact of scholarly study rather than living memory, because cheap text has been woven into everyday communication for so long that no one alive remembers a world without it. The political map of Europe might bear almost no resemblance to the one in our timeline, since the press-censorship battles of the early eleventh century could have reshuffled the church-state relationship centuries before feudalism consolidated into the nation-state forms we know.",
+      },
+    ],
+    disclaimer: "An imagined history. Each step says what really happened instead, so the fiction stays visibly separate from the record.",
+  },
+  faq: [
+    { q: "How does an alternate history generator work?",
+      a: "Name one change to the past — an invention arriving early, a battle going the other way — and Alternate Path traces what would plausibly follow, step by step, with the reason each step follows from the last and what really happened instead." },
+    { q: "Is it historically accurate?",
+      a: "The starting facts and the “what actually happened” notes are real history; everything after the change is reasoned speculation. It rates its own plausibility out of 10 so you can see how far the chain has stretched." },
+    { q: "What makes a good “what if”?",
+      a: "A specific moment with a clear change — “What if movable type spread in 940 CE” gives a richer timeline than “what if Europe were different.” Small changes often produce the most surprising consequences." },
+    { q: "How far forward does it go?",
+      a: "You choose: the next few decades after the change, or all the way to today, when it also describes what daily life might look like now." },
+    { q: "Can I use it for fiction or worldbuilding?",
+      a: "Yes — the timeline, the “butterfly moment” and the biggest surprise are built to spark ideas. The weird tone loosens the plausibility rules for stranger worlds." },
+  ],
   description: "One small change can rewrite centuries. Name the moment you'd change, and follow what happens next — politics, technology, culture, ordinary life — for fifty years or five hundred.",
   guide: {
     overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
@@ -2374,6 +2583,12 @@ export const tools = [
       "Try small changes for surprising big consequences",
       "Modern events work too — not just ancient history",
       "The fun is in the unexpected second- and third-order effects"
+    ],
+
+    pitfalls: [
+      "Real people and dates can appear in invented events — the “what actually happened” notes are the line between record and fiction",
+      "The further forward it reaches, the more speculative each step gets; the plausibility score reflects that",
+      "It's built for curiosity and storytelling, not as a source for history homework",
     ]
   }
 },
@@ -2489,6 +2704,57 @@ export const tools = [
   icon: "🔥",
   categories: ['Career', 'Just for Fun'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Roast Me gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the LinkedIn bio below, unedited.",
+    sampleLabel: "The LinkedIn bio",
+    sampleText: "Experienced Product Manager | 7+ Years Turning Coffee Into Roadmaps ☕ — I'm passionate about building products that matter at the intersection of human insight and scalable technology. Key wins: Led cross-functional team to 3x revenue (through strategic pivoting and stakeholder alignment) • Championed data-driven culture (literally brought in a whiteboard) • Managed $2M budget (mostly meetings about meetings). Currently seeking my next opportunity to disrupt, iterate, and move the needle. 🚀",
+    context: "Real run, 2026-10-07 — heat level: medium. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "First impression",
+        tone: "neutral",
+        text: "A product manager who has discovered corporate Mad Libs and is very proud of their newfound vocabulary.",
+      },
+      {
+        label: "The roast",
+        tone: "red",
+        items: [
+          "Turning Coffee Into Roadmaps is a nice way to say you attended meetings while caffeinated.",
+          "You didn't champion a data-driven culture — you bought a whiteboard. That's what Staples calls a Tuesday.",
+          "3x revenue through strategic pivoting and stakeholder alignment is how you describe something that worked and you were in the room when it happened.",
+          "Mostly meetings about meetings is the most honest thing you've written, and it's buried in parentheses like you hoped nobody would notice.",
+          "Obsessed with the why behind user behavior is a polite way of saying you ask people why they do things, which is called talking to humans.",
+          "You want to disrupt, iterate, and move the needle — three things that sound important and mean nothing without specifics.",
+        ],
+      },
+      {
+        label: "The summary",
+        tone: "yellow",
+        text: "This is a solid reminder that LinkedIn bios are where specificity goes to die. You've got real wins buried under so much jargon that even you don't quite remember what you actually did — and that whiteboard comment proves you know it. One more round of feedback and you'll have said nothing perfectly.",
+      },
+      {
+        label: "One nice thing",
+        tone: "green",
+        text: "The self-aware joke about meetings-about-meetings shows you actually see what's happening; you just needed to trust that observation instead of drowning it in corporate vocabulary.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I get my resume or LinkedIn bio roasted?",
+      a: "Paste the text, pick a heat level — Gentle, Medium or Scorched — and Roast Me writes lines aimed at what you actually wrote: the buzzwords, the vague wins, the humblebrags. The real example on this page is a LinkedIn bio at Medium." },
+    { q: "Is the roast useful or just funny?",
+      a: "Both. Every line points at something specific, so it doubles as an edit list — the parts people would quietly roll their eyes at. Each roast also includes one genuinely nice observation." },
+    { q: "What can I roast?",
+      a: "Resumes, LinkedIn profiles, dating profiles, emails, social posts — any text. It detects the type and goes after what that kind of writing usually gets wrong." },
+    { q: "How harsh is Scorched?",
+      a: "Sharp, but aimed at the writing rather than at you as a person. Gentle is closer to friendly teasing; Medium is in between." },
+    { q: "Can I get different jokes on the same text?",
+      a: "Yes — roast again for a fresh set of lines, or switch heat levels to hear the same flaws at a different temperature." },
+  ],
   description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched. Every roast line targets specific content you submitted — zero generic insults. DeftBrain detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.",
   guide: {
     overview: "RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.",
@@ -2508,6 +2774,12 @@ export const tools = [
       "Scorched is funniest on content that takes itself too seriously",
       "Try roasting the same content at different heat levels",
       "Hit 'Roast Again' to get completely different lines on the same content"
+    ],
+
+    pitfalls: [
+      "It roasts the text you paste, not you — anything it couldn't see, it can't make fun of",
+      "The jokes land best on writing that takes itself seriously; a deliberately funny bio leaves less to work with",
+      "A roast tells you what reads badly, not how to rewrite it — for that, the specific lines are the place to start",
     ]
   }
 },
@@ -2577,6 +2849,55 @@ export const tools = [
   icon: "🙃",
   categories: ['Ideas & Imagination', 'Just for Fun'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Wrong Answers Only gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run. Every “fact” in it is invented on purpose — that's the joke — and the real answer comes at the end.",
+    sampleLabel: "The question",
+    sampleText: "Why do we yawn when we see someone else yawn?",
+    context: "Real run, 2026-10-07 — playful mode. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The confidently wrong answer",
+        tone: "yellow",
+        text: "Contagious yawning is driven by what we call synchronized laryngeal resonance frequency matching, a phenomenon first documented by Dr. Marcus Vollrath at the Max Planck Institute in 2009. When you observe someone yawn, your brain's auditory cortex detects the specific acoustic frequency of their yawn—typically between 487 and 523 Hz—and your own laryngeal muscles involuntarily match this frequency to create harmonic alignment. This is actually a vestigial predator-detection system: in our evolutionary past, when one member of a group yawned, it signaled the presence of a nearby threat, and synchronized yawning allowed the group to achieve acoustic camouflage by matching ambient sound patterns. Approximately 78% of humans retain this reflex, though interestingly, psychopathic individuals show zero contagion rates, which is why they're useful as control subjects. The response is strongest between 4 and 6 seconds after the observed yawn, and recent neuroimaging by the Copenhagen Institute (2023) shows that the superior temporal sulcus actually vibrates in sympathy with the observed yawn's frequency.",
+      },
+      {
+        label: "The expert tip (also wrong)",
+        tone: "yellow",
+        text: "Elite performers like professional athletes and opera singers actually train their laryngeal muscles to resist synchronization through a technique called Competitive Yawn Independence, allowing them to maintain mental focus in group settings without being derailed by others' acoustic frequencies.",
+      },
+      {
+        label: "How wrong it was: 8/10",
+        tone: "neutral",
+        items: [
+          "Laryngeal resonance frequency matching accounts for 94% of contagious yawn transmission in laboratory settings — what's actually wrong: There is no established acoustic frequency theory of yawning; the real answer involves mirror neurons and theory of mind, not sound matching",
+          "Deaf individuals show a 12% contagion rate due to vibration sensing through bone conduction — what's actually wrong: Contagious yawning in deaf people is actually similar to hearing people and involves visual processing, not vibration; this invents an impossible mechanism",
+          "The superior temporal sulcus exhibits measurable oscillation when observing yawns, with amplitude correlating to yawn duration — what's actually wrong: The STS is involved in social perception, but it doesn't vibrate; this confuses brain activation with literal physical resonance",
+        ],
+      },
+      {
+        label: "The real answer",
+        tone: "green",
+        text: "The actual mechanism involves mirror neurons, theory of mind simulation, and social bonding—you yawn when you see someone yawn because your brain is modeling their mental state, not because of sound frequencies.",
+      },
+    ],
+    disclaimer: "Names, studies and numbers in the wrong answer are made up for the joke, including any that borrow real-sounding institutions.",
+  },
+  faq: [
+    { q: "What is Wrong Answers Only?",
+      a: "A comedy tool: ask any real question and get an impressively confident, well-structured and completely wrong answer — invented studies, fake experts and all. The real answer is one button away afterwards." },
+    { q: "Is any of the answer true?",
+      a: "No — the wrong answer is wrong on purpose, including the sources it cites. Each piece of fake evidence comes with a note on what's actually wrong about it, and the real answer is shown at the end." },
+    { q: "What questions work best?",
+      a: "Simple, familiar questions — why we yawn, why the sky is blue, why cats knead — because everyone half-knows the real answer, so the confident nonsense lands harder." },
+    { q: "Can I use it to fool my friends?",
+      a: "That's what deadpan mode is for. It reads straight-faced enough that people may not notice at first, so do tell them before it spreads any further." },
+    { q: "Will it answer any question?",
+      a: "Not quite: questions where a convincingly wrong answer could hurt someone, such as medical doses or emergencies, are declined rather than played for laughs." },
+  ],
   description: "Ask a real question. Get an impressively wrong answer, delivered with total confidence. There is a button for the real answer afterwards, if you want it.",
   guide: {
     overview: "Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.",
@@ -2595,6 +2916,12 @@ export const tools = [
       "Simple, well-known questions get the funniest wrong answers",
       "Deadpan mode fools friends who won't realize it's wrong at first",
       "Try the same question in different categories for wildly different answers"
+    ],
+
+    pitfalls: [
+      "The wrong answers can sound genuinely authoritative — worth labelling before you share one, so it doesn't travel without the joke",
+      "Fake studies sometimes borrow the names of real institutions; none of the findings attributed to them are real",
+      "The “real answer” is a short pointer, not a full explanation — for the actual science, follow it up properly",
     ]
   }
 },
@@ -3049,6 +3376,67 @@ export const tools = [
   icon: "📢",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Context Collapse gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the post below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The post",
+    sampleText: "After eleven years, Friday was my last day at the company. Not my choice, but I'm okay. Open to what's next — if you know of anything, I'd love to hear it.",
+    context: "Real run, 2026-10-07 — one announcement read by former colleagues and an old manager, recruiters, and family (including a mother who doesn't know yet). One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Former colleagues and old manager — mild risk",
+        tone: "yellow",
+        items: [
+          "This may land as a clear, non-accusatory announcement that sidesteps detail. They could interpret 'Not my choice' as a euphemism for a decision made by leadership (which includes your manager), which may prompt them to either assume they know what happened or wonder if you're being diplomatic. The lack of any reference to shared history might feel neutral to some and notably absent to others — particularly your manager, who may read the silence around those 11 years as either gracious discretion or a signal that the relationship mattered less than the transaction.",
+          "What drives it: The phrase 'Not my choice' combined with the absence of any acknowledgment of the relationship. Your manager does not know whether you're protecting them, protecting yourself, or both.",
+        ],
+      },
+      {
+        label: "Recruiters and people who might hire — safe",
+        tone: "green",
+        items: [
+          "This could read as professionally appropriate — you're not venting, not over-explaining, and you're signaling openness to opportunity. However, 'Not my choice' may trigger a pattern-recognition question: was this a performance issue, a layoff, a restructure, or something else? Recruiters may read this as transparent (good) or as deliberately vague (also good for them — no red flags yet, but also no clarity). The 'I'm okay' might read as stability or as 'I'm not panicking,' depending on what they want to hear.",
+          "What drives it: The vagueness around 'Not my choice' — recruiters will assume something, and if it is the wrong something, it could close doors. But right now, the statement is neutral enough that they can ask for clarification without judgment.",
+        ],
+      },
+      {
+        label: "Family, including your mother — risky",
+        tone: "red",
+        items: [
+          "Your mother may read this and feel shock, then confusion — 'Not my choice' signals something happened to you, but 'I'm okay' could mean anything from 'I have savings' to 'I am pretending I'm fine so you don't worry.' The announcement format (public, brief) might feel like she is hearing major life news from a social platform rather than from you directly, which could read as distance or as a sign that you needed control over the narrative. She may also read the 'if you know of anything' as a request for help that she cannot actually provide, which could trigger guilt or a sense of helplessness.",
+          "What drives it: 'I'm okay' without context. To a parent, this often reads as reassurance-to-forestall-questions rather than as a statement of actual status. Combined with the lack of a private heads-up, she may read this as you managing her emotions rather than confiding in her.",
+        ],
+      },
+      {
+        label: "Verdict: minor tweaks",
+        tone: "yellow",
+        text: "The message itself is sound for colleagues and recruiters, but sending it to all three audiences simultaneously, with your mother not yet aware, creates a foreground risk that overshadows the message quality. A small structural fix (tell your mother first, then send this) solves the primary problem. If you must send it as a broadcast to all three at once, one minor addition addresses the gap without changing your voice.",
+      },
+      {
+        label: "If you must broadcast to all three simultaneously: One clarifying phrase for family without shifting tone",
+        tone: "green",
+        items: [
+          "“After eleven years, Friday was my last day at the company. Not my choice, but I'm doing okay and not looking for sympathy — just wanted to say it myself before someone else did. Open to what's next, though, and genuinely grateful for any leads. If you know of anything, I'd love to hear it.”",
+          "The tradeoff: You gain: 'doing okay' becomes slightly more credible; 'not looking for sympathy' sets a boundary that can actually help your mother (it gives her permission not to panic, and guides how to respond). 'Genuinely grateful' nods to the 11 years without editorializing. You lose: slightly more words, and the tone moves from 'cool distance' to 'warm professionalism.' It is still your voice, but it reaches a little more. This is a middle option if you cannot reach your mother before posting.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How will my message come across to different people?",
+      a: "Paste it, name who will see it, and say what you want it to do. Context Collapse reads it from each audience's side — how it's likely to land, how risky it is, and the exact phrase driving that — then suggests rewrites that keep your voice." },
+    { q: "What is context collapse?",
+      a: "When one message reaches several audiences at once — a post your boss, recruiters and your mother all see — and each reads it differently. The words that reassure one group can worry or offend another." },
+    { q: "Should I post that I was laid off?",
+      a: "It depends on who will read it and what you want from them. The real example on this page shows how one short layoff post reads to old colleagues, recruiters and family, and the small change that fixes the riskiest reading." },
+    { q: "Does it rewrite the message for me?",
+      a: "It offers rewrites, each with the tradeoff spelled out — what you gain and what you lose — so you choose. Sometimes the fix isn't in the words at all, like telling one person privately first." },
+    { q: "What kinds of messages does it handle?",
+      a: "Emails, group chats, social posts, team announcements — anything more than one kind of reader will see. It also notes platform risks like screenshots and forwarding." },
+  ],
   description: "A message doesn't mean the same thing to everyone who reads it. Tell DeftBrain what you're about to send, and we'll show you where your intent and your audience's interpretation may not match.",
   guide: {
     overview: "Context Collapse is named after the communication phenomenon where a single message lands completely differently depending on who reads it. It's DecoderRing in reverse — instead of decoding what someone sent you, it previews how your message will be received by each audience before you send it. You define who will see it, and the tool shows you the emotional interpretation, risk level, key triggers, and likely reactions for each person or group.",
@@ -3070,6 +3458,12 @@ export const tools = [
       "Rewrite suggestions preserve your voice while fixing the gaps — they don't make you sound corporate",
       "Platform notes flag things like screenshot risk, forwarding risk, and social media permanence",
       "Use this before any announcement that goes to mixed audiences — it prevents 90% of 'that came out wrong' moments"
+    ],
+
+    pitfalls: [
+      "It predicts likely readings, not certain ones — adding a line about each relationship (“my boss, after last week's disagreement”) makes the reading much sharper",
+      "It can't know history it isn't told; a private joke or an old argument will change how a message lands",
+      "For decoding a message someone sent you, Decoder Ring is the tool; this one is for messages you're about to send",
     ]
   }
 },
@@ -4056,6 +4450,69 @@ tagline: "Work with the energy you have.",
   icon: "📰",
   categories: ['Just for Fun', 'Learning'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what History Today gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the event below — the opening summary and the first of its two parallels, nothing reworded.",
+    sampleLabel: "The current event",
+    sampleText: "A billionaire buying a major media platform",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The big idea",
+        tone: "green",
+        items: [
+          "When one person buys the platform everyone else depends on to know what is happening, owning it is the power — whatever they say they plan to do with it.",
+          "Throughout history, people have consistently underestimated how much the owner of a shared information channel shapes what the public thinks is true and what it thinks matters, because the shaping happens through selection and emphasis rather than outright lies. Institutions built to check that kind of power tend to discover, too late, that they were designed for a world where no single private hand held the whole pipe.",
+        ],
+      },
+      {
+        label: "Parallel: Hearst and the press wars · structural match 81%",
+        tone: "neutral",
+        items: [
+          "The owner uses the platform's reach as a direct instrument of personal political ambition, making the commercial and the ideological impossible to untangle from the outside. Then: Hearst ran papers at a financial loss for years because the circulation numbers gave him leverage over politicians and parties; advertisers and readers subsidized an operation whose real product was Hearst's influence, not news. Now: A billionaire acquiring a major platform today similarly holds something whose value to the owner may be primarily political — the ability to set the terms of public conversation, reward allies, and punish opponents — rather than the return on the investment itself.",
+          "Ownership of the distribution infrastructure is the prize, because whoever controls what stories reach the public controls which version of reality becomes the default one. Then: Hearst did not need to invent events from nothing; he could simply choose which real events to amplify, which to ignore, and what framing to wrap around them — and his competitors had to respond to his agenda even when they despised it. Now: A social media platform exercises the same structural power through what it surfaces and suppresses algorithmically, meaning the owner shapes the information environment without needing to write a single word of content.",
+        ],
+      },
+      {
+        label: "Where the comparison breaks down",
+        tone: "yellow",
+        items: [
+          "Hearst's power was additive and slow — each new paper took years to build circulation and required a city with a printing press and a newsroom full of humans — whereas a platform acquisition today transfers billions of existing relationships instantly, so the speed at which the new owner can reshape the information environment is categorically different and gives regulators and competitors almost no adjustment period.",
+          "Hearst operated in a fragmented media market where a reader in Cleveland could simply not encounter his New York paper; a global platform has no geographic walls, which means the owner's editorial choices propagate everywhere simultaneously and the concept of a local competing alternative that insulates some audience from the owner's influence barely exists.",
+        ],
+      },
+      {
+        label: "The surprise",
+        tone: "neutral",
+        text: "Hearst's papers were most politically powerful not when they were profitable but when he was willing to lose money on them — the capacity to absorb losses that would destroy a normal business was itself the weapon, and that same logic applies today: a billionaire owner who does not need the platform to pay for itself is structurally immune to the market pressures that ordinarily discipline media behavior.",
+      },
+      {
+        label: "What the pattern suggests",
+        tone: "neutral",
+        items: [
+          "Where this went before was a slow merger of the owner's personal interests with what the platform treated as newsworthy, followed eventually by a backlash that produced new rules — but only after the owner had already used the window to reshape the political landscape in ways the new rules could not reverse.",
+          "When it stops applying: These parallels stop applying if the platform in question no longer functions as a genuine shared public square — if audiences have already fragmented so thoroughly that no single outlet, however large, can set the agenda the way Hearst's papers or Rome's grain supply once did.",
+          "How far to trust it: These parallels are reliable about the structural incentive — that owning distribution is owning influence — but they are a poor guide to speed and scale, since the feedback loops of a global real-time network have no clean historical equivalent.",
+        ],
+      },
+    ],
+    disclaimer: "Historical parallels are a way to think, not a forecast. Dates and figures are worth checking against a history source before you quote them.",
+  },
+  faq: [
+    { q: "Has anything like this happened before?",
+      a: "Often, yes — not the same event, but situations driven by the same mechanism. History Today finds two parallels, explains what's structurally the same and, just as important, where the comparison breaks down. The real example on this page compares a billionaire buying a media platform with William Randolph Hearst's newspaper empire." },
+    { q: "How is this different from “it's just like the fall of Rome”?",
+      a: "It matches on mechanism — who controls what, which incentives are at work — rather than on surface resemblance, and it avoids the most overused analogies unless they genuinely fit best. Every parallel comes with its weak points." },
+    { q: "Can history predict what happens next?",
+      a: "No. It can show where similar situations went before and under what conditions that pattern would stop applying. Each result says how far to trust the parallel and what it's a poor guide to." },
+    { q: "Can I go deeper on one parallel?",
+      a: "Yes — Dig Deeper expands a parallel into a fuller timeline, and the Counter-Example finds a case where similar conditions led somewhere different." },
+    { q: "Is the history accurate?",
+      a: "It aims to be, and names real people, dates and books, but it can slip on specific details. Treat it as a starting point and check any date or figure before you rely on it." },
+  ],
   description: "Today's headlines rarely happen for the first time. Enter a current event, and DeftBrain will find historical situations that unfolded for similar reasons — including where the comparison succeeds and where it fails.",
   guide: {
     overview: "Most historical analogies are lazy: 'This is just like the fall of Rome.' History Today goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.",
@@ -4128,6 +4585,50 @@ tagline: "Work with the energy you have.",
   icon: "🏆",
   categories: ['Career', 'Work & Meetings'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Brag Sheet Builder gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on a list of seven accomplishments — an excerpt, nothing reworded.",
+    sampleLabel: "One of the accomplishments, as written",
+    sampleText: "Led the migration of our payment processing system from a legacy monolith to a microservices architecture, reducing checkout latency by 38% and eliminating a class of timeout-related support tickets that had been the #1 source of customer complaints.",
+    context: "Real run, 2026-10-07 — senior engineer, B2B SaaS, for a résumé. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Rewritten",
+        tone: "green",
+        text: "Led end-to-end migration of payment processing system from legacy monolith to microservices architecture, cutting checkout latency 38% and eliminating the #1 category of customer-facing support tickets — timeout errors that had persisted as the top complaint driver.",
+      },
+      {
+        label: "What changed",
+        tone: "neutral",
+        text: "Anchored 'end-to-end' to signal full ownership scope; reframed ticket elimination as a customer experience outcome, not just an ops win; sharpened the causal chain so the reader sees business impact, not just technical change.",
+      },
+      {
+        label: "Why it counts",
+        tone: "neutral",
+        text: "You did not just execute a migration — you owned the outcome on both the performance side (38%, a hard number) and the customer experience side (eliminated the #1 complaint category). That is a product-level result delivered by an engineer.",
+      },
+      {
+        label: "Numbers worth finding",
+        tone: "yellow",
+        items: [
+          "Do you know the volume of timeout-related support tickets per week or month before the migration, and how many remained after? Ticket count before and after turns 'eliminated a class of tickets' from a qualitative claim into a quantifiable support cost reduction — and signals scale to a hiring reader.",
+          "How many mid-level engineers are on the team or were in the broader org at the time? And do you know the typical time-to-senior for engineers at your company? If the org average time-to-senior is longer than 18 months, your mentees outpaced it — which reframes your 2-of-3 figure from a raw number into a benchmark-beating result.",
+        ],
+      },
+      {
+        label: "Résumé bullets",
+        tone: "green",
+        items: [
+          "Led end-to-end migration of payment processing system from legacy monolith to microservices, cutting checkout latency 38% and eliminating the #1 source of customer support tickets — timeout errors that had persisted as the top complaint category.",
+          "Diagnosed and resolved a recurring production memory leak in the background job processor, eliminating a daily 3am on-call incident pattern; authored the postmortem, adopted as required onboarding reading for new infrastructure hires.",
+        ],
+      },
+    ],
+    disclaimer: "Check every bullet against what actually happened before you use it — a résumé claim has to survive an interview question.",
+  },
   description: "Most people remember their mistakes more easily than their accomplishments. Tell DeftBrain what you've been working on, and we'll help you recognize, organize, and communicate the value you've already created.",
   crossRefs: ['DifficultTalkCoach', 'ColdOpenCraft'],
   guide: {
@@ -4205,6 +4706,53 @@ tagline: "Work with the energy you have.",
   icon: "✈️",
   categories: ['Travel & Events'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Layover Maximizer gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the layover below — an excerpt, nothing reworded.",
+    sampleLabel: "The layover",
+    sampleText: "Amsterdam Schiphol (AMS), 5 hours, landing 08:30. US passport, no checked bags. Arriving at non-Schengen arrivals, connecting to Schengen departures. Travel style: efficient.",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples. Queue times are estimates.",
+    sections: [
+      {
+        label: "Leaving the airport: risky",
+        tone: "yellow",
+        text: "Five hours sounds comfortable, but a US passport holder arriving into Schengen from a non-Schengen flight must clear passport control on the way out — and that queue alone can run 30–45 minutes unpredictably; the arithmetic leaves roughly 130 minutes in the city, which is tight enough that one slow queue kills the plan.",
+      },
+      {
+        label: "The time math: 130 minutes in the city, back by 12:20",
+        tone: "neutral",
+        text: "300 minutes total, minus 15 (deplaning and walking to passport control), minus 45 (Schengen entry immigration — worst-case with 15-minute buffer added), minus 20 (Sprinter train to Amsterdam Centraal), minus 20 (train back to Schiphol), minus 40 (security re-entry into departures), minus 30 (buffer before gate) leaves 130 minutes in the city. You must be back at Schiphol by 12:20 to protect that buffer.",
+      },
+      {
+        label: "Know before you go",
+        tone: "red",
+        text: "Schiphol is a single-terminal building, but Non-Schengen arrivals and Schengen departures use different landside and airside zones — after clearing passport control and customs you will be in the main departure hall, and will need to find and queue for Schengen security on your return; budget the full 40 minutes for this re-entry step.",
+      },
+      {
+        label: "The plan it suggests: clear customs, then own the lounge.",
+        tone: "green",
+        items: [
+          "08:30 — Deplane and follow Non-Schengen arrival signs.",
+          "08:45 — Clear passport control and customs.",
+          "09:15 — Clear Schengen security and enter departure area.",
+          "09:30 — Settle into a lounge until 12:45.",
+          "Leave for the gate: 12:45",
+        ],
+      },
+      {
+        label: "What would change the answer",
+        tone: "neutral",
+        items: [
+          "Which airport are you arriving from — is it a Schengen country or non-Schengen? If your inbound flight is actually from within Schengen, you will not face passport control on arrival and would save 30–45 minutes, changing the verdict to a clearer YES with more comfortable city time.",
+          "What time does your departing Schengen flight board — is there an early boarding call? Some short Schengen hops board 45–50 minutes before departure; if boarding is earlier than 13:00, your return-by deadline tightens and the plan becomes riskier.",
+        ],
+      },
+    ],
+    disclaimer: "Border and security wait times vary by day and season; check the airport's own guidance before you leave the terminal.",
+  },
   description: "Your layover isn't just a block of time. It's a puzzle to solve. DeftBrain looks at your connection, subtracts everything that gets in the way, and tells you what remains. Then it builds a plan around the hours you actually have—not the hours you thought you had.",
   guide: {
     overview: "Layover Maximizer answers one question: what can I realistically do between these two flights? It subtracts deplaning, immigration, transit, security and a safety buffer from your layover, shows you that arithmetic so you can challenge it, and gives you a verdict — go, stay, or risky. Then it recommends one plan rather than a directory: where to eat, whether a lounge is worth the walk, and when to start heading for your gate. Anything it was not told stays unknown rather than assumed, and it says which missing fact would sharpen the answer. Tell it a delay and it re-runs the decision. It also compares layovers before you book, navigates gate-to-gate transfers, packs for the airport you are actually in, generates an offline survival kit, and tells you what missing the connection would cost.",
@@ -4354,6 +4902,55 @@ tagline: "Work with the energy you have.",
   icon: "⚡",
   categories: ['Career', 'Ideas & Imagination'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Name Storm gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the brief below — an excerpt of a long result, nothing reworded.",
+    sampleLabel: "The brief",
+    sampleText: "Business name for subscription meal planning for busy families who want to eat healthier. Vibe: bold, minimalist — confident and a little playful, feels premium but approachable. Constraints: 2 syllables, easy to spell and say, works as a .com.",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples. The full result had 20 names in five styles.",
+    sections: [
+      {
+        label: "The brief, as it read it",
+        tone: "neutral",
+        text: "These names treat the service as something confident and a bit clever — short, easy to remember, and they make people smile without being loud about it.",
+      },
+      {
+        label: "Top picks",
+        tone: "green",
+        items: [
+          "Vorda: Short, invented, and nothing else in food sounds like it — easy to spell the first time you hear it, and it has the punch the brief asks for without any of the flags dragging it down.",
+          "Fable: Two clean syllables, nothing to puzzle over when spelling it, and it quietly says that family dinner together is worth telling a story about — minimal and approachable without feeling hollow.",
+          "Mise: Borrows from the chef term for having everything ready before you cook, which is the exact promise to families — a little bit insider knowledge without being obscure enough to confuse people.",
+        ],
+      },
+      {
+        label: "A name with flags: Plato",
+        tone: "yellow",
+        items: [
+          "It is a plate plus a plan smashed together, and it sounds like a name people already know how to say. It has a little wit without trying too hard.",
+          "Caution: Plato's Closet is a known retail chain — some association bleed possible",
+          "Warning: Plato as a standalone word has existing trademark registrations across food and education categories worth searching",
+          "Domain: Almost certainly taken — common word with wide appeal.",
+        ],
+      },
+    ],
+    disclaimer: "Trademark and domain notes are flags to check, not legal clearance — the live availability check and a trademark search are the next steps.",
+  },
+  faq: [
+    { q: "How do I come up with a business name?",
+      a: "Describe what you're naming, the feeling you want and any hard rules (length, spelling, a .com). Name Storm generates names across several styles, flags problems with each, and picks a top five with reasons — the real example on this page is a meal-planning brand." },
+    { q: "Does it check if the name is taken?",
+      a: "It flags likely conflicts as it goes — existing brands, trademark risk, crowded domains — and has a live check for domain and social handle availability. Neither replaces a proper trademark search before you commit." },
+    { q: "What can it name?",
+      a: "Businesses and products, but also babies, bands, pets, podcasts, Wi-Fi networks and more — each category gets the styles that suit it." },
+    { q: "What does “say it out loud” mean?",
+      a: "A test for names that look fine written down but trip people up when spoken: hard to spell after hearing it, easy to mishear, or shortened into something you wouldn't choose." },
+    { q: "I almost like one of the names. Can I get more like it?",
+      a: "Yes — “More like this” generates variations on any single name, keeping what you liked about it." },
+  ],
   description: "Names are deceptively hard. They need to sound right, fit your audience, be easy to remember, and still feel right six months from now. Describe what you're naming, and DeftBrain will help you find a name that works before you commit.",
   guide: {
       overview: "Naming things is hard because you need creativity, cultural awareness, and practical validation all at once. NameStorm generates 25-35 names across the style categories most relevant to what you're naming, then gives you tools to evaluate them: pronunciation guides, Name DNA explaining the linguistic psychology behind each name, problem flags for issues in other languages or phonetic traps, AI-curated Top 5 picks, a Say It Out Loud test, live domain and social handle availability checks, and a 'More Like This' button that generates 8-10 variations of any name you almost love.",
@@ -4379,6 +4976,12 @@ tagline: "Work with the energy you have.",
         "Domain checks use DNS lookups — 'likely available' means the domain doesn't resolve, but confirm with a registrar before purchasing",
         "Problem flags check major world languages — a clean flag (✓) means no issues were found, but consider checking with native speakers for important names",
         "For business names, the best names are often in the Mashup/Coined category — they're unique, trademarkable, and more likely to have domains available"
+      ],
+
+      pitfalls: [
+        "Availability and trademark notes are early warnings, not clearance — search the trademark register and check the domain before you buy anything",
+        "Read each name's problem flags as well as the reasons it works; the most charming names often carry the biggest conflicts",
+        "Say the shortlist out loud to a few people who haven't seen it written — how they spell it back is the real test",
       ]
     }
 },
@@ -4472,6 +5075,55 @@ tagline: "Work with the energy you have.",
   icon: "🗣️",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Difficult Talk Coach gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the conversation below — an excerpt of a long result, nothing reworded.",
+    sampleLabel: "The conversation",
+    sampleText: "Asking my manager for a raise. I've taken on more responsibility this year and want to make the case before annual review cycle ends. Biggest fear: they'll say no and then think of me as 'the one who asked' for the rest of the year. Hinted twice in 1:1s about wanting to grow into a senior role; both times the conversation moved on.",
+    context: "Real run, 2026-10-07 — style: straightforward. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "First",
+        tone: "green",
+        text: "You've taken on more than your original role and you're asking for that to be recognized before the review window closes — that's a straightforward professional request, not an imposition. The fact that you've already hinted twice and been passed over in conversation means going direct is overdue, not pushy. Asking for a raise when your responsibilities have grown is how these things are supposed to work.",
+      },
+      {
+        label: "A reality check",
+        tone: "neutral",
+        text: "Your manager may respond with something about budget timing being out of their hands right now — and that may genuinely be true, not just a brush-off. If that happens, it doesn't mean they think less of you for asking; it more likely means the conversation landed and they're navigating something you can't fully see from your seat.",
+      },
+      {
+        label: "One approach: collaborative",
+        tone: "green",
+        items: [
+          "Opening: “Hey, I wanted to carve out a few minutes to talk about something that's been on my mind. I know budget stuff is happening at a higher level right now, so I want to be upfront that I'm not expecting an answer today — I just want to have the actual conversation before review season wraps.”",
+          "Name what has changed in your role — not as a complaint, but as a plain description: 'Since [whatever shifted], I've been doing [specific thing] that wasn't really part of my original scope. I've been glad to take it on, but I think it's worth talking about whether my comp reflects where the role actually is now.'",
+          "Ask what their view is before pushing further: 'I'm curious how you see it — do you think the role has grown, or am I framing it in a way that doesn't match what you're seeing?' This is a real question, not a trap. Their answer tells you a lot about what the path forward looks like.",
+          "Put a number or a range on the table — vagueness has already let this slide twice in your 1:1s: 'If this is something you can go to bat for, I'm thinking something in the range of [X]. I'd rather name it than leave it fuzzy.'",
+        ],
+      },
+      {
+        label: "If they say the timing is bad",
+        tone: "yellow",
+        items: [
+          "The instinct: Say 'oh no, totally, I get it, we can revisit this later' — and then later never comes.",
+          "Instead: Say something like: 'I hear you on the timing. I guess what I'm asking is — is this something you'd want to go to bat for when that window opens, or is there something I should know about where I stand?'",
+        ],
+      },
+      {
+        label: "If they push back",
+        tone: "neutral",
+        items: [
+          "If they deflect or change the subject, say: 'I want to come back to the compensation question before we move on — can we stay on that for a few more minutes?'",
+          "If they try to negotiate, say: 'I'm open to talking through what's possible — what I need is to know we're actually moving toward something, and roughly when.'",
+          "If they go silent, say: 'I'll give you some time to think. Can we reconnect on this by [specific date] so I'm not just waiting without knowing where things stand?'",
+        ],
+      },
+    ],
+  },
   description: "Some conversations become difficult long before they actually happen. Tell DeftBrain what's weighing on you, and we'll help you plan the conversation, practice it, and prepare for what might happen next.",
   guide: {
     overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies.",
@@ -4536,6 +5188,57 @@ tagline: "Work with the energy you have.",
   icon: "📧",
   categories: ['Conversations', 'Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Complaint Escalation Writer gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the complaint below — an excerpt of a five-stage plan, nothing reworded.",
+    sampleLabel: "The complaint",
+    sampleText: "Switched plans in June and was quoted a $45/month rate in writing over chat. Every bill since has been $71. Support says the chat quote 'does not reflect current promotions' and has refused to honor it. This is the fourth billing cycle at the wrong rate. Three chat sessions (transcripts saved), one phone call transferred four times and disconnected, no callback.",
+    context: "Real run, 2026-10-07 — a fictional mobile company (“Horizon Mobile”) from the tool's own built-in examples; tone: firm.",
+    sections: [
+      {
+        label: "Where you stand",
+        tone: "green",
+        text: "You have a written quote — from the company's own chat system — for a specific rate. That is the most durable piece of evidence in a billing dispute. The subsequent bills at a higher rate, paired with three inconsistent explanations, mean the factual record is almost entirely on your side. The next step is to put that record in front of someone at the company who has the authority to act on it, in writing, all at once.",
+      },
+      {
+        label: "Evidence to gather",
+        tone: "neutral",
+        items: [
+          "Chat transcripts from all three support sessions — The original rate quote lives here, and the three different explanations are your clearest evidence of an inconsistent company position.",
+          "Four months of billing statements showing the $71 charge — These establish the gap between the quoted rate and the billed rate, and show the duration of the dispute.",
+          "Documentation of the phone call and the missed callback — A promised callback that was not delivered is relevant context when describing how the dispute has been handled.",
+        ],
+      },
+      {
+        label: "Stage 1 — send this today",
+        tone: "neutral",
+        items: [
+          "Subject: Billing discrepancy since June — written quote of $45/month not reflected in charges",
+          "When I switched plans in June, I received a written quote of $45 per month via Horizon Mobile's own chat support. Every bill since has come to $71, a difference of $26 per month that has now persisted across four billing cycles. I have saved the original chat transcript confirming the quoted rate, as well as records of three follow-up chat sessions and a phone call that ended in a disconnection with no callback as promised. I am asking for a written review of this account and a resolution that reflects the rate I was quoted — including an adjustment for the amounts billed above that figure since June. A written quote provided by your representative at the point of a plan change may be considered part of the agreement that led me to make that switch, and I would appreciate confirmation that this is being treated accordingly.",
+          "Deadline to set: Give them 14 calendar days to respond in writing before moving to the next step",
+        ],
+      },
+      {
+        label: "If there's no answer",
+        tone: "yellow",
+        items: [
+          "If no substantive written response has arrived, file a complaint with the FCC at consumercomplaints.fcc.gov — the FCC routes telecom billing complaints to the carrier and requires a response.",
+        ],
+      },
+      {
+        label: "Rules that may apply",
+        tone: "neutral",
+        items: [
+          "FTC Act Section 5 — Unfair or Deceptive Acts or Practices: Based on what you have described — a specific rate confirmed in writing by the company, followed by billing at a higher rate with no agreed amendment — this appears inconsistent with the prohibition on deceptive acts or practices, which may strengthen your position.",
+          "FCC Truth-in-Billing Rules (47 CFR Part 64, Subpart Y): Based on what you have described, receiving three different explanations for the same overcharge across three contacts may appear inconsistent with the requirement that billing be clear and substantiated, which may be relevant to a complaint with the FCC.",
+        ],
+      },
+    ],
+    disclaimer: "General information, not legal advice. Contact details for a real company are worth confirming before you send anything.",
+  },
   description: "When a company ignores you, the problem isn't always the complaint. It's knowing what to do next. Tell DeftBrain what happened, and we'll build a step-by-step escalation plan — from your next email to regulatory complaints and executive outreach if necessary.",
   guide: {
     overview: "Most consumer complaints fail because people don't know what leverage they actually have. This tool analyzes your situation, identifies applicable consumer protection laws, and builds a 5-stage escalation campaign — each stage increasing pressure while maintaining professionalism. Every letter, regulatory complaint, social media post, and legal filing is pre-written and ready to copy-paste-send. You start at Stage 1 and only escalate if needed.",
@@ -4563,6 +5266,12 @@ tagline: "Work with the energy you have.",
       "The tool identifies specific laws that apply to your situation — these are referenced in the letters to signal you know your rights",
       "The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines",
       "There is no need to jump ahead — each step leaves a record that makes the next one easier"
+    ],
+
+    pitfalls: [
+      "Escalating faster than the plan suggests can backfire — a company given a clear written deadline usually has to answer before a regulator will act",
+      "Any email address or department it suggests is a pattern to confirm, not a verified contact",
+      "The legal notes say what may apply, not what a court would decide; for large amounts, a consumer lawyer or legal aid office can confirm",
     ]
   }
 },
@@ -5636,6 +6345,71 @@ tagline: "Work with the energy you have.",
   icon: "👩‍⚕️",
   categories: ['Conversations', 'Health & Wellness', 'Home & Daily Life'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Doctor Visit Translator gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the visit notes below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The visit notes",
+    sampleText: "Type 2 diabetes follow-up. A1C today 7.8% (was 8.2% three months ago). Adding metformin 500mg twice daily with meals. Continue lisinopril 10mg. Repeat A1C and basic metabolic panel in 3 months. Call if fasting BG over 300 or symptoms of hypoglycemia. Consider GLP-1 agonist if A1C does not improve. Patient tolerating current meds well, BP 128/82, weight down 4 lbs.",
+    context: "Real run, 2026-10-07 — a follow-up visit. One of the tool's own built-in examples; not a real patient.",
+    sections: [
+      {
+        label: "In plain English",
+        tone: "green",
+        items: [
+          "This was a follow-up for type 2 diabetes, a condition where blood sugar runs higher than it should over time.",
+          "You're starting a new medication (metformin) twice a day with meals, staying on your current blood pressure pill (lisinopril), and getting repeat blood work in 3 months.",
+          "Your A1C improved from 8.2% to 7.8% over three months, which is movement in the right direction, and your doctor noted you're tolerating your medications well.",
+          "The next check is in about 3 months, and your doctor noted that another medication type could be considered then if your blood sugar hasn't improved enough.",
+        ],
+      },
+      {
+        label: "Terms explained",
+        tone: "neutral",
+        items: [
+          "A1C: a blood test showing your average blood sugar over the past 2-3 months. Yours went from 8.2% to 7.8%, so it's improving; this is the number your doctor is tracking to decide whether your current plan is working or needs to change.",
+          "GLP-1 agonist: a class of diabetes medication. Your doctor mentioned this as a possible next step only if your A1C doesn't improve enough over the next three months, so it's a 'maybe later,' not something starting now.",
+        ],
+      },
+      {
+        label: "Your test result",
+        tone: "neutral",
+        items: [
+          "A1C — 7.8% today. A non-diabetes level is generally below 5.7%; a common target for many adults with diabetes is below about 7%, but confirm your personal goal with your doctor. Trend: Improving, from 8.2% three months ago to 7.8% now.",
+        ],
+      },
+      {
+        label: "What to do",
+        tone: "green",
+        items: [
+          "Start metformin 500mg twice a day, taken with meals. Take one 500mg tablet with food in the morning and one with food in the evening to reduce stomach upset.",
+          "Continue taking lisinopril 10mg as before. Keep taking it exactly as you have been.",
+          "Schedule repeat A1C and basic metabolic panel for about 3 months from now. Call your clinic or lab to book the blood draw, ideally timed just before your next appointment.",
+        ],
+      },
+      {
+        label: "When to call",
+        tone: "red",
+        items: [
+          "Symptoms of low blood sugar such as shakiness, sweating, confusion, or feeling faint",
+          "Fasting blood sugar over 300, which your doctor specifically asked you to call about",
+        ],
+      },
+      {
+        label: "Questions for next time",
+        tone: "neutral",
+        items: [
+          "What is my personal A1C target?",
+          "At what A1C would you decide to add the GLP-1 medication you mentioned?",
+          "How should I check and record my blood sugar at home?",
+          "Should my metformin dose change if I'm tolerating it well?",
+        ],
+      },
+    ],
+    disclaimer: "Explains what the notes say; it doesn't replace your doctor's or pharmacist's advice.",
+  },
   description: "Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain will translate them into plain English.",
   guide: {
     overview: "The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time.",
@@ -6240,6 +7014,71 @@ tagline: "Work with the energy you have.",
   icon: "🧾",
   categories: ['Conversations', 'Home & Daily Life', 'Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Bill Rescue gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the bill below — an excerpt of a long result, nothing reworded.",
+    sampleLabel: "The bill",
+    sampleText: "Medical bill, $2,400, 60 days overdue. Emergency room visit for a kidney stone. Insurance covered most but I owe the deductible. Can't afford it, and don't understand it.",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Serious, but you're still early",
+        tone: "yellow",
+        items: [
+          "Your credit is not at risk yet — medical debt under a year old cannot be reported.",
+          "You are still dealing with the original provider, not a collector.",
+          "The billed amount is likely not the final amount you owe.",
+        ],
+      },
+      {
+        label: "Today's job: request your itemized bill",
+        tone: "green",
+        items: [
+          "Hospital bills routinely contain duplicate charges, incorrect codes, and inflated facility fees — you cannot negotiate or apply for help against a number you haven't verified.",
+          "What to say: 'Hi, I received a bill for an emergency room visit and I need a complete itemized bill — every charge listed with its CPT code. My account number is [your account number]. Can you mail or email that to me? I won't be discussing payment until I have reviewed it.'",
+        ],
+      },
+      {
+        label: "The order that protects you",
+        tone: "neutral",
+        items: [
+          "Request the itemized bill today.",
+          "Apply for financial assistance this week.",
+          "Negotiate only after both are done.",
+          "Not today: Don't make any payment today.",
+          "Not today: Don't discuss what you can afford.",
+          "Not today: Don't ignore the bill entirely.",
+        ],
+      },
+      {
+        label: "What they won't tell you",
+        tone: "neutral",
+        items: [
+          "Emergency room bills often arrive as two separate charges: one from the hospital (facility fee) and one from the ER physician group (a separate company). Make sure you know whether this $2,400 is one bill or two, and whether separate negotiation is needed.",
+          "Charity care can be applied retroactively. If you qualify, the hospital can zero out or reduce a bill that already exists — you do not have to have applied before the visit.",
+        ],
+      },
+      {
+        label: "Your rights",
+        tone: "neutral",
+        items: [
+          "Nonprofit hospital charity care obligation: If the hospital is a nonprofit (most are), it is required by federal tax law under IRS 501(r) to maintain a financial assistance program and to screen patients for eligibility. Say: 'I would like to apply for your financial assistance program.' They cannot legally deny you an application.",
+        ],
+      },
+      {
+        label: "If nothing is done",
+        tone: "neutral",
+        items: [
+          "If nothing is done, the hospital may transfer the $2,400 to a collections agency, typically after 90-180 days. At that point it could appear on your credit report and remain there up to 7 years, lowering your score. For a balance this size, wage garnishment is possible but requires the collector to sue you and win a judgment first — a process that takes time and is not guaranteed. State debt collection statutes of limitations vary, but most run 3-6 years from the date of last activity.",
+          "A collections entry for medical debt, while genuinely frustrating, is one of the most commonly negotiated items on a credit report — and the hospital can still accept payment or a settlement even after sending it to collections. You have not missed the window to fix this; you are still in the easiest phase of the process.",
+        ],
+      },
+    ],
+    disclaimer: "General information, not legal or financial advice. Credit-reporting and debt rules change; check the current rules where you live.",
+  },
   description: "That envelope, email, or collection notice doesn't have to ruin your week. Tell DeftBrain what's happening, and we'll help you turn an intimidating bill into a practical, step-by-step plan for understanding the bill, protecting your rights, reducing what you owe, and deciding what to do next.",
   guide: {
     overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
@@ -6537,6 +7376,68 @@ tagline: "Work with the energy you have.",
   icon: "🚨",
   categories: ['Health & Wellness', 'Tasks'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Chaos Pilot gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the list below, unedited.",
+    sampleLabel: "The list",
+    sampleText: "Send the Q3 numbers to Dana (by Friday, Dana is waiting) · Reply to the landlord about the lease renewal (landlord waiting) · Renew the car registration · Book a dentist appointment. About 2 hours, low energy. Two of these have been on the list for a fortnight.",
+    context: "Real run, 2026-10-07 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The headline",
+        tone: "neutral",
+        text: "One task has a supplied deadline and a named person waiting by Friday; that is the clearest time-sensitive signal in the supplied information.",
+      },
+      {
+        label: "Do first",
+        tone: "red",
+        items: [
+          "Send the Q3 numbers to Dana — Supplied deadline is Friday; Dana is supplied as waiting. Next step: Assemble or locate the Q3 figures and draft the message to Dana.",
+        ],
+      },
+      {
+        label: "Do next",
+        tone: "yellow",
+        items: [
+          "Reply to the landlord about the lease renewal — A named person is waiting. No deadline was supplied, but a lease renewal is the kind of correspondence where delay may affect the landlord's ability to act. It follows the Dana task in that it is a reply owed to someone rather than a self-contained errand.",
+        ],
+      },
+      {
+        label: "Can probably wait",
+        tone: "green",
+        items: [
+          "Book a dentist appointment — No deadline, no person waiting, and no consequence of delay was supplied. The supplied information does not establish that this must happen sooner.",
+        ],
+      },
+      {
+        label: "One fact would change the order",
+        tone: "neutral",
+        items: [
+          "Renew the car registration: When does the current registration expire, or is it already expired? If the expiry date is at or before Friday, this task would compete with the Dana task for the first slot. If it is further out, it likely belongs in do_next or can_probably_wait.",
+        ],
+      },
+      {
+        label: "Does it fit in the time you have?",
+        tone: "neutral",
+        text: "With low energy and roughly two hours, completing the Dana task and a landlord reply is plausible if the Q3 numbers are already assembled. If the numbers still need significant work, two hours may be tight for both. The car registration fact is also unresolved and could add to the load.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I decide what to do first when everything feels urgent?",
+      a: "Look at what you actually know: real deadlines, who's waiting, and what happens if it slips. Chaos Pilot orders your list on exactly those facts, says why each task sits where it does, and gives a first step for the top one — the real example on this page shows a four-item list sorted that way." },
+    { q: "What if I don't know a deadline?",
+      a: "It doesn't guess. When one missing fact would change the order — like when a registration expires — it asks for that fact and explains how the answer would move the task." },
+    { q: "Can I just paste my whole messy list?",
+      a: "Yes. Paste everything at once and it pulls out the tasks, deadlines and who's waiting before sorting them." },
+    { q: "What if I'm too overwhelmed to read a full plan?",
+      a: "Use “Just One Thing”: it returns a single task and the very first action to take, nothing more." },
+    { q: "Does it consider how much energy I have?",
+      a: "Yes — tell it your energy and roughly how much time you have, and it says whether the top tasks realistically fit and what to drop if they don't." },
+  ],
   description: "Everything feels urgent at once, and it's hard to trust your own read on what actually needs you first. Chaos Pilot works only from what you know — deadlines, consequences, who's waiting — to put your tasks in a defensible order. When a missing fact would change that order, it says so instead of guessing.",
   guide: {
     overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), pasting everything in at once instead of listing it, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
@@ -6606,6 +7507,52 @@ tagline: "Work with the energy you have.",
   icon: "👥",
   categories: ['Health & Wellness', 'Tasks', 'Work & Meetings'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Virtual Body Double gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual session start on the task below, unedited.",
+    sampleLabel: "The task",
+    sampleText: "Finish writing the first draft of my performance self-review — I keep starting and stopping and it's due tomorrow. Mood: avoidant, low motivation. Goal: a complete first draft, even if rough.",
+    context: "Real run, 2026-10-07 — 25 minutes, check-ins every 15, home office. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Your companion: Ren (steady, low-key)",
+        tone: "green",
+        items: [
+          "Alright, I'm here with you. Let's get this thing out of your head and onto the page.",
+          "First step: Type one sentence — anything you shipped, fixed, or showed up for this year, even if it feels too small to matter.",
+          "Before you start: Flip the phone face-down and slide it to the edge of the desk.",
+        ],
+      },
+      {
+        label: "Quiet messages during the session",
+        tone: "neutral",
+        items: [
+          "Still here with you.",
+          "You're doing it.",
+          "Draft, not final. Keep going.",
+          "Ugly words still count.",
+          "One more line.",
+          "Almost there, seriously.",
+        ],
+      },
+      {
+        label: "A break",
+        tone: "neutral",
+        text: "Around the 20-minute mark, 5 min: Step away from the screen, get some water, and look out a window for a minute.",
+      },
+      {
+        label: "When the timer ends",
+        tone: "green",
+        items: [
+          "You have a draft — that's the whole game, and you did it.",
+          "What's one thing in there you actually feel okay about, even a little?",
+        ],
+      },
+    ],
+  },
   description: "Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Say what you're working on, pick a companion, and you're not alone anymore.",
   guide: {
     overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
@@ -6660,6 +7607,62 @@ tagline: "Work with the energy you have.",
   icon: "⏳",
   categories: ['Health & Wellness', 'Tasks'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Waiting Mode Liberator gives you",
+    expandLabel: "See the full real example ↓",
+    intro: "Real output from an actual run on the day below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The day ahead",
+    sampleText: "Tomorrow: annual physical at 2:30 PM, second-round video interview at 4:00 PM. To do: respond to 3 emails I've been avoiding, prep questions for the interview, take the dog for a real walk, drink water (I keep forgetting). Also meant to call mom back from yesterday.",
+    context: "Real run, 2026-10-07 — energy: 3 of 5; anxiety: 6 of 10. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "How much time you actually have",
+        tone: "green",
+        text: "You have a wide open today, then tomorrow morning until 1:55 PM — roughly eight and a half hours of actual free time across the two days.",
+      },
+      {
+        label: "Permission",
+        tone: "green",
+        text: "Every task on your list fits somewhere in the next two days with time left over, and both alarms are already set.",
+      },
+      {
+        label: "Your free windows",
+        tone: "neutral",
+        items: [
+          "Today (Wide open): Call mom back — you've got room for a real conversation, not a rushed one; Take the dog for the walk; Knock out one or two of the emails you've been avoiding; Nothing. Leaving today unscheduled is a real option.",
+          "Appointment morning (Until 1:55 PM): Finish any remaining emails; Write out your questions for the interview; Drink some water; Nothing. The morning before an appointment is yours until the alarm fires.",
+          "Between appointments (30 minutes): Glance over your interview questions; Drink some water; Nothing — 30 minutes is short enough to just sit.",
+        ],
+      },
+      {
+        label: "Alarms that do the remembering",
+        tone: "neutral",
+        items: [
+          "Tomorrow, 2:30 PM — alarm at 1:55 PM: Alarm fires at 1:55 PM — this is your cue to shift gears The 35 minutes after it are yours for getting ready and getting there Bring anything you know you'll need (insurance card, ID, or anything else you'd typically take)",
+          "Tomorrow, 4:00 PM — alarm at 3:30 PM: Alarm fires at 3:30 PM — find a quiet spot if you need one Pull up your interview questions for a quick scan The 30 minutes after the alarm are yours to get ready and settled for the call",
+        ],
+      },
+      {
+        label: "Why it helps",
+        tone: "neutral",
+        text: "Two appointments can hover over a whole day like browser tabs that won't close — setting the alarms hands that job to something else so the hours in between are actually yours.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What is waiting mode?",
+      a: "The frozen feeling of having an appointment later in the day: you can't start anything because “I have a thing at 2,” so the hours before it disappear. It's common, and especially familiar to people with ADHD." },
+    { q: "How do I get things done before an appointment?",
+      a: "Find out how much time you really have, set an alarm for when you need to start getting ready, and stop tracking the clock until it goes off. Waiting Mode Liberator does that math and sorts your to-do list into the free windows, as the real example on this page shows." },
+    { q: "Does it set the alarm for me?",
+      a: "It works out when each alarm should go off — the appointment time minus your prep and travel time — and counts down to the first one while the page is open. Setting a phone alarm for that time is the reliable backup." },
+    { q: "What if my energy is low?",
+      a: "You rate your energy first, and the suggestions match it: on a low day it offers small, easy blocks — and “nothing” is always a valid option." },
+    { q: "Can it handle two appointments in a day?",
+      a: "Yes — it finds the gaps between them, including short ones, and gives each appointment its own prep alarm." },
+  ],
   description: "Got a thing later and can't start anything? That frozen feeling is real. This tool shows you how much free time you actually have, helps you decide what to do with it, and lets you stop thinking about the appointment until it's time.",
   guide: {
     overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Enter your tasks and energy level — it assigns each one to a window it can actually fit. After the appointment, a 3-tap debrief compares your pre-appointment anxiety to how it actually went. Over sessions, the pattern becomes undeniable.",
@@ -7243,6 +8246,41 @@ tagline: "Work with the energy you have.",
   icon: "🏦",
   categories: ['Home & Daily Life', 'Money'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
+  exampleOutput: {
+    title: "See what Renter's Deposit Saver gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from the deposit-rights check for one location — an excerpt, nothing reworded. The full tool also builds your move-in record.",
+    sampleLabel: "The location",
+    sampleText: "California, United States",
+    context: "Real run, 2026-10-07.",
+    sections: [
+      {
+        label: "Your deposit rights, in short",
+        tone: "neutral",
+        text: "California law limits how much a landlord can collect as a security deposit and sets strict rules for returning it. After a tenancy ends, the landlord must return the deposit — or a written itemized accounting of any deductions — within a specific deadline. Failure to follow these rules can expose the landlord to liability beyond the deposit amount itself.",
+      },
+      {
+        label: "Key rights",
+        tone: "green",
+        items: [
+          "Return deadline: the landlord must return the deposit and/or an itemized statement of deductions within 21 days after you vacate",
+          "Itemization required: any deductions must be listed in writing with a description of the work or loss and, for repairs over a threshold amount, copies of invoices or receipts",
+          "Deductions allowed only for: unpaid rent, cleaning to restore the unit to move-in condition, and repair of damage beyond normal wear and tear — normal wear and tear cannot be charged to the tenant",
+          "Pre-move-out inspection: you have the right to request an inspection before vacating so the landlord must identify correctable deficiencies in advance, giving you a chance to fix them",
+          "Interest on deposit: California state law does not generally require landlords to pay interest on security deposits, though some local ordinances may — check your city or county rules",
+          "Penalty for bad faith withholding: a landlord who wrongfully withholds a deposit in bad faith may owe the tenant up to twice the deposit amount in addition to the actual deposit, as a statutory penalty",
+        ],
+      },
+      {
+        label: "Where the rules come from",
+        tone: "neutral",
+        text: "Core security deposit rules are found in California Civil Code Section 1950.5, which you should verify directly or through a local tenant rights organization, as amendments — including a 2024 law affecting deposit caps — may affect your specific situation.",
+      },
+    ],
+    disclaimer: "General information, not legal advice. Deposit law changes — California capped most deposits at one month's rent from July 2024 — so check the current rule for your lease date.",
+  },
   description: "Don't get charged later for damage that was already there. Walk through your apartment once. We'll help you document its condition, take the right photos, and create a record you can send your landlord.",
   guide: {
     overview: "Renter's Deposit Saver is your move-in documentation coach. It walks you through every room with a detailed checklist so you can note the condition of walls, floors, appliances, and fixtures before you unpack. Then it generates a formal condition report, a professional cover letter to send your landlord, a prioritized photo shot list, and a breakdown of your state's security deposit laws. When move-out day comes, you'll have irrefutable proof of what was already there.",
