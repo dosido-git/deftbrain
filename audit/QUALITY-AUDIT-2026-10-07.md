@@ -136,3 +136,54 @@ and goldens pass on a restarted server.
   priority decision; legality-class findings need a slot that isn't contested.
 - **Wave logistics:** running goldens on a shared backend you didn't start tests the
   old code — check `/api/health` uptime against your edit time first.
+
+---
+
+## Second sample (overlapping run, same day)
+
+A second scheduled run of this wave ran at the same time against the same backend. It
+used fresh inputs and swapped two tools: **phrase-decoder** and **meeting-worth-it**
+(new tools, never audited) instead of ticket-tackler and analogy-engine, and
+money-diplomat **/lend** instead of /split. All 14 endpoints returned 200 in 10–67s. No
+annotation leaks, no string `"null"`, and all 9 quote probes parsed. Mid-run, every
+model endpoint returned 500 in under 4s for about 3 minutes, then recovered without
+anyone touching it. That points upstream, and it is probably the same event as the
+failure at the top of this report. Most of this sample ran before 28b738b5, and that
+commit was never loaded into the backend anyway.
+
+**No fixes from this sample.** The four-fix branch `audit-fixes-2026-10-07` is still
+unpushed, and the shared backend has never loaded it. Stacking more route edits that
+can't be checked against goldens would repeat the 2026-07-23 risk.
+
+### Where the second sample disagrees with, or adds to, the first
+
+| Tool | 2nd-sample verdict | What's new |
+|---|---|---|
+| decision-coach | **SIGNIFICANT** (1st: MINOR) | Gets the direction wrong on a career offer. Says *"The one-time $5,000 signing bonus narrows the first-year gap"*; it widens it, because Brightline already leads by $1,000, so year one is $6,000. Calls losing a discretionary $8,000 bonus a change of *"slightly but not the direction"*; it makes the gap 8–9× the one the advice rests on, yet `one_thing_that_could_change_this` came back null. `no_second_guessing` says decline today, while the steps say talk first, then decline. MONEY rule `decision-coach.js:154` doesn't separate one-time from recurring pay; no `withNumberCheck` |
+| someone-said-it-better | **SIGNIFICANT** (1st: MINOR) | Shows Plutarch's *"not a vessel to be filled but a fire to be kindled"* as an exact quote. It is a known paraphrase, and the packet's own `context_note` says so, but the frontend never renders `context_note` (`SomeoneSaidItBetter.js:582`). The second pass treats `context_note` as verified (`someone-said-it-better.js:200-205`), so a reading tailored to the visitor passes as fact about where the quote came from. `quoteResearch.js:39` labels any source `authoritative_secondary` by default (Goodreads Kindle notes got it). `researched_at` is written by the model (`:44`). Same root as the first sample's aggregator finding: `cleanPacket` trusts the packet |
+| velvet-hammer | MINOR (1st: GOOD) | `core_message`: *"Three emails went unanswered"*, but the draft shows the Oct 1 email was answered. Third-person *"the sender paid $89"* |
+| meeting-worth-it | MINOR (new) | Invented *"deferred for at least three consecutive syncs"* (input supports two). Recommends *"Shorter meeting"*, but the plan adds up to about the same hour. Time math is code-computed and correct (14 person-hours) |
+| phrase-decoder | **GOOD** (new) | Didn't invent an origin for the phrase; slight overstatement only |
+| money-diplomat /lend | **GOOD** | $900 + $2,500 = $3,400 correct; ignored a planted red herring; no repayment predictions. /split, the first sample's finding, was not re-run |
+| bill-rescue | MINOR — HOLDS | Script offers *"$128 per month for 12 months"* ($1,536) against a stated $2,550 balance, which breaks its own rule at `:321`. Says *"two insurers' math"* when there is one. `keysB` (`:232-236`) still omits `know_your_rights`, and `canAffordMonthly` is still never sent, both carried over from 2026-08-29 |
+| lease-trap-detector | MINOR (PA lease) | All 15 planted traps surfaced. Legal citations are the weak point, the same as the first sample's regression: *Cutler Corp. v. Latshaw* cited as voiding confession-of-judgment clauses (it is about conspicuousness); habitability attributed to 68 P.S. §250.505a (that is case law); "68 P.S." and "68 Pa. C.S." mixed up; rentcheckme.com among its "verified sources" |
+| safe-walk | MINOR — IMPROVED (agrees) | Still names an unverified turn (*"from Baltimore Ave onto Larchwood"*). Battery concern in 7 fields. Third-person leak *"Visitor will be carrying a laptop bag"*. **Still no `withLocaleContext`** (`safe-walk.js:3`), carried over from 2026-08-29 |
+| difficult-talk-coach | MINOR (agrees) | Firm rung ends with an unnamed threat (*"decisions I have to make about my own situation"*), which `:199` forbids. Two approaches open with the same sentence. Invented deadlines (Oct 17 / Oct 31) |
+| mend | MINOR (agrees) | States the friend's inner state as fact; `"N/A"` strings; "call before you miss it" said twice |
+| drive-home | MINOR — HOLDS | Invents a place to sleep (*"your sister's place"*, rule 8 `:410`); two near-duplicate `safer_options` get past the exact-match dedupe at `:357` |
+| conflict-coach | GOOD-minor | Third-person *"the visitor's records"* in `message_read` (`:61`); the first sample's dropped-fact bug did not recur |
+| grief-guide | GOOD — HOLDS (agrees) | `more_support` empty; dates right |
+
+### Adds to the deferred list
+
+- **decision-coach**: add `withNumberCheck`, and extend the MONEY rule to say which side
+  leads, separate one-time from recurring pay, and treat pay that may not come as the
+  open question.
+- **someone-said-it-better**: drop any quote whose packet admits a paraphrase;
+  limit `context_note` to where the quote came from, or render it; replace the
+  `authoritative_secondary` default with a domain check.
+- **Third-person "visitor" leaks** in 3 routes this run (safe-walk, conflict-coach,
+  velvet-hammer), the same class as SpiralStopper 2026-09-11. Worth one sweep for
+  `visitor` in schema prose.
+- **Provable by inspection, still open since 08-29**: safe-walk `withLocaleContext`,
+  bill-rescue `keysB`. Bundle them with the next golden-verified fix push.
