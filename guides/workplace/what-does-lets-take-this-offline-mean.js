@@ -29,7 +29,7 @@ module.exports = {
   steps: [
     {
       name: "Read the legitimate sidebar",
-      body: "The most common version, and the reason the phrase exists. The topic raised really is off-agenda, or requires people who aren't in the room, or needs data nobody has on hand. The tell is that the person saying it immediately proposes a specific follow-up — 'let's grab fifteen minutes Thursday after the standup' — not a vague 'we'll circle back.' This is the phrase functioning as designed: protect the meeting, schedule the real conversation. Say yes, get it on a calendar before the current meeting ends.",
+      body: "The most common version, and the reason the phrase exists. The topic raised really is off-agenda, or requires people who aren't in the room, or needs data nobody has on hand. The tell is that the person saying it immediately proposes a specific follow-up — 'let's grab fifteen minutes Thursday after the standup' — not a vague 'we'll circle back.' This is the phrase functioning as designed: protect the meeting, schedule the real conversation. Say yes, get it on a calendar before the current meeting ends. For a phrase you've never come across before, [What's That Mean?](/WhatsThatMean) says what kind of expression it is and what it means in plain language.",
     },
     {
       name: "Spot the wrong-audience version",

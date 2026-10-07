@@ -41,6 +41,9 @@ const TOOL_ALIASES = {
 // inline in its own tools/*.js file, so they're deliberately NOT in this set
 // — adding them here too would render the demo twice. Cohort 2 (added
 // 2026-09-23) uses the shared component instead, rendered once below.
+// Not part of the experiment: tools given a real example later, as page
+// content in its own right (2026-10-07, "Discovered – not indexed" pages).
+const EXAMPLE_OUTPUT_TOOLS = new Set(['WhatsThatMean', 'SomeoneSaidItBetter']);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 
 const ToolRenderer = ({ college }) => {
@@ -131,7 +134,7 @@ const ToolRenderer = ({ college }) => {
         <ToolErrorBoundary toolId={toolId}>
           <ToolComponent college={college} tool={toolData} />
         </ToolErrorBoundary>
-        {STATIC_CONTENT_COHORT_2.has(toolId) && <PublicProductDemo tool={toolData} />}
+        {(STATIC_CONTENT_COHORT_2.has(toolId) || EXAMPLE_OUTPUT_TOOLS.has(toolId)) && <PublicProductDemo tool={toolData} />}
       </Suspense>
       </div>
     </ToolPageWrapper>

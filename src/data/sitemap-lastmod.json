@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "0a7b071dd464e26842f5209ed03dc44d7dbc1b2c",
-  "lastmod": "2026-10-06"
+  "hash": "c5cec45850e0aa3212e5071b3df88a4545570f8b",
+  "lastmod": "2026-10-07"
  },
  "static:about": {
   "hash": "7ca0e871218e9659778c96b99198da24a7792246",
@@ -184,12 +184,12 @@
   "lastmod": "2026-09-08"
  },
  "tool:WhatsThatMean": {
-  "hash": "c37132ce13508676d0e9e0efac7dec14e7402fb0",
-  "lastmod": "2026-10-04"
+  "hash": "e0cbc5e14ae88f0df27346cfa7068b328720d7c6",
+  "lastmod": "2026-10-07"
  },
  "tool:SomeoneSaidItBetter": {
-  "hash": "0719ed7b105cf7b5292fd6784d1bacf11a3685d8",
-  "lastmod": "2026-10-04"
+  "hash": "b6201763ac509a152875e5d6db30176df7aa8204",
+  "lastmod": "2026-10-07"
  },
  "static:tools": {
   "hash": "2d5fa34e6838c5d76eb3dc1dd53bbb80e993fad1",
