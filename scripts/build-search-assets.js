@@ -83,7 +83,7 @@ function main() {
 
   const keep = loadKeepSet();
   const toolNames = Object.fromEntries(toolRows.map(t => [t.id, t.title]));
-  const hrefOf = g => keep.has(`${g.category}/${g.slug}`) ? `/guides/${g.category}/${g.slug}` : `/guides/${g.category}#${g.slug}`;
+  const hrefOf = g => `/guides/${g.category}/${g.slug}`;
 
   // A guide can live in two categories on purpose (~29 slugs, e.g. meetings/
   // and workplace/ — owner call 2026-09-26). Search lists it ONCE: the copy

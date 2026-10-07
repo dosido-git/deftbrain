@@ -69,12 +69,11 @@ function loadKeepSet() {
   return set;
 }
 
-// Same rule as build-guides-indexes.js hrefFor(): a consolidated guide lives
-// as an anchored section on its folder's hub, never at a URL that 301s.
-function hrefFor(spec, keepSet) {
-  return keepSet.has(`${spec.category}/${spec.slug}`)
-    ? `/guides/${spec.category}/${spec.slug}`
-    : `/guides/${spec.category}#${spec.slug}`;
+// Every guide links to its own page. Non-keep-list guides are live but
+// noindexed (the old 301 to a hub summary was retired 2026-07-31), so a
+// link labelled as a guide must land on the guide, not the hub.
+function hrefFor(spec) {
+  return `/guides/${spec.category}/${spec.slug}`;
 }
 
 /**
@@ -106,7 +105,7 @@ function buildGuideShelves(tools, categoriesFor) {
     ranked.sort((a, b) => a.rank - b.rank || (b.kept - a.kept) || strip(a.spec.title).localeCompare(strip(b.spec.title)));
     if (!ranked.length) continue;
     shelves[name] = {
-      guides: ranked.map(({ spec }) => ({ title: spec.title, href: hrefFor(spec, keepSet) })),
+      guides: ranked.map(({ spec }) => ({ title: spec.title, href: hrefFor(spec) })),
     };
   }
   return shelves;

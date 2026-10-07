@@ -166,13 +166,11 @@ const CATEGORY_META = {
 // in the same order, each with the same guide list its /tools/{slug} page
 // shows (scripts/lib/guideShelves.js). One set of categories everywhere.
 
-// Kept guides have their own standalone page; consolidated ones render as an
-// anchored section on their category hub (see renderCategoryPage) — same
-// rule both places, kept in one function so it can't drift between them.
-function hrefFor(spec, keepSet) {
-  return keepSet.has(`${spec.category}/${spec.slug}`)
-    ? `/guides/${spec.category}/${spec.slug}`
-    : `/guides/${spec.category}#${spec.slug}`;
+// Every guide links to its own page — non-keep-list ones are live but
+// noindexed, never redirected (see backend/server.js). Kept in one function
+// so the guides home and scripts/lib/guideShelves.js can't drift apart.
+function hrefFor(spec) {
+  return `/guides/${spec.category}/${spec.slug}`;
 }
 
 function escHtml(s) {
@@ -645,7 +643,7 @@ const GUIDES_BROWSE_STYLE = `
     .gh-by-tool-note a{color:var(--gh-blue);font-weight:700}
     .gh-page{--gl-ink:var(--gh-ink);--gl-link:var(--gh-blue);--gl-muted:var(--gh-muted);--gl-line:var(--gh-line)}${GUIDE_LIST_STYLE}`;
 
-function renderGuidesHome(specs, keepSet) {
+function renderGuidesHome(specs) {
   const categories = loadModuleData(path.join('src', 'data', 'categoryMeta.js'), 'CATEGORY_META');
   const tools = loadModuleData(path.join('src', 'data', 'tools.js'), 'tools');
   const shelves = buildGuideShelves(tools, categoriesFor);
@@ -669,7 +667,7 @@ ${guideListHtml(shelves[c.name].guides, '        ')}
       slug: spec.slug,
       title: spec.title,
       description: spec.description || '',
-      href: hrefFor(spec, keepSet),
+      href: hrefFor(spec),
     })));
 
   return renderHead({
@@ -928,7 +926,7 @@ function main() {
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 
   // Main index — editorial homepage (2026-09-22 redesign)
-  fs.writeFileSync(path.join(BUILD_DIR, 'index.html'), renderGuidesHome(specs, keepSet), 'utf8');
+  fs.writeFileSync(path.join(BUILD_DIR, 'index.html'), renderGuidesHome(specs), 'utf8');
   console.log(`  ✓ build/guides/index.html — guides homepage`);
 
   // By-tool view
