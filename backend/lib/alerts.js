@@ -377,7 +377,33 @@ function reportSurge(on, info = {}) {
   return { mailed: true, reason: 'off' };
 }
 
+// Quality audits have gone quiet (lib/auditWatch.js decides when). The
+// scheduled waves stalled silently from 2026-08-29 to 2026-10-07 — every run
+// sat on a permission prompt nobody was there to answer — and nothing said
+// so. This is that something. auditWatch only calls it inside one daily
+// window, so a run of redeploys can't turn it into a flood.
+function reportAuditStale({ latest, ageDays, threshold } = {}) {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { mailed: false, reason: 'no-key' };
+  send(key, `🧪 DeftBrain quality audits have stopped — last report ${ageDays} days ago`, [
+    `The newest quality-audit report in the repo is ${latest ? `audit/QUALITY-AUDIT-${latest}.md` : 'missing'} (${ageDays} days old; the limit is ${threshold}).`,
+    ``,
+    `The audit waves are scheduled tasks in the Claude desktop app (Mondays and Thursdays). A wave that`,
+    `finishes writes a dated report; none has landed in ${ageDays} days, so the runs are failing or not starting.`,
+    ``,
+    `Usual causes, most likely first:`,
+    `  1. A run is stuck "running", which blocks every later run. Open the task's Runs list and stop it.`,
+    `  2. A run is waiting for a permission approval. The tasks need to run in Auto mode, not Ask.`,
+    `  3. The app was closed at the scheduled time and hasn't been opened since.`,
+    ``,
+    `Live state: https://deftbrain.com/api/health/audits`,
+    `This email repeats daily while audits stay stale.`,
+  ].join('\n'));
+  return { mailed: true, reason: 'stale' };
+}
+
 module.exports = {
+  reportAuditStale,
   reportSurge,
   reportRenderCrash,
   reportToolError,

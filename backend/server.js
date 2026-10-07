@@ -667,6 +667,11 @@ app.use('/api', (req, res, next) => {
 const { busyMiddleware, surgeStatus } = require('./lib/surge');
 app.use('/api', busyMiddleware);
 app.get('/api/health/surge', (req, res) => res.json(surgeStatus()));
+// Quality-audit freshness (lib/auditWatch.js): the date of the newest
+// audit/QUALITY-AUDIT-*.md and whether it is older than the alert limit.
+const { auditStatus, startAuditWatch } = require('./lib/auditWatch');
+app.get('/api/health/audits', (req, res) => res.json(auditStatus()));
+startAuditWatch();
 
 // ── Mount all tool routes from /routes directory ──
 const routes = require('./routes');
