@@ -4,7 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext, cleanJsonResponse 
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { quoteResearch, quoteResearchState } = require('../lib/quoteResearch');
-const { NO_QUOTE_RULE } = require('../lib/factCheck');
+const { NO_QUOTE_RULE, checkAgainstSupplied } = require('../lib/factCheck');
+const { isSurging } = require('../lib/surge');
 
 router.outputStandard = 'v2';
 // validateResult() below IS the check this declares — it enforces every one
@@ -165,6 +166,10 @@ OTHER RULES:
 - Choose quotes that offer meaningfully different angles. Do not return three versions of the same lesson.
 - Keep each explanation to 1-2 sentences.
 - Do not invent historical context beyond the verified packet.
+
+WHERE A QUOTE CAME FROM IS A FACT, AND ONLY THE PACKET HAS IT
+
+Any statement about a quotation's origin — the scene, the occasion, who said it to whom, when, where, or what was happening at the time — must be stated in that quote's work, date or context_note in the packet. If the packet does not say it, do not say it, even if you believe you know the work well. Recalled plot and history are where these explanations go wrong (a line from a play's final act described as "spoken at a wedding" because the play also contains one). When the packet is silent, interpret the words themselves.
 - Return ONLY valid JSON.
 
 ${NO_QUOTE_RULE}`;
@@ -184,6 +189,28 @@ ${NO_QUOTE_RULE}`;
     const parsed = typeof raw === 'string' ? JSON.parse(cleanJsonResponse(raw)) : raw;
     const result = validateResult(parsed, research.packet);
     if (!result) return res.status(502).json({ error: 'The verified quotes could not be matched cleanly. Please try again.' });
+
+    // Second pass (2026-10-07): the rule above is not enough on its own. Two
+    // runs in a row placed Wilder's Act III line from Our Town "at a wedding"
+    // — the model's memory of the play, not the packet. The shared checker
+    // sees only the visitor's words and the verified record of each picked
+    // quote, so a recalled scene shows up as unsupported. Fail-open.
+    if (!isSurging()) {
+      try {
+        const record = result.picks.map((p, i) => `QUOTE ${i}: "${p.quote.text}" — ${p.quote.author}`
+          + `${p.quote.work ? `, ${p.quote.work}` : ''}${p.quote.date ? ` (${p.quote.date})` : ''}`
+          + `${p.quote.context_note ? `\n  Verified context: ${p.quote.context_note}` : '\n  Verified context: none recorded'}`).join('\n');
+        await checkAgainstSupplied(result, {
+          label: 'someone-said-it-better',
+          supplied: `THE VISITOR'S SITUATION:\n${situation}\n\nTHE VERIFIED RECORD OF EACH QUOTATION (nothing else about these quotations is established):\n${record}`,
+          fields: result.picks.map((p, i) => [`picks[${i}].why_this_one`, p.why_this_one]),
+          lookFor: `- any statement about where a quotation came from — the scene, occasion, speaker, listener, date, place, or what was happening — that its verified record does not state
+- any fact about the visitor's life, feelings, or history that their situation does not state`,
+          repairNote: 'Keep the interpretation of the quotation\'s words and its connection to the visitor. Remove only the unsupported origin or visitor detail.',
+          userLanguage: req.body.userLanguage,
+        });
+      } catch (e) { console.error('someone-said-it-better check:', e.message); }
+    }
     res.json({ ...result, researched_at: research.packet.researched_at });
   } catch (err) {
     console.error('someone-said-it-better:', err);
