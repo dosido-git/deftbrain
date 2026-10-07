@@ -195,6 +195,15 @@ function answerPin(spec, brain) {
   ] });
 }
 
+// The answer pin's points, as one line of text for its Pinterest description.
+function answerDescription(spec) {
+  const points = spec.answerTable && spec.answerTable.rows
+    ? spec.answerTable.rows.map(r => `${r[0]}: ${r[1]}`)
+    : ((spec.answerList && spec.answerList.length) ? spec.answerList : spec.steps.map(st => st.name)).slice(0, 5);
+  const line = points.map(t => String(t).replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[.\s]+$/, '')).join('. ');
+  return firstSentences(`The short answer: ${line}. Full guide at DeftBrain.`, 480);
+}
+
 function toolPin(t, brain) {
   const check = (txt) => el('div', { gap: '22px', alignItems: 'flex-start' }, [
     el('div', { width: '50px', height: '50px', flexShrink: 0, borderRadius: '999px', backgroundColor: C.blue, color: '#fff', fontSize: '28px', fontWeight: 500, alignItems: 'center', justifyContent: 'center' }, [
@@ -269,7 +278,13 @@ async function main() {
       const png = new Resvg(svg, { fitTo: { mode: 'width', value: 1000 } }).render().asPng();
       const name = `${spec.slug}-${variant}.png`;
       fs.writeFileSync(path.join(OUT_DIR, name), png);
-      rows.push([name, board, (spec.shortTitle || spec.title).slice(0, 100), description, link].map(csvCell).join(','));
+      // Pinterest's bulk import rejects two rows with the same title, so the
+      // answer pin gets its own title and a description of what it shows.
+      const head = spec.shortTitle || spec.title;
+      const title = variant === 'answer' ? `${head.replace(/\?$/, '')}: the short answer` : head;
+      const desc = variant === 'answer' ? answerDescription(spec) : description;
+      const pinLink = variant === 'answer' ? `${link}&utm_content=answer` : link;
+      rows.push([name, board, title.slice(0, 100), desc, pinLink].map(csvCell).join(','));
       made++;
     }
     console.log(`  ✓ ${spec.slug}`);
