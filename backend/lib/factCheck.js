@@ -230,6 +230,12 @@ function numericFields(obj, { max = 80 } = {}) {
  * @param opts.userLanguage
  * @returns number of changes applied
  */
+// Parallel passes for long lists (see checkNumbers): up to 8 items run as one
+// pass; longer lists split into passes of about CHUNK_SIZE, at most MAX_CHUNKS.
+const CHUNK_MIN = 8;
+const CHUNK_SIZE = 7;
+const MAX_CHUNKS = 4;
+
 async function checkNumbers(draft, opts) {
   if (process.env.FACT_CHECK === 'off') return 0;
   const { label, context = '', facts = false, removable = [], extraRules = '', userLanguage } = opts;
@@ -254,17 +260,47 @@ Read each item in light of its field name: a field can state something on purpos
 Do NOT touch style, tone, wording, or anything that is merely loose. If a statement is true, leave it alone even if you would phrase it differently.
 
 Work in two steps. First "checks": for every item that contains a calculation, a total, a conversion or a number that must agree with another item${facts ? ', and every factual claim' : ''}, record {"n": <item number>, "claim": "a few words", "work": "your own recomputation or reasoning, briefly — e.g. 10 x 1.1 = 11, 11 x 1.1 = 12.1, text says 11 percent: inconsistent", "ok": true|false}. Do the work; a check without it is a guess. Then "fixes": one per item that is not ok —
-  {"n": <item number>, "value": <the whole corrected item: same language, same length and voice, only the error changed; a [number] item gets a plain number>}${removable.length ? `
-  or {"n": <item number>, "remove": true} for an item in a list entry that is false and cannot be fixed in about its original length.` : ''}
+  {"n": <item number>, "path": "<that item's field path, copied exactly>", "value": <the whole corrected item: same language, same length and voice, only the error changed; a [number] item gets a plain number>}${removable.length ? `
+  or {"n": <item number>, "path": "<its field path>", "remove": true} for an item in a list entry that is false and cannot be fixed in about its original length.` : ''}
 Return ONLY valid JSON: {"checks": [...], "fixes": [...]}. No errors → "fixes": []. Do not invent problems, and do not wave a calculation through without recomputing it.
 ${NO_QUOTE_RULE}`;
 
-  const checked = await callClaudeWithRetry({
+  // Speed (2026-10-07): the check's time is its OUTPUT — one "checks" entry
+  // with worked arithmetic per item. AnalogyEngine's 23 items took ~25s on top
+  // of a ~37s answer, and visitors were reloading at 40-50s. So a long list is
+  // split into parallel chunks: every chunk still SEES every item (cross-item
+  // consistency needs the whole answer) but writes checks and fixes only for
+  // its own range. Item numbers stay global, so merging is a concat. A chunk
+  // that fails is lost on its own; the others still apply (fail-open).
+  const ranges = [];
+  const size = fields.length <= CHUNK_MIN ? fields.length : Math.ceil(fields.length / Math.min(MAX_CHUNKS, Math.ceil(fields.length / CHUNK_SIZE)));
+  for (let a = 0; a < fields.length; a += size) ranges.push([a, Math.min(fields.length, a + size) - 1]);
+  const ask = ([a, b]) => callClaudeWithRetry({
     model: MODELS.SMART,
     max_tokens: 4000,
     system: withLanguage(system, userLanguage),
-    messages: [{ role: 'user', content: `${context ? `WHAT THE VISITOR ASKED:\n${context}\n\n` : ''}ITEMS TO CHECK:\n${list}` }],
+    messages: [{ role: 'user', content: `${context ? `WHAT THE VISITOR ASKED:\n${context}\n\n` : ''}ITEMS TO CHECK:\n${list}`
+      + (ranges.length > 1 ? `\n\nThis pass covers items ${a} to ${b} ONLY. Read every item above for context and consistency, but write "checks" and "fixes" only for items ${a}-${b}; other passes cover the rest.` : '') }],
   }, { label: `${label}-numcheck`, maxRetries: 1 });
+  const parts = await Promise.allSettled(ranges.map(ask));
+  if (parts.every(p => p.status === 'rejected')) throw parts[0].reason;
+  // A split pass sometimes names the right item but the wrong number (seen:
+  // "3 hours is 160 minutes" fixed as the item before it). Each fix also
+  // copies the item's path; when that path is a real one and disagrees with
+  // n, the path wins. A translated or garbled path matches nothing and n
+  // stands, as before.
+  const pathIndex = new Map(fields.map(([p], i) => [p, i]));
+  const renumber = x => {
+    const byPath = typeof x?.path === 'string' ? pathIndex.get(x.path.trim()) : undefined;
+    return byPath !== undefined && byPath !== Number(x?.n) ? { ...x, n: byPath } : x;
+  };
+  const inRange = (r, x) => Number(x?.n) >= r[0] && Number(x?.n) <= r[1];
+  const checked = { checks: [], fixes: [] };
+  parts.forEach((p, i) => {
+    if (p.status !== 'fulfilled') { console.warn(`[${label}] number check: pass ${ranges[i].join('-')} failed: ${p.reason?.message}`); return; }
+    if (Array.isArray(p.value?.checks)) checked.checks.push(...p.value.checks.filter(x => inRange(ranges[i], x)));
+    if (Array.isArray(p.value?.fixes)) checked.fixes.push(...p.value.fixes.map(renumber).filter(x => inRange(ranges[i], x)));
+  });
 
   let applied = 0;
   const changed = [];
@@ -304,7 +340,7 @@ ${NO_QUOTE_RULE}`;
   }
 
   const bad = (Array.isArray(checked?.checks) ? checked.checks : []).filter(c => c && c.ok === false).length;
-  console.log(`[${label}] number check: ${fields.length} item(s), ${bad} flagged, ${applied} change(s) applied${changed.length ? ': ' + changed.join(', ') : ''}`);
+  console.log(`[${label}] number check: ${fields.length} item(s) in ${ranges.length} pass(es), ${bad} flagged, ${applied} change(s) applied${changed.length ? ': ' + changed.join(', ') : ''}`);
   return applied;
 }
 

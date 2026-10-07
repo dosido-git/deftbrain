@@ -145,27 +145,15 @@ ${picksBlock}
 
 ${taskBlock(1)}
 
-Also provide further_reading for the event and both chosen parallels.
-
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
 - Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
-- At most 2 further_reading entries.
 - Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
-
-FURTHER READING: each title must be ONE exact real book title (with its real author) — never blend two titles; omit an entry rather than approximate.
 
 Return ONLY valid JSON:
 {
-  "parallel": ${PARALLEL_SCHEMA},
-  "further_reading": [
-    {
-      "title": "Book or article title — 3-6 words",
-      "author": "Author name. Nothing else.",
-      "why": "Why this is the right thing to read next — one sentence"
-    }
-  ]
+  "parallel": ${PARALLEL_SCHEMA}
 }
-Your response MUST contain ALL 2 keys: parallel, further_reading.`, userLanguage);
+Your response MUST contain the key: parallel.`, userLanguage);
 
     const promptB = withLanguage(`CURRENT EVENT:
 "${event.trim()}"${contextNote}${motivationNote}
@@ -174,17 +162,42 @@ ${picksBlock}
 
 ${taskBlock(2)}
 
-Then synthesize: considering BOTH chosen parallels together, what do they collectively suggest?
-
-Then write the BIG IDEA — the single thing a reader should leave with, written before they have read any of the evidence and understandable without it. Name what the two parallels share, in one plain sentence, then state the lesson it carries. No jargon whatsoever in this block; it is the part most people will read and the only part some will. If a phrase in it needs the report below to make sense, it is the wrong phrase.
-
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
 - Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
 - Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
 
 Return ONLY valid JSON:
 {
-  "parallel": ${PARALLEL_SCHEMA},
+  "parallel": ${PARALLEL_SCHEMA}
+}
+Your response MUST contain the key: parallel.`, userLanguage);
+
+    // Third call (2026-10-07, speed): the synthesis, big idea and reading list
+    // used to ride along with parallel #2 / #1, which made those calls the
+    // long pole (~45s). Each of the three calls now writes about a third of
+    // the answer, so the slowest finishes sooner. It works from the selection
+    // step's two picks, the same summary of them the other calls see.
+    const promptC = withLanguage(`CURRENT EVENT:
+"${event.trim()}"${contextNote}${motivationNote}
+
+${picksBlock}
+
+Two other passes are writing the full analysis of each parallel. YOUR TASK is the part that spans both.
+
+Synthesize: considering BOTH chosen parallels together, what do they collectively suggest?
+
+Then write the BIG IDEA — the single thing a reader should leave with, written before they have read any of the evidence and understandable without it. Name what the two parallels share, in one plain sentence, then state the lesson it carries. No jargon whatsoever in this block; it is the part most people will read and the only part some will. If a phrase in it needs the report below to make sense, it is the wrong phrase.
+
+Also provide further_reading for the event and both chosen parallels.
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
+- At most 2 further_reading entries.
+- Respect every field's stated length (one sentence means one sentence). Be concise and never pad.
+
+FURTHER READING: each title must be ONE exact real book title (with its real author) — never blend two titles; omit an entry rather than approximate.
+
+Return ONLY valid JSON:
+{
   "big_idea": {
     "one_line": "What both historical situations have in common, in words a friend would use — one sentence, no jargon, no names or dates needed to follow it",
     "lesson": "What that pattern teaches, stated as something true about people or institutions rather than a forecast about this event — 2 sentences"
@@ -194,11 +207,18 @@ Return ONLY valid JSON:
     "consensus_prediction": "What the historical pattern would suggest happens next IF it holds. Say it as a conditional about the pattern, never as a claim about the future: 'where this went before was...', not 'this will...'. No dates, no numbers, no odds. — one sentence",
     "wildcard": "The condition under which these parallels stop applying — what would have to be true about today for the historical pattern to be the wrong guide. This is a test that could fail the comparison, NOT a speculation about what might happen next, and NOT a second prediction wearing a hedge. — one sentence",
     "confidence_note": "Honest assessment of how strong these parallels actually are, naming what they are reliable about and what they are not — one sentence"
-  }
+  },
+  "further_reading": [
+    {
+      "title": "Book or article title — 3-6 words",
+      "author": "Author name. Nothing else.",
+      "why": "Why this is the right thing to read next — one sentence"
+    }
+  ]
 }
-Your response MUST contain ALL 3 keys: parallel, big_idea, synthesis.`, userLanguage);
+Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, userLanguage);
 
-    const [a, b] = await Promise.all([
+    const [a, b, c] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 3600,
@@ -211,6 +231,12 @@ Your response MUST contain ALL 3 keys: parallel, big_idea, synthesis.`, userLang
         system: withLanguage(SYSTEM_CORE, userLanguage),
         messages: [{ role: 'user', content: promptB }],
       }, { label: 'history-today-p2' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2400,
+        system: withLanguage(SYSTEM_CORE, userLanguage),
+        messages: [{ role: 'user', content: promptC }],
+      }, { label: 'history-today-p3' }),
     ]);
 
     // Merge back into the ORIGINAL response shape — frontend unchanged.
@@ -218,9 +244,9 @@ Your response MUST contain ALL 3 keys: parallel, big_idea, synthesis.`, userLang
       event_summary: pick.event_summary,
       premise_check: pick.premise_check,
       parallels: [a.parallel, b.parallel].filter(Boolean),
-      big_idea: b.big_idea,
-      synthesis: b.synthesis,
-      further_reading: a.further_reading,
+      big_idea: c.big_idea,
+      synthesis: c.synthesis,
+      further_reading: c.further_reading,
     };
 
     if (!parsed.event_summary) {

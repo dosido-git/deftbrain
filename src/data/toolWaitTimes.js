@@ -4,6 +4,10 @@
 // shows no estimate. Keys are catalog ids (src/data/tools.js). Update a number
 // here when a tool's speed changes; the wait notice reads nothing else.
 //
+// Re-timed from Railway logs 2026-10-07 after visitors left mid-wait:
+// PlotHoleFinder (was 26; now 61-79s on a full scan), AnalogyEngine and
+// HistoryToday (untimed before; timed after that day's speed-ups).
+//
 // Name changes since timing: "SayWhat?" is WhatsThatMean, "CrisisPrioritizer"
 // is ChaosPilot, "RoomReader" is ReadTheRoom.
 export const TOOL_WAIT_SECONDS = {
@@ -38,7 +42,6 @@ export const TOOL_WAIT_SECONDS = {
   GriefGuide: 25,
   QuoteCheck: 25,
   LazyWorkoutAdapter: 26,
-  PlotHoleFinder: 26,
   ToastWriter: 26,
   CultureBriefing: 27,
   MagicMouth: 27,
@@ -57,6 +60,7 @@ export const TOOL_WAIT_SECONDS = {
   PetBehaviorDecoder: 39,
   DreamPatternSpotter: 40,
   HobbyMatch: 40,
+  HistoryToday: 40,
   HeartOfTheMatter: 41,
   ResearchDecoder: 42,
   ConceptCoach: 43,
@@ -70,8 +74,10 @@ export const TOOL_WAIT_SECONDS = {
   ContractDecoder: 50,
   BeforeHello: 53,
   UpsellShield: 53,
+  AnalogyEngine: 55,
   LeaseTrapDetector: 58,
   BreakMyPlan: 62,
+  PlotHoleFinder: 70,
   HecklerPrep: 77,
   FutureProof: 95,
   TicketTackler: 100,

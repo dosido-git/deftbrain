@@ -23,6 +23,11 @@ const SHOW_AFTER_MS = 5000;     // a quick answer never sees the note
 const QUICK_TOOL_S = 15;        // timed tools faster than this get no note
 const SUGGEST_TABS_S = 30;      // "you can switch tabs" from this estimate up
 const UNTIMED_TABS_AFTER_MS = 15000;
+// Railway logs (2026-10-07): visitors on 55-80s tools reloaded at 36-53s and
+// started over — each time the server was still working. From 20s on, the
+// note says so: reloading is the one thing that loses the answer.
+const NO_RELOAD_AFTER_MS = 20000;
+const BAR_MAX = 0.95;            // the bar never claims to be finished
 
 function estimateLine(t, secs) {
   if (secs >= 90) return t('wait_couple_minutes');
@@ -141,9 +146,20 @@ export default function WaitNotice() {
   const showTabs = timed ? estimate >= SUGGEST_TABS_S : elapsed >= UNTIMED_TABS_AFTER_MS;
   const recap = (wait.summary || []).slice(0, 2);
 
+  // How far along, against the usual time: a quiet sign that something is
+  // happening. Timed tools only — an untimed bar would be a guess.
+  const progress = timed ? Math.min(BAR_MAX, elapsed / (estimate * 1000)) : null;
+
   return shell(
     <>
       <p className="font-semibold">{first}</p>
+      {progress !== null && (
+        <div aria-hidden="true" className={`mt-2 h-1 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-[#e8edf3]'}`}>
+          <div className={`h-full rounded-full transition-[width] duration-1000 ease-linear ${isDark ? 'bg-zinc-300' : 'bg-[#142a43]'}`}
+            style={{ width: `${Math.round(progress * 100)}%` }} />
+        </div>
+      )}
+      {elapsed >= NO_RELOAD_AFTER_MS && <p className={`mt-1.5 text-[13px] ${muted}`}>{t('wait_no_reload')}</p>}
       {showTabs && <p className={`mt-0.5 text-[13px] ${muted}`}>{t('wait_switch_tabs')}</p>}
       {recap.length > 0 && (
         <div className={`mt-2 pt-2 border-t ${isDark ? 'border-zinc-700' : 'border-[#e8edf3]'}`}>
