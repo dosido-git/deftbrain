@@ -1543,6 +1543,60 @@ export const tools = [
   icon: "💡",
   categories: ['Conversations', 'Learning'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Analogy Engine gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the request below. Three of its five analogies are shown; nothing is reworded.",
+    sampleLabel: "The request",
+    sampleText: "Explain how vaccines work to my 8-year-old — loves dinosaurs, plays Minecraft, asks why constantly.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The Minecraft Mob Training Server",
+        tone: "green",
+        items: [
+          "Imagine you join a special Minecraft server where the creepers can't actually explode — they look exactly like real creepers, they move the same way, but they do zero damage. You fight hundreds of them, you learn their patterns, you get really good at taking them down. Then when you jump into survival mode and a real creeper shows up, you already know exactly what to do. A vaccine is that practice server — the germ it shows you is either weakened or just a tiny harmless piece of the real thing, so your body trains against it safely.",
+          "Where it breaks: In Minecraft your skills carry over instantly; in your body it takes a week or two after the vaccine for the immune system to finish building its defenses.",
+        ],
+      },
+      {
+        label: "The Dinosaur Wanted Poster",
+        tone: "green",
+        items: [
+          "Imagine the sheriff in a dinosaur town puts up wanted posters of a dangerous T. rex all around the city before the T. rex even arrives. Every guard studies the poster — the shape of the teeth, the tiny arms, the specific roar — so they can recognize it immediately. When the real T. rex finally shows up, the guards don't have to figure out what it is; they already know and can surround it in seconds. A vaccine is that wanted poster: it gives your immune system guards a good look at the germ so they're ready the moment the real one enters your body.",
+          "Where it breaks: A wanted poster is just paper — it doesn't make the guards stronger or give them weapons; the immune system analogy goes further because it actually teaches the body to produce real weapons called antibodies.",
+        ],
+      },
+      {
+        label: "The Fire Drill at School",
+        tone: "green",
+        items: [
+          "Your school does fire drills even though there's no actual fire. Everyone practices walking to the exit, teachers count heads, and you learn the exact route. If a real fire happened, nobody would be standing there confused — you'd already know the plan. A vaccine is a fire drill for your immune system: it runs through the whole emergency response using a harmless version of the germ, so if the real germ ever shows up, your body doesn't need to figure anything out — it just executes the plan it already practiced.",
+          "Where it breaks: A fire drill doesn't leave anything behind afterward; your immune system actually creates lasting memory cells that stick around for years, sometimes your whole life.",
+        ],
+      },
+      {
+        label: "The key idea",
+        tone: "blue",
+        text: "Your immune system can't learn without practice, and a vaccine gives it a safe fight to practice on — so it's already an expert when the real danger arrives.",
+      },
+      {
+        label: "Teaching tip",
+        tone: "purple",
+        text: "Let the child pick their favorite analogy and retell it back to you in their own words — the act of explaining it may help cement the concept more than just listening.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I explain something complicated to a child?",
+      a: "Start from something they already know well — a game, an animal, a routine — and map the idea onto it. Then say where the comparison stops working, so the analogy doesn't become a misconception." },
+    { q: "Why does it say where each analogy breaks?",
+      a: "Every analogy is wrong somewhere. Knowing the limit lets you use the comparison without teaching something false." },
+    { q: "Who can it explain things to?",
+      a: "Anyone you describe — a child, a parent, a non-technical boss, a new colleague — and their interests shape the analogies." },
+  ],
   description: "The right explanation doesn't begin with the subject. It begins with the listener. Tell DeftBrain what you're trying to explain and who you're explaining it to, and we'll translate it into their world.",
   guide: {
     tips: [
@@ -1713,6 +1767,55 @@ export const tools = [
   icon: "🧭 ",
   categories: ['Travel & Events'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Hobby Match gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the answers below. Three of its five matches are shown; nothing is reworded.",
+    sampleLabel: "The answers",
+    sampleText: "Personality: Sociable but exhausted. Likes finishing things. Hates anything that needs a group at a fixed time. Time: Twenty minutes after bedtime, most nights. Occasionally a whole Saturday morning if my partner takes the toddler. Budget: under 50. Physical: Fine, just permanently tired. Nothing that needs leaving the flat after 7pm. Tried before: Book club (could never finish the book in time). An online course I stopped opening. Knitting, which I liked but the needles live in a drawer now. Looking for: something relaxing, a creative outlet.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "✍️ Short-form poetry or flash fiction",
+        tone: "green",
+        items: [
+          "You like finishing things. No group deadlines.",
+          "Try it once: Pick a simple prompt from a free site. Write for ten minutes. Done.",
+        ],
+      },
+      {
+        label: "🧵 Embroidery or cross-stitch",
+        tone: "green",
+        items: [
+          "Similar to the knitting you liked, but individual sections feel complete as you go. You can pick it up for fifteen minutes or longer. No class times.",
+          "Try it once: Complete one small motif.",
+        ],
+      },
+      {
+        label: "🧩 Solo jigsaw puzzles",
+        tone: "green",
+        items: [
+          "Natural stopping points, no time pressure, no group required. You can return to it across multiple sessions without commitment.",
+          "Try it once: Pick up a 500-piece puzzle. Spend one evening on it.",
+        ],
+      },
+      {
+        label: "The pattern",
+        tone: "blue",
+        text: "Most can be worked on in fifteen to thirty minutes after bedtime, and each session produces something visibly complete or advances a visible project. None require a group or fixed schedule.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What hobby can I do in 20 minutes a night?",
+      a: "Pick something that stops cleanly and shows progress each session: short writing, embroidery or cross-stitch, a jigsaw, small watercolor sketches." },
+    { q: "Why do I keep quitting hobbies?",
+      a: "Often the hobby doesn't fit your real schedule or energy — a fixed group time, a book due by a date, a course with no finish line. Matching the hobby to the time you actually have matters more than willpower." },
+    { q: "Does Hobby Match use what I've tried before?",
+      a: "Yes. What you liked, what you dropped and why all shape the matches, and each one says which of your answers it was based on." },
+  ],
   description: "Looking for a hobby that actually fits your life? Tell Hobby Match what you enjoy, what you want more of, and the limits that matter. Get a short list of well-matched possibilities, why each might fit, what it takes to try, and an easy first step.",
   guide: {
     tips: [
@@ -2025,6 +2128,59 @@ export const tools = [
   icon: "🎪",
   categories: ['Relationships', 'Travel & Events'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Party Architect gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the gathering below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The gathering",
+    sampleText: "Housewarming, 9 guests, chill, 3 hours, budget 120. Who's coming: Three couples from my old job, my brother, and the neighbours from downstairs who I have spoken to twice. Nobody knows anybody outside their own pair. Space: One-bed flat. Living room seats five if two people take the floor. Kitchen is a corridor. No outdoor space. Constraints: Building has a noise rule after 10pm and thin floors. Nine people is already more than the room comfortably holds.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Things to plan for",
+        tone: "yellow",
+        items: [
+          "The described seating does not accommodate nine people at once. Decide before the night whether you are comfortable with a standing-and-moving gathering, or whether you want to bring in any additional seating you have access to — floor cushions, a desk chair, whatever is available.",
+          "The corridor kitchen limits how much can be prepared or retrieved during the gathering. Set out as much as possible before guests arrive and plan around refilling rather than preparing on the night.",
+          "The building has a noise rule and thin floors. Know what your start time means for when the rule applies, and reduce music volume with enough margin beforehand that you are not making a sudden adjustment mid-conversation.",
+        ],
+      },
+      {
+        label: "Food and drink",
+        tone: "green",
+        items: [
+          "Grazing food set out in the kitchen or on any available surface, with guests helping themselves. This avoids needing the host to serve in a corridor kitchen and means food is accessible without a shared serving moment.",
+          "One non-alcoholic option that is not water — a juice, a cordial, something with a little effort behind it — so guests who are not drinking have a real choice.",
+        ],
+      },
+      {
+        label: "Helping people connect",
+        tone: "blue",
+        items: [
+          "Host-led introduction at the door. When each person or pair arrives, introduce them briefly to whoever is already there by name and how you know them — nothing more unless you have a genuine point of connection to add.",
+          "The flat itself — what you have done with it, what you still want to do, what the building is like — is something every guest can respond to without prior knowledge of each other.",
+        ],
+      },
+      {
+        label: "Music",
+        tone: "purple",
+        items: [
+          "Arrival: Something unobtrusive at low volume — quiet enough that two people speaking normally at one end of the room can hear each other without raising their voices.",
+          "Winding down: Lower the volume noticeably before the noise rule takes effect — exact timing depends on your start time, but reduce it with enough margin that it is not a sudden change.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I host a party in a small apartment?",
+      a: "Set food and drinks out before anyone arrives so you aren't serving from a tiny kitchen, make floor seating look intentional, and plan for people standing and moving rather than sitting." },
+    { q: "How do I help guests who don't know each other mix?",
+      a: "Introduce each arrival to someone already there by name and how you know them. Give people something everyone can talk about — the new place, how you know each other — instead of an icebreaker game." },
+    { q: "Does Party Architect plan the menu?",
+      a: "It suggests a food format and what to spend on, but its focus is the flow of the event: arrival, when energy peaks, and how it ends." },
+  ],
   description: "Hosting a gathering and want it to not be boring? Describe the guest list, space, budget, and vibe, and PartyArchitect designs the full event flow: arrival experience, conversation catalysts, when to introduce activities, how to mix groups that don't know each other, and when to shift energy. Not a Pinterest board — an event strategy.",
   guide: {
     tips: [
@@ -6041,6 +6197,59 @@ tagline: "Work with the energy you have.",
   icon: "🛡️",
   categories: ['Work & Meetings'],
   headerColor: "#97b4d8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Meeting Hijack Stopper gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the meeting below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The meeting",
+    sampleText: "Goal: Agree how we split on-call between the two teams for next quarter. 45 minutes, 9 people, in person. Sam and Priya lead the two teams. Dana runs the platform group and will be affected. The two teams disagreed about this last quarter and it was never resolved. Worried about: interruptions, no decision, no next step.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Agenda (45 minutes)",
+        tone: "blue",
+        items: [
+          "5 min — Frame the problem and the goal for today",
+          "10 min — Lay out what each team needs from the split",
+          "20 min — Propose and test options",
+          "7 min — Name where there is agreement and where there is not",
+          "3 min — Close or hand off",
+        ],
+      },
+      {
+        label: "Watch for",
+        tone: "yellow",
+        items: [
+          "Two people start talking at the same time and one point risks getting lost before it is heard. Say: “Hold on, let us take those one at a time. [Name], you had the floor, go ahead and finish.”",
+          "The discussion keeps circling the same point and no new information is coming in, making it hard to move toward a choice. Say: “We have been on this point for a few minutes and I am not hearing new information. The specific question in front of us is this: [state it]. Can we answer that one directly?”",
+        ],
+      },
+      {
+        label: "Before the meeting",
+        tone: "green",
+        items: [
+          "Ask Sam and Priya separately whether there is a specific sticking point from last quarter you should know about going in, so you can frame the options block around it.",
+          "Ask Dana what information, if any, the platform group would need to have in the room for this discussion to be useful to them.",
+          "Find out, before the meeting, whether there is someone with authority to make the final call if the two teams cannot agree, so you are not discovering that gap live.",
+        ],
+      },
+      {
+        label: "Closing script",
+        tone: "purple",
+        text: "Here is what we are leaving with: [read the agreed split, or the open question and decision path]. If we landed on a split, the next step is [owner and action]. If we did not, the next step is [how it gets resolved and by whom]. Thank you all for staying with a hard conversation.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I stop one person from taking over a meeting?",
+      a: "Set the norm at the start (one voice at a time, whoever was cut off finishes first), keep a visible list of the options on the table, and redirect circling to one specific question." },
+    { q: "How do I make sure a meeting ends with a decision?",
+      a: "Decide before the meeting who makes the final call if the room can't agree, and before anyone leaves, read back what was agreed — or the exact open question and who will settle it." },
+    { q: "What does Meeting Hijack Stopper produce?",
+      a: "A timed agenda, what to say when things go off track, prep to do beforehand and a closing script." },
+  ],
   description: "Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.",
   guide: {
       tips: [
@@ -6544,6 +6753,52 @@ tagline: "Work with the energy you have.",
   icon: "🕵️",
   categories: ['Work & Meetings'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Justify My Meeting gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the meeting below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The meeting",
+    sampleText: "Weekly engineering all-hands. Standing 60-min meeting, 22 attendees. Agenda: \"Status updates from each team lead.\" No prep, no decisions — everyone reports out what they did last week. Recurring for 6 months. Context: I am one of the team leads. I speak for about 90 seconds and listen for the rest.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Verdict: Make it async",
+        tone: "yellow",
+        text: "Sixty minutes of synchronized listening is not a meeting — it is a podcast with worse production values.",
+      },
+      {
+        label: "What weakens the case",
+        tone: "blue",
+        items: [
+          "Status reporting as described is one-directional; a written summary can carry the same information without requiring 22 people to be free at the same time",
+          "No decisions means the meeting produces no output that required everyone present",
+        ],
+      },
+      {
+        label: "What would make it worth keeping",
+        tone: "green",
+        items: [
+          "Whether cross-team questions, escalations, or coordination actually happen during the updates — that would materially strengthen the case",
+          "If team leads surface blockers or dependencies during their updates and others respond in real time, that coordination could benefit from live exchange — back-and-forth on a dependency is faster than a thread when timing is tight",
+        ],
+      },
+      {
+        label: "A better format",
+        tone: "purple",
+        text: "Each team lead posts a short written update before end of day Monday — what shipped, what is blocked, what needs another team. Anyone who reads something requiring a conversation flags it and schedules a targeted sync with only the people needed. Team leads would actually read each other's updates; if that is not reliably true, async fails and a shorter, discussion-only meeting may be needed instead.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Should this meeting be an email?",
+      a: "If it only moves information one way — status updates, announcements — a written update usually works. Keep the meeting when people need back-and-forth: decisions, disagreements, blockers that need several people at once." },
+    { q: "How do I suggest cancelling a recurring meeting?",
+      a: "Propose a time-limited trial rather than a cancellation: replace it with a written update for four weeks and see whether anything important gets lost." },
+    { q: "What verdicts can it give?",
+      a: "Whether the meeting earns its time, needs fixing, or would work better async — with the reasons, what it doesn't know, and an agenda or message to send." },
+  ],
   description: "Have a meeting coming up? Paste the invite or describe what happens. Justify My Meeting looks at the goal of the meeting and whether having everyone there at the same time is the best use of everyone’s time. Then it tells you whether to keep it, shorten it, fix it, or replace it with something better.",
   guide: {
     tips: [

@@ -48,3 +48,10 @@ line "at a wedding" — fixed in 6b7bbc3b (origin rule + supplied-facts check).
 - **BreakMyPlan / FutureProof** — British spellings in an en-US run (utilisation, signalling, optimised, specialise, favourable); same class as Giftology. FutureProof also leaked an `INFERRED:` marker into `the_pattern`. Affected fields left out of the examples.
 - **BreakMyPlan** — still opens with a fictional post-mortem narrative ("The two clients did follow…"). Left out.
 - **ConceptCoach** — built-in example 3 is tagged stage `idea` but describes a live product with 40 paying teams, and says "3 teams lost … both cited". Fix the example data.
+
+## Batch 9 (2026-10-08)
+
+- **DateNight — NOT indexed.** Austin anniversary run marked every venue `venue_confirmed: true` but invented details: a burnt-ends "sold out by evening" tip, the Lady Bird Lake trail as "well-lit" for a 10:45 PM walk, Elephant Room "jazz Thu–Sat" (it runs nightly), and a "Restaurant Francois at The Driskill" backup that I couldn't find. Needs grounding for venue facts, and shouldn't send people onto an unlit trail at night.
+- **AnalogyEngine** — one "where it breaks" line says vaccines get updated because live weakened germs "change a tiny bit" (updates follow the circulating virus, e.g. flu). The misconception line says no vaccine can cause the disease "in a healthy person" (live vaccines can, rarely). Both left out.
+- **JustifyMyMeeting** — `time_footprint.occurrences_per_year` came back null for a meeting described as weekly, so the annual cost (~1,144 person-hours) never shows. Should be computed in code from "weekly/daily/monthly".
+- **MeetingHijackStopper** — the user picked "Disagree & commit", but `decision_plan` ignored it. Left out.

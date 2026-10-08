@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "00b1e9854e07ce56e7ab107100fe9f1720804d12",
+  "hash": "aeea4b3a0b4e626a5fc74472d1ac48c71a2b7cdd",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -413,6 +413,26 @@
  },
  "tool:ResearchDecoder": {
   "hash": "4867544e5bf4074b3f72af5db4cfa647633657e2",
+  "lastmod": "2026-10-08"
+ },
+ "tool:AnalogyEngine": {
+  "hash": "d34254547f2a29ad9eb9382a5e8af0b66d65eb2a",
+  "lastmod": "2026-10-08"
+ },
+ "tool:HobbyMatch": {
+  "hash": "87ca011b457c1958ae09e4d4ab71c7bb66c75e7b",
+  "lastmod": "2026-10-08"
+ },
+ "tool:PartyArchitect": {
+  "hash": "9b5c5ffb27225a28f69c2359da47329ed2c3e979",
+  "lastmod": "2026-10-08"
+ },
+ "tool:MeetingHijackStopper": {
+  "hash": "4db88ab36afb466db887c9b604650c74d682b9a1",
+  "lastmod": "2026-10-08"
+ },
+ "tool:JustifyMyMeeting": {
+  "hash": "62f451693751a29145a3bf56fc3f035ed129e70c",
   "lastmod": "2026-10-08"
  }
 }
