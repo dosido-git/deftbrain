@@ -80,8 +80,8 @@ export const TOOL_WAIT_SECONDS = {
   PlotHoleFinder: 70,
   HecklerPrep: 77,
   FutureProof: 95,
-  TicketTackler: 100,
   Giftology: 118,
   LeverageLogic: 120,
+  TicketTackler: 135,
   SignalVsNoise: 148,
 };

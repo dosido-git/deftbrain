@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext, extractSearchResults } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { runOutputGuard } = require('../lib/outputGuard');
+const { calendarFacts } = require('../lib/calendarFacts');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { stripCites, matchVerifiedSources } = require('../lib/groundedFacts');
 
@@ -96,6 +98,9 @@ EVIDENCE AND CLAIM DISCIPLINE
 - When deadlines conflict, use the earlier deadline as the safer action point unless citation-specific authoritative information resolves the conflict.
 - Use conditional language when the conclusion is conditional. Do not use words such as almost certainly, probably, likely, or unlikely to fill an evidentiary gap.
 
+RULE APPLICATION
+Before relying on any rule, exemption or defense, take each of its conditions in turn and test it against the established facts. It supports the user only if every condition is met by established facts. If a condition fails, the rule does not help — say so plainly rather than stretching it (an exemption for a car parked after the sweeper has passed does not cover a car that was already parked before the sweep). If a condition is unknown, the rule is unresolved, not supportive. Evidence that confirms the violation occurred (a photo or video showing the car parked during the restricted time) does not strengthen a case to contest.
+
 APPEAL PROVENANCE
 Include a factual claim in the appeal only if it is from the citation, a VERIFIED investigator finding, or explicitly attributed to the user. Never promote an inference, theory, or unverified explanation into fact.
 
@@ -147,6 +152,8 @@ router.post('/ticket-tackler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       imageBlocks.push({ type: 'text', text: 'The image above is the ticket/citation (THE CITATION category). Read every field on it (violation code, date, time, location, amount, deadline) and use those details.' });
     }
 
+    const yearHint = Number((String(ticketText || '').match(/\b\d{1,2}\/\d{1,2}\/(\d{4})\b/) || [])[1]) || new Date().getUTCFullYear();
+    const calendar = calendarFacts([ticketText, whatHappened, deadline], yearHint);
     const baseCasePrompt = `Review this ${typeLabel}.
 
 TICKET TYPE: ${typeLabel}
@@ -156,6 +163,7 @@ ${deadline ? `APPEAL DEADLINE (as entered by the user): ${String(deadline).slice
 ${ticketText?.trim() ? `\nTHE CITATION (pasted text):\n${ticketText.trim().slice(0, 6000)}` : ''}
 ${whatHappened?.trim() ? `\nTHE USER'S ACCOUNT (not independently verified):\n${whatHappened.trim().slice(0, 4000)}` : ''}
 ${imageBlocks.length ? '\nThe citation was also provided as a photo above (THE CITATION category).' : ''}
+${calendar.length ? `\nCALENDAR FACTS (computed in code — established; never ask the user to check these):\n- ${calendar.join('\n- ')}` : ''}
 `;
 
     const investigatorPrompt = `${baseCasePrompt}
@@ -205,6 +213,32 @@ RULES:
 
     const researchDossier = JSON.stringify(stripCites(investigation));
 
+    // Rule-application check (2026-10-07). The reviewer kept applying an
+    // exemption for a car "parked after the sweeper has passed" to a car parked
+    // the night before — a rule instruction alone didn't stop it. A separate
+    // pass tests each researched rule's conditions against the facts, one by
+    // one, and its verdict on each rule is binding on the reviewer. Fail-open:
+    // without it the reviewer runs exactly as before.
+    let ruleCheckBlock = '';
+    try {
+      const rc = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 1800,
+        system: withLanguage('You test whether rules apply to facts. You do not research, advise or persuade. For each rule, exemption or defense named in the research findings, list its conditions exactly as the finding states them, then test each condition against the citation and the user\'s account — paying close attention to the order of events in time. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
+        messages: [{ role: 'user', content: `${baseCasePrompt}
+
+RESEARCH FINDINGS:
+${researchDossier}
+
+Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|failed|unknown","why":"the fact that settles it, or what is missing — one sentence"}],"applies":"yes|no|unknown"}]}. "applies" is yes only if every condition is met, no if any condition failed, otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
+      }, { label: 'ticket-tackler-rulecheck', maxRetries: 1 });
+      const rules = Array.isArray(rc?.rules) ? rc.rules.filter(r => r && r.rule) : [];
+      if (rules.length) {
+        ruleCheckBlock = `\n\nRULE APPLICATION CHECK (done separately; BINDING): a rule marked applies: no cannot support contesting and must not appear as a basis in the assessment, what_may_matter or the appeal; a rule marked unknown is unresolved, not supportive.\n${rules.map(r => `- ${r.rule}: applies ${r.applies}${(r.conditions || []).filter(c => c.status !== 'met').map(c => ` | ${c.status}: ${c.condition} — ${c.why}`).join('')}`).join('\n')}`;
+        console.log(`[ticket-tackler] rule check: ${rules.map(r => `${r.rule}=${r.applies}`).join(', ')}`);
+      }
+    } catch (e) { console.warn('[ticket-tackler] rule check skipped:', e.message); }
+
     // The investigator names a source per VERIFIED finding (source_name/
     // source_url) directly in its own JSON — but that's the model's own
     // self-report, not independently confirmed; a plausible-looking URL can
@@ -232,7 +266,7 @@ RULES:
 
 INVESTIGATOR DOSSIER
 The research stage has already run. Use these findings; do not invent missing research or silently upgrade unresolved findings to facts.
-${researchDossier}
+${researchDossier}${ruleCheckBlock}
 
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
@@ -299,6 +333,34 @@ RULES:
       messages: [{ role: 'user', content }],
     }, { label: 'ticket-tackler' });
 
+    // v2 guard (PF-39a), after the reviewer and before the heartbeat stops —
+    // it can take a few seconds and the client is still waiting. The research
+    // and the rule check count as supplied facts: a VERIFIED finding is
+    // established, an inference built on top of it is not. Fail-open.
+    if (parsed && parsed.assessment) {
+      try {
+        const fields = [];
+        const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
+        add('assessment.reason', parsed.assessment.reason);
+        (parsed.what_may_matter || []).forEach((m, i) => { add(`what_may_matter[${i}].fact`, m?.fact); add(`what_may_matter[${i}].why_it_matters`, m?.why_it_matters); });
+        add('appeal_letter', parsed.appeal_letter);
+        add('before_appeal', parsed.before_appeal);
+        add('pay_or_contest.supports_contesting', parsed.pay_or_contest?.supports_contesting);
+        add('pay_or_contest.next_step', parsed.pay_or_contest?.next_step);
+        await runOutputGuard(parsed, {
+          label: 'ticket-tackler',
+          fields,
+          supplied: `${baseCasePrompt}\n\nRESEARCH FINDINGS (only VERIFIED ones are established):\n${researchDossier}${ruleCheckBlock}`,
+          promise: 'Read a parking or camera ticket against the facts and verified rules, say whether contesting is supported and why, name the one fact that would change that, and draft an appeal only when established facts support one.',
+          guard: router.outputGuard,
+          requiredNonEmpty: ['assessment.reason', 'pay_or_contest.next_step'],
+          userLanguage,
+        });
+      } catch (guardErr) {
+        console.log('[ticket-tackler] v2 guard skipped:', guardErr.message);
+      }
+    }
+
     clearInterval(keepAlive);
 
     if (!parsed.assessment) {
@@ -360,4 +422,20 @@ Your response MUST contain ALL 3 keys: answer, watch_out, next_step.`, userLangu
   }
 });
 
+// Reviewed under the v2 output standard 2026-10-07, when the rule-application
+// pass and calendar facts were added (lib/outputStandard.js, PF-39). The
+// prompt already led with the verdict, right-sized the response and refused
+// to promise outcomes; these are the failure modes the guard enforces.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'rule_exemption_or_defense_relied_on_although_the_facts_do_not_meet_one_of_its_conditions',
+    'researched_rule_fine_or_deadline_stated_as_fact_without_a_VERIFIED_finding',
+    'invented_review_process_remedy_agency_or_filing_step',
+    'calendar_fact_left_for_the_user_to_check_although_it_is_computed_above',
+    'evidence_that_confirms_the_violation_described_as_strengthening_the_case',
+    'outcome_or_probability_of_winning_predicted',
+  ],
+  require: ['fulfills_tool_promise', 'actionable_output'],
+};
 module.exports = router;
