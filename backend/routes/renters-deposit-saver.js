@@ -16,6 +16,10 @@ async function groundDepositLawFacts({ location }) {
   const block = await groundedFacts({
     cacheKey,
     label: 'renters-deposit-saver-facts',
+    // Wait for the first visitor from a place (2026-10-07): the rights lookup
+    // otherwise answers from memory, and memory still says California allows
+    // two months' deposit. Later visitors from the same place are warm.
+    coldWaitMs: 45000,
     userPrompt: `Verify with web_search the CURRENT security-deposit rules (as of today) for residential tenants in: ${location}.
 
 Cover ONLY: (1) maximum deposit amount, (2) return deadline after move-out, (3) itemization requirement, (4) interest on deposit, (5) penalties for landlord non-compliance. Skip any you cannot verify. Note the effective date of any rule that changed since 2023.
@@ -90,14 +94,18 @@ router.post('/renters-deposit-saver/rights', rateLimit(DEFAULT_LIMITS), async (r
     const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage)
                  + withLocaleContext(userLocale, userCurrency, userRegion);
 
+    // Grounded since 2026-10-07: this lookup used to answer from memory and
+    // led California with the pre-2024 two-month cap.
+    const { block: depositLawBlock } = await groundDepositLawFacts({ location });
     const prompt = `You are an expert tenant rights advocate. Summarize security deposit rights for a renter in ${location}.
+${depositLawBlock || '\nNo verified current-law block is available: for the deposit cap and the return deadline, say what the rule commonly is AND that it changes, and tell the renter to confirm the current figure locally. Never state a remembered cap as the current limit.'}
 
 STATUTE ACCURACY: ONLY cite a statute number or code section when you are confident it is accurate for ${location}. If you are not certain of the exact citation, describe the legal principle and label it (e.g., "commonly cited as ..." or "verify the exact statute locally") rather than inventing a precise-looking section number. A confident principle with no number beats a fabricated citation.
 
 Return ONLY valid JSON with exactly these keys:
 {
   "rights_summary": "2-3 sentence overview",
-  "key_rights": ["5-8 short bullets: max deposit, return deadline, itemization, interest, penalties"],
+  "key_rights": ["5-8 short bullets: max deposit, return deadline, itemization, interest, penalties — when the VERIFIED block covers a topic, state its rule and nothing older"],
   "caution": "one sentence — name statutes only if certain, otherwise say verify locally"
 }`;
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
+const { checkStatement } = require('../lib/statementMath');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
@@ -95,7 +96,7 @@ function parseBillFile(dataUrl) {
   return { type: kind, source: { type: 'base64', media_type: mediaType, data: base64Data } };
 }
 
-const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific — when a VERIFIED CURRENT FACTS block is present in the user message, those figures and programs were web-checked TODAY and OVERRIDE your training knowledge; use them verbatim. For anything not covered by the block, NEVER invent program names, URLs, or phone numbers for county/local programs; name only programs you are certain exist and serve that area, otherwise describe how to find them (e.g. the hospital's own financial-assistance office). Cite laws only when certain of the bill number; otherwise name the legal right generically. Always start shame-to-action with the smallest possible first step.
+const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific — when a VERIFIED CURRENT FACTS block is present in the user message, those figures and programs were web-checked TODAY and OVERRIDE your training knowledge; use them verbatim. For anything not covered by the block, NEVER invent program names, URLs, or phone numbers for county/local programs; name only programs you are certain exist and serve that area, otherwise describe how to find them (e.g. the hospital's own financial-assistance office). Cite laws only when certain of the bill number; otherwise name the legal right generically. Always start shame-to-action with the smallest possible first step. Never tell someone they qualify for assistance, never promise a discount size ("30 to 60 percent"), and never call a company or credit-bureau policy a law: eligibility depends on income and the provider's own policy, so say what to ask for and what it depends on.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.
 
@@ -212,6 +213,25 @@ Write every field with precision — no filler, no padding, no restating what wa
     const billBlock = hasBillImage ? parseBillFile(billImageBase64) : null;
     if (billBlock) imageBlocks.push(billBlock);
 
+    // The statement's own arithmetic, checked in code (lib/statementMath.js —
+    // the audit case was a bill asking $851 more than its own lines supported).
+    let statementFindings = [];
+    if (hasBillText || billBlock) {
+      try {
+        const st = await callClaudeWithRetry({
+          model: MODELS.FAST,
+          max_tokens: 1500,
+          system: withLanguage('You copy the numbers off a bill into JSON. You never do arithmetic and never invent a line: copy each amount exactly as printed. Return ONLY valid JSON.', userLanguage),
+          messages: [{ role: 'user', content: [
+            ...(billBlock ? [billBlock] : []),
+            { type: 'text', text: `${hasBillText ? `BILL TEXT:\n${pastedBill.substring(0, 4000)}\n\n` : ''}Return {"line_items":[{"date":"","code":"","desc":"","amount":number}],"stated_total_charges":number|null,"credits":[{"desc":"adjustments, insurance payments, patient payments, discounts — as printed","amount":number}],"stated_amount_due":number|null}. Charges only in line_items; every reduction in credits.` },
+          ] }],
+        }, { label: 'bill-rescue-statement', maxRetries: 1 });
+        statementFindings = checkStatement(st, v => `${sym}${Number(v).toFixed(2)}`);
+        console.log(`[bill-rescue] statement check: ${statementFindings.length} finding(s)`);
+      } catch (e) { console.warn('[bill-rescue] statement check skipped:', e.message); }
+    }
+
     const situationBlock = `BILL SITUATION:
 Type: ${billType}
 ${hasAmount ? `Amount: ${sym}${amount}` : 'Amount: Not specified'}
@@ -220,7 +240,8 @@ What's making this hard: ${reasonText || 'NOT PROVIDED'}
 ${hasAfford ? `Can afford monthly: ${sym}${canAffordMonthly}` : 'Monthly budget: Not specified'}
 ${details ? `Additional context: ${details}` : ''}
 ${hasBillText ? `\nPASTED BILL TEXT (analyze for overcharges):\n${pastedBill.substring(0, 2000)}` : ''}
-${billBlock ? '\nTHE BILL ITSELF IS ATTACHED ABOVE. Read it and analyse it for overcharges, duplicates and waivable fees.' : ''}`;
+${billBlock ? '\nTHE BILL ITSELF IS ATTACHED ABOVE. Read it and analyse it for overcharges, duplicates and waivable fees.' : ''}
+${statementFindings.length ? `\nSTATEMENT ARITHMETIC — checked in code, exact (report every one of these in bill_autopsy, in the visitor's language, and treat the amount due as unverified until it is explained):\n- ${statementFindings.join('\n- ')}` : ''}`;
 
     const keysA = [
       'verdict', 'recommendation', 'todays_job', 'shame_to_action',

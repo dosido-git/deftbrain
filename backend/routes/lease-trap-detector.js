@@ -27,16 +27,24 @@ function handleAiError(res, error, longDocMessage) {
 // TTL cache; see lib/groundedFacts.js for the pattern rationale. Best-effort:
 // returns '' on any failure and the main prompt's hedge rule takes over.
 async function groundTenantLawFacts({ location }) {
-  const cacheKey = `tenant-law:${normalizeKeyPart(location)}`;
+  // v2 (2026-10-07): added upfront_fees — the audit's Boston lease charged
+  // move-in, application and pet fees that Massachusetts bans outright, and the
+  // report called them "depends on jurisdiction" because nothing verified them.
+  const cacheKey = `tenant-law:v2:${normalizeKeyPart(location)}`;
   const block = await groundedFacts({
     cacheKey,
     label: 'lease-trap-detector-facts',
+    // Wait for the first visitor from a jurisdiction (2026-10-07). Without
+    // it, the cold run answered from memory and called a fee Massachusetts
+    // bans "legal" — the warm run, with verified law, got it right. A legal
+    // report is worth ~25s more once per jurisdiction; later visitors are warm.
+    coldWaitMs: 45000,
     userPrompt: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
 
-Cover ONLY: (1) security deposit maximum, (2) deposit return deadline, (3) late fee limits, (4) landlord entry notice requirement, (5) repair-and-deduct rights waivability. Skip any you cannot verify.
+Cover ONLY: (1) security deposit maximum, (2) deposit return deadline, (3) late fee limits, including how many days late rent must be before any fee may be charged, (4) landlord entry notice requirement, (5) repair-and-deduct rights waivability, (6) which charges a landlord may require at or before move-in (application, move-in, pet, key or lock fees, last month's rent) and which are prohibited. Skip any you cannot verify.
 
 Return ONLY valid JSON:
-{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official legislature/court/regulator/government domain when the search found one." }] }`,
+{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights | upfront_fees", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official legislature/court/regulator/government domain when the search found one." }] }`,
     // `searchResults` is every page web_search actually retrieved (real URLs
     // — see claude.js's extractSearchResults), typically two dozen+ across 5
     // topic searches, most of it SEO/blog content the model never relied on.
@@ -133,7 +141,9 @@ The reader has to live with this landlord, often for years, and may have to rais
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
 - top_fixes: EXACTLY 3, ordered most consequential first. These are the three things a reader would act on if they did nothing else, so prefer changes that are concrete, negotiable and worth real money over ones that are merely unusual.
-- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags 1-2 (even in a trap-heavy lease, name at least one genuinely standard/fair clause if any exists), unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 3, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
+- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags 1-2 (even in a trap-heavy lease, name at least one genuinely standard/fair clause if any exists), unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 6, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
+- FEES ARE NEVER CROWDED OUT: every fee or charge the lease requires beyond rent and the security deposit (application, move-in, pet, key/lock, amenity, cleaning, late fees) goes in unusual_fees — up to 6 — whether or not it also made red_flags. Its is_legal is "yes" or "no" whenever the VERIFIED CURRENT TENANT LAW block covers that kind of fee; "depends on jurisdiction" only when the block does not. A fee that appears prohibited is also named in financial_red_flags.
+- When choosing the 4 red_flags, a clause that appears to break the law here outranks one that is merely unfavorable.
 - Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
 LEGAL RESEARCH REQUIREMENTS:

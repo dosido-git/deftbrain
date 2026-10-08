@@ -3,6 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
+const { computeSplit, apportion } = require('../lib/splitMath');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts, exact words to say, and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
@@ -481,19 +482,56 @@ router.post('/money-diplomat-split', rateLimit(DEFAULT_LIMITS), async (req, res)
       return res.status(400).json({ error: 'Describe the bill situation.' });
     }
 
+    // ── Step 1: read the bill into a ledger (no arithmetic) ──
+    // The sums are done in code (lib/splitMath.js) — see the note there for
+    // the audit that forced it. If this step fails or the bill has no
+    // itemisable amounts, the route falls back to the old single call.
+    let ledger = null;
+    try {
+      ledger = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 1500,
+        system: 'You read a restaurant or shared bill into structured data. You never do arithmetic: copy each amount exactly as stated, and never invent an item, a person or an amount. Return ONLY valid JSON. ' + NO_QUOTE_RULE,
+        messages: [{ role: 'user', content: `SITUATION: ${situation.trim().slice(0, 4000)}
+PEOPLE: ${people?.trim() || 'not listed separately'}
+TOTAL BILL: ${totalBill || 'not given separately'}
+
+Return:
+{
+  "people": [{ "name": "short name exactly as the visitor refers to them ('Me' for the visitor)", "covered": true only if the group is paying for this person (e.g. the birthday person), else false }],
+  "items": [{ "desc": "item", "amount": number (the price of this line as stated; for '2 x $16' write 32), "shared_by": "all" when everyone shared it, else an array of the names who had it }],
+  "stated_subtotal": number or null (the pre-tax, pre-tip food-and-drink total the visitor states),
+  "tax": number or null,
+  "tip_pct_stated": number or null (only if the visitor already chose a tip percentage)
+}
+List every item with a stated price. An item shared by everyone except someone: list the names who shared it.` }],
+      }, { label: 'MoneyDiplomatSplit-ledger', maxRetries: 1 });
+    } catch (e) { console.warn('[MoneyDiplomatSplit] ledger step failed:', e.message); }
+    const pre = ledger ? computeSplit(ledger, ledger.tip_pct_stated || 0) : null;
+
+    const money = v => { try { return new Intl.NumberFormat(userLocale || 'en-US', { style: 'currency', currency: userCurrency || 'USD' }).format(v); } catch { return String(v); } };
+    const figuresBlock = pre ? `
+COMPUTED FIGURES (exact — computed in code; use these and never recompute or restate them differently):
+- Items listed add up to ${money(pre.item_total)}; stated subtotal ${money(pre.subtotal)}${Math.abs(pre.unassigned) >= 0.01 ? ` — ${money(Math.abs(pre.unassigned))} ${pre.unassigned > 0 ? 'of the subtotal is not accounted for by any listed item' : 'MORE in items than the stated subtotal'}. Say this plainly in the_awkward_part: it should be resolved before anyone pays.` : ' (they match).'}
+- Tax: ${money(pre.tax)}. Paying: ${pre.payers.join(', ')}${pre.covered.length ? `; covered by the group: ${pre.covered.join(', ')}` : ''}.
+- What each person consumed (own items plus an equal share of what they shared): ${Object.entries(pre.consumed).map(([n, v]) => `${n} ${money(v)}`).join('; ')}.
+The per-person amounts in each option are filled in by code after you choose the tip, so write each breakdown "amount" as an empty string unless the option's rule is "custom".` : '';
+
     const prompt = withLanguage(`Figure out the fairest way to split this bill, accounting for the social dynamics. This isn't just math — it's diplomacy.
 
 SITUATION: "${situation.trim()}"
 PEOPLE INVOLVED: ${people?.trim() || 'Not specified'}
 TOTAL BILL: ${totalBill || 'Not specified'}
+${figuresBlock}
 
 Return ONLY valid JSON:
 {
   "options": [
     {
       "method": "Equal Split|Proportional|Social Split|Custom",
+      "rule": "equal (everyone paying splits the grand total evenly) | itemised (each pays for what they had, the covered person's share is spread evenly, tax and tip in proportion) | custom (any other allocation — then fill every amount yourself)",
       "breakdown": [
-        { "person": "Person description — one sentence", "amount": "this person's share as a compact figure in the user's currency (e.g. £25) — no sentence", "reasoning": "Why this amount — one sentence" }
+        { "person": "the person's short name", "amount": "this person's share as a compact figure in the user's currency (e.g. £25) — no sentence", "reasoning": "Why this amount — one sentence" }
       ],
       "total_with_tip": "XXX.XX — one sentence",
       "fairness_score": 85,
@@ -510,7 +548,8 @@ Return ONLY valid JSON:
     "note": "How to handle tip in the split — per person or on total — one sentence"
   },
   "next_time": "How to prevent this situation in the future — one practical tip — one sentence"
-}`, userLanguage);
+}
+Write "rule" as the exact English word equal, itemised or custom whatever language the rest is in.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -522,7 +561,42 @@ Return ONLY valid JSON:
     if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-split', context: visitorContext(req.body), userLanguage });
+
+    // ── Step 3: code owns every amount ──
+    const tipPct = Number(ledger?.tip_pct_stated) || Number(parsed.tip_recommendation?.percentage) || 0;
+    const fig = ledger ? computeSplit(ledger, tipPct) : null;
+    if (fig) {
+      for (const opt of parsed.options) {
+        const rule = String(opt.rule || '').toLowerCase();
+        const why = new Map((opt.breakdown || []).map(b => [String(b.person || '').trim().toLowerCase(), b.reasoning || '']));
+        if (rule === 'equal' || rule === 'itemised' || rule === 'itemized') {
+          const table = rule === 'equal' ? fig.equal : fig.itemised;
+          opt.breakdown = fig.payers.map(n => ({ person: n, amount: money(table[n]), reasoning: why.get(n.toLowerCase()) || '' }));
+        } else if (Array.isArray(opt.breakdown) && opt.breakdown.length) {
+          // custom: keep the model's proportions, make them add up to the real total
+          const raw = opt.breakdown.map(b => Math.max(0, Number(String(b.amount).replace(/[^\d.-]/g, '')) || 0));
+          const scaled = apportion(Math.round(fig.grand_total * 100), raw.some(x => x > 0) ? raw : raw.map(() => 1));
+          opt.breakdown = opt.breakdown.map((b, i) => ({ ...b, amount: money(scaled[i] / 100) }));
+        }
+        opt.total_with_tip = money(fig.grand_total);
+        delete opt.rule;
+      }
+      if (parsed.tip_recommendation) {
+        parsed.tip_recommendation.percentage = fig.tip_pct;
+        parsed.tip_recommendation.total_tip = money(fig.tip);
+      }
+    }
+    await withNumberCheck(parsed, {
+      label: 'money-diplomat-split',
+      context: visitorContext(req.body) + (fig ? `\n\nCOMPUTED IN CODE (correct — take as given): grand total ${money(fig.grand_total)} = subtotal ${money(fig.subtotal)} + tax ${money(fig.tax)} + tip ${money(fig.tip)} (${fig.tip_pct}%); items listed ${money(fig.item_total)}; unaccounted ${money(fig.unassigned)}; equal share ${money(Object.values(fig.equal)[0])}; itemised: ${Object.entries(fig.itemised).map(([n, v]) => `${n} ${money(v)}`).join(', ')}.` : ''),
+      // Amounts are code-owned when the ledger worked; check only the prose around them.
+      fields: fig ? [
+        ['the_awkward_part', parsed.the_awkward_part], ['recommended', parsed.recommended],
+        ['how_to_bring_it_up', parsed.how_to_bring_it_up], ['tip_recommendation.note', parsed.tip_recommendation?.note],
+        ...parsed.options.flatMap((o, i) => [[`options[${i}].best_for`, o.best_for], ...(o.breakdown || []).map((b, j) => [`options[${i}].breakdown[${j}].reasoning`, b.reasoning])]),
+      ].filter(([, v]) => typeof v === 'string' && /\d/.test(v)) : undefined,
+      userLanguage,
+    });
     res.json(validateResult(parsed));
 
   } catch (error) {

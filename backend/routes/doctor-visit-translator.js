@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { checkAgainstSupplied, withNumberCheck } = require('../lib/factCheck');
+const { isSurging } = require('../lib/surge');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // Defense-in-depth strip of the model-generated diagram markup. The frontend
@@ -286,6 +288,38 @@ Return ONLY the JSON object.`;
     if (!results.plain_english_summary) {
       return res.status(500).json({ error: 'Could not translate your medical information. Please try again.' });
     }
+
+    // Checks (2026-10-07) — this tool had none. A medical explanation that
+    // invents a dose, a test value or an instruction the notes never gave is
+    // the worst error the catalog can make. Both checks are the shared,
+    // proven ones (lib/factCheck.js) and both fail open.
+    //   1. Supplied facts: anything patient-specific must come from the notes.
+    //      Text notes only — a PDF's text isn't available to the checker.
+    //   2. Number check: doses, values and dates must agree everywhere.
+    const notes = (doctorNotes || '').trim();
+    if (notes && !isSurging()) {
+      try {
+        const fields = [];
+        const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
+        Object.entries(results.plain_english_summary || {}).forEach(([k, v]) => add(`plain_english_summary.${k}`, v));
+        (results.action_checklist || []).forEach((a, i) => { add(`action_checklist[${i}].action`, a?.action); add(`action_checklist[${i}].how`, a?.how); add(`action_checklist[${i}].when`, a?.when); });
+        (results.medications || []).forEach((m, i) => { add(`medications[${i}].name`, m?.name); add(`medications[${i}].how_to_take`, m?.how_to_take); });
+        (results.test_results_explained || []).forEach((t, i) => { add(`test_results_explained[${i}].your_result`, t?.your_result); add(`test_results_explained[${i}].trend`, t?.trend); });
+        const fu = results.follow_up_requirements || {};
+        add('follow_up_requirements.next_appointment', fu.next_appointment);
+        await checkAgainstSupplied(results, {
+          label: 'doctor-visit-translator',
+          supplied: `THE DOCTOR'S NOTES / DOCUMENT:\n${notes.slice(0, 6000)}${concerns ? `\n\nPATIENT'S CONCERNS: ${concerns}` : ''}${currentMedications ? `\n\nMEDICATIONS THE PATIENT LISTED: ${currentMedications}` : ''}`,
+          fields,
+          lookFor: `- a dose, frequency, timing, test value, date, diagnosis or instruction about THIS patient that the notes do not state, or state differently
+- a medication the notes do not mention presented as part of this patient's plan
+General medical explanation — what a test measures, what a drug class does, typical side effects, common target ranges — is NOT a violation.`,
+          repairNote: 'Keep the plain-language explanation. Remove or correct only the patient-specific detail the notes do not support; if the notes are unclear, say to confirm it with the doctor or pharmacist.',
+          userLanguage,
+        });
+      } catch (e) { console.error('doctor-visit-translator supplied-facts check:', e.message); }
+    }
+    await withNumberCheck(results, { label: 'doctor-visit-translator', context: notes.slice(0, 4000), userLanguage });
     res.json(results);
 
   } catch (error) {

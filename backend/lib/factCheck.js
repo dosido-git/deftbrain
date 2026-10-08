@@ -347,11 +347,14 @@ ${NO_QUOTE_RULE}`;
 // What the visitor typed, as checker context: the scalar text/number fields of
 // the request body, minus locale plumbing and uploads (base64 is noise).
 const NOT_CONTEXT = /^(userLanguage|userLocale|userCurrency|userRegion|.*(image|file|photo|base64|data)$)/i;
-function visitorContext(body, max = 2000) {
+// Per-field cap was 600 chars until 2026-10-07: the audit found a bill
+// split's line items cut off before the checker saw them, so it couldn't tell
+// the arithmetic was wrong. A visitor's own description is the evidence.
+function visitorContext(body, max = 5000) {
   const lines = [];
   for (const [k, v] of Object.entries(body || {})) {
     if (NOT_CONTEXT.test(k)) continue;
-    if ((typeof v === 'string' && v.trim()) || typeof v === 'number') lines.push(`${k}: ${String(v).slice(0, 600)}`);
+    if ((typeof v === 'string' && v.trim()) || typeof v === 'number') lines.push(`${k}: ${String(v).slice(0, 3000)}`);
   }
   return lines.join('\n').slice(0, max);
 }
