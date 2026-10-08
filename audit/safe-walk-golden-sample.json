@@ -77,7 +77,11 @@
           }
         ],
         "bottom_line": "Take the main road — you already identified it as better lit, which directly addresses your lighting concern. Have your torch ready before the first dim block."
-      }
+      },
+      "optionalSections": [
+        "verified_local_info"
+      ],
+      "_optional_note": "2026-10-08: the recorded local fact (a PBOT project ending 2026-09-10) has expired; an empty verified_local_info is correct when search finds nothing current."
     },
     {
       "name": "short-daytime-no-concerns",

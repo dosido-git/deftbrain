@@ -19,11 +19,61 @@
 // nobody promised would be running — but it never reports success it did not
 // observe, which is the failure this gate exists to prevent.
 
+// PASSES ARE REMEMBERED (2026-10-08). The gate used to rerun every changed
+// tool on every push attempt. A push stopped by an unrelated gate, or by one
+// flaky case in one tool, then reran tools whose code had not changed since
+// they passed — one retry on 2026-10-08 spent ~$5 rerunning 8 tools to
+// re-check 1. Now each passing CASE is recorded with a fingerprint of
+// everything the result depends on: the route file, its golden sample, every
+// shared file in backend/lib/ and server.js. On the next push, cases that
+// passed against the same fingerprint are skipped and only the rest run;
+// change any of those files and the tool runs in full. The record lives in
+// .git/ (local, untracked). GOLDEN_FORCE=1 ignores it.
+//
+// SPEND CAP. Each case is one or more live model calls (~$0.15 on average in
+// October 2026). If a push would run more than GOLDEN_MAX_CASES (default 12),
+// the gate stops before spending anything and says how many and roughly what
+// they cost; rerun with a higher GOLDEN_MAX_CASES to proceed.
+
 'use strict';
 
 const { execFileSync, spawnSync } = require('child_process');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+
+const PASS_FILE = path.join(__dirname, '..', '.git', 'golden-pass.json');
+function fingerprint(slug) {
+  const root = path.join(__dirname, '..');
+  const lib = path.join(root, 'backend', 'lib');
+  const files = [
+    path.join(root, 'backend', 'routes', `${slug}.js`),
+    path.join(root, 'audit', `${slug}-golden-sample.json`),
+    path.join(root, 'backend', 'server.js'),
+    ...fs.readdirSync(lib).filter(f => f.endsWith('.js')).sort().map(f => path.join(lib, f)),
+  ];
+  const h = crypto.createHash('sha256');
+  for (const f of files) { h.update(f); h.update(fs.existsSync(f) ? fs.readFileSync(f) : ''); }
+  return h.digest('hex');
+}
+function readPasses() { try { return JSON.parse(fs.readFileSync(PASS_FILE, 'utf8')); } catch { return {}; } }
+function writePass(slug, fp, cases) {
+  const all = readPasses();
+  const prev = all[slug]?.fp === fp ? all[slug].cases || [] : [];
+  all[slug] = { fp, cases: [...new Set([...prev, ...cases])], at: new Date().toISOString() };
+  try { fs.writeFileSync(PASS_FILE, JSON.stringify(all, null, 1)); } catch (_) { /* a lost record only costs a rerun */ }
+}
+function caseNames(slug) {
+  try {
+    const g = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'audit', `${slug}-golden-sample.json`), 'utf8'));
+    // Same two shapes check-golden's loadCases accepts.
+    if (Array.isArray(g.cases) && g.cases.length) return g.cases.map(x => x && x.name).filter(Boolean);
+    if (g.input && g.output) return [slug];
+    return [];
+  } catch { return []; }
+}
+const COST_PER_CASE = 0.15;
+const MAX_CASES = Number(process.env.GOLDEN_MAX_CASES || 12);
 
 const ROOT = path.join(__dirname, '..');
 const BASE = process.env.GOLDEN_BASE_URL || 'http://localhost:3001';
@@ -66,10 +116,33 @@ async function backendUp() {
   }
 
   let failed = 0;
-  for (const slug of slugs) {
-    console.log(`golden-for-push: ${slug}`);
-    const r = spawnSync('node', [path.join(__dirname, 'check-golden.js'), slug],
-      { cwd: ROOT, encoding: 'utf8', stdio: 'inherit' });
+  const passes = process.env.GOLDEN_FORCE === '1' ? {} : readPasses();
+  const plan = slugs.map(slug => {
+    const fp = fingerprint(slug);
+    const done = passes[slug]?.fp === fp ? new Set(passes[slug].cases || []) : new Set();
+    const names = caseNames(slug);
+    const todo = names.length ? names.filter(n => !done.has(n)) : null; // null: unknown shape, run it all
+    return { slug, fp, done, todo };
+  });
+  const toRun = plan.reduce((n, p) => n + (p.todo === null ? 3 : p.todo.length), 0);
+  if (toRun > MAX_CASES) {
+    console.log(`✖ golden-for-push: this push would rerun ${toRun} case(s), about $${(toRun * COST_PER_CASE).toFixed(2)} of API calls — over the cap of ${MAX_CASES}.`);
+    plan.forEach(p => console.log(`   ${p.slug}: ${p.todo === null ? 'all' : p.todo.length} to run${p.done.size ? `, ${p.done.size} already passed on this code` : ''}`));
+    console.log(`   To proceed: GOLDEN_MAX_CASES=${toRun} git push`);
+    process.exit(1);
+  }
+  for (const p of plan) {
+    if (p.todo && !p.todo.length) {
+      console.log(`golden-for-push: ${p.slug} — every case passed on this code already, skipped`);
+      continue;
+    }
+    console.log(`golden-for-push: ${p.slug}`);
+    const report = path.join(require('os').tmpdir(), `golden-${p.slug}-${process.pid}.json`);
+    const r = spawnSync('node', [path.join(__dirname, 'check-golden.js'), p.slug], {
+      cwd: ROOT, encoding: 'utf8', stdio: 'inherit',
+      env: { ...process.env, GOLDEN_SKIP_CASES: [...p.done].join(','), GOLDEN_REPORT_FILE: report },
+    });
+    try { writePass(p.slug, p.fp, JSON.parse(fs.readFileSync(report, 'utf8')).passed || []); fs.unlinkSync(report); } catch (_) { /* no report, nothing recorded */ }
     if (r.status !== 0) failed++;
   }
   process.exit(failed ? 1 : 0);

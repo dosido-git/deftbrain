@@ -147,8 +147,14 @@ async function runTool(tool) {
   if (!cases) { console.log(`  ! ${tool}: ${path.basename(file)} has no usable cases`); return { ok: false, total: 0, passed: 0, setupError: true }; }
 
   console.log(`${tool} — ${cases.length} case(s):`);
+  // GOLDEN_SKIP_CASES: case names that already passed against this exact code
+  // (golden-for-push decides that). They count as passed and cost nothing.
+  // GOLDEN_REPORT_FILE: where to write the names of the cases that passed.
+  const skip = new Set(String(process.env.GOLDEN_SKIP_CASES || '').split(',').map(x => x.trim()).filter(Boolean));
+  const passedNames = [];
   let passed = 0;
   for (const c of cases) {
+    if (skip.has(c.name)) { console.log(`  • ${c.name}  ${c.endpoint}  … passed earlier on this code, skipped`); passed++; passedNames.push(c.name); continue; }
     process.stdout.write(`  • ${c.name}  ${c.endpoint}  … `);
     let fresh;
     try {
@@ -160,8 +166,11 @@ async function runTool(tool) {
       continue;
     }
     const fails = diffCase(c.output, fresh, c.optionalSections);
-    if (fails.length === 0) { console.log('PASS'); passed++; }
+    if (fails.length === 0) { console.log('PASS'); passed++; passedNames.push(c.name); }
     else { console.log('FAIL'); fails.forEach(f => console.log(`     ✖ ${f}`)); }
+  }
+  if (process.env.GOLDEN_REPORT_FILE) {
+    try { fs.writeFileSync(process.env.GOLDEN_REPORT_FILE, JSON.stringify({ tool, passed: passedNames, total: cases.length })); } catch (_) { /* report is best-effort */ }
   }
   return { ok: passed === cases.length, total: cases.length, passed, setupError: false };
 }

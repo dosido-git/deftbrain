@@ -131,21 +131,24 @@ function cleanString(value, max = 4000) {
 
 // One concern, one place (2026-10-07 wave: a phone-battery concern came back
 // in seven fields). Prose fields are left alone; across the two action lists
-// a concern word the visitor typed may lead at most two items, and later
-// repeats are dropped. Generic walk vocabulary never counts as a concern.
+// a concern word the visitor typed may lead at most two items per list, and
+// later repeats are dropped. Generic walk vocabulary never counts as a concern.
 const GENERIC = new Set(['street', 'streets', 'route', 'walk', 'walking', 'around', 'about', 'before', 'after', 'night', 'there', 'which', 'where', 'their', 'would', 'could', 'should', 'think', 'really', 'little', 'between', 'blocks', 'sure', 'going', 'minutes', 'hours']);
 function limitRepeats(cleaned, typed) {
   const keys = [...new Set(String(typed || '').toLowerCase().match(/[a-z]{5,}/g) || [])]
     .map(w => w.replace(/(?:ies|es|s)$/, '')).filter(w => w.length >= 5 && !GENERIC.has(w) && !GENERIC.has(w + 's'));
   if (!keys.length) return 0;
-  const count = new Map();
   const stats = { dropped: 0 };
+  // Per list: a concern may lead two items in before_you_go and two in
+  // watch_for — they are different jobs (prepare / notice). A list is never
+  // emptied by this; its first item always stays.
   for (const [list, a, b] of [['before_you_go', 'action', 'why_here'], ['watch_for', 'condition', 'if_it_happens']]) {
     if (!Array.isArray(cleaned[list])) continue;
-    cleaned[list] = cleaned[list].filter(item => {
+    const count = new Map();
+    cleaned[list] = cleaned[list].filter((item, i) => {
       const text = `${item?.[a] || ''} ${item?.[b] || ''}`.toLowerCase();
       const hit = keys.filter(k => text.includes(k));
-      if (hit.length && hit.every(k => (count.get(k) || 0) >= 2)) { stats.dropped++; return false; }
+      if (i > 0 && hit.length && hit.every(k => (count.get(k) || 0) >= 2)) { stats.dropped++; return false; }
       hit.forEach(k => count.set(k, (count.get(k) || 0) + 1));
       return true;
     });
