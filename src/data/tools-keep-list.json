@@ -52,6 +52,11 @@
     "ContractDecoder",
     "QuoteCheck",
     "MoneyDiplomat",
-    "TicketTackler"
+    "TicketTackler",
+    "CultureBriefing",
+    "GriefGuide",
+    "PetBehaviorDecoder",
+    "PlantRescue",
+    "LaundroMat"
   ]
 }

@@ -116,6 +116,73 @@ export const tools = [
   icon: "💙",
   categories: ['Health & Wellness', 'Self & Reflection'],
   headerColor: "#c0cce0",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what GriefGuide gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below — the full result, nothing reworded.",
+    sampleLabel: "The situation",
+    sampleText: "My coworker’s husband died last week. I want to support her, but I am afraid of saying something wrong. We are not close friends, and I do not want to intrude or make her manage my discomfort.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples (supporting someone else).",
+    sections: [
+      {
+        label: "What you described",
+        tone: "neutral",
+        text: "You want to acknowledge what your coworker is going through without overstepping a relationship that is collegial rather than close. The concern you named — that she might end up managing your discomfort rather than receiving support — is a real and specific one worth keeping in mind.",
+      },
+      {
+        label: "Worth knowing",
+        tone: "neutral",
+        items: [
+          "A brief, low-demand acknowledgment from a coworker can carry its own kind of weight without requiring closeness. It does not need to be deep to be meaningful.",
+          "Vague offers ('let me know if you need anything') put the work of asking on the person who is grieving. Something specific and optional is easier to say yes or no to.",
+        ],
+      },
+      {
+        label: "Ways to help",
+        tone: "green",
+        items: [
+          "Say something brief and direct. A short message or a quiet word that acknowledges her loss — without a question attached — lets her receive it without having to respond. It does the job without opening a conversation she may not have energy for.",
+          "Offer something specific, not open-ended. If you want to do something concrete, name it: 'I'm going to the coffee cart — can I bring you something?' or leaving something at her desk. A specific, small gesture requires nothing back from her.",
+          "Follow her lead at work. Some people find routine a relief; others find it hard. Let her set the pace for when and how she re-engages. Treating her normally when she signals she wants that, and not pressing when she doesn't, respects whatever she's navigating.",
+        ],
+      },
+      {
+        label: "Words you could use",
+        tone: "green",
+        items: [
+          "I was so sorry to hear about your husband.",
+          "I've been thinking of you this week.",
+          "There's no need to catch up on anything — just let me know whenever you're ready.",
+        ],
+      },
+      {
+        label: "Best avoided",
+        tone: "yellow",
+        items: [
+          "'He's in a better place' or 'everything happens for a reason' — These redirect from her loss toward a framework she may not share and may not find comforting.",
+          "'I can't imagine what you're going through' — It centers your reaction rather than acknowledging hers, and she may feel she now needs to reassure you.",
+        ],
+      },
+      {
+        label: "One next step",
+        tone: "green",
+        text: "Send or say one short sentence — something along the lines of 'I was so sorry to hear about your husband' — with no question after it.",
+      },
+    ],
+    disclaimer: "GriefGuide offers guidance, not therapy. If you or someone else is in danger, contact local emergency services; in the US you can also call or text 988.",
+  },
+  faq: [
+    { q: "What should I say to a coworker whose family member died?",
+      a: "Keep it short and don't ask for a reply: 'I was so sorry to hear about your husband' or 'I've been thinking of you this week.' If you want to help, offer something specific and small, like bringing a coffee, rather than 'let me know if you need anything.'" },
+    { q: "What should you not say to someone who is grieving?",
+      a: "Avoid explanations of the loss ('everything happens for a reason', 'they're in a better place') and lines that make them reassure you ('I can't imagine what you're going through'). Short and sincere beats clever." },
+    { q: "Is there a right way to grieve?",
+      a: "No. Grief doesn't follow fixed stages or a timetable, and it can come and go for months or years. GriefGuide responds to what you describe rather than to a model of how grief should go." },
+    { q: "What if I'm struggling to cope?",
+      a: "If the loss is affecting your daily life for a long time, a grief counselor, your doctor or a support group can help. If you are thinking of harming yourself, contact emergency services now; in the US, call or text 988." },
+  ],
   description: "Guidance for a loss — whether you're grieving yourself, supporting someone who is, or both. It stays close to what you tell it: what it heard, a few things that may help, words if you need them, and one gentle next step.",
   guide: {
     tips: [
@@ -209,6 +276,66 @@ export const tools = [
   icon: "🌍",
   categories: ['Relationships', 'Travel & Events'],
   headerColor: "#b8d4e8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Culture Briefing gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the trip below — an excerpt of a longer briefing, nothing reworded.",
+    sampleLabel: "The trip",
+    sampleText: "Business trip to Osaka, Japan, for a week, from the United States. Vegetarian and don't drink alcohol; meeting a client's executive team.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Overview",
+        tone: "neutral",
+        text: "Osaka is Japan's second-largest metropolitan area with a more informal business culture than Tokyo, though formality in first meetings remains higher than typical US practice. Business etiquette and hierarchy matter significantly; social settings are noticeably more relaxed. Vegetarian dining is feasible but requires advance planning, particularly for business meals. Alcohol is central to after-work socializing; as a non-drinker, you can decline.",
+      },
+      {
+        label: "Business etiquette",
+        tone: "green",
+        items: [
+          "The business card exchange (meishi koukan) is a formal ritual: present your card with both hands, read the card you receive carefully for a few seconds, place it in front of you on the table (never in a back pocket or written on), and thank the person. This applies in first meetings or formal introductions.",
+          "Hierarchy and seniority are significant; allow senior figures to speak first, and address them by their title and family name unless explicitly invited otherwise.",
+          "Direct disagreement in a group setting, particularly with a senior person, contrasts with stating reservations indirectly — phrasing concerns as 'that is one perspective' or 'there may be other considerations' is more typical in business meetings.",
+        ],
+      },
+      {
+        label: "For you specifically",
+        tone: "green",
+        items: [
+          "Confirm vegetarian dining preferences with your client or restaurant contact at least a day before any business meal — day-of requests often cannot be fulfilled. Specify 'no fish, no fish stock, no meat broth' clearly, as some vegetarian dishes include dashi or fish-based ingredients.",
+        ],
+      },
+      {
+        label: "Higher-stakes missteps",
+        tone: "yellow",
+        items: [
+          "Disagreeing with a client or senior figure directly in front of others — raising concerns privately afterward is the more typical approach in this context.",
+          "Handling a business card casually — putting it in a back pocket, writing on it, or not examining it — departs from the standard of receiving with both hands and studying it briefly.",
+        ],
+      },
+      {
+        label: "Tipping and payment",
+        tone: "neutral",
+        items: [
+          "No tipping in Japan — not in restaurants, taxis, hotels, or any service context. Leaving cash on the table or offering it directly can be awkward or even refused.",
+          "Paying the bill: in a business context, the person who invited or has higher rank typically pays. Accept graciously if someone pays for you.",
+        ],
+      },
+    ],
+    disclaimer: "Customs vary by person, company and region. Culture Briefing describes what is widely observed and says what varies; your host is the best guide to their own expectations.",
+  },
+  faq: [
+    { q: "What should I know about business etiquette in Japan?",
+      a: "First meetings are more formal than in the US: a slight bow, family names with -san, and a careful business-card exchange — offered and received with both hands, read briefly, and kept on the table in front of you. Senior people usually speak first, and disagreement is normally raised privately or indirectly rather than in front of the group." },
+    { q: "Do you tip in Japan?",
+      a: "No. Tipping is not customary in restaurants, taxis or hotels, and leaving cash can cause awkwardness. Good service is included in the price." },
+    { q: "How do I eat vegetarian in Japan?",
+      a: "Plan ahead. Many dishes that look vegetarian use dashi, a fish-based stock, so ask specifically for no fish, no fish stock and no meat broth, and tell your host or the restaurant in advance of a business meal." },
+    { q: "Can Culture Briefing cover anywhere?",
+      a: "Yes — any country or region, for business, family, study or travel. Add your home country and anything about your situation, such as dietary needs or who you will meet, and the briefing focuses on what matters for you." },
+  ],
   description: "A practical cultural briefing before you travel — greetings, taboos, dining, dress, tipping, business etiquette, religion and safety. It separates the practices that are widely observed from the ones that vary by region, generation or setting, and flags what is worth checking locally rather than taking on trust. Tailored to your trip purpose.",
   guide: {
     tips: [
@@ -4495,6 +4622,63 @@ tagline: "Work with the energy you have.",
   icon: '🪴',
   categories: ['Home & Daily Life'],
   headerColor: "#1e2a3a",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Plant Rescue gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the plant below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The plant",
+    sampleText: "Pothos in a 6-inch pot. Leaves yellowing from the bottom up over the past two weeks. A few have brown tips. New growth still green but smaller than before. Indoors, partial shade, watered weekly on a schedule, pot has drainage. Pets in the house.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples, described in words without a photo.",
+    sections: [
+      {
+        label: "Watch and check",
+        tone: "yellow",
+        text: "Bottom-up yellowing with active new growth still present suggests the plant is under some stress, but is not in immediate crisis. The pattern fits a few different causes that need to be distinguished before acting. Check soil moisture and watering practice first.",
+      },
+      {
+        label: "Check this first",
+        tone: "neutral",
+        items: [
+          "Soil moisture before your next watering: Push a finger or wooden chopstick well into the potting mix, below the dry surface layer. Note whether it comes out damp, wet, or dry. If it is still damp or wet: hold off watering and switch to watering only when the top portion of the mix has dried out. This is the single most useful change you can make right now.",
+        ],
+      },
+      {
+        label: "What to do now",
+        tone: "green",
+        items: [
+          "Switch from a fixed watering schedule to watering based on soil feel. A calendar interval does not account for how quickly this particular pot, mix, and plant actually use water. Checking the soil directly removes the guesswork that a fixed schedule introduces.",
+          "Remove yellowed leaves that have little healthy green tissue remaining. Leaves that are mostly yellow will not recover. Removing them is tidier and lets you see clearly whether yellowing continues to spread to leaves that were green before.",
+        ],
+      },
+      {
+        label: "What improvement looks like",
+        tone: "neutral",
+        items: [
+          "Yellowing stops progressing to leaves that were green before",
+          "New leaves grow to a comparable size as earlier growth, rather than continuing to shrink",
+          "The plant does not produce more yellowed leaves after you correct the watering practice",
+        ],
+      },
+      {
+        label: "Pets",
+        tone: "red",
+        text: "Pothos is considered toxic to cats and dogs if ingested, primarily causing oral irritation and gastrointestinal upset. Keep the plant out of reach of pets. If you have reason to think a pet has chewed on or eaten part of it, contact your vet or a pet poison information service.",
+      },
+    ],
+    disclaimer: "Plant Rescue works from what you describe and any photo you add. It gives the checks that tell causes apart rather than a guess; a local nursery can look at the plant itself.",
+  },
+  faq: [
+    { q: "Why are my plant's lower leaves turning yellow?",
+      a: "Often it is watering — too much, so roots sit in wet soil, or too little. Older lower leaves also yellow naturally as a plant grows, but slowly. Check the soil a couple of inches down before you water: if it is still damp, water less often." },
+    { q: "How often should I water a pothos?",
+      a: "Not on a fixed schedule. Water when the top part of the soil has dried out, then let the excess drain away. How often that is depends on light, temperature, pot size and season." },
+    { q: "Is pothos toxic to cats and dogs?",
+      a: "Yes. The ASPCA lists pothos as toxic to cats and dogs; chewing it usually causes mouth irritation, drooling and vomiting. Keep it out of reach, and call your vet or a pet poison line if your pet has eaten some." },
+    { q: "Do I need a photo?",
+      a: "No, a description works, as in the example above. A clear photo of the affected leaves, the soil and the drainage hole makes the checks more specific." },
+  ],
   description: "Something wrong with your plant? Upload a photo or describe what you're seeing and Plant Rescue helps you narrow down what may be happening, decide what to check next, and make a practical rescue plan.",
   guide: {
     tips: [
@@ -4601,6 +4785,61 @@ tagline: "Work with the energy you have.",
   icon: "🐾",
   categories: ['Health & Wellness', 'Home & Daily Life'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Pet Behavior Decoder gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the behavior below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The behavior",
+    sampleText: "Dog, Labrador mix, 2 years old, about a week: He's started eating grass obsessively on every walk, then vomiting within an hour. It's happened 4 times this week. His regular food hasn't changed.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Contact your vet",
+        tone: "yellow",
+        text: "Four vomiting episodes in a single week is a pattern worth discussing with your vet, even without other changes reported. This is not a clear emergency, but the frequency makes watchful waiting alone a less comfortable option.",
+      },
+      {
+        label: "What could explain it",
+        tone: "neutral",
+        items: [
+          "An underlying GI issue prompting the grass eating: A dog with GI discomfort may seek out grass; the vomiting that follows could reflect the underlying issue rather than the grass alone.",
+          "The grass itself triggering vomiting: Eating a significant amount of grass can cause vomiting in dogs; if the grass has been recently treated with a lawn product, that could also be a factor.",
+        ],
+      },
+      {
+        label: "What would change the next step",
+        tone: "red",
+        items: [
+          "Blood in the vomit — contact your vet promptly",
+          "Vomiting becomes more frequent, or he cannot keep water down",
+          "He seems lethargic, painful, or clearly unwell between episodes",
+          "Episodes continue to accumulate beyond the four already reported this week",
+        ],
+      },
+      {
+        label: "What you can do now",
+        tone: "green",
+        items: [
+          "Contact your vet to describe the pattern — four vomiting episodes in a week is specific enough to be worth reporting rather than waiting.",
+          "If it is practical and safe on some walks, redirect him away from grass and note whether the vomiting still occurs — that observation may help your vet.",
+          "Note the location of each episode where possible, and whether the grass area could have been recently treated with any lawn product.",
+        ],
+      },
+    ],
+    disclaimer: "Pet Behavior Decoder does not diagnose. It sorts possibilities and tells you how soon to involve a vet; if your pet seems seriously unwell, call a vet now.",
+  },
+  faq: [
+    { q: "Why does my dog eat grass and then throw up?",
+      a: "Many dogs eat grass now and then without problems. Eating a lot of it can itself cause vomiting, and an upset stomach can also lead a dog to seek grass. A one-off is usually nothing; vomiting several times in a week, vomiting without grass, or any other change such as appetite, stool or energy is worth a call to the vet." },
+    { q: "When is a pet's behavior an emergency?",
+      a: "Call a vet immediately for trouble breathing, collapse, pale or blue gums, a swollen belly with unproductive retching, suspected poisoning, seizures, or blood in vomit or stool. Those don't wait for a pattern." },
+    { q: "What should I tell the vet?",
+      a: "Dates and times of each episode, what happened just before, anything else that has changed — food, routine, environment — and any medications. A short written log is more useful than memory." },
+    { q: "Can Pet Behavior Decoder diagnose my pet?",
+      a: "No. It explains what could account for the behavior, what to watch for, and how urgently to involve a vet, based only on what you describe. Only an examination can diagnose." },
+  ],
   description: "Not sure what to make of something your pet is doing? Describe what you're seeing and Pet Behavior Decoder helps you understand plausible explanations, what to watch for, and when it's worth calling a vet.",
   guide: {
     tips: [
@@ -6305,6 +6544,60 @@ tagline: "Work with the energy you have.",
   icon: "🧺",
   categories: ['Home & Daily Life'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what LaundroMat gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the load below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The load",
+    sampleText: "Mixed whites, a wool sweater, dark jeans, and a down jacket. Can I wash these together or do I need to separate them?",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples, for a home machine.",
+    sections: [
+      {
+        label: "Wash these separately",
+        tone: "yellow",
+        items: [
+          "Wool sweater: Wool requires a cold, gentle or hand-wash cycle with wool-safe detergent; any agitation, heat, or spin from a normal or heavy cycle can cause irreversible shrinkage and felting.",
+          "Down jacket: Down needs a specific wash-and-dry process (gentle cycle, low heat drying with dryer balls) that conflicts with every other item in this load, and its bulk can unbalance a mixed load.",
+          "Dark jeans: Dark denim can bleed dye onto whites, especially in warm or hot water.",
+        ],
+      },
+      {
+        label: "Drying",
+        tone: "neutral",
+        items: [
+          "Wool sweater: Dry flat on a clean towel away from direct heat or sunlight, reshaping it to its original dimensions while damp.",
+          "Down jacket: Tumble dry on low heat with two or three clean dryer balls, stopping periodically to break up any clumped fill by hand, until fully dry — damp down can develop odor or mildew.",
+          "Dark jeans: Turn inside out and either hang to dry or tumble dry on low heat to reduce dye fade and shrinkage.",
+        ],
+      },
+      {
+        label: "Before you wash",
+        tone: "green",
+        items: [
+          "Down jacket: Close all zippers and fasten any snaps before washing to protect the shell fabric and keep the jacket from snagging itself.",
+          "Dark jeans: Turn inside out before washing to slow surface dye loss.",
+        ],
+      },
+      {
+        label: "One thing not to skip",
+        tone: "green",
+        text: "The down jacket must be completely dry before storage — even a small amount of residual moisture inside the baffles can cause mildew that is very difficult to remove.",
+      },
+    ],
+    disclaimer: "LaundroMat works from what you describe or a photo of the care label. When a label says otherwise, follow the label.",
+  },
+  faq: [
+    { q: "Can I wash a wool sweater with other clothes?",
+      a: "Usually not. Wool shrinks and felts with heat and agitation, so wash it on its own — cold, on a wool or hand-wash cycle with wool-safe detergent — and dry it flat. Follow the care label if it says dry clean only." },
+    { q: "How do you wash a down jacket?",
+      a: "On its own, on a gentle cycle with a mild or down-specific detergent, zips and snaps closed. Tumble dry on low with two or three dryer balls until it is completely dry, breaking up clumps as you go; damp down can turn musty." },
+    { q: "Will dark jeans bleed onto whites?",
+      a: "They can, especially in warm water and in the first few washes. Wash dark denim inside out with darks or on its own, in cold water." },
+    { q: "Can LaundroMat read a care label?",
+      a: "Yes. Add a photo of the label and it explains the symbols and the settings to use. It also helps with stains and with sorting a mixed load." },
+  ],
   description: "Not sure how to wash it, remove the stain, read the care label, or fix what went wrong? LaundroMat gives you practical laundry help for the clothes in front of you.",
   guide: {
     tips: [

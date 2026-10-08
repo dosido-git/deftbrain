@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "e191e98f017a90a746d24d757f62b43819de0d3f",
+  "hash": "07ac3e545bda957f9d504012ffbea12ce7212732",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -273,6 +273,26 @@
  },
  "tool:TicketTackler": {
   "hash": "16b8ba4b7317d8902ee727446240bc14b237f430",
+  "lastmod": "2026-10-08"
+ },
+ "tool:GriefGuide": {
+  "hash": "1b95e5a2e05ed7d7336b9d3b095439e70bcd4b05",
+  "lastmod": "2026-10-08"
+ },
+ "tool:CultureBriefing": {
+  "hash": "45a1d17f51ff15f9bd174b81058f56d7ceadb359",
+  "lastmod": "2026-10-08"
+ },
+ "tool:PlantRescue": {
+  "hash": "926488f6b375646af4b7fa755a67b6fdfd7dfd14",
+  "lastmod": "2026-10-08"
+ },
+ "tool:PetBehaviorDecoder": {
+  "hash": "8ce4784ed3e41b781270218d1eaceff2726fd33e",
+  "lastmod": "2026-10-08"
+ },
+ "tool:LaundroMat": {
+  "hash": "55a7c2f87f8e6577a9d3059597ce088ffc396241",
   "lastmod": "2026-10-08"
  }
 }
