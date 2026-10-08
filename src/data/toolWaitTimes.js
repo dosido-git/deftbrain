@@ -7,6 +7,9 @@
 // Re-timed from Railway logs 2026-10-07 after visitors left mid-wait:
 // PlotHoleFinder (was 26; now 61-79s on a full scan), AnalogyEngine and
 // HistoryToday (untimed before; timed after that day's speed-ups).
+// TipOfTongue timed 2026-10-08 after it moved to the stronger model plus a
+// clue check (~32s + ~8s). HistoryToday 40 -> 65 the same day: a dates-and-facts
+// check over the finished answer (~25s).
 //
 // Name changes since timing: "SayWhat?" is WhatsThatMean, "CrisisPrioritizer"
 // is ChaosPilot, "RoomReader" is ReadTheRoom.
@@ -60,7 +63,7 @@ export const TOOL_WAIT_SECONDS = {
   PetBehaviorDecoder: 39,
   DreamPatternSpotter: 40,
   HobbyMatch: 40,
-  HistoryToday: 40,
+  TipOfTongue: 40,
   HeartOfTheMatter: 41,
   ResearchDecoder: 42,
   ConceptCoach: 43,
@@ -77,6 +80,7 @@ export const TOOL_WAIT_SECONDS = {
   AnalogyEngine: 55,
   LeaseTrapDetector: 58,
   BreakMyPlan: 62,
+  HistoryToday: 65,
   PlotHoleFinder: 70,
   HecklerPrep: 77,
   FutureProof: 95,

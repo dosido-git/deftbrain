@@ -346,20 +346,45 @@ function compactList(value, allowed) {
   return [...new Set(value.filter(v => allowed.includes(v)))];
 }
 
+// Near-duplicates (2026-10-07 wave): two safer_options that differed only in
+// a word or two got past an exact-match check. Word overlap catches them.
+const words = s => new Set(s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(w => w.length > 2).map(w => w.replace(/(?:ing|ed|es|s)$/, '')));
+function nearDuplicate(a, b) {
+  const A = words(a), B = words(b);
+  if (!A.size || !B.size) return false;
+  let both = 0;
+  for (const w of A) if (B.has(w)) both++;
+  return both / Math.min(A.size, B.size) >= 0.8;
+}
+
 function cleanList(value, maxItems = 6) {
   if (!Array.isArray(value)) return [];
-  const seen = new Set();
   const out = [];
   for (const v of value) {
     if (typeof v !== 'string' || !v.trim() || blank(v)) continue;
     const trimmed = v.trim();
-    const key = trimmed.toLowerCase();
-    if (seen.has(key)) continue;   // one live run came back with a factor printed twice
-    seen.add(key);
+    if (out.some(o => nearDuplicate(o, trimmed))) continue;   // one live run came back with a factor printed twice
     out.push(trimmed);
     if (out.length === maxItems) break;
   }
   return out;
+}
+
+// A person nobody mentioned (2026-10-07 wave: "your sister's place" as a
+// place to sleep). Rule 8 forbids it and the guard missed it, so code drops
+// any list item that names a relative, friend or housemate the driver never
+// typed. English only; other languages still rely on the prompt and guard.
+const UNSUPPLIED_PERSON = /\b(?:your|a|the)\s+(sister|brother|sibling|mom|mum|mother|dad|father|parents?|friend|partner|spouse|wife|husband|girlfriend|boyfriend|roommate|housemate|flatmate|colleague|co-?worker|neighbou?r|cousin|aunt|uncle|grandparents?|grandma|grandpa|son|daughter|kids?|family)(?:'s)?\b/i;
+function dropUnsuppliedPeople(clean, suppliedText) {
+  const typed = String(suppliedText || '').toLowerCase();
+  const ok = item => {
+    const m = String(item).match(UNSUPPLIED_PERSON);
+    return !m || typed.includes(m[1].toLowerCase().replace(/s$/, ''));
+  };
+  for (const k of ['safer_options', 'prep_checklist', 'watch_for', 'factors_in_favor', 'factors_harder']) {
+    if (Array.isArray(clean[k])) clean[k] = clean[k].filter(ok);
+  }
+  return clean;
 }
 
 function sanitizeResult(raw, userLanguage) {
@@ -662,7 +687,7 @@ Return only the requested JSON.`;
         clean.safer_options = [];
       }
       clean.limits = [t(userLanguage, 'limits')];
-      return clean;
+      return dropUnsuppliedPeople(clean, JSON.stringify(req.body));
     };
 
     const result = finalise(raw);

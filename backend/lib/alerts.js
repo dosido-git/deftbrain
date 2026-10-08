@@ -377,43 +377,6 @@ function reportSurge(on, info = {}) {
   return { mailed: true, reason: 'off' };
 }
 
-// The model API is refusing every call — out of credit, or the key is bad
-// (2026-10-07: credit ran out and every tool 500'd until someone noticed by
-// hand). lib/claude.js calls this when the refusal is seen twice in a row.
-// One email per hour while it lasts.
-const API_BLOCK_COOLDOWN_MS = 60 * 60 * 1000;
-let apiBlockMailedAt = 0;
-function reportApiBlock({ kind, message } = {}) {
-  const key = process.env.RESEND_API_KEY;
-  const now = Date.now();
-  if (now - apiBlockMailedAt < API_BLOCK_COOLDOWN_MS) return { mailed: false, reason: 'cooldown' };
-  if (!key) return { mailed: false, reason: 'no-key' };
-  apiBlockMailedAt = now;
-  const billing = kind === 'billing';
-  // Two billing refusals read differently and have different fixes: an empty
-  // credit balance, and the account's own monthly spend cap (2026-10-08).
-  const cap = billing && /usage limits?|spend(ing)? limit|regain access/i.test(String(message || ''));
-  send(key, cap ? '🚨 DeftBrain is DOWN — the monthly Anthropic spend limit is reached'
-    : billing ? '🚨 DeftBrain is DOWN — Anthropic credit has run out' : '🚨 DeftBrain is DOWN — the Anthropic API key is being refused', [
-    cap
-      ? 'Every tool is failing: the Anthropic API says this account has reached the monthly usage limit you set.'
-      : billing
-      ? 'Every tool is failing: the Anthropic API says the credit balance is too low.'
-      : 'Every tool is failing: the Anthropic API is refusing the API key.',
-    '',
-    cap
-      ? 'Fix: console.anthropic.com → Settings → Limits → raise the monthly spend limit. Tools recover within seconds, no deploy needed.'
-      : billing
-      ? 'Fix: console.anthropic.com → Plans & Billing → add credit. Tools recover within seconds, no deploy needed. Turn on auto-reload while you are there.'
-      : 'Fix: check ANTHROPIC_API_KEY in Railway (Variables → Apply), then redeploy.',
-    '',
-    `Last error: ${esc(String(message || '')).slice(0, 200)}`,
-    'Live state: https://deftbrain.com/api/health (503 while this lasts)',
-    'This email repeats hourly until a call succeeds.',
-  ].join('\n'));
-  return { mailed: true, reason: kind };
-}
-
 // Quality audits have gone quiet (lib/auditWatch.js decides when). The
 // scheduled waves stalled silently from 2026-08-29 to 2026-10-07 — every run
 // sat on a permission prompt nobody was there to answer — and nothing said
@@ -440,7 +403,6 @@ function reportAuditStale({ latest, ageDays, threshold } = {}) {
 }
 
 module.exports = {
-  reportApiBlock,
   reportAuditStale,
   reportSurge,
   reportRenderCrash,

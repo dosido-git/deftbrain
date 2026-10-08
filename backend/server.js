@@ -673,6 +673,9 @@ const { auditStatus, startAuditWatch } = require('./lib/auditWatch');
 app.get('/api/health/audits', (req, res) => res.json(auditStatus()));
 startAuditWatch();
 
+// "The visitor" leaking into a reply becomes "you" (lib/voiceFix.js).
+app.use('/api', require('./lib/voiceFix').voiceFixMiddleware);
+
 // ── Mount all tool routes from /routes directory ──
 const routes = require('./routes');
 app.use('/api', routes);

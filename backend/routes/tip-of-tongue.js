@@ -3,11 +3,87 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { isSurging } = require('../lib/surge');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
 const PERSONALITY = `Identification expert with encyclopedic cross-domain knowledge. People describe things from memory — fragmentary, sensory, vibes-based — and you figure out what they mean. Give multiple ranked matches with confidence levels, never just one guess. Explain why each fits. Include how to find or verify each match. Mirror their sensory vocabulary. When genuinely uncertain, describe the likely category. Be calibrated about certainty.`
+
+// ── Clue check (2026-10-08) ─────────────────────────────────────────────────
+// Writing the tool-page example caught this in 3 of 3 runs: "pecorino, black
+// pepper, crispy pork, no cream, no egg" came back as cacio e pepe "with
+// guanciale" — a dish with no pork — while the right answer (gricia) sat at
+// the bottom, described as "sometimes includes tomato". Another run called
+// Coraline "his". Ranking from memory is the job, and memory is where it
+// slips, so a second reader tests each match against the clues one by one.
+// Code does the reranking: a match that contradicts a clue the visitor gave
+// can never stay above one that does not. Fail-open.
+const MATCH_TEXT_FIELDS = ['name', 'why_it_fits', 'memory_trigger', 'how_to_verify', 'how_to_find', 'fun_fact'];
+const CONF_RANK = { high: 0, medium: 1, low: 2 };
+
+async function clueCheck(parsed, clues, userLanguage, label) {
+  if (isSurging() || !Array.isArray(parsed?.matches) || !parsed.matches.length) return;
+  const listing = parsed.matches.map((m, i) => `MATCH ${i}: ${m.name}\n` + MATCH_TEXT_FIELDS.slice(1)
+    .filter(f => typeof m[f] === 'string' && m[f].trim()).map(f => `  ${f}: ${m[f]}`).join('\n')).join('\n\n');
+  let out;
+  try {
+    out = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 1800,
+      system: withLanguage(`You check an identification tool's answers. Someone described a half-remembered thing; the tool proposed matches. For EACH match, decide how well it fits the clues, and check every sentence of every field for facts that are wrong about the match itself.
+
+FIT — one of:
+- "fits": the thing, as it is actually known, has every clue the person gave, allowing for ordinary memory drift.
+- "partial": it fits the core but misses or bends a secondary clue.
+- "contradicts": it lacks a KEY clue the person stated plainly — a defining ingredient, the central image, the plot itself (they said crispy pork and the dish has no pork). Memory changes details — a character's gender, a decade, a colour shade — so a mismatch on a detail like that, or on anything the person said they were unsure about, is never "contradicts". When the person names a candidate themselves and doubts it, that candidate is not contradicted by their doubt.
+A FACTUAL ERROR is a wrong statement about the match: an ingredient it does not have, a wrong year, creator or plot point, a wrong pronoun for a character. Not style, not length.
+Also say whether a candidate that fits every key clue better than all the listed ones is missing.
+
+Return ONLY valid JSON:
+{"checks":[{"match":0,"fit":"fits | partial | contradicts","errors":[{"field":"why_it_fits | memory_trigger | how_to_verify | how_to_find | fun_fact","wrong":"the shortest exact span that is wrong, copied character for character","fix":"the words that replace that span in the same sentence, written to the person in the tool's voice — never a comment about the error; empty string if the span should simply go"}]}],"missing":{"name":"better candidate","line":"one sentence to the person naming it and the clues it fits, e.g. Could it be pasta alla carbonara? It has the pepper and crispy pork, and its creaminess comes from egg, not cream."} or null}
+Write fix and line in the same language as the matches.
+Never place a double-quote (") character inside a JSON string value.`, userLanguage),
+      messages: [{ role: 'user', content: `THE CLUES THEY GAVE:\n${clues}\n\nTHE MATCHES:\n${listing}` }],
+    }, { label: `${label}-cluecheck`, maxRetries: 1 });
+  } catch (e) { console.warn(`[${label}] clue check skipped: ${e.message}`); return; }
+
+  let fixes = 0, demoted = 0;
+  const FIT_RANK = { fits: 0, partial: 1, contradicts: 2 };
+  const fit = new Map();
+  for (const c of Array.isArray(out?.checks) ? out.checks : []) {
+    const m = parsed.matches[c?.match];
+    if (!m) continue;
+    if (c.fit in FIT_RANK) fit.set(m, c.fit);
+    for (const e of Array.isArray(c.errors) ? c.errors : []) {
+      const f = MATCH_TEXT_FIELDS.slice(1).includes(e?.field) ? e.field : null;
+      if (!f || typeof m[f] !== 'string' || !e.wrong || typeof e.fix !== 'string') continue;
+      if (!m[f].includes(e.wrong) || e.fix.length > e.wrong.length * 2 + 60) continue; // a fix that balloons is commentary, not a repair
+      m[f] = m[f].replace(e.wrong, e.fix).replace(/\s{2,}/g, ' ').replace(/\s+([.,;:])/g, '$1').replace(/\.{2,}/g, '.').replace(/,\s*\./g, '.').trim();
+      fixes++;
+    }
+  }
+  const rank = m => FIT_RANK[fit.get(m)] ?? 1;
+  for (const m of parsed.matches) {
+    if (fit.get(m) === 'contradicts' && m.confidence !== 'low') { m.confidence = 'low'; demoted++; }
+    if (fit.get(m) === 'partial' && m.confidence === 'high') { m.confidence = 'medium'; demoted++; }
+  }
+  const before = parsed.matches[0];
+  // stable: better fit first, then confidence, then the original order
+  parsed.matches = parsed.matches.map((m, i) => [m, i])
+    .sort((a, b) => (rank(a[0]) - rank(b[0])) || ((CONF_RANK[a[0].confidence] ?? 3) - (CONF_RANK[b[0].confidence] ?? 3)) || (a[1] - b[1]))
+    .map(([m]) => m);
+  // "dominant" was the generator's claim about ITS first match; it does not
+  // carry over to a different one, and never to a match that bends a clue.
+  if (parsed.matches[0] !== before || rank(parsed.matches[0]) !== 0) parsed.dominant = false;
+  if (out?.missing?.name && !parsed.matches.some(m => String(m.name).toLowerCase().includes(String(out.missing.name).toLowerCase()))) {
+    // A better candidate the list missed is a question for the reader, not a
+    // fabricated match card: it goes into the "none of these?" prompt.
+    const line = String(out.missing.line || '').trim() || `${out.missing.name}?`;
+    parsed.if_none_match = `${line}${parsed.if_none_match ? ' ' + parsed.if_none_match : ''}`;
+  }
+  console.log(`[${label}] clue check: fit ${parsed.matches.map(m => fit.get(m) || '?').join('/')}, ${demoted} demoted, ${fixes} fix(es)`);
+}
 
 // ════════════════════════════════════════════════════════════
 // POST /tip-of-tongue — Main identification
@@ -172,7 +248,7 @@ RULES:
 6. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: MODELS.FAST,
+      model: MODELS.SMART, // FAST answered cacio e pepe 'with guanciale' 3 of 3 runs (2026-10-07)
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -181,6 +257,10 @@ RULES:
     if (!parsed.matches || !parsed.matches.length) {
       return res.status(500).json({ error: 'Could not find matching words. Please try again.' });
     }
+    await clueCheck(parsed, [
+      `Description: ${description}`, notThis && `It is NOT: ${notThis}`,
+      whenWhere && `When/where: ${whenWhere}`, extraClues && `Extra clues: ${extraClues}`,
+    ].filter(Boolean).join('\n'), userLanguage, 'tip-of-tongue-find');
     res.json(parsed);
 
   } catch (error) {
@@ -253,7 +333,7 @@ RULES:
 4. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: MODELS.FAST,
+      model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -262,6 +342,8 @@ RULES:
     if (!parsed.matches || !parsed.matches.length) {
       return res.status(500).json({ error: 'Could not refine matches. Please try again.' });
     }
+    await clueCheck(parsed, [`Description: ${originalDescription}`, `Feedback on earlier guesses:\n${feedback}`,
+      refinement && `More detail: ${refinement}`].filter(Boolean).join('\n'), userLanguage, 'tip-of-tongue-refine');
     res.json(parsed);
 
   } catch (error) {

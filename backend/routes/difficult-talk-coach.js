@@ -3,6 +3,8 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { checkAgainstSupplied } = require('../lib/factCheck');
+const { isSurging } = require('../lib/surge');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted dialogue, scripts, and phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -248,7 +250,7 @@ OUTPUT FORMAT — Return ONLY valid JSON
   }
 }
 
-The "level" values must stay exactly gentle, balanced, firm — lowercase English, never translated; the interface switches on them.
+The "level" values must stay exactly gentle, balanced, persistent, firm — lowercase English, never translated; the interface switches on them.
 
 Return ONLY the JSON object with EXACTLY the 2 keys shown above. No markdown, no preamble.`;
 
@@ -445,6 +447,35 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
+    }
+    // 2026-10-07 quality wave: dated deadlines nobody set (Oct 17 / Oct 31)
+    // and a Very Firm rung ending on an unnamed threat ("decisions I have to
+    // make about my own situation"), which the prompt above forbids. Fail-open.
+    if (!isSurging()) {
+      const fields = [];
+      const walk = (v, path) => {
+        if (typeof v === 'string' && v.trim().length > 25) fields.push([path, v]);
+        else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+        else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+      };
+      walk(parsed.firmness_messages, 'firmness_messages');
+      walk(parsed.conversation_approaches, 'conversation_approaches');
+      walk(parsed.pushback_scripts, 'pushback_scripts');
+      walk(parsed.follow_up_plan, 'follow_up_plan');
+      try {
+        await checkAgainstSupplied(parsed, {
+          label: 'difficult-talk-coach',
+          supplied: [`Topic: ${topic}`, `Relationship: ${relationship}`, goals && `Goals: ${Array.isArray(goals) ? goals.join(', ') : goals}`,
+            fears && `Fears: ${Array.isArray(fears) ? fears.join(', ') : fears}`, biggestFear && `Biggest fear: ${biggestFear}`,
+            theirPerspective && `Their perspective: ${theirPerspective}`, previousAttempts && `Previous attempts: ${previousAttempts}`].filter(Boolean).join('\n'),
+          fields: fields.slice(0, 40),
+          lookFor: `- a date, deadline or timeframe the user did not set (by October 17, within two weeks) — a placeholder like [date] is fine
+- a consequence, limit or decision the user did not say they would act on, including an unnamed one that only hints at a threat (I will have to think about my options, decisions I have to make about my own situation)
+- a fact about the other person or the history between them that the user did not give`,
+          repairNote: 'Replace an invented date with a placeholder like [a date that works for you]. Remove an invented or hinted consequence entirely; a firm line stays firm by being clear about the ask, not by threatening.',
+          userLanguage,
+        });
+      } catch (e) { console.error('difficult-talk-coach check:', e.message); }
     }
     res.json(parsed);
 

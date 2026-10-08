@@ -3,6 +3,56 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { checkAgainstSupplied } = require('../lib/factCheck');
+const { isSurging } = require('../lib/surge');
+
+// ── Supplied-facts check (2026-10-08) ───────────────────────────────────────
+// The tool-page example run turned plain accomplishments into bullets that
+// added "without additional headcount", "a structured weekly 1:1 curriculum",
+// "zero-disruption reliability" and "cross-team" — none of it typed. On a
+// résumé that is the visitor's risk, not ours. NO_INVENTED_FACTS was already
+// in the prompt; this is the check behind it. Bracketed estimates ([~20%])
+// are the tool's own convention for "fill this in" and stay allowed.
+// Only the visitor's words count as supplied: earlier transformations are
+// reduced to their "original" text, since an earlier "improved" line may
+// itself carry an invention.
+const SKIP_KEYS = new Set(['original', 'from', 'to', 'accomplishment_index', 'metrics_to_find', 'question', 'example']);
+function suppliedFrom(body) {
+  const keep = ['accomplishments', 'newAccomplishment', 'accomplishment', 'interviewQuestion', 'jobDescription', 'metricsAnswers',
+    'roleTitle', 'yearsExp', 'industry', 'level', 'instruction', 'original', 'existingAccomplishments'];
+  const out = [];
+  for (const k of keep) if (body[k] != null && body[k] !== '') out.push(`${k}: ${typeof body[k] === 'string' ? body[k] : JSON.stringify(body[k])}`);
+  for (const k of ['transformations', 'originalTransformations', 'existingTransformations']) {
+    if (Array.isArray(body[k])) out.push(`${k} (the visitor's own words): ${JSON.stringify(body[k].map(t => t?.original).filter(Boolean))}`);
+  }
+  return out.join('\n').slice(0, 8000);
+}
+async function groundBrag(parsed, body, label) {
+  if (isSurging() || !parsed || typeof parsed !== 'object') return parsed;
+  const fields = [];
+  const walk = (v, path, key) => {
+    if (SKIP_KEYS.has(key)) return;
+    if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]);
+    else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`, key));
+    else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, path ? `${path}.${k}` : k, k));
+  };
+  walk(parsed, '', '');
+  if (!fields.length) return parsed;
+  try {
+    await checkAgainstSupplied(parsed, {
+      label,
+      supplied: suppliedFrom(body),
+      fields: fields.slice(0, 40),
+      lookFor: `- a fact about the work that the visitor did not state: scope, team size, headcount, budget, frequency, structure, who was involved, a department or team crossed, reliability or uptime, a method, a tool
+- a role upgraded beyond what they said (noticed -> led, helped -> drove, part of -> owned)
+- a number, percentage or outcome that is not in their words and is NOT in [square brackets]
+Bracketed estimates like [~20%] or [X customers] are the tool's placeholders for the visitor to fill in, and are allowed. Stronger verbs and tighter wording for what they did say are the point of the tool and are allowed.`,
+      repairNote: 'Keep the strong verb and the shape of the bullet. Remove only the unsupported fact, or turn an invented number into a bracketed placeholder like [X%].',
+      userLanguage: body.userLanguage,
+    });
+  } catch (e) { console.error(`${label} check:`, e.message); }
+  return parsed;
+}
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted accomplishments or phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -174,6 +224,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!parsed.transformations && !parsed.transformed && !parsed.bullets && !parsed.achievements && !parsed.brag_sheet) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
+    await groundBrag(parsed, req.body, 'brag-sheet-builder');
     res.json(parsed);
 
   } catch (error) {
@@ -275,6 +326,7 @@ Return ONLY valid JSON:
     if (!parsed.upgraded_transformations) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
+    await groundBrag(parsed, req.body, 'brag-sheet-refine');
     res.json(parsed);
 
   } catch (error) {
@@ -343,6 +395,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!parsed.improved) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
+    await groundBrag(parsed, req.body, 'brag-sheet-tweak');
     res.json(parsed);
 
   } catch (error) {
@@ -422,6 +475,7 @@ Return ONLY valid JSON:
     if (!parsed.transformation) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
+    await groundBrag(parsed, req.body, 'brag-sheet-add-single');
     res.json(parsed);
 
   } catch (error) {
@@ -483,6 +537,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!parsed.title) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
+    await groundBrag(parsed, req.body, 'brag-sheet-star');
     res.json(parsed);
 
   } catch (error) {
@@ -675,6 +730,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!parsed.jd_requirements) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
+    await groundBrag(parsed, req.body, 'brag-sheet-tailor');
     res.json(parsed);
 
   } catch (error) {

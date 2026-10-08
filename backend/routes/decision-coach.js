@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
+const { comparePay, looksLikePayComparison } = require('../lib/payMath');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
 // v1: decide
@@ -112,11 +114,58 @@ In practice:
 - Being decisive requires none of this. A firm answer grounded only in what they typed is more convincing than a warm one built on invented detail.
 - Do NOT hedge the decision itself. Choosing a dish means the main ingredient is part of the choice, not an assumption to qualify — 'garlic butter shrimp (if you have shrimp)' hands the decision back. Commit to the answer; make only the INCIDENTAL additions conditional: the oil, the acid, the garnish, the side.`;
 
+// ── Pay comparison in code (2026-10-08) ─────────────────────────────────────
+// A second-sample audit caught the model getting the DIRECTION of a pay gap
+// wrong on two job offers (see lib/payMath.js). When the question compares
+// paid options, a fast call reads the offers into a ledger — no arithmetic —
+// and code computes who leads in year one and after, with uncertain pay kept
+// apart. Fails open: no ledger, no block, the old single call.
+async function payFactsFor(body) {
+  const text = [body.decisionNeeded, body.preferences].filter(Boolean).join('\n');
+  if (!looksLikePayComparison(text)) return null;
+  let ledger = null;
+  try {
+    ledger = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 1200,
+      system: withLanguage('You read job or pay offers into structured data. You never do arithmetic: copy each amount exactly as stated, and never invent an option, a component or an amount. Option names stay as the visitor wrote them. Return ONLY valid JSON. ' + NO_QUOTE_RULE, body.userLanguage),
+      messages: [{ role: 'user', content: `${text.slice(0, 4000)}
+
+Return:
+{
+  "options": [{
+    "name": "the option's short name as the visitor calls it",
+    "components": [{
+      "label": "base salary | signing bonus | annual bonus | 401k match | relocation | equity | ...",
+      "amount": number exactly as stated (85k -> 85000; for a percentage match, the money amount only if the visitor states it, else omit the component),
+      "period": "annual | monthly | biweekly | weekly | hourly | one_time",
+      "certain": false when the visitor says it is discretionary, target, not guaranteed, may not be paid, or depends on performance; else true
+    }]
+  }]
+}
+Only options that carry stated money. If fewer than two do, return {"options": []}.` }],
+    }, { label: 'DecisionCoach1-pay', maxRetries: 1 });
+  } catch (e) { console.warn('[DecisionCoach1] pay ledger failed:', e.message); return null; }
+  const cmp = comparePay(ledger);
+  if (!cmp) return null;
+  const money = v => { try { return new Intl.NumberFormat(body.userLocale || 'en-US', { style: 'currency', currency: body.userCurrency || 'USD', maximumFractionDigits: 0 }).format(v); } catch { return String(Math.round(v)); } };
+  const line = t => `- ${t.name}: guaranteed recurring ${money(t.recurring)}/yr; one-time ${money(t.oneTime)} (year one only)${t.uncertainYearly || t.uncertainOnce ? `; NOT guaranteed: ${money(t.uncertainYearly)}/yr${t.uncertainOnce ? ` + ${money(t.uncertainOnce)} once` : ''}` : ''}. Year one guaranteed ${money(t.yearOne)}; each later year ${money(t.later)}.`;
+  const say = (r, what) => r.leader ? `${r.leader} leads ${what} by ${money(r.gap)}` : `they are level ${what}`;
+  const flips = cmp.hasUncertain && (cmp.yearOne.leader !== cmp.yearOneIfAll.leader || cmp.later.leader !== cmp.laterIfAll.leader);
+  const block = `PAY FACTS (computed in code from the amounts the visitor typed — exact; use these figures and directions, never your own arithmetic):
+${cmp.options.map(line).join('\n')}
+- Guaranteed pay: ${say(cmp.yearOne, 'in year one')}; ${say(cmp.later, 'in each later year')}.
+${cmp.hasUncertain ? `- If every not-guaranteed amount is paid: ${say(cmp.yearOneIfAll, 'in year one')}; ${say(cmp.laterIfAll, 'in each later year')}.${flips ? ' The not-guaranteed pay DECIDES which offer pays more. Unless the visitor said how reliable it is, that is the one fact that could change the call: use one_thing_that_could_change_this for it.' : ''}` : ''}
+A one-time amount added to the offer that already leads WIDENS the year-one gap; added to the other offer it NARROWS it. Never describe a gap as narrowing or widening other than these figures show.`;
+  return { block, context: block };
+}
+
 router.post('/decision-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!decisionNeeded) return res.status(400).json({ error: 'Describe the decision you need made' });
+    const pay = await payFactsFor(req.body);
 
     const prompt = `You are Decision Coach — decisive, confident, warm. You MAKE the decision. ONE answer, not options.
 
@@ -156,8 +205,8 @@ TONE: Confident, warm, slightly playful. Like a friend who is great at decisions
 
 WHAT NO-SECOND-GUESSING MEANS. You are taking responsibility for the call, not claiming the call is objectively correct. The register is: here is the call, here is why, here is what to do next, stop reopening it unless something important changes. It is NOT: I am certain this is right. Own the decision; do not dress it as a fact.
 
-MONEY: when the input contains multiple money components (salary, bonus, match, equity), compute and cite the NET annual difference — never quote a single base-salary delta as the whole gap. Show the components inline so the reader can check the arithmetic.
-
+MONEY: when the input contains multiple money components (salary, bonus, match, equity), compute and cite the NET annual difference — never quote a single base-salary delta as the whole gap. Show the components inline so the reader can check the arithmetic. Keep one-time pay (signing bonus) apart from recurring pay, and treat pay that may not come (discretionary bonus) as an open question, not as money in hand.
+${pay ? '\n' + pay.block + '\n' : ''}
 OUTPUT (JSON only):
 {
   "decision_made_for_you": {
@@ -178,6 +227,12 @@ OUTPUT (JSON only):
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const parsed = enforceOutputState(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' }));
+    await withNumberCheck(parsed, {
+      label: 'decision-coach',
+      context: visitorContext(req.body) + (pay ? '\n\n' + pay.context : ''),
+      extraRules: 'A sentence that says a gap narrows, widens, or barely changes is a numeric claim: check its direction and size against PAY FACTS when they are given.',
+      userLanguage,
+    });
     res.json(await guardResult(parsed, req.body, 'DecisionCoach1'));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });

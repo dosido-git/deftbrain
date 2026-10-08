@@ -20,15 +20,31 @@ function keyFor({ situation, voice }) {
   return `quote-fit:${normalizeKeyPart(compact(situation, 180))}:${normalizeKeyPart(compact(voice, 40))}`;
 }
 
-function cleanPacket(raw) {
+// 2026-10-07 second sample: a known paraphrase (Plutarch's "fire to be
+// kindled") reached the page as an exact quote although the packet's own
+// context_note said it was a paraphrase, and a Goodreads page was labelled
+// authoritative because that was the default. The research prompt already
+// forbade both; these checks are the code half.
+const AGGREGATOR = /(^|\.)(goodreads\.com|brainyquote\.com|azquotes\.com|quotefancy\.com|quotes\.net|wisdomquotes\.com|passiton\.com|quotemaster\.org|everydaypower\.com|inspiringquotes\.us|quotegarden\.com|quotery\.com|quotepark\.com|quotlr\.com|quotationspage\.com|thequotes\.in|quotescosmos\.com|keepinspiring\.me|quotestats\.com|pinterest\.[a-z.]+|facebook\.com|instagram\.com|twitter\.com|x\.com|tiktok\.com|reddit\.com|tumblr\.com|quora\.com|medium\.com|linkedin\.com)$/i;
+const NOT_EXACT = /paraphras|misattribut|apocryph|spurious|not (?:a |an )?(?:direct|exact|verbatim|literal)|loosely|adapted from|condensed|summari[sz]|commonly attributed|often attributed|widely attributed|popularly attributed|no (?:known|reliable|verifiable) source|cannot be (?:verified|confirmed|traced)|could not be (?:verified|confirmed|traced)|unverified|disputed|modern (?:rendering|version)|approximat/i;
+
+function hostOf(url) {
+  try { return new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch { return ''; }
+}
+
+function cleanPacket(raw, { log = false } = {}) {
   if (!raw || typeof raw !== 'object') return null;
-  const quotes = (Array.isArray(raw.quotes) ? raw.quotes : []).slice(0, 10).map((q, i) => {
+  const dropped = { aggregator: 0, not_exact: 0 };
+  const quotes = (Array.isArray(raw.quotes) ? raw.quotes : []).slice(0, 10).map(q => {
     const text = compact(q?.text, 360);
     const words = text.split(/\s+/).filter(Boolean);
     const url = compact(q?.url, 700);
     if (!text || words.length > 25 || !url) return null;
+    const host = hostOf(url);
+    if (!host || AGGREGATOR.test(host)) { dropped.aggregator++; return null; }
+    const context_note = compact(q?.context_note, 500) || null;
+    if (q?.exact === false || NOT_EXACT.test(`${context_note || ''} ${q?.source_title || ''}`)) { dropped.not_exact++; return null; }
     return {
-      id: `Q${i + 1}`,
       text,
       author: compact(q?.author, 120),
       work: compact(q?.work, 180) || null,
@@ -36,11 +52,12 @@ function cleanPacket(raw) {
       source_title: compact(q?.source_title, 220),
       publisher: compact(q?.publisher, 140),
       url,
-      verification: ['primary', 'authoritative_secondary'].includes(q?.verification) ? q.verification : 'authoritative_secondary',
-      context_note: compact(q?.context_note, 500) || null,
+      verification: q?.verification === 'primary' ? 'primary' : 'secondary',
+      context_note,
       themes: (Array.isArray(q?.themes) ? q.themes : []).map(x => compact(x, 60)).filter(Boolean).slice(0, 6),
     };
-  }).filter(Boolean);
+  }).filter(Boolean).map((q, i) => ({ id: `Q${i + 1}`, ...q }));
+  if (log) console.log(`[quoteResearch] ${quotes.length} of ${Array.isArray(raw.quotes) ? raw.quotes.length : 0} kept; dropped ${dropped.aggregator} aggregator, ${dropped.not_exact} not-exact`);
   return quotes.length >= 2 ? { researched_at: compact(raw.researched_at, 60) || new Date().toISOString(), quotes } : null;
 }
 
@@ -75,14 +92,17 @@ HARD RULES:
 - Do not use quote-image sites, social posts, Pinterest, anonymous quote aggregators, SEO quote lists, or pages that merely repeat an attribution without provenance.
 - Never repair, modernize, paraphrase, translate, or complete a quotation from memory.
 - Maximum 25 words per quotation. Shorter is better.
-- If a famous saying is commonly misattributed or the wording cannot be verified, exclude it.
+- If a famous saying is commonly misattributed, is a paraphrase or condensed version of the original, or the wording cannot be verified, exclude it. A paraphrase is never a quotation, however well known.
 - Do not force inspiration. Witty, bracing, humane, skeptical, literary, or surprising quotes are welcome when they fit.
 - Return only candidates you can verify. Return ONLY valid JSON.
 
 ${NO_QUOTE_RULE}`,
-    userPrompt: `Find 6-10 verified short quotations that could illuminate this situation:\n${compact(situation, 1800)}\n\nDESIRED VOICE: ${compact(voice, 60)}\n\nReturn ONLY:\n{\n  "researched_at": "ISO date/time",\n  "quotes": [\n    {\n      "text": "exact quotation, 25 words maximum",\n      "author": "verified speaker/author",\n      "work": "original work/speech/letter if established, otherwise null",\n      "date": "date if established, otherwise null",\n      "source_title": "title of page actually visited",\n      "publisher": "archive/publisher/institution",\n      "url": "full URL actually visited",\n      "verification": "primary | authoritative_secondary",\n      "context_note": "brief provenance/context only if established by source",\n      "themes": ["short theme labels"]\n    }\n  ]\n}`,
+    userPrompt: `Find 6-10 verified short quotations that could illuminate this situation:\n${compact(situation, 1800)}\n\nDESIRED VOICE: ${compact(voice, 60)}\n\nReturn ONLY:\n{\n  "quotes": [\n    {\n      "text": "exact quotation, 25 words maximum",\n      "author": "verified speaker/author",\n      "work": "original work/speech/letter if established, otherwise null",\n      "date": "date if established, otherwise null",\n      "source_title": "title of page actually visited",\n      "publisher": "archive/publisher/institution",\n      "url": "full URL actually visited",\n      "verification": "primary | secondary",\n      "exact": true only if the page shows these exact words as the author's own; false for a paraphrase, translation variant or condensed version,\n      "context_note": "where and when the words were written or said, only if the source establishes it — provenance only, never an interpretation",\n      "themes": ["short theme labels"]\n    }\n  ]\n}`,
     render: raw => {
-      const packet = cleanPacket(raw);
+      // The research time is a fact about this fetch, so code writes it —
+      // the model's "researched_at" was whatever date it chose to type.
+      if (raw && typeof raw === 'object') raw.researched_at = new Date().toISOString();
+      const packet = cleanPacket(raw, { log: true });
       return packet ? { block: render(packet), data: packet } : { block: '', data: null };
     },
   });

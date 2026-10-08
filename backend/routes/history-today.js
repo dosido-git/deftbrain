@@ -3,6 +3,7 @@ const router = express.Router();
 const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write historical quotes or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -252,6 +253,28 @@ Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, u
     if (!parsed.event_summary) {
       return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
     }
+    // Dates and facts check (2026-10-08). The tool-page example run put
+    // Pompey's 67 BCE command down as a grain-supply fix (it was the anti-
+    // piracy command; the grain one was 57 BCE), dated Caesar's cut of the
+    // grain rolls 59 BCE (46 BCE) and gave Hearst ~30 papers by 1917. "Names,
+    // dates, numbers" is the brief, so every one of them is a claim to check.
+    const fields = [];
+    const walk = (v, path) => {
+      if (typeof v === 'string' && v.trim().length > 20) fields.push([path, v]);
+      else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+      else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+    };
+    parsed.parallels.forEach((p, i) => walk(p, `parallels[${i}]`));
+    walk(parsed.big_idea, 'big_idea');
+    walk(parsed.synthesis, 'synthesis');
+    await withNumberCheck(parsed, {
+      label: 'history-today',
+      context: visitorContext(req.body),
+      fields: fields.filter(([, v]) => /\d/.test(v) || /\b(?:under|during|after|before|when|by)\b/i.test(v)),
+      facts: true,
+      extraRules: `This is history. Check every date, year, reign, office, law, battle, number and attribution against the historical record: a real event placed in the wrong year, assigned to the wrong person, or given the wrong purpose is an error even when the sentence reads well. Fix the fact and keep the sentence. Do not judge the analogy itself, only the facts it rests on.`,
+      userLanguage,
+    });
     res.json(parsed);
 
   } catch (error) {

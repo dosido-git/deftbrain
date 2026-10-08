@@ -3,6 +3,43 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { checkAgainstSupplied } = require('../lib/factCheck');
+const { isSurging } = require('../lib/surge');
+
+// 2026-10-07 quality wave: the main read stated the friend's inner state as
+// fact ("she felt replaced") and filled empty fields with the string "N/A",
+// which renders as a line reading N/A. Placeholders become null in code; the
+// other person's feelings go through the supplied-facts check.
+const PLACEHOLDER = /^\s*(?:n\/?a|none|null|not applicable|-+)\s*\.?\s*$/i;
+function dropPlaceholders(v) {
+  if (Array.isArray(v)) return v.map(dropPlaceholders).filter(x => x !== null);
+  if (v && typeof v === 'object') { for (const k of Object.keys(v)) v[k] = dropPlaceholders(v[k]); return v; }
+  return typeof v === 'string' && PLACEHOLDER.test(v) ? null : v;
+}
+async function groundMend(parsed, body, label) {
+  dropPlaceholders(parsed);
+  if (isSurging()) return;
+  const fields = [];
+  const walk = (v, path) => {
+    if (typeof v === 'string' && v.trim().length > 20) fields.push([path, v]);
+    else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+    else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, path ? `${path}.${k}` : k));
+  };
+  walk(parsed, '');
+  try {
+    await checkAgainstSupplied(parsed, {
+      label,
+      supplied: Object.entries(body).filter(([k, v]) => typeof v === 'string' && v.trim() && !/^user(Language|Locale|Currency|Region)$/.test(k))
+        .map(([k, v]) => `${k}: ${v}`).join('\n'),
+      fields: fields.slice(0, 40),
+      lookFor: `- the other person's feelings, thoughts, motives or reactions stated as fact (she felt replaced, he is hurt that, they think you) when the user did not say so — a possibility worded as one ("may have felt") is fine
+- an event, history or detail about the relationship the user did not give
+Apology wording the user could say, and advice, are the tool's job and are fine.`,
+      repairNote: 'Turn a stated feeling into a possibility (may have felt, could have read it as), or remove it. Keep the advice.',
+      userLanguage: body.userLanguage,
+    });
+  } catch (e) { console.error(`${label} check:`, e.message); }
+}
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted speech or phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -119,6 +156,7 @@ VOICE. Short sentences. No clinical register — not 'the injured party', not 'e
     if (!parsed.level_name) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
+    await groundMend(parsed, req.body, 'apology-calibrator');
     res.json(parsed);
 
   } catch (error) {

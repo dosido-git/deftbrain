@@ -3,6 +3,24 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// Reviewed under the v2 output standard 2026-10-08 (quality wave second
+// sample: core_message said "three emails went unanswered" when the draft
+// showed one was answered, and called the user "the sender"). The prompt
+// already carried the v2 rules; the guard is the check behind them.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'a count, date, amount or event changed from the draft (three unanswered when the draft shows one answered)',
+    'a consequence, deadline, escalation or threat the user did not state',
+    'praise, apology, concession or warmth the user did not express',
+    'a motive, intention or character judgment about the recipient',
+    'a boundary or request wider than the one in the draft',
+    'the user described in the third person (the sender, the user, the visitor)',
+  ],
+  require: ['three sendable messages in the user\'s own voice, same facts and scope as the draft'],
+};
 
 // ════════════════════════════════════════════════════════════
 // POST /velvet-hammer — Turn an angry draft into a sendable message
@@ -95,7 +113,7 @@ Before returning the answer, check every sentence: did the user give me this fac
 Return ONLY valid JSON:
 {
   "session_label": "A short, neutral, recognizable 3-7 word description of the issue — safe to show in a session list later. Never reproduce insults, profanity, accusations, sensitive details, or emotionally charged wording from the draft. Describe the subject, not the user's anger. Example: 'late-night Slack messages'.",
-  "core_message": "One or two sentences stating what survives after the heat is removed, without interpretation or judgment.",
+  "core_message": "One or two sentences, addressed to the user as you, stating what survives after the heat is removed, without interpretation or judgment. Never call the user the sender. Every count and date must match the draft exactly: if the draft shows some emails were answered, do not say they all went unanswered.",
   "variants": [
     {
       "tone": "clear",
@@ -139,6 +157,18 @@ RULES:
     if (!data.variants?.length) {
       return res.status(500).json({ error: 'Failed to generate message variants. Please try again.' });
     }
+
+    await runOutputGuard(data, {
+      label: 'velvet-hammer',
+      fields: [['core_message', data.core_message], ...data.variants.map((v, i) => [`variants[${i}].message`, v?.message])]
+        .filter(([, v]) => typeof v === 'string' && v.trim()),
+      supplied: `THE USER'S OWN DRAFT (every fact, count, date and amount must match this):\n${draft.trim()}\n\nRecipient: ${relationshipMap[relationship] || 'someone'}. Goal: ${goalMap[goal] || 'address the situation'}. Power: ${powerMap[power] || 'roughly equal'}.`,
+      promise: 'The same message with the heat removed, in three tones, keeping every fact, amount and scope exactly as the user gave it.',
+      guard: router.outputGuard,
+      requiredNonEmpty: ['variants[0].message', 'variants[1].message', 'variants[2].message'],
+      userLanguage: req.body.userLanguage,
+      locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+    });
 
     return res.json(data);
 

@@ -357,11 +357,6 @@ function noteApiOutcome(err) {
     message: ((err && err.message) || String(err)).slice(0, 160),
     consecutive: (_apiBlock && _apiBlock.kind === kind ? _apiBlock.consecutive : 0) + 1,
   };
-  // Email as soon as it is a real outage (2nd consecutive refusal) — required
-  // lazily: alerts.js must never be on claude.js's load path.
-  if (_apiBlock.consecutive >= 2) {
-    try { require('./alerts').reportApiBlock(_apiBlock); } catch (_) { /* alerting never breaks a request */ }
-  }
 }
 
 // A single blip is not an outage; two in a row with no success between them is.

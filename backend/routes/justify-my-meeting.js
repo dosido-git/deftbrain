@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -338,6 +339,21 @@ const RULES = [
 const VERDICTS = ['KEEP IT', 'SHORTEN IT', 'FIX IT', 'MAKE IT ASYNC', 'NOT ENOUGH TO TELL'];
 const ZOMBIE_VERDICTS = ['ALIVE AND USEFUL', 'NEEDS A REFRESH', 'TOO FREQUENT', 'SHOULD DIE', 'NOT ENOUGH TO TELL'];
 
+// Reviewed under the v2 output standard 2026-10-08 (quality wave second
+// sample: "deferred for at least three consecutive syncs" when the input
+// supported two, and a "Shorter meeting" whose plan added up to the same hour).
+// The prompt's rules and validateResult's phrase list were already v2 in
+// spirit; the guard reads the whole answer against what was typed.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'a count, frequency or history stated more strongly than the input supports (at least three when two were described)',
+    'a Shorter meeting recommendation whose plan does not take less time than the meeting described',
+    'a claim about how attendees use their time, prepare, or feel that the input does not give',
+  ],
+  require: ['a verdict on whether the meeting earns its time, grounded in what was typed, with a concrete next move'],
+};
+
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
   const walk = (node) => {
@@ -481,6 +497,23 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     if (parsed.better_format) parsed.better_format.recommendation = pinTo(parsed.better_format.recommendation, FORMATS, 'Other');
     parsed.time_footprint = timeFootprint(duration, attendees, null);
     await withNumberCheck(parsed, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage });
+    const fields = [];
+    const walk = (v, path) => {
+      if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]);
+      else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+      else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+    };
+    for (const k of ['one_liner', 'what_we_know', 'why_this_verdict', 'what_earns_the_meeting', 'what_weakens_the_case', 'better_format', 'next_move', 'if_it_has_to_happen']) walk(parsed[k], k);
+    await runOutputGuard(parsed, {
+      label: 'justify-my-meeting',
+      fields,
+      supplied: `THE INVITE OR DESCRIPTION:\n${meetingText.trim()}\nDuration: ${duration ? `${duration} hour(s)` : 'not given'}. Attendees: ${attendees || 'not given'}.\nAnything else: ${context?.trim() || 'nothing'}`,
+      promise: 'A verdict on whether this meeting earns its synchronous time, grounded only in what was typed, with a concrete better format and next move.',
+      guard: router.outputGuard,
+      requiredNonEmpty: ['one_liner', 'next_move'],
+      userLanguage,
+      locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+    });
     res.json(validateResult(parsed));
 
   } catch (error) {
