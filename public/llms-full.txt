@@ -4652,9 +4652,9 @@ The single best question to ask before deciding whether to write minutes, notes,
 ### How to Ask a Friend to Pay You Back (Without Making It Weird)
 
 URL: https://deftbrain.com/guides/money/how-to-ask-a-friend-to-pay-you-back
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-It has been six weeks. They have not sent it. Here are the messages that work — and the rule for when to write it off.
+To ask a friend to pay you back, send a short, friendly text rather than raising it in person, with the exact amount and what it was for, plus your payment link: 'Hey! Just the $40 from drinks at McKinley's — here's my Venmo.' If there's no reply in a week, send one follow-up, then decide whether to let it go.
 
 You covered drinks for them six weeks ago. They said they would Venmo you. They did not. You have seen them three times since, and each time you have had a brief internal debate about whether to bring it up, and each time you have not, because saying you owe me $40 to someone you like seems aggressive about a number that is not life-changing, and yet — six weeks. The amount is now a small splinter in the friendship that is bothering you more than it should.
 
@@ -4662,7 +4662,7 @@ The reason this conversation feels hard is that it is happening too late. Friend
 
 What follows: the script, the timing rule for next time, and what to do when they ghost the message. Then a tool that drafts yours.
 
-**Send a low-key message tonight, not in person**
+**How do you ask a friend for money they owe you?**
 
 Asking in person feels heavier than it is, and the silence after the ask is what makes it weird. A text is the right channel — it is asynchronous, no eye contact, no awkward beat. Tonight: hey — not sure if it slipped your mind but you owe me about $40 from drinks last month. No rush, just flagging. The tone is casual, the amount is specific, the timeline is non-urgent. That is the shape of a message that gets paid.
 
@@ -4747,15 +4747,15 @@ The final rung depends on what you have. Credit card chargeback if you paid by c
 ### How to Escalate When the Official Answer Is No (The External Paths Most People Don't Know Exist)
 
 URL: https://deftbrain.com/guides/money/how-to-escalate-when-the-official-answer-is-no
-Updated: 2026-10-03
+Updated: 2026-10-08
 
-Companies depend on you stopping when they say no. The actual leverage points are usually outside the company — and most consumers don't realize how powerful these external paths are or how easy they are to use.
+When a company's final answer is no, go outside it. In the US, complain to the regulator for that industry (the CFPB for banks and cards, the FCC for telecoms), use a card chargeback for anything you paid by card, consider small claims court for money owed, and file with your state attorney general and the BBB together.
 
 You've gone all the way through the company's escalation chain. Frontline support said no. The supervisor said no. The supervisor's supervisor said no. Customer relations said no. The executive office, when you reached it, said no. The official answer is, in fact, no, delivered with consistent and increasingly polite firmness. Most people stop here, partly because they've run out of internal options to try and partly because they assume that the company's repeated no must be the actual end of the conversation.
 
 It usually isn't. Companies have internal authority limits, but the consumer protection ecosystem outside any individual company has more leverage than the company itself does. Regulators, attorneys general, chargeback systems, and small claims courts can override decisions that no internal escalation could reach — and they're meaningfully more accessible than most consumers realize. The companies that depend on customers giving up at the internal-no stage are also exactly the companies that often suddenly find new options when an external escalation begins.
 
-**Match the regulator to the industry**
+**Who can you complain to when a company refuses to help?**
 
 Different industries have different regulators with different powers. Banks and credit cards: Consumer Financial Protection Bureau (CFPB). Telecom and cable: Federal Communications Commission (FCC). Airlines: Department of Transportation (DOT). Insurance: your state's insurance commissioner. Investment firms: SEC or FINRA. Healthcare billing: state attorney general or state department of health. Utilities: your state's public utility commission. The regulator's website will have a complaint form that takes 10-20 minutes to complete. They forward the complaint to the company with a required response window — usually 30-60 days. The complaint goes into a public record. Companies that ignored your direct contact often respond within days when the regulator is the forwarder, because non-response to a regulator-flagged complaint creates a different kind of problem for them than ignoring a customer email.
 
@@ -4778,9 +4778,9 @@ Frequently, what happens after you've started external escalation is that the co
 ### How to Push Back on Bank Fees (And Actually Get Them Refunded)
 
 URL: https://deftbrain.com/guides/money/how-to-push-back-on-bank-fees
-Updated: 2026-04-27
+Updated: 2026-10-08
 
-Most bank fees are reversible if you know what to ask for and how to ask. The script is short, the success rate is high, and almost no one uses it.
+To get a bank fee refunded, call rather than using chat, ask for the refund directly instead of arguing that the fee was unfair, and if they hesitate, ask whether they can refund it 'as a courtesy'. Banks often waive a first overdraft or occasional fee for customers in good standing. If the answer is no, ask politely for a supervisor.
 
 It's $35 for the overdraft. Or $25 for the wire transfer that you didn't realize had a fee. Or $12 for the monthly maintenance charge that's been quietly recurring for two years. The amount feels small enough to ignore but specific enough to be annoying — and you're not sure whether banks actually refund things like this or whether complaining about a thirty-five dollar fee makes you the customer everyone in the call center groans about.
 
@@ -4790,7 +4790,7 @@ Banks refund fees routinely — and they frequently waive the first fee if you s
 
 Most fee refunds happen on the phone. The chat tool, the in-app messaging, and the email contact form are all designed to deflect. They route you through scripted decision trees that conclude 'this fee is valid' more than they conclude 'we'll refund it.' Phone agents have refund authority that chat agents don't. Find the customer service number on the back of your card, get past the menu by saying 'representative' until a person picks up, and have the date and amount of the fee ready before you start.
 
-**Ask for the refund directly — don't argue the fee**
+**How do you get a bank to refund a fee?**
 
 Resist the urge to explain why the fee is unfair. Banks aren't refunding fees because they agree the fee was unjustified; they're refunding because retaining you costs less than acquiring a new customer. So the right opening isn't 'this fee shouldn't have been charged.' It's 'I'd like to request a refund of the [amount] fee charged on [date].' Direct, polite, no debate. The agent will check, ask a couple of questions, and tell you what they can do. The shorter the request, the higher the success rate.
 
@@ -4846,9 +4846,9 @@ Hospitals in the U.S. have been required since 2021 to publish their standard ch
 ### How to Spot a Bad Deal That Looks Good (Before You Click Buy)
 
 URL: https://deftbrain.com/guides/money/how-to-spot-a-bad-deal-that-looks-good
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-The price is great, the reviews are five stars, the photos look amazing. Here's how to tell whether you're about to save money or about to throw it away.
+To spot a bad deal that looks good, search the brand outside the marketplace (real brands have a history), read the low reviews before the five-stars, look for reviews bunched into a few weeks, compare the photos for inconsistencies, and read the return policy for overseas returns or restocking fees.
 
 It looks like a steal. The product is half the price of the brand-name version. The reviews are mostly 4 and 5 stars. The photos look professional. The seller has a name that sounds plausible. Everything checks out enough that you almost click buy. Almost. There's something just slightly off — the brand name you've never heard of, the slightly-too-perfect product description, the reviews that are all weirdly enthusiastic — but you can't quite pin down what's wrong.
 
@@ -4870,22 +4870,22 @@ Real product reviews accumulate slowly over months. Suspicious products often ha
 
 Real product photos are usually slightly imperfect — different lighting, different angles, taken at different times. Suspicious listings often use a mix of stylized professional photos for the product, plus stock images, plus AI-generated images. If one photo shows the product in pure white-background studio mode and another shows it in a 'lifestyle' setting that looks like AI, that's a flag. The product the seller is selling isn't necessarily the same product they have photos of.
 
-**Read the return policy carefully**
+**What should you check before buying a cheap product online?**
 
 Bad deals often hide in the return policy. 'Free returns' might mean you pay shipping. 'Money-back guarantee' might require returning to an address overseas at your cost. 'Lifetime warranty' might be void the moment you've used the product normally. A legitimate seller has a clean, simple return policy. A predatory seller buries hostile terms in legalese. If the return policy is harder to find or read than the product description, treat it as a flag — not because every long policy is bad, but because hostile terms hide in length.
 
 ### How to Spot Fake Amazon Reviews
 
 URL: https://deftbrain.com/guides/money/how-to-spot-fake-amazon-reviews
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Fake reviews follow patterns. Once you can see them, the real review pool is much smaller — and the product is much clearer.
+To spot fake Amazon reviews, look at the shape of the ratings rather than the average, sort by date to find bursts of reviews in a single week, and read the one- and two-star reviews first. Search for phrases repeated across reviews, and open a few reviewers' profiles to see whether their other reviews look like a real person's.
 
 You're looking at a product with 4,200 five-star reviews. The number feels like proof. Then you start reading and something is off — review after review with the same praise, the same length, the same suspiciously enthusiastic phrasing. Some are fake; you can't tell which. The five-star average isn't lying exactly, but it's not telling you the thing you wanted to know either, which is whether this product will work for you.
 
 Fake reviews follow patterns, and once you can see them, the real review pool is much smaller and much clearer. Below are five tells that work across categories — they apply to Amazon, but the same patterns show up everywhere reviews can be gamed.
 
-**Look at the review distribution shape, not the average**
+**How can you tell if Amazon reviews are fake?**
 
 Real products produce a J-shaped review distribution: lots of 5-stars, some 4s, fewer 3s, and a small but real tail of 1- and 2-stars from people who hated it. Fake-pumped products show a U-shape — huge five-star spike, very few middle reviews, sometimes a small one-star tail from real angry buyers. If the distribution is mostly 5s and 1s with almost nothing in between, the 5s are doing too much work. Look at the bar chart, not the average.
 
@@ -4939,15 +4939,15 @@ Sometimes the act of receiving a well-structured complaint letter is what produc
 ### Red Flags in Product Reviews That Mean It's Fake
 
 URL: https://deftbrain.com/guides/money/red-flags-in-product-reviews-that-mean-its-fake
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-The signs of fake reviews are visible if you know what to look for. Here are the five most reliable tells, and what to do when you spot them.
+The red flags of a fake product review are generic praise with no specific use, the full product and brand name repeated, a competitor named and knocked down, a reviewer who posted many unrelated five-star reviews in a few days, and a conspicuous focus on a competitor's known weakness. One flag may mean nothing; two or more usually do.
 
 You can tell a fake review when you see one — almost. Sometimes you read a five-star review and it's just enthusiastic, and sometimes you read a five-star review and something's off, and you couldn't say what. The off-ness has signatures. Once you can name them, the read goes from gut feeling to pattern recognition, and the fake-review filter starts working in real time as you scroll.
 
 Below are the five most reliable red flags. Each one alone might mean nothing; two or more in the same review almost always means fake.
 
-**The review is generic praise without specific use**
+**What does a fake product review look like?**
 
 "I love this product! It works great and I would highly recommend it to anyone." That's a fake review template. Real reviews mention specific use: when they used it, what they used it for, what they noticed. "I bought this for my apartment kitchen, and it fits exactly between the fridge and the wall — measure first." That kind of specificity is hard to fake at scale. Generic enthusiasm is easy. If you can't tell from the review what the product actually is, the review isn't real.
 
@@ -5003,9 +5003,9 @@ Utilities and internet are usually split evenly, since use is hard to measure, t
 ### What to Use Now That Fakespot Is Gone
 
 URL: https://deftbrain.com/guides/money/what-to-use-now-that-fakespot-is-gone
-Updated: 2026-07-29
+Updated: 2026-10-08
 
-Mozilla retired Fakespot in mid-2025, and the grade-the-page browser extension model went with it. Here's what actually replaced it, what didn't, and how to judge a review section yourself in about two minutes.
+Mozilla shut down Fakespot in 2025, and nothing free now gives the same one-glance grade. Check whether any replacement extension is trustworthy before installing it, and learn the quick manual check that works on any site: read the most recent and lowest-rated reviews, look for bursts of reviews, and check that reviews are about this exact product.
 
 If you got used to glancing at a letter grade before trusting a product's reviews, you've probably noticed that habit stopped working. Mozilla acquired Fakespot in 2023, folded it into Firefox as Review Checker, and then discontinued both: the in-browser Review Checker was retired on June 10, 2025, and the extensions, mobile apps and website went offline on July 1, 2025. Mozilla's explanation was blunt — the products "didn't fit a model we could sustain."
 
@@ -5023,7 +5023,7 @@ ReviewMeta was the other well-known name in this category, with an approach many
 
 A vacuum this visible attracts filler. In the months after the shutdown, a crop of extensions and sites appeared promising Fakespot-style grading. Some are honest efforts; others are affiliate operations where the 'analysis' exists to funnel you toward whatever product pays the referral, or data-collection plays where a browser extension that reads every page you visit is the actual product and the review grade is the excuse. Two questions filter most of it: does the tool tell you how it reaches its verdict, and does it ever say 'these reviews look fine'? A grader that finds something suspicious about everything is either broken or selling something. A grader that won't explain its reasoning can't be checked, which means it can't be trusted on the purchase where it matters most.
 
-**Learn the four signals that survive any tool going offline**
+**How can you check reviews without Fakespot?**
 
 The manual version takes about two minutes and never gets discontinued. First, sort by most recent and read those, not the top-rated ones — manipulation is usually a campaign, and campaigns have dates. Second, look for timing clusters: dozens of five-star reviews inside a few days, especially near the listing's launch or right after a run of bad ones, is the single strongest signal available to a human reader. Third, click through two or three glowing reviewers and check whether they have any other review history, or whether their history is thirty five-star reviews of unrelated cheap products. Fourth, read the three-star reviews — they are the least worth faking in either direction, and they are where the real defects get described in specific, unenthusiastic detail. If those four checks come back clean, the review section is probably honest. If two or more look wrong, treat the rating as decoration.
 
@@ -5038,9 +5038,9 @@ That's the whole manual method, in the order that finds problems fastest. It wor
 ### Why Does Bottled Water Cost So Much (When the Stuff in It Is Basically Free)
 
 URL: https://deftbrain.com/guides/money/why-does-bottled-water-cost-so-much
-Updated: 2026-04-27
+Updated: 2026-10-08
 
-The water in the bottle costs almost nothing. Almost everything else in the price tag is markup — and once you know what's in it, the number gets harder to pay.
+Bottled water costs so much because you are paying almost entirely for things other than the water: the bottle, label and cap, transporting heavy cases and paying for shelf space, the brand, and the seller's margin — which is highest where you have no alternative, such as airports, stadiums and hotel minibars.
 
 You're at the gas station, the airport, the hotel mini-bar, the music festival. The water is $4. You buy it because you're thirsty and also because at this point arguing with the price feels exhausting. Somewhere in the back of your mind, a small voice notes that the substance you're buying — water — was running through the tap in your kitchen this morning for less than a penny per gallon. The voice is correct. The math is upsetting.
 
@@ -5062,7 +5062,7 @@ Water is heavy. A 24-pack weighs 30 pounds, and trucking it from a bottling plan
 
 This is the part that varies most. Store-brand water is ~$0.20–0.40 per bottle wholesale. Aquafina and Dasani are roughly the same product wearing better packaging, sold at a 30% premium. Fiji, VOSS, and Smartwater layer on additional brand premium that's pure margin — not better water, not better logistics, just the right shape, the right name, and the right shelf adjacency. The minute the bottle is designed to look luxurious, you're paying for the design.
 
-**Margin and the psychology of thirst**
+**Why is bottled water so expensive at airports?**
 
 After all the costs, bottled water margins typically run 25–50%, which is high but not extraordinary for consumer products. The extraordinary part is *where* you're buying it. Airports, stadiums, and hotels know you can't bring water in, can't easily leave to find cheaper, and are physiologically pressured to buy. These are not pricing-the-product venues; they are pricing-your-circumstance venues. The $5 airport water isn't $5 because the water is special. It's $5 because you have nowhere else to go.
 
@@ -5071,9 +5071,9 @@ After all the costs, bottled water margins typically run 25–50%, which is high
 ### How Do I Know If My Dog Is Sick? The Signs That Actually Matter
 
 URL: https://deftbrain.com/guides/pets/how-do-i-know-if-my-dog-is-sick
-Updated: 2026-04-25
+Updated: 2026-10-08
 
-Dogs can't tell you they don't feel good — they show you. Five categories of signs that consistently mean something is wrong, plus the emergencies that turn watch-and-wait into call-now.
+The signs a dog is sick are changes across a day or more in appetite, toilet habits, energy and engagement, and physical signs such as gum color. One skipped meal in a bright dog is usually nothing. Pale, white or blue gums, collapse, a swollen belly with unproductive retching, or difficulty breathing need a vet immediately.
 
 You can't ask your dog how they're feeling. You can only watch. And dogs are spectacular at hiding when something's wrong — leftover wolf wiring tells them showing weakness gets you eaten. They will compensate, conceal, and carry on long after a person in the same condition would be on the couch.
 
@@ -5095,7 +5095,7 @@ Healthy dogs have a recognizable engagement level — they meet you at the door,
 
 Five things you can actually check, not just observe. Gum color: pink and moist is normal; pale, white, blue, yellow, or brick-red is not. Press your fingertip on the gum — color should return in under two seconds. Breathing: rapid panting at rest, or visible effort when not exercising or hot, is concerning. Hydration: pinch the skin between the shoulder blades; it should snap back. Skin that stays tented is dehydration. Temperature: a warm or dry nose is not a reliable test — take a real temp if you suspect fever. Normal is 101–102.5°F; over 103°F is fever territory. Belly: a hard, distended, painful belly, especially with restlessness or unproductive retching, is a same-day emergency.
 
-**Know the emergencies you don't wait on**
+**When should you take your dog to the vet immediately?**
 
 Some signs aren't on the same scale as the rest of this guide. Pale, white, or blue gums. Collapse or sudden inability to stand. A bloated, hard belly with unproductive retching — that's bloat, and it kills dogs in hours, not days. Severe breathing distress. Seizure. Suspected toxin ingestion (chocolate, grapes, xylitol, rodenticide, antifreeze, certain plants). Sudden inability to use the back legs. Repeated bloody vomiting or bloody diarrhea with lethargy. These are ER visits, not vet appointments. The rest of this guide is about reading signals and deciding when to call. This step is the one where the deciding is already done — go now.
 
@@ -5106,9 +5106,9 @@ Three questions that turn a vague worry into a useful read. New + brief + isolat
 ### Is My Dog Sick or Just Tired? How to Tell the Difference
 
 URL: https://deftbrain.com/guides/pets/is-my-dog-sick-or-just-tired
-Updated: 2026-04-25
+Updated: 2026-10-08
 
-Your dog has been off all day and you can't tell if it's a low-energy day or something wrong. Five signals that separate just tired from actually sick, plus the emergencies that don't wait until morning.
+A tired dog still engages — eyes follow you, the tail thumps, they eat, if slowly — and bounces back after a night's rest. A sick dog stops engaging, loses interest in food, is still off the next day, or shows several symptoms together. Abnormal gum color, collapse or a swollen belly with retching need a vet now.
 
 Your dog has been quiet all afternoon. Not interested in their toy. Got up for dinner but barely ate. They're not limping, not throwing up, not panting weird — they're just... off. You're 90% sure it's nothing. The other 10% is what made you open this tab at 11pm.
 
@@ -5122,7 +5122,7 @@ A tired dog is still your dog. Their eyes track you when you walk in. They lift 
 
 Tiredness dulls enthusiasm; sickness switches off interest. A dog who is merely wiped out will still amble over for dinner — maybe eat slower, maybe leave some behind — because being tired doesn't turn off hunger. A dog who ignores the bowl entirely, or sniffs it and walks away, is telling you something different. Weigh it against the day, too: a long hike, a hot afternoon, or a stressful outing can flatten a single meal without meaning anything. In a dog who's just tired, it's the next meal that decides — appetite comes back with the energy. If the energy returns and the appetite doesn't, stop filing it under tired.
 
-**Check the recovery overnight**
+**How long should a dog be tired before you worry?**
 
 Tired bounces back. Sick doesn't. A dog who had a quiet afternoon and is bright the next morning was just tired — case closed. A dog who's been off for 24 hours and is still off the next morning isn't recovering on the normal timeline, and that's the cleanest single test in this guide. Most 'tired' resolves by the next day. Most 'sick' doesn't. If you're somewhere on the line at 11pm, the smartest move is often to sleep on it and re-evaluate in the morning. If they're back to normal, you have your answer. If they're not, call the vet.
 
@@ -5141,9 +5141,9 @@ The three questions that separate tired from sick. Hours usually mean tired; a f
 ### Weird Cat Behaviors, Explained (And When to Actually Worry)
 
 URL: https://deftbrain.com/guides/pets/weird-cat-behaviors-explained
-Updated: 2026-04-25
+Updated: 2026-10-08
 
-Cats are weird on purpose, but a small fraction of weirdness is them telling you something is off. Five common cat behaviors explained, plus the change-in-baseline rule that separates quirky from concerning.
+Most weird cat behavior, such as staring at walls, hiding and night-time noise, is normal because cats sense sounds, smells and movement people miss. What matters is a change from your cat's usual behavior: over-grooming with bald patches, hiding that is new, eating non-food items, or an older cat who starts yowling at night are worth a vet visit.
 
 Your cat is staring at the wall. Or the ceiling. Or, somehow, both at once. They've been doing it for ten minutes. You are now Googling, against your better judgment.
 
@@ -5153,7 +5153,7 @@ Cats are weird on purpose. Their wiring is built around predator senses we can't
 
 Cats see, hear, and smell things you don't. Air currents, dust motes catching light, the high-frequency hum of a power supply, an insect on the ceiling, the soft scrape of a mouse two rooms away. When your cat stares at 'nothing,' they're almost always processing something real to them. This is the most reliably quirky behavior in this guide. The pattern — sudden focus, locked posture, occasional ear-tracking — is normal predator wiring. The concerning version is rare: persistent wall-staring without focus, often combined with disorientation or unusual vocalization, which can signal cognitive changes in elderly cats. For a cat under 10 with intermittent wall-watching, you're fine.
 
-**Read the over-grooming**
+**When is a cat's behavior a sign something is wrong?**
 
 Cats groom roughly 30% of their waking time. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.
 
@@ -5178,9 +5178,9 @@ Cats are masters at hiding distress — a cat who's still eating, grooming, and 
 ### Hobbies for Introverts That Don't Feel Forced
 
 URL: https://deftbrain.com/guides/practical/hobbies-for-introverts-that-dont-feel-forced
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-The standard hobby suggestions for introverts feel either lonely or secretly social. Here is how to find solo hobbies that actually feel restorative.
+Good hobbies for introverts are ones that are better alone rather than just possible alone, that absorb your full attention (drawing, pottery, fermenting, puzzles, gardening), that don't need an audience, and that you can start at home without planning. Treat the time as recovery, not productivity.
 
 Every list of hobbies for introverts is the same. Reading. Writing. Knitting. Then suddenly, halfway through, the list pivots to join a small book club, take a writing workshop, find a pottery group. As if the real point of solo hobbies is to use them as a low-stakes way to meet people. You are not against meeting people. You are looking for things to do alone that genuinely feel good when done alone — not as a stepping stone to anything.
 
@@ -5192,7 +5192,7 @@ What follows: how to recognize solo hobbies that actually fit, with examples. Th
 
 Some hobbies are technically doable alone but are clearly designed as social — they are bigger and richer with other people. Board games. Improv. Hiking with friends. The solo version always feels like a compromise. Look for hobbies where solo is the intended mode and the social version is the variant: writing, drawing, cooking for yourself, woodworking, fly tying, gardening. The pleasure is in the doing, not in the company. These restore introverts. The other kind drains them by reminding them they are alone.
 
-**Look for hobbies with a strong absorption quality**
+**What are good hobbies for introverts?**
 
 Introverts often crave activities that occupy attention completely — what some people call flow. Hobbies with high absorption: detailed drawing, pottery, fermenting, complex cooking, any kind of repair work, jigsaw puzzles, writing, restoration projects. The absorption is part of why these are restorative. They give the social-processing part of your brain a long break. Hobbies that do not absorb you (light reading, casual sports, scrolling) might be enjoyable but they do not produce the restoration that absorbing hobbies do.
 
@@ -5211,9 +5211,9 @@ Introverts sometimes apply work-style metrics to hobbies — am I improving? Am 
 ### How to Find a Hobby You'll Actually Stick With
 
 URL: https://deftbrain.com/guides/practical/how-to-find-a-hobby-youll-actually-stick-with
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Most hobbies fade in the first month. Here are the predictors that distinguish hobbies that stick from hobbies that get abandoned, and how to filter for them.
+To find a hobby you'll stick with, choose one that is enjoyable early rather than months into practice, fits into ten-minute pockets instead of scheduled blocks, and shows you clear progress. Don't announce it publicly, and give it about eight weeks before deciding, since most hobbies feel awkward for the first month.
 
 You have started six hobbies in the last three years. None of them stuck. The yoga mat is in the closet. The watercolors are dried. The guitar leans against the wall, untouched, judging you. You have started to suspect that the problem is you — that you are someone who picks things up and drops them, and that there is no point starting another one. The pattern keeps repeating and you keep blaming yourself.
 
@@ -5237,16 +5237,16 @@ Hobbies that show you are getting better stick. Hobbies that do not, fade. Runni
 
 Telling everyone you are picking up a new hobby seems like accountability but usually backfires. The public commitment locks you in psychologically; quitting now feels like admitting failure to people you cared about impressing. People often quit privately and then carry shame about the quitting. Better: do the hobby quietly for two months. If it takes, it takes. If not, you can drop it without anyone noticing. The hobbies that stick are the ones you would do anyway, not the ones you announced.
 
-**Give it eight weeks before you decide**
+**How long should you try a hobby before quitting?**
 
 Most hobbies feel awkward and effortful for the first three to four weeks. The version of you that judges whether it is working is impatient and biased toward stopping. Set a private commitment to keep going for eight weeks before you evaluate. Many hobbies that felt forced at week three will feel natural at week eight. If at week eight it still feels like a chore, it is probably not the right hobby for you — but the eight-week threshold is what separates real assessments from premature ones.
 
 ### How to Get a Recap of a Show Without Spoilers (For the Part You Haven't Watched Yet)
 
 URL: https://deftbrain.com/guides/practical/how-to-get-a-recap-of-a-show-without-spoilers
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Every recap online assumes you're caught up. You aren't. Here's how to get the parts you actually need without the parts you're trying to avoid.
+To get a recap of a show without spoilers, name your exact stopping point (season and episode), decide what counts as a spoiler for you, and ask for what has been established so far rather than what happens next. Avoid wikis and fan aggregators, which mention later events, and watch one episode before chasing more detail.
 
 You stopped watching halfway through season two. You want to come back. You search for a recap and every result either starts at the beginning (covering ground you remember) or goes through the current season (revealing things you don't want revealed). The wiki is worse — major plot points spoiled in the first paragraph of every character page. There's no obvious way to get exactly the chunk you need without contaminating the rest.
 
@@ -5264,7 +5264,7 @@ Some viewers don't want plot spoilers but are fine with character spoilers (who'
 
 A good recap-up-to-a-point summarizes what's been established — the relationships, the conflicts, the revealed mysteries — without any 'and then later, X happens.' If the source can't make that distinction, it's not the right source. The structure you want: 'as of episode N, here's the state of play.' Past tense, current state. No future tense, no foreshadowing.
 
-**Avoid wikis and aggregators**
+**Where can you get a TV recap without spoilers?**
 
 Wikis are designed to be comprehensive, which means spoiler-rich. Even when you click on a season-2 character page, the page will mention things from season 6 because it was written by someone fully caught up. Same with most aggregator sites. Stick with sources that bound the recap by request — written episode recaps from when the season aired, or a tool that lets you set the boundary explicitly.
 
@@ -5275,9 +5275,9 @@ Even a great recap will leave gaps. Don't try to perfect the recap until everyth
 ### How to Pronounce Names From Languages You Do Not Speak
 
 URL: https://deftbrain.com/guides/practical/how-to-pronounce-names-from-languages-you-dont-speak
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-There is a respectful middle path between butchering the name and faking the accent. Here is how to find it.
+To pronounce a name from a language you don't speak, look it up before you need to say it — the person's own recording, a pronunciation site, or someone who knows them — and aim for the actual sounds rather than an anglicized version, without putting on an accent. Practise it aloud a few times, and invite a correction once.
 
 Your new colleague's name is from a language you do not speak. You have looked at it written down and you have ideas, none of which you trust. You will introduce them to the team in twenty minutes. You will hear yourself say their name aloud for the first time. You would like to not embarrass yourself, them, or both.
 
@@ -5285,7 +5285,7 @@ The ground rule for pronouncing names from unfamiliar languages is that there is
 
 What follows: the practical method for any unfamiliar name. Then a tool that gives you a guide calibrated to your ear.
 
-**Look up the pronunciation before the moment, not during**
+**How do you find out how to pronounce someone's name?**
 
 Most pronunciation disasters happen because people try to wing the first attempt. A 30-second look-up before the meeting prevents almost all of them. A pronunciation tool, an audio clip, a quick ask of someone who knows the language. The asymmetry is huge: 30 seconds of prep prevents months of getting it wrong. Build the habit of looking up names before the call, not during it.
 
@@ -5308,9 +5308,9 @@ If you have an introduction or meeting coming up, say the name out loud — to y
 ### How to Pronounce Wine Names Without Sounding Pretentious
 
 URL: https://deftbrain.com/guides/practical/how-to-pronounce-wine-names-without-sounding-pretentious
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-There is a way to pronounce wine names correctly that does not make you sound like a snob. Here is what it is.
+To pronounce wine names without sounding pretentious, say the name once at normal speed, get the stressed syllable right (most French names stress the last one) and let the rest be close enough, and skip the exaggerated French accent. Match the room, and if you're unsure, ask the server rather than pointing at the menu.
 
 You are at a restaurant. You want the Châteauneuf-du-Pape. There are roughly four ways to pronounce it, and three of them will make the table groan. Pronounce it too American and the waiter winces. Pronounce it too French and your friends roll their eyes. There is a narrow middle path where the wine arrives without anyone hating you, and you would like to find it.
 
@@ -5330,7 +5330,7 @@ If you are at a bistro with friends, full French pronunciation is overdone. If y
 
 Trying to sound French on every consonant — the rolled r, the breathy h, the perfectly nasal vowel — is what tips into pretension. Hit the vowels closer to the French version. Let the consonants stay at your normal speech level. Pinot Noir said with French vowels and English consonants sounds correct without performing.
 
-**Get the stress right and let the rest be approximate**
+**How do you pronounce French wine names?**
 
 The stress placement is the part most people get wrong, and getting it right does more than any other adjustment. Most French wine names stress the last syllable: cha-TEAU, bor-DEAUX, mer-LOH, beau-jo-LAY. If you only fix one thing, fix the stress. Approximate vowels with correct stress sound far better than perfect vowels with English stress.
 
@@ -5341,9 +5341,9 @@ Pointing at the menu — the wine on the third line — is what makes it look li
 ### How to Wash Clothes Without Shrinking Them
 
 URL: https://deftbrain.com/guides/practical/how-to-wash-clothes-without-shrinking-them
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Three things shrink clothes: heat, agitation, and water that swells the fibers. Avoid those three and almost nothing in your closet will shrink again.
+Clothes shrink from heat, agitation and moisture swelling the fibers, so to avoid it, wash natural fibers in cold water, use the delicate cycle or hand-wash wool, cashmere and silk, and air-dry anything you would be sad to lose. Wash sweaters inside out in a mesh bag, and follow the care label.
 
 It happened again. You pulled a sweater out of the dryer and it has become a sweater for a child. The cashmere you were hoping would last forever has tightened up like a felted ball. Or the t-shirt you loved is now too tight in the shoulders even though it fit perfectly two weeks ago. You did the laundry the same way you always do. Something specific is going wrong and you cannot quite identify what.
 
@@ -5359,7 +5359,7 @@ Heat from hot water swells natural fibers (wool, cotton, linen, silk) — and th
 
 Agitation is the second shrinkage driver. The delicate cycle reduces the speed and aggressiveness of the drum's tumbling. For wool, cashmere, silk, and any structured garment, use it. For really sensitive items — fine wool, silk blouses, lingerie — hand-wash in cool water with a gentle detergent. Hand-washing takes ten minutes, and it is the difference between owning the sweater for fifteen years and replacing it after two.
 
-**Skip the dryer for anything you would be sad to lose**
+**Does the dryer shrink clothes?**
 
 Most shrinkage that catches people off guard happens in the dryer, not the washer. Heat plus tumbling is the most aggressive combination there is. Air-dry anything natural, anything fitted, anything you paid more than thirty dollars for, anything you cannot easily replace. Hang on a drying rack or a clothesline. For sweaters, lay flat to dry — hanging stretches them. The dryer is fine for towels, sheets, and casual cotton. For everything else, it is the single biggest threat in your laundry routine.
 
@@ -5374,9 +5374,9 @@ Care labels exist because the manufacturer tested the fabric and knows what it c
 ### Icebreakers That Do Not Feel Forced
 
 URL: https://deftbrain.com/guides/practical/icebreakers-that-dont-feel-forced
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-The reason most icebreakers fail is they announce themselves. Here is how to break the ice without anyone noticing.
+Icebreakers that don't feel forced are ones guests don't notice: an unusual object on the table to react to, a small job to do on arrival, food and drink placed so people have to cross the room, and a topic seeded in one conversation that spreads. Skip the circle where everyone shares a fun fact.
 
 Someone is gathering everyone in a circle. They are about to ask you to share a fun fact about yourself. You can already feel the room shrinking. The fun fact you used at the last team retreat will not work here. The one before that was about a cat you no longer have. You consider faking a phone call.
 
@@ -5400,16 +5400,16 @@ Instead of announcing icebreaker time, rearrange the physical space so guests ha
 
 If you want a topic to spread through the room, do not announce it. Bring it up loudly in your own conversation with one other guest, and let it travel by overhearing. What is the worst job you ever had. What did you almost name your kid. What is something you only learned at thirty. The question becomes the room's question without ever being introduced.
 
-**Skip the circle entirely**
+**Why do icebreakers feel forced?**
 
 The classic icebreaker mistake is gathering everyone in a circle for a structured share. It is the one format guaranteed to feel forced because it is performance under social spotlight. If you must do something structured, do it in pairs or trios, simultaneously, so no one is watching anyone else. Or skip the structured piece entirely and trust the objects, tasks, and proximity to do the work.
 
 ### What to Do When Your Party Is Dying
 
 URL: https://deftbrain.com/guides/practical/what-to-do-when-your-party-is-dying
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-It is hour two and the energy has dropped. Here are the moves that can revive it without making it weird.
+When a party is dying, change the physical space — lighting, music source, a door opened — introduce one new thing such as food, a playlist or a quick game, and break up stale clusters by pulling people into a small task. For a deep dip, create a shared moment like a toast or group photo. Sometimes the right move is a graceful close.
 
 It is 10pm. There are seventeen people in the apartment, but somehow it feels like four. Two clusters in opposite corners. Three people on phones. One person eating chips alone at the counter. The playlist is fine. The drinks are fine. The energy died about twenty minutes ago and you have been pretending not to notice.
 
@@ -5417,7 +5417,7 @@ A party in the trough is not unsalvageable. The dip is normal — most events ha
 
 What follows: the moves that revive an event in real time. Then a tool that engineers the flow before the dip even happens.
 
-**Change the room**
+**How do you revive a party?**
 
 The single fastest way to reset energy is to physically move people. Open a door that was closed. Move the music to a different speaker. Light a candle. Turn off an overhead light. Bring a tray to the rooftop. Guests follow the change. The act of relocating gives a stale conversation a natural exit and a new one a starting point. Stagnant rooms produce stagnant parties.
 
@@ -5440,15 +5440,15 @@ Some dips are recoverable and some are not. If guests have been there four hours
 ### Why Do My Bike Brakes Squeak?
 
 URL: https://deftbrain.com/guides/practical/why-do-my-bike-brakes-squeak
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Five causes of brake squeak, from the harmless to the serious. The fix order that works without buying new pads first.
+Bike brakes usually squeak because the pads or rotor are contaminated with oil or grime. The other causes, in order of likelihood, are glazed pads, a misaligned caliper, pads worn down to the metal, and a bent rotor. Clean the rotor with isopropyl alcohol first, before buying new pads; worn-through pads need replacing straight away.
 
 You ride into the driveway, you pull the brake, and the whole street hears it. A high-pitched squeal that turns heads. The brake itself works — the bike stops — but the sound is so loud and so embarrassing that you start wondering if you should just leave the bike at home.<br/><br/>Brake squeak almost always has a fixable cause. The annoying part is that it can be five different causes, and the wrong fix wastes money. The right move is to diagnose first, then act.
 
 The five causes, in order of likelihood — start at the top.
 
-**The pads or rotor are contaminated**
+**What is the most common cause of squeaky bike brakes?**
 
 This is the number-one cause. Chain lube, road grime, or anything oily that splashed on the rotor or pads will make them squeal. The fix: clean the rotor with isopropyl alcohol and a clean rag. If the pads are also contaminated, pull them out, sand the surface lightly with fine sandpaper, and reinstall. If alcohol and sanding do not solve it, the pads are saturated and need replacing — but try cleaning first because pads are not free.
 
@@ -5473,9 +5473,9 @@ If you spin the wheel and watch the rotor between the brake pads, it should trac
 ### How to Cut Down a Presentation That Is Too Long
 
 URL: https://deftbrain.com/guides/presentations/how-to-cut-down-a-presentation-thats-too-long
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Your runthrough was 45 minutes. The slot is 30. Cutting feels brutal. Here is how to cut effectively without losing what matters.
+To cut down a presentation that runs too long, cut setup and background before anything else, keep the first example for each point and drop the rest, merge slides that make the same point, and be willing to cut the section you most enjoyed preparing. Re-time it out loud after every round of cuts, because paper estimates run short.
 
 You did the runthrough. It was 45 minutes. The slot is 30. You have to cut a third of the material and you do not know which parts to drop. Every slide felt important when you wrote it. Cutting feels like losing parts of the argument. The temptation is to talk faster instead of cutting, which produces a worse version of the same long talk.
 
@@ -5483,7 +5483,7 @@ Long presentations are usually long for predictable reasons — too many setup s
 
 Here is the cutting protocol.
 
-**Cut the setup, not the conclusion**
+**What should you cut from a presentation that's too long?**
 
 Most long presentations spend too much time on setup — context, history, definitions, "before we get to the main point" framing. The audience will tolerate weak setup but loses interest in weak conclusion. Cut setup ruthlessly. Get to the main point in the first three minutes. The setup material can be referenced briefly when needed, not pre-loaded as if the audience cannot follow without it.
 
@@ -5506,9 +5506,9 @@ Cuts made on paper lie. Removing a slide does not remove all its time — you st
 ### How to Handle Hostile Questions in a Presentation
 
 URL: https://deftbrain.com/guides/presentations/how-to-handle-hostile-questions-in-a-presentation
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-Some questions are not really questions. Here is how to recognize hostile framing, address the real concern underneath, and not lose the room.
+To handle a hostile question in a presentation, pause before answering, name the legitimate concern underneath ('the real question is whether these numbers hold up'), answer that concern briefly, and decline to be drawn into a debate. Stay calmer than the questioner, and if they won't release the floor, offer to continue afterwards.
 
 You have given the presentation. Q&A starts. The first question is not a question. It is a statement disguised as one — somebody who clearly disagrees with your conclusion, framed in a way that makes any answer sound defensive. The room is watching. The hostile questioner is watching. You feel your pulse in your ears. Whatever you say next is going to set the tone for the rest of the session.
 
@@ -5520,7 +5520,7 @@ What follows: the techniques. Then a tool that surfaces hostile questions before
 
 The instinct under hostility is to rush — to fill the silence, to defend, to push back. Do the opposite. Pause. Long enough to feel uncomfortable. Then answer. The pause does three things: it shows you are not rattled, it signals to the room that you are taking the question seriously, and it gives you a few seconds to figure out what the questioner is actually after. Watch any politician handle a hostile question well and you will see the pause.
 
-**Name the underlying concern, not the surface attack**
+**How do you answer a hostile question?**
 
 Most hostile questions wrap a legitimate concern in unfriendly framing. Why should we trust your numbers when your team has been wrong before? wraps the real concern (track record on forecasts) in an accusation. Acknowledge the real concern: That is fair — let me speak to our forecast accuracy. Then answer it directly. The questioner gets their concern addressed. The room sees that you separated the substance from the hostility. The hostility loses its energy.
 
@@ -5539,9 +5539,9 @@ If a hostile questioner is dominating Q&A or refusing to release the floor, you 
 ### How to Prepare for a Presentation in a Week
 
 URL: https://deftbrain.com/guides/presentations/how-to-prepare-for-a-presentation-in-a-week
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-You have seven days, a topic, and a rough idea of what you want to say. Here is the day-by-day plan that produces a presentation people actually remember.
+To prepare a presentation in a week, write the talk before building slides (days one and two), build slides that support rather than repeat it (days three and four), do a timed run-through out loud on day five, fix weak spots and prepare for likely questions on day six, and do one full rehearsal on day seven.
 
 You have a presentation in seven days. The slides are not made. The talk is not written. You have a rough idea of what you want to say. The default approach is to procrastinate until day six, panic-build slides on day six, and rehearse once during the drive in. The result is predictable — flat delivery, slides that fight you instead of helping, and questions you should have anticipated catching you flat-footed.
 
@@ -5549,7 +5549,7 @@ A week is actually plenty of time, if you spend the days right. The mistake peop
 
 Here is the day-by-day plan.
 
-**Day 1-2: write the talk before you build slides**
+**How should you prepare a presentation in a week?**
 
 Spend the first two days writing what you want to say in plain text — no slides yet. Three to five main points, an opening, a close. Slides built before the talk is written end up dictating what you say instead of supporting it. Write the talk first. Read it aloud once. The slides will be much easier to design when you know what they need to support.
 

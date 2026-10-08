@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    "Is My Dog Sick or Just Tired?",
   navTitle:      "Is my dog sick or just tired how to tell the difference",
 
-  description:   "Your dog has been off all day and you can't tell if it's a low-energy day or something wrong. Five signals that separate just tired from actually sick, plus the emergencies that don't wait until morning.",
-  deck:          "Your dog has been off all day and you can't tell if it's a low-energy day or something wrong. Five signals that separate just tired from actually sick, plus the emergencies that don't wait until morning.",
+  description:  "Is your dog sick or just tired? How engagement, appetite, overnight recovery and clusters of symptoms tell the difference, plus the emergencies.",
+  deck:         "A tired dog still engages — eyes follow you, the tail thumps, they eat, if slowly — and bounces back after a night's rest. A sick dog stops engaging, loses interest in food, is still off the next day, or shows several symptoms together. Abnormal gum color, collapse or a swollen belly with retching need a vet now.",
+  answerList: [
+    "Tired dogs still engage; sick dogs stop.",
+    "Tired dogs still eat, slowly; sick dogs lose interest.",
+    "Tired dogs bounce back overnight; sick dogs don't.",
+    "Two or three symptoms together matter more than one.",
+    "Abnormal gums, collapse or a swollen belly: vet now.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `Your dog has been quiet all afternoon. Not interested in their toy. Got up for dinner but barely ate. They're not limping, not throwing up, not panting weird — they're just... off. You're 90% sure it's nothing. The other 10% is what made you open this tab at 11pm.`,
@@ -36,7 +43,7 @@ module.exports = {
       body: "Tiredness dulls enthusiasm; sickness switches off interest. A dog who is merely wiped out will still amble over for dinner — maybe eat slower, maybe leave some behind — because being tired doesn't turn off hunger. A dog who ignores the bowl entirely, or sniffs it and walks away, is telling you something different. Weigh it against the day, too: a long hike, a hot afternoon, or a stressful outing can flatten a single meal without meaning anything. In a dog who's just tired, it's the next meal that decides — appetite comes back with the energy. If the energy returns and the appetite doesn't, stop filing it under tired.",
     },
     {
-      name: "Check the recovery overnight",
+      name: "How long should a dog be tired before you worry?",
       body: "Tired bounces back. Sick doesn't. A dog who had a quiet afternoon and is bright the next morning was just tired — case closed. A dog who's been off for 24 hours and is still off the next morning isn't recovering on the normal timeline, and that's the cleanest single test in this guide. Most 'tired' resolves by the next day. Most 'sick' doesn't. If you're somewhere on the line at 11pm, the smartest move is often to sleep on it and re-evaluate in the morning. If they're back to normal, you have your answer. If they're not, call the vet.",
     },
     {

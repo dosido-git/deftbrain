@@ -8,8 +8,19 @@ module.exports = {
   shortTitle:    "How to Escalate When the Official Answer Is No",
   navTitle:      "How to escalate when the official answer is no and the external paths most people don't know exist",
 
-  description:   "Companies depend on you stopping when they say no. The actual leverage points are usually outside the company — and most consumers don't realize how powerful these external paths are or how easy they are to use.",
-  deck:          "Companies depend on you stopping when they say no. The actual leverage points are usually outside the company — and most consumers don't realize how powerful these external paths are or how easy they are to use.",
+  description:  "How to escalate after a company says no: the right regulator, chargebacks, small claims court, and attorney-general and BBB complaints.",
+  deck:         "When a company's final answer is no, go outside it. In the US, complain to the regulator for that industry (the CFPB for banks and cards, the FCC for telecoms), use a card chargeback for anything you paid by card, consider small claims court for money owed, and file with your state attorney general and the BBB together.",
+  answerList: [
+    "Complain to the regulator for that industry.",
+    "Use a card chargeback for anything you paid by card.",
+    "Consider small claims court for money owed.",
+    "File with your state attorney general and the BBB together.",
+    "If they then offer a settlement, weigh it before accepting.",
+  ],
+  sources: [
+    { label: "CFPB — Submit a complaint about a financial product or service", url: "https://www.consumerfinance.gov/complaint/" },
+    { label: "USA.gov — Where to file a consumer complaint", url: "https://www.usa.gov/consumer-complaints" },
+  ],
 
   ledes: [
     `You've gone all the way through the company's escalation chain. Frontline support said no. The supervisor said no. The supervisor's supervisor said no. Customer relations said no. The executive office, when you reached it, said no. The official answer is, in fact, no, delivered with consistent and increasingly polite firmness. Most people stop here, partly because they've run out of internal options to try and partly because they assume that the company's repeated no must be the actual end of the conversation.`,
@@ -18,7 +29,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Match the regulator to the industry",
+      name: "Who can you complain to when a company refuses to help?",
       body: "Different industries have different regulators with different powers. Banks and credit cards: Consumer Financial Protection Bureau (CFPB). Telecom and cable: Federal Communications Commission (FCC). Airlines: Department of Transportation (DOT). Insurance: your state's insurance commissioner. Investment firms: SEC or FINRA. Healthcare billing: state attorney general or state department of health. Utilities: your state's public utility commission. The regulator's website will have a complaint form that takes 10-20 minutes to complete. They forward the complaint to the company with a required response window — usually 30-60 days. The complaint goes into a public record. Companies that ignored your direct contact often respond within days when the regulator is the forwarder, because non-response to a regulator-flagged complaint creates a different kind of problem for them than ignoring a customer email.",
     },
     {
@@ -54,5 +65,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-10-03',
+  modified:  '2026-10-08',
 };

@@ -6,8 +6,15 @@ module.exports = {
   titleHtml:     "How to Find a Hobby <em>You'll Actually Stick With</em>",
   shortTitle:    "Find a Hobby You'll Stick With",
   navTitle:      "find a hobby you'll stick with",
-  description:   "Most hobbies fade in the first month. Here are the predictors that distinguish hobbies that stick from hobbies that get abandoned, and how to filter for them.",
-  deck:          "Most hobbies fade in the first month. Here are the predictors that distinguish hobbies that stick from hobbies that get abandoned, and how to filter for them.",
+  description:  "How to find a hobby you'll actually stick with: an early payoff, short sessions, visible progress, no public commitment, and an eight-week trial.",
+  deck:         "To find a hobby you'll stick with, choose one that is enjoyable early rather than months into practice, fits into ten-minute pockets instead of scheduled blocks, and shows you clear progress. Don't announce it publicly, and give it about eight weeks before deciding, since most hobbies feel awkward for the first month.",
+  answerList: [
+    "Choose something enjoyable early, not after months of practice.",
+    "Pick one that fits ten-minute pockets.",
+    "Choose one that shows you're improving.",
+    "Don't announce it.",
+    "Give it eight weeks before deciding.",
+  ],
   ledes: [
     `You have started six hobbies in the last three years. None of them stuck. The yoga mat is in the closet. The watercolors are dried. The guitar leans against the wall, untouched, judging you. You have started to suspect that the problem is you — that you are someone who picks things up and drops them, and that there is no point starting another one. The pattern keeps repeating and you keep blaming yourself.
 
@@ -19,7 +26,7 @@ The pattern is not about you. It is mostly about which hobbies you picked. There
     { name: 'Pick hobbies that do not require you to schedule them', body: 'Hobbies that need a 90-minute block at a specific time are fragile. Anything you can do in 10-minute pockets is durable. Reading. Drawing. Crosswords. Bread starter maintenance. Birding from the window. These hobbies survive busy weeks because they fit into the cracks in your day. Time-block hobbies (yoga class, climbing gym, weekly art workshop) are great when life is steady and the first thing to die when life gets bumpy.' },
     { name: 'Choose hobbies with a built-in feedback signal', body: 'Hobbies that show you are getting better stick. Hobbies that do not, fade. Running gives you faster times. Cooking gives you better dishes. Writing gives you completed pieces you can reread. Meditation has almost no feedback signal, which is why it is one of the most-started, least-stuck-with hobbies in the world. Pick one where you can see your own progress. The feedback is what keeps you coming back when motivation is low.' },
     { name: 'Start with no public commitments', body: 'Telling everyone you are picking up a new hobby seems like accountability but usually backfires. The public commitment locks you in psychologically; quitting now feels like admitting failure to people you cared about impressing. People often quit privately and then carry shame about the quitting. Better: do the hobby quietly for two months. If it takes, it takes. If not, you can drop it without anyone noticing. The hobbies that stick are the ones you would do anyway, not the ones you announced.' },
-    { name: 'Give it eight weeks before you decide', body: 'Most hobbies feel awkward and effortful for the first three to four weeks. The version of you that judges whether it is working is impatient and biased toward stopping. Set a private commitment to keep going for eight weeks before you evaluate. Many hobbies that felt forced at week three will feel natural at week eight. If at week eight it still feels like a chore, it is probably not the right hobby for you — but the eight-week threshold is what separates real assessments from premature ones.' }
+    { name: "How long should you try a hobby before quitting?", body: 'Most hobbies feel awkward and effortful for the first three to four weeks. The version of you that judges whether it is working is impatient and biased toward stopping. Set a private commitment to keep going for eight weeks before you evaluate. Many hobbies that felt forced at week three will feel natural at week eight. If at week eight it still feels like a chore, it is probably not the right hobby for you — but the eight-week threshold is what separates real assessments from premature ones.' }
   ],
   cta: {
     glyph:    '🧭',
@@ -35,5 +42,5 @@ The pattern is not about you. It is mostly about which hobbies you picked. There
     toolName: 'Hobby Match',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

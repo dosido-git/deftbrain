@@ -6,14 +6,21 @@ module.exports = {
   titleHtml:     "How to Ask a Friend to Pay You Back <em>(Without Making It Weird)</em>",
   shortTitle:    "Ask a Friend to Pay Back",
   navTitle:      "ask a friend to pay back",
-  description:   "It has been six weeks. They have not sent it. Here are the messages that work — and the rule for when to write it off.",
-  deck:          "It has been six weeks. They have not sent it. Here are the messages that work — and the rule for when to write it off.",
+  description:  "How to ask a friend to pay you back without making it weird: a short text, the exact amount, a payment link, and one follow-up.",
+  deck:         "To ask a friend to pay you back, send a short, friendly text rather than raising it in person, with the exact amount and what it was for, plus your payment link: 'Hey! Just the $40 from drinks at McKinley's — here's my Venmo.' If there's no reply in a week, send one follow-up, then decide whether to let it go.",
+  answerList: [
+    "Ask by text, not in person.",
+    "Give the exact amount and what it was for.",
+    "Include your payment link in the same message.",
+    "One follow-up after a week; not three.",
+    "In future, lend small amounts only if you'd be fine never seeing them again.",
+  ],
   ledes: [
     `You covered drinks for them six weeks ago. They said they would Venmo you. They did not. You have seen them three times since, and each time you have had a brief internal debate about whether to bring it up, and each time you have not, because saying you owe me $40 to someone you like seems aggressive about a number that is not life-changing, and yet — six weeks. The amount is now a small splinter in the friendship that is bothering you more than it should.\n\nThe reason this conversation feels hard is that it is happening too late. Friend money debts have a half-life: ask within the first forty-eight hours and it is a casual reminder; ask after a month and it feels like a confrontation. By six weeks, you are now framing it as confrontation in your head and writing the message accordingly, which is exactly why it stays unsent. There is a way out that does not require you to be smooth. It just requires you to send the message tonight.`,
     `What follows: the script, the timing rule for next time, and what to do when they ghost the message. Then a tool that drafts yours.`,
   ],
   steps: [
-    { name: 'Send a low-key message tonight, not in person', body: 'Asking in person feels heavier than it is, and the silence after the ask is what makes it weird. A text is the right channel — it is asynchronous, no eye contact, no awkward beat. Tonight: hey — not sure if it slipped your mind but you owe me about $40 from drinks last month. No rush, just flagging. The tone is casual, the amount is specific, the timeline is non-urgent. That is the shape of a message that gets paid.' },
+    { name: "How do you ask a friend for money they owe you?", body: 'Asking in person feels heavier than it is, and the silence after the ask is what makes it weird. A text is the right channel — it is asynchronous, no eye contact, no awkward beat. Tonight: hey — not sure if it slipped your mind but you owe me about $40 from drinks last month. No rush, just flagging. The tone is casual, the amount is specific, the timeline is non-urgent. That is the shape of a message that gets paid.' },
     { name: 'Use a specific amount and a specific reference', body: 'Vague messages fail. Hey did you ever pay me back for that thing makes the friend defensive and unsure how to respond. The $40 from drinks at McKinley\'s is concrete and impossible to misinterpret. Specifics also subtly remind the friend that you are not making this up — there is a real evening, a real bill, a real number. Specificity is what turns a request into a settled fact.' },
     { name: 'Make payment friction-free', body: 'Include your Venmo or payment link in the same message. The number-one reason small debts go unpaid is friction — they have to remember, find your handle, type the amount, write a note. Take it down to one click: send me at @yourname when you get a sec. Most pay-backs happen in the first thirty seconds after a payment-friction-free message. Most that go more than a day get pushed to never.' },
     { name: 'Send one polite follow-up. Not three.', body: 'If they do not respond in a week, send one short follow-up: hey just bumping this up. Then stop. Repeat reminders move the dynamic from friend reminding friend to creditor pursuing debtor, which is the dynamic that ruins friendships over forty-dollar debts. One follow-up is the cap. After that, the friendship is the bigger asset. You write it off.' },
@@ -33,5 +40,5 @@ module.exports = {
     toolName: 'Money Diplomat',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

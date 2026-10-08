@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Get a Recap of a Show Without Spoilers",
   navTitle:      "How to get a recap of a show without spoilers for the part you haven't watched yet",
 
-  description:   "Every recap online assumes you're caught up. You aren't. Here's how to get the parts you actually need without the parts you're trying to avoid.",
-  deck:          "Every recap online assumes you're caught up. You aren't. Here's how to get the parts you actually need without the parts you're trying to avoid.",
+  description:  "How to get a recap of a TV show without spoilers: your exact stopping point, what counts as a spoiler, a bounded recap, and why to avoid wikis.",
+  deck:         "To get a recap of a show without spoilers, name your exact stopping point (season and episode), decide what counts as a spoiler for you, and ask for what has been established so far rather than what happens next. Avoid wikis and fan aggregators, which mention later events, and watch one episode before chasing more detail.",
+  answerList: [
+    "Name your exact stopping point: season and episode.",
+    "Decide what counts as a spoiler for you.",
+    "Ask for what's established, not what happens next.",
+    "Avoid wikis; they mention later seasons.",
+    "Watch one episode before chasing more.",
+  ],
 
   ledes: [
     `You stopped watching halfway through season two. You want to come back. You search for a recap and every result either starts at the beginning (covering ground you remember) or goes through the current season (revealing things you don't want revealed). The wiki is worse — major plot points spoiled in the first paragraph of every character page. There's no obvious way to get exactly the chunk you need without contaminating the rest.`,
@@ -30,7 +37,7 @@ module.exports = {
       body: "A good recap-up-to-a-point summarizes what's been established — the relationships, the conflicts, the revealed mysteries — without any 'and then later, X happens.' If the source can't make that distinction, it's not the right source. The structure you want: 'as of episode N, here's the state of play.' Past tense, current state. No future tense, no foreshadowing.",
     },
     {
-      name: "Avoid wikis and aggregators",
+      name: "Where can you get a TV recap without spoilers?",
       body: "Wikis are designed to be comprehensive, which means spoiler-rich. Even when you click on a season-2 character page, the page will mention things from season 6 because it was written by someone fully caught up. Same with most aggregator sites. Stick with sources that bound the recap by request — written episode recaps from when the season aired, or a tool that lets you set the boundary explicitly.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

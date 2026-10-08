@@ -6,14 +6,21 @@ module.exports = {
   titleHtml:     "How to Pronounce Names <em>From Languages You Do Not Speak</em>",
   shortTitle:    "Names From Other Languages",
   navTitle:      "names from other languages",
-  description:   "There is a respectful middle path between butchering the name and faking the accent. Here is how to find it.",
-  deck:          "There is a respectful middle path between butchering the name and faking the accent. Here is how to find it.",
+  description:  "How to pronounce names from languages you don't speak: look it up first, aim for the real sounds, skip the accent, practise, and ask once.",
+  deck:         "To pronounce a name from a language you don't speak, look it up before you need to say it — the person's own recording, a pronunciation site, or someone who knows them — and aim for the actual sounds rather than an anglicized version, without putting on an accent. Practise it aloud a few times, and invite a correction once.",
+  answerList: [
+    "Look it up before the moment.",
+    "Aim for the real sounds, not an anglicized version.",
+    "Don't put on an accent.",
+    "Practise it aloud three or four times.",
+    "Invite one correction: 'Did I say that right?'",
+  ],
   ledes: [
     `Your new colleague's name is from a language you do not speak. You have looked at it written down and you have ideas, none of which you trust. You will introduce them to the team in twenty minutes. You will hear yourself say their name aloud for the first time. You would like to not embarrass yourself, them, or both.\n\nThe ground rule for pronouncing names from unfamiliar languages is that there is a middle path between two failure modes. On one side: making no effort, mangling the name, and treating it as unimportant. On the other side: overcompensating with a fake accent that sounds like a parody. The right approach sounds humble, gets close to the actual sounds, and does not perform. It takes 30 seconds of preparation and one specific habit you can build.`,
     `What follows: the practical method for any unfamiliar name. Then a tool that gives you a guide calibrated to your ear.`,
   ],
   steps: [
-    { name: 'Look up the pronunciation before the moment, not during', body: 'Most pronunciation disasters happen because people try to wing the first attempt. A 30-second look-up before the meeting prevents almost all of them. A pronunciation tool, an audio clip, a quick ask of someone who knows the language. The asymmetry is huge: 30 seconds of prep prevents months of getting it wrong. Build the habit of looking up names before the call, not during it.' },
+    { name: "How do you find out how to pronounce someone's name?", body: 'Most pronunciation disasters happen because people try to wing the first attempt. A 30-second look-up before the meeting prevents almost all of them. A pronunciation tool, an audio clip, a quick ask of someone who knows the language. The asymmetry is huge: 30 seconds of prep prevents months of getting it wrong. Build the habit of looking up names before the call, not during it.' },
     { name: 'Aim for the actual sounds, not your accent\'s version of them', body: 'Many English speakers have a version-of-the-name in their head that is the English-friendly approximation. Diego becomes DEE-ay-go. Xiomara becomes zee-oh-MAR-ah. The English versions are recognizable but wrong. Aim for the original sounds even if you cannot perfectly produce them. Half-right at the original is more respectful than fully-right at the English approximation.' },
     { name: 'Do not perform the accent', body: 'Saying a Japanese name with a sudden Japanese accent is worse than saying it neutrally. The accent shift draws attention to itself; it sounds like impersonation rather than respect. Say the name with your normal speech rhythm and your normal voice. The goal is correct sounds, not character work. Neutral delivery of correct sounds is the target.' },
     { name: 'Ask the person to confirm or correct, once', body: 'After you say the name out loud the first time, give the person space to correct you. Did I get that right is fine. So is just saying the name and watching their reaction. If they correct you, accept the correction without apologizing five times. One thank you, repeat the corrected version once, and move on. Long apologies make them comfort you, which inverts the dynamic.' },
@@ -34,5 +41,5 @@ module.exports = {
     toolName: 'Pronounce It Right',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

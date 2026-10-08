@@ -6,14 +6,21 @@ module.exports = {
   titleHtml:     "Red Flags in Product Reviews <em>(That Mean It's Fake)</em>",
   shortTitle:    "Red Flags That Mean Fake",
   navTitle:      "red flags that mean fake",
-  description:   "The signs of fake reviews are visible if you know what to look for. Here are the five most reliable tells, and what to do when you spot them.",
-  deck:          "The signs of fake reviews are visible if you know what to look for. Here are the five most reliable tells, and what to do when you spot them.",
+  description:  "Red flags that a product review is fake: generic praise, repeated full product names, competitor knocks, review bursts, and suspiciously targeted claims.",
+  deck:         "The red flags of a fake product review are generic praise with no specific use, the full product and brand name repeated, a competitor named and knocked down, a reviewer who posted many unrelated five-star reviews in a few days, and a conspicuous focus on a competitor's known weakness. One flag may mean nothing; two or more usually do.",
+  answerList: [
+    "Generic praise with no specific use.",
+    "The full brand and product name, repeated.",
+    "A competitor named and run down.",
+    "A reviewer with a burst of unrelated five-star reviews.",
+    "A pointed fix for a competitor's famous flaw.",
+  ],
   ledes: [
     `You can tell a fake review when you see one — almost. Sometimes you read a five-star review and it's just enthusiastic, and sometimes you read a five-star review and something's off, and you couldn't say what. The off-ness has signatures. Once you can name them, the read goes from gut feeling to pattern recognition, and the fake-review filter starts working in real time as you scroll.`,
     `Below are the five most reliable red flags. Each one alone might mean nothing; two or more in the same review almost always means fake.`,
   ],
   steps: [
-    { name: 'The review is generic praise without specific use', body: '"I love this product! It works great and I would highly recommend it to anyone." That\'s a fake review template. Real reviews mention specific use: when they used it, what they used it for, what they noticed. "I bought this for my apartment kitchen, and it fits exactly between the fridge and the wall — measure first." That kind of specificity is hard to fake at scale. Generic enthusiasm is easy. If you can\'t tell from the review what the product actually is, the review isn\'t real.' },
+    { name: "What does a fake product review look like?", body: '"I love this product! It works great and I would highly recommend it to anyone." That\'s a fake review template. Real reviews mention specific use: when they used it, what they used it for, what they noticed. "I bought this for my apartment kitchen, and it fits exactly between the fridge and the wall — measure first." That kind of specificity is hard to fake at scale. Generic enthusiasm is easy. If you can\'t tell from the review what the product actually is, the review isn\'t real.' },
     { name: 'The review uses the product\'s full name and brand multiple times', body: 'Real users say "the cable" or "this thing" or "the headphones." Fake reviewers say "the [Brand Name] Pro Wireless Earbuds Model X." The reason is SEO — the fake review is partly written to rank in search, and repeating the product\'s full name helps. When a review reads like ad copy with the brand name dropped repeatedly, the writer is selling, not reviewing.' },
     { name: 'It mentions a competitor by name in a way that disparages them', body: 'Real reviewers occasionally compare to competitors, but in measured terms — "I had the Brand Y version before; this one\'s similar but the battery\'s better." Fake reviews often disparage competitors specifically and oddly: "I returned my Brand Y because it was junk — this one is the only real choice." That sentence isn\'t a review; it\'s a hit piece, and the reviewer probably hasn\'t owned either product.' },
     { name: 'The reviewer\'s profile shows a burst of unrelated reviews', body: 'Click through to the reviewer\'s profile. If they reviewed twelve unrelated products in three days, all five-star, all generic — kitchenware, supplements, electronics, a yoga mat — they\'re not a person. They\'re a paid review account. Real customers review occasionally, in their actual interest categories, with mixed ratings. Burst-pattern reviewers across unrelated categories are the cleanest fake-account signal.' },
@@ -34,5 +41,5 @@ module.exports = {
     toolName: 'Fake Review Detective',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

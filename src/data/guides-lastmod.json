@@ -36,24 +36,24 @@
   "lastmod": "2026-10-08"
  },
  "money": {
-  "hash": "2601e161435f2b19d697dbdb649bbb099351f175",
+  "hash": "031af0b49aafa2b90f76ab84892098a4a888a9db",
   "lastmod": "2026-10-08"
  },
  "pets": {
-  "hash": "02a5ab5c62821db36504dbfccb10022acc268049",
-  "lastmod": "2026-10-07"
+  "hash": "2a2d67d8010ec6e0e311c95cc107ca3f7656e636",
+  "lastmod": "2026-10-08"
  },
  "planning": {
   "hash": "6e107c5e83fb5f42ebd9d8c794d322d1fc589aee",
   "lastmod": "2026-10-07"
  },
  "practical": {
-  "hash": "c3640ff0e54fc6194de8c1e1d477ca5d3812d58f",
-  "lastmod": "2026-10-07"
+  "hash": "c01421c3a805c96820859a701aecc35ddfae50c9",
+  "lastmod": "2026-10-08"
  },
  "presentations": {
-  "hash": "eb09c8fe710cdd1a422fc5477aa522ddd2a402e5",
-  "lastmod": "2026-10-07"
+  "hash": "8e77287e026a37dd98dc37b65a07e1572b9148a4",
+  "lastmod": "2026-10-08"
  },
  "speeches": {
   "hash": "1f4e1b6168ffb052b3944b4a332084f6656367f9",
@@ -72,11 +72,11 @@
   "lastmod": "2026-10-08"
  },
  "_index": {
-  "hash": "ad8e15e01dee647143fad8093eee9bcae528fabe",
+  "hash": "35a1dae7f1554462d58117a0fba3fad2a95f87c8",
   "lastmod": "2026-10-08"
  },
  "_by-tool": {
-  "hash": "1ddb43ab1cd2c190bf8cc5d03487c3e05bdf2c8b",
+  "hash": "0fa8b531fc8e02095fb281000956dda4d850e05f",
   "lastmod": "2026-10-08"
  }
 }

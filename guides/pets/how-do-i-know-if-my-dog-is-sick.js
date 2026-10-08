@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    "How Do I Know If My Dog Is Sick?",
   navTitle:      "How do I know if my dog is sick the signs that actually matter",
 
-  description:   "Dogs can't tell you they don't feel good — they show you. Five categories of signs that consistently mean something is wrong, plus the emergencies that turn watch-and-wait into call-now.",
-  deck:          "Dogs can't tell you they don't feel good — they show you. Five categories of signs that consistently mean something is wrong, plus the emergencies that turn watch-and-wait into call-now.",
+  description:  "How to tell if your dog is sick: changes in appetite, toilet habits and engagement, physical checks like gum color, and the emergencies that can't wait.",
+  deck:         "The signs a dog is sick are changes across a day or more in appetite, toilet habits, energy and engagement, and physical signs such as gum color. One skipped meal in a bright dog is usually nothing. Pale, white or blue gums, collapse, a swollen belly with unproductive retching, or difficulty breathing need a vet immediately.",
+  answerList: [
+    "Appetite: a pattern over a day or more, not one meal.",
+    "Toilet changes: repeated vomiting, blood, diarrhea, straining.",
+    "Engagement: not greeting you or responding to their name.",
+    "Physical checks: gum color and capillary refill.",
+    "Emergencies now: pale or blue gums, collapse, swollen belly with retching.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `You can't ask your dog how they're feeling. You can only watch. And dogs are spectacular at hiding when something's wrong — leftover wolf wiring tells them showing weakness gets you eaten. They will compensate, conceal, and carry on long after a person in the same condition would be on the couch.`,
@@ -44,7 +51,7 @@ module.exports = {
       body: "Five things you can actually check, not just observe. Gum color: pink and moist is normal; pale, white, blue, yellow, or brick-red is not. Press your fingertip on the gum — color should return in under two seconds. Breathing: rapid panting at rest, or visible effort when not exercising or hot, is concerning. Hydration: pinch the skin between the shoulder blades; it should snap back. Skin that stays tented is dehydration. Temperature: a warm or dry nose is not a reliable test — take a real temp if you suspect fever. Normal is 101–102.5°F; over 103°F is fever territory. Belly: a hard, distended, painful belly, especially with restlessness or unproductive retching, is a same-day emergency.",
     },
     {
-      name: "Know the emergencies you don't wait on",
+      name: "When should you take your dog to the vet immediately?",
       body: "Some signs aren't on the same scale as the rest of this guide. Pale, white, or blue gums. Collapse or sudden inability to stand. A bloated, hard belly with unproductive retching — that's bloat, and it kills dogs in hours, not days. Severe breathing distress. Seizure. Suspected toxin ingestion (chocolate, grapes, xylitol, rodenticide, antifreeze, certain plants). Sudden inability to use the back legs. Repeated bloody vomiting or bloody diarrhea with lethargy. These are ER visits, not vet appointments. The rest of this guide is about reading signals and deciding when to call. This step is the one where the deciding is already done — go now.",
     },
   ],

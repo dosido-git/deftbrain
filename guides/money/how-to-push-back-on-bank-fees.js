@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Push Back on Bank Fees",
   navTitle:      "How to push back on bank fees and actually get them refunded",
 
-  description:   "Most bank fees are reversible if you know what to ask for and how to ask. The script is short, the success rate is high, and almost no one uses it.",
-  deck:          "Most bank fees are reversible if you know what to ask for and how to ask. The script is short, the success rate is high, and almost no one uses it.",
+  description:  "How to push back on bank fees and get them refunded: call, ask directly, use 'as a courtesy', know the fee-specific asks, and escalate calmly.",
+  deck:         "To get a bank fee refunded, call rather than using chat, ask for the refund directly instead of arguing that the fee was unfair, and if they hesitate, ask whether they can refund it 'as a courtesy'. Banks often waive a first overdraft or occasional fee for customers in good standing. If the answer is no, ask politely for a supervisor.",
+  answerList: [
+    "Call; don't use chat.",
+    "Ask for the refund directly; don't argue the fee.",
+    "If they hesitate: 'Could you refund it as a courtesy?'",
+    "Ask about first-time overdraft forgiveness.",
+    "If it's no, ask politely for a supervisor.",
+  ],
 
   ledes: [
     `It's $35 for the overdraft. Or $25 for the wire transfer that you didn't realize had a fee. Or $12 for the monthly maintenance charge that's been quietly recurring for two years. The amount feels small enough to ignore but specific enough to be annoying — and you're not sure whether banks actually refund things like this or whether complaining about a thirty-five dollar fee makes you the customer everyone in the call center groans about.`,
@@ -22,7 +29,7 @@ module.exports = {
       body: "Most fee refunds happen on the phone. The chat tool, the in-app messaging, and the email contact form are all designed to deflect. They route you through scripted decision trees that conclude 'this fee is valid' more than they conclude 'we'll refund it.' Phone agents have refund authority that chat agents don't. Find the customer service number on the back of your card, get past the menu by saying 'representative' until a person picks up, and have the date and amount of the fee ready before you start.",
     },
     {
-      name: "Ask for the refund directly — don't argue the fee",
+      name: "How do you get a bank to refund a fee?",
       body: "Resist the urge to explain why the fee is unfair. Banks aren't refunding fees because they agree the fee was unjustified; they're refunding because retaining you costs less than acquiring a new customer. So the right opening isn't 'this fee shouldn't have been charged.' It's 'I'd like to request a refund of the [amount] fee charged on [date].' Direct, polite, no debate. The agent will check, ask a couple of questions, and tell you what they can do. The shorter the request, the higher the success rate.",
     },
     {
@@ -61,5 +68,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

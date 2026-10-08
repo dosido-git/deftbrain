@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    "Weird Cat Behaviors, Explained",
   navTitle:      "Weird cat behaviors explained and when to actually worry",
 
-  description:   "Cats are weird on purpose, but a small fraction of weirdness is them telling you something is off. Five common cat behaviors explained, plus the change-in-baseline rule that separates quirky from concerning.",
-  deck:          "Cats are weird on purpose, but a small fraction of weirdness is them telling you something is off. Five common cat behaviors explained, plus the change-in-baseline rule that separates quirky from concerning.",
+  description:  "Weird cat behaviors explained — wall-staring, hiding, grooming, eating odd things, night yowling — and the change-from-normal rule for when to worry.",
+  deck:         "Most weird cat behavior, such as staring at walls, hiding and night-time noise, is normal because cats sense sounds, smells and movement people miss. What matters is a change from your cat's usual behavior: over-grooming with bald patches, hiding that is new, eating non-food items, or an older cat who starts yowling at night are worth a vet visit.",
+  answerList: [
+    "Wall-staring: usually sounds, dust or insects you can't detect.",
+    "Over-grooming with bald patches is worth a vet visit.",
+    "Hiding is normal; new or constant hiding is not.",
+    "Eating non-food items (pica) is always worth checking.",
+    "An older cat starting to yowl at night needs a check-up.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `Your cat is staring at the wall. Or the ceiling. Or, somehow, both at once. They've been doing it for ten minutes. You are now Googling, against your better judgment.`,
@@ -32,7 +39,7 @@ module.exports = {
       body: "Cats see, hear, and smell things you don't. Air currents, dust motes catching light, the high-frequency hum of a power supply, an insect on the ceiling, the soft scrape of a mouse two rooms away. When your cat stares at 'nothing,' they're almost always processing something real to them. This is the most reliably quirky behavior in this guide. The pattern — sudden focus, locked posture, occasional ear-tracking — is normal predator wiring. The concerning version is rare: persistent wall-staring without focus, often combined with disorientation or unusual vocalization, which can signal cognitive changes in elderly cats. For a cat under 10 with intermittent wall-watching, you're fine.",
     },
     {
-      name: "Read the over-grooming",
+      name: "When is a cat's behavior a sign something is wrong?",
       body: "Cats groom roughly 30% of their waking time. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.",
     },
     {

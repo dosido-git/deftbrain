@@ -6,8 +6,15 @@ module.exports = {
   titleHtml:     "How to Wash Clothes <em>Without Shrinking Them</em>",
   shortTitle:    "How to Wash Without Shrinking",
   navTitle:      "wash clothes without shrinking",
-  description:   "Three things shrink clothes: heat, agitation, and water that swells the fibers. Avoid those three and almost nothing in your closet will shrink again.",
-  deck:          "Three things shrink clothes: heat, agitation, and water that swells the fibers. Avoid those three and almost nothing in your closet will shrink again.",
+  description:  "How to wash clothes without shrinking them: cold water, a gentle cycle, no dryer for delicate items, sweaters in a mesh bag, and the care label.",
+  deck:         "Clothes shrink from heat, agitation and moisture swelling the fibers, so to avoid it, wash natural fibers in cold water, use the delicate cycle or hand-wash wool, cashmere and silk, and air-dry anything you would be sad to lose. Wash sweaters inside out in a mesh bag, and follow the care label.",
+  answerList: [
+    "Wash natural fibers in cold water.",
+    "Use the delicate cycle, or hand-wash wool, cashmere and silk.",
+    "Air-dry anything you'd hate to lose; most shrinkage happens in the dryer.",
+    "Wash sweaters inside out, in a mesh bag.",
+    "Follow the care label.",
+  ],
   ledes: [
     `It happened again. You pulled a sweater out of the dryer and it has become a sweater for a child. The cashmere you were hoping would last forever has tightened up like a felted ball. Or the t-shirt you loved is now too tight in the shoulders even though it fit perfectly two weeks ago. You did the laundry the same way you always do. Something specific is going wrong and you cannot quite identify what.
 
@@ -17,7 +24,7 @@ Shrinkage has three main causes. Heat is the biggest. Agitation is the second. W
   steps: [
     { name: 'Use cold water on anything natural', body: 'Heat from hot water swells natural fibers (wool, cotton, linen, silk) — and that swelling, combined with agitation, locks the fibers into a shorter, denser configuration. Cold water keeps the fibers stable. For anything natural and anything you cannot replace, cold is the default. The exceptions to cold are narrow: sanitation loads, deep cleaning of whites. Most of what shrinks does so because it went through warm or hot water it did not need.' },
     { name: 'Use the delicate cycle, or hand-wash, for sensitive items', body: 'Agitation is the second shrinkage driver. The delicate cycle reduces the speed and aggressiveness of the drum\'s tumbling. For wool, cashmere, silk, and any structured garment, use it. For really sensitive items — fine wool, silk blouses, lingerie — hand-wash in cool water with a gentle detergent. Hand-washing takes ten minutes, and it is the difference between owning the sweater for fifteen years and replacing it after two.' },
-    { name: 'Skip the dryer for anything you would be sad to lose', body: 'Most shrinkage that catches people off guard happens in the dryer, not the washer. Heat plus tumbling is the most aggressive combination there is. Air-dry anything natural, anything fitted, anything you paid more than thirty dollars for, anything you cannot easily replace. Hang on a drying rack or a clothesline. For sweaters, lay flat to dry — hanging stretches them. The dryer is fine for towels, sheets, and casual cotton. For everything else, it is the single biggest threat in your laundry routine.' },
+    { name: "Does the dryer shrink clothes?", body: 'Most shrinkage that catches people off guard happens in the dryer, not the washer. Heat plus tumbling is the most aggressive combination there is. Air-dry anything natural, anything fitted, anything you paid more than thirty dollars for, anything you cannot easily replace. Hang on a drying rack or a clothesline. For sweaters, lay flat to dry — hanging stretches them. The dryer is fine for towels, sheets, and casual cotton. For everything else, it is the single biggest threat in your laundry routine.' },
     { name: 'Wash sweaters inside out, separately, in a mesh bag', body: 'Knit garments are particularly vulnerable because the loops can pull on each other and cause both shrinkage and felting (especially with wool). Turn sweaters inside out before washing — this protects the outer surface from rubbing against other items. Put them in a mesh laundry bag to limit movement in the drum. Wash separately from heavy items like jeans. These three small adjustments do more for sweater longevity than any detergent change.' },
     { name: 'Read the care label once, follow it forever', body: 'Care labels exist because the manufacturer tested the fabric and knows what it can take. For irreplaceable items, follow the label exactly the first time. If it says hand-wash cold, hand-wash cold. If it says dry flat, dry flat. The temptation to ignore care labels comes from people who got away with it — but the people who got away with it for a year are usually the same people whose item shrinks in year two. The label is the manufacturer\'s commitment to the garment, and following it is how you keep the garment.' }
   ],
@@ -35,5 +42,5 @@ Shrinkage has three main causes. Heat is the biggest. Agitation is the second. W
     toolName: 'LaundroMat',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

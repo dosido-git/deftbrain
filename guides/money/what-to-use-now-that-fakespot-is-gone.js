@@ -22,11 +22,18 @@ module.exports = {
   shortTitle:    "What to Use Now That Fakespot Is Gone",
   navTitle:      "What to use now that Fakespot is gone",
 
-  description:   "Mozilla retired Fakespot in mid-2025, and the grade-the-page browser extension model went with it. Here's what actually replaced it, what didn't, and how to judge a review section yourself in about two minutes.",
-  deck:          "Mozilla retired Fakespot in mid-2025, and the grade-the-page browser extension model went with it. Here's what actually replaced it, what didn't, and how to judge a review section yourself in about two minutes.",
+  description:  "What to use now that Fakespot is gone: what actually replaced it, which extensions to be wary of, and a two-minute manual check for fake reviews.",
+  deck:         "Mozilla shut down Fakespot in 2025, and nothing free now gives the same one-glance grade. Check whether any replacement extension is trustworthy before installing it, and learn the quick manual check that works on any site: read the most recent and lowest-rated reviews, look for bursts of reviews, and check that reviews are about this exact product.",
+  answerList: [
+    "Fakespot shut down in 2025; no free tool gives the same quick grade.",
+    "Check any replacement extension before trusting it.",
+    "Sort by most recent and read those first.",
+    "Read the one- and two-star reviews.",
+    "Check the reviews are about this exact product, not a merged listing.",
+  ],
 
   published:     '2026-07-29',
-  modified:      '2026-07-29',
+  modified:      '2026-10-08',
 
   ledes: [
     `If you got used to glancing at a letter grade before trusting a product's reviews, you've probably noticed that habit stopped working. Mozilla acquired Fakespot in 2023, folded it into Firefox as Review Checker, and then discontinued both: the in-browser Review Checker was retired on June 10, 2025, and the extensions, mobile apps and website went offline on July 1, 2025. Mozilla's explanation was blunt — the products "didn't fit a model we could sustain."`,
@@ -47,7 +54,7 @@ module.exports = {
       body: "A vacuum this visible attracts filler. In the months after the shutdown, a crop of extensions and sites appeared promising Fakespot-style grading. Some are honest efforts; others are affiliate operations where the 'analysis' exists to funnel you toward whatever product pays the referral, or data-collection plays where a browser extension that reads every page you visit is the actual product and the review grade is the excuse. Two questions filter most of it: does the tool tell you how it reaches its verdict, and does it ever say 'these reviews look fine'? A grader that finds something suspicious about everything is either broken or selling something. A grader that won't explain its reasoning can't be checked, which means it can't be trusted on the purchase where it matters most.",
     },
     {
-      name: "Learn the four signals that survive any tool going offline",
+      name: "How can you check reviews without Fakespot?",
       body: "The manual version takes about two minutes and never gets discontinued. First, sort by most recent and read those, not the top-rated ones — manipulation is usually a campaign, and campaigns have dates. Second, look for timing clusters: dozens of five-star reviews inside a few days, especially near the listing's launch or right after a run of bad ones, is the single strongest signal available to a human reader. Third, click through two or three glowing reviewers and check whether they have any other review history, or whether their history is thirty five-star reviews of unrelated cheap products. Fourth, read the three-star reviews — they are the least worth faking in either direction, and they are where the real defects get described in specific, unenthusiastic detail. If those four checks come back clean, the review section is probably honest. If two or more look wrong, treat the rating as decoration.",
     },
     {

@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "Why Does Bottled Water Cost So Much",
   navTitle:      "Why does bottled water cost so much when the stuff in it is basically free",
 
-  description:   "The water in the bottle costs almost nothing. Almost everything else in the price tag is markup — and once you know what's in it, the number gets harder to pay.",
-  deck:          "The water in the bottle costs almost nothing. Almost everything else in the price tag is markup — and once you know what's in it, the number gets harder to pay.",
+  description:  "Why bottled water costs so much when the water is nearly free: packaging, heavy transport, branding, and the premium charged where you can't shop around.",
+  deck:         "Bottled water costs so much because you are paying almost entirely for things other than the water: the bottle, label and cap, transporting heavy cases and paying for shelf space, the brand, and the seller's margin — which is highest where you have no alternative, such as airports, stadiums and hotel minibars.",
+  answerList: [
+    "The water itself is a tiny share of the price.",
+    "Packaging — bottle, cap, label — costs more than the water.",
+    "Transport and shelf space are the biggest costs; water is heavy.",
+    "Brand names add a premium for much the same product.",
+    "The highest prices are where you can't shop around.",
+  ],
 
   ledes: [
     `You're at the gas station, the airport, the hotel mini-bar, the music festival. The water is $4. You buy it because you're thirsty and also because at this point arguing with the price feels exhausting. Somewhere in the back of your mind, a small voice notes that the substance you're buying — water — was running through the tap in your kitchen this morning for less than a penny per gallon. The voice is correct. The math is upsetting.`,
@@ -34,7 +41,7 @@ module.exports = {
       body: "This is the part that varies most. Store-brand water is ~$0.20–0.40 per bottle wholesale. Aquafina and Dasani are roughly the same product wearing better packaging, sold at a 30% premium. Fiji, VOSS, and Smartwater layer on additional brand premium that's pure margin — not better water, not better logistics, just the right shape, the right name, and the right shelf adjacency. The minute the bottle is designed to look luxurious, you're paying for the design.",
     },
     {
-      name: "Margin and the psychology of thirst",
+      name: "Why is bottled water so expensive at airports?",
       body: "After all the costs, bottled water margins typically run 25–50%, which is high but not extraordinary for consumer products. The extraordinary part is *where* you're buying it. Airports, stadiums, and hotels know you can't bring water in, can't easily leave to find cheaper, and are physiologically pressured to buy. These are not pricing-the-product venues; they are pricing-your-circumstance venues. The $5 airport water isn't $5 because the water is special. It's $5 because you have nowhere else to go.",
     },
   ],
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

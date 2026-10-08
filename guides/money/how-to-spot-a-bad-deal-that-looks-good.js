@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Spot a Bad Deal That Looks Good",
   navTitle:      "How to spot a bad deal that looks good before you click buy",
 
-  description:   "The price is great, the reviews are five stars, the photos look amazing. Here's how to tell whether you're about to save money or about to throw it away.",
-  deck:          "The price is great, the reviews are five stars, the photos look amazing. Here's how to tell whether you're about to save money or about to throw it away.",
+  description:  "How to spot a bad deal before you buy: check the brand, read low reviews first, watch review timing, compare photos, and read the return policy.",
+  deck:         "To spot a bad deal that looks good, search the brand outside the marketplace (real brands have a history), read the low reviews before the five-stars, look for reviews bunched into a few weeks, compare the photos for inconsistencies, and read the return policy for overseas returns or restocking fees.",
+  answerList: [
+    "Search the brand outside the marketplace.",
+    "Read the low reviews before the five-stars.",
+    "Watch for reviews bunched into a few weeks.",
+    "Look for photos that don't match each other.",
+    "Read the return policy before you buy.",
+  ],
 
   ledes: [
     `It looks like a steal. The product is half the price of the brand-name version. The reviews are mostly 4 and 5 stars. The photos look professional. The seller has a name that sounds plausible. Everything checks out enough that you almost click buy. Almost. There's something just slightly off — the brand name you've never heard of, the slightly-too-perfect product description, the reviews that are all weirdly enthusiastic — but you can't quite pin down what's wrong.`,
@@ -34,7 +41,7 @@ module.exports = {
       body: "Real product photos are usually slightly imperfect — different lighting, different angles, taken at different times. Suspicious listings often use a mix of stylized professional photos for the product, plus stock images, plus AI-generated images. If one photo shows the product in pure white-background studio mode and another shows it in a 'lifestyle' setting that looks like AI, that's a flag. The product the seller is selling isn't necessarily the same product they have photos of.",
     },
     {
-      name: "Read the return policy carefully",
+      name: "What should you check before buying a cheap product online?",
       body: "Bad deals often hide in the return policy. 'Free returns' might mean you pay shipping. 'Money-back guarantee' might require returning to an address overseas at your cost. 'Lifetime warranty' might be void the moment you've used the product normally. A legitimate seller has a clean, simple return policy. A predatory seller buries hostile terms in legalese. If the return policy is harder to find or read than the product description, treat it as a flag — not because every long policy is bad, but because hostile terms hide in length.",
     },
   ],
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };
