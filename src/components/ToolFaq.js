@@ -1,5 +1,5 @@
 /**
- * ToolFaq — the React mirror of the "Frequently asked questions" block that
+ * ToolFaq — the React mirror of the "Questions people ask" block that
  * scripts/prerender.js writes into each enriched tool's static HTML.
  * ──────────────────────────────────
  * Why this exists: the prerendered block lives INSIDE #root, so React replaces

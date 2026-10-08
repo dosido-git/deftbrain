@@ -184,6 +184,7 @@ function loadTools() {
       seoTitle:       t.seoTitle || '',
       seoDescription: t.seoDescription || '',
       guide:          t.guide || null,
+      primer:         t.primer || null,
       faq:            Array.isArray(t.faq) ? t.faq : null,
       exampleOutput:  t.exampleOutput || null,
       tags:           Array.isArray(t.tags) ? t.tags : [],
@@ -333,7 +334,8 @@ function getToolHubsHTML(guides) {
   const links = cats
     .map(c => `<a href="/guides/${c}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(HUB_NAMES[c])} guides &rarr;</a>`)
     .join('\n        ');
-  return `<nav class="db-tool-hubs" aria-label="Guide categories for this tool" style="margin:0 0 20px">
+  return `<nav class="db-tool-hubs" aria-label="More guides like this" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">More guides like this</h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>
@@ -538,13 +540,13 @@ function stripToolIndex(html) {
 
 // Static, tool-specific body content. The CRA shell ships an empty <div id="root">,
 // so crawlers' first pass (and JS-off clients) saw no on-page content — only the
-// shared footer index, identical across all tools. This mirrors the guide section
-// ToolPageWrapper already renders (h1 → description → overview → how-to → example →
-// tips → pitfalls), so it's the SAME content the page shows (no cloaking). Injected
+// shared footer index, identical across all tools. This mirrors what the live tool
+// page shows (h1 → description → example output → nutshell → good to know →
+// before you go → questions), so it's the SAME content the page shows (no cloaking). Injected
 // INSIDE #root: the app mounts with createRoot().render(), which REPLACES the
 // container's contents on load — so there's no hydration mismatch; React simply
 // swaps this for the live app. Keep in sync with ToolPageWrapper's guide layout.
-function buildBodyContent({ title, tagline, description, guide, faq, exampleOutput }) {
+function buildBodyContent({ title, tagline, description, guide, primer, faq, exampleOutput }) {
   const e = escapeHtml;
   const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
   const LI = 'margin:.4rem 0;line-height:1.55';
@@ -576,33 +578,22 @@ function buildBodyContent({ title, tagline, description, guide, faq, exampleOutp
       + `</section>`);
   }
 
-  if (g.overview) {
-    out.push(`<h2 style="${H2}">Overview</h2><p style="line-height:1.6;margin:0">${e(g.overview)}</p>`);
-  }
-  if (Array.isArray(g.howToUse) && g.howToUse.length) {
-    const items = g.howToUse.map(s => `<li style="${LI}">${e(String(s))}</li>`).join('');
-    out.push(`<h2 style="${H2}">How to use it</h2><ol style="padding-left:1.25rem;margin:0">${items}</ol>`);
-  }
-  if (g.example) {
-    let body = '';
-    if (typeof g.example === 'string') {
-      body = `<p style="line-height:1.6;margin:0">${e(g.example)}</p>`;
-    } else {
-      const rows = [];
-      if (g.example.scenario) rows.push(`<p style="margin:.3rem 0;line-height:1.55"><strong>Scenario:</strong> ${e(g.example.scenario)}</p>`);
-      if (g.example.action)   rows.push(`<p style="margin:.3rem 0;line-height:1.55"><strong>What you do:</strong> ${e(g.example.action)}</p>`);
-      if (g.example.result)   rows.push(`<p style="margin:.3rem 0;line-height:1.55"><strong>Result:</strong> ${e(g.example.result)}</p>`);
-      body = rows.join('');
-    }
-    if (body) out.push(`<h2 style="${H2}">Example</h2>${body}`);
+  // The tool page's sidebar since 68b8a7a0 (2026-08-09): In a Nutshell, Good to
+  // Know (the tips), Before You Go. Overview / How to use it / Example /
+  // pitfalls were deleted from the page then, so they are not written here —
+  // the static copy says only what a visitor can see. Mirrors ToolPageWrapper.
+  const p = primer || {};
+  const nut = [['When', p.when], ['You give', p.give], ['You get', p.get], ['The edge', p.edge]].filter(([, v]) => v);
+  if (nut.length) {
+    const rows = nut.map(([label, v]) => `<dt style="font-weight:600;margin:.6rem 0 .1rem">${label}</dt><dd style="margin:0;line-height:1.55">${e(String(v))}</dd>`).join('');
+    out.push(`<h2 style="${H2}">In a Nutshell</h2><dl style="margin:0">${rows}</dl>`);
   }
   if (Array.isArray(g.tips) && g.tips.length) {
     const items = g.tips.map(t => `<li style="${LI}">${e(String(t))}</li>`).join('');
-    out.push(`<h2 style="${H2}">Tips</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
+    out.push(`<h2 style="${H2}">Good to Know</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
   }
-  if (Array.isArray(g.pitfalls) && g.pitfalls.length) {
-    const items = g.pitfalls.map(p => `<li style="${LI}">${e(String(p))}</li>`).join('');
-    out.push(`<h2 style="${H2}">Common pitfalls</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
+  if (g.beforeYouGo) {
+    out.push(`<h2 style="${H2}">Before You Go</h2><p style="line-height:1.6;margin:0">${e(String(g.beforeYouGo))}</p>`);
   }
   // FAQ — focus-tools enrichment (2026-07). Mirrored by
   // src/components/ToolFaq.js, so crawler and user see identical copy. It used
@@ -612,7 +603,7 @@ function buildBodyContent({ title, tagline, description, guide, faq, exampleOutp
     const items = faq.map(f =>
       `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .3rem;color:#0f172a">${e(String(f.q))}</h3>`
       + `<p style="line-height:1.6;margin:0">${e(String(f.a))}</p>`).join('');
-    out.push(`<h2 style="${H2}">Frequently asked questions</h2>${items}`);
+    out.push(`<h2 style="${H2}">Questions people ask</h2>${items}`);
   }
 
   return `<div class="seo-prerender" style="max-width:760px;margin:0 auto;padding:2rem 1.25rem;`
@@ -714,8 +705,9 @@ async function main() {
       // Per-page Related-tools / Related-guides blocks go INSIDE #root (React's
       // <RelatedLinks> replaces them per-route → no SPA-nav leak); the global
       // all-tools index stays OUTSIDE #root (identical on every page, harmless).
-      const relatedBlocks = getRelatedHTML(relatedTools(tool, tools))
-        + getRelatedGuidesHTML(guidesByTool[tool.id])
+      // Same order and headings as <RelatedLinks>: guides, tools, hubs.
+      const relatedBlocks = getRelatedGuidesHTML(guidesByTool[tool.id])
+        + getRelatedHTML(relatedTools(tool, tools))
         + getToolHubsHTML(guidesByTool[tool.id]);
       const html = stripToolIndex(injectBody(injectMeta(template, tool), tool, relatedBlocks));
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
