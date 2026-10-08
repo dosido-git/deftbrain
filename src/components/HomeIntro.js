@@ -293,6 +293,27 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
     </section>
 
+    {/* Categories above the demo (owner, 2026-10-08). */}
+    <section className="db-home-section db-home-categories" id="categories" aria-labelledby="home-categories-title" data-db-section="categories">
+      <div className="db-home-section-heading">
+        <h2 id="home-categories-title">Explore by category</h2>
+        <Link to="/tools" className="db-home-text-link">Browse all tools <span aria-hidden="true">→</span></Link>
+      </div>
+      <nav aria-label="Tool categories" className="db-home-category-list">
+        {CATEGORY_META.filter(cat => categoryCounts[cat.name]).map(cat => (
+          // A real link to the category page (/tools/{slug}) — what crawlers
+          // and new tabs follow — but a plain click opens the toolbox filtered
+          // to this category, its chip highlighted (owner, 2026-10-04).
+          <a key={cat.slug} href={`/tools/${cat.slug}`} title={cat.example}
+            onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); navigate(`/tools?category=${encodeURIComponent(cat.name)}`); }}>
+            <span aria-hidden="true">{cat.emoji}</span> {cat.name}
+            <span className="db-home-category-count">{categoryCounts[cat.name]}</span>
+          </a>
+        ))}
+      </nav>
+      <p className="db-home-guide-intro">Just want some quick info? Check out our helpful collection of <a href="/guides">Guides →</a></p>
+    </section>
+
     {byId.has('DoctorVisitPrep') && <section className="db-home-demo db-home-section" aria-labelledby="home-demo-title" data-db-section="demo">
       <h2 id="home-demo-title">See how it works</h2>
       {/* Labelled as one example (2026-10-04, owner): with no label the
@@ -332,26 +353,6 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </ol>
       <Link to="/DoctorVisitPrep" className="db-home-primary-link db-home-demo-cta-after">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
     </section>}
-
-    <section className="db-home-section db-home-categories" id="categories" aria-labelledby="home-categories-title" data-db-section="categories">
-      <div className="db-home-section-heading">
-        <h2 id="home-categories-title">Explore by category</h2>
-        <Link to="/tools" className="db-home-text-link">Browse all tools <span aria-hidden="true">→</span></Link>
-      </div>
-      <nav aria-label="Tool categories" className="db-home-category-list">
-        {CATEGORY_META.filter(cat => categoryCounts[cat.name]).map(cat => (
-          // A real link to the category page (/tools/{slug}) — what crawlers
-          // and new tabs follow — but a plain click opens the toolbox filtered
-          // to this category, its chip highlighted (owner, 2026-10-04).
-          <a key={cat.slug} href={`/tools/${cat.slug}`} title={cat.example}
-            onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); navigate(`/tools?category=${encodeURIComponent(cat.name)}`); }}>
-            <span aria-hidden="true">{cat.emoji}</span> {cat.name}
-            <span className="db-home-category-count">{categoryCounts[cat.name]}</span>
-          </a>
-        ))}
-      </nav>
-      <p className="db-home-guide-intro">Just want some quick info? Check out our helpful collection of <a href="/guides">Guides →</a></p>
-    </section>
 
     <div className="db-home-explore" data-db-section="scramble"><ToolScramble allTools={allTools} onBrowse={onBrowse} /></div>
     {/* Objection-handling — collapsed by default, after the tools content
