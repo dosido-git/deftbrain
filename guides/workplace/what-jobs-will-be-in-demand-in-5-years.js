@@ -6,14 +6,24 @@ module.exports = {
   titleHtml:     "What jobs will be <em>in demand in 5 years?</em>",
   shortTitle:    "In-demand jobs in 5 years",
   navTitle:      "jobs in demand 5 years",
-  description:   "An honest forecast of which jobs will see growing demand over the next five years — and the structural reasons behind it.",
-  deck:          "An honest forecast of which jobs will see growing demand over the next five years — and the structural reasons behind it.",
+  description:  "What jobs will be in demand in five years: healthcare, skilled trades, AI integration roles, care work and energy-transition jobs — and why.",
+  deck:         "Jobs likely to be in demand over the next five years fall into a few groups: healthcare roles driven by an aging population, skilled trades such as electricians and HVAC technicians, roles that put AI to work inside organizations, care and judgment-heavy work such as therapy and teaching, and energy-transition jobs like solar and wind technicians.",
+  answerList: [
+    "Healthcare: driven by an aging population.",
+    "Skilled trades: electricians, plumbers, HVAC technicians.",
+    "AI integration roles, more than pure AI research.",
+    "Care and judgment work: therapists, teachers, social workers.",
+    "Energy transition: solar, wind and grid jobs.",
+  ],
+  sources: [
+    { label: "US Bureau of Labor Statistics — Fastest growing occupations", url: "https://www.bls.gov/ooh/fastest-growing.htm" },
+  ],
   ledes: [
     `You are trying to make a career decision. Maybe you are picking a major. Maybe you are switching fields. Maybe you are advising someone else. The question 'what jobs will be in demand in five years' has a real answer, and the answer matters a lot — but most of the articles that try to answer it are either bland (every list mentions nurses and software engineers) or hype-driven (every list mentions whatever was trending the month it was written).\n\nThe useful version of this question requires looking at structural forces — demographic shifts, technology curves, supply constraints — rather than at vibes. The structural forces are reasonably predictable, even when the specific job titles are not.`,
     `Here are the categories of jobs that are likely to see growing demand over the next five years, and why.`,
   ],
   steps: [
-    { name: 'Healthcare roles, driven by demographics', body: 'The aging of the population in most developed countries is the most predictable demand driver in the labor market. Nurses, physical therapists, home health aides, geriatric specialists, mental health professionals — all of these face structural demand growth that is not contingent on any technology trend or market shift. The demand is driven by demographics, and demographics change slowly and predictably. If you are choosing a career on demand alone, healthcare is a defensible bet because the floor is high and the floor is rising.' },
+    { name: "Which jobs will be most in demand?", body: 'The aging of the population in most developed countries is the most predictable demand driver in the labor market. Nurses, physical therapists, home health aides, geriatric specialists, mental health professionals — all of these face structural demand growth that is not contingent on any technology trend or market shift. The demand is driven by demographics, and demographics change slowly and predictably. If you are choosing a career on demand alone, healthcare is a defensible bet because the floor is high and the floor is rising.' },
     { name: 'Skilled trades, driven by underinvestment in training', body: 'Plumbers, electricians, HVAC technicians, mechanics — these jobs have seen rising demand and rising wages for the past decade, and the structural reasons (a generation of training programs was eliminated, the existing workforce is aging, demand for the work is steady) are not going away. Skilled trades are also among the most automation-resistant categories of work — physical, on-site, situational. If you have aptitude for this kind of work, the next decade is unusually favorable.' },
     { name: 'AI-adjacent roles, but specifically the integration roles', body: 'AI itself is a moving target — pure AI engineering jobs are unstable in their definitions and sometimes in their existence. But roles that integrate AI into specific industries — AI-enabled product management, AI-enabled financial analysis, AI-enabled clinical workflows — are growing fast and will keep growing as the technology spreads from tech companies into other sectors. The skill is not pure AI engineering; it is bringing AI capabilities to a specific domain effectively.' },
     { name: 'Care and human-judgment work that AI is bad at', body: 'Therapists, teachers, social workers, special-needs caregivers, complex case managers — these jobs require human judgment, emotional attunement, and trust in ways that current AI cannot replicate. They have historically been undervalued by the labor market. As more analytical work gets automated, the relative value of judgment-and-care work is likely to rise. The pay in these fields is not as high as in tech, but the demand floor is solid and the work has held up against successive waves of automation.' },
@@ -33,5 +43,5 @@ module.exports = {
     toolName: 'Future Proof',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Schedule a Week Without Constant Switching",
   navTitle:      "How to schedule a week so you're not constantly switching gears",
 
-  description:   "The Sunday-night dread comes from looking at a week shaped to fragment you. Here's how to shape it differently — without rewriting your whole calendar.",
-  deck:          "The Sunday-night dread comes from looking at a week shaped to fragment you. Here's how to shape it differently — without rewriting your whole calendar.",
+  description:  "How to schedule your week to avoid constant context switching: loose day themes, two protected mornings, clustered meetings, and a Friday catch-all.",
+  deck:         "To schedule a week without constant switching, give each day a loose theme, protect two mornings for focused work rather than all five, cluster meetings into afternoons that already have some, and leave Friday afternoon for small leftover tasks. When the plan gets broken, restore the pattern instead of rebuilding the whole week.",
+  answerList: [
+    "Give each day a loose theme.",
+    "Protect two mornings, not five.",
+    "Cluster meetings into the same afternoons.",
+    "Use Friday afternoon for the small leftovers.",
+    "When it breaks, restore the pattern.",
+  ],
 
   ledes: [
     `It's Sunday night. You look at next week's calendar and feel the dread. Not because anything specific is bad — each thing on the calendar is reasonable. The dread is the shape of it: meetings scattered across every morning, deep work crammed between calls, two project areas competing for the same Tuesday afternoon. You know the week will be fine. You also know you'll end Friday more tired than the work itself justifies.`,
@@ -26,7 +33,7 @@ module.exports = {
       body: "Trying to keep every morning meeting-free fails because the world insists. Keeping two mornings (say, Tuesday and Thursday) protected is realistic. Two protected mornings per week is enough for almost any role to get the deep work done; expecting five is what makes the system collapse. Realistic protections beat aspirational ones.",
     },
     {
-      name: "Cluster meetings into the same afternoons",
+      name: "How do you stop context switching at work?",
       body: "When something has to be a meeting, push it toward an existing meeting-heavy block. A Wednesday afternoon already has three calls? The fourth costs almost nothing. Adding it to a meeting-free Thursday morning costs a lot. Be willing to suggest specific times when scheduling — most people are flexible if you give them a window.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

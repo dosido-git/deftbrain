@@ -8,6 +8,16 @@ module.exports = {
   navTitle:      "how to read an itemized hospital bill",
   description:   "How to read an itemized hospital bill: what each column means, the billing errors that show up most often, and how to check it against your insurer's EOB.",
   deck:          "To read an itemized hospital bill, match each line's date, revenue code, CPT or HCPCS code, units, and charge to what actually happened during your care, then compare the amount you are asked to pay with your insurer's Explanation of Benefits. Duplicate lines, wrong units, and services you never received are the most common errors.",
+  answerList: [
+    "Ask the billing office for an itemized bill with codes.",
+    "Match each line's date, code, units and charge to your care.",
+    "Look for duplicates, wrong units and services you didn't receive.",
+    "Compare what you're asked to pay with your insurer's Explanation of Benefits.",
+    "Ask about financial assistance before paying.",
+  ],
+  sources: [
+    { label: "CMS — Hospital price transparency", url: "https://www.cms.gov/priorities/key-initiatives/hospital-price-transparency" },
+  ],
   ledes: [
     `The first bill from a hospital is usually a summary: one total, maybe a few categories, and a due date. That summary is not the bill you can check. The itemized bill is, and you generally have to ask for it. When it arrives it can run several pages of dates, four-digit numbers, five-character codes, abbreviations, and prices with no obvious logic.
 
@@ -35,5 +45,5 @@ It reads that way because it was written for the insurer's systems, not for you.
     toolName: 'Bill Rescue',
   },
   published: '2026-10-05',
-  modified:  '2026-10-05',
+  modified:  '2026-10-08',
 };

@@ -6,14 +6,21 @@ module.exports = {
   titleHtml:     "How to make solo deep work <em>less lonely</em>",
   shortTitle:    "Solo deep work less lonely",
   navTitle:      "solo work less lonely",
-  description:   "Practical ways to keep the loneliness of long solo focus sessions from quietly grinding you down — without losing the benefits of working alone.",
-  deck:          "Practical ways to keep the loneliness of long solo focus sessions from quietly grinding you down — without losing the benefits of working alone.",
+  description:  "How to make solo deep work less lonely: one conversation a day, silent coworking, getting out twice, a peer who does the same work.",
+  deck:         "To make solo deep work less lonely, schedule at least one real conversation every day, try silent video coworking with others, and get out of the house at least twice a day. Find one peer doing similar work to swap progress with, and treat some loneliness as a normal cost of working alone rather than a sign you're failing.",
+  answerList: [
+    "Schedule one real conversation every day.",
+    "Try silent video coworking.",
+    "Get out of the house at least twice a day.",
+    "Find one peer doing similar work.",
+    "Treat some loneliness as a cost, not a failure.",
+  ],
   ledes: [
     `You wanted the freelance life. You wanted the deep work. You wanted to be the kind of person whose calendar was clear of meetings and whose afternoons were given over to long, unbroken stretches of thinking. You got it. And now, six months in, you have noticed something nobody warned you about: you are bored. Not of the work — the work is fine. You are lonely. The day is too quiet. The accomplishments register flatly because there is nobody to register them with.\n\nDeep work is great. Solo deep work, hour after hour, day after day, with no other voices and no parallel motion, is something else. It is a specific kind of slow grinding that you can sustain for a while, but not forever, and not as well as you can sustain the same work in a room with other people doing similar things.`,
     `Here is how to keep the focus benefits of solo deep work without letting the isolation slowly erode you.`,
   ],
   steps: [
-    { name: 'Schedule one human interaction per day, no exceptions', body: 'If your day has zero conversations, by evening you will feel hollow regardless of how much got done. Schedule one — coffee with a friend, a video call with a colleague, a walk with a neighbor. Even fifteen minutes is enough to break the silence. This is not optional and it is not a luxury. Your nervous system needs voice and face from another human, and email does not count. The day with one good conversation feels qualitatively different from the day with none.' },
+    { name: "How do you stop feeling lonely working from home?", body: 'If your day has zero conversations, by evening you will feel hollow regardless of how much got done. Schedule one — coffee with a friend, a video call with a colleague, a walk with a neighbor. Even fifteen minutes is enough to break the silence. This is not optional and it is not a luxury. Your nervous system needs voice and face from another human, and email does not count. The day with one good conversation feels qualitatively different from the day with none.' },
     { name: 'Cowork in parallel, even with strangers', body: 'There are now coworking video sessions where strangers join, mute their mics, and work together silently for an hour. It sounds odd until you try it. The presence of other faces — even faces you do not know — provides the calibration that solo work lacks. You start when they start. You keep working when they keep working. You take a break when they do. You do not have to talk. The presence does the work.' },
     { name: 'Get out of the house at least twice', body: 'Solo deep workers who never leave their apartment are the ones who burn out fastest. Two outings a day — morning coffee shop, afternoon walk, evening grocery run, anything — keep the body in the world. The work happens at the desk, but the rest of you needs sun, weather, faces in passing, the ambient texture of being among other humans. The output of the work is better when the rest of you is healthy, and the rest of you cannot be healthy living entirely indoors.' },
     { name: 'Find a peer who does the same work', body: 'Even one person who is doing similar work — same field, same stage, same daily challenges — changes the shape of solo deep work entirely. You exchange progress notes once a week. You complain to each other about the parts that are hard. You celebrate small wins. The work is still solo, but it is solo in parallel with someone who knows what it is like. This single relationship, more than any productivity hack, separates solo workers who thrive from solo workers who quietly wither.' },
@@ -33,5 +40,5 @@ module.exports = {
     toolName: 'Virtual Body Double',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

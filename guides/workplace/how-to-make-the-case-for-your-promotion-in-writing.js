@@ -12,8 +12,15 @@ module.exports = {
   shortTitle:    "How to Make the Case for Your Promotion",
   navTitle:      "How to make the case for your promotion in writing",
 
-  description:   "A promotion case isn't a list of accomplishments at your current level. It's the argument that you're already operating at the next one. Five steps for writing it.",
-  deck:          "A promotion case isn't a list of accomplishments at your current level. It's the argument that you're already operating at the next one. Five steps for writing it.",
+  description:  "How to write a promotion case: evidence you already work at the next level, patterns not events, measurable impact, and answering objections.",
+  deck:         "To make the case for your promotion in writing, argue that you already work at the next level rather than listing this year's accomplishments. Build it around the expectations of the role above yours, show patterns rather than one-off wins, quantify what changed because of you, and address the likely objections before calibration raises them.",
+  answerList: [
+    "Write to the role above yours, not the one you have.",
+    "Show patterns, not one-off events.",
+    "Quantify what changed because of you.",
+    "Answer the likely objections in advance.",
+    "Sometimes the case points to a different promotion.",
+  ],
 
   published:     '2026-04-25',
   modified:      '2026-10-08',
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Build the case from the role above you, not the role you have",
+      name: "What should a promotion case include?",
       body: "The most common failure of promotion cases is that they're written from the wrong reference point. They list what you did this year and argue you did it well — which is the case for keeping you in your current role. The promotion case has to argue something subtly but importantly different: you're already doing the work of the next level. This requires starting from the next-level role definition and working backward, not starting from your accomplishments and working forward. Pull the role description for the level above you (HR usually has one; if not, your manager can describe what differentiates the levels). Identify the three or four key differentiators — usually scope, autonomy, ambiguity tolerance, and impact — and structure the document around evidence that you're already operating at that bar. Bullets that don't speak to next-level differentiators belong in your performance review, not your promo case.",
     },
     {

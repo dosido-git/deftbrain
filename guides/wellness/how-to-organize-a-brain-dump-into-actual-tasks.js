@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Organize a Brain Dump into Actual Tasks",
   navTitle:      "How to organize a brain dump into actual tasks without it becoming another mess",
 
-  description:   "The dump is done. Now you have 60 fragments. Most are not tasks. Here's how to extract the few that are — and what to do with the rest.",
-  deck:          "The dump is done. Now you have 60 fragments. Most are not tasks. Here's how to extract the few that are — and what to do with the rest.",
+  description:  "How to organize a brain dump into real tasks: cross out the stale, sort fragments into four kinds, write next actions, and park the rest.",
+  deck:         "To turn a brain dump into tasks, first cross out anything no longer relevant, then sort each remaining fragment into a task, a decision, a worry or a note. Rewrite tasks as specific next actions ('Call Mom this weekend', not 'Mom'), keep decisions and worries on separate lists, and treat the result as today's snapshot, not a permanent system.",
+  answerList: [
+    "Cross out what's no longer relevant.",
+    "Sort the rest: task, decision, worry or note.",
+    "Rewrite tasks as specific next actions.",
+    "Keep decisions and worries on separate lists.",
+    "Treat it as a snapshot, not a system.",
+  ],
 
   ledes: [
     `You did the brain dump. You have 60 items on the page. The trouble starts now: most of those items aren't tasks. They're fragments. 'Mom's birthday.' 'Kitchen.' 'Why did Jeff act weird in the meeting.' If you try to put them all in your todo app you'll either stare at it overwhelmed or convert each fragment into a task that doesn't quite mean anything, and then ignore the whole list for a week.`,
@@ -22,7 +29,7 @@ module.exports = {
       body: "A brain dump captures everything, including things that have already resolved themselves or you've stopped caring about. Read the list once and just cross out anything that's no longer alive. You'd be surprised how much of the list is already dead weight by the time you sort it. The list shrinks by 20-30% before you've done any real organizing.",
     },
     {
-      name: "Second pass: turn fragments into one of four shapes",
+      name: "How do you turn a brain dump into a to-do list?",
       body: "What remains needs to be one of four things. A task ('email Sara about Q4 plan'). A decision ('decide whether to go to my cousin's wedding'). A worry ('Mom's health' — no clear action). An idea ('article about hot pot — write someday?'). Most fragments are tasks waiting to be sentence-shaped. The rest go to other piles — and crucially, those other piles get treated differently.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

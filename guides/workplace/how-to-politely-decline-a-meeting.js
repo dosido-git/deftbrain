@@ -18,11 +18,18 @@ module.exports = {
   shortTitle:    "Decline a meeting",
   navTitle:      "How to politely decline a meeting",
 
-  description:   "Specific language for declining a meeting you shouldn't be in — without sounding difficult, lazy, or political, and without giving the organizer an easy reason to push back.",
-  deck:          "Declining is a skill, not a personality trait. Here's how to say no to a meeting in a way that keeps the relationship and that the organizer can't easily push back on.",
+  description:  "How to politely decline a meeting: thank them, name the goal, offer input instead, keep the reason short, don't apologize, and decline early.",
+  deck:         "To decline a meeting politely, reply early, thank the organizer and name the meeting's goal, then offer something in place of attending — written input, a quick async update, or a colleague who can cover it. Keep the reason short ('I have a conflict' is enough) and don't apologize for declining.",
+  answerList: [
+    "Thank them and name the meeting's goal.",
+    "Offer something instead: written input or an update.",
+    "Keep the reason short: 'I have a conflict' is enough.",
+    "Don't apologize for declining.",
+    "Decline early, not the morning of.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-09-26',
+  modified:      '2026-10-08',
 
   ledes: [
     `The invite arrived at 4:47pm. It's for tomorrow at 10am. There's no agenda, eight people on it, and you genuinely cannot think of a reason you should be there. You're not the decision-maker or the subject-matter expert, and your being there won't change the outcome. But declining feels risky — it might read as not being a team player — so you're going to accept, half-attend, multitask through it, and resent the hour.`,
@@ -35,7 +42,7 @@ module.exports = {
       body: "Start with appreciation, not deflection: 'Thanks for including me.' Then name what the meeting is trying to accomplish rather than your objection to it. 'I want to make sure the launch plan gets locked in this week' is a different opening than 'I don't think I need to be on this call.' The first keeps you on the same team as the organizer; the second casts you as an obstacle to what they're trying to do — which is rarely the real situation. People respond very differently to warm declines than to cold ones, even when the substance is identical.",
     },
     {
-      name: "Offer something in place of your attendance",
+      name: "What do you say to decline a meeting?",
       body: "A bare decline forces the organizer to either accept your absence or push back. A decline plus an offer makes the same point and gives them somewhere to go. Send written input ahead of time, read the notes after, or suggest someone better placed to attend — 'Sarah is closer to this and would get more out of it than I would.' The offer doesn't have to be big; it has to remove their reason to need you in the room. It turns a refusal into a redirect, and redirects almost never create friction.",
     },
     {

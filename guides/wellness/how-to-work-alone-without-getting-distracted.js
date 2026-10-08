@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Work Alone Without Distraction",
   navTitle:      "How to work alone without getting distracted constantly",
 
-  description:   "Most distraction at home isn't a focus problem — it's an environment problem. Here's how to engineer the workspace so the distractions cost you something to reach.",
-  deck:          "Most distraction at home isn't a focus problem — it's an environment problem. Here's how to engineer the workspace so the distractions cost you something to reach.",
+  description:  "How to work from home without getting distracted: phone in another room, one browser window, a plain workspace, one task, and scheduled breaks.",
+  deck:         "To work alone without getting distracted, change the environment rather than relying on willpower: put your phone in another room, use one browser window with only the tabs you need, keep the workspace deliberately plain, work on a single task with everything else closed, and schedule set times for checking messages.",
+  answerList: [
+    "Put your phone in another room.",
+    "Use one browser window with only what you need.",
+    "Keep the workspace plain on purpose.",
+    "Work on one task; close everything else.",
+    "Schedule set times to check messages.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `You meant to work for two hours. You worked for forty minutes, in scattered fragments, between checking your phone, opening a tab, looking at the laundry pile, and considering whether the dog needs to go out. Each individual distraction took thirty seconds. Together they ate the morning. The instinct is to feel guilty about your willpower; the more useful instinct is to notice that the environment is set up to make distraction easier than focus.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Put the phone in another room",
+      name: "What is the biggest distraction when working from home?",
       body: "Phone within arm's reach is the single biggest cost on home focus. Even unused, even face-down, even on silent — the brain knows it's there and treats it as available. Put it in another room. Not the next room over; somewhere genuinely inconvenient. The friction of having to walk to retrieve it is what does the work, and the friction has to exceed your average impulsivity threshold to be effective.",
     },
     {

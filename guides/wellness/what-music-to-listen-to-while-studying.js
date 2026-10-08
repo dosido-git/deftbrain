@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "What Music to Listen to While Studying",
   navTitle:      "What music to listen to while studying that actually helps instead of distracting",
 
-  description:   "Lyrics, beats, familiarity, volume — each one matters in a different way depending on what you're studying. Here's how to pick what fits the task.",
-  deck:          "Lyrics, beats, familiarity, volume — each one matters in a different way depending on what you're studying. Here's how to pick what fits the task.",
+  description:  "What music to listen to while studying: no lyrics for word-heavy work, tempo matched to the task, familiar tracks, low volume, and a ready-made playlist.",
+  deck:         "The best music for studying depends on the task. For reading, writing or memorizing, use music without lyrics, since words compete with the words you're processing. Match the tempo to the work, choose familiar music over new, keep the volume just loud enough to cover background noise, and build the playlist before you start.",
+  answerList: [
+    "Reading, writing or memorizing: no lyrics in a language you know.",
+    "Match the tempo to the task: slow for reading, faster for repetitive work.",
+    "Familiar music distracts less than new music.",
+    "Keep it just loud enough to cover background noise.",
+    "Make the playlist before you start.",
+  ],
 
   ledes: [
     `You sit down to study. You put on a playlist. Twenty minutes later you've absorbed nothing but you've definitely been listening to music. Or you put on something different and it's so flat that you keep tabbing over to find something better. The advice online is all over the place — classical, lo-fi, video game soundtracks, ambient, white noise — and most of it is generic, treating 'studying' as if it were one activity instead of ten different cognitive tasks.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Identify whether the task uses your language brain",
+      name: "Is it bad to listen to music with lyrics while studying?",
       body: "If you're reading, writing, or memorizing words, your verbal processing system is busy. Music with lyrics in a language you understand competes with that system and slows you down measurably. (Vocals in a language you don't speak are less disruptive for many people — the research there is mixed — but for verbal work, instrumental is still the safe default.) For language-heavy tasks, instrumental only. For math, code, or visual-spatial tasks, lyrics matter much less and can sometimes even help by occupying the parts of your brain that otherwise wander. If the trouble is a concept that won't click rather than focus, [Missing Link](/MissingLink) finds the earlier idea it depends on.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

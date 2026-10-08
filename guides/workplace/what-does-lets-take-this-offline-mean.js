@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    'What "Let\'s Take This Offline" Means',
   navTitle:      'What does lets take this offline mean in a meeting and when to push back',
 
-  description:   "Sometimes 'let's take this offline' is a real sidebar. Sometimes it's a polite shutdown. Four contexts, what each one signals, and when it's worth pushing back in the room.",
-  deck:          "Sometimes 'let's take this offline' is a real sidebar. Sometimes it's a polite shutdown. Four contexts, what each one signals, and when it's worth pushing back in the room.",
+  description:  "What 'let's take this offline' means in a meeting: a real sidebar, the wrong audience, conflict avoidance or a shutdown — and when to push back.",
+  deck:         "'Let's take this offline' in a meeting can mean the topic really belongs elsewhere, that only a few people need to discuss it, that someone wants to avoid an uncomfortable disagreement, or a way of shutting down a challenge. If the offline conversation never happens, follow up and ask for a time, or push back politely in the room.",
+  answerList: [
+    "Often a genuine sidebar: off-agenda or missing people.",
+    "Sometimes the topic only concerns a few people.",
+    "Sometimes it avoids an uncomfortable disagreement.",
+    "Sometimes it shuts down a challenge.",
+    "If the follow-up never happens, ask for a time.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `You raise something in a meeting. The discussion is going somewhere. Then someone — maybe your manager, maybe a peer, maybe leadership — says "let's take this offline." The conversation moves on. Whether you got managed or accommodated depends entirely on what was happening in the moment they said it.`,
@@ -28,7 +35,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Read the legitimate sidebar",
+      name: "What does 'let's take this offline' mean?",
       body: "The most common version, and the reason the phrase exists. The topic raised really is off-agenda, or requires people who aren't in the room, or needs data nobody has on hand. The tell is that the person saying it immediately proposes a specific follow-up — 'let's grab fifteen minutes Thursday after the standup' — not a vague 'we'll circle back.' This is the phrase functioning as designed: protect the meeting, schedule the real conversation. Say yes, get it on a calendar before the current meeting ends. For a phrase you've never come across before, [What's That Mean?](/WhatsThatMean) says what kind of expression it is and what it means in plain language.",
     },
     {

@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Remember Everything Without Losing Your Mind",
   navTitle:      "How to remember everything you need to do without losing your mind in the process",
 
-  description:   "The goal isn't perfect recall. It's getting things out of your head so you can stop holding them. Here's a system that works for people who hate systems.",
-  deck:          "The goal isn't perfect recall. It's getting things out of your head so you can stop holding them. Here's a system that works for people who hate systems.",
+  description:  "How to remember everything you need to do: one capture spot, quick notes, a five-minute daily review, dated reminders, and forgiving the gaps.",
+  deck:         "To keep track of everything you need to do, use one capture place only, jot things down in seconds when they occur to you and tidy them later, and review that list once a day for five minutes. Put things that aren't due yet in a dated reminder, and when the system lapses, pick it back up rather than starting over.",
+  answerList: [
+    "Use one capture spot, not three.",
+    "Capture in seconds; organize later.",
+    "Review it once a day for five minutes.",
+    "Put not-yet-due items in a dated reminder.",
+    "When it lapses, just pick it back up.",
+  ],
 
   ledes: [
     `You keep forgetting things. Not big things — small things. The form you meant to file, the friend you meant to text, the dentist appointment you knew about a month ago and somehow let lapse. Each one separately is fine. The pattern is making you feel slightly out of control, which is making you mentally hold more things, which is making the forgetting worse. The advice you've heard ('use a productivity system') feels like adding another layer of work to a person who's already overloaded.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Pick one capture spot, not three",
+      name: "What is the best way to keep track of tasks?",
       body: "Most failed systems fail because they're spread across too many places — sticky notes, two apps, the back of an envelope, a notebook. Pick one. Notes app, paper notebook, single document, whatever. The location matters less than the consistency. The first rule is: when something occurs to you that you might forget, it goes in the one spot. Not 'I'll remember to put it there later.' Right then, if at all possible.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

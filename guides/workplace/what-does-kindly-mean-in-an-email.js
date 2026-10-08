@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    'What "Kindly" Means in an Email',
   navTitle:      'What does kindly mean at the start of an email and why it lands differently',
 
-  description:   "'Kindly send the report by Friday' isn't always cold. Sometimes it's standard polite English; sometimes it's a flag. Five contexts that change what 'kindly' actually signals.",
-  deck:          "'Kindly send the report by Friday' isn't always cold. Sometimes it's standard polite English; sometimes it's a flag. Five contexts that change what 'kindly' actually signals.",
+  description:  "What 'kindly' means in an email: usually just 'please', sometimes a polite nudge or a cooler tone — and how to tell which from the context.",
+  deck:         "'Kindly' at the start of an email usually just means 'please', especially in South Asian, British and much of African and Southeast Asian business English. It can also signal mild impatience in a follow-up, a show of superiority, or a shift to a more formal footing. Read it against the context: who sent it, and what came before.",
+  answerList: [
+    "Usually it simply means 'please'.",
+    "In a follow-up, it can be patient-but-firm.",
+    "Sometimes it signals a show of superiority.",
+    "New from an informal contact, it marks a shift to formal.",
+    "Judge it by who sent it and what came before.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `An email arrives. "Kindly send the deck by end of day." Two reactions are possible: a normal polite request, or a quiet correction with a smile attached. Which one it actually is depends almost entirely on context that has nothing to do with the word itself.`,
@@ -28,7 +35,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Read the standard polite usage",
+      name: "Is 'kindly' rude in an email?",
       body: "The most common version globally, and the one Americans most often misread. In South Asian English, British English, much of African and Southeast Asian business English, and large stretches of customer service worldwide, 'kindly' is simply how polite requests open. 'Kindly send the report' carries the same warmth as 'please send the report' — sometimes more. The tell is regional and contextual: if the sender writes in a register that's consistently formal, if they use 'kindly' in routine messages with no friction attached, or if they're writing from a context where 'kindly' is the standard business idiom, the word means exactly what it says. Reading hostility into it usually says more about the reader's frame than the sender's intent. For a phrase you've never come across before, [What's That Mean?](/WhatsThatMean) says what kind of expression it is and what it means in plain language.",
     },
     {
