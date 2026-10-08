@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "9a10a07f3d120daf80fe08da64a0d269700cb0af",
+  "hash": "00b1e9854e07ce56e7ab107100fe9f1720804d12",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -393,6 +393,26 @@
  },
  "tool:NerveCheck": {
   "hash": "bdc4d67d209f4054311f274d72e93025462dd0e1",
+  "lastmod": "2026-10-08"
+ },
+ "tool:ConceptCoach": {
+  "hash": "fb940087d090a6a56d44136b206cc58ab71019f4",
+  "lastmod": "2026-10-08"
+ },
+ "tool:FutureProof": {
+  "hash": "48cdec2dd9eca776c598a2ee206a4a661b33e792",
+  "lastmod": "2026-10-08"
+ },
+ "tool:BreakMyPlan": {
+  "hash": "5ab5490b73fc5c0f276fcaa1aedfe2975acdd5ef",
+  "lastmod": "2026-10-08"
+ },
+ "tool:DocumentDetective": {
+  "hash": "58a390f405fff2d56db744848f73d69e84e450ec",
+  "lastmod": "2026-10-08"
+ },
+ "tool:ResearchDecoder": {
+  "hash": "4867544e5bf4074b3f72af5db4cfa647633657e2",
   "lastmod": "2026-10-08"
  }
 }

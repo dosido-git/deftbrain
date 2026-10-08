@@ -58,6 +58,7 @@ const EXAMPLE_OUTPUT_TOOLS = new Set([
   'DecisionCoach', 'PaperworkPath', 'RoommateCourt', 'NameThatFeeling', 'ColdOpenCraft',
   'HecklerPrep', 'MagicMouth',
   'NerveCheck', 'TheRunthrough', 'BuyWise', 'UpsellShield', 'CaptionMagic', 'SafeWalk', 'SignalVsNoise',
+  'ResearchDecoder', 'DocumentDetective', 'BreakMyPlan', 'FutureProof', 'ConceptCoach',
 ]);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 

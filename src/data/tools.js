@@ -213,6 +213,57 @@ export const tools = [
   icon: "🔬",
   categories: ['Career', 'Decisions'],
   headerColor: "#d8c8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Concept Coach gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the idea below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The idea",
+    sampleText: "An app that connects people who want to learn a skill (like cooking, guitar, or coding) with local experts who can teach them in person. Think Airbnb for skill-sharing. Teachers set their own rates. We take 15%. Starting with cooking and fitness in my city. Evidence so far: Spoke to about 15 people who would want to teach; 4 said they would pay for lessons. No sign-ups yet. Two similar apps in other cities shut down last year. Founder: I'm a product manager at a tech company, decent at building products. No experience running a marketplace. Have $30k in savings to invest.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Verdict: Clear concept, core demand unproven",
+        tone: "blue",
+        text: "The marketplace structure is clearly defined and the starting scope is narrow, but the evidence gathered so far does not establish that enough learners will pay, or that enough bookings will occur to sustain a 15% fee model.",
+      },
+      {
+        label: "Biggest risks",
+        tone: "yellow",
+        items: [
+          "Learner demand is unestablished — Before building further, identify potential learners through community channels, local groups, or personal networks and ask them for a small deposit or pre-payment toward a first session. Whether they convert from interest to commitment is a materially stronger signal than whether they say yes in conversation.",
+          "Marketplace cold-start dependency — Manually broker sessions end-to-end without any app — connect a willing teacher with a willing learner, handle scheduling yourself, and collect the fee. If you cannot produce successful completed sessions this way, building the platform is premature. If you can, you have a template and early evidence to build from.",
+        ],
+      },
+      {
+        label: "Strengths",
+        tone: "green",
+        items: [
+          "Supply-side early interest",
+          "Narrow starting scope reduces coordination burden",
+          "Product management experience is relevant to early iteration",
+          "Capital available for testing before a larger commitment",
+        ],
+      },
+      {
+        label: "Questions to answer",
+        tone: "purple",
+        items: [
+          "Do you know why the two similar apps in other cities shut down, and does any part of what ended them apply to your market or model?",
+          "Of the four people who said they would pay for lessons, how many would commit to a real session with a real teacher at a real price right now?",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I validate a business idea before building it?",
+      a: "Test the riskiest assumption with real behavior, not opinions: ask for a deposit, sell the service by hand before building software, and find out why similar businesses failed." },
+    { q: "What is a concierge test?",
+      a: "Delivering the service manually — matching people, scheduling, collecting payment yourself — before building a product. If you can't make it work by hand, an app won't fix it." },
+    { q: "Does Concept Coach say whether my idea is good?",
+      a: "It says what your evidence supports, what it doesn't yet, and the cheapest tests to find out — not whether to go ahead." },
+  ],
   description: "Describe your business idea and Concept Coach will challenge it, surface weak assumptions, point out genuine strengths, and help you figure out what to test before you commit more time or money.",
   guide: {
     tips: [
@@ -871,6 +922,50 @@ export const tools = [
   icon: "🔮",
   categories: ['Career', 'Decisions'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Future Proof gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below, over a 10-year horizon. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The situation",
+    sampleText: "Running a two-van plumbing business. Twenty-two years in, two vans, three people including me. Work comes from word of mouth and a listing site that now takes a bigger cut every year and puts sponsored firms above me. My eldest has no interest in taking it on. I am 54.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The question that matters",
+        tone: "blue",
+        text: "Is the underlying plumbing skill becoming more valuable per hour, or is the business model eroding faster than the skill compounds?",
+      },
+      {
+        label: "Headwinds",
+        tone: "yellow",
+        items: [
+          "Platform margin extraction — The listing site taking a larger cut each year and ranking sponsored firms above organic results is already compressing the return on customer acquisition through that channel.",
+          "No succession or scale path described — With the eldest uninterested and the business at two vans, options to grow value through succession or sale depend on deliberate action and clear visibility into what the business would be worth to a buyer.",
+          "Customer acquisition concentrating in platforms — If more customers default to platform search rather than personal referral, operators who have not built direct channels become increasingly dependent on terms they do not set.",
+        ],
+      },
+      {
+        label: "What this means for you",
+        tone: "green",
+        text: "The underlying skill is not the problem. Twenty-two years of physical, diagnostic, judgment-heavy work is genuinely hard to replicate and hard to replace. What is eroding is your capture of that value, because a platform you do not control is inserting itself between your skill and your customers and taking a larger share each year. That is a business-model problem, not a skill problem, and it is solvable in a way that automation risk to the core work is not. The succession question and the exit question are separate but both worth looking at now, while you have time and income to act rather than react. The most resilient version of the next ten years probably involves owning the customer relationship more directly, charging appropriately for the work only you can diagnose, and having a clear view of what the business would fetch if you wanted to sell it — so that staying or leaving is a choice, not a default.",
+      },
+      {
+        label: "One thing to do",
+        tone: "purple",
+        text: "Contact a sample of customers who have come to you through word of mouth. Ask them: how did you find me, would you refer me by name to someone who asked, and what has your experience been with platform-based tradespeople. Write down what you hear. This tells you whether your direct channel is strong enough to build on and what your actual competitive position looks like from the customer side.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Is my job at risk from AI?",
+      a: "It depends on which parts of the work can be done remotely and repeated, and which need presence, judgment and accountability. Future Proof separates the two, and often the bigger risk turns out to be the business model rather than automation." },
+    { q: "What can Future Proof assess?",
+      a: "A career, a skill, a business, an investment or a long-term commitment, over the timeframe you choose." },
+    { q: "Does it predict the future?",
+      a: "No. It lays out the forces pushing each way, a best, base and worst case, and how certain it is — and says when the evidence is thin." },
+  ],
   description: "Stress-test a career, skill, technology, investment, or long-term bet. See what's working for it, what's working against it, what could change, and what you can do now without betting everything on one forecast. Choose a 1, 3, 5 or 10 year horizon; get tailwinds, headwinds, three conditional scenarios, and one low-regret action.",
   guide: {
       tips: [
@@ -1089,6 +1184,52 @@ export const tools = [
   icon: "💀",
   categories: ['Decisions', 'Work & Meetings'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Break My Plan? gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the plan below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The plan",
+    sampleText: "Quit my agency job in June to go freelance as a UX designer, with two current clients who have said they would follow me as the base. Stakes: Six months of savings and a mortgage. If it fails I go back to the market a year older, with a gap. Assumptions: The two clients actually follow. I can bill about 60% of my hours. I will not mind selling.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Test this assumption first",
+        tone: "blue",
+        text: "The two clients actually follow you when you leave the agency. Both clients have said they would follow. What is not yet known is whether those conversations were formal commitments, informal encouragement, or something in between — and whether their ability to contract with you directly depends on agency agreements, procurement rules, or internal approval that has not yet been tested.",
+      },
+      {
+        label: "Most likely way it fails: Client commitments do not convert to contracts",
+        tone: "yellow",
+        items: [
+          "Why: Clients who genuinely want to keep working with you may still face internal procurement rules, preferred-vendor lists, or agency non-solicitation clauses that prevent them from contracting with you directly, regardless of intent. Good intentions and actual contracts are not the same thing.",
+          "Reduce the risk: Before giving notice, have a direct conversation with each client about the mechanics of contracting with you independently — not just whether they want to, but whether their procurement process permits it and what it would take. Aim for a signed agreement or at minimum a written statement of intent before you hand in notice.",
+        ],
+      },
+      {
+        label: "Early warning signs",
+        tone: "green",
+        items: [
+          "One or both clients delays confirming a specific first engagement — meetings happen, intentions are restated, but a signed brief or purchase order does not arrive within the first few weeks of your start date.",
+          "Your actual billable hours in the first month fall noticeably short of the 60% target, and the shortfall is not explained by a one-time setup period you had already planned for.",
+        ],
+      },
+      {
+        label: "When to reconsider",
+        tone: "purple",
+        text: "If, by the time you give notice, neither client has signed a contract or issued a formal engagement letter with you personally — or if one has gone quiet — the financial foundation is not yet real. Delay the June quit date until at least one client is contracted and paying, or reduce your fixed costs enough that the savings runway extends materially beyond six months. Do not treat verbal enthusiasm as equivalent to a signed agreement.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What is a pre-mortem?",
+      a: "You imagine the plan has failed and work out the most likely reasons, before you start. It surfaces risks that optimism hides, while there's still time to change the plan." },
+    { q: "How do I know if I'm ready to go freelance?",
+      a: "Turn your assumptions into things you can check: signed contracts instead of promises, a realistic share of billable hours, and how many months your savings cover your fixed costs." },
+    { q: "Will it tell me not to do it?",
+      a: "No. It shows how the plan could fail, what to test first and the signs to watch for, so the decision stays yours." },
+  ],
   description: "Have a plan you're about to put into action? Describe it and Break My Plan? will work backward from an imagined failure to find the weak assumptions, warning signs, and failure paths worth thinking about now — while you can still do something about them.",
   guide: {
       tips: [
@@ -3254,6 +3395,52 @@ export const tools = [
   icon: "🔎",
   categories: ['Health & Wellness', 'Home & Daily Life', 'Money'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Document Detective gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the lease clauses below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The document (three clauses from a tenancy agreement)",
+    sampleText: "CLAUSE 14 — BREAK CLAUSE\n14.1 Either party may terminate this Agreement after month 12 by giving not less than two (2) months' written notice.\n14.2 Notice given under this clause must expire on or after the last day of month 12.\n\nCLAUSE 17 — RENT REVIEW\n17.1 The Landlord may increase the Rent once in any 12-month period by serving notice in writing, such increase to take effect not less than one (1) month after the notice is served, and to reflect no more than the percentage change in the relevant regional rent index over the preceding 12 months.\n\nCLAUSE 21 — DEPOSIT DEDUCTIONS\n21.1 The Landlord may deduct from the Deposit any reasonable costs of professional cleaning where the property is not returned in a condition consistent with a professional clean at the start of the tenancy, regardless of whether one was carried out.\n\nMy situation: I signed this ten months ago and want to move out at the eleven-month mark for a job in another city.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The earliest exit the break clause allows",
+        tone: "blue",
+        text: "If you want to exit at the earliest point the break clause allows, the soonest your notice could expire is the last day of month 12, which means you would need to serve notice no later than the last day of month 10 to achieve a month-12 exit.",
+      },
+      {
+        label: "Leaving at month 11",
+        tone: "yellow",
+        text: "To leave at month 11, you would need the landlord to agree to an early termination outside the break clause — the document does not provide that route. If you intend to use the break clause at the earliest possible point, you would need to serve at least two months written notice, with that notice expiring no earlier than the last day of month 12.",
+      },
+      {
+        label: "Questions to ask the landlord",
+        tone: "green",
+        items: [
+          "Will you agree to release me from the tenancy early, at the eleven-month mark, given my circumstances?",
+          "If we agree to early termination, what will you require in terms of property condition before returning my deposit?",
+          "What is the exact last day of month 12 as you count it from the tenancy start date, for the purposes of clause 14.2?",
+        ],
+      },
+      {
+        label: "Where to get outside help",
+        tone: "purple",
+        items: [
+          "Whether the cleaning deduction in clause 21.1 is enforceable given no professional clean was documented at move-in — and what 'reasonable costs' means in practice in a dispute — Your deposit protection scheme — if the deposit is registered with one, it will have a dispute resolution process and published guidance on what evidence it considers when adjudicating cleaning deductions.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "Can I end a lease early with a break clause?",
+      a: "Only on the terms the clause sets — usually a minimum period and a notice period. Read whether the notice must be given after a date or simply expire after it; that difference decides your earliest exit. Outside those terms you need the landlord's agreement." },
+    { q: "Does Document Detective give legal advice?",
+      a: "No. It reads the document against your situation, points out what applies to you and what's easy to miss, and says when a question needs a lawyer, an advice service or the organization that sent it." },
+    { q: "What kinds of documents can it read?",
+      a: "Leases, contracts, insurance policies, benefit letters, medical consent forms and other paperwork where the fine print matters. Paste the text or upload a PDF." },
+  ],
   description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Document Detective extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
   guide: {
     tips: [
@@ -3965,6 +4152,49 @@ tagline: "Work with the energy you have.",
   icon: "📄",
   categories: ['Learning'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Research Decoder gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the abstract below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The abstract — “Association between ultra-processed food intake and all-cause mortality: prospective cohort study”",
+    sampleText: "In this prospective cohort of 44,551 French adults aged 45 years and older followed for a median of 7.1 years, ultra-processed food represented 14.4% of the weight of total food consumed and 29.1% of total energy intake. Ultra-processed food consumption was associated with younger age, lower income, lower educational level, living alone, higher body mass index, and lower physical activity level. An absolute increase of 10% in the proportion of ultra-processed food in the diet was associated with a 14% higher risk of all-cause mortality (hazard ratio 1.14, 95% CI 1.04 to 1.27) after adjustment for a range of confounding factors. Sensitivity analyses excluding participants who died within the first two years of follow-up did not materially change the estimates. Limitations include self-reported dietary data and the observational design, which precludes causal inference.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The finding",
+        tone: "blue",
+        text: "In a study of over 44,000 French adults, each 10-percentage-point increase in the share of ultra-processed food in the diet was associated with a 14% higher hazard of dying from any cause over a median follow-up of about seven years. The researchers found this association after adjusting for a range of confounding factors, but the observational design means causation cannot be inferred.",
+      },
+      {
+        label: "What the main number means",
+        tone: "green",
+        items: [
+          "Each 10-point rise in the share of ultra-processed food in the diet was associated with a 14% higher rate of death during follow-up, relative to those with a 10 points lower share. This is a relative comparison, not an absolute personal risk figure.",
+          "A hazard ratio is not the same as personal risk. To know what this means in absolute terms for an individual, you would need the baseline mortality rate in the study population, which is not reported in this excerpt.",
+        ],
+      },
+      {
+        label: "What it doesn't establish",
+        tone: "yellow",
+        items: [
+          "Causation: the researchers explicitly state the observational design precludes causal inference",
+          "What the absolute increase in mortality risk was for any individual, because the hazard ratio alone does not convey that without baseline risk data not provided in this excerpt",
+          "Whether the association holds in populations that differ from this sample in age, nationality, dietary culture, or other characteristics",
+          "Which specific foods within the ultra-processed category, or which properties of those foods, might drive the association — the excerpt does not address this",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What does a hazard ratio of 1.14 mean?",
+      a: "The event happened at a 14% higher rate in one group than the comparison group during the study. It's a relative figure: without the baseline rate, it doesn't tell you any one person's actual risk." },
+    { q: "Can an observational study prove cause and effect?",
+      a: "No. It can show an association that holds after adjusting for known factors, but something unmeasured could explain part of it. Randomized trials are how cause is usually tested." },
+    { q: "Can I upload a full paper?",
+      a: "Yes — paste text or upload a PDF. If you only give it an abstract, it says so, because limitations and methods often aren't in the abstract." },
+  ],
   description: "Paste an abstract, excerpt, or research paper. Research Decoder explains what the researchers found, what they actually did, what the numbers mean, and what the study can—and cannot—tell you.",
   guide: {
       tips: [

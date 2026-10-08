@@ -136,6 +136,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://deftbrain.com/ConceptCoach</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://deftbrain.com/SleepArchitect</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -172,6 +178,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://deftbrain.com/FutureProof</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://deftbrain.com/MarkupDetective</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -179,6 +191,12 @@
   </url>
   <url>
     <loc>https://deftbrain.com/SignalVsNoise</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deftbrain.com/BreakMyPlan</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -298,6 +316,12 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://deftbrain.com/DocumentDetective</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://deftbrain.com/ContextCollapse</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -329,6 +353,12 @@
   </url>
   <url>
     <loc>https://deftbrain.com/ArgueSmarter</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deftbrain.com/ResearchDecoder</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

@@ -41,3 +41,10 @@ line "at a wedding" — fixed in 6b7bbc3b (origin rule + supplied-facts check).
 - **SignalVsNoise** — some figures not checked against the cited papers (90% polyphasic dropout attributed to S6; "12,637 adults" catch-up study). Left out of the example; consider a number check against source text.
 - **SafeWalk** — verified facts are date-bound (Chicago Marathon, station hours), so left out of a permanent example.
 - **TheRunthrough** — Cut mode added a sentence not in the original ("Flagging that now so there are no surprises"). Minor; shown as-is.
+
+## Batch 8 (2026-10-08)
+
+- **DocumentDetective** — contradicts itself on the break clause: bottom line and `needs_attention` say notice can only be *given* after month 12; `also_relevant` correctly says notice can be served by end of month 10 to expire at end of month 12. Also overstates that "regardless" wording "removes any argument" (deposit schemes / unfair-terms rules may not agree). Example shows only the consistent parts.
+- **BreakMyPlan / FutureProof** — British spellings in an en-US run (utilisation, signalling, optimised, specialise, favourable); same class as Giftology. FutureProof also leaked an `INFERRED:` marker into `the_pattern`. Affected fields left out of the examples.
+- **BreakMyPlan** — still opens with a fictional post-mortem narrative ("The two clients did follow…"). Left out.
+- **ConceptCoach** — built-in example 3 is tagged stage `idea` but describes a live product with 40 paying teams, and says "3 teams lost … both cited". Fix the example data.
