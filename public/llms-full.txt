@@ -137,6 +137,8 @@ Leases are full of language most renters never question until something goes wro
 - DOCUMENT EVERYTHING - if you negotiate changes, get them in writing as lease addendum before signing.
 - RED FLAGS = WALK AWAY WARNING - if lease has multiple red flags and landlord won't negotiate, consider walking away. Predatory lease = bad landlord.
 
+**Before you go.** Check the lease before you sign. Once it's signed, even a clause the law won't enforce can take a fight to remove.
+
 ### Paperwork Path
 
 URL: https://deftbrain.com/PaperworkPath
@@ -280,6 +282,8 @@ Walking somewhere alone? Tell Safe Walk where you're going, when, and anything y
 - The pretend call discloses itself before it starts — it's a social exit tool, not something to rely on in place of moving toward help
 - If the browser can't access your phone's actual flashlight, the flashlight tile brightens the screen instead rather than failing silently
 
+**Before you go.** The check-in reminder doesn't alert anyone. If someone should know your route, text them before you set out.
+
 ## Travel & Events
 
 ### Hobby Match
@@ -328,6 +332,8 @@ Your layover isn't just a block of time. It's a puzzle to solve. DeftBrain looks
 - Generate the Survival Kit before you fly — you might not have WiFi when you land
 - The Delay Tracker threshold scale shows exactly when to abandon your exploration plan
 - Save your hub airports — frequent flyers keep rediscovering the same places
+
+**Before you go.** Before leaving the airport, check the entry rules for your passport on an official government site. This plan assumes you're allowed out.
 
 ## Relationships
 
@@ -781,6 +787,8 @@ Names are deceptively hard. They need to sound right, fit your audience, be easy
 - Problem flags check major world languages — a clean flag (✓) means no issues were found, but consider checking with native speakers for important names
 - For business names, the best names are often in the Mashup/Coined category — they're unique, trademarkable, and more likely to have domains available
 
+**Before you go.** Before you buy a domain or print anything, search the trademark register yourself. The availability notes here are early warnings, not clearance.
+
 ### Roast Me
 
 URL: https://deftbrain.com/RoastMe
@@ -1067,6 +1075,8 @@ Turn your scattered worries and symptoms into a focused script for your next doc
 - Save the output to your phone and scroll to it when the doctor asks 'so what's going on?'
 - Pair with Doctor Visit Translator afterward to decode what the doctor said
 
+**Before you go.** Severe or sudden symptoms, such as chest pain, the worst headache of your life, signs of stroke or heavy bleeding, need urgent care or the ER, not an appointment.
+
 ### Document Detective
 
 URL: https://deftbrain.com/DocumentDetective
@@ -1352,6 +1362,8 @@ Not sure what to make of something your pet is doing? Describe what you're seein
 - The vet summary is meant to be handed to or emailed to your vet — it states only what you reported, never a suspected diagnosis
 - If you're worried enough to use this tool and something feels urgent, don't wait for an answer — use the emergency guidance at the top
 
+**Before you go.** If your pet is in distress right now (trouble breathing, collapse, a suspected poisoning), call a vet first.
+
 ### Procedure Probe
 
 URL: https://deftbrain.com/ProcedureProbe
@@ -1612,6 +1624,8 @@ That envelope, email, or collection notice doesn't have to ruin your week. Tell 
 - Log victories immediately — watching your savings total grow builds the habit
 - The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit
 
+**Before you go.** If a collector has the bill, don't pay or agree the debt is yours until they've validated it in writing. On an old debt, even a small payment can restart the time limit for collecting it.
+
 ### Comeback Cooker
 
 URL: https://deftbrain.com/ComebackCooker
@@ -1656,6 +1670,8 @@ When a company ignores you, the problem isn't always the complaint. It's knowing
 - The tool identifies specific laws that apply to your situation — these are referenced in the letters to signal you know your rights
 - The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines
 - There is no need to jump ahead — each step leaves a record that makes the next one easier
+
+**Before you go.** Confirm any email address or department before you send. The ones suggested are likely contacts, not verified ones.
 
 ### Conflict Coach
 
@@ -2709,6 +2725,8 @@ Tell it about the drive and how you're feeling, and it gives you one clear call 
 - A go call is not a safety guarantee — it means nothing you reported gave a clear reason to wait
 - If the answer is pause and you resolve the missing fact, run it again rather than talking yourself past it
 - Walking home instead? SafeWalk covers that trip
+
+**Before you go.** Never use Drive Home while the vehicle is moving.
 
 ### Friendship Fade Alerter
 

@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "bb43940db9f15e0a76a4aa98e6d6444e641ed12a",
+  "hash": "e2c953d27fdcbc275b4e3b08e82e088ce7e7088d",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -28,7 +28,7 @@
   "lastmod": "2026-10-08"
  },
  "tool:BillRescue": {
-  "hash": "eb62c3334d575bb6095d386a7898c6e3ab9e90ff",
+  "hash": "455a1742844bd5db3b406a5a7501016cf099a161",
   "lastmod": "2026-10-08"
  },
  "tool:BragSheetBuilder": {
@@ -40,7 +40,7 @@
   "lastmod": "2026-10-08"
  },
  "tool:ComplaintEscalationWriter": {
-  "hash": "582f2838a39a3ceb0f680d2f68b8e962042c6a4c",
+  "hash": "5896558f7fb26a09d238aa45b28312e1b9334352",
   "lastmod": "2026-10-08"
  },
  "tool:ContextCollapse": {
@@ -56,7 +56,7 @@
   "lastmod": "2026-10-08"
  },
  "tool:DoctorVisitPrep": {
-  "hash": "f0bcb7d726cc894b02a25fae0ea60b4e70ec7df4",
+  "hash": "3b05857b5d6628d56f02ac051886f2cab94f2e99",
   "lastmod": "2026-10-08"
  },
  "tool:DoctorVisitTranslator": {
@@ -80,11 +80,11 @@
   "lastmod": "2026-10-08"
  },
  "tool:LayoverMaximizer": {
-  "hash": "11e13ac2e892f2b171be407775918156d5c8ea94",
+  "hash": "a1f3651a8237ffa2e03b88f3abb9696784bc8cc6",
   "lastmod": "2026-10-08"
  },
  "tool:LeaseTrapDetector": {
-  "hash": "45832eca45bd210877c1f14967def177889bd6e1",
+  "hash": "356639a52552ae0173ba54bf8a2192923691ef2c",
   "lastmod": "2026-10-08"
  },
  "tool:MarkupDetective": {
@@ -104,7 +104,7 @@
   "lastmod": "2026-10-08"
  },
  "tool:NameStorm": {
-  "hash": "23c1fe740460ed04a44dd4ba3d977c1a6981a969",
+  "hash": "7a88816cfed681791b299f939e9084c1ba12e555",
   "lastmod": "2026-10-08"
  },
  "tool:PlainTalk": {

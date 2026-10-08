@@ -419,6 +419,7 @@ export const tools = [
       "Save the output to your phone and scroll to it when the doctor asks 'so what's going on?'",
       "Pair with Doctor Visit Translator afterward to decode what the doctor said"
     ],
+    beforeYouGo: "Severe or sudden symptoms, such as chest pain, the worst headache of your life, signs of stroke or heavy bleeding, need urgent care or the ER, not an appointment.",
   }
 },
 {
@@ -455,6 +456,7 @@ export const tools = [
       "If the answer is pause and you resolve the missing fact, run it again rather than talking yourself past it",
       "Walking home instead? SafeWalk covers that trip"
     ],
+    beforeYouGo: "Never use Drive Home while the vehicle is moving.",
 
   }
 },
@@ -3606,6 +3608,7 @@ tagline: "Work with the energy you have.",
       "The Delay Tracker threshold scale shows exactly when to abandon your exploration plan",
       "Save your hub airports — frequent flyers keep rediscovering the same places"
     ],
+    beforeYouGo: "Before leaving the airport, check the entry rules for your passport on an official government site. This plan assumes you're allowed out.",
 
   }
 },
@@ -3747,6 +3750,7 @@ tagline: "Work with the energy you have.",
         "Problem flags check major world languages — a clean flag (✓) means no issues were found, but consider checking with native speakers for important names",
         "For business names, the best names are often in the Mashup/Coined category — they're unique, trademarkable, and more likely to have domains available"
       ],
+      beforeYouGo: "Before you buy a domain or print anything, search the trademark register yourself. The availability notes here are early warnings, not clearance.",
 
     }
 },
@@ -3973,6 +3977,7 @@ tagline: "Work with the energy you have.",
       "The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines",
       "There is no need to jump ahead — each step leaves a record that makes the next one easier"
     ],
+    beforeYouGo: "Confirm any email address or department before you send. The ones suggested are likely contacts, not verified ones.",
 
   }
 },
@@ -4514,6 +4519,7 @@ tagline: "Work with the energy you have.",
       "The vet summary is meant to be handed to or emailed to your vet — it states only what you reported, never a suspected diagnosis",
       "If you're worried enough to use this tool and something feels urgent, don't wait for an answer — use the emergency guidance at the top"
     ],
+    beforeYouGo: "If your pet is in distress right now (trouble breathing, collapse, a suspected poisoning), call a vet first.",
   }
 },
 
@@ -5031,6 +5037,7 @@ tagline: "Work with the energy you have.",
       "DOCUMENT EVERYTHING - if you negotiate changes, get them in writing as lease addendum before signing.",
       "RED FLAGS = WALK AWAY WARNING - if lease has multiple red flags and landlord won't negotiate, consider walking away. Predatory lease = bad landlord."
     ],
+    beforeYouGo: "Check the lease before you sign. Once it's signed, even a clause the law won't enforce can take a fight to remove.",
     
   }
 },
@@ -5305,6 +5312,7 @@ tagline: "Work with the energy you have.",
       "Log victories immediately — watching your savings total grow builds the habit",
       "The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit"
     ],
+    beforeYouGo: "If a collector has the bill, don't pay or agree the debt is yours until they've validated it in writing. On an old debt, even a small payment can restart the time limit for collecting it.",
 
   },
   crossRefs: ['MoneyDiplomat', 'ChaosPilot'],
@@ -6071,6 +6079,7 @@ tagline: "Work with the energy you have.",
       "The pretend call discloses itself before it starts — it's a social exit tool, not something to rely on in place of moving toward help",
       "If the browser can't access your phone's actual flashlight, the flashlight tile brightens the screen instead rather than failing silently"
     ],
+    beforeYouGo: "The check-in reminder doesn't alert anyone. If someone should know your route, text them before you set out.",
 
   }
 },
