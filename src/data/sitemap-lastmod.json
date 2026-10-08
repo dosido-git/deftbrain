@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "8c093e7d2e657283f49255a22ca4c923a2077a47",
+  "hash": "9a10a07f3d120daf80fe08da64a0d269700cb0af",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -365,6 +365,34 @@
  },
  "tool:MagicMouth": {
   "hash": "2a2bdb526a44877e6a1a20ca451c3a013c1cda81",
+  "lastmod": "2026-10-08"
+ },
+ "tool:SignalVsNoise": {
+  "hash": "5eee74c572dac3866980b4dc373df10af718e831",
+  "lastmod": "2026-10-08"
+ },
+ "tool:UpsellShield": {
+  "hash": "52519e48ac7cf00f3ca3f714a7f62da304004ef3",
+  "lastmod": "2026-10-08"
+ },
+ "tool:TheRunthrough": {
+  "hash": "b56896a2832fe4d01f8501395cfe72b883391ceb",
+  "lastmod": "2026-10-08"
+ },
+ "tool:CaptionMagic": {
+  "hash": "fe47fe3201ae03a1b6d6665794a0a11143b5ace0",
+  "lastmod": "2026-10-08"
+ },
+ "tool:BuyWise": {
+  "hash": "cbb0a21928dd2deab0a4b2090a8c6657ed8b764b",
+  "lastmod": "2026-10-08"
+ },
+ "tool:SafeWalk": {
+  "hash": "3637691fefb3e5d7ca0eb700c5ec43a9e7f3fa93",
+  "lastmod": "2026-10-08"
+ },
+ "tool:NerveCheck": {
+  "hash": "bdc4d67d209f4054311f274d72e93025462dd0e1",
   "lastmod": "2026-10-08"
  }
 }

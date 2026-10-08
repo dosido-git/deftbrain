@@ -32,3 +32,12 @@ line "at a wedding" — fixed in 6b7bbc3b (origin rule + supplied-facts check).
 | LeverageLogic | 'not short of applicants' (the visitor's own assessment, in yourSide) recast as 'Your employer indicated…'; an unknown's explanation reverses which way an existing exception cuts. Kept off the page. | misattribution; logic |
 | PaperworkPath | Austin move: says a Texas vehicle safety inspection is needed before registration (Texas dropped safety inspections for most passenger vehicles from 2025; emissions testing remains in Travis County); says to register to vote 'online at vote.texas.gov' (Texas has no general online registration). Both kept off the page. Grounded research would catch these. | stale/wrong law |
 | NameAudit | **Not indexed.** Its own built-in example 'Loomly' (B2B social-media-management SaaS) gets verdict GOOD FIT, but Loomly is an existing social-media-management product (loomly.com). The tool never checks for existing businesses or domains — it only says 'worth verifying'. Needs a cheap existence check (DNS, as NameStorm's /check does, plus a web search) before a verdict; the example should also be replaced. | missing real-world check |
+
+## Batches 6–7 (2026-10-08)
+
+- **UpsellShield** — `your_plan` wrote "out-of-door price" (should be out-the-door). Line left out of the example.
+- **CaptionMagic** — misspelled hashtag `#maxthefrizbee`; two captions invent things not in the input ("my face" covered in sand; a rescue-backstory sentiment). Left out of the example.
+- **BuyWise** — `verify_before_buying` asserted "these two brands are sold largely direct" (FlexiSpot sells widely through Amazon). Left out. Most price fields said "could not verify" — honest, but the tool has no price grounding.
+- **SignalVsNoise** — some figures not checked against the cited papers (90% polyphasic dropout attributed to S6; "12,637 adults" catch-up study). Left out of the example; consider a number check against source text.
+- **SafeWalk** — verified facts are date-bound (Chicago Marathon, station hours), so left out of a permanent example.
+- **TheRunthrough** — Cut mode added a sentence not in the original ("Flagging that now so there are no surprises"). Minor; shown as-is.

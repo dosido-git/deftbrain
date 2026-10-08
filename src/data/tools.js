@@ -1010,6 +1010,54 @@ export const tools = [
   icon: "📡",
   categories: ['Learning'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Signal vs. Noise gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the topic below, with its sources. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The topic",
+    sampleText: "Sleep optimization. The conflicting advice: sleep 8 hours vs. polyphasic sleep; phone before bed ruins sleep vs. blue-light glasses fix it; sleep debt is real vs. you can't catch up.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Why it's noisy",
+        tone: "blue",
+        text: "Most of these conflicts dissolve when you separate 'the core mechanism is real' from 'the popular fix based on it works as advertised.' Evidence supports ranges and partial effects, not the clean rules circulating online.",
+      },
+      {
+        label: "The signal",
+        tone: "green",
+        items: [
+          "Most adults need 7-9 hours of sleep, not exactly 8; both meaningfully shorter and longer sleep are associated with worse health outcomes. Limits: Duration data is mostly self-reported and observational; individual genetic variation means some adults genuinely function on less or need more.",
+          "Weekend catch-up sleep provides only partial recovery from sleep debt and cannot fully offset chronic deprivation. Limits: Evidence for partial recovery is stronger for short-term debt than chronic restriction; subjective feeling of recovery can precede actual cognitive recovery.",
+        ],
+      },
+      {
+        label: "The noise: “Blue light glasses fix the sleep damage from phone use before bed”",
+        tone: "yellow",
+        text: "Evening blue light can delay sleep onset; blue-light blocking glasses show only small, statistically non-significant effects on objective sleep in RCTs reviewed in a 2025 meta-analysis. Kernel of truth: evening light exposure, including from phones, can measurably shift circadian timing.",
+      },
+      {
+        label: "Some of the sources it checked",
+        tone: "purple",
+        items: [
+          "Sleep duration and health in adults: an overview of systematic reviews — Applied Physiology, Nutrition, and Metabolism (Canadian Science Publishing) (2020)",
+          "National Sleep Foundation's sleep time duration recommendations: methodology and results summary — Sleep Health: Journal of the National Sleep Foundation (2015)",
+          "About Sleep — Centers for Disease Control and Prevention (CDC)",
+          "Nighttime sleep duration, 24-hour sleep duration and risk of all-cause mortality among adults: a meta-analysis of prospective cohort studies — NCBI / PubMed Central (2016)",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How much sleep do adults actually need?",
+      a: "Most adults need 7–9 hours; that range — not exactly 8 — is what the CDC and the National Sleep Foundation recommend, and individual needs vary within it." },
+    { q: "Do blue-light glasses help you sleep?",
+      a: "The evidence is thin. Evening light can delay sleep, but trials of blue-light-blocking glasses are small and haven't shown a clear effect on measured sleep." },
+    { q: "Where does Signal vs. Noise get its answers?",
+      a: "It searches for sources first — reviews, professional bodies, government health agencies — then answers only from what it found, and lists each source so you can check it." },
+  ],
   description: "Conflicting claims everywhere? Signal vs. Noise researches the question first, then shows what the checked sources actually support, what is overstated or mixed, and what is still unresolved — with the sources behind each conclusion.",
   guide: {
       tips: [
@@ -1680,6 +1728,58 @@ export const tools = [
   icon: "🛡️",
   categories: ['Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Upsell Shield gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The situation",
+    sampleText: "Buying a used 2020 Honda CR-V from a dealership tomorrow afternoon. Want: the base trim, no extended warranty, no add-ons. Budget: pre-approved for $24,000 max from a credit union. Worry: \"Last time they wore me down for 4 hours and I added $3K of stuff I didn't want.\"",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Watch for",
+        tone: "yellow",
+        items: [
+          "Monthly payment framing — The conversation could shift away from the total price toward what you would pay per month, making the overall number harder to track. Say: I am working from a total purchase price, not a monthly payment. What is the all-in number before I sign?",
+          "Finance office add-ons — After agreeing on the car price, you may be presented with a menu of products — protection plans, GAP coverage, extended warranties — often presented as routine or already included. Before entering the finance office, decide now: your answer to every optional product is no. You can say: I am not adding anything to this purchase.",
+          "Trim or upgrade substitution — You may be told the base trim is unavailable, sold, or that a higher trim is a better value for a little more. Say: I came in for the base trim specifically. If that one is not available today, I will need to look elsewhere.",
+        ],
+      },
+      {
+        label: "Questions worth asking",
+        tone: "blue",
+        items: [
+          "What is the total out-the-door price, including all taxes, fees, and any dealer charges?",
+          "Are there any products, coatings, or protections already added to the vehicle that I would be required to pay for?",
+          "What is the interest rate and loan term you are offering, and can I use my own financing instead?",
+        ],
+      },
+      {
+        label: "Before you commit",
+        tone: "green",
+        items: [
+          "CHECK: Confirm the total out-the-door price — taxes, title, registration, and all dealer fees included — is at or under $24,000.",
+          "CHECK: Read every line of the purchase agreement before signing. If anything appears that you did not agree to, ask for it to be removed in writing before you proceed.",
+          "DECIDE NOW, before you walk in: your answer to every optional product in the finance office is no. Having that answer settled in advance makes it easier to hold when you are tired.",
+        ],
+      },
+      {
+        label: "If you need to leave",
+        tone: "purple",
+        text: "“Thanks for your time. I am not ready to agree to this today, so I am going to head out and think it over.”",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I avoid add-ons when buying a car?",
+      a: "Decide before you walk in that your answer to every optional product is no, negotiate the total out-the-door price rather than a monthly payment, and read every line of the contract for items you didn't agree to." },
+    { q: "What is an out-the-door price?",
+      a: "The total you'll pay including taxes, title, registration and dealer fees. It's the only number that tells you whether a deal fits your budget." },
+    { q: "Does Upsell Shield work for things other than cars?",
+      a: "Yes — anywhere you expect to be sold more than you came for: phone plans, funerals, home repairs, gym memberships, travel bookings." },
+  ],
   description: "Sometimes it's hard to keep track of what you wanted in the first place once you're in the room. Upsell Shield helps you go in with your priorities clear, recognize the moments that tend to pull people off course, and know what to say when the conversation starts drifting from your plan.",
   guide: {
     tips: [
@@ -2276,6 +2376,49 @@ export const tools = [
   icon: "🎙️",
   categories: ['Career', 'Work & Meetings'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what The Run-Through gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual Cut-mode run on the update below, with a 3-minute target. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The talk (222 words, for a weekly standup that keeps running over)",
+    sampleText: "So I wanted to give everyone an update on where we are with the migration project. As you all know, we started this back in March, and honestly it's been a bit of a journey. We hit some unexpected issues with the legacy database schema that nobody had really documented well, so the first month was mostly discovery. Then we spent about six weeks building the migration scripts and testing them against a copy of production data, which took longer than expected because we found several edge cases with old customer records that had inconsistent formatting. We're now about 80% through the actual migration, running it in batches overnight to avoid downtime. There have been a couple of hiccups — one batch failed last Tuesday because of a timeout issue, but we caught it before it affected any customers and fixed the root cause. Current plan is to finish the remaining 20% over the next two weeks and then run a full validation pass before we decommission the old system. I also want to flag that we'll need about a week of buffer for that validation, so the total timeline is pushing about two weeks past our original estimate.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Trimmed version (147 words)",
+        tone: "green",
+        text: "Quick update on the migration project. We started in March — first month was mostly discovery because the legacy database schema wasn't well documented. Then about six weeks building and testing migration scripts, which took longer than expected due to edge cases with old customer records that had inconsistent formatting. We're now 80% through the actual migration, running it in batches overnight to avoid downtime. There was a hiccup last Tuesday — one batch failed due to a timeout — but we caught it before it affected any customers and fixed the root cause. Plan is to finish the remaining 20% over the next two weeks, then run a full validation pass before we decommission the old system. That validation needs about a week of buffer, so total timeline is pushing roughly two weeks past our original estimate. Flagging that now so there are no surprises.",
+      },
+      {
+        label: "What was cut, and why",
+        tone: "yellow",
+        items: [
+          "'As you all know' opener and 'honestly it's been a bit of a journey' — Throat-clearing that the standup setting does not need — gets to the facts faster without losing anything the audience requires",
+          "'I also want to flag that' lead-in before the timeline slip — The flag itself is kept; the verbal setup for it is redundant in tight standup speech",
+        ],
+      },
+      {
+        label: "The point that survives",
+        tone: "blue",
+        text: "The migration is 80% done, on track to finish in two weeks, but the total timeline is slipping about two weeks past the original estimate due to a needed validation buffer.",
+      },
+      {
+        label: "How to deliver it",
+        tone: "purple",
+        text: "Slow slightly on 'two weeks past our original estimate' — that is the number people will want to register and possibly react to, so give it a beat. The Tuesday timeout incident is context, not alarm; keep that section matter-of-fact and move through it. End on 'no surprises' with a full stop — do not trail off or immediately invite questions, let the room absorb the timeline news first.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I cut a presentation down to time?",
+      a: "Decide the one point the audience must leave with, then cut throat-clearing, backstory and repeated setups before you touch substance. Read the trimmed version aloud with a timer — most people speak about 130–150 words a minute." },
+    { q: "How do I prepare for questions after a talk?",
+      a: "Use Anticipate mode: give the talk, the audience and what you're asking for, and it predicts the hard questions with draft answers." },
+    { q: "Can it help me start and end a talk more strongly?",
+      a: "Hook mode rewrites your opening and closing in the tone you choose — provocative, conversational, authoritative or inspirational." },
+  ],
   description: "A presentation can look ready on the page and still stumble in the room. The Run-Through helps you find what to cut, what to prepare for, and what needs a stronger landing — before you're standing in front of an audience.",
   guide: {
     tips: [
@@ -3565,6 +3708,41 @@ export const tools = [
   icon: "📸",
   categories: ['Career', 'Conversations', 'Just for Fun'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Caption Magic gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the photo description below. Four of its six captions are shown; nothing is reworded.",
+    sampleLabel: "The photo",
+    sampleText: "Golden hour shot of my dog mid-leap catching a frisbee at the beach, sand spraying everywhere, ocean blurred in the background. For Instagram — a feed about outdoor adventures with my rescue dog Max.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Captions",
+        tone: "green",
+        items: [
+          "Golden hour with Max doing what he does best—everything at full volume.",
+          "There's something about watching a dog move through the world with complete certainty that he belongs in every moment of it.",
+          "Max doesn't catch frisbees. Max becomes the frisbee. The sand is just reporting on the physics.",
+          "Max mid-everything and completely sure that this is exactly where he was supposed to be. I believe him.",
+        ],
+      },
+      {
+        label: "Alt text",
+        tone: "blue",
+        text: "A dog mid-leap catching a frisbee at the beach during golden hour, sand spraying in an arc around him. The ocean is blurred in the background. The moment captures movement and joy frozen in time.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What makes a good Instagram caption?",
+      a: "One that adds something the photo can't say on its own — a detail, a joke, a reason it matters to you. Short usually wins; front-load the line people see before \"more.\"" },
+    { q: "Can I upload the photo instead of describing it?",
+      a: "Yes. Upload it, or describe it if you'd rather not share the image. Either way it writes only from what's actually there and what you tell it." },
+    { q: "Does it write alt text?",
+      a: "Yes. Every set comes with a plain description of the image for people using screen readers." },
+  ],
   description: "A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.",
   guide: {
     tips: [
@@ -7103,6 +7281,50 @@ tagline: "Work with the energy you have.",
   icon: "💲",
   categories: ['Decisions', 'Money', 'Tasks'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Buy Wise gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the purchase below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The purchase",
+    sampleText: "Standing desk — considering FlexiSpot E7 or UPLIFT V2. Price: $600. No rush. Work from home full-time, lower back issues, been using my kitchen table for two years.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The verdict",
+        tone: "green",
+        text: "After two years at a kitchen table working full-time with back issues, a quality sit-stand desk is a reasonable buy — and both models you named are credible candidates in this price range.",
+      },
+      {
+        label: "Is $600 fair?",
+        tone: "yellow",
+        text: "I could not verify today's street price for either the FlexiSpot E7 or the UPLIFT V2, so treat $600 as the number to test rather than one I can confirm good or bad. What drives cost in this category is the frame — dual motors, the lift mechanism, stability at full height and the stated weight rating — plus the desktop material and size, so check whether your $600 is for frame-plus-top in the size you want or frame only with the top extra.",
+      },
+      {
+        label: "Check before you buy",
+        tone: "blue",
+        items: [
+          "Confirm what the $600 actually buys on the configuration you want — on both the FlexiSpot E7 and UPLIFT V2, the frame and desktop size, desktop material, and any surcharge for a larger or solid-core top can move the price; check whether $600 is the frame-plus-top you'd actually order or a base config before add-ons.",
+          "Ask whether the warranty covers the motors and electronics and for how long, and whether it transfers if you ever resell — on a motorized desk the electronics are the expensive failure point, so a frame-only warranty that excludes the controller is a weaker promise than it looks.",
+          "Check the stated weight capacity against everything you'll put on top — monitor arm, dual monitors, laptop dock — and confirm it's the rated lifting capacity, not just a static load number; if you run a heavy multi-monitor setup you want margin above your actual load.",
+        ],
+      },
+      {
+        label: "A cheaper way to get most of it",
+        tone: "purple",
+        text: "A single-motor frame or a smaller/laminate desktop does most of the same sit-stand job for less than a dual-motor, larger, or bamboo-top configuration — look for the base frame size and a standard laminate top, which tends to run a meaningful share below the loaded config. Tradeoff: single-motor frames can lift more slowly and sometimes rack slightly under uneven loads, and a smaller or laminate top gives you less surface and a less premium feel — but the core raise-and-lower function is the same.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Is a standing desk worth it if I work from home?",
+      a: "If you work at a desk most of the day, being able to change position is the main benefit. Before buying, check what the price actually includes (frame only, or frame plus desktop), the weight rating against your setup, and whether the warranty covers the motors." },
+    { q: "Does Buy Wise know today's prices?",
+      a: "Not always. When it can't verify a current price it says so and tells you what to check, rather than guessing a number." },
+    { q: "Can it tell me not to buy something?",
+      a: "Yes. It weighs the purchase against what you told it — need, timing, budget, impulse — and says when waiting, buying used or skipping it makes more sense." },
+  ],
   description: "Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.",
   guide: {
       tips: [
@@ -7135,6 +7357,53 @@ tagline: "Work with the energy you have.",
   icon: "🚶",
   categories: ['Home & Daily Life'],
   headerColor: "#1e2a3a",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Safe Walk gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the walk below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The walk",
+    sampleText: "Union Station, Chicago to a hotel on N Clark St, late at night, 20–30 minutes. First time in the city; the map shows the route passing a parking garage and an underpass. Arriving on a delayed train around 11:40pm with a suitcase.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What matters",
+        tone: "blue",
+        text: "The main things to plan around are your phone as a navigation tool in an unfamiliar city, managing a suitcase over a 20-30 minute walk, and the fact that you don't yet know which streets on this route will have foot traffic or how the underpass and parking garage feel on the ground.",
+      },
+      {
+        label: "Before you go",
+        tone: "green",
+        items: [
+          "Make sure your phone has enough charge to run navigation for 20-30 minutes plus a buffer.",
+          "Pull up your navigation app and get the route loaded before you leave the station.",
+          "Note your hotel's address and phone number somewhere you can access without signal, such as a screenshot or written note.",
+        ],
+      },
+      {
+        label: "Watch for",
+        tone: "yellow",
+        items: [
+          "If the stretch near the underpass or parking garage looks or feels substantially different from what the map suggested — darker, more enclosed, or blocked — and you're not comfortable continuing. Use your navigation app to check whether there's another pedestrian route around that section, rather than improvising one.",
+          "If your navigation app re-routes you or shows a street closure that wasn't visible when you planned. Follow the app's updated route rather than your memory of the original one — it will have current road information.",
+        ],
+      },
+      {
+        label: "A check-in text you could send",
+        tone: "purple",
+        text: "Just arrived at Union Station in Chicago. About to walk to my hotel on N Clark St — the walk should take me roughly 20-30 minutes based on my estimate, so I'm expecting to arrive somewhere between midnight and 12:15am. I'll text you when I'm in.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I stay safe walking alone at night in a new city?",
+      a: "Charge your phone, load the route before you leave, keep your destination's address somewhere you can read offline, and tell someone when you expect to arrive. If a stretch looks worse than the map suggested, reroute rather than improvise." },
+    { q: "Does Safe Walk know which streets are safe?",
+      a: "No, and it says so. It doesn't rate neighborhoods; it helps you plan around what you know and what you can't know yet, and it checks for verified closures or disruptions on your route." },
+    { q: "Does it track my location?",
+      a: "No. It plans the walk with you before you go; check-ins are messages you send to someone you choose." },
+  ],
   description: "Walking somewhere alone? Tell Safe Walk where you're going, when, and anything you already know about the route. It helps you think through the walk before you leave, make a simple check-in plan, and keep useful tools close while you're on the way.",
   guide: {
     tips: [
@@ -7410,6 +7679,63 @@ tagline: "Work with the energy you have.",
   icon: '💪',
   categories: ['Conversations', 'Health & Wellness', 'Self & Reflection'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (strict index review: indexed only once it shows real output).
+  exampleOutput: {
+    title: "See what Nerve Check gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual Prep-mode run on the situation below. Most of the result is shown; nothing is reworded.",
+    sampleLabel: "The situation",
+    sampleText: "Job interview at a tech company tomorrow morning. Readiness: 4 out of 10. The fear: \"They'll ask something I can't answer and I'll freeze.\"",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What you know, what might happen, what you can't know yet",
+        tone: "blue",
+        items: [
+          "Known: You're worried you'll be asked something you can't answer and will freeze",
+          "Possible: A technical question comes up that's outside what you've prepared",
+          "Possible: You start an answer and lose the thread partway through",
+          "Unknown: What specific questions they'll ask",
+          "Unknown: How the interviewer responds to moments of uncertainty",
+          "Unknown: What they're prioritizing in this hire",
+        ],
+      },
+      {
+        label: "What you can prepare tonight",
+        tone: "green",
+        items: [
+          "Write down and rehearse one 'buying time' sentence out loud before you sleep tonight — when a question catches you off guard, you'll have a specific sentence already available instead of searching for words in that moment",
+          "Pick two or three things you genuinely know well from your background and have a brief, clear version of each ready — if an answer gets uncertain, you can steer toward something concrete you can actually speak to with confidence",
+          "Decide in advance that 'I don't know, but here's how I'd approach finding out' is a complete and usable answer — having a predetermined response to not-knowing means the gap in your knowledge doesn't have to become a gap in your speaking",
+        ],
+      },
+      {
+        label: "Words if you need them",
+        tone: "yellow",
+        items: [
+          "If you blank mid-answer: “Let me take a second to think about that properly.”",
+          "If you genuinely don't know the answer: “I don't have that off the top of my head, but the way I'd approach it is... [describe your reasoning process or what you'd look into]”",
+          "If you need to restart an answer: “Actually, let me back up and give you a clearer answer on that.”",
+        ],
+      },
+      {
+        label: "Remember",
+        tone: "purple",
+        text: "Not knowing one answer is a specific moment in the interview, not the whole interview — and you can prepare for what to do in that moment.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I stop freezing when I don't know an interview answer?",
+      a: "Prepare the moment, not every answer: rehearse one sentence that buys you time (\"Let me take a second to think about that\") and decide in advance that \"I don't know, but here's how I'd find out\" is a complete answer." },
+    { q: "What can I do the night before a stressful interview or presentation?",
+      a: "Pick a few small, concrete preparations — say your opening and your fallback sentences out loud once, and have two or three things you know well ready to steer toward. More cramming rarely helps as much as rehearsing what you'll do if it goes wrong." },
+    { q: "What is SOS mode?",
+      a: "For when the nerves hit right before or during the moment. It skips the questions and gives you something immediate to do and say." },
+    { q: "Is Nerve Check therapy?",
+      a: "No. It helps you prepare for one specific moment. If anxiety is affecting your daily life, a doctor or licensed therapist is the right place to start." },
+  ],
   description: "Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.",
   guide: {
     tips: [
