@@ -1,6 +1,6 @@
 # DeftBrain — full content
 
-> DeftBrain (https://deftbrain.com) is a free collection of 124 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 121 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 This file carries the substance behind https://deftbrain.com/llms.txt: what each tool does, and the full text of the guides. Tool pages are interactive forms, so their value is described rather than transcribed; the guides are reproduced in full.
 
@@ -1215,33 +1215,6 @@ Guidance for a loss — whether you're grieving yourself, supporting someone who
 - Grief over non-death losses (relationships, jobs, health, identity) is just as real and often less validated — this tool treats all loss seriously
 - More support is offered as an option, not as evidence that something is wrong with how you are grieving
 - If you're in crisis right now, please reach out to a crisis line in your area directly
-
-### Jargon Assassin
-
-URL: https://deftbrain.com/JargonAssassin
-Tagline: Confusing documents → plain language → what to do about it
-Categories: Health & Wellness, Home & Daily Life, Learning, Money
-
-Paste or upload a document you don't fully understand. Jargon Assassin translates the dense language, shows you what matters, flags terms worth a closer look, and helps you figure out what the document means for your situation.
-
-**When.** A lease, consent form, policy or contract you can't parse.
-
-**You give.** The document, its type, and how plain you want the translation.
-
-**You get.** Plain language, a danger score, flagged sections, and what to do about each.
-
-**The edge.** It doesn't stop at translating — it flags what's actually enforceable and what you can push back on.
-
-**Good to know.**
-
-- Start with Translate, then use the one-click buttons (Red-Line, vs Normal, Action Plan) to unlock the full analysis — each builds on the translation
-- Red-Line + Action Plan together complete the arc: Red-Line tells you WHAT to push back on, Action Plan tells you HOW and WHEN
-- Template Compare is the sleeper feature — knowing what's 'normal' for your document type is often more valuable than the translation itself
-- Use Explain To when you need buy-in from someone else — it reframes for their concerns, not yours, and even tells you how to have the conversation
-- The Dossier mode is powerful for real-world situations where documents reference each other (lease + building rules, job offer + benefits package + handbook)
-- Letter Generator saves hours — but always review before sending, especially for legal or financial responses
-- Reading levels matter: ELI5 for 'I just need to know if this is safe,' Professional for 'I'm smart but not in this field'
-- Danger scores are instant gut-checks — if you see 🔴, read the flagged sections before doing anything else
 
 ### Lazy Workout Adapter
 
@@ -2632,29 +2605,6 @@ Thinking about a purchase? Tell Buy Wise what you're considering, the price you 
 - Adding context ('replacing old one', 'gift', 'bake once a month') dramatically improves the advice
 - Timing advice includes sale calendars — waiting 3 weeks can save 30%
 
-### Crowd Wisdom
-
-URL: https://deftbrain.com/CrowdWisdom
-Tagline: Five different ways to look at the choice you can't stop thinking about
-Categories: Decisions, Just for Fun
-
-See your question through five deliberately different lenses: the Pragmatist, the Risk-Taker, the person who tried it and regretted it, the person who chose not to, and the Contrarian. See where their arguments clash—and what each perspective notices that the others miss.
-
-**When.** A choice you keep turning over and can't settle.
-
-**You give.** The situation, plus anything about your goals or values.
-
-**You get.** Five distinct people arguing — what each believes, what they'd tell you, and what each is blind to.
-
-**The edge.** It isn't looking for consensus. The value is the disagreement and the question none of them asked.
-
-**Good to know.**
-
-- The more specific your situation, the more specific — and useful — each voice gets
-- The 'thing they might miss' section is where the stealth insight lives — don't skip it
-- The tension between voices is more useful than any single answer
-- Use this for decisions where you've already heard the obvious advice and need something different
-
 ### Decision Coach
 
 URL: https://deftbrain.com/DecisionCoach
@@ -2800,29 +2750,6 @@ We'll help you understand the appeals process, identify overlooked options, find
 - The regulatory angle works even if the complaint goes nowhere — it signals seriousness
 - The win-likelihood assessment tells you if this battle is worth the time investment
 - Pair with MagicMouth to script the actual phone calls
-
-### Rut Buster
-
-URL: https://deftbrain.com/RutBuster
-Tagline: One calculated disruption. Small change. Big ripple.
-Categories: Decisions, Ideas & Imagination
-
-When every week starts to look exactly like the last one, it's easy to mistake routine for progress. Tell DeftBrain what life looks like right now, and we'll identify one carefully chosen disruption designed to shake something loose.
-
-**When.** Nothing's wrong, but nothing's moving either.
-
-**You give.** Your typical week in detail, and what feels stale.
-
-**You get.** One specific disruption you can do today — targeted at the pattern causing the stagnation, not random novelty.
-
-**The edge.** It diagnoses the pattern first. 'Do something different' is advice; this names which thing.
-
-**Good to know.**
-
-- The more specific your routine description, the more surgical the disruption
-- The 'compound effect' section shows why one small disruption is worth doing
-- When you feel the specific friction named in advance, do it anyway — that's the point
-- One disruption per run — the value is in the precision, not the quantity
 
 ### Small Change, Big Difference
 
@@ -3175,37 +3102,6 @@ Sometimes the best-written self-review in the world doesn't move the calibration
 Outcome: 'Led dashboard redesign that cut support tickets 40% (Q2-Q4) and unblocked the enterprise launch — second-largest revenue line of the year.'
 
 Same work, two completely different bullets. The activity version tells the reader you were responsible for a project. The outcome version tells the reader the company is materially different because of you, with numbers that hold up to scrutiny and a connection to a business outcome the calibration committee already cares about. The second version is what gets you the raise.
-
-### Is Accounting Going to Be Replaced by AI?
-
-URL: https://deftbrain.com/guides/career/is-accounting-going-to-be-replaced-by-ai
-Updated: 2026-04-28
-
-Some of accounting will be replaced. Some of it absolutely won't. Here's how to tell which side of the line you're on — and what to do in the next 18 months either way.
-
-You're seven years into accounting. The work is steady. The job is fine. And every other week now there's a headline about AI doing reconciliations, AI generating audit trails, AI replacing the bookkeeping function entirely. Your firm's leadership has started using language like 'augmentation' and 'efficiency,' which never makes anyone feel safer. The career you spent a decade building is being publicly questioned, in real time, by people who don't seem to know exactly which parts of it are at risk.
-
-The honest answer is that accounting is a wide field, and AI is hitting different parts of it at very different speeds. Transactional bookkeeping is in serious trouble. Audit, advisory, and tax strategy are mostly not. Five-year-ahead planning starts with knowing which side of that split your specific role is on. Here's how to figure it out.
-
-**Sort your work into transactional vs judgment**
-
-Take a normal week and sort your hours. Transactional work — data entry, reconciliations, ledger maintenance, basic compliance — is the part of accounting most exposed to automation. Judgment work — interpreting ambiguous situations, advising clients, designing tax strategy, navigating audit gray areas — is much less exposed. The ratio of one to the other in your current role is the cleanest predictor of your five-year exposure. If you're 80% transactional, the work is changing fast around you.
-
-**Watch what your firm is automating**
-
-Your firm's leadership has more concrete information about your trajectory than any general article does. What software did they license this year? What roles have they stopped backfilling? Which functions are being moved offshore or consolidated? Internal change is the real signal — the public discourse about AI lags actual firm decisions by about eighteen months. Pay attention to your firm's own moves; they're telling you what they think.
-
-**Move toward the work AI doesn't do well**
-
-AI is excellent at structured tasks with clear right answers. It's not good — yet — at situations involving messy judgment, client relationships, ambiguous facts, or accountability for outcomes. Migrate your day toward that work. Volunteer for the advisory engagements, the unusual audit issues, the new-client transitions. Each year you spend further into judgment work is a year your role is harder to replace; each year you spend deeper in transactional work is the opposite.
-
-**Pick a specialization that compounds**
-
-Generalist accountants are the most exposed; specialists less so. Tax strategy for high-net-worth individuals, forensic accounting, M&A advisory, international tax, restructuring, ESG reporting — these specializations require domain expertise that takes years to build and doesn't transfer cleanly to software. Pick one. Move toward it deliberately over 18-24 months. The specialization is your moat, and moats compound the longer you hold them.
-
-**Don't over-prepare for the wrong scenario**
-
-The bear case — accounting almost entirely automated within five years — is unlikely. The bull case — your career proceeds as planned — is also unlikely. The realistic middle is that the field shrinks, the entry-level pyramid gets smaller, and the people who do well are the ones who moved up the value chain in time. Plan for the middle. Don't quit and become a coder; don't ignore the change either. The right move is incremental migration toward the work that survives, starting now.
 
 ## Conversations
 
@@ -6423,33 +6319,37 @@ There is no perfect career out there waiting for you to discover it. The framing
 ### How to Make the Case for Your Promotion in Writing
 
 URL: https://deftbrain.com/guides/workplace/how-to-make-the-case-for-your-promotion-in-writing
-Updated: 2026-04-29
+Updated: 2026-10-08
 
-A one-page promotion case has four parts: scope, impact, evidence, ask. Skip any part and the document does not work.
+A promotion case isn't a list of accomplishments at your current level. It's the argument that you're already operating at the next one. Five steps for writing it.
 
-Your manager said to put it in writing. That is a good sign — they want a document they can take to their own boss or to calibration. It is also where most people lose the promotion. The document they send up is a list of projects, not a case. It reads like a status report instead of an argument, so the people reading it cannot tell why this person should be promoted now.<br/><br/>A promotion case is a different kind of writing. It is short. It is structured. It does specific work. Here is the structure that wins, with the parts in the order that matters.
+You're going up for promotion. Your manager is supportive, calibration is in six weeks, and now there's a document to write — variously called the promo packet, the case, the brag doc, or just 'send me your bullets so I can advocate for you.' You sit down to draft it and reach for the obvious move: list everything you've accomplished in your current role. Strong list, twelve solid bullets, ready to send.
 
-The four-part case, with the language patterns that work in each part.
+That document loses promotion cases. The mistake isn't that the bullets are weak — they're probably strong. The mistake is that they're describing accomplishments at your current level, which is what the calibration committee already expects from someone at your current level. A promotion case has to argue something different: that you're already operating at the level you're being considered for. The bullets that demonstrate this are usually different from the ones in your standard self-review, and the structural argument that wraps them matters as much as the bullets themselves. The five steps below are how to build that argument deliberately.
 
-**Open with scope, not gratitude**
+**Build the case from the role above you, not the role you have**
 
-Skip the "I am writing to express my interest" preamble. Open with the scope of work you are already doing: "Over the past 12 months, I have been leading [the function/team/area] including [three specific responsibilities]." This frames the document as a description of work being performed at the next level, which is the only argument that matters. The reader should be able to tell from the first paragraph that you are operating above your current title.
+The most common failure of promotion cases is that they're written from the wrong reference point. They list what you did this year and argue you did it well — which is the case for keeping you in your current role. The promotion case has to argue something subtly but importantly different: you're already doing the work of the next level. This requires starting from the next-level role definition and working backward, not starting from your accomplishments and working forward. Pull the role description for the level above you (HR usually has one; if not, your manager can describe what differentiates the levels). Identify the three or four key differentiators — usually scope, autonomy, ambiguity tolerance, and impact — and structure the document around evidence that you're already operating at that bar. Bullets that don't speak to next-level differentiators belong in your performance review, not your promo case.
 
-**Show three to five concrete impact statements**
+**Show pattern, not events**
 
-Each one should follow the pattern: action you took, decision or judgment that was yours, measurable outcome. Not "worked on the launch" — "owned the cross-functional coordination for the launch, made the call to delay by two weeks for QA, which prevented [specific bad outcome]." Numbers are better than adjectives. Decisions are better than tasks. Outcomes are better than activities. Three excellent statements beat eight mediocre ones.
+Single events are weaker promotion evidence than patterns. 'Led the migration successfully' is one event, which a calibration committee can attribute to circumstance, luck, or an exceptional moment. 'Led three cross-functional initiatives over the past 18 months — migration, customer onboarding redesign, and incident response overhaul — each delivered on time and absorbed by the team' is a pattern. Patterns are much harder to dismiss because they show repeatability and trajectory, which is what 'ready for the next level' actually means. Identify two or three thematic clusters in your work — leadership at scale, technical depth in a critical area, mentorship that produced specific outcomes — and group bullets under each. The themes themselves become the spine of the document, and individual bullets are evidence within them rather than freestanding claims. A promotion case organized by theme reads as 'this person operates at level N+1'; a promotion case organized as a list of accomplishments reads as 'this person had a good year at level N.'
 
-**Cite outside witnesses**
+**Quantify what changed because of you, not what you participated in**
 
-Anyone reading your case is going to ask: who else thinks this? Pre-empt the question. "Senior leaders X and Y have referenced this work in [specific context]." "Cross-team partners have asked for me by name on [type of project]." Even a one-line callout from a respected peer carries weight. Without external validation, your case reads as self-assessment. With it, it reads as a recognized pattern.
+Every senior-level role has the same implicit question behind it: what got materially better at the company because this person was here? Promotion cases that answer that question with specific outcomes win calibrations. Cases that list participation in initiatives without specifying what changed do not. The discipline is to push every bullet from 'was part of' to 'caused this specific outcome' or 'unblocked this specific thing.' Numbers are the proof. The migration didn't just ship — it retired three legacy systems and saved $2.4M annually. The onboarding redesign didn't just complete — it cut activation time by 60% and increased trial-to-paid conversion 12 points. The incident response overhaul didn't just go live — it dropped MTTR from 4 hours to 45 minutes across the next quarter. If you can't say what changed because of you, the calibration committee can't either, and the bullet doesn't carry weight against peers whose bullets do.
 
-**Address the gap directly**
+**Address what gets you to no proactively**
 
-Every promotion case has a gap — something the next level requires that you have not yet done. Name it before they do. "The area I have not yet had reps in is [thing]. I am addressing this by [specific plan]." Showing self-awareness here is dramatically more powerful than hiding the gap and hoping no one notices. Calibrators always find the gap. The question is whether you found it first.
+Every promotion case has objections that will surface in calibration whether you address them or not. Common ones: scope hasn't grown enough, you're strong technically but haven't demonstrated leadership at the next level, your impact is in your own team but not cross-functional, you've been at the current level less time than peers who got promoted. Identify the two or three objections most likely to come up for you and address them in the document directly. Not defensively — proactively. 'My scope this year was contained to the platform team, but I extended my impact through the architecture review process where I influenced decisions across four other teams.' Naming and refuting objections shows the committee you've thought about the case clearly, and it gives your manager the talking points they need to advocate for you when those objections come up in the room. Cases that ignore the obvious objections leave them unanswered; cases that address them turn potential blockers into demonstrated awareness.
 
-**End with a clear ask, not a hedged hope**
+**Know when the right move is to ask for a different promotion than the one you thought you wanted**
 
-"I am asking to be promoted to [title] effective [cycle]." Not "I would love to discuss next steps" or "I hope this is something we can explore." A clear ask gives the manager something to either support or push back on. A hedged hope gives them an out — they can say "let us keep talking" forever. The case is a request. Make the request.
+There's a category of promotion case where the document, honestly written, reveals that the promotion path you're on isn't the one that fits your work. Maybe you're a strong individual contributor being told you need to manage to advance; maybe you're a strong manager being asked to demonstrate technical depth that isn't where your value actually is. The first draft of your case may be telling you that the level you're applying for isn't the natural next step. The right response isn't to force the case — it's to consider whether a different track exists or could be argued for. Many companies have parallel IC and management tracks but underuse them; some have specialist tracks that aren't widely advertised. The honest read of your own work sometimes reveals that the standard promotion path isn't the right one, and the conversation worth having is about that mismatch rather than about the standard case. Promotions on the wrong track look like wins and feel like burnout six months later. The harder conversation about path can produce a promotion that actually fits.
+
+> What does the role above me actually require — in scope, autonomy, ambiguity, and impact — that's different from my current role? Which of my accomplishments demonstrate I'm already operating at that bar?
+
+These are the two questions that frame a real promotion case. The first names the differentiators between your current level and the next; the second filters your accomplishments to the ones that speak to those differentiators. Most accomplishments will be solid level-N work and don't belong in the promo case. The two or three that demonstrate level-N+1 operation — work above your scope, decisions made with ambiguity you didn't have authority to resolve, impact across teams you didn't lead — are the spine of the document. Build from those.
 
 ### How to Politely Decline a Meeting (Without Looking Like You're Hiding)
 
@@ -6654,37 +6554,6 @@ Most drunk-test failures come from one specific phoneme that gets misheard — t
 **If a name fails the drunk test repeatedly, accept it and move on**
 
 Some names cannot be fixed without losing what made them appealing. If you have iterated and the name keeps failing the drunk test, it is the wrong name for a brand that needs to spread by word of mouth. Some names work for paid-acquisition-only businesses where customers are typing from a screen. Most early-stage businesses are not those. The drunk test is a constraint, not an opinion. Respect it.
-
-### How to Write Self-Review Bullets That Get You the Raise
-
-URL: https://deftbrain.com/guides/workplace/how-to-write-self-review-bullets-that-get-you-the-raise
-Updated: 2026-04-29
-
-Self-review bullets are not resume bullets. They are written for an audience that already knows the projects. The five rules for writing them right.
-
-It is review season. You have a blank text box and a deadline. You start typing about the same projects you discussed with your manager all year, and you realize you are explaining things they were in the room for. The bullets feel obvious and weak even as you write them, but you are not sure what else to say.<br/><br/>Self-review bullets fail when they are written like resume bullets. The audience is different — your manager and skip-level know the projects. They do not need the setup. What they need is the part you are uniquely positioned to tell them, which is what you decided, what you owned, and what you are taking forward.
-
-The five rules that separate a self-review bullet from a project recap.
-
-**Skip the project setup, lead with the decision or judgment**
-
-Resume bullets need context because the reader has none. Self-review bullets land in front of someone who knows the project, so context is wasted space. Open with the move you made: "Made the call to push the launch by two weeks after QA flagged blockers" — not "Worked on the Q3 launch project, which involved..." The first version respects the reader’s time and shows judgment. The second sounds like you are filling space.
-
-**Name the trade-off you accepted**
-
-Real work involves trade-offs — you chose A over B, you spent time on X instead of Y, you took the slower path because the faster one was risky. Naming the trade-off shows your manager you were thinking like an operator, not just executing. "Prioritized infrastructure stability over feature velocity in Q2 because reliability incidents were the bigger business risk" is a real bullet. "Worked on infrastructure" is not.
-
-**Tie the work to a metric your manager already cares about**
-
-Your manager has a small set of numbers they get measured on. If you can tie your work to one of those numbers, do it. "This contributed to the 18 percent reduction in incident MTTR for the team" is much stronger than "This improved reliability." The bullet is now about how your work moved a number that matters in the room your manager is going to be in.
-
-**Acknowledge what you did not get to or got wrong**
-
-Self-reviews that claim everything went well read as low-self-awareness. Pick one or two things to name as misses or growth areas. "I underestimated the migration complexity and we hit the deadline only by adding scope cuts I had not planned for" is the kind of statement that increases the credibility of everything else in the document. Calibration meetings reward people who already see their own gaps.
-
-**End with what you are taking on next, at the next level**
-
-Promotion-track self-reviews end with forward-looking work that is at the level you are aiming for. "Going into next half, I am taking on [larger scope] and partnering with [senior person] on [strategic project]." This signals to your manager that you have a plan, that you see what comes next, and that you are positioning yourself. The current-period bullets earn the credibility; the forward bullets close the deal.
 
 ### Is accounting going to be replaced by AI?
 

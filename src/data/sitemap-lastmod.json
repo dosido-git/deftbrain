@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "e2c953d27fdcbc275b4e3b08e82e088ce7e7088d",
+  "hash": "19a10af6e5c90ae32d05ae62fccef949ceafd633",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -196,8 +196,8 @@
   "lastmod": "2026-10-06"
  },
  "category:home-daily-life": {
-  "hash": "b0a4a9f17e7c522af38d9ba58742a5d572761807",
-  "lastmod": "2026-10-06"
+  "hash": "66b1834648b839fc46859be105a31f056927362b",
+  "lastmod": "2026-10-08"
  },
  "category:travel-events": {
   "hash": "6762c66ee986bc0e5b3118670a225481476252b3",
@@ -208,8 +208,8 @@
   "lastmod": "2026-10-06"
  },
  "category:money": {
-  "hash": "2cbae3c445498d2f850227696bb88802526756b1",
-  "lastmod": "2026-10-06"
+  "hash": "76b47dbec9ea805e998fc42d74a6e0e85a4f2597",
+  "lastmod": "2026-10-08"
  },
  "category:career": {
   "hash": "f1d7d222dcad6ddfa1d616f786d6677ea3116ea6",
@@ -220,32 +220,32 @@
   "lastmod": "2026-10-06"
  },
  "category:health-wellness": {
-  "hash": "47f35b56e84d9485a78a38dc48e4de204b2b5649",
-  "lastmod": "2026-10-06"
+  "hash": "4883dae998229aa6fac88fdd08eb38fcae0a491a",
+  "lastmod": "2026-10-08"
  },
  "category:conversations": {
   "hash": "d2346b3cb87466db236f14b8a8b2cdf0dc850d87",
   "lastmod": "2026-10-06"
  },
  "category:learning": {
-  "hash": "c944f97b7a805a81f884b1d11d6745a204c6b040",
-  "lastmod": "2026-10-06"
+  "hash": "2beb556a8d37377794a92d87c51ae7cf03aa7b06",
+  "lastmod": "2026-10-08"
  },
  "category:just-for-fun": {
-  "hash": "4899e63098be08b2da33dc2408b440f6bc32d2c7",
-  "lastmod": "2026-10-06"
+  "hash": "e52a0f392b27b94bb70d212aa87d979f431e179e",
+  "lastmod": "2026-10-08"
  },
  "category:self-reflection": {
   "hash": "9ba9874709b7134ce9379229a082b4b2ee269473",
   "lastmod": "2026-10-06"
  },
  "category:ideas-imagination": {
-  "hash": "757eaa742598ef36bf10bf9008d3dfb6c8ed6f84",
-  "lastmod": "2026-10-06"
+  "hash": "f2bc90781e05dcaacfd186da2e336d62cf58df40",
+  "lastmod": "2026-10-08"
  },
  "category:decisions": {
-  "hash": "92435bafe8c1404bdabae31920940f3d4bda6209",
-  "lastmod": "2026-10-06"
+  "hash": "006e00e0189c7e577f9e808f47d4465a0881ce6c",
+  "lastmod": "2026-10-08"
  },
  "category:tasks": {
   "hash": "caf0edc9a3f42fe58751e2af3779ecc30a064f32",
@@ -254,5 +254,25 @@
  "static:organizations": {
   "hash": "c392f66c28e1544dc03fe3f854a1e6ece8bede55",
   "lastmod": "2026-10-04"
+ },
+ "tool:ContractDecoder": {
+  "hash": "deb5cd399eb60bcf31dd5ea76b25c41a2249d736",
+  "lastmod": "2026-10-08"
+ },
+ "tool:ScamRadar": {
+  "hash": "0415d56a5091403a85159288f36f2281332715d9",
+  "lastmod": "2026-10-08"
+ },
+ "tool:MoneyDiplomat": {
+  "hash": "74c59c9787b6d053bd8a7b0ce24b50d4cd9d8c1a",
+  "lastmod": "2026-10-08"
+ },
+ "tool:QuoteCheck": {
+  "hash": "dc782c25ba19508b812d42c9b3201da2ff7cbf08",
+  "lastmod": "2026-10-08"
+ },
+ "tool:TicketTackler": {
+  "hash": "16b8ba4b7317d8902ee727446240bc14b237f430",
+  "lastmod": "2026-10-08"
  }
 }

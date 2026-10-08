@@ -1,6 +1,6 @@
 # DeftBrain
 
-> DeftBrain (https://deftbrain.com) is a free collection of 124 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 121 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 ## Start here
 
@@ -78,7 +78,6 @@
 - [Focus Sound Architect](https://deftbrain.com/FocusSoundArchitect): Build a background your attention can live with.
 - [Gentle Push Generator](https://deftbrain.com/GentlePushGenerator): Micro-challenges just outside your comfort zone
 - [GriefGuide](https://deftbrain.com/GriefGuide): Compassionate guidance for navigating loss — yours or someone else's
-- [Jargon Assassin](https://deftbrain.com/JargonAssassin): Confusing documents → plain language → what to do about it
 - [Lazy Workout Adapter](https://deftbrain.com/LazyWorkoutAdapter): Low-barrier movement that meets you where you are
 - [Mental Health Navigator](https://deftbrain.com/MentalHealthNavigator): Find the right support for what you're going through
 - [Name That Feeling](https://deftbrain.com/NameThatFeeling): There's a word for that. Let's find it.
@@ -156,14 +155,12 @@
 
 - [Break My Plan?](https://deftbrain.com/BreakMyPlan): Find the weak spots in your plan before they find you.
 - [Buy Wise](https://deftbrain.com/BuyWise): Make the purchase with your eyes open.
-- [Crowd Wisdom](https://deftbrain.com/CrowdWisdom): Five different ways to look at the choice you can't stop thinking about
 - [Decision Coach](https://deftbrain.com/DecisionCoach): One answer. No second-guessing.
 - [Decision Prism](https://deftbrain.com/DecisionPrism): See a tough decision from every angle
 - [Drive Home](https://deftbrain.com/DriveHome): A clearer call before you get behind the wheel
 - [Friendship Fade Alerter](https://deftbrain.com/FriendshipFadeAlerter): Stay connected to the people you care about
 - [Mise en Place](https://deftbrain.com/MiseEnPlace): The hard part isn't the cooking. It's deciding.
 - [Not So Fast!](https://deftbrain.com/NotSoFast): The overlooked options, key conversations, and escalation paths nobody ever explains
-- [Rut Buster](https://deftbrain.com/RutBuster): One calculated disruption. Small change. Big ripple.
 - [Small Change, Big Difference](https://deftbrain.com/SmallChangeBigDifference): One small change that could make the rest easier.
 - [The Debrief](https://deftbrain.com/TheDebrief): The meeting ended. Now figure out what actually happened.
 - [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? See what kind of case you actually have.

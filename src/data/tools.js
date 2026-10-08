@@ -240,6 +240,72 @@ export const tools = [
   icon: "📋",
   categories: ['Home & Daily Life', 'Money', 'Work & Meetings'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Contract Decoder gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the contract below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The contract",
+    sampleText: "FREELANCE SERVICES AGREEMENT\n\nThis Agreement is entered into as of the date of signing between ACME Corp (\"Client\") and the undersigned designer (\"Contractor\").\n\n1. SERVICES\nContractor agrees to provide graphic design services as directed by Client.\n\n2. COMPENSATION\nClient shall pay Contractor $75/hour. Payment is due within 60 days of invoice. Client may dispute any invoice within 90 days of receipt. Contractor waives all right to payment if not claimed within 6 months of completion.\n\n3. INTELLECTUAL PROPERTY\nAll work product, including preliminary designs, sketches, and concepts, shall be the sole and exclusive property of Client upon creation, regardless of payment status. Contractor hereby assigns all rights, title, and interest in any work product to Client. Contractor waives all moral rights. Client may use Contractor's name and portfolio samples in perpetuity for marketing purposes.\n\n4. TERMINATION\nClient may terminate this agreement at any time with or without cause, with zero notice. Upon termination, Contractor shall deliver all work in progress immediately. No compensation shall be due for work not yet invoiced at time of termination.\n\n5. NON-COMPETE\nContractor agrees not to perform design services for any company in the technology sector for a period of 24 months following termination of this agreement.\n\n6. CONFIDENTIALITY\nContractor shall keep all Client information confidential in perpetuity, including after termination, and shall not discuss the existence of this agreement with any third party.\n\n7. DISPUTE RESOLUTION\nAny disputes shall be resolved by binding arbitration in the Client's jurisdiction. Contractor waives all right to jury trial. Client may seek injunctive relief in any court without posting bond.\n\n8. GOVERNING LAW\nThis agreement shall be governed by the laws of Delaware, regardless of Contractor's location.\n\n9. ENTIRE AGREEMENT\nThis agreement supersedes all prior agreements. Client may modify this agreement at any time by posting updates to its website.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples. Context given: I'm a freelance designer being asked to sign this before starting a project for a startup.",
+    sections: [
+      {
+        label: "In plain English",
+        tone: "neutral",
+        text: "This is a freelance services agreement between you (the designer) and ACME Corp, covering a graphic design engagement. As written, ownership of all work transfers to the client from the moment it is created, payment timelines favor the client significantly, and several clauses extend obligations well beyond the end of the project — including a 24-month restriction on working in the technology sector, perpetual confidentiality, and a non-disparagement-adjacent clause preventing you from discussing the agreement's existence.",
+      },
+      {
+        label: "Ownership transfers immediately, regardless of payment",
+        tone: "yellow",
+        text: "The client owns everything you create — including early drafts and concepts — the moment you make it, whether or not they have paid you anything yet.",
+      },
+      {
+        label: "Work completed before invoicing is not compensable at termination",
+        tone: "yellow",
+        text: "The client can end the agreement instantly, for any reason or no reason. You must hand over everything immediately. Work you have done but not yet invoiced is expressly excluded from compensation under this clause.",
+      },
+      {
+        label: "Payment timeline and waiver of unpaid claims",
+        tone: "yellow",
+        text: "You will be paid $75/hour, but invoices do not have to be paid for 60 days. The client has 90 days to dispute an invoice — longer than the payment window itself. Any payment you have not claimed within 6 months of project completion is given up under this clause.",
+      },
+      {
+        label: "24-month restriction on technology-sector design work",
+        tone: "yellow",
+        text: "For two years after this agreement ends, you agree not to do design work for any company in the technology sector — regardless of how short or narrow the ACME project was.",
+      },
+      {
+        label: "Questions to ask before you sign",
+        tone: "neutral",
+        items: [
+          "Which specific work samples are covered, and do you have any right to approve or withdraw consent for how your name is used?",
+          "Which arbitration body and rules apply, where specifically does arbitration take place, and who bears the costs?",
+          "Can you invoice at any time, including the moment termination is communicated?",
+        ],
+      },
+      {
+        label: "Before you sign",
+        tone: "green",
+        items: [
+          "Identify every current or likely future client of yours that could fall within 'the technology sector' as you would define it broadly — if any do, that restriction as written would cover them for 24 months after this project ends.",
+          "Find the client's website and locate the page where agreement updates are posted, if it exists. Note what it currently says, so you have a record of the terms at signing.",
+          "Establish your invoicing cycle before signing and confirm in writing with the client that you may submit a final invoice immediately upon any termination, to address the gap the current termination clause creates.",
+        ],
+      },
+    ],
+    disclaimer: "Contract Decoder explains what the document says and what to check. It is not legal advice, and whether a clause is enforceable depends on where you are; a lawyer can confirm that for a contract that matters.",
+  },
+  faq: [
+    { q: "What should I look for before signing a contract?",
+      a: "Who owns the work and when, how and when you get paid, how either side can end it and what happens to unpaid work, any restriction on what you can do afterwards (non-compete, confidentiality), how disputes are handled, and whether one side can change the terms on its own. Those are the clauses that decide what the contract costs you." },
+    { q: "Can I ask to change a contract before I sign it?",
+      a: "Yes. A contract you have been sent is usually a starting draft. Asking for a specific change — payment within 30 days instead of 60, ownership passing on payment rather than on creation, a narrower non-compete — is normal, and it is easier before you sign than after." },
+    { q: "Is a clause like this enforceable?",
+      a: "It depends on the jurisdiction and the details. Non-competes, waivers and one-sided change clauses are treated very differently from place to place. Contract Decoder says what a clause states and what to clarify; for whether it would hold up, ask a lawyer where you live." },
+    { q: "Can I upload the contract as a file?",
+      a: "Yes. Paste the text or upload the file, and optionally add where the contract is governed and anything about your situation that matters." },
+  ],
   description: "Paste a contract — or upload the file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.",
   guide: {
     tips: [
@@ -272,6 +338,66 @@ export const tools = [
   icon: "🎣",
   categories: ['Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Scam Radar gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the message below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The message",
+    sampleText: "Hi David! Sorry for the late reply, this is Wenjing from the tennis club. Is this still your number?\n\n[after reply]\n\nOh I'm so sorry, wrong number! But you seem nice. I'm new to the area, I moved here from Singapore last year for work. Do you live nearby?\n\n[three days of friendly conversation later]\n\nMy uncle works in commodities and he's been helping me with a gold trading account. I made 2,400 last month just following his signals. I'm not trying to sell you anything, I just think you'd be good at it. I can show you the platform if you're curious, no pressure at all.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Likely scam",
+        tone: "red",
+        text: "The message follows a recognizable sequence: an unsolicited wrong-number opener, several days of relationship-building with no apparent purpose, then an introduction to an investment opportunity framed as a personal favor. Each stage is consistent with a well-documented scam pattern. No single element proves fraud, but the combination is a strong signal.",
+      },
+      {
+        label: "The pattern",
+        tone: "neutral",
+        text: "This sequence is consistent with a pattern in which a stranger initiates contact through an apparently accidental message, builds rapport over days or weeks, then introduces a trading or investment platform — often described as a family member's or trusted contact's method. The platform introduction typically comes with an offer to 'show you' how it works. If the pattern continues, the next steps often involve depositing money, seeing apparent profits, and then finding that withdrawals are blocked or require additional fees. That the sender says 'I'm not trying to sell you anything' and frames the opportunity as a personal favor are features of the approach, not evidence against it.",
+      },
+      {
+        label: "Why it is concerning",
+        tone: "yellow",
+        items: [
+          "'My uncle works in commodities and he's been helping me with a gold trading account. I made 2,400 last month just following his signals.' A specific, modest-sounding profit figure from a trusted family member's guidance is a common feature of investment approaches that build credibility through personal referral rather than verifiable claims.",
+          "'I'm not trying to sell you anything' and 'no pressure at all.' Explicitly disclaiming a sales motive while making an unsolicited investment offer does not reduce the risk — it is a feature of the approach that makes the invitation feel lower-stakes.",
+          "The offer is to 'show you the platform,' not to describe it in detail. Directing someone to a specific platform introduced through this contact — rather than one the person found independently — is where financial exposure in this pattern typically begins.",
+        ],
+      },
+      {
+        label: "What does not settle it",
+        tone: "neutral",
+        items: [
+          "The sender's friendly, natural-sounding writing does not verify who they are or whether they are who they claim to be.",
+          "The mention of Singapore, a tennis club, and a named uncle adds personal detail but none of it can be checked from this conversation alone.",
+          "The offer being framed as low-pressure and personal does not establish that the platform or the opportunity is legitimate.",
+        ],
+      },
+      {
+        label: "What to do now",
+        tone: "green",
+        items: [
+          "Do not engage with the platform offer. If the conversation has been ongoing (as your pasted transcript suggests), stopping now is reasonable — you do not owe an explanation.",
+          "Do not deposit money into, register on, or share financial credentials with any platform this contact introduces.",
+          "Do not share bank details, identity documents, or payment information with this person.",
+        ],
+      },
+    ],
+    disclaimer: "Scam Radar reads the message you paste. It does not open links or look up the sender, and a verdict is an assessment of the pattern, not proof.",
+  },
+  faq: [
+    { q: "How can I tell if a text message is a scam?",
+      a: "Look for the pattern rather than any one detail: an unexpected contact, urgency or a deadline, a request for money, codes or personal details, a link to a site you did not find yourself, and payment by gift card, crypto or wire. Then check the claim through a channel you already trust, such as the number on your card or the company's own website — never through the message itself." },
+    { q: "What is a wrong-number or pig-butchering scam?",
+      a: "A stranger texts as if they had the wrong number, keeps chatting for days or weeks to build trust, then mentions an investment or crypto platform that a relative or mentor supposedly uses. Victims are often shown fake profits at first; the money usually cannot be withdrawn later." },
+    { q: "What should I do if I already sent money or shared details?",
+      a: "Contact your bank or payment provider straight away, using a number you look up yourself, and say exactly what happened. Change any password you shared. In the US you can also report it at ReportFraud.ftc.gov, and online fraud at ic3.gov; elsewhere, your national fraud-reporting service or the police." },
+    { q: "Does Scam Radar check the link or the phone number?",
+      a: "No. It reads the text you paste and explains which parts match known scam patterns, what would and would not settle the question, and what to do next. It does not visit links or look anything up, so verify through a source you find yourself." },
+  ],
   description: "Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Radar shows you what in it deserves caution, what to do next, and how to verify the request without relying on the message itself.",
   guide: {
     tips: [
@@ -497,35 +623,6 @@ export const tools = [
   }
 },
 {
-  modified: "2026-03-10",
-  id: "CrowdWisdom",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
-  primer: {
-    when: "A choice you keep turning over and can't settle.",
-    give: "The situation, plus anything about your goals or values.",
-    get: "Five distinct people arguing — what each believes, what they'd tell you, and what each is blind to.",
-    edge: "It isn't looking for consensus. The value is the disagreement and the question none of them asked.",
-  },
-  seoDescription: "Get five real perspectives on the choice you can't stop thinking about — Pragmatist, Risk-Taker, and more. See the tension and the question nobody asked. Free.",
-  seoTitle: "5 Perspectives on Your Decision",
-  title: "Crowd Wisdom",
-  tagline: "Five different ways to look at the choice you can't stop thinking about",
-  tags: ['decision', 'multiple perspectives', 'different viewpoints', 'decision lenses', 'perspective', 'dilemma', 'choice', 'stuck on a decision', 'tradeoffs', 'blind spots', 'contrarian', 'pragmatist', 'risk taker', 'decision reframing', 'question nobody asked', 'career decision', 'relationship decision', 'life change', 'simulated perspectives'],
-  icon: "👥",
-  categories: ['Decisions', 'Just for Fun'],
-  headerColor: "#b8dcd8",
-  description: "See your question through five deliberately different lenses: the Pragmatist, the Risk-Taker, the person who tried it and regretted it, the person who chose not to, and the Contrarian. See where their arguments clash—and what each perspective notices that the others miss.",
-  guide: {
-      tips: [
-        "The more specific your situation, the more specific — and useful — each voice gets",
-        "The 'thing they might miss' section is where the stealth insight lives — don't skip it",
-        "The tension between voices is more useful than any single answer",
-        "Use this for decisions where you've already heard the obvious advice and need something different"
-      ],
-    }
-},
-{
   modified: "2025-03-05",
   id: "FutureProof",
   // Preamble — the four questions a new visitor has, in order.
@@ -721,36 +818,6 @@ export const tools = [
         "The Assumption to Test First is the most important output — test it before you execute",
         "Use the Assumptions Autopsy to build a pre-launch checklist",
         "Run this on plans you're most excited about — excitement is when blind spots are largest"
-      ]
-    }
-},
-
-{
-  modified: "2025-03-05",
-  id: "RutBuster",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
-  primer: {
-    when: "Nothing's wrong, but nothing's moving either.",
-    give: "Your typical week in detail, and what feels stale.",
-    get: "One specific disruption you can do today — targeted at the pattern causing the stagnation, not random novelty.",
-    edge: "It diagnoses the pattern first. 'Do something different' is advice; this names which thing.",
-  },
-  seoDescription: "Stuck in a rut? Get one free, surgically designed disruption to break the pattern keeping you stagnant — exact timing, full instructions, no random novelty.",
-  seoTitle: "Break Out of a Rut",
-  title: "Rut Buster",
-  tagline: "One calculated disruption. Small change. Big ripple.",
-  tags: ['stuck', 'rut', 'routine', 'bored', 'stagnant', 'change', 'habit', 'shake up', 'motivation', 'growth', 'pattern', 'disruption', 'intervention', 'novelty', 'life change', 'burnout', 'monotony'],
-  icon: "🎰",
-  categories: ['Decisions', 'Ideas & Imagination'],
-  headerColor: "#b8dcd8",
-  description: "When every week starts to look exactly like the last one, it's easy to mistake routine for progress. Tell DeftBrain what life looks like right now, and we'll identify one carefully chosen disruption designed to shake something loose.",
-  guide: {
-      tips: [
-        "The more specific your routine description, the more surgical the disruption",
-        "The 'compound effect' section shows why one small disruption is worth doing",
-        "When you feel the specific friction named in advance, do it anyway — that's the point",
-        "One disruption per run — the value is in the precision, not the quantity"
       ]
     }
 },
@@ -3084,39 +3151,6 @@ tagline: "Work with the energy you have.",
 },
 
 {
-  modified: "2026-03-11",
-  id: "JargonAssassin",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
-  primer: {
-    when: "A lease, consent form, policy or contract you can't parse.",
-    give: "The document, its type, and how plain you want the translation.",
-    get: "Plain language, a danger score, flagged sections, and what to do about each.",
-    edge: "It doesn't stop at translating — it flags what's actually enforceable and what you can push back on.",
-  },
-  seoDescription: "Paste any legal, medical, or insurance document and get it in plain language — with red flags, deadlines, and what to do next. Free document translator, no signup.",
-  seoTitle: "Legal & Medical Translator",
-  title: "Jargon Assassin",
-  tagline: "Confusing documents → plain language → what to do about it",
-  tags: ["jargon", "plain language", "plain english", "document", "document explanation", "understand document", "legal document", "medical document", "insurance document", "government notice", "policy", "agreement", "terms", "deadline", "action required", "what does this mean"],
-  icon: "🗡️",
-  categories: ['Health & Wellness', 'Home & Daily Life', 'Learning', 'Money'],
-  headerColor: "#d4dde8",
-  description: "Paste or upload a document you don't fully understand. Jargon Assassin translates the dense language, shows you what matters, flags terms worth a closer look, and helps you figure out what the document means for your situation.",
-  guide: {
-      tips: [
-        "Start with Translate, then use the one-click buttons (Red-Line, vs Normal, Action Plan) to unlock the full analysis — each builds on the translation",
-        "Red-Line + Action Plan together complete the arc: Red-Line tells you WHAT to push back on, Action Plan tells you HOW and WHEN",
-        "Template Compare is the sleeper feature — knowing what's 'normal' for your document type is often more valuable than the translation itself",
-        "Use Explain To when you need buy-in from someone else — it reframes for their concerns, not yours, and even tells you how to have the conversation",
-        "The Dossier mode is powerful for real-world situations where documents reference each other (lease + building rules, job offer + benefits package + handbook)",
-        "Letter Generator saves hours — but always review before sending, especially for legal or financial responses",
-        "Reading levels matter: ELI5 for 'I just need to know if this is safe,' Professional for 'I'm smart but not in this field'",
-        "Danger scores are instant gut-checks — if you see 🔴, read the flagged sections before doing anything else"
-      ]
-    }
-},
-{
   modified: "2026-03-10",
   id: "ArgueSmarter",
   // Preamble — the four questions a new visitor has, in order.
@@ -3288,6 +3322,63 @@ tagline: "Work with the energy you have.",
   icon: "💵",
   categories: ['Conversations', 'Money', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Money Diplomat gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the bill below — an excerpt of a longer result, nothing reworded. The amounts are computed in code from the bill, so they add up to the cent.",
+    sampleLabel: "The bill",
+    sampleText: "Four of us at dinner: Ana, Ben, Cara and me. Ana and Ben shared a $48 bottle of wine and a $12 dessert that Cara and I never touched. Mains: Ana $24, Ben $22, Cara $19, me $21. Subtotal $146, tax $12.41. Everyone just assumes we're splitting the check evenly like always.",
+    context: "Real run, 2026-10-08, on a bill written for this page.",
+    sections: [
+      {
+        label: "The awkward part",
+        tone: "yellow",
+        text: "Cara and I would each overpay under the usual even split solely because Ana and Ben ordered a bottle of wine and a dessert the rest of us never had — roughly $22 for Cara and roughly $20 for me.",
+      },
+      {
+        label: "Equal split (total with a 20% tip: $187.61)",
+        tone: "neutral",
+        items: [
+          "Ana: $46.91",
+          "Ben: $46.90",
+          "Cara: $46.90",
+          "Me: $46.90",
+        ],
+      },
+      {
+        label: "Each pays for what they had, tax and tip shared in proportion",
+        tone: "green",
+        items: [
+          "Ana: $69.39",
+          "Ben: $66.82",
+          "Cara: $24.42",
+          "Me: $26.98",
+        ],
+      },
+      {
+        label: "How to bring it up",
+        tone: "neutral",
+        text: "Hey, since Ana and Ben had the wine and dessert and the rest of us skipped those, should we just have them cover that part and split our mains separately? Probably easier than an even four-way.",
+      },
+      {
+        label: "Next time",
+        tone: "neutral",
+        text: "Before the first order arrives, a quick 'should we split evenly or go by what we get?' takes ten seconds and prevents the whole awkward calculation at the end.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What is the fairest way to split a restaurant bill?",
+      a: "When everyone ordered about the same, split evenly — it is quick and nobody minds. When orders differ a lot, or some people shared things others did not touch, each person pays for what they had, with tax and tip shared in proportion to that. Shared items are divided among the people who shared them." },
+    { q: "How much should I tip on a restaurant bill in the US?",
+      a: "For sit-down service in the US, 18–20% of the pre-tax bill is the usual range, and 20% is common in cities. Customs differ widely in other countries, where service may be included or tipping less expected." },
+    { q: "How do I suggest not splitting evenly without being awkward?",
+      a: "Say it early and make it about the specific items, not the people: 'Since you two had the wine and dessert, want to cover that and we split the rest?' Before ordering is easiest; at the end, name the items and keep it light." },
+    { q: "Does Money Diplomat do the maths for me?",
+      a: "Yes. When you list the items and prices, the split is calculated in code — shared items divided among the people who shared them, tax and tip in proportion — so the shares add up exactly to the bill. It also flags when the items you listed do not add up to the subtotal." },
+  ],
   description: "Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.",
   guide: {
       tips: [
@@ -6310,6 +6401,59 @@ tagline: "Work with the energy you have.",
   icon: "🧾",
   categories: ['Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Quote Check gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the quote below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The quote",
+    sampleText: "2016 Ford Focus, 78,000 miles, 9 years old. Went in for an MOT. It failed on a worn brake disc. They rang to say that while it was on the ramp they had also found the rear discs, both front tyres, a leaking shock absorber and a cracked coolant hose, and recommended doing all of it at once. Quoted £1,290. Itemised: front discs and pads, rear discs and pads, two tyres fitted and balanced, one rear shock absorber, coolant hose, four hours labour, MOT retest fee.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples, run in pounds.",
+    sections: [
+      {
+        label: "Needs clarification",
+        tone: "yellow",
+        text: "The itemised breakdown is reasonably detailed and the scope of work is clear, but several material details are absent that would let you properly evaluate the £1,290 total: individual line-item prices are not provided, so you cannot tell how the total is built up, whether the labour rate is as expected, or where the bulk of the cost sits. The quote also covers a wide range of work found during the same ramp inspection, and a few of the items are worth asking about before you approve — not because anything is provably wrong, but because understanding them gives you a better basis for deciding.",
+      },
+      {
+        label: "What the quote does not tell you",
+        tone: "neutral",
+        items: [
+          "No individual line-item prices are given, so you cannot see how the £1,290 breaks down between parts and labour, or identify whether any single item is priced unexpectedly high.",
+          "The labour rate per hour is not stated, so you cannot verify whether four hours at that rate accounts for the full total or whether additional charges make up the difference.",
+          "Only one rear shock absorber is listed. It is worth asking whether the other rear shock was inspected and what its condition is, so you can make an informed decision about whether to address both now or later.",
+          "No warranty terms are stated anywhere in the quote — neither for parts nor labour — which affects your financial exposure if any of the repaired items develops a problem shortly after collection.",
+        ],
+      },
+      {
+        label: "Questions to ask",
+        tone: "neutral",
+        items: [
+          "Can you send me a written breakdown showing the price of each item separately — parts and labour — so I can see how the £1,290 is made up?",
+          "What warranty do you offer on the parts and labour for this work?",
+          "The quote lists one rear shock absorber — was the other rear shock inspected, and what is its current condition?",
+          "What make and specification of parts are you using — for example, are the discs and pads OEM or aftermarket?",
+        ],
+      },
+      {
+        label: "What to say",
+        tone: "green",
+        text: "Thanks for the quote. Before I approve the work, could you send me an itemised breakdown showing each part and labour charge separately? I would also like to know what warranty you provide on parts and labour, and what specification of parts you are using. Once I have that detail I can give you the go-ahead.",
+      },
+    ],
+    disclaimer: "Quote Check reads the quote you give it. It cannot see the car or the part, and it does not know local prices, so it tells you what to ask rather than what the job should cost.",
+  },
+  faq: [
+    { q: "How do I know if a repair quote is fair?",
+      a: "Ask for it itemised: each part and each labour charge priced separately, the hourly rate, the part specification and the warranty. A fair quote can be explained line by line. Then compare like with like — a second quote for the same scope, not just the same total." },
+    { q: "Should I approve extra work a garage finds while the car is in?",
+      a: "Ask which items are needed now for safety or the test, and which could wait. Get each one priced on its own, so you can approve the urgent work and decide on the rest later, or get a second quote for it." },
+    { q: "Is it rude to ask for a second quote?",
+      a: "No. For anything beyond a small job it is normal, and a reputable repairer expects it. Ask the second shop to quote the same scope of work so the two prices are comparable." },
+    { q: "Does Quote Check know what my repair should cost?",
+      a: "No. It does not look up local prices. It reads the quote — what is itemised, what is missing, whether the arithmetic adds up — and tells you what to ask before you approve." },
+  ],
   crossRefs: ['LeverageLogic', 'ContractDecoder', 'ScamRadar'],
   description: "Paste a repair quote for an appliance, vehicle, or other repair — or upload the quote itself. Quote Check checks what the price actually includes, flags questions worth asking, compares a second quote if you have one, and helps you decide what to clarify before approving the work.",
   guide: {
@@ -6341,6 +6485,56 @@ tagline: "Work with the energy you have.",
   icon: "🚦",
   categories: ['Decisions', 'Money'],
   headerColor: "#d9a04e",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Ticket Tackler gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the ticket below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The ticket",
+    sampleText: "CITY OF SEATTLE — PARKING INFRACTION NOTICE. Violation: SMC 11.23.180 — Parking in passenger load zone. Date: 07/22/2026 Time: 6:40 PM. Location: 1400 block, E Pine St. Penalty: $47. Respond within 15 days of issue date. What happened: The load-zone sign says the restriction runs 'Passenger Load Zone 7AM–6PM'. I parked at 6:40 PM, after the posted end time. The sign is also partially bent behind a tree branch — you can barely read it from the street side.",
+    context: "Real run on 2026-10-08, eleven weeks after the ticket date — which is why it starts with the deadline. One of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "May be worth contesting",
+        tone: "yellow",
+        text: "Your core defense is time-based: you parked at 6:40 PM and the sign posts a restriction of 7AM–6PM. If those posted hours determine when the restriction applies, the citation falls outside the enforcement window. However, the appeal deadline of 15 days from July 22, 2026 was approximately August 6, 2026 — more than two months ago. Before pursuing any defense, you must contact Seattle Municipal Court to check whether the deadline has lapsed and whether a late contest is still available.",
+      },
+      {
+        label: "Evidence to get now",
+        tone: "green",
+        items: [
+          "Your Seattle Municipal Court case record for this citation — check online or call the court. Confirms whether a default has been entered and whether any late-contest avenue still exists.",
+          "Photographs of every sign on the 1400 block of E Pine St, both blockfaces, including any RPZ, paid parking, or time-limit signs. Establishes whether the load zone sign reads as the user states and whether any other restriction independently covers 6:40 PM on a Wednesday.",
+          "Close-up photograph of the load zone sign, including any bending or obstruction by the tree branch. Documents the posted hours and the legibility issue if the time-based defense or sign-adequacy argument is raised at a hearing.",
+        ],
+      },
+      {
+        label: "What still needs checking",
+        tone: "neutral",
+        items: [
+          "Whether the contest deadline has passed and whether any late-response option remains available through Seattle Municipal Court.",
+          "Whether any sign on the 1400 block of E Pine St imposes a separate restriction — RPZ or paid parking — that applies at 6:40 PM on a Wednesday.",
+        ],
+      },
+      {
+        label: "The appeal letter (excerpt)",
+        tone: "neutral",
+        text: "I am writing to respectfully request that this citation be dismissed or reviewed on the following grounds.\n\n1. The parking time fell outside the posted restriction hours. The load zone sign at the cited location states a restriction of 7AM–6PM. The citation was issued at 6:40 PM — 40 minutes after the posted restriction ended. If the restriction ended at 6PM as posted, the infraction as cited was issued outside that period.\n\n2. The sign governing this zone was partially obstructed by vegetation and difficult to read from street level. I am prepared to provide photographs documenting the sign's condition at the time of citation.\n\nI respectfully request that this citation be dismissed. I am prepared to provide photographs of the posted sign and the blockface signage in support of these points at any scheduled review.",
+      },
+    ],
+    disclaimer: "Ticket Tackler is not legal advice. It checks the rule on the ticket against what you describe and tells you what to verify; the court or the city decides the outcome.",
+  },
+  faq: [
+    { q: "Is it worth contesting a parking ticket?",
+      a: "It can be when you have a specific, checkable defence: the restriction did not apply at that time, the sign was missing or unreadable, the details on the ticket are wrong, or you were legally allowed to be there. A general sense that it was unfair rarely works. Contest before the deadline, with photos." },
+    { q: "What evidence helps when appealing a parking ticket?",
+      a: "Photos of every sign on the block, taken soon after and showing the posted hours and anything blocking them; a copy of the ticket; and anything showing the time you parked, such as a receipt or a phone photo with its timestamp." },
+    { q: "What happens if I miss the deadline to contest a ticket?",
+      a: "Rules vary by city and court. Often the fine stands, late fees can be added, and it may go to collections. Some courts still accept a late request in some circumstances, so contact the court that issued it straight away and ask what options remain." },
+    { q: "Does Ticket Tackler know my city's parking rules?",
+      a: "It researches the rule cited on your ticket for your city and checks each condition of it against what you describe, then says which facts still need verifying. It cannot see the sign or the street, so photos are still what decide most cases." },
+  ],
   description: "A ticket isn't automatically worth fighting—or paying. Ticket Tackler helps you understand what the citation says, spot the facts that may matter, gather the evidence worth preserving, and decide whether an appeal makes sense. If it does, it helps you make your case clearly.",
   guide: {
     tips: [

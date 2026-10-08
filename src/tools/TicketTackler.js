@@ -115,11 +115,22 @@ const TicketTackler = ({ tool }) => {
 
   const hasAnyInput = !!(city || ticketText || ticketImage || whatHappened || fineAmount || deadline || results);
 
+  // The examples carry fixed dates, so they aged into "your deadline passed
+  // months ago" answers (2026-10-08). Move each to the most recent date on the
+  // same weekday at least two days back: the deadline is live and any weekday
+  // rule (Sunday meters, weekday-only zones) still reads the same.
+  const recentDate = text => text.replace(/Date: (\d{2})\/(\d{2})\/(\d{4})/, (m, mm, dd, yyyy) => {
+    const was = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 2);
+    while (d.getDay() !== was.getDay()) d.setDate(d.getDate() - 1);
+    return `Date: ${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+  });
+
   const loadExample = () => {
     const ex = pickExample('TicketTackler', EXAMPLES);
     setTicketType(ex.ticketType);
     setCity(ex.city);
-    setTicketText(ex.ticketText);
+    setTicketText(recentDate(ex.ticketText));
     setWhatHappened(ex.whatHappened);
     setFineAmount(ex.fineAmount);
     setDeadline(ex.deadline);

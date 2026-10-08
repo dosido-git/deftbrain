@@ -50,6 +50,8 @@ const EXAMPLE_OUTPUT_TOOLS = new Set([
   'AwkwardSilenceFiller', 'WaitingModeLiberator', 'NameStorm', 'ChaosPilot', 'HistoryToday',
   'DoctorVisitTranslator', 'RentersDepositSaver', 'DifficultTalkCoach', 'ComplaintEscalationWriter',
   'VirtualBodyDouble', 'BillRescue', 'LayoverMaximizer', 'BragSheetBuilder',
+  // 2026-10-08, strict index review: a tool is indexed once its page shows a real run.
+  'ScamRadar', 'ContractDecoder', 'QuoteCheck', 'MoneyDiplomat', 'TicketTackler',
 ]);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 

@@ -20,3 +20,9 @@ audit/QUALITY-AUDIT-KIT.md) — none has been fixed yet.
 
 Earlier the same day: SomeoneSaidItBetter placed Wilder's Act III Our Town
 line "at a wedding" — fixed in 6b7bbc3b (origin rule + supplied-facts check).
+
+## 2026-10-08 (index-review example runs)
+
+| Tool | Defect | Class |
+|---|---|---|
+| MoneyDiplomat /split | The "Social Split" (custom) option's reasoning describes the itemised rule ("her main plus half the wine and dessert, plus proportional tax and tip") but its amounts differ from the itemised option (Ana $56.26 vs $69.39). Code rescales custom amounts to the total without checking the reasoning matches. Kept off the page. | reasoning/number mismatch |
