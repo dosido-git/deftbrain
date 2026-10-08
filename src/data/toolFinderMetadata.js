@@ -499,34 +499,6 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user has a photo or image in mind and wants several caption ideas, especially when they can add context the image alone cannot show.",
     whenNotToRecommend: "Do not recommend for image editing, general social-media planning, or fabricating real-world backstory about the people or event in a photo.",
   },
-  RutBuster: {
-    problems: [
-      "My life feels stale even though nothing is obviously wrong",
-      "I am stuck in a rut and want one deliberate change",
-      "My routine is repeating and I want to shake something loose",
-    ],
-    capabilities: [
-      "identifies a pattern contributing to stagnation",
-      "proposes one targeted disruption rather than random novelty",
-      "keeps the intervention small and concrete",
-    ],
-    accepts: [
-      "a description of the user’s typical week",
-      "what feels stale or repetitive",
-      "constraints the disruption should respect",
-    ],
-    notFor: [
-      "a crisis or urgent problem",
-      "a task-management problem",
-      "freezing around a scheduled event",
-      "clinical mental-health support",
-    ],
-    handoffs: [
-    ],
-    primaryIntent: "introduce one targeted, low-stakes disruption to a stagnant routine",
-    whenToRecommend: "Recommend when the user says life is repetitive, stale, or stuck and wants a deliberate experiment rather than a full plan.",
-    whenNotToRecommend: "Do not recommend for emergencies, task scheduling, waiting-mode, or mental-health care navigation.",
-  },
   ColdOpenCraft: {
     problems: [
       "I need to message someone I do not know and do not want to sound like spam",
@@ -740,7 +712,6 @@ export const toolFinderMetadata = {
       "working through a high-stakes decision with multiple frameworks when the user does not want a single delegated answer",
     ],
     handoffs: [
-      { when: "the user wants several deliberately different viewpoints rather than one answer", toolId: "CrowdWisdom" },
       { when: "the user wants to imagine how two meaningful personal paths might feel rather than delegate the choice", toolId: "WhichLife" },
       { when: "the user wants a difficult decision analyzed through multiple structured frameworks", toolId: "DecisionPrism" },
     ],
@@ -1758,7 +1729,6 @@ export const toolFinderMetadata = {
       "product comparison or other factual side-by-side research",
     ],
     handoffs: [
-      { when: "the user wants several strongly different viewpoints on the decision rather than two imagined futures", toolId: "CrowdWisdom" },
       { when: "the user wants the decision run through structured frameworks rather than experiential simulation", toolId: "DecisionPrism" },
       { when: "the user wants a direct recommendation rather than a simulation", toolId: "DecisionCoach" },
       { when: "the user wants to change a real historical event and trace an alternate timeline", toolId: "AlternatePath" },
@@ -1844,38 +1814,6 @@ export const toolFinderMetadata = {
     whenNotToRecommend: "Do not recommend for true emergency response, psychological assessment, a single overwhelming project that only needs decomposition, or ordinary task batching after priorities are already clear.",
   },
 
-  CrowdWisdom: {
-    problems: [
-      "I am stuck on a decision and want to hear several genuinely different ways of looking at it",
-      "I want to expose the blind spots in the way I am currently framing a choice",
-      "I want strong disagreement and perspective rather than one supposedly correct answer",
-    ],
-    capabilities: [
-      "puts the user's question in front of five deliberately different simulated lenses: Pragmatist, Risk-Taker, Did It and Regretted It, Didn't and Regretted It, and Contrarian",
-      "lets each lens argue its position forcefully without presenting the voice as a real person or fabricated testimony",
-      "surfaces what each perspective notices and what it may miss",
-      "draws out the central tension across the perspectives and offers an additional question the original framing may have overlooked",
-    ],
-    accepts: [
-      "one decision or question",
-      "optional context that makes the perspectives more specific",
-    ],
-    notFor: [
-      "real human testimonials, survey results, community consensus, or sourced public opinion",
-      "a definitive recommendation about what the user should choose",
-      "factual research about which option is objectively better",
-      "stress-testing a belief or rule rather than looking at a concrete choice",
-    ],
-    handoffs: [
-      { when: "the user wants one direct recommendation rather than deliberately conflicting perspectives", toolId: "DecisionCoach" },
-      { when: "the user wants the choice analyzed through structured decision frameworks", toolId: "DecisionPrism" },
-      { when: "the user wants to pressure-test a belief or rule that is driving the choice", toolId: "BeliefStressTest" },
-      { when: "the user has exactly two personal paths and wants to imagine an ordinary future day inside each", toolId: "WhichLife" },
-    ],
-    primaryIntent: "help the user see a decision through several strongly different simulated perspectives so disagreement reveals tradeoffs and blind spots",
-    whenToRecommend: "Recommend when the user is stuck on a choice and would benefit from hearing multiple opinionated lenses rather than receiving one answer or another pro-con list.",
-    whenNotToRecommend: "Do not recommend when the user wants real people's opinions, sourced evidence, one definitive recommendation, or a formal stress test of a belief.",
-  },
 
   CultureBriefing: {
     problems: [
@@ -2151,44 +2089,6 @@ export const toolFinderMetadata = {
     whenNotToRecommend: "Do not recommend for definitive viability judgments, live market research, investment advice, full business-plan generation, or general decisions among several unrelated alternatives.",
   },
 
-  JargonAssassin: {
-    problems: [
-      "I have a document I do not fully understand",
-      "I need dense or technical language translated into plain English",
-      "I want to know which parts of a notice, policy, agreement, form, or statement deserve my attention",
-      "I understand the words but still do not know what the document means for my situation or what I may need to do next",
-    ],
-    capabilities: [
-      "reads pasted text or an uploaded document and explains dense language in plain English",
-      "prioritizes the explanation around what the user is trying to figure out",
-      "surfaces important terms, deadlines, obligations, choices, and questions that deserve closer attention",
-      "connects the document's wording to practical next steps without pretending uncertain legal, medical, financial, or administrative outcomes are settled",
-      "can vary the explanation style from simplest possible to everyday language or detail-preserving",
-    ],
-    accepts: [
-      "pasted document text or an uploaded document, image, or PDF",
-      "optional document type such as legal, medical, insurance, financial, government, technical, or academic",
-      "optional question or concern the user wants the explanation to focus on",
-      "optional explanation style",
-    ],
-    notFor: [
-      "definitive legal rulings, enforceability opinions, diagnoses, coverage determinations, or predictions about what an institution will do",
-      "rewriting ordinary prose solely to make the writing clearer when no consequential document analysis is needed",
-      "a contract-specific review when the user primarily wants clause-by-clause contract implications and negotiation points",
-      "a residential lease-specific workflow or a medical-visit debrief when a dedicated DeftBrain tool fits better",
-      "a bill the user is trying to resolve, dispute, or afford — even a confusing medical or hospital bill is a billing problem first, and BillRescue is the dedicated tool for it",
-    ],
-    handoffs: [
-      { when: "the user wants a contract-specific review of clauses, practical effects, ambiguities, and negotiation points", toolId: "ContractDecoder" },
-      { when: "the document is a residential lease and the user wants lease-specific traps, questions, and protections", toolId: "LeaseTrapDetector" },
-      { when: "the user wants to understand notes, instructions, or information from a medical visit rather than a general document", toolId: "DoctorVisitTranslator" },
-      { when: "the user simply wants supplied writing made clearer or easier to read rather than analyzed for consequences", toolId: "PlainTalk" },
-      { when: "the document is a bill — including a confusing hospital, medical, or insurance bill — and the user wants to understand it, dispute it, or decide what to do about it", toolId: "BillRescue" },
-    ],
-    primaryIntent: "understand a consequential or confusing document in plain language, identify what matters, and see what to check or do next",
-    whenToRecommend: "Recommend when the user is staring at a notice, policy, form, statement, agreement, letter, medical or insurance document, government communication, or other dense document and wants both comprehension and practical significance.",
-    whenNotToRecommend: "Do not recommend when the task is only general rewriting, when the user wants a definitive professional judgment, when the document is a bill (even a confusing medical one — that is BillRescue), or when a dedicated contract, lease, or medical-visit workflow is clearly the better fit.",
-  },
 
   LaundroMat: {
     problems: [
@@ -2664,7 +2564,6 @@ export const toolFinderMetadata = {
       "guaranteeing that an omitted issue is absent when the user supplied only an excerpt or incomplete document",
     ],
     handoffs: [
-      { when: "the main need is translating difficult jargon or understanding what the document says rather than filtering for personal relevance", toolId: "JargonAssassin" },
       { when: "the document is a contract and the user wants a contract-focused explanation of important terms and negotiation questions", toolId: "ContractDecoder" },
       { when: "the document is a lease and the user wants a lease-specific review of clauses and renter concerns", toolId: "LeaseTrapDetector" },
       { when: "the user wants to compare two versions of a document or identify what changed between them", toolId: "PlainTalk" },
@@ -2989,7 +2888,7 @@ export const toolFinderMetadata = {
     handoffs: [
       { when: "the user cannot remember the word itself and needs help retrieving it rather than pronouncing a known target", toolId: "TipOfTongue" },
       { when: "the user knows the words but needs help rehearsing what to say in a stressful upcoming interaction", toolId: "NerveCheck" },
-      { when: "the user has a consequential document full of unfamiliar language and needs the document explained rather than one term pronounced", toolId: "JargonAssassin" },
+      { when: "the user has a consequential document full of unfamiliar language and needs the document explained rather than one term pronounced", toolId: "PlainTalk" },
     ],
     primaryIntent: "help the user say a known word, name, place, brand, term, or phrase accurately enough to use aloud, with pronunciation teaching adapted to the language they already speak",
     whenToRecommend: "Recommend when the user asks how to pronounce, say, sound out, or practice a specific word, name, place, food, brand, term, or phrase.",
@@ -3098,7 +2997,6 @@ export const toolFinderMetadata = {
     ],
     handoffs: [
       { when: "the user has a difficult non-research document that needs plain-language explanation", toolId: "PlainTalk" },
-      { when: "the user has a jargon-heavy consequential document and needs the obligations, deadlines, or actions explained", toolId: "JargonAssassin" },
     ],
     primaryIntent: "explain the research text in front of the user and distinguish what it supports from what it does not establish",
     whenToRecommend: "Recommend when the user supplies a research paper, abstract, study excerpt, research headline, or research term and wants a source-faithful explanation.",

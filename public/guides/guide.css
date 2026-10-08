@@ -630,3 +630,9 @@ h1            { animation-delay: .10s; }
 .answer-table th { font-weight: 600; color: var(--ink); }
 .step-body p a, .lede a { color: var(--deft-blue, #165b9a); text-decoration: underline; text-underline-offset: 2px; }
 :root[data-theme="dark"] .step-body p a, :root[data-theme="dark"] .lede a { color: #85afd6; }
+
+/* Sources (2026-10-08, GEO pass) — quiet, after the steps, before the CTA. */
+.guide-sources { margin: 28px 0 8px; padding-top: 14px; border-top: 1px solid var(--rule, #e7e2d9); }
+.guide-sources-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3, #6e675c); margin: 0 0 6px; }
+.guide-sources ul { margin: 0; padding-left: 1.1em; font-size: 14px; line-height: 1.55; color: var(--ink2); }
+.guide-sources a { color: inherit; }

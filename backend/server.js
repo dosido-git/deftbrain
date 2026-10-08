@@ -124,7 +124,7 @@ const LARGE_BODY_PREFIXES = [
 // request ceiling once the prompt is added.
 const PDF_BODY_PREFIXES = [
   '/api/bill-rescue', '/api/doctor-visit-translator', '/api/heart-of-the-matter',
-  '/api/jargon-assassin', '/api/lease-trap-detector', '/api/plaintalk', '/api/quote-check',
+  '/api/lease-trap-detector', '/api/plaintalk', '/api/quote-check',
   '/api/document-detective',
 ];
 const matches = (path, prefixes) => prefixes.some(p => path === p || path.startsWith(p + '/'));
@@ -249,15 +249,15 @@ const TOOL_IDS = [
   'AlternatePath','AnalogyEngine','ArgumentSimulator',
   'AwkwardSilenceFiller','BatchFlow','BeliefStressTest','BikeMedic',
   'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
-  'BrainStateDeejay','BuyWise','CaptionMagic','RutBuster','ColdOpenCraft',
+  'BrainStateDeejay','BuyWise','CaptionMagic','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
-  'BeforeTheCrash','ContractDecoder','ChaosPilot','CrowdWisdom','CultureBriefing','DateNight',
+  'BeforeTheCrash','ContractDecoder','ChaosPilot','CultureBriefing','DateNight',
   'ArgueSmarter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','BeforeHello','GriefGuide','HecklerPrep','HistoryToday','ConceptCoach',
-  'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
+  'HobbyMatch','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LeverageLogic','GetNoticed','MagicMouth','MarkupDetective',
   'JustifyMyMeeting','MeetingHijackStopper','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
@@ -407,6 +407,21 @@ const LEGACY_REDIRECTS = {
   '/spiralstopper':              '/PEP',
   '/spiral-stopper':             '/PEP',
 
+  // JargonAssassin merged into PlainTalk, RutBuster into SmallChangeBigDifference
+  // 2026-10-08 (owner, index review — overlapping tools; see audit/RENAMES.md).
+  '/JargonAssassin':             '/PlainTalk',
+  '/jargonassassin':             '/PlainTalk',
+  '/jargon-assassin':            '/PlainTalk',
+  '/RutBuster':                  '/SmallChangeBigDifference',
+  '/rutbuster':                  '/SmallChangeBigDifference',
+  '/rut-buster':                 '/SmallChangeBigDifference',
+
+  // CrowdWisdom merged into DecisionPrism 2026-10-08 (owner, index review —
+  // overlapping decision tools; see audit/RENAMES.md).
+  '/CrowdWisdom':                '/DecisionPrism',
+  '/crowdwisdom':                '/DecisionPrism',
+  '/crowd-wisdom':               '/DecisionPrism',
+
   // WardrobeChaosHelper retired 2026-09-14 (see audit/RENAMES.md) — hard
   // delete, not a redesign call. The rewrite itself shipped clean, but the
   // five guides built around it (how-to-dress-for-unpredictable-weather,
@@ -486,6 +501,50 @@ const LEGACY_REDIRECTS = {
 // meeting". The workplace one kept its URL (keep-list, indexed); the
 // meetings one's material (the scripted line, "decline early") merged in.
 const MERGED_GUIDE_REDIRECTS = {
+  // apologies/ and conversations/ held the same 5 apology guides (2026-10-08,
+  // owner: merge overlapping guides). The apologies/ copies were about twice as full.
+  '/guides/conversations/the-difference-between-an-apology-and-an-explanation': '/guides/apologies/the-difference-between-an-apology-and-an-explanation',
+  '/guides/conversations/the-difference-between-an-apology-and-an-explanation.html': '/guides/apologies/the-difference-between-an-apology-and-an-explanation',
+  '/guides/conversations/how-to-apologize-to-your-partner-without-making-it-worse': '/guides/apologies/how-to-apologize-to-your-partner-without-making-it-worse',
+  '/guides/conversations/how-to-apologize-to-your-partner-without-making-it-worse.html': '/guides/apologies/how-to-apologize-to-your-partner-without-making-it-worse',
+  '/guides/conversations/how-to-apologize-at-work-for-a-mistake-everyone-saw': '/guides/apologies/how-to-apologize-at-work-for-a-mistake-everyone-saw',
+  '/guides/conversations/how-to-apologize-at-work-for-a-mistake-everyone-saw.html': '/guides/apologies/how-to-apologize-at-work-for-a-mistake-everyone-saw',
+  '/guides/conversations/how-to-apologize-when-you-really-screwed-up-at-work': '/guides/apologies/how-to-apologize-when-you-really-screwed-up-at-work',
+  '/guides/conversations/how-to-apologize-when-you-really-screwed-up-at-work.html': '/guides/apologies/how-to-apologize-when-you-really-screwed-up-at-work',
+  '/guides/conversations/how-to-apologize-for-ghosting-someone': '/guides/apologies/how-to-apologize-for-ghosting-someone',
+  '/guides/conversations/how-to-apologize-for-ghosting-someone.html': '/guides/apologies/how-to-apologize-for-ghosting-someone',
+  // career/ and workplace/ held the same 15 guides (2026-10-08, owner: merge
+  // overlapping guides). Survivor: the indexed copy, else the stronger one.
+  '/guides/career/how-to-figure-out-what-career-to-switch-to': '/guides/workplace/how-to-figure-out-what-career-to-switch-to',
+  '/guides/career/how-to-figure-out-what-career-to-switch-to.html': '/guides/workplace/how-to-figure-out-what-career-to-switch-to',
+  '/guides/career/how-to-identify-your-transferable-skills': '/guides/workplace/how-to-identify-your-transferable-skills',
+  '/guides/career/how-to-identify-your-transferable-skills.html': '/guides/workplace/how-to-identify-your-transferable-skills',
+  '/guides/career/how-to-know-if-your-job-is-at-risk': '/guides/workplace/how-to-know-if-your-job-is-at-risk',
+  '/guides/career/how-to-know-if-your-job-is-at-risk.html': '/guides/workplace/how-to-know-if-your-job-is-at-risk',
+  '/guides/career/how-to-know-if-youre-ready-for-the-next-level': '/guides/workplace/how-to-know-if-youre-ready-for-the-next-level',
+  '/guides/career/how-to-know-if-youre-ready-for-the-next-level.html': '/guides/workplace/how-to-know-if-youre-ready-for-the-next-level',
+  '/guides/career/how-to-make-the-case-for-your-promotion-in-writing': '/guides/workplace/how-to-make-the-case-for-your-promotion-in-writing',
+  '/guides/career/how-to-make-the-case-for-your-promotion-in-writing.html': '/guides/workplace/how-to-make-the-case-for-your-promotion-in-writing',
+  '/guides/career/how-to-switch-careers-to-tech': '/guides/workplace/how-to-switch-careers-to-tech',
+  '/guides/career/how-to-switch-careers-to-tech.html': '/guides/workplace/how-to-switch-careers-to-tech',
+  '/guides/workplace/how-to-talk-about-your-work-without-sounding-arrogant': '/guides/career/how-to-talk-about-your-work-without-sounding-arrogant',
+  '/guides/workplace/how-to-talk-about-your-work-without-sounding-arrogant.html': '/guides/career/how-to-talk-about-your-work-without-sounding-arrogant',
+  '/guides/workplace/how-to-write-resume-bullets-for-the-job-you-actually-did': '/guides/career/how-to-write-resume-bullets-for-the-job-you-actually-did',
+  '/guides/workplace/how-to-write-resume-bullets-for-the-job-you-actually-did.html': '/guides/career/how-to-write-resume-bullets-for-the-job-you-actually-did',
+  '/guides/workplace/how-to-write-self-review-bullets-that-get-you-the-raise': '/guides/career/how-to-write-self-review-bullets-that-get-you-the-raise',
+  '/guides/workplace/how-to-write-self-review-bullets-that-get-you-the-raise.html': '/guides/career/how-to-write-self-review-bullets-that-get-you-the-raise',
+  '/guides/career/is-accounting-going-to-be-replaced-by-ai': '/guides/workplace/is-accounting-going-to-be-replaced-by-ai',
+  '/guides/career/is-accounting-going-to-be-replaced-by-ai.html': '/guides/workplace/is-accounting-going-to-be-replaced-by-ai',
+  '/guides/career/is-it-too-late-to-learn-coding': '/guides/workplace/is-it-too-late-to-learn-coding',
+  '/guides/career/is-it-too-late-to-learn-coding.html': '/guides/workplace/is-it-too-late-to-learn-coding',
+  '/guides/career/what-jobs-will-be-in-demand-in-5-years': '/guides/workplace/what-jobs-will-be-in-demand-in-5-years',
+  '/guides/career/what-jobs-will-be-in-demand-in-5-years.html': '/guides/workplace/what-jobs-will-be-in-demand-in-5-years',
+  '/guides/career/what-skills-are-actually-futureproof': '/guides/workplace/what-skills-are-actually-futureproof',
+  '/guides/career/what-skills-are-actually-futureproof.html': '/guides/workplace/what-skills-are-actually-futureproof',
+  '/guides/career/what-skills-do-i-need-to-become-a-product-manager': '/guides/workplace/what-skills-do-i-need-to-become-a-product-manager',
+  '/guides/career/what-skills-do-i-need-to-become-a-product-manager.html': '/guides/workplace/what-skills-do-i-need-to-become-a-product-manager',
+  '/guides/workplace/what-to-say-in-a-performance-review-when-you-cant-remember': '/guides/career/what-to-say-in-a-performance-review-when-you-cant-remember',
+  '/guides/workplace/what-to-say-in-a-performance-review-when-you-cant-remember.html': '/guides/career/what-to-say-in-a-performance-review-when-you-cant-remember',
   '/guides/meetings/how-to-politely-decline-a-meeting':      '/guides/workplace/how-to-politely-decline-a-meeting',
   '/guides/meetings/how-to-politely-decline-a-meeting.html': '/guides/workplace/how-to-politely-decline-a-meeting',
   // 2026-10-03: seven guides retired with Subscription Tamer (deleted

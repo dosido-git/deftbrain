@@ -16,7 +16,7 @@ module.exports = {
   deck:          "The policy is sixty pages. The claim is what you'll care about. Here's how to read auto, home, or renters insurance so you know what you're covered for — before you need it.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `Your insurance policy arrived as a PDF six months ago. It's sixty-four pages, divided into sections labeled with words like 'declarations,' 'endorsements,' and 'exclusions.' You filed it in a folder called 'Important.' You'll open it for the first time the day you have to file a claim — which is exactly the worst day to discover that something you assumed was covered, isn't. Insurance is one of the few documents where the cost of not reading it is paid in full at the moment you most need it.`,
@@ -47,17 +47,16 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '🗡',
-    headline: "Translate the policy before you need to file",
-    body:     "Paste your insurance policy and Jargon Assassin extracts coverage limits, deductibles, exclusions, and sublimits — flagged, translated, and compared against typical policies of the same type, so you know what you actually have.",
+    glyph:    '📋',
+    headline: "Know what you are agreeing to before you sign.",
+    body:     "Paste the contract, or upload the file, and Contract Decoder gives you a plain-English breakdown of the important terms, the questions to ask, and the points you may want to clarify or negotiate before you sign. It quotes the language it is explaining and keeps what the contract says separate from what still needs checking.",
     features: [
-      "Policy translation",
-      "Exclusion detection",
-      "Sublimit flagging",
-      "Standard-policy comparison",
-      "Q&A on coverage scenarios",
+      "Plain-English overview of what the contract actually says",
+      "Important terms, quoted from the document itself",
+      "Questions to clarify before you sign",
+      "Points you may want to negotiate"
     ],
-    toolId:   'JargonAssassin',
-    toolName: 'Jargon Assassin',
+    toolId:   'ContractDecoder',
+    toolName: 'Contract Decoder',
   },
 };

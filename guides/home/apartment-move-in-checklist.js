@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "Apartment Move-In Checklist",
   navTitle:      "Apartment move-in checklist and the five things that actually matter",
 
-  description:   "Most move-in checklists are 47 items long and treat 'change your mailing address' the same as 'document pre-existing damage.' Here's the short version of what actually matters and what's just clutter.",
-  deck:          "Most move-in checklists are 47 items long and treat 'change your mailing address' the same as 'document pre-existing damage.' Here's the short version of what actually matters and what's just clutter.",
+  description:  "Apartment move-in checklist: the five things that matter on move-in day — damage photos, the inspection form, testing systems, day-one setup — and what can wait.",
+  deck:         "An apartment move-in checklist only needs five things: photograph existing damage before your furniture arrives, return the move-in inspection form within 48 hours, test every appliance and fixture and report faults in writing, set up utilities, renter's insurance and contact details on day one, and leave everything else for later. The first two protect your deposit.",
+  answerList: [
+    "Photograph every room's existing damage before furniture arrives.",
+    "Return the move-in inspection form within 48 hours, and keep a copy.",
+    "Test every appliance and fixture; report faults in writing.",
+    "Day one: utilities in your name, renter's insurance active, contact details swapped.",
+    "Everything else can wait weeks.",
+  ],
 
   ledes: [
     `You searched for a move-in checklist and got back something with forty-seven bullet points, including 'find a doctor in your new neighborhood' and 'unpack one box per day.' The list is exhausting in a way that doesn't match the urgency of move-in day, and the fundamental problem is that everything on the list looks equally weighted. Some of these items will affect the next year of your life. Others can be done whenever you get to them, or never. The list doesn't tell you which is which.`,
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

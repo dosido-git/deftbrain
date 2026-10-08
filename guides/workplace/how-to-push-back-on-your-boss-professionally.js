@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "How to Push Back on a Decision Already Made",
   navTitle:      "How to push back professionally when the decision is already made",
 
-  description:   "Raising a concern before a decision is one skill. Reopening a decision that's already closed is a harder one. Here's how to challenge a locked-in call without looking like you're ignoring your manager.",
-  deck:          "Raising a concern before a decision is one thing. Reopening a decision that's already closed is harder — and more politically charged. Here's how to do it in a way that sounds like leadership, not insubordination.",
+  description:  "How to push back on a decision your boss has already made: when it's worth reopening, how to frame it, and what to do if the answer is still no.",
+  deck:         "To push back on a decision that has already been made, first decide whether it is worth reopening, then bring new information rather than repeating the old argument. Frame it as a risk the decision did not account for, offer an adjusted plan instead of a reversal, and if the answer is still no, commit to the plan fully.",
+  answerList: [
+    "Decide whether this one is worth reopening.",
+    "Bring new information, not the old argument.",
+    "Frame it as a risk, not a disagreement.",
+    "Offer an adjustment, not a reversal.",
+    "If it's still no, commit fully.",
+  ],
 
   published:     '2026-04-22',
-  modified:      '2026-04-22',
+  modified:      '2026-10-08',
 
   ledes: [
     `The decision got made last Tuesday. You weren't in the room, or you were but didn't push hard enough, or everyone nodded because nobody wanted to be the one who nodded last. Now you're looking at the plan and you can see it's going to fail — maybe quietly, maybe loudly — and you're the one who's going to be asked why nobody said anything.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Decide whether it's worth reopening",
+      name: "Should you push back on a decision that's already made?",
       body: "Not every closed decision is worth reopening. The cost of being the person who keeps second-guessing calls is real, and you spend political capital every time you do it. Before you walk in, ask yourself: is the outcome merely suboptimal, or actually bad? Will I be able to live with it if I say nothing? If the honest answer is 'it'll work out fine, I just don't love it' — let it go. Reserve this move for decisions that will materially harm the outcome, not the ones where you'd have made a different call.",
     },
     {

@@ -8,8 +8,18 @@ module.exports = {
   shortTitle:    "How to Understand What Your Doctor Actually Said",
   navTitle:      "How to understand what your doctor actually said after you already left",
 
-  description:   "You nodded along, you said okay, you walked out. Now you're at home and the only thing you remember clearly is the part where they used a word you didn't know. Here's how to reconstruct the rest.",
-  deck:          "You nodded along, you said okay, you walked out. Now you're at home and the only thing you remember clearly is the part where they used a word you didn't know. Here's how to reconstruct the rest.",
+  description:  "How to understand what your doctor said after the visit: use the after-visit summary, translate the terms, sort what you heard, and ask the right follow-up.",
+  deck:         "To understand what your doctor said after the appointment, start with the written after-visit summary or the visit notes in your patient portal, not your memory. List the terms you don't understand, translate each into what it means for you, sort everything into diagnosis, treatment, outlook and follow-up, and send a portal message about anything still unclear.",
+  answerList: [
+    "Open the after-visit summary or visit notes first.",
+    "List every term you don't fully understand.",
+    "Translate each into what it means for you.",
+    "Sort it: diagnosis, treatment, outlook, follow-up.",
+    "Ask the rest in a portal message, with specific questions.",
+  ],
+  sources: [
+    { label: "MedlinePlus (US National Library of Medicine) — Talking with your doctor", url: "https://medlineplus.gov/talkingwithyourdoctor.html" },
+  ],
 
   ledes: [
     `It was twenty minutes ago. The doctor was talking, you were listening, and somewhere in the middle they used a word that pulled all your attention to one place — and the next three sentences happened without you. Now you're in the car or at home, and you have a vague, important-feeling cloud of information that you can't quite make a sentence out of. You know there was a diagnosis, or a recommendation, or a number. You don't know exactly what it was.`,
@@ -18,7 +28,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Pull up the after-visit summary before you trust your memory",
+      name: "Where do you find what the doctor said after a visit?",
       body: "Almost every visit produces a written record — the after-visit summary in the patient portal, the visit notes, a printout you were handed on the way out. Find it before you start trying to reconstruct anything from memory. Memory of a medical visit is unreliable in a specific way: you remember the parts that scared you and forget the parts that explained them. The written record is the actual answer; your memory is the prompt that helps you find it.",
     },
     {
@@ -55,5 +65,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

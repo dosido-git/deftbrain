@@ -20,18 +20,18 @@ module.exports = {
     { name: 'Look for non-compete-by-stealth language', body: 'Some NDAs sneak in non-compete or non-solicitation provisions. The document is titled \'NDA\' but contains clauses that prevent you from working with competitors, hiring their employees, or pursuing similar business. These provisions belong in a separate non-compete agreement that you can evaluate on its own. If they appear in an NDA, they are often hoping you will not notice. Read every paragraph, not just the headings. If you see anything beyond confidentiality obligations, push back.' }
   ],
   cta: {
-    glyph:    '🗡️',
-    headline: "From confusion to action, in one document.",
-    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
+    glyph:    '📋',
+    headline: "Know what you are agreeing to before you sign.",
+    body:     "Paste the contract, or upload the file, and Contract Decoder gives you a plain-English breakdown of the important terms, the questions to ask, and the points you may want to clarify or negotiate before you sign. It quotes the language it is explaining and keeps what the contract says separate from what still needs checking.",
     features: [
-      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
-      "Red flags scored, enforceability noted, hidden catches surfaced",
-      "Red-Line generates specific edits to propose with negotiation strategy",
-      "Template Compare shows whether the document is standard or aggressive"
+      "Plain-English overview of what the contract actually says",
+      "Important terms, quoted from the document itself",
+      "Questions to clarify before you sign",
+      "Points you may want to negotiate"
     ],
-    toolId:   'JargonAssassin',
-    toolName: 'Jargon Assassin',
+    toolId:   'ContractDecoder',
+    toolName: 'Contract Decoder',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

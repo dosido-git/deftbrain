@@ -6,8 +6,19 @@ module.exports = {
   titleHtml:     "How to Escalate <em>a Customer Service Complaint</em>",
   shortTitle:    "Escalate Customer Service",
   navTitle:      "escalate a customer service complaint",
-  description:   "The escalation ladder has five rungs. Most complaints lose because people stay on rung one too long, then jump to rung five.",
-  deck:          "The escalation ladder has five rungs. Most complaints lose because people stay on rung one too long, then jump to rung five.",
+  description:  "How to escalate a customer service complaint, step by step: when to ask for a supervisor, put it in writing, contact an executive or a regulator, and use a chargeback.",
+  deck:         "To escalate a customer service complaint, move up one step at a time, and only when the last one has run out: a documented first contact, then a supervisor, then a written complaint to the company, then an executive email together with a regulator complaint, and finally a chargeback or small claims. Keep names, dates and reference numbers throughout.",
+  answerList: [
+    "Document the first call or chat: name, date, reference number.",
+    "Ask for a supervisor once the deadline they gave you passes.",
+    "Send a written formal complaint to the corporate address.",
+    "Email an executive and file with a regulator at the same time.",
+    "Last resort: a card chargeback, a public post or small claims.",
+  ],
+  sources: [
+    { label: "USA.gov — Where to file a consumer complaint", url: "https://www.usa.gov/consumer-complaints" },
+    { label: "CFPB — Submit a complaint about a financial product or service", url: "https://www.consumerfinance.gov/complaint/" },
+  ],
   ledes: [
     `You have been on hold. You have explained the situation four times. You have heard "I understand your frustration" so often you can predict when it is coming. The first-line rep cannot help you, the supervisor is not available, and the issue is still not resolved.<br/><br/>Customer service is built to absorb complaints at the lowest possible level. Escalation is how you move past the absorption layer. The trick is knowing the ladder — five rungs, each with its own moves and timing. Skip rungs and you lose leverage; stay too long on one and you waste weeks.`,
     `The escalation ladder, with the trigger to move up at each rung.`,
@@ -33,5 +44,5 @@ module.exports = {
     toolName: 'Complaint Escalation Writer',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

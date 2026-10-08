@@ -8,8 +8,18 @@ module.exports = {
   shortTitle:    "How to Write a Formal Complaint Letter to a Company",
   navTitle:      "How to write a formal complaint letter to a company that doesn't get filed in the crank pile",
 
-  description:   "Most complaint letters fail because they read like complaints. The ones that work read like documentation — calm, specific, and impossible to dismiss without an actual response.",
-  deck:          "Most complaint letters fail because they read like complaints. The ones that work read like documentation — calm, specific, and impossible to dismiss without an actual response.",
+  description:  "How to write a formal complaint letter a company will act on: the outcome first, dated facts, the policy or law you rely on, and a reply deadline.",
+  deck:         "A formal complaint letter should open with the outcome you want, then give the facts as a dated record: what happened, when, who you dealt with and any reference numbers. Name the policy or law your request rests on, ask for a written reply by a set date, such as 30 days, and keep the tone neutral throughout.",
+  answerList: [
+    "First sentence: the specific outcome you want — refund, repair or credit.",
+    "A short chronology with dates, names and case numbers.",
+    "The policy, contract term or law the request rests on.",
+    "A deadline for a written reply, such as 30 days.",
+    "Copies of receipts and earlier messages attached.",
+  ],
+  sources: [
+    { label: "USA.gov — Where to file a consumer complaint", url: "https://www.usa.gov/consumer-complaints" },
+  ],
 
   ledes: [
     `You've decided to put it in writing. Maybe a paper letter, maybe an email to an executive, maybe a regulatory filing. Whatever the format, you sit down to draft and immediately realize you don't quite know how a formal complaint is supposed to sound. You don't want to come across as unhinged. You also don't want to come across as so reasonable that the company can ignore you. The space between those two failure modes is narrower than you'd like, and most people land squarely in one of them.`,
@@ -18,7 +28,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Lead with the outcome, not the story",
+      name: "What should the first sentence of a complaint letter say?",
       body: "First sentence: what you want. 'I am writing to request a refund of $147 for service charges billed on March 14, 2026.' Not the story of the issue. Not your frustration. Not the back-and-forth with support. The specific, dated, dollar-amount-or-action outcome you're seeking. This single move changes how the letter is processed — instead of being read as a complaint that needs to be evaluated, it's read as a request that needs to be granted or denied. Companies have processes for the second; the first goes to a queue.",
     },
     {
@@ -30,7 +40,7 @@ module.exports = {
       body: "If your complaint involves a violation of policy, contract terms, or law, name it specifically. 'Per your published Terms of Service section 4.2, refunds may be requested within 60 days.' 'This billing practice appears to violate FTC regulation 16 CFR Part 425.' 'Under [your state]'s consumer protection statute, the warranty implied by sale extends to...' This isn't legal threat — it's documentation that you've done your homework and that the company's response will need to address the specific authority you're citing. Letters with citations get treated differently than letters without.",
     },
     {
-      name: "Set a specific deadline for response",
+      name: "How long should you give a company to respond?",
       body: "Open-ended complaint letters get filed indefinitely. Letters with deadlines get processed. 'I request a written response within 30 days of receipt.' This is reasonable, standard, and creates a record — if the company doesn't respond, the lapsed deadline is itself a fact you can cite in the next round (a regulatory filing, a chargeback, a small claims action). 30 days is the right ask for most consumer disputes; 14 for time-sensitive billing matters; 5 business days for active service interruptions. Whatever you ask for, ask for it specifically.",
     },
     {
@@ -55,5 +65,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

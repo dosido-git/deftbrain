@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "How to Tell Your Boss a Deadline Is Unrealistic",
   navTitle:      "How to tell your boss a deadline is unrealistic",
 
-  description:   "The worst time to tell your manager a deadline won't work is the day before it's due. The second-worst is never. Here's how to have the conversation early — with data, not excuses.",
-  deck:          "The worst time to tell your manager a deadline won't work is the day before it's due. The second-worst is never. Here's how to have the conversation early — with data, not excuses.",
+  description:  "How to tell your boss a deadline is unrealistic: raise it early, show the math, offer what can ship, flag dependencies, and confirm the new plan in writing.",
+  deck:         "To tell your boss a deadline is unrealistic, raise it as early as you can and bring numbers, not feelings: break the work into pieces and show the estimate against the time available. Then offer what can be delivered by the date, name the dependencies outside your control, and confirm the agreed plan in writing.",
+  answerList: [
+    "Raise it as soon as you see it.",
+    "Show the math: the work estimate against the time available.",
+    "Offer what can ship by the date, and what would have to move.",
+    "Name the dependencies you don't control.",
+    "Confirm the new plan in a short written recap.",
+  ],
 
   published:     '2026-04-22',
-  modified:      '2026-04-22',
+  modified:      '2026-10-08',
 
   ledes: [
     `You looked at the timeline, ran the numbers in your head, and the answer came back negative. Two weeks of work, nine days available. The deadline isn't wrong in principle — it's wrong in practice, and you can already see exactly where it breaks down. Now you have to say so.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Raise it immediately, not at the halfway mark",
+      name: "When should you tell your boss a deadline won't work?",
       body: "The signal value of a deadline concern drops by the day. Saying 'this timeline is tight' on day one is a planning conversation. Saying it on day seven is a bailout request. The content is the same — the framing is completely different. If you already know the deadline won't hold, the right time to say so is now, before you've done enough work to feel sunk-cost about it.",
     },
     {

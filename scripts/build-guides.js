@@ -213,6 +213,13 @@ function renderGuide(spec, siblings) {
     : '') + (spec.answerTable && spec.answerTable.rows
     ? `      <table class="answer-table">\n        <thead><tr>${spec.answerTable.head.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr></thead>\n        <tbody>\n${spec.answerTable.rows.map(r => `          <tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('\n')}\n        </tbody>\n      </table>\n`
     : '');
+  // Sources (2026-10-08, GEO pass): where a guide states a rule, a deadline or
+  // a medical fact, the page names the primary source it relies on — the
+  // thing an answer engine looks for before citing a page. Optional; only
+  // real, checked URLs belong here.
+  const sourcesHtml = Array.isArray(spec.sources) && spec.sources.length
+    ? `      <div class="guide-sources">\n        <p class="guide-sources-label">Sources</p>\n        <ul>\n${spec.sources.map(x => `          <li><a href="${esc(x.url)}" rel="noopener" target="_blank">${esc(x.label)}</a></li>`).join('\n')}\n        </ul>\n      </div>\n`
+    : '';
   const ledesHtml = spec.ledes
     .map(p => `      <p class="lede">${escLede(p)}</p>`)
     .join('\n');
@@ -307,6 +314,21 @@ function renderGuide(spec, siblings) {
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": ${jsonLd(spec.title)},
+    "description": ${jsonLd(spec.description)},
+    "datePublished": ${jsonLd(spec.published || spec.modified)},
+    "dateModified": ${jsonLd(spec.modified || spec.published)},
+    "author": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
+    "publisher": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
+    "mainEntityOfPage": "https://deftbrain.com/guides/${spec.category}/${spec.slug}"${Array.isArray(spec.sources) && spec.sources.length ? `,
+    "citation": [${spec.sources.map(x => jsonLd(x.url)).join(', ')}]` : ''}
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
     "@type": "HowTo",
     "name": ${jsonLd(spec.title)},
     "description": ${jsonLd(spec.description)},
@@ -362,6 +384,7 @@ ${ledesHtml}
 
 ${stepsHtml}
 
+${sourcesHtml}
       <div class="cta-block" data-glyph="${spec.cta.glyph}">
         <div class="cta-eyebrow">Try it now — free</div>
         <p class="cta-headline">${esc(spec.cta.headline)}</p>

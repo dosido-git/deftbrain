@@ -20,18 +20,18 @@ module.exports = {
     { name: 'Identify what is missing', body: 'What a contract does not say can be as important as what it does. Is there severance language for layoffs? Is there a definition of \'good reason\' that lets you leave with benefits? Is there language about how disputes are resolved (especially mandatory arbitration, which is very common and often disadvantageous to employees)? Note what is missing and decide whether to negotiate for it. Many candidates only push back on things in the document and do not ask for things that are absent — but absent terms are often where the biggest leverage lies.' }
   ],
   cta: {
-    glyph:    '🗡️',
-    headline: "From confusion to action, in one document.",
-    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
+    glyph:    '📋',
+    headline: "Know what you are agreeing to before you sign.",
+    body:     "Paste the contract, or upload the file, and Contract Decoder gives you a plain-English breakdown of the important terms, the questions to ask, and the points you may want to clarify or negotiate before you sign. It quotes the language it is explaining and keeps what the contract says separate from what still needs checking.",
     features: [
-      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
-      "Red flags scored, enforceability noted, hidden catches surfaced",
-      "Red-Line generates specific edits to propose with negotiation strategy",
-      "Template Compare shows whether the document is standard or aggressive"
+      "Plain-English overview of what the contract actually says",
+      "Important terms, quoted from the document itself",
+      "Questions to clarify before you sign",
+      "Points you may want to negotiate"
     ],
-    toolId:   'JargonAssassin',
-    toolName: 'Jargon Assassin',
+    toolId:   'ContractDecoder',
+    toolName: 'Contract Decoder',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

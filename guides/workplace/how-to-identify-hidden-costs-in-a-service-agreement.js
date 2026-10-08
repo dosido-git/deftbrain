@@ -16,7 +16,7 @@ module.exports = {
   deck:          "The headline price is what they want you to remember. The fine print is where the real cost lives. Here's how to find every fee, escalator, and 'as needed' charge.",
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `The proposal arrived. The price is on the first page, in bold, in a tasteful font. It's roughly what you expected. You start reading the rest of the document and immediately your eyes glaze, because it is six pages of definitions and you already saw the number. Three months later your first invoice is 22% higher than the proposal price, and you can't quite explain why. The answer was always in the document. You just stopped reading after the headline.`,
@@ -53,17 +53,16 @@ module.exports = {
   },
 
   cta: {
-    glyph:    '🗡',
-    headline: "Find every hidden cost before signing",
-    body:     "Paste any service agreement and Jargon Assassin extracts every fee, escalator, sublimit, and unit-based charge — translates each into plain language, totals the year-one cost, and flags the open-ended pricing terms.",
+    glyph:    '📋',
+    headline: "Know what you are agreeing to before you sign.",
+    body:     "Paste the contract, or upload the file, and Contract Decoder gives you a plain-English breakdown of the important terms, the questions to ask, and the points you may want to clarify or negotiate before you sign. It quotes the language it is explaining and keeps what the contract says separate from what still needs checking.",
     features: [
-      "Fee extraction",
-      "Auto-escalation detection",
-      "Termination cost analysis",
-      "Year-one cost calculation",
-      "Suggested redlines",
+      "Plain-English overview of what the contract actually says",
+      "Important terms, quoted from the document itself",
+      "Questions to clarify before you sign",
+      "Points you may want to negotiate"
     ],
-    toolId:   'JargonAssassin',
-    toolName: 'Jargon Assassin',
+    toolId:   'ContractDecoder',
+    toolName: 'Contract Decoder',
   },
 };

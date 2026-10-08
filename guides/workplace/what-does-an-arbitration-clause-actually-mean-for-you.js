@@ -20,18 +20,18 @@ module.exports = {
     { name: 'Many arbitration clauses have opt-out windows', body: 'Some arbitration clauses give you a 30 to 60 day window to opt out, usually by sending written notice to a specific address. The opt-out is buried in the fine print, and almost nobody uses it. If you have signed up for a service recently, check whether you are still in the opt-out window. Sending the opt-out letter takes ten minutes and preserves your right to use the courts. It does not jeopardize your service. Companies almost never act on opt-outs they receive — they just process them and move on.' }
   ],
   cta: {
-    glyph:    '🗡️',
-    headline: "From confusion to action, in one document.",
-    body:     "Paste any legal, medical, insurance, or financial document and Jargon Assassin translates it into plain language with red flags scored, enforceability notes, and a built-in glossary. Then it goes further: red-line edits to propose, comparisons against what's standard, action plans with deadlines, and ready-to-send response letters.",
+    glyph:    '📋',
+    headline: "Know what you are agreeing to before you sign.",
+    body:     "Paste the contract, or upload the file, and Contract Decoder gives you a plain-English breakdown of the important terms, the questions to ask, and the points you may want to clarify or negotiate before you sign. It quotes the language it is explaining and keeps what the contract says separate from what still needs checking.",
     features: [
-      "Plain-language translation with adjustable reading level (ELI5 → Professional)",
-      "Red flags scored, enforceability noted, hidden catches surfaced",
-      "Red-Line generates specific edits to propose with negotiation strategy",
-      "Template Compare shows whether the document is standard or aggressive"
+      "Plain-English overview of what the contract actually says",
+      "Important terms, quoted from the document itself",
+      "Questions to clarify before you sign",
+      "Points you may want to negotiate"
     ],
-    toolId:   'JargonAssassin',
-    toolName: 'Jargon Assassin',
+    toolId:   'ContractDecoder',
+    toolName: 'Contract Decoder',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

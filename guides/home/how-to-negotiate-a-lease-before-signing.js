@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Negotiate a Lease Before Signing",
   navTitle:      "How to negotiate a lease before signing without losing the apartment",
 
-  description:   "You have more leverage than you think — but only before you sign. Here's how to ask for changes without coming across as the difficult tenant.",
-  deck:          "You have more leverage than you think — but only before you sign. Here's how to ask for changes without coming across as the difficult tenant.",
+  description:  "How to negotiate a lease before signing without losing the apartment: when to ask, what to ask for, how to phrase it, and getting it in writing.",
+  deck:         "Yes, you can negotiate a lease before signing, and that is when your leverage is highest. Choose the two or three changes that matter most, such as a fee, a deposit term or a clause that removes a standard right. Ask for them as questions rather than demands, and get every agreed change written into the lease before you sign.",
+  answerList: [
+    "Negotiate before you sign; afterwards you have almost no leverage.",
+    "Pick two or three asks, not eight.",
+    "Frame each as a question: 'Is this fee negotiable?'",
+    "Get agreed changes written into the lease itself.",
+    "A landlord who won't discuss anything is showing you how disputes will go.",
+  ],
 
   ledes: [
     `The application went through. The landlord wants the lease signed by the end of the week. You've read it. There are three clauses that worry you, one fee that seems excessive, and a pet policy that could become a problem. You also really want this apartment. The question isn't whether to push back — it's whether pushing back will cost you the place.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Negotiate before you've signed, not after you've moved in",
+      name: "When is the best time to negotiate a lease?",
       body: "Your leverage peaks the day before you sign and drops to nearly zero the day after. Before signing, the landlord has a unit they need to fill and a verbal commitment from you. After signing, you're locked in and they have all the time in the world. Whatever you want changed, ask now. 'I'll bring it up if it becomes a problem' is almost always the wrong move — once you're inside, the lease is the lease. If something in your rental history needs explaining — a broken lease, several moves in a few years — [The Whole Story](/TheWholeStory) helps you explain it honestly to a landlord.",
     },
     {
@@ -61,5 +68,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-10-05',
+  modified:  '2026-10-08',
 };
