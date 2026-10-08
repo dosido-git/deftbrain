@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { airportPlacesBlock } = require('../lib/airportPlaces');
 
 const NO_INVENTED_AUTHORITY = `NEVER USE CONFIDENT SPECIFICITY YOU CANNOT SUPPORT. Not "consistently fresh", not "nearly always empty at 9 AM", not "signal is stronger there", not "consistently rated the top lounge". Those read as observed fact and none of them is checkable. Say what a place reliably IS, not what it is reliably like on a Tuesday.
 
@@ -103,7 +104,7 @@ router.post('/layover-maximizer', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-Plan this layover specifically — real terminal names, real restaurants, real transit times. Worst-case estimates only. Add 15-20 min buffer to immigration.
+Plan this layover specifically — real terminal names, real transit times, and places inside the airport named only under the NAMING RULE below. Worst-case estimates only. Add 15-20 min buffer to immigration.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
@@ -118,6 +119,7 @@ ${NO_INVENTED_AUTHORITY}`;
     // or do I stay?), so that is the seam. The time math and the verdict it
     // decides stay in the same call, or the two halves could disagree about how
     // long the traveller actually has. Merged back to the original shape.
+    const placesBlock = await airportPlacesBlock(airport);
     const brief = `LAYOVER ANALYSIS:
 Airport: ${airport}
 Layover duration: ${layoverHours} hours
@@ -130,6 +132,7 @@ ${arrivalTime ? `Landing time: ${arrivalTime}` : 'Landing time: NOT PROVIDED'}
 ${addMinutes(arrivalTime, Number(layoverHours) * 60) ? `Onward flight departs: ${addMinutes(arrivalTime, Number(layoverHours) * 60)} (computed from the landing time and the layover length — use this exact time, do not derive your own)` : ''}
 ${liveBrief}
 ${travelStyle ? `Travel style: ${travelStyle}` : ''}
+${placesBlock}
 
 NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is unknown to you, and several of these decide whether this traveller makes their flight:
 

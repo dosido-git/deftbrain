@@ -250,6 +250,48 @@ RULES: problems must be an array ([] if clean). Check names for language conflic
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN GENERATION
 // ═══════════════════════════════════════════════════
+// ── Checkable claims in prose (2026-10-08) ──────────────────────────────────
+// The tool-page example run said "Forkful" and "Plateful" are three syllables
+// (both two) and that "Nouri … works as a .com without argument" — a domain
+// nobody had checked. The tool has a real DNS check (/namestorm/check); prose
+// must not pre-empt it. English replies only: both fixes rewrite sentences.
+function syllables(word) {
+  const w = String(word).toLowerCase().replace(/[^a-z]/g, '');
+  if (!w) return 0;
+  let n = (w.match(/[aeiouy]+/g) || []).length;
+  if (/[^aeiouy]e$/.test(w) && !/[^aeiouy]le$/.test(w)) n--;                       // silent final e
+  n -= (w.match(/[^aeiouy]e(?=(?:ful|ly|less|ment|ness|s)\b|(?:ful|less|ment|ness))/g) || []).length; // plate|ful
+  return Math.max(1, n);
+}
+const NUM_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+const COUNT_CLAIM = /\b(one|two|three|four|five|six|\d)[- ]syllables?\b/i;
+const DOMAIN_CLAIM = /\.(?:com|co|io|app|net|org)\b[^.]*\b(?:available|free|unclaimed|open|without (?:argument|a fight)|is yours|yours to (?:take|register)|clean|unregistered)\b|\b(?:available|free|unclaimed|unregistered)\b[^.]*\.(?:com|co|io|app|net|org)\b/i;
+function fixNameClaims(parsed, userLanguage) {
+  if (userLanguage && !String(userLanguage).toLowerCase().startsWith('en')) return parsed;
+  let fixed = 0;
+  const names = new Set();
+  const collect = v => { if (Array.isArray(v)) v.forEach(collect); else if (v && typeof v === 'object') { if (typeof v.name === 'string') names.add(v.name); Object.values(v).forEach(collect); } };
+  collect(parsed);
+  const fixSentence = sent => {
+    if (DOMAIN_CLAIM.test(sent)) { fixed++; return 'Check the domain before you get attached; whether it is free is not known yet.'; }
+    const m = sent.match(COUNT_CLAIM);
+    if (m) {
+      const claimed = NUM_WORDS[m[1].toLowerCase()] || Number(m[1]);
+      const named = [...names].filter(n => sent.includes(n.split('.')[0]));
+      if (named.length && named.some(n => syllables(n.split('.')[0]) !== claimed)) { fixed++; return ''; }
+    }
+    return sent;
+  };
+  const fixStr = str => str.split(/(?<=[.!?])\s+/).map(fixSentence).filter(Boolean).join(' ');
+  const walk = node => {
+    if (Array.isArray(node)) node.forEach((v, i) => { if (typeof v === 'string') node[i] = fixStr(v); else walk(v); });
+    else if (node && typeof node === 'object') for (const [k, v] of Object.entries(node)) { if (k === 'name') continue; if (typeof v === 'string') node[k] = fixStr(v); else walk(v); }
+  };
+  walk(parsed);
+  if (fixed) console.log(`[NameStorm] ${fixed} unchecked syllable or domain claim(s) rewritten`);
+  return parsed;
+}
+
 router.post('/namestorm', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const {
@@ -350,7 +392,7 @@ PRIMARY AUDIENCE LANGUAGE: ${primaryLanguage}. Names should feel natural and res
         max_tokens: 8000,
         messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
       }, { label: 'NameStorm' });
-      return res.json(normalizeProblems(parsed));
+      return res.json(fixNameClaims(normalizeProblems(parsed), userLanguage));
     }
 
     // Stage 1 — FAST pre-pass: pick the 5 most relevant categories.
@@ -550,7 +592,7 @@ RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe
       naming_notes: curated.naming_notes || '',
     });
 
-    res.json(parsed);
+    res.json(fixNameClaims(parsed, req.body.userLanguage));
 
   } catch (error) {
     console.error('[NameStorm] Error:', error);
@@ -646,7 +688,7 @@ Same rules: check every name for problems in major languages, phonetic issues, b
       if (!Array.isArray(v.problems)) v.problems = [];
     });
 
-    res.json(parsed);
+    res.json(fixNameClaims(parsed, req.body.userLanguage));
 
   } catch (error) {
     console.error('[NameStorm/More] Error:', error);
@@ -898,7 +940,7 @@ ${PLAIN_LANGUAGE_RULE} Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + 
       });
     });
 
-    res.json(parsed);
+    res.json(fixNameClaims(parsed, req.body.userLanguage));
 
   } catch (error) {
     console.error('[NameStorm/Blend] Error:', error);
@@ -992,7 +1034,7 @@ Keep every field to a phrase or single sentence — no length annotations. Retur
       if (!Array.isArray(v.problems)) v.problems = [];
     });
 
-    res.json(parsed);
+    res.json(fixNameClaims(parsed, req.body.userLanguage));
 
   } catch (error) {
     console.error('[NameStorm/Refine] Error:', error);
@@ -1059,7 +1101,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Story' });
 
-    res.json(parsed);
+    res.json(fixNameClaims(parsed, req.body.userLanguage));
 
   } catch (error) {
     console.error('[NameStorm/Story] Error:', error);
@@ -1124,7 +1166,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Quick' });
-    res.json(parsed);
+    res.json(fixNameClaims(parsed, req.body.userLanguage));
 
   } catch (error) {
     console.error('NameStorm quick error:', error);

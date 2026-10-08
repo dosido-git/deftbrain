@@ -11,6 +11,31 @@ const NO_QUOTE_RULE = '\n\nNever place a double-quote (") character inside any J
 // v3: multi-event, energy-aware, one-thing, reframes
 // v4: +start-with-me (guided launch), +debrief
 // ═══════════════════════════════════════════════════
+// Minutes in code (2026-10-08). The tool-page example run gave the "after the
+// interview" window 5 minutes while its note said evening minutes were not
+// counted, and total_free_minutes added the 5 anyway. A bounded window's
+// length is end minus start, and the total is the sum — both are arithmetic.
+function clockMinutes(s) {
+  const m = /(\d{1,2}):(\d{2})\s*([AaPp])\.?\s*[Mm]?/.exec(String(s || ''));
+  if (!m) return null;
+  let h = Number(m[1]) % 12;
+  if (/p/i.test(m[3])) h += 12;
+  return h * 60 + Number(m[2]);
+}
+function fixWindowMinutes(parsed) {
+  if (!Array.isArray(parsed?.windows)) return parsed;
+  for (const w of parsed.windows) {
+    if (!w || w.bounded !== true) continue;
+    const a = clockMinutes(w.start), b = clockMinutes(w.end);
+    if (a == null || b == null) continue;
+    const span = ((b - a) + 1440) % 1440;
+    if (span > 0 && w.minutes !== span) w.minutes = span;
+  }
+  const total = parsed.windows.reduce((n, w) => n + (Number.isFinite(Number(w?.minutes)) ? Number(w.minutes) : 0), 0);
+  if (Number.isFinite(total)) parsed.total_free_minutes = total;
+  return parsed;
+}
+
 router.post('/waiting-mode-liberator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
@@ -133,7 +158,7 @@ Return ONLY valid JSON:
         if (parsed.total_free_minutes == null && !parsed.windows && !parsed.events_summary) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
-        return res.json(parsed);
+        return res.json(fixWindowMinutes(parsed));
       }
 
       // ────────────────────────────────────────────

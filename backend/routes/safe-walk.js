@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -129,6 +129,73 @@ function cleanString(value, max = 4000) {
   return value.trim().slice(0, max);
 }
 
+// One concern, one place (2026-10-07 wave: a phone-battery concern came back
+// in seven fields). Prose fields are left alone; across the two action lists
+// a concern word the visitor typed may lead at most two items, and later
+// repeats are dropped. Generic walk vocabulary never counts as a concern.
+const GENERIC = new Set(['street', 'streets', 'route', 'walk', 'walking', 'around', 'about', 'before', 'after', 'night', 'there', 'which', 'where', 'their', 'would', 'could', 'should', 'think', 'really', 'little', 'between', 'blocks', 'sure', 'going', 'minutes', 'hours']);
+function limitRepeats(cleaned, typed) {
+  const keys = [...new Set(String(typed || '').toLowerCase().match(/[a-z]{5,}/g) || [])]
+    .map(w => w.replace(/(?:ies|es|s)$/, '')).filter(w => w.length >= 5 && !GENERIC.has(w) && !GENERIC.has(w + 's'));
+  if (!keys.length) return 0;
+  const count = new Map();
+  const stats = { dropped: 0 };
+  for (const [list, a, b] of [['before_you_go', 'action', 'why_here'], ['watch_for', 'condition', 'if_it_happens']]) {
+    if (!Array.isArray(cleaned[list])) continue;
+    cleaned[list] = cleaned[list].filter(item => {
+      const text = `${item?.[a] || ''} ${item?.[b] || ''}`.toLowerCase();
+      const hit = keys.filter(k => text.includes(k));
+      if (hit.length && hit.every(k => (count.get(k) || 0) >= 2)) { stats.dropped++; return false; }
+      hit.forEach(k => count.set(k, (count.get(k) || 0) + 1));
+      return true;
+    });
+  }
+  if (stats.dropped) console.log(`[safe-walk] dropped ${stats.dropped} repeated concern item(s)`);
+  return stats.dropped;
+}
+
+// Invented directions (2026-10-07 wave: "from Baltimore Ave onto Larchwood"
+// — a turn nobody supplied). NAVIGATION forbids it; the guard missed it. A
+// sentence that gives a turn or heading onto a street the visitor did not
+// type is cut; a list item that was only that sentence is dropped.
+const TURN = /\b(?:onto|turn (?:left|right)(?: (?:on|onto|at))?|head (?:north|south|east|west)(?:bound)?(?: on)?|cut through|take (?:the )?[A-Z][a-z]+ (?:St|Ave|Rd|Blvd|Street|Avenue|Road|Lane|Way)\b)\s*([A-Z][\w.'-]*(?:\s+[A-Z][\w.'-]*)*)?/;
+function dropInventedTurns(cleaned, typed) {
+  const t = String(typed || '').toLowerCase();
+  const invented = sentence => {
+    const m = sentence.match(TURN);
+    if (!m) return false;
+    const name = (m[1] || '').trim().toLowerCase().split(/\s+/)[0];
+    return !name || !t.includes(name);
+  };
+  let cut = 0;
+  const fix = str => {
+    const parts = str.split(/(?<=[.!?])\s+/);
+    const kept = parts.filter(p => !invented(p));
+    if (kept.length === parts.length) return str;
+    cut += parts.length - kept.length;
+    return kept.join(' ');
+  };
+  const walk = node => {
+    if (Array.isArray(node)) {
+      for (let i = node.length - 1; i >= 0; i--) {
+        if (typeof node[i] === 'string') { node[i] = fix(node[i]); if (!node[i].trim()) node.splice(i, 1); }
+        else if (node[i] && typeof node[i] === 'object') {
+          const before = Object.entries(node[i]).filter(([, v]) => typeof v === 'string' && v.trim()).map(([k]) => k);
+          walk(node[i]);
+          if (before.some(k => !String(node[i][k] || '').trim())) node.splice(i, 1);   // an item emptied by the cut goes
+        }
+      }
+    } else if (node && typeof node === 'object') {
+      for (const [k, v] of Object.entries(node)) {
+        if (k.startsWith('source_')) continue;
+        if (typeof v === 'string') node[k] = fix(v); else walk(v);
+      }
+    }
+  };
+  walk(cleaned);
+  if (cut) console.log(`[safe-walk] cut ${cut} sentence(s) with directions nobody supplied`);
+}
+
 function collectProseFields(parsed) {
   const fields = [];
   const walk = (val, path) => {
@@ -240,7 +307,7 @@ Return ONLY valid JSON. No markdown fences, no preamble.`;
         parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 4000,
-          system: withLanguage(SYSTEM_PROMPT, userLanguage),
+          system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
           messages: [{ role: 'user', content: supplied }],
         }, { label: 'safe-walk' });
@@ -263,6 +330,8 @@ Return ONLY valid JSON. No markdown fences, no preamble.`;
       }
 
       const cleaned = stripCites(parsed);
+      limitRepeats(cleaned, `${concerns} ${routeKnowledge}`);
+      dropInventedTurns(cleaned, `${from} ${to} ${routeKnowledge} ${concerns} ${userLocation}`);
 
       await runOutputGuard(cleaned, {
         label: 'safe-walk',

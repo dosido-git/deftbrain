@@ -148,6 +148,29 @@ Return ONLY valid JSON:
   return { block, cacheKey };
 }
 
+// A plan that does not pay the bill (2026-10-07 wave: "$128 per month for 12
+// months" — $1,536 — offered against a stated $2,550 balance, against the
+// prompt's own rule). Monthly amount × months is arithmetic: when the plan
+// falls short of the balance, code corrects the number of months so the
+// script and strategy add up. Amounts the visitor typed are the balance.
+function fixPlanMonths(parsed, balance) {
+  const plan = parsed?.payment_plan;
+  const bal = Number(balance);
+  if (!plan || !Number.isFinite(bal) || bal <= 0) return;
+  const re = /([^\d\s]?\s?)(\d[\d,]*(?:\.\d{1,2})?)(\s?(?:\/|per|a|each)\s?month(?:ly)?)([^.]*?\bfor\s+)(\d{1,3})(\s+months?)/gi;
+  for (const k of ['script', 'strategy']) {
+    if (typeof plan[k] !== 'string') continue;
+    plan[k] = plan[k].replace(re, (m, cur, amt, per, mid, months, unit) => {
+      const monthly = Number(String(amt).replace(/,/g, ''));
+      const n = Number(months);
+      if (!monthly || !n || monthly * n >= bal * 0.98) return m;
+      const need = Math.ceil(bal / monthly);
+      console.log(`[bill-rescue] payment plan ${monthly} x ${n} < balance ${bal} — months corrected to ${need}`);
+      return `${cur}${amt}${per}${mid}${need}${unit}`;
+    });
+  }
+}
+
 router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
@@ -252,7 +275,7 @@ ${statementFindings.length ? `\nSTATEMENT ARITHMETIC — checked in code, exact 
     ];
     const keysB = [
       ...(isCollections ? ['collections_defense'] : []),
-      'hardship_letter', 'what_they_wont_tell_you', 'assistance_programs',
+      'hardship_letter', 'know_your_rights', 'what_they_wont_tell_you', 'assistance_programs',
       'worst_case', 'worst_case_reassurance', 'follow_up', 'permission',
     ];
 
@@ -425,6 +448,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage });
+    if (hasAmount) fixPlanMonths(parsed, amount);
     const verifiedSources = groundedData(billFactsCacheKey)?.sources;
     res.json({
       ...stripCites(parsed),

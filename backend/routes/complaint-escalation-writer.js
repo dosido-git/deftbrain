@@ -45,6 +45,34 @@ not sound like one. Write what they could read aloud without wincing.
   reference to filings you are considering, no leverage.
 `;
 
+// Invented contacts (2026-10-07 tool-page run): "customerrelations@…" and
+// similar addresses, hedged "confirm" but still made up — and a letter sent to
+// a guessed address goes nowhere. Code removes any email address the visitor
+// did not type. An email_pattern holding a real-looking address becomes null;
+// one inside a letter becomes a placeholder.
+const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
+function scrubEmails(parsed, body) {
+  const typed = JSON.stringify(body || {}).toLowerCase();
+  const stats = { n: 0 };
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (typeof v === 'string') {
+        if (!EMAIL.test(v)) { EMAIL.lastIndex = 0; continue; }
+        EMAIL.lastIndex = 0;
+        if (k === 'email_pattern') {
+          if (!(v.match(EMAIL) || []).every(a => typed.includes(a.toLowerCase()))) { node[k] = null; stats.n++; }
+          continue;
+        }
+        node[k] = v.replace(EMAIL, a => (typed.includes(a.toLowerCase()) ? a : (stats.n++, '[their email address]')));
+      } else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  walk(parsed);
+  if (stats.n) console.log(`[complaint-escalation-writer] removed ${stats.n} email address(es) the visitor did not supply`);
+  return parsed;
+}
+
 router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage, userLocale, userCurrency, userRegion } = req.body;
@@ -115,7 +143,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
       "title": "Send this today",
       "subject_line": "Email/letter subject line",
       "letter_body": "Complete ready-to-send letter",
-      "send_to": [{ "role": "Position/department", "how_to_find": "How to find this contact", "email_pattern": "Common email format if known" }],
+      "send_to": [{ "role": "Position/department", "how_to_find": "How to find this contact", "email_pattern": "The usual FORMAT only, never an address — e.g. firstname.lastname at the company domain; null if unknown" }],
       "send_via": "How to send for maximum impact",
       "deadline_to_set": "How many days to give them",
       "leverage_points_used": ["Legal/regulatory points the letter references"]
@@ -133,7 +161,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
       "title": "Going higher up",
       "subject_line": "Subject line for executive email",
       "letter_body": "Shorter, more direct letter referencing failed previous attempts",
-      "target_contacts": [{ "title": "Executive title", "email_pattern": "Likely email format", "why": "Why this person" }],
+      "target_contacts": [{ "title": "Executive title", "email_pattern": "The usual FORMAT only, never an address; null if unknown", "why": "Why this person" }],
       "timing": "When to send relative to Stage 2"
     }
   }
@@ -353,7 +381,7 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
     if (!parsed.situation_assessment) {
       return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
     }
-    res.json(parsed);
+    res.json(scrubEmails(parsed, req.body));
 
   } catch (error) {
     console.error('[ComplaintEscalationWriter] Error:', error);
@@ -425,7 +453,7 @@ Return ONLY valid JSON:
     if (!parsed.response_type) {
       return res.status(500).json({ error: 'Could not analyze the company response. Please try again.' });
     }
-    res.json(parsed);
+    res.json(scrubEmails(parsed, req.body));
   } catch (err) {
     console.error('[CEW analyze-response]', err);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -454,7 +482,7 @@ router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_L
 
     const stageFormats = {
       2: `{"title": "Regulatory Complaint","agency": "Specific agency name","agency_url": "Filing URL","why_this_agency": "Why this is the right regulatory body","complaint_text": "Pre-written complaint text that REFERENCES the failed Stage 1 attempt","what_happens_after": "What the agency does","company_impact": "Why companies take this seriously"}`,
-      3: `{"title": "Executive Escalation","subject_line": "Subject line referencing specific failure pattern","letter_body": "Letter weaving in SPECIFIC DETAILS from company actual responses","target_contacts":[{"title": "Executive title","email_pattern": "Likely email format","why": "Why this person"}],"timing": "When to send relative to Stage 2"}`,
+      3: `{"title": "Executive Escalation","subject_line": "Subject line referencing specific failure pattern","letter_body": "Letter weaving in SPECIFIC DETAILS from company actual responses","target_contacts":[{"title": "Executive title","email_pattern": "The usual FORMAT only, never an address; null if unknown","why": "Why this person"}],"timing": "When to send relative to Stage 2"}`,
       4: `{"title": "Public Pressure Campaign","social_media_post": "Under 280 chars — reference specific failures","social_media_long": "Longer version telling the whole story","platforms_to_target":["Where to post"],"review_sites":["Where to review"],"hashtags":["Relevant hashtags"],"media_tip": "Media angle if applicable"}`,
       5: `{"title": "Financial & Legal Remedies","chargeback":{"applicable":true,"reason_code":"Code","time_window": "Window","how_to_file":"Steps","documentation_needed": "Reference specific evidence gathered during campaign","success_likelihood": "Based on documented history"},"small_claims":{"applicable":true,"jurisdiction":"Where","filing_fee_range":"Cost","max_claim_amount":"Limit","typical_outcome": "How these resolve","company_response": "What company typically does"},"attorney_general":{"applicable":true,"how_to_file": "Process","what_it_triggers": "What happens"}}`
     };
@@ -514,7 +542,7 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
     if (!parsed.title) {
       return res.status(500).json({ error: 'Could not regenerate the stage. Please try again.' });
     }
-    res.json(parsed);
+    res.json(scrubEmails(parsed, req.body));
 
   } catch (error) {
     console.error('[CEW/regenerate] Error:', error);

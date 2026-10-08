@@ -62,6 +62,59 @@ Return ONLY valid JSON:
   return { block, cacheKey };
 }
 
+// Citations only from research (2026-10-08). A PA lease came back citing
+// Cutler Corp. v. Latshaw for something the case does not decide, pinning
+// habitability on 68 P.S. §250.505a (it is case law) and mixing up "68 P.S."
+// and "68 Pa. C.S." — precise-looking, wrong, and the part a tenant would
+// quote back to a landlord. The prompt already said not to guess. Now any
+// section number or case name that is not in the researched tenant-law facts
+// is replaced with a plain pointer (English replies; other languages log it).
+const CASE_NAME = /\b[A-Z][\w.&'-]*(?:\s+[A-Z][\w.&'-]*)*\s+v\.\s+[A-Z][\w.&'-]*(?:\s+[A-Z][\w.&'-]*)*/g;
+const SECTION = /(?:\b\d+\s+)?(?:[A-Z][\w.]*\.?\s+){0,4}(?:Code|Stat\.?|Laws|P\.\s?S\.|C\.\s?S\.|U\.S\.C\.|Admin\.? Code|Gen\.? Laws|Rev\.? Stat\.?)?\s*§+\s*[\d.:()a-z-]*\d[\d.:()a-z-]*/g;
+function checkCitations(parsed, lawBlock, userLanguage) {
+  const verified = String(lawBlock || '').toLowerCase().replace(/\s+/g, ' ');
+  const sectionNumber = c => (c.match(/§+\s*([\d.:-]*\d[\d.:a-z-]*)/i) || [])[1] || '';
+  const ok = c => {
+    const num = sectionNumber(c);
+    if (num) return verified.includes(num.toLowerCase());
+    return verified.includes(c.toLowerCase().replace(/\s+/g, ' '));
+  };
+  const english = !userLanguage || String(userLanguage).toLowerCase().startsWith('en');
+  const stats = { swapped: 0, seen: 0 };
+  const fix = str => {
+    let out = str;
+    for (const re of [CASE_NAME, SECTION]) {
+      out = out.replace(re, whole => {
+        if (!/§|\sv\.\s/.test(whole)) return whole;
+        const lead = (whole.match(/^(?:Under|In|See|Per|Citing|Following|Like|Unlike|After|Because)\s+/) || [''])[0];
+        const m = whole.slice(lead.length);
+        stats.seen++;
+        if (ok(m)) return whole;
+        if (!english) return whole;
+        stats.swapped++;
+        return `${lead}the state law on this (check the exact section)`;
+      });
+    }
+    return out;
+  };
+  const walk = node => {
+    if (Array.isArray(node)) node.forEach((v, i) => { if (typeof v === 'string') node[i] = fix(v); else walk(v); });
+    else if (node && typeof node === 'object') for (const [k, v] of Object.entries(node)) { if (typeof v === 'string') node[k] = fix(v); else walk(v); }
+  };
+  walk(parsed);
+  if (stats.seen) console.log(`[lease-trap-detector] citations: ${stats.seen} found, ${stats.swapped} not in the researched facts${english ? ' — replaced' : ' (non-English reply, left as written)'}`);
+}
+
+// Sources shown as "verified" must be the kind a tenant can rely on: government,
+// legislature, courts, universities and established legal references — not a
+// rent-check website that happened to appear in the search results.
+const AUTHORITATIVE = /(?:\.gov|\.gov\.[a-z]{2}|\.us|\.edu|\.mil)$|(?:^|\.)(?:law\.cornell\.edu|justia\.com|legislature\.[a-z.]+|courts?\.[a-z.]+|nolo\.com|findlaw\.com|hud\.gov|consumerfinance\.gov|gov\.uk|canada\.ca|gc\.ca)$/i;
+function authoritativeOnly(sources) {
+  return (sources || []).filter(src => {
+    try { return AUTHORITATIVE.test(new URL(src.url).hostname.replace(/^www\./, '')); } catch { return false; }
+  });
+}
+
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { leaseText, pdfBase64, location, leaseType, concerns, situation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
@@ -411,7 +464,8 @@ ${criticalRules}`;
     if (Array.isArray(parsed.red_flags) && parsed.overall_assessment) {
       parsed.overall_assessment.major_concerns_count = parsed.red_flags.length;
     }
-    const verifiedSources = groundedData(tenantLawCacheKey)?.sources;
+    checkCitations(parsed, verifiedLawBlock, userLanguage);
+    const verifiedSources = authoritativeOnly(groundedData(tenantLawCacheKey)?.sources);
     res.json({
       ...stripCites(parsed),
       ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),

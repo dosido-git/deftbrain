@@ -104,6 +104,15 @@ router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) =
   const emergencyBlock = emergencyNumber
     ? `\n\nVERIFIED EMERGENCY NUMBER — this one is checked and may be written: ${emergencyNumber} (the general emergency number for the region this visitor is browsing from). Use it ONLY if the user has not told you they are somewhere else; if the country they named differs from that, write no number and say to contact local emergency services.`
     : '';
+  // 988 for the US only (owner, 2026-10-08). The audit found the model naming
+  // 988 although the prompt forbids hotlines; it was right for the US and
+  // would be wrong anywhere else. So it comes from code, for US visitors only,
+  // with the same "unless they said they are elsewhere" guard as the number above.
+  const region = String(userRegion || userLocale || '');
+  const isUS = /(?:^|-)US$/i.test(region.trim());
+  const crisisLineBlock = isUS
+    ? `\n\nVERIFIED CRISIS LINE (United States) — may be written in crisis_support or more_support: the 988 Suicide & Crisis Lifeline, call or text 988. Use it ONLY if the user has not told you they are outside the US. This is the only crisis line you may name.`
+    : '';
 
   const personality = `You provide careful, humane grief guidance. You are not a therapist and do not diagnose, assess, or declare a person's psychological state. Your job is to help the user make sense of what they explicitly shared, find one or two manageable ways forward, and find words when words would help.
 
@@ -149,7 +158,7 @@ CRISIS SAFETY — ABSOLUTE PRIORITY
 If the user's words indicate suicidal thoughts, self-harm, wanting to die/not be alive, immediate danger, or inability to stay safe, set crisis_support to a short safety-first message urging immediate human help. Tell them to stay with, or contact, a trusted person if that is possible. Do not bury acute safety guidance under grief advice.
 
 NUMBERS — THE ONE THING THAT MUST NEVER BE WRONG
-The ONLY phone number you may write is the verified emergency number supplied below, if one is supplied. Never write any other number. Never name a crisis hotline, suicide line, warmline, text service, organisation, or URL — not even one you believe you know, and not even if the user names their country. A wrong number at this moment is worse than no number: the person dials it, reaches nothing, and may not try again. When no verified number is supplied, say plainly to contact local emergency services or a crisis service in their area — vague and correct beats specific and wrong.${emergencyBlock}
+The ONLY phone numbers you may write are the verified ones supplied below, if any are supplied. Never write any other number. Never name a crisis hotline, suicide line, warmline, text service, organisation, or URL — not even one you believe you know, and not even if the user names their country — except a crisis line given as VERIFIED below. A wrong number at this moment is worse than no number: the person dials it, reaches nothing, and may not try again. When no verified number is supplied, say plainly to contact local emergency services or a crisis service in their area — vague and correct beats specific and wrong.${emergencyBlock}${crisisLineBlock}
 
 Return only valid JSON. No markdown outside JSON.`;
 
@@ -241,6 +250,13 @@ FINAL CHECK BEFORE RETURNING:
       },
     };
 
+    // Outside the US, 988 is not a crisis line: drop any sentence naming it.
+    if (!isUS) {
+      const no988 = t => (typeof t === 'string' ? t.split(/(?<=[.!?])\s+/).filter(x => !/\b988\b/.test(x)).join(' ') : t);
+      if (out.crisis_support) out.crisis_support = no988(out.crisis_support);
+      out.more_support.when = no988(out.more_support.when);
+      out.more_support.options = out.more_support.options.map(no988).filter(o => typeof o !== 'string' || o.trim());
+    }
     await guardGriefGuide(out, req.body, startedAt);
     res.json(out);
   } catch (err) {
