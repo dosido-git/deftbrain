@@ -123,20 +123,22 @@ indexes cleanly — nothing to hand-code:
 | `seoTitle` / `seoDescription` | `<title>` + meta description |
 | `title` / `tagline` / `description` | OG/Twitter cards + on-page copy |
 | `tags[]` | keyword signals |
-| `guide.overview` / `guide.steps` | the guide aside + HowTo content |
+| `primer` (`when`/`give`/`get`/`edge`) | the "In a Nutshell" sidebar |
 | `faq[]` (`{q,a}`) | on-page FAQ + FAQPage structured data |
 | `categories` / `headerColor` / `icon` | catalog placement + theming |
 
-**Help-panel slots** — `ToolPageWrapper` renders the "How to use this tool" aside
-from the `guide` object. Fill what fits; each is a named slot:
+**Sidebar slots** — `ToolPageWrapper` renders the sidebar; `prerender.js`
+writes the same sections into the static HTML. Only fields the page shows
+belong in `tools.js` (overview / howToUse / example / pitfalls were removed
+2026-10-08 — the page stopped showing them on 2026-08-09):
 
-| `guide.` slot | Renders as | Shape |
+| Slot | Renders as | Shape |
 |---|---|---|
-| `overview` | "What this does" | string |
-| `howToUse` | "Step-by-step" (numbered) | string[] — **note: `howToUse`, not `steps`** |
-| `example` | "Example" | string, or `{ scenario, action, result }` |
-| `tips` | "Pro tips" | string[] |
-| `faq` (top-level, sibling of `guide`) | on-page FAQ + FAQPage JSON-LD | `[{ q, a }]` |
+| `primer` (top-level) | "In a Nutshell" — When / You give / You get / The edge | `{ when, give, get, edge? }` |
+| `guide.tips` | "Good to Know" (collapsed) | string[] |
+| `guide.beforeYouGo` | "Before You Go" — optional; the one caveat to read before acting | string |
+| `faq` (top-level) | "Questions people ask" + FAQPage JSON-LD | `[{ q, a }]` |
+| `exampleOutput` (top-level) | the real-run example | see PublicProductDemo.js |
 
 Guides (separate ranking content in `guides/`) are their own system — not part
 of the tool component.

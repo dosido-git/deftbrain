@@ -2,46 +2,14 @@
 
 /**
  * TOOLS DATABASE
- * 
- * Each tool includes:
- * - Basic metadata: id, title, category, icon, description, tagline
- * - Educational guide: overview, howToUse, example, tips, pitfalls
- * 
- * Guide objects are optional but recommended for better user experience.
- * Finance tools have complete guides as examples.
- * Other tools have template structures you can fill in.
+ *
+ * Each tool: id, title, tagline, description, tags, categories, icon, primer
+ * (In a Nutshell: when / give / get / edge), seo*, faq, and guide:
+ *   guide.tips        — the "Good to Know" list
+ *   guide.beforeYouGo — optional; the one caveat to read before acting
+ * Only fields the page shows belong here (2026-10-08: overview, howToUse,
+ * example and pitfalls removed — the page stopped showing them on 2026-08-09).
  */
-/**
-template:
-   {modified: "",
-    id: "",
-    title: "",
-    tagline: "",
-    tags: [],
-    icon: "",
-    categories: [],
-    description: "",
-
-    guide: {
-      overview: "",
-      howToUse: [
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      example: {
-        scenario: "",
-        action: "",
-        result: ""
-      },
-      tips: [
-        "",
-        "",
-        "",
-        ""
-]}},**/
 export const tools = [
 {
   id: "MentalHealthNavigator",
@@ -115,17 +83,6 @@ export const tools = [
   },
 
   guide: {
-    overview: "Knowing you need help is the first step — but figuring out what kind of help, and how to actually get it, is its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? The difference matters, and most people don't know where to start. MentalHealthNavigator cuts through the confusion: you describe what's been going on, and it recommends the right type of support for your situation, tells you how to find it (country-specific where possible), gives you the exact words to say when you reach out, and identifies what you can do today — not someday.",
-
-    howToUse: [
-      "Select what's been on your mind — you can pick multiple areas",
-      "Describe your situation in your own words — the more context you share, the more tailored the guidance",
-      "Indicate what you've tried before — this prevents generic advice about things you've already done",
-      "Note any barriers — cost, waitlists, location, language — so the guidance can address them directly",
-      "Add your country for country-specific resources, directories, and cost information",
-      "Click 'Find My Support Path' — get a prioritized recommendation, practical how-to, and immediate next steps",
-    ],
-
     tips: [
       "You don't need to have it figured out before using this — 'general / not sure' is a valid starting point",
       "The 'What to say' section removes the most common blocker: not knowing how to start the conversation when calling a professional",
@@ -135,10 +92,6 @@ export const tools = [
       "Works across all 12 DeftBrain languages",
     ],
 
-    example: {
-      scenario: "Someone selects anxiety, work, and sleep as areas, describes 6 months of work anxiety, avoidance, and sleep disruption, and notes their GP just told them to exercise more. They select cost as a barrier and 'United States' as country.",
-      result: "What we heard: You've been managing significant work-related anxiety for 6 months that's affecting your sleep and daily life — and you haven't yet found support that actually helps. Recommended: (1) Licensed therapist specializing in CBT — directly targets the worry patterns and avoidance you described; Psychology Today directory lets you filter by specialty, insurance, and sliding scale. (2) Psychiatrist — if anxiety is severe enough to consider medication, a referral from your GP (or a new GP) is the path. What to say: 'I've been dealing with anxiety around work for about 6 months — it's affecting my sleep and I've started avoiding things. I'm looking for a therapist who works with anxiety.' Immediate steps: Search Psychology Today's therapist finder filtered to anxiety + your zip code + sliding scale today."
-    },
   },
 },
 {
@@ -165,17 +118,6 @@ export const tools = [
   headerColor: "#c0cce0",
   description: "Guidance for a loss — whether you're grieving yourself, supporting someone who is, or both. It stays close to what you tell it: what it heard, a few things that may help, words if you need them, and one gentle next step.",
   guide: {
-    overview: "Grief is one of the most universal human experiences and one of the least understood, and much of what gets offered in response is either a script or a verdict. GriefGuide does neither. It stays anchored to what you actually tell it — it will not name an emotion you did not mention, decide that what you are experiencing is normal or abnormal, or place you at a stage. What it returns is short by design: what it heard, one or two things that may help make sense of it, at most three proportionate suggestions, words you could actually say if language would help, and exactly one gentle next step. It works for the person grieving, for someone trying to support them without making it worse, or for both at once.",
-
-    howToUse: [
-      "Select who this is for — yourself, someone you're trying to help, or both",
-      "Choose the type of loss if relevant — grief over a job is different from grief over a death",
-      "Select when it happened — guidance shifts depending on timeline",
-      "Share as much or as little as you're comfortable with in the text field — the more context, the more personal the guidance",
-      "Add your country for locally-relevant support resources",
-      "Get your guidance — it is built from what you shared, and stops there",
-    ],
-
     tips: [
       "You don't have to share everything — even minimal input gets useful guidance",
       "The 'Helping someone grieve' mode gives you phrases to use and phrases to avoid, built only from what you told it — it will not invent a memory to make a line sound personal",
@@ -184,10 +126,6 @@ export const tools = [
       "If you're in crisis right now, please reach out to a crisis line in your area directly",
     ],
 
-    example: {
-      scenario: "Someone shares that their father died suddenly three weeks ago. They're functional at work but cry at home. They keep thinking they need to call him. Family is telling them to be strong for their mom.",
-      result: "What I hear: your father died suddenly three weeks ago, you are getting through the working day, and it arrives when you get home. You keep reaching for the phone. Your family has asked you to be strong for your mother. Making sense of it: reaching for the phone is not a mistake you are making — it is a habit that was built over decades and has not caught up yet. Being there for your mother and grieving your own father are not the same task, and being asked for the first does not cancel the second. What may help: let the crying at home be the thing that happens rather than the thing you manage; consider one person you do not have to be strong in front of. One gentle next step: pick that one person, and tell them only that you would rather not be strong around them. Note what it does not do — it does not tell you that what you feel is normal, name an emotion you did not mention, or guess what your father would have wanted."
-    },
   },
 },
 {
@@ -210,18 +148,6 @@ export const tools = [
   headerColor: "#d8c8b8",
   description: "Describe your business idea and Concept Coach will challenge it, surface weak assumptions, point out genuine strengths, and help you figure out what to test before you commit more time or money.",
   guide: {
-    overview: "Most business ideas fail for predictable, avoidable reasons — but founders are too close to their idea to see them. Concept Coach acts as a skeptical advisor who's seen thousands of ideas fail: it stress-tests your idea against real failure modes (market size, willingness to pay, cold start problems, competitive moats, unit economics, execution risk), identifies what's genuinely strong, and tells you the specific questions you need to answer before investing more time or money. The goal is to help you kill bad ideas fast — or fix fixable ones before you've sunk years into them.",
-
-    howToUse: [
-      "Select where you are with the idea — the earlier the stage, the more brutal the feedback should be",
-      "Describe your idea in detail: what it is, who it's for, how it works, how you make money, and what makes it different",
-      "Add context about yourself — your background, skills, and resources shape the execution risk assessment",
-      "Select focus areas if you want the autopsy to prioritize specific dimensions",
-      "Click 'Run the Autopsy' — get a viability score, ranked failure modes, and a validation plan",
-      "Start with Kill Questions — if you can't answer them, that's where to focus before anything else",
-      "Use Next Steps as a 30-day validation sprint: validate or kill the idea as cheaply as possible",
-    ],
-
     tips: [
       "The more specific your description, the better the autopsy — 'Airbnb for skills' is less useful than a detailed description of how the marketplace works and how you acquire both sides",
       "Add your founder context — a critical risk for one person may not apply to another with the right background or network",
@@ -231,10 +157,6 @@ export const tools = [
       "Run the autopsy again after you've done validation work — the score should improve as you answer kill questions",
     ],
 
-    example: {
-      scenario: "A product manager describes a marketplace app connecting people who want to learn skills with local expert teachers. Takes 15% commission. Starting with cooking and fitness.",
-      result: "Viability score: 5/10 — 'Two-sided marketplace, cold start dependency.' Failure modes: Cold start problem (CRITICAL) — can't attract learners without teachers and vice versa; No clear differentiation from YouTube and free alternatives (HIGH); 15% commission may be too low for viability (MEDIUM). Kill questions: Will people pay $50/hour for in-person skill teaching when they could watch YouTube for free? Can you get 20 teachers in one city before launch? Next steps: Interview 20 potential learners this week, run a manual concierge version before building any tech."
-    },
   },
 },
 {
@@ -258,18 +180,6 @@ export const tools = [
   headerColor: "#c8c0e8",
   description: "Tell us what sleep has been like lately — your schedule, what gets in the way, and what you want to improve. Sleep Architect turns it into one practical experiment you can try and learn from.",
   guide: {
-    overview: "Sleep Architect helps you learn from your own sleep rather than pretending to diagnose it. It starts with what you reported, identifies a plausible variable worth testing, and asks you to change one thing at a time so you can tell whether it helped. The output separates reported patterns from hypotheses and unknowns, gives only low-risk behavioral experiments, and keeps other possibilities in What to Try Next instead of turning them into simultaneous protocols. It does not prescribe medication, supplements, melatonin, clinician-supervised sleep-restriction treatment, or invented 'optimal' bedtimes and wake times. When you report persistent severe sleep difficulty, major daytime sleepiness, breathing concerns, significant pain, or near-total sleep loss around shift changes, it points toward professional evaluation rather than trying to manage that condition itself.",
-
-    howToUse: [
-      "Select the sleep problem or problems you want to improve",
-      "Enter your usual bedtime, wake time, and actual hours slept if you know them",
-      "Select any disruptors you already suspect or experience — these are clues to test, not established causes",
-      "Use the freeform field to describe what a typical night actually looks like, including timing, awakenings, discomfort, shift work, or things you've already tried",
-      "Click Build my sleep experiment to get a plain-language sleep picture and one primary experiment",
-      "Use Quick Wins only when they support that same experiment; the tool should not ask you to change several independent variables at once",
-      "Track the small set of observations the experiment names, then use What to Try Next only after you have learned something from the first test",
-    ],
-
     tips: [
       "The freeform description is the strongest input — concrete observations are more useful than labels like 'bad sleeper'",
       "A selected disruptor means it may matter; the tool should not silently promote it into the cause of your sleep problem",
@@ -279,10 +189,6 @@ export const tools = [
       "Pain, breathing concerns, persistent severe sleep difficulty, or substantial daytime sleepiness may deserve professional evaluation rather than another home experiment",
     ],
 
-    example: {
-      scenario: "You fall asleep easily but wake most nights between 1 and 3 AM, sometimes because of hip and back discomfort. You also report that the room often feels too warm.",
-      result: "Sleep Architect summarizes the reported waking pattern, keeps the relationship between pain, temperature, and other awakenings unresolved unless you established it, and selects one variable to test first — for example, a single positional-support change. It tells you what to observe while keeping everything else as stable as practical. Temperature or another plausible factor stays under What to Try Next rather than becoming a second simultaneous experiment."
-    },
   },
 },
 {
@@ -305,18 +211,6 @@ export const tools = [
   headerColor: "#b8d4e8",
   description: "A practical cultural briefing before you travel — greetings, taboos, dining, dress, tipping, business etiquette, religion and safety. It separates the practices that are widely observed from the ones that vary by region, generation or setting, and flags what is worth checking locally rather than taking on trust. Tailored to your trip purpose.",
   guide: {
-    overview: "Most travel guides tell you to 'be respectful of local customs' without telling you what that means. CultureBriefing gives you specific, actionable cultural intelligence: what to do, what to never do, how to greet people correctly, what not to wear, how tipping actually works, what gestures to avoid, and the things most travelers learn the hard way. Tailored by trip purpose — tourism, business, family visits, living abroad — so you get what actually matters for your situation. Works for 190+ countries and major cities.",
-
-    howToUse: [
-      "Enter your destination — country, region, or city",
-      "Select your trip purpose — this shapes which sections are prioritized",
-      "Add duration and your home country for more tailored advice (optional)",
-      "Click 'Get My Briefing' — get a full cultural briefing organized by topic",
-      "Navigate topics using the pill buttons — tap any section to expand it",
-      "Review ✅ DOs, 🚫 DON'Ts, and ℹ️ context notes for each area",
-      "Read the practical tips and key phrases before you land, and note anything marked as worth checking locally",
-    ],
-
     tips: [
       "Add your home country — the AI tailors the advice to highlight differences that specifically trip up travelers from your background",
       "Business travelers: select 'Business' to get card exchange etiquette, hierarchy norms, meeting behavior, and negotiation style",
@@ -326,10 +220,6 @@ export const tools = [
       "Works across all 12 DeftBrain languages — get your briefing in your native language",
     ],
 
-    example: {
-      scenario: "An American businessperson traveling to Japan for the first time selects 'Business' and enters 'United States' as home country and '1 week' as duration.",
-      result: "Overview: Japanese business culture leans on hierarchy, relationship-building and non-verbal communication, and directness that works in the US can read as aggressive. Greetings: a bow and a two-handed business-card exchange are widely observed; depth of bow and whether a handshake accompanies it varies by generation and how international the firm is. Taboos: chopsticks upright in rice and names written in red are widely avoided. Tipping: not customary in most settings — flagged as worth checking for your specific context. Business etiquette: silence in meetings often reads as consideration rather than discomfort. Plus practical tips and key phrases."
-    },
   },
 },
 {
@@ -352,19 +242,6 @@ export const tools = [
   headerColor: "#c0d8b8",
   description: "Paste a contract — or upload the file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.",
   guide: {
-    overview: "Contract Decoder helps you understand a contract without pretending to deliver a legal verdict. It identifies important terms in the document, quotes the language it is explaining, translates that language into plain English, describes its apparent practical effect, and surfaces questions that may be worth clarifying. When a point looks negotiable, it can suggest a possible ask. It also collects document-specific gaps and ambiguities into a short 'Things to clarify' section and finishes with a concrete before-you-sign checklist.",
-
-    howToUse: [
-      "Paste the contract text or upload the contract file",
-      "Optionally add the country and state/province that govern the agreement, if known",
-      "Optionally describe your situation or a concern you want the explanation to keep in mind",
-      "Click 'Decode This Contract'",
-      "Start with the plain-English overview, then review the important terms that are grounded in quoted contract language",
-      "Use 'Things to clarify' for gaps or ambiguities the supplied document does not resolve",
-      "Use 'If you want to negotiate this' as optional language for raising a point — not as a verdict that the term must be changed",
-      "Finish with the before-you-sign checklist for document-specific next steps",
-    ],
-
     tips: [
       "Use the full agreement when you can. An extract may omit definitions, notice provisions, exceptions, schedules, or riders that change how a clause reads",
       "If the contract names a governing law or jurisdiction, enter that location rather than your own physical location",
@@ -374,10 +251,6 @@ export const tools = [
       "Possible negotiation asks are optional starting points. Choose only the ones that matter to you and fit the actual relationship",
     ],
 
-    example: {
-      scenario: "A company uploads an extract from a software subscription agreement after receiving a 40% renewal increase. The agreement renews annually unless written notice is given 90 days before the term ends.",
-      result: "The overview identifies the renewal window, uncapped renewal pricing, mid-term seat restrictions, amendment terms, and data-export provisions. Each important term includes the exact contract language, a plain-English explanation, its apparent practical effect, and a question to consider. 'Things to clarify' asks how written non-renewal notice must be delivered and where the provider's current price list is published. The before-you-sign checklist tells the user to calculate the 90-day deadline, obtain the current price list, confirm the notice method, and verify export format and migration rates."
-    },
   },
 },
 {
@@ -401,17 +274,6 @@ export const tools = [
   headerColor: "#c0d8b8",
   description: "Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Radar shows you what in it deserves caution, what to do next, and how to verify the request without relying on the message itself.",
   guide: {
-    overview: "Scam Radar starts with the evidence you actually have: the message, the sender details you supplied, the surrounding context, and whether you've already clicked, replied, shared information, entered a code or password, or sent money. It separates what the message says from general scam patterns and from facts that would require independent verification. The output puts the immediate action first, explains why particular details are concerning, shows how to verify through a channel the message does not control, and names what does not settle the question. It does not invent sender intent, pretend a domain or identity has been verified when it has not, or treat polished branding, typos, urgency, or any single cue as decisive on its own.",
-
-    howToUse: [
-      "Paste the complete message or script whenever possible — subject lines, sender details, links shown as text, and surrounding context can matter",
-      "Add anything you already know about the sender or situation",
-      "Say what you've already done, if anything — clicked, replied, entered credentials or a code, shared information, or sent money",
-      "If your pasted message and your exposure selection conflict, resolve that discrepancy rather than letting a checkbox overwrite the message",
-      "Review What to Do Right Now first, then Why This Looks Concerning and How to Verify It",
-      "Verify through a channel you already trust or find independently — not a link, phone number, or reply address supplied by the suspicious message",
-    ],
-
     tips: [
       "A full paste is more useful than a summary because wording, requests, sender details, and sequence can all matter",
       "'No clear scam signs' is not the same as 'verified safe' — sensitive requests still deserve independent verification",
@@ -420,10 +282,6 @@ export const tools = [
       "Pattern language is descriptive: 'resembles a known tactic' is different from claiming this particular sender is following a proven script",
     ],
 
-    example: {
-      scenario: "You receive an email saying your account will be suspended unless you confirm billing information through a link in the message. The sender address looks similar to the company's name, and you have not clicked anything.",
-      result: "Scam Radar would put the immediate action first: don't use the message's link. It would identify the sensitive request, urgency, and sender details as reasons for caution without claiming the sender has been independently verified as fraudulent. It would then tell you to open the company's known app or type its known website yourself, and explain which facts remain unresolved until you check through that independent channel."
-    },
   },
 },
 {
@@ -554,20 +412,6 @@ export const tools = [
   },
 
   guide: {
-    overview: "The Doctor Visit Prep tool shapes what you say to your doctor, the same way the Doctor Visit Translator decodes what the doctor said afterward. Tell it your chief concern, how long it's been going on, what you've tried, and what you're most worried about — and get back a one-sentence opener for the first minute of the visit, three prioritized questions, things to mention proactively (medications, family history, functional impact), a pre-visit checklist, and conversation tips. Useful when you know you'll forget half of what you meant to say the moment you're sitting on the exam table.",
-    howToUse: [
-      "Type your chief concern — the single main reason for the visit — in your own words",
-      "Add details: how long it's been going on, severity, what makes it better or worse",
-      "List your current medications and any known allergies or adverse reactions",
-      "Select the appointment type (new problem, follow-up, specialist, etc.) so the prep matches the context",
-      "Add what you're most worried about — the output will address it directly",
-      "Review your opener, prioritized questions, and pre-visit checklist; copy, print, or export to your phone"
-    ],
-    example: {
-      scenario: "You've had intermittent right-sided back pain for about three weeks. It's worse when you sit for long stretches and better when you walk. You've been taking ibuprofen. You're worried it might be a kidney problem because your mother had kidney stones. Your follow-up is in two days and you know you'll forget half of this the moment you're in the room.",
-      action: "Enter chief concern: 'Right-sided lower back pain for 3 weeks, getting worse'. Add symptom details, duration, and severity. Add current medications (ibuprofen 400mg). Add family history of kidney stones. Set worry: 'Concerned it might be kidney-related'. Select 'Follow-up' appointment type.",
-      result: "You get a single-sentence opener to start the visit, three prioritized questions (top one: 'Could this be kidney-related given my family history, and what's the simplest way to rule that in or out?'), things to mention proactively (ibuprofen dose and frequency, mother's kidney stone history, functional impact on your sitting tolerance), a pre-visit checklist (write down exact onset date, note when pain is worst, bring your ibuprofen bottle), and conversation tips."
-    },
     tips: [
       "Be specific in the chief concern field — 'right-sided lower back pain for 3 weeks' beats 'my back hurts'",
       "Fill in the 'what you're most worried about' field honestly — the output will address it directly instead of dancing around it",
@@ -575,11 +419,6 @@ export const tools = [
       "Save the output to your phone and scroll to it when the doctor asks 'so what's going on?'",
       "Pair with Doctor Visit Translator afterward to decode what the doctor said"
     ],
-    pitfalls: [
-      "This tool does not diagnose and will not suggest treatments — it shapes how you describe your symptoms and what to ask",
-      "If you have red-flag symptoms (severe chest pain, sudden severe headache, signs of stroke, heavy bleeding), go to urgent care or an ER — prep is for scheduled visits, not emergencies",
-      "The opener and questions are suggestions, not a script to memorize — read them in your own voice"
-    ]
   }
 },
 {
@@ -609,23 +448,6 @@ export const tools = [
   headerColor: "#1e2a3a",
   description: "Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.",
   guide: {
-    overview: "Drive Home answers one question: should you start this drive right now? You give it the length of the drive, the time of day, the conditions you can see, the road type, and an honest word about your own state. It comes back with go, pause, or do not start — a headline, what makes the drive harder, what is in your favour, and, if the answer is anything but go, what to do instead. It does not score your risk, it does not certify a drive as safe, and it has no live traffic, weather, or road data. Place names are context only; it will not tell you about a road it cannot see. If the call is go, you can set an arrival reminder that runs in your own browser and copy a message to send someone before you leave.",
-
-    howToUse: [
-      "Say roughly how long the drive is. The presets cover most trips; type a number for anything else.",
-      "Pick the time of day, tick any conditions that apply, and choose the road type. From and To are optional — they add context, not route knowledge.",
-      "Answer 'How are you doing right now?' literally. 'Very tired' always returns do-not-start; that is a fixed boundary, not an opinion.",
-      "Add anything making you hesitate. One concrete sentence changes the answer more than any other field.",
-      "Read the call. If it says pause, 'Before you decide' names the one fact that would settle it.",
-      "If the call is go, optionally set the arrival reminder and copy the departure message before you start the engine."
-    ],
-
-    example: {
-      scenario: "Leaving a friend's birthday dinner much later than you meant to. Twenty minutes home on city streets, clear night, and you feel fine.",
-      action: "Choose 20 minutes, Late night, Clear, City streets, Fine, and add: 'It is much later than I meant to stay out.'",
-      result: "A go call that says so plainly — nothing you reported gives a reason to wait — with the late hour named as the thing that makes it harder, a short list to do before you pull out, and the signs that should make you stop and reassess on the way. Then, if you want it, a twenty-five-minute arrival reminder and a message to send before you leave."
-    },
-
     tips: [
       "Answer the condition question about now, not about the forecast — it reasons from what you report, so a stale answer gives a stale call",
       "The hesitation box is the highest-value field on the form; a specific worry gets a specific answer",
@@ -634,12 +456,6 @@ export const tools = [
       "Walking home instead? SafeWalk covers that trip"
     ],
 
-    pitfalls: [
-      "Drive Home has no live traffic, weather, or road-condition data, and no map — it reasons only from the conditions you report",
-      "Place names are context, not route knowledge; it will not tell you what a particular road or highway is like",
-      "The arrival reminder runs in this browser tab and contacts nobody for you — it is a nudge to check in, not a monitoring service",
-      "Never open or use Drive Home while the vehicle is moving"
-    ]
   }
 },
 {
@@ -670,19 +486,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.",
   guide: {
-    overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
-    howToUse: [
-      "Describe your problem, situation, or need in plain language",
-      "Or tap a quick-pick button to jump in",
-      "Review the recommended tools — each explains why it fits YOUR situation",
-      "Click any tool card to open it directly",
-      "Check the workflow section if multiple tools work best in sequence"
-    ],
-    example: {
-      scenario: "Your landlord is threatening to keep your security deposit and you got a sketchy itemized list.",
-      action: "Type the situation into ToolFinder.",
-      result: "Recommends RentersDepositSaver (best match), LeaseTrapDetector (review lease clauses), and ComplaintEscalationWriter (if they don't budge). Workflow explains the order."
-    },
     tips: [
       "More detail gets better matches — 'money problem' is vague, 'my roommate owes me $200 and it's awkward' is specific",
       "The workflow section shows how to chain tools together",
@@ -712,30 +515,12 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: "See your question through five deliberately different lenses: the Pragmatist, the Risk-Taker, the person who tried it and regretted it, the person who chose not to, and the Contrarian. See where their arguments clash—and what each perspective notices that the others miss.",
   guide: {
-      overview: "Crowd Wisdom channels five distinct life archetypes — each shaped by different values and different outcomes. The goal isn't consensus. It's to surface the tension, the blind spots, and the question you haven't thought to ask yet.",
-      howToUse: [
-        "Describe the situation or decision you're wrestling with",
-        "Add context about your life, goals, or values if relevant",
-        "Five voices respond — each with their core belief, what they'd say, and what they might miss",
-        "Read the tension between the voices — that's where the real insight is",
-        "Look for 'the question nobody asked' — often the most useful output"
-      ],
-      example: {
-        scenario: "Should I quit my stable job to take a risky startup role?",
-        action: "Describe the job, the startup, your financial situation, and what's pulling you toward the leap",
-        result: "Five voices: the Pragmatist warns about runway, the Risk-Taker calculates asymmetric upside, the Did-It-and-Regretted-It voice warns about the culture fit you're ignoring, the Didn't-and-Regretted-It voice names the window that closes, and the Contrarian asks whether the real fear is failure or success."
-      },
       tips: [
         "The more specific your situation, the more specific — and useful — each voice gets",
         "The 'thing they might miss' section is where the stealth insight lives — don't skip it",
         "The tension between voices is more useful than any single answer",
         "Use this for decisions where you've already heard the obvious advice and need something different"
       ],
-      pitfalls: [
-        "Don't look for a majority vote — disagreement between voices is the point",
-        "Vague questions get generic voices; the more specific your situation, the sharper the insight",
-        "The 'question nobody asked' section is often the most valuable — don't skip it"
-      ]
     }
 },
 {
@@ -759,19 +544,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "Stress-test a career, skill, technology, investment, or long-term bet. See what's working for it, what's working against it, what could change, and what you can do now without betting everything on one forecast. Choose a 1, 3, 5 or 10 year horizon; get tailwinds, headwinds, three conditional scenarios, and one low-regret action.",
   guide: {
-      overview: "Future Proof stress-tests anything you are betting years on — a skill, a career path, a technology, an investment or a major commitment. It separates what can be observed now from what is only projected, names the assumptions the analysis rests on, maps adjacent moves, and gives three genuinely different conditional scenarios rather than one forecast at three volumes.",
-      howToUse: [
-        "Name what you're stress-testing — a skill, career, technology, or investment",
-        "Select the subject type for more calibrated analysis",
-        "Optionally add your context — industry, experience level, goals",
-        "Review trajectory, tailwinds, headwinds, and the automation question",
-        "Read all three scenarios — bull, base, and bear — then the honest take"
-      ],
-      example: {
-        scenario: "Is UX design a good skill to invest heavily in right now?",
-        action: "Enter 'UX Design' as a skill, add context about your current level and industry",
-        result: "Trajectory: Transforming. Tailwinds: AI tools increasing design output speed, more products competing on experience. Headwinds: AI automating wireframing and research synthesis. Automation risk: low-fidelity mockups at risk, strategy less so. The pivot: UX + AI tooling fluency is the moat. One action: ship one project using Figma AI this month."
-      },
       tips: [
         "Be specific about what you're analyzing — 'coding' is too broad, 'Python for ML pipelines' is useful",
         "The adjacent moves section often surfaces better bets than the original subject",
@@ -880,19 +652,6 @@ export const tools = [
   ],
   description: "Ever wonder why a $5 coffee costs $5 or hospital aspirin costs $25? Describe any product or service, and Markup Detective will show you where the money goes and why the price may be much higher than you expected.",
   guide: {
-    overview: "MarkupDetective is pricing forensics for everyday life. Pick any product or service, and it shows you exactly where your money goes — what percentage is raw materials vs. labor vs. brand premium vs. pure profit. Includes the psychological pricing tactics being used on you, industry secrets about how things are really priced, and specific ways to get the same thing for less.",
-    howToUse: [
-      "Describe the product or service you're curious about",
-      "Optionally add the specific price you saw and where",
-      "Or tap a popular mystery to jump in",
-      "Review the cost breakdown with visual bars showing where money goes",
-      "Check what it typically costs elsewhere, and the money-saving tips"
-    ],
-    example: {
-      scenario: "You just paid $15 for a cocktail at a nice bar.",
-      action: "Enter '$15 cocktail at a cocktail bar' into MarkupDetective.",
-      result: "Shows the spirits cost about $2.50, the garnish/mixer is $0.80, labor is $3, and you're paying $8.70 for the atmosphere and brand. Markup: 6x. Pricing psychology: anchoring against the $18 'premium' cocktails. Industry secret: most bars make 80% margin on well drinks."
-    },
     tips: [
       "Adding the specific price and context gets more precise breakdowns",
       "The pricing-practice section explains how the industry actually sets its prices",
@@ -900,11 +659,6 @@ export const tools = [
       "Save money tips are specific to each item, not generic advice"
     ],
 
-    pitfalls: [
-      "The cost breakdown is an estimate of a typical structure, not an audit of the seller's books",
-      "A high markup isn't automatically unfair — rent, labor and risk are real costs; the breakdown shows which part is which",
-      "For a medical bill you want to dispute, Bill Rescue goes further than a markup estimate",
-    ]
   }
 },
 
@@ -929,20 +683,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Conflicting claims everywhere? Signal vs. Noise researches the question first, then shows what the checked sources actually support, what is overstated or mixed, and what is still unresolved — with the sources behind each conclusion.",
   guide: {
-      overview: "Signal vs. Noise uses a two-step research workflow. First it searches and builds a fixed evidence packet from the sources it actually examined. Then a separate synthesis pass works only from that packet: no new search, no remembered evidence quietly filling gaps. Conclusions are tied to source IDs, comparative claims need comparative evidence, population and time-horizon limits stay attached to the findings, and association is not promoted to causation. If a proposition is only partly supported, it is narrowed, split, qualified, or left unresolved. The result is a targeted evidence check, not a claim that every relevant source on the internet was found.",
-      howToUse: [
-        "Enter the contested topic or claim you want checked",
-        "Review The Signal for conclusions the checked evidence supports within its actual scope",
-        "Review The Noise for claims that are broader, stronger, or more certain than the retrieved evidence allows",
-        "Check Still Worth Verifying for genuinely mixed, incomplete, or unresolved questions",
-        "Open the cited sources to see which source establishes each empirical point and what limits came with it",
-        "Use the Bottom Line as a concise synthesis of the same evidence — never as a stronger conclusion than the sections above it",
-      ],
-      example: {
-        scenario: "You've seen conflicting claims about whether a particular diet, supplement, productivity method, or financial strategy reliably delivers the benefit people promise.",
-        action: "Enter the disputed claim in plain language.",
-        result: "Signal vs. Noise researches the claim, then separates supported findings from overstatement, mixed evidence, and unresolved questions. Each empirical conclusion points back to the sources that support it, and the wording preserves important limits such as population, duration, comparison group, or study design instead of flattening them into a universal answer."
-      },
       tips: [
         "Ask a claim specific enough to research — a concrete proposition usually produces a better evidence packet than a huge topic",
         "A logical inference is only as strong as its empirical premises; reasoning cannot turn remembered background knowledge into retrieved evidence",
@@ -974,19 +714,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Have a plan you're about to put into action? Describe it and Break My Plan? will work backward from an imagined failure to find the weak assumptions, warning signs, and failure paths worth thinking about now — while you can still do something about them.",
   guide: {
-      overview: "Break My Plan? runs a cognitive inversion: assume your plan has already failed, then work backward to explain why. This technique — used by NASA, military planners, and venture investors — surfaces risks that forward-thinking misses. The imagined failure is a thinking device, not a prediction — the fiction stays disciplined so the advice underneath it stays grounded in your actual plan.",
-      howToUse: [
-        "Describe your plan, project, or decision in specific terms",
-        "Select the plan type — startup, career move, project, relationship, etc.",
-        "Add what's at stake and what has to go right if relevant",
-        "Read the failure narrative — a plausible way it could have gone wrong",
-        "Focus on the Assumption to Test First and the Assumptions Autopsy — these are the most actionable outputs"
-      ],
-      example: {
-        scenario: "Launching a newsletter as a side business",
-        action: "Describe the newsletter topic, target audience, monetization plan, and time you can commit",
-        result: "The memo: 'The newsletter launched, but audience growth remained too slow to support the paid target. Publishing continued to consume the time reserved for other priorities, and after repeated signs that distribution wasn't improving, the project was eventually paused.' Assumption to test first: whether consistent publishing alone can produce enough distribution. First move: test whether the topic attracts a real, engaged audience before building a monetization plan around it."
-      },
       tips: [
         "The more specific your plan, the more specific and actionable the failure modes",
         "The Assumption to Test First is the most important output — test it before you execute",
@@ -1017,19 +744,6 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: "When every week starts to look exactly like the last one, it's easy to mistake routine for progress. Tell DeftBrain what life looks like right now, and we'll identify one carefully chosen disruption designed to shake something loose.",
   guide: {
-      overview: "Rut Buster diagnoses the pattern producing your stagnation before prescribing anything. The disruption it designs is specific enough to execute today, slightly uncomfortable enough to produce a reaction, and targeted at the exact constraint making your world small.",
-      howToUse: [
-        "Describe your typical week in as much detail as possible",
-        "Add context about what's feeling stale, stuck, or repetitive",
-        "Review the pattern diagnosis — the invisible rut and what it's costing you",
-        "Read the full disruption instruction and commit to the exact timing specified",
-        "Note the friction described — recognizing it when it arrives is the key to following through"
-      ],
-      example: {
-        scenario: "Work from home, same routine every day, weeks blurring together",
-        action: "Describe the routine in detail, including evenings and weekends",
-        result: "Invisible rut: you've optimized your life to minimize friction, which has eliminated the serendipity that used to make you feel alive. The disruption: take your laptop to a different neighborhood every Friday afternoon. Go somewhere inconvenient. Don't open Slack for the first 30 minutes. The friction you'll feel: 'This is inefficient.' That feeling is the signal."
-      },
       tips: [
         "The more specific your routine description, the more surgical the disruption",
         "The 'compound effect' section shows why one small disruption is worth doing",
@@ -1060,18 +774,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Walk through a typical day and tell us what you want to improve. Small Change, Big Difference looks for one small adjustment that could make the rest of your routine easier — and gives you a practical way to try it.",
   guide: {
-      overview: "Small Change, Big Difference reasons only from the day you actually describe — it doesn't diagnose you or claim to have found the scientifically optimal bottleneck in your life. It looks for one small, concrete change that occurs at a useful point in your routine and may make later parts of the day easier, and commits to that one experiment instead of handing you a list.",
-      howToUse: [
-        "Walk through a typical day in honest detail — include the parts that aren't working especially well",
-        "Optionally note what you'd like to make better, and where the day seems to go off track",
-        "Read what the tool noticed in your routine and the one change it suggests trying",
-        "Try the change and use 'What to Watch For' to judge whether it's actually helping"
-      ],
-      example: {
-        scenario: "Productive some days, derailed others, mornings feel rushed",
-        action: "Walk through the full day from alarm to bed, including phone habits",
-        result: "What I notice: mornings start with 20 minutes of phone-in-bed scrolling before anything else happens. The small change: charge the phone outside the bedroom. What it may change: removes the easiest way to start scrolling before getting up, which may make the morning feel less rushed. What to watch for: do you actually get out of bed sooner, and does the change create a new problem elsewhere?"
-      },
       tips: [
         "Be honest about the routine — the tool can only reason from what you share",
         "There's no claim this is the mathematically optimal change — it's a sensible first experiment",
@@ -1103,19 +805,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.",
   guide: {
-      overview: "BeliefStressTest runs your operating beliefs through a battery of tests — not to destroy them, but to find where they're actually true versus where they're a useful simplification that misleads in specific situations. The output is a calibrated upgrade.",
-      howToUse: [
-        "Enter a belief that guides your decisions or how you see the world",
-        "Optionally add context about how you apply it in your life",
-        "Review the stress tests by severity — focus on fatal ones first",
-        "Read the 'hidden structure' section — why you hold this belief often matters as much as whether it's true",
-        "The upgrade in the final section is the practical takeaway"
-      ],
-      example: {
-        scenario: "'Everything in moderation'",
-        action: "Enter the belief, note you apply it to diet, work, and leisure",
-        result: "Where it holds: prevents extremes, reduces anxiety. Fatal stress test: doesn't apply to genuinely harmful things — moderate heroin use isn't wisdom. Significant: some goods require full commitment, not moderation. Hidden structure: it's really a rule against anxiety, not a guide to quantity. Upgrade: 'Moderation is a useful default for diminishing-return activities. For things requiring mastery or commitment, replace moderation with intentionality.'"
-      },
       tips: [
         "The 'psychological function' section is often the most revealing part",
         "Severity ratings on stress tests help you prioritize what's worth acting on",
@@ -1145,22 +834,6 @@ export const tools = [
   headerColor: "#e8d5b7",
   description: "Want more opportunities to be seen? Describe how your work, interests, and relationships put you in contact with new people and ideas. Get Noticed suggests practical ways to become more visible and create more opportunities for meaningful connections.",
   guide: {
-      overview: "Get Noticed helps you create more opportunities for useful, unexpected connections and discoveries. Describe where your life currently puts you in contact with new people or ideas — work, hobbies, communities, places you spend time, things you make or share — and it describes how new people and opportunities reach you today, what narrows that, what is already working, and three to five practical ways to widen it. It does not calculate a luck percentage, because there is no defensible denominator for available serendipity, and it does not claim any move will produce a particular result. It explains the mechanism instead: what a change makes possible, not what it will deliver.",
-
-      howToUse: [
-        "Describe where your life already puts you in contact with new people or ideas",
-        "Optionally say what you would like more chances to encounter, and what you already do",
-        "Read your current opportunity surface — narrow, mixed, or broad — and what narrows it",
-        "Work through the moves; each names the exposure it creates, not a result it promises",
-        "Start with the one move marked Start here"
-      ],
-
-      example: {
-        scenario: "You work from home on the same team you have been on for three years, see a small group of friends, and share nothing publicly about what you do.",
-        action: "Describe the work, the friend group, and the fact that you do not post about your work; say you would like more chances at interesting collaborators.",
-        result: "A narrow reading with the reasons named concretely — most contact runs through one team and one friend group — what already works, and three to five moves that each open a different route, with the smallest first step for each."
-      },
-
       tips: [
         "Say what you actually do, not what you think sounds impressive — every move has to connect to something you supplied",
         "Leaving a field blank is fine; it will say so rather than invent an answer",
@@ -1196,30 +869,12 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Want to connect with someone in your professional world, but don't want to show up as a stranger with an ask? Build a practical plan to become more visible, relevant, and useful first—then recognize when there's a genuine reason to reach out.",
   guide: {
-      overview: "Before Hello is built on one test: every step it suggests has to be worth taking even if the other person never sees it. So it works on your side of the introduction — what you actually bring, where the overlap is real, and whether there is already a good enough reason to send the message. Sometimes the answer is that there is, and you should send it today.",
-      howToUse: [
-        "Describe the person — their role, their field, and what they work on",
-        "Pick the kind of connection: mentor, collaborator, investor, employer, client, or professional peer",
-        "Say why this person specifically, and what you already bring",
-        "Read the readiness verdict first — it may tell you to reach out now rather than prepare",
-        "Use the first-contact draft as a starting point, and keep the ask small enough to be easy to decline"
-      ],
-      example: {
-        scenario: "You want to talk to a VC who invests in climate tech",
-        action: "Describe their focus, your own background in climate research, and what you'd actually want to discuss",
-        result: "Starting position: your research is the credible part; the gap is that none of it is public. Strengthen: write up one finding in plain language — worth doing for your own record either way. Genuine overlap: their thesis and your dataset touch the same question. Ready to say hello? Build first — one piece of public work makes the message land. First contact: what to say, and what not to. Do today: draft the first paragraph of that write-up."
-      },
       tips: [
         "The readiness verdict can say 'ready now' — a direct, specific, easy-to-decline message is often the whole answer",
         "If a suggested step would only make sense because this person might notice it, the tool is supposed to reject it; treat one that slips through as a bug",
         "Being specific about your own background is what separates a real overlap from a generic one",
         "Works for mentors, collaborators, investors, employers, clients, and peers in your field"
       ],
-          pitfalls: [
-      "It won't help you get someone's attention — no engineered proximity, no cultivating their contacts, no attending things because they'll be there",
-      "It won't invent facts about the person: if you don't say what they've published or care about, it won't guess",
-      "There are no scores, percentages, or timelines here on purpose — none of them would be measuring anything"
-    ]
     }
 },
 
@@ -1328,19 +983,6 @@ export const tools = [
   },
   description: "We'll help you understand the appeals process, identify overlooked options, find the right escalation path, and prepare for conversations with the people who can actually make decisions.",
   guide: {
-      overview: "Every formal system has informal architecture. Not So Fast! maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
-      howToUse: [
-        "Name the system — Comcast, health insurance, HOA, landlord, university, IRS, airline",
-        "Describe the specific problem and the outcome you want",
-        "Note what you've already tried — this changes the recommended path",
-        "Follow the escalation ladder in order — don't jump to nuclear options prematurely",
-        "Use magic phrases exactly as written — small wording changes reduce their effectiveness"
-      ],
-      example: {
-        scenario: "Health insurance denied a claim for a procedure the doctor says was medically necessary",
-        action: "Describe the procedure, the denial reason, and that one appeal has already been filed",
-        result: "How it works: first-level denials are automated; human review happens at second appeal. Ladder: (1) Request denial code and ask for 'peer-to-peer review' between your doctor and their medical director; (2) File with your state Insurance Commissioner; (3) Request Independent Medical Review via your state's external appeals process. Magic phrases: 'peer-to-peer review,' 'external independent review,' 'medical necessity criteria per your utilization management guidelines.'"
-      },
       tips: [
         "The 'magic phrases' section is literal — use the exact wording provided",
         "The regulatory angle works even if the complaint goes nowhere — it signals seriousness",
@@ -1348,11 +990,6 @@ export const tools = [
         "Pair with MagicMouth to script the actual phone calls"
       ],
 
-      pitfalls: [
-        "It maps the routes that exist; it can't promise an outcome, and its honest assessment says so when the odds are low",
-        "Deadlines vary by state, country, contract and plan — the dates on your own denial letter or contract are the ones that count",
-        "The ladder runs from the lightest step to the heaviest; going straight to a regulator over a small issue can cost goodwill you may need later",
-      ]
     }
 },
 
@@ -1390,19 +1027,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Some things get harder the longer they go unsaid. Truth Bomb helps you separate what you know from what you're assuming, understand what speaking — or staying silent — would actually change, and decide what you want to do next.",
   guide: {
-      overview: "TruthBomb handles the unsaid thing — not with therapy, but with clarity. It isn't about finding the courage to speak; it's about getting clear enough to choose. It examines what's really driving the silence and what staying silent actually does — what it preserves as well as what it leaves unresolved — then gives an honest reality check: what you actually know versus what you're only assuming, rather than a prediction of how anyone will react. Then it scripts three versions: a gentle opening, a clear statement, and the full unfiltered truth.",
-      howToUse: [
-        "Type the thing you're hiding — to yourself or to someone else. Be honest.",
-        "Select who it's about and optionally why you haven't said it",
-        "Add relationship context if relevant",
-        "Read 'what it's really about' before jumping to the scripts — context changes which version fits",
-        "Choose the version that matches what you actually need to accomplish"
-      ],
-      example: {
-        scenario: "I don't love my job anymore and I've been hiding it from my partner because they sacrificed for me to get it",
-        action: "Enter the truth, note the relationship and the guilt driving the silence",
-        result: "What it's really about: not wanting their sacrifice to feel wasted. What staying silent does: it avoids a conversation you're not ready for — and leaves you the only one who knows how you actually feel about the job. Reality check: you know you've been hiding it; you don't know how they'd actually respond — that's a fear, not a fact. Gentle: 'I want to talk about where I am with work — some things have shifted for me.' Full truth: 'I've been pretending I'm okay with this job, and I'm not anymore.'"
-      },
       tips: [
         "This tool doesn't tell you whether to say it — that decision is yours",
         "'Permission to not say it' is a real section — sometimes silence is the right call",
@@ -1433,19 +1057,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "The right explanation doesn't begin with the subject. It begins with the listener. Tell DeftBrain what you're trying to explain and who you're explaining it to, and we'll translate it into their world.",
   guide: {
-    overview: "AnalogyEngine creates analogies so tailored that complex ideas become instantly obvious. Tell it what you need to explain and who the audience is — especially their interests and world — and it generates multiple analogies that use concepts your audience already understands. Every analogy shows its accuracy, memorability, where it breaks down, and how to deliver it.",
-    howToUse: [
-      "Enter the concept you need to explain",
-      "Describe who you're explaining it to",
-      "Add their interests for much better results (e.g., 'loves cooking', 'plays basketball')",
-      "Choose depth: quick grasp, solid understanding, or deep dive",
-      "Pick your favorite analogy or copy all of them"
-    ],
-    example: {
-      scenario: "You need to explain machine learning to your chef friend.",
-      action: "Enter 'machine learning', audience 'a chef', interests 'cooking, restaurants, flavor profiles'.",
-      result: "Generates analogies like 'The Recipe Refinement' — ML is like a chef who makes a dish 10,000 times, adjusting one ingredient each time based on customer reactions, until they've 'learned' the perfect recipe without anyone giving them the recipe."
-    },
     tips: [
       "The audience's interests field is where the magic happens — the more specific, the better",
       "Check the 'where it breaks down' section so you know the analogy's limits",
@@ -1475,19 +1086,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you three ready-to-send ways to begin — each opening differently and asking for something different — plus a follow-up for when nobody replies.",
   guide: {
-    overview: "Cold Open Craft helps when you need to contact someone you do not know well and the first sentence is the hardest part. Tell it who you are contacting, why you are reaching out, the channel, and any real connection points you have. It returns three complete messages that open differently while staying grounded in what you actually supplied, plus a simple follow-up if the first message gets no reply.",
-    howToUse: [
-      "Say who you are reaching out to and why you want to contact them",
-      "Choose the channel: email, LinkedIn, Twitter/X DM, Instagram DM, or text",
-      "Add any specific facts you genuinely know about the person that could make the opener more natural",
-      "Add the part of your own background that is relevant to this outreach",
-      "Compare the three ready-to-send approaches, choose the one that sounds most like you, and personalize it before sending"
-    ],
-    example: {
-      scenario: "You want to contact a hiring manager who posted a role, and you have relevant experience plus one piece of their public work you genuinely follow.",
-      action: "Enter the role, why you are reaching out, the channel, the public connection point, and the relevant part of your background.",
-      result: "Cold Open Craft gives you three grounded messages that lead differently — for example with the role, the shared topic, or your relevant background — plus a brief follow-up you can use later if needed."
-    },
     tips: [
       "Specific real details make outreach feel more natural; invented familiarity does the opposite",
       "Include only the parts of your background that help explain why this connection makes sense",
@@ -1522,20 +1120,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "You know the stories. You know what the person means to you. Toast Writer helps you turn that into something worth saying out loud.",
   guide: {
-    overview: "ToastWriter takes the panic out of standing up and saying something that matters. Give it details about the person, the occasion, your relationship, and any stories or details — and it generates 3 takes on your requested tone, each with inline delivery cues like [PAUSE] and [LOOK AT THEM], built only from what you actually supplied. Plus delivery tips, common mistakes for this type of event, and a bail-out closer.",
-    howToUse: [
-      "Enter who the toast is for and your relationship to them",
-      "Pick the occasion — wedding, birthday, retirement, roast, memorial, etc.",
-      "Add any stories, details, or inside jokes you want included",
-      "Choose your preferred tone and target length",
-      "List topics to avoid if needed",
-      "Flip between the 3 versions and pick your favorite"
-    ],
-    example: {
-      scenario: "Best man speech at your college roommate's wedding.",
-      action: "Enter the details including a story about getting lost in Tokyo together.",
-      result: "Three versions: 'The Storyteller' (warm, built around the Tokyo story), 'The Roast' (funny jabs about his terrible cooking that led to meeting his partner on a food delivery app), 'The Elegant One' (shorter, refined, ending with a quote). Each has delivery cues and timing."
-    },
     tips: [
       "The more stories and details you provide, the more personal the toast becomes",
       "The opening and closing lines are highlighted separately — memorize those especially",
@@ -1571,24 +1155,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "Looking for a hobby that actually fits your life? Tell Hobby Match what you enjoy, what you want more of, and the limits that matter. Get a short list of well-matched possibilities, why each might fit, what it takes to try, and an easy first step.",
   guide: {
-    overview: "Hobby Match works from what you supply — interests, how much free time you have, what you can spend, what already has to work around, and what you have tried — and returns a short list of hobbies worth a look. Each one says why it made the list, what you would actually be doing, how it fits the time you have, roughly what it costs to start, and the smallest way to try it before committing to anything.",
-    howToUse: [
-      "Describe your interests and what tends to hold your attention",
-      "Pick what you're looking for — relaxation, social, creative, physical, etc.",
-      "Add your schedule constraints and budget level",
-      "List anything you've already tried so it's excluded",
-      "Expand each hobby card for full details and first steps"
-    ],
-    pitfalls: [
-      "Selecting every goal dilutes the results — pick your top two or three for more targeted suggestions",
-      "The 'weird' option is intentional; don't skip it unless the suggestions feel off-brand for you",
-      "Budget filtering is applied in the prompt — results may still mention paid options if they're transformatively better"
-    ],
-    example: {
-      scenario: "Introverted night owl, $50 budget, bad knees, loves building things, already tried woodworking and model kits.",
-      action: "Enter all the details and generate matches.",
-      result: "Suggests bookbinding (solo, works in short sessions, low startup), amateur radio (build and repair your own equipment, licence required in most places), and fountain pen restoration (mechanical tinkering with a history angle) — each with what a session actually involves and the smallest way to try it first."
-    },
     tips: [
       "List what you have tried, and why it did or did not work — the reason matters more than the hobby",
       "Tap 'Something weird' in the goals for the most unexpected recommendations",
@@ -1709,19 +1275,6 @@ export const tools = [
   },
 
   guide: {
-    overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
-    howToUse: [
-      "Enter the procedure or treatment that was recommended",
-      "Pick the provider type — dentist, surgeon, etc.",
-      "Add the quoted price and your insurance situation if you have them",
-      "Note your urgency level and any concerns",
-      "Review the full briefing — especially the questions to ask"
-    ],
-    example: {
-      scenario: "Your dentist recommended a crown for $1,200 and you're not sure it's necessary.",
-      action: "Enter 'dental crown', quoted price $1,200, provider dentist, concern 'is this necessary?'",
-      result: "Explains what a crown involves in plain English, notes it's standard if the tooth is >50% compromised but worth questioning for small cavities, gives 7 questions to ask (including 'can we try a large filling first?'), shows typical range is $800-$1,500, and flags the red flag of recommending crowns on teeth that could be restored with less invasive treatment."
-    },
     tips: [
       "The questions to ask section is your most powerful tool — bring them to your appointment",
       "Adding your insurance situation helps the cost picture be more accurate",
@@ -1758,19 +1311,6 @@ export const tools = [
   headerColor: "#c0d8b8",
   description: "Sometimes it's hard to keep track of what you wanted in the first place once you're in the room. Upsell Shield helps you go in with your priorities clear, recognize the moments that tend to pull people off course, and know what to say when the conversation starts drifting from your plan.",
   guide: {
-    overview: "Upsell Shield is preparation, not a script for outplaying anyone. Tell it where you're going, what you want, and your budget, and it restates your own priorities back to you first, then walks through the pressure or decision moments plausibly relevant to this kind of conversation — described as things you may encounter, not predictions — with a grounded response for each. Includes questions worth asking, what to verify before you commit, and a plain exit line for if you need one.",
-    howToUse: [
-      "Describe where you're going and what you plan to buy or negotiate",
-      "Add your budget and any constraints",
-      "Start with Your Plan — it's your own priorities, restated",
-      "Read Watch For and keep your exit line ready",
-      "Check Questions Worth Asking and Before You Commit before you agree to anything"
-    ],
-    example: {
-      scenario: "Buying a used car at a dealership. Budget: $18,000, no extended warranty.",
-      action: "Enter the situation, what you want, and your budget.",
-      result: "Your Plan restates the $18,000 ceiling and no-warranty limit as decided. Watch For names moments like payment framed monthly instead of total, or an add-on offered late in the visit — each with a grounded response, not a bluff. Before You Commit flags the out-the-door price as something to verify in writing. Your exit line: a plain, polite way to leave and think it over."
-    },
     tips: [
       "Read through Your Plan before you walk in — it's your own priorities, not the seller's",
       "Your exit line requires no excuse — practice saying it once out loud",
@@ -1805,31 +1345,12 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.",
   guide: {
-    overview: "HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, what the question is testing, and something credible to say if you don't know yet.",
-    howToUse: [
-      "Describe what you're presenting, pitching, or proposing",
-      "Describe your audience — who they are and what they care about",
-      "Add any known objections or sensitive areas",
-      "Review the 10 hardest questions and practice the answers",
-      "Memorize the bail-out strategies for questions you truly can't answer"
-    ],
-    example: {
-      scenario: "Pitching a budget increase to the executive team for your marketing department.",
-      action: "Enter the topic and audience details.",
-      result: "Generates questions like 'What's the ROI on the last budget increase?', 'Why can't you do more with what you have?', 'What happens if we give you half?', each with a coached answer that addresses the real concern behind the question."
-    },
     tips: [
       "The questions get harder as the list goes on — if you can handle #10, you're ready",
       "The 'what this tests' line tells you what the question is really about, so you answer that rather than the words",
       "Practice answering out loud, not just reading the model answers",
       "The bail-out strategies are for genuine unknowns — don't fake answers"
     ],
-    pitfalls: [
-      "The questions are harder when you include your actual proposal — generic topic inputs produce generic objections",
-      "'Brutal' difficulty questions are calibrated for board or investor pressure; they may feel discouraging for a team meeting setting",
-      "The model answers are starting points — adapt them to your voice before practicing"
-    ],
-
   }
 },
 
@@ -1854,19 +1375,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "Hosting a gathering and want it to not be boring? Describe the guest list, space, budget, and vibe, and PartyArchitect designs the full event flow: arrival experience, conversation catalysts, when to introduce activities, how to mix groups that don't know each other, and when to shift energy. Not a Pinterest board — an event strategy.",
   guide: {
-    overview: "PartyArchitect designs the flow of your event so it feels effortless even though it was engineered. Give it your guest count, the space, your budget, who's coming, and the vibe you want — and it builds a timeline with arrival flow, ice-breaking strategies, energy peaks and valleys, activity timing, food/drink pacing, and the techniques for mixing groups that don't know each other.",
-    howToUse: [
-      "Describe the occasion and the vibe you want",
-      "Enter guest count and who's coming (friends, coworkers, mixed groups)",
-      "Describe your space and budget",
-      "Add any constraints — dietary, noise, time limits",
-      "Follow the event flow timeline from arrival to exit"
-    ],
-    example: {
-      scenario: "Hosting a housewarming, 25 guests, mix of work friends and college friends who don't know each other, apartment with rooftop access, $300 budget.",
-      action: "Enter all the details and generate the event plan.",
-      result: "Designs a flow: arrivals in the apartment (lower-energy mingling zone with a simple conversation game on the counter), then guided migration to the rooftop at the 45-minute mark (energy peak), introduces a '2 truths and a lie' variant that naturally mixes the groups, schedules food service to create natural gathering points, and includes the 'graceful wind-down' signal."
-    },
     tips: [
       "The guest mix description is crucial — 'people who don't know each other' triggers specific mixing strategies",
       "Follow the energy curve — events that stay at one energy level get boring",
@@ -1900,19 +1408,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Ever reach the end of a day wondering where the time went? Walk through it as you remember it. Where Did the Time Go? helps you see what filled the hours, what broke up your day, and why it may have felt so different from the day you expected.",
   guide: {
-    overview: "Where Did the Time Go? reconstructs a confusing or fragmented day from what you actually describe — not from invented minutes. Walk through it in whatever order it comes to mind, and optionally say what feels off about it (busy but unfinished, an afternoon that vanished, expecting more time than you had). AI lays out the day in order, points out what's genuinely supported about why it felt that way, and — when the account supports one — suggests a single small experiment to try next time.",
-    howToUse: [
-      "Pick a timeframe: today, yesterday, this week, or the weekend",
-      "Walk through it as you remember it — times help if you have them, but rough is fine",
-      "Optionally describe what feels off about the day (this sharpens the reconstruction, but isn't required)",
-      "Read The Day You Described first, then What Made It Feel Different",
-      "The Biggest Mismatch and Try This Next Time only appear when your account actually supports one — the tool won't force either"
-    ],
-    example: {
-      scenario: "You worked all day but feel like you got nothing done. You had a standup, worked on a presentation, answered emails, had a 1-on-1, and tried to write a report.",
-      action: "Walk through the day in order. Optionally add: 'I was busy all day but got nothing finished.'",
-      result: "AI reconstructs the day in a timeline using only what you described, points out that two meetings occupied over two hours and that document work kept getting interrupted by Slack, and suggests trying one protected block with Slack closed next time — framed as something to test, not a promised fix."
-    },
     tips: [
       "The 'what feels off' field is optional but sharpens the reconstruction — it's what you're actually confused about, not another number to estimate",
       "Times you're unsure of are fine left rough — the tool won't invent false precision",
@@ -1943,29 +1438,11 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Tell us a little about who you're shopping for. Giftology turns what you know about them into thoughtful gift ideas—with help choosing, finding, and making each one feel personal.",
   guide: {
-    overview: "Giftology connects scattered things you know about a person into gift ideas that feel like you paid attention. The AI moment isn't 'here are popular gifts' — it's the reasoning chain from a specific detail about them to a specific gift that proves you notice things. Every pick includes a card message that makes even a simple gift feel intentional. Wildcard option for something unexpected, last-minute save for panic mode.",
-    howToUse: [
-      "Describe the recipient — relationship, interests, personality, quirks, anything you know",
-      "Pick an occasion, set a budget and deadline (all optional but help focus results)",
-      "Optionally mention past gifts or things to avoid",
-      "Review gift ideas — expand each for the full reasoning, where to get it, and card message",
-      "Check the wildcard for something unexpected, and the last-minute save if time is tight"
-    ],
-    example: {
-      scenario: "Your mom, 60s, retired teacher, loves gardening and mystery novels. Says 'don't get me anything' every year. Budget: $30-50. Her birthday is this weekend.",
-      action: "Describe her, pick 'Birthday', set budget '$30-50', deadline 'This week'.",
-      result: "Top pick: a specific heirloom seed collection from Baker Creek matched to her growing zone, paired with 'The Wych Elm' by Tana French (mystery + garden setting). Card message ties the two together. Wildcard: a 'garden mystery book club' subscription box. Last-minute save: a handwritten 'coupon book' for garden help days this spring."
-    },
     tips: [
       "The more specific you are about the person, the more personal the gift ideas get",
       "Mention things they've said offhand — 'she once mentioned wanting to learn pottery' is gold",
       "The card message is the secret weapon — it makes any gift feel intentional",
       "Use the wildcard when you want to surprise someone who's hard to shop for"
-    ],
-        pitfalls: [
-      "Generic descriptions produce generic gifts — describe the person's quirks, not just their hobbies",
-      "The 'wildcard' suggestion is intentionally outside the obvious options; don't dismiss it before reading the reasoning",
-      "Budget filtering happens in the AI prompt, not a filter — if results feel off-range, try resubmitting"
     ],
   }
 },
@@ -2048,22 +1525,6 @@ export const tools = [
   ],
   description: "Not every silence needs rescuing. But when it does, we'll help you find something natural to say.",
   guide: {
-    overview: "Awkward silences happen. This tool provides 5-7 conversation fillers appropriate for your specific context - safe, low-risk things to say that restart conversation without forcing it. Ranges from environmental observations to light questions to polite exits.",
-    
-    howToUse: [
-      "Optionally describe conversation context",
-      "Select setting type (casual/work/party/date/family/networking)",
-      "Set your comfort level (low/medium/high anxiety)",
-      "Get 5-7 conversation fillers with risk levels",
-      "Learn follow-up paths for each filler",
-      "See what NOT to say in this context"
-    ],
-    example: {
-      scenario: "You're at a work happy hour. Made small talk with someone from another department, now silence. You're moderately anxious and don't know what to say.",
-      action: "Context: Work happy hour, Setting: Work event, Comfort: Medium anxiety.",
-      result: "Fillers: 1. Environmental (low risk): 'This place has a great vibe' â†’ Follow-up: They might share their favorite spots. 2. Work-appropriate question (low risk): 'How long have you been with the company?' â†’ Opens to their history. 3. Weekend plans (medium risk): 'Any plans for the weekend?' â†’ Safe, relatable topic. 4. Shared experience (low risk): 'These team events are nice, aren't they?' â†’ Bonds over shared context. 5. Department question (low risk): 'What's your team working on lately?' â†’ Shows interest, work-appropriate. Exit strategies: 'I'm going to grab another drink, great chatting!' or 'I should say hi to [person], but nice talking to you!' What NOT to say: Politics, religion, gossip about coworkers, anything too personal. Body language: Maintain open posture, smile, don't check phone. Silence acceptance: Brief silence (5-10 seconds) is normal. Don't panic-fill immediately."
-    },
-    
     tips: [
       "Low-risk options are always safe; use medium-risk when feeling more comfortable",
       "Environmental observations are universally safe across contexts",
@@ -2072,11 +1533,6 @@ export const tools = [
       "Some silences are fine - you don't need to fill every pause"
     ],
     
-    pitfalls: [
-      "Don't rapid-fire questions - one filler, then let conversation develop or die naturally",
-      "Don't use work event fillers at family gatherings (context matters)",
-      "Don't feel you must force conversation if it's clearly not working - polite exit is okay"
-    ]
   }
 },
 
@@ -2149,28 +1605,6 @@ export const tools = [
     "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.",
 
   guide: {
-    overview:
-      "Tip of Tongue helps when you remember pieces of something but not its name. Describe whatever you still have — a flavor, lyric fragment, packaging color, scene, scent, place, texture, era, or just the general feel. DeftBrain uses those clues to suggest the strongest matches, explain why each one fits, and give you an easy way to verify them. If none is quite right, tell it what was close or wrong and keep narrowing the search.",
-
-    howToUse: [
-      "Pick a category if you know it — otherwise choose Something Else.",
-      "Describe whatever you remember — sensory details, vibes, fragments, partial facts, even details you aren't completely sure about.",
-      "Add what you know it isn't, where or when you encountered it, or any odd detail that might help.",
-      "Check the strongest matches and the clues behind them. Use the memory trigger and verification suggestion to see whether one clicks.",
-      "If none is right, mark what was close, add anything else you remember, and narrow it down again."
-    ],
-
-    example: {
-      scenario:
-        "You remember a cold noodle dish from a restaurant a few years ago. It was slightly sweet and nutty, with something crispy on top, and you think it may have been Chinese.",
-
-      action:
-        "Enter: 'Cold noodles, sesame-like sauce, slightly sweet, crispy topping. Ate it at a small restaurant around 2023. Not peanut noodles.'",
-
-      result:
-        "Tip of Tongue suggests a few plausible dishes, explains which remembered details point toward each one, and gives you something concrete to check — such as the sauce, toppings, or typical preparation. Mark the closest match and refine from there."
-    },
-
     tips: [
       "Sensory details can be surprisingly useful — 'it felt creamy and came in a green jar' may be more distinctive than a vague factual description.",
       "Say what it definitely isn't. Ruling out an obvious near-match can narrow the search quickly.",
@@ -2178,11 +1612,6 @@ export const tools = [
       "If one result is close, say so. Knowing what almost fits often reveals which direction to search next."
     ],
 
-    pitfalls: [
-      "It can match on the clues you give and still get a detail of the answer wrong — use the “how to check” step before you rely on it",
-      "Your memory may have changed a detail (the wrong gender, the wrong decade); if nothing fits, say which part you're least sure of",
-      "Low-confidence matches are there to jog your memory, not as answers in their own right",
-    ]
   },
 },
 
@@ -2206,19 +1635,6 @@ export const tools = [
   headerColor: "#c0d8b8",
   description: "Tell it what you want — a refund, an upgrade, a free donut, a waived fee, a table at a full restaurant. AI reads the situation, finds your best angle, writes the exact script, and coaches the delivery. Charm, not fraud.",
   guide: {
-    overview: "Magic Mouth is for anyone who's ever watched a friend talk their way into something and thought 'how do they do that?' Describe what you want and the situation, and AI analyzes the power dynamics, identifies your strongest angle, writes a natural-sounding script (opener, the ask, what to say if they hesitate, and a graceful exit), and coaches delivery — tone, body language, and the mistakes that kill the ask. Includes a backup angle and a pro tip most people don't know.",
-    howToUse: [
-      "Describe what you want — be specific about the outcome you're after",
-      "Explain the situation — the more detail, the sharper the angle",
-      "Optionally add who you're asking and what you've already tried",
-      "Read the strategy, memorize the script, review the delivery notes",
-      "Go get what you came for"
-    ],
-    example: {
-      scenario: "You bought shoes that started peeling after one wear, but it's 2 weeks past the return window and you don't have the receipt.",
-      action: "Enter what you want (a refund) and the situation details.",
-      result: "AI identifies 'The Quality Angle' as your best shot — you're not returning shoes, you're reporting a defect. Gives you the exact script to use with the store manager, including what to say if they cite the return policy, and a pro tip about manufacturer warranty claims."
-    },
     tips: [
       "Specific situations get much better angles than vague ones",
       "The 'Already tried' field is powerful — if you've been told no, AI adjusts the strategy",
@@ -2248,19 +1664,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
   guide: {
-    overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and AI finds the precise word for it — from common English terms you forgot to obscure words from other languages that captured the exact feeling. Because sometimes knowing the name for something makes it easier to carry.",
-    howToUse: [
-      "Describe the feeling in your own words — messy is fine",
-      "Be as specific as possible about the nuances (when it happens, what triggers it, what it's close to but not quite)",
-      "Read the word, its origin, and why it fits",
-      "Discover words from languages around the world that nailed feelings English missed",
-      "Share the perfect word with someone who's feeling the same thing"
-    ],
-    example: {
-      scenario: "You feel nostalgic for a time you never actually experienced — like missing the 1970s even though you were born in 1995.",
-      action: "Describe that feeling as best you can.",
-      result: "AI surfaces 'anemoia' — nostalgia for a time you've never known. It explains the origin, why it fits, and gives you related words like 'saudade' and 'sehnsucht' that live in the same emotional neighborhood."
-    },
     tips: [
       "The weirder and more specific your description, the better the match",
       "If the first word doesn't quite fit, tell it why — it'll dig deeper",
@@ -2296,19 +1699,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "How you write leaves impressions you may not notice yourself. Paste some messages you've written and What’s My Vibe points out the patterns in your words—your tone, habits, humor, directness, and the ways your writing might land on someone reading it.",
   guide: {
-    overview: "What's My Vibe? reads your actual writing — texts, emails, social posts, Slack messages — and points out the patterns actually visible in it: sentence length, punctuation, hedging, humor, directness, and structure. It's built to stay grounded in what's on the page, not to diagnose why you write that way — a small sample is a sample, not your permanent voice.",
-    howToUse: [
-      "Paste some of your writing — texts, emails, tweets, DMs, whatever feels like 'you'",
-      "The more variety, the better the read (mix of casual and professional helps)",
-      "Read What You Do, How It Can Land, and Your Signature Moves",
-      "Share it with friends and see if they agree",
-      "Try pasting writing from different contexts to see how the patterns shift"
-    ],
-    example: {
-      scenario: "You're curious how you come across in your work Slack messages.",
-      action: "Paste a handful of recent Slack messages.",
-      result: "AI names the pattern — maybe 'The Polite Bullet Train' — and grounds it in what's actually there: short asks, frequent qualifiers like 'just wondering', and rapid follow-up messages. How It Can Land notes this can read as considerate, or as unsure of your own ask."
-    },
     tips: [
       "Paste at least a few messages for a meaningful read — one text isn't enough",
       "Mixing casual and professional writing reveals how much the patterns shift by context",
@@ -2338,19 +1728,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "A presentation can look ready on the page and still stumble in the room. The Run-Through helps you find what to cut, what to prepare for, and what needs a stronger landing — before you're standing in front of an audience.",
   guide: {
-    overview: "The Runthrough is a 3-mode presentation coaching tool. Cut mode trims your content to fit a time limit while preserving the core message. Anticipate mode predicts the hardest questions your audience will ask and drafts strong answers with traps to avoid. Hook mode rewrites your opening, closing, and key transitions to grab attention and stick in memory.",
-    howToUse: [
-      "Paste your presentation text, speaker notes, or outline",
-      "Pick a mode: Cut (trim to time), Anticipate (predict Q&A), or Hook (rewrite open/close)",
-      "Set mode-specific options (time limit, audience type, or tone)",
-      "Review the results — copy individual sections or the full analysis",
-      "Run the same content through multiple modes for complete prep"
-    ],
-    example: {
-      scenario: "You have a 20-minute investor pitch that runs about 35 minutes.",
-      action: "Paste it in Cut mode, set the time limit to 20 minutes. Then run it through Anticipate mode with 'Investors' selected.",
-      result: "Cut mode trims it to 19 minutes, telling you exactly what was removed and why. Anticipate mode surfaces 6 tough questions investors will ask, with draft answers and traps to avoid."
-    },
     tips: [
       "Run all three modes on the same content for complete presentation prep",
       "Cut mode works best with full text — outlines give less accurate time estimates",
@@ -2420,19 +1797,6 @@ export const tools = [
   },
 
   guide: {
-    overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
-    howToUse: [
-      "Describe Path A — the first option you're considering",
-      "Describe Path B — the alternative",
-      "Optionally share something about yourself for more personal narratives",
-      "Choose a timeframe (1, 2, 5, or 10 years out)",
-      "Read both narratives and notice which one your body reacts to"
-    ],
-    example: {
-      scenario: "You're deciding whether to stay at your stable corporate job or quit to start your own business.",
-      action: "Enter both paths, add that you're 31 and love building things but value financial security, and set to 2 years.",
-      result: "Two vivid day-in-the-life narratives: one where you're two years into the corporate track, one where you're two years into the startup. Each includes a moment of genuine satisfaction and an honest cost. The 'what I noticed' section surfaces what you'd grieve either way."
-    },
     tips: [
       "The more context you give about yourself, the more personal and specific the narratives get",
       "Pay attention to which narrative you read first, which you re-read, and which makes you feel something — that's data",
@@ -2462,19 +1826,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.",
   guide: {
-    overview: "Comeback Cooker is for the remark that keeps replaying after the moment has passed. Describe what happened, quote the exact words if you remember them, say who the person is to you, and choose a mood: Surgical, Witty, Petty, or Dignified. It gives you five comeback ideas, a High Road option, and an intentionally over-the-top Nuclear Option kept in the fantasy drawer so the tool can be satisfying as well as useful.",
-    howToUse: [
-      "Describe what happened",
-      "Add the exact words if you remember them and the relationship if it changes what would land",
-      "Choose Surgical, Witty, Petty, or Dignified",
-      "Read the five comeback ideas and the High Road option",
-      "Reveal the Nuclear Option only when you want the cathartic version that is better enjoyed than sent"
-    ],
-    example: {
-      scenario: "At a family gathering, an in-law makes the same intrusive comment they have made before.",
-      action: "Quote the comment, identify the relationship, and choose Witty or Surgical.",
-      result: "You get five different comeback ideas grounded in the comment, a short High Road response that may be more usable in real life, and an optional fantasy-drawer line that is allowed to go much further for comic relief."
-    },
     tips: [
       "Exact quotes give the tool more to play with than a general description of the insult",
       "Try the same situation in another mood if the first batch is too sharp or too tame",
@@ -2565,19 +1916,6 @@ export const tools = [
   ],
   description: "One small change can rewrite centuries. Name the moment you'd change, and follow what happens next — politics, technology, culture, ordinary life — for fifty years or five hundred.",
   guide: {
-    overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
-    howToUse: [
-      "Name a historical event or moment",
-      "Describe what you'd change about it",
-      "Read the alternate timeline as consequences cascade forward",
-      "Share your favorite 'what if' with friends",
-      "Try changing different details of the same event for wildly different outcomes"
-    ],
-    example: {
-      scenario: "You're curious what would have happened if the internet was never invented.",
-      action: "Enter 'What if the internet was never invented?'",
-      result: "A chain of consequences — how communication, commerce, entertainment, politics, and daily life would look today without it, each step following from the one before."
-    },
     tips: [
       "Specific pivots produce richer timelines — 'What if Napoleon won at Waterloo' beats 'What if France was different'",
       "Try small changes for surprising big consequences",
@@ -2585,11 +1923,6 @@ export const tools = [
       "The fun is in the unexpected second- and third-order effects"
     ],
 
-    pitfalls: [
-      "Real people and dates can appear in invented events — the “what actually happened” notes are the line between record and fiction",
-      "The further forward it reaches, the more speculative each step gets; the plausibility score reflects that",
-      "It's built for curiosity and storytelling, not as a source for history homework",
-    ]
   }
 },
 
@@ -2625,19 +1958,6 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: "Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up—and separates genuine holes from things the story actually explains.",
   guide: {
-    overview: "Plot Hole Finder is a narrative logic analyst that sorts a genuine contradiction from an unexplained gap, a debatable character decision, or a convenience — then adjudicates only the findings that survive scrutiny. A shorter list of real holes beats a longer list padded to look impressive.",
-    howToUse: [
-      "Pick media type (Movie, TV Show, Book, Game) and enter the title",
-      "Optionally point to a specific scene, rule, timeline issue, or decision that never made sense",
-      "Hit 'Find the Plot Holes' to get each finding's type, case, best defense, and verdict, plus a Swiss Cheese Rating",
-      "Click 'Defend this hole' on any finding to switch to courtroom-style defense mode",
-      "In Defend mode, describe any plot hole and get the strongest possible counter-arguments"
-    ],
-    example: {
-      scenario: "You enter 'The Dark Knight Rises' and ask how Bruce gets back into sealed Gotham from a foreign prison pit.",
-      action: "Hit Find the Plot Holes.",
-      result: "Your question gets answered directly first — MAYBE, the story leaves a gap rather than a hard contradiction, since it never establishes that his return is impossible, just unshown. A couple of other findings follow if they hold up, each with its own case, defense, and verdict — plus a Swiss Cheese Rating for the film overall."
-    },
     tips: [
       "The 'Defend a Hole' mode is great for settling arguments with friends",
       "Ask about a specific scene or decision for a focused answer instead of a scan of the whole work",
@@ -2666,18 +1986,6 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: "Create a wild but defensible fan theory about any movie, show, book, or game—or put your own theory to the test.",
   guide: {
-    overview: "FanTheory generates conspiracy theories for fiction — the kind that make you go 'wait... actually?' Every theory cites specific plot details as evidence and is internally consistent, even when it's a stretch.",
-    howToUse: [
-      "Enter a title and pick a theory direction (or let it surprise you)",
-      "Hit 'Generate Theory' to get a full theory with evidence and ratings",
-      "Switch to 'Grade My Theory' to submit your own theory for academic grading",
-      "The Smoking Gun is the single strongest piece of evidence — the one that makes people pause"
-    ],
-    example: {
-      scenario: "Title: 'Toy Story'. Direction: Secret Villain.",
-      action: "Hit Generate Theory.",
-      result: "Theory: Andy's Mom is actually the true villain — she systematically downsizes the toys' living space across all four films, moving them from a house to smaller and smaller rooms. Evidence: she sells the house (Toy Story 3), repeatedly threatens yard sales, and never once acknowledges the toys' sentience despite clearly seeing them move. Plausibility: 3/10. Mind-blown: 7/10."
-    },
     tips: [
       "Hit 'Different Theory' to get a completely different angle on the same title",
       "The Grade mode gives honest ratings — most theories are 2-4 plausibility and that's fine",
@@ -2757,30 +2065,12 @@ export const tools = [
   ],
   description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched. Every roast line targets specific content you submitted — zero generic insults. DeftBrain detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.",
   guide: {
-    overview: "RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.",
-    howToUse: [
-      "Select what you're submitting (resume, dating profile, LinkedIn, email, social media, or other)",
-      "Paste your content into the text box",
-      "Choose your heat level: Gentle, Medium, or Scorched",
-      "Hit 'Roast Me' and brace yourself",
-      "Copy the 'Share Line' to send to friends"
-    ],
-    example: {
-      scenario: "You paste your LinkedIn headline: 'Passionate thought leader | Synergy enthusiast | Making the world better one meeting at a time'",
-      action: "Set content type to LinkedIn, heat level to Medium, hit Roast Me.",
-      result: "Roast lines target 'passionate thought leader' (everyone who calls themselves a thought leader has never had an original thought), 'synergy enthusiast' (this is the saddest hobby since stamp collecting), and 'making the world better one meeting at a time' (meetings have never made anything better)."
-    },
     tips: [
       "Scorched is funniest on content that takes itself too seriously",
       "Try roasting the same content at different heat levels",
       "Hit 'Roast Again' to get completely different lines on the same content"
     ],
 
-    pitfalls: [
-      "It roasts the text you paste, not you — anything it couldn't see, it can't make fun of",
-      "The jokes land best on writing that takes itself seriously; a deliberately funny bio leaves less to work with",
-      "A roast tells you what reads badly, not how to rewrite it — for that, the specific lines are the place to start",
-    ]
   }
 },
 
@@ -2811,18 +2101,6 @@ export const tools = [
   headerColor: "#b8dcd8",
   description: "What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.",
   guide: {
-    overview: "Time Warp creates collisions between the modern and historical that are genuinely funny first. History is the playground, not the point — the model picks whatever form (a scene, a listing, a letter, an ad, and more) makes each specific collision funniest, then names the surprising thing the collision reveals about the familiar modern thing.",
-    howToUse: [
-      "Pick a modern thing and a historical period, or use a Quick Combo",
-      "Hit 'Warp It' and let the collision find its own form",
-      "Read 'The Warp' — the short reflection on what the collision reveals",
-      "Try 'One More?' for an irresistible adjacent collision"
-    ],
-    example: {
-      scenario: "Modern thing: Uber. Historical period: 1920s New York.",
-      action: "Hit Warp It.",
-      result: "A fictional 1920s newspaper notice about mysterious horseless carriages summoned by pocket devices, followed by a short reflection on what the panic over 'letting a stranger's car pick you up' still says about trust and convenience today."
-    },
     tips: [
       "The more specific your modern thing, the funnier the result",
       "'Same Combo, Different Warp' reruns the pairing for a fresh take",
@@ -2900,29 +2178,12 @@ export const tools = [
   ],
   description: "Ask a real question. Get an impressively wrong answer, delivered with total confidence. There is a button for the real answer afterwards, if you want it.",
   guide: {
-    overview: "Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.",
-    howToUse: [
-      "Type any real question or pick from Quick Questions",
-      "Choose a category and seriousness level",
-      "Hit 'Wrong Answers Only'",
-      "Toggle 'Show Real Answer' when you want the actual truth"
-    ],
-    example: {
-      scenario: "Question: 'Why is the sky blue?' Category: Science. Seriousness: Playful.",
-      action: "Hit Wrong Answers Only.",
-      result: "Confident answer about 'chromatic resonance particles' from ocean evaporation, fake Nature paper citation, and the 'common misconception' section dismissing Rayleigh scattering as amateur physics."
-    },
     tips: [
       "Simple, well-known questions get the funniest wrong answers",
       "Deadpan mode fools friends who won't realize it's wrong at first",
       "Try the same question in different categories for wildly different answers"
     ],
 
-    pitfalls: [
-      "The wrong answers can sound genuinely authoritative — worth labelling before you share one, so it doesn't travel without the joke",
-      "Fake studies sometimes borrow the names of real institutions; none of the findings attributed to them are real",
-      "The “real answer” is a short pointer, not a full explanation — for the actual science, follow it up properly",
-    ]
   }
 },
 
@@ -2954,19 +2215,6 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Notice what leaves you with more energy — and what leaves you with less. Log an interaction before and after; over time, Social Battery Advisor helps you spot patterns in your own experience and decide what might be worth changing.",
   guide: {
-    overview: "Some interactions leave you with more energy than you started with; others leave you with less — but it's hard to know which is which from memory alone. Social Battery Advisor is built around one idea: log an interaction right after it happens (what it was, your energy before and after, how much you had to 'be on'), and let a pattern emerge from your own data rather than a guess. There's no weekly energy budget, no performance score, and no forecast of a crash — just what your logs actually show, held to how much evidence you've actually given it. One log tells you what happened once; a repeated, comparable pattern only counts once you have a few. When you're ready, switch to My Patterns to see what's worth noticing, a useful contrast or two between logged interactions, and at most one small experiment worth testing next.",
-    howToUse: [
-      "Log an interaction right after it happens — what it was, your energy before and after, and how much you had to be 'on'",
-      "Add an optional note if something about it seems worth remembering",
-      "Repeat for a few more interactions — one log tells you what happened once, not a pattern",
-      "Switch to My Patterns to see what your logs show: worth noticing, useful contrasts, and one experiment to try next",
-      "Try the suggested experiment, if any, then log a few more interactions and check again"
-    ],
-    example: {
-      scenario: "You log a big dinner with friends (energy 4→2, felt fully 'on'), your weekly team meeting (energy 3→3, mostly listened), and a call with your sister (energy 2→4, barely had to be 'on').",
-      action: "Open My Patterns to review the three logs together.",
-      result: "Social Battery Advisor shows the plain counts — one interaction ended lower, one stayed the same, one ended higher — and names a contrast worth noticing: the interaction where you felt most 'on' was also the one that left you lowest, worth testing with more data. It does not tell you the dinner wasn't worth having, and it does not predict a crash — just what these three logs show, and what to log next to learn more."
-    },
     tips: [
       "Log right after the interaction — energy ratings from memory a day later are a guess, not data",
       "One log tells you what happened once; it takes two or three comparable logs before a pattern means much",
@@ -2997,21 +2245,6 @@ export const tools = [
   headerColor: "#9a4040",
   description: "Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you how to say it, where the stress goes, and how to make unfamiliar sounds — with guidance adapted to the language you already speak. When the spelling alone can't settle a reading (a name especially), it says so instead of guessing.",
   guide: {
-    overview: "Pronounce It Right maps unfamiliar words to sounds you already know in your native language. The guidance changes depending on whether you speak English, Spanish, Mandarin, or Arabic — because the tricky parts are different for each speaker. Names get particular care: a spelling doesn't prove how a specific person says their own name, so the guide offers the common reading plus a respectful way to ask, rather than asserting certainty it doesn't have.",
-    howToUse: [
-      "Type the word, name, or phrase — this is the only required field.",
-      "Optionally pick what kind of thing it is: Name, Food/Drink, Place, Brand, Music/Art, Science/Medical, Phrase, or Other.",
-      "Select your native language — this calibrates every sound comparison and mouth-position tip to your ear.",
-      "Add optional context (e.g. 'ordering at a French restaurant', 'my coworker's name') when spelling alone doesn't settle the reading.",
-      "Review the guide: phonetic spelling, stress/tone/rhythm (whichever applies), things to watch out for, and — for names — a script for asking someone to confirm.",
-      "Use Batch mode to look up 2–10 words at once — great for travel prep or restaurant menus.",
-      "Tap any word in your history to re-look it up instantly."
-    ],
-    example: {
-      scenario: "You're going to an Italian restaurant and want to order without second-guessing yourself.",
-      action: "Switch to Batch mode, select Food/Drink, enter: Gnocchi, Bruschetta, Prosciutto, Chianti.",
-      result: "Four pronunciation cards with phonetic spelling, the sound each one trips up for an English speaker specifically, and a flag on any word whose reading genuinely depends on context you haven't given."
-    },
     tips: [
       "Your native language selection matters — a Spanish speaker needs different guidance than a Korean speaker for the same word.",
       "For a person's name, the guide gives the common reading when one exists plus a respectful script for confirming it — spelling alone can't tell you how someone says their own name.",
@@ -3116,19 +2349,6 @@ export const tools = [
   },
 
   guide: {
-    overview: "The Debrief is The Crux's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of talks and long reads. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
-    howToUse: [
-      "Pick a mode: Distill (decisions & actions), Follow Up (draft messages), or Series (cross-meeting patterns)",
-      "Paste your transcript — from Zoom captions, Teams, Otter.ai, Google Meet, or typed notes",
-      "Select meeting type for better extraction (standup vs. planning vs. client meetings need different outputs)",
-      "Optionally add attendee names and context",
-      "Review results — Distill gives you the full meeting output, Follow Up gives you ready-to-send messages"
-    ],
-    example: {
-      scenario: "Your team just finished a 45-minute sprint planning meeting. Three decisions were made, several tasks assigned, and one disagreement was tabled for later.",
-      action: "Paste the Zoom transcript, select 'Planning', add attendee names.",
-      result: "Distill produces: 3 decisions (with who drove each), 7 action items (2 flagged as UNASSIGNED — nobody actually took ownership), 2 open questions (one deferred because the PM was absent), detected tension between engineering and design on the timeline, and a meeting health score of 65% efficiency. The ready-to-send follow-up email lists all action items with owners and deadlines."
-    },
     tips: [
       "Meeting type matters — a standup extraction focuses on blockers while a planning extraction focuses on ownership and timelines",
       "UNASSIGNED action items are flagged in red — these are the ones that fall through the cracks if you don't fix them",
@@ -3161,19 +2381,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes — text, a PDF, or an audio recording. Heart of the Matter finds the ideas doing the most work, breaks down what to understand, or connects themes across multiple pieces.",
     guide: {
-    overview: "Heart of the Matter solves a problem every long talk or article has: an hour of content where maybe ten minutes truly matters. Speakers and writers repeat the important points, flag them with emphasis, and bury them in tangents, stories, and setup. Heart of the Matter detects those signals and extracts what you'd highlight if you had perfect attention the whole way through — whether it's a TED talk, a university lecture, a conference keynote, a sermon, a podcast, or a long article. Everything content-specific stays grounded in what you actually supplied: it reorganizes, compares, and generates practice from the material, but it does not silently add outside facts, predict what will be on an exam, guess a professor's intent, or invent common mistakes. When the source doesn't establish something, that stays a gap rather than getting filled in. Three modes cover different needs, from quick-reference bullets to a fuller breakdown to cross-source themes — and the material itself can be pasted, or uploaded as a text file, PDF, or audio recording.",
-    howToUse: [
-      "Pick a mode: Distill (ranked bullet points), Understand (a plainer breakdown of what to understand), or Connect (cross-source themes)",
-      "Paste your material, or upload it — a .txt/.md file, a PDF, or an audio recording (lecture, talk, podcast) — and it's read in for you",
-      "Optionally add the subject and topic for sharper context",
-      "Set mode-specific options: point count and priority type for Distill",
-      "Review results — each mode produces output optimized for its use case, grounded only in what you supplied"
-    ],
-    example: {
-      scenario: "You just watched a 20-minute TED talk on behavioral economics and want the core ideas without rewatching it.",
-      action: "Paste the transcript (or upload the audio), enter 'Behavioral economics' as the subject, and run Distill (8 points, balanced priority) for the key ideas.",
-      result: "Distill produces 8 ranked points — #1 is the talk's central claim, flagging the line the speaker repeated three times and the story used to anchor it. Each point notes what role it plays in the material, and the summary strips the anecdotes down to the idea they were illustrating. Run Connect across several saved transcripts and it surfaces the threads that are actually supported across them."
-    },
     tips: [
       "Auto-captions are fine — Heart of the Matter handles imperfect transcription (typos, missed words) well",
       "The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times — only when the material actually says them",
@@ -3181,11 +2388,6 @@ export const tools = [
       "Connect mode shines across sources — paste or upload 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them",
       "An uploaded PDF or audio file is read in as text before anything else happens — if the extracted text looks off, you can edit it directly before running a mode"
     ],
-    pitfalls: [
-      "This isn't exam prediction — it won't guess what a professor will actually ask, how much time to budget per topic, or what's coming in a future lecture",
-      "A gap or unresolved point stays a gap — it won't invent an outside fact or a plausible-sounding explanation to fill in what the material didn't cover",
-      "An uploaded file over 20MB won't go through — try a shorter clip or the text version instead"
-    ]
   }
 },
 
@@ -3284,19 +2486,6 @@ export const tools = [
   },
   description: "Some stories are hard to tell. Share the real story—even the messy parts—and we'll help you explain it honestly and strategically.",
   guide: {
-    overview: "The Whole Story takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
-    howToUse: [
-      "Write out the real story — be as honest and detailed as possible (this stays between you and the tool)",
-      "Select who you're telling: job interviewer, landlord, date, in-laws, lender, coworker, or custom audience",
-      "Pick your preferred tone: professional, conversational, warm, or direct",
-      "Add what you're worried they'll think and any extra context about the situation",
-      "Review 2-3 strategically different versions, each with scripts, risks, and best-use scenarios"
-    ],
-    example: {
-      scenario: "You left your last job after only 4 months. The company was chaotic, management was toxic, and they misrepresented the role. You're now interviewing for a senior position at a competitor.",
-      action: "Enter the full story, select 'Job Interviewer', set tone to 'Professional', add concern 'They'll think I'm a job hopper' and context 'Applying for senior role at competitor'.",
-      result: "Three versions: 'The Growth Story' (emphasizes what you learned about what you need in a workplace), 'The Standards Story' (frames it as knowing your worth and not settling), and 'Own It' (brief and confident, redirects to what you bring). Each includes a ready-to-use script, follow-up prep for 'Why so short?' and 'Were you fired?', delivery tips, and a redirect line if things get uncomfortable."
-    },
     tips: [
       "The messier and more honest your input, the better the framing — don't self-censor",
       "Each version has a genuinely different strategic approach, not just different words for the same thing",
@@ -3305,11 +2494,6 @@ export const tools = [
       "Try the same story with different audiences to see how framing shifts — it's eye-opening"
     ],
 
-    pitfalls: [
-      "It frames the true story and won't invent jobs, dates or credentials — an invented detail is usually what unravels under a follow-up question",
-      "Scripts can include placeholders like [specific project]; they work only once those are filled with real details",
-      "Each version comes with its risk — which one fits depends on who is asking, so the risk is worth reading as closely as the script",
-    ]
   }
 },
 
@@ -3334,19 +2518,6 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Document Detective extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
   guide: {
-    overview: "Document Detective solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
-    howToUse: [
-      "Paste the full text of the document you received",
-      "Select the document type (insurance, HOA, lease, policy update, etc.)",
-      "Describe your situation — the more specific, the better the filtering ('renter, no kids, have a dog, work from home')",
-      "Optionally add specific concerns ('Did they raise the rent?' or 'Am I covered for this?')",
-      "Review action items, cost changes, savings opportunities, and what you can safely ignore"
-    ],
-    example: {
-      scenario: "You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.",
-      action: "Paste the full text, select 'HOA/Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
-      result: "Document Detective finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
-    },
     tips: [
       "More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
       "Action Required items show deadlines and consequences — these are the ones people miss and regret",
@@ -3439,19 +2610,6 @@ export const tools = [
   ],
   description: "A message doesn't mean the same thing to everyone who reads it. Tell DeftBrain what you're about to send, and we'll show you where your intent and your audience's interpretation may not match.",
   guide: {
-    overview: "Context Collapse is named after the communication phenomenon where a single message lands completely differently depending on who reads it. It's DecoderRing in reverse — instead of decoding what someone sent you, it previews how your message will be received by each audience before you send it. You define who will see it, and the tool shows you the emotional interpretation, risk level, key triggers, and likely reactions for each person or group.",
-    howToUse: [
-      "Paste the message you're about to send or post",
-      "Select the platform (text, email, group chat, social media, Slack, public post)",
-      "Add 2-6 audiences who will see this — with their relationship and any relevant context",
-      "Describe what you're TRYING to communicate",
-      "Review per-audience readings, risk levels, the intent-vs-reality gap, and rewrite suggestions"
-    ],
-    example: {
-      scenario: "You're posting in a group chat with coworkers and your manager: 'Just FYI, I've been handling the client reports solo for the past three weeks. Happy to keep going but wanted to flag it.'",
-      action: "Paste the message, select 'Group Chat', add audiences: 'My manager (she assigned the reports)', 'Jake (was supposed to help, didn't)', 'Rest of team (not involved)'. Intent: 'Get Jake to help without creating drama'.",
-      result: "Manager reads it as a professional heads-up with subtle accountability signal — safe. Jake reads it as public shaming — risky, he'll get defensive. Rest of team reads it as you positioning for credit — mild risk of seeming political. Biggest risk: Jake feels ambushed. Rewrite suggestions include a version that achieves the same goal via DM to manager instead, and a softer group version that doesn't name the duration."
-    },
     tips: [
       "Add relationship context for each audience — 'My boss (we had a disagreement last week)' changes the reading dramatically",
       "The 'Key Trigger' field shows the exact word or phrase driving each audience's interpretation",
@@ -3460,11 +2618,6 @@ export const tools = [
       "Use this before any announcement that goes to mixed audiences — it prevents 90% of 'that came out wrong' moments"
     ],
 
-    pitfalls: [
-      "It predicts likely readings, not certain ones — adding a line about each relationship (“my boss, after last week's disagreement”) makes the reading much sharper",
-      "It can't know history it isn't told; a private joke or an old argument will change how a message lands",
-      "For decoding a message someone sent you, Decoder Ring is the tool; this one is for messages you're about to send",
-    ]
   }
 },
 
@@ -3489,19 +2642,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.",
   guide: {
-    overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
-    howToUse: [
-      "Pick your media type: Show, Book, Game, or Sports",
-      "Enter the title and exactly where you stopped (episode, chapter, story point, or date)",
-      "Add what you remember — even vague recollections help calibrate the recap",
-      "Set your spoiler level: Strict (nothing after your point), Moderate (vague hints okay), or Open",
-      "Ask specific questions if something's nagging you ('Who was the guy with the scar?')"
-    ],
-    example: {
-      scenario: "You stopped watching Succession after Season 2, Episode 7. You remember something about a shareholder meeting and Kendall trying to take over, but the details are fuzzy. Your friends keep referencing it and you want to catch up without restarting.",
-      action: "Select Show, enter 'Succession' and 'Season 2, Episode 7', add what you remember, set spoiler level to Strict.",
-      result: "Bookmark delivers a present-tense recap of the power struggle up to that point, a character-by-character refresher (who's allied with whom, what each person wants), active plot threads with their unresolved tensions, the exact last major scene to trigger your memory, and an honest 'worth continuing?' take. Zero information from after S2E7."
-    },
     tips: [
       "The 'What do you remember?' field dramatically improves accuracy — even wrong memories help calibrate",
       "Sports mode's must-watch games with '🔒 Watch blind' tags let you catch up on storylines while preserving big moments",
@@ -3580,30 +2720,12 @@ export const tools = [
   },
 
   guide: {
-    overview: "Decoder Ring looks at the pragmatics, subtext, and emotional undercurrent of a message and lays out how it could reasonably be read — often more than one way. It doesn't tell you what the sender meant; nobody can know that from a message. It widens the range of readings you're considering, rates how ambiguous the message actually is, and gives you three different ways to reply.",
-    howToUse: [
-      "Paste the exact message you received — wording and tone matter",
-      "Select where it came from (text, email, Slack, dating app, etc.)",
-      "Choose your relationship to the sender for context",
-      "Add backstory if the message is ambiguous",
-      "Review the translation, emotional read, decoded layers, and response options"
-    ],
-    example: {
-      scenario: "You receive a text from your partner: 'Hey! So I was thinking about what you said and I totally get where you're coming from. I just think maybe we should take some time to think about things separately.'",
-      action: "Paste the message, select 'Text message' and 'Partner/Spouse', add context about a recent argument.",
-      result: "Decoder Ring scores the message 8/10 for ambiguity and says so plainly: it could be a request for breathing room, or a first step toward more distance, and the message alone doesn't settle it. It walks through each line with both readings side by side, notes that 'totally fine either way' could be genuine or could be withdrawal, and gives you 3 ways to reply — ask directly, give space, or address the decision that started it — each with its own downside."
-    },
     tips: [
       "Paste the EXACT wording — paraphrasing loses the tone cues the read depends on",
       "Adding relationship context makes a much bigger difference than people expect on an ambiguous message",
       "Check the ambiguity score first. A high one means the message genuinely supports several readings, and no tool can narrow it further",
       "Response strategies include risk assessments — check the downsides before sending"
     ],
-    pitfalls: [
-      "Don't paste paraphrased versions — the exact wording is where the tone lives",
-      "The tool reads the message in isolation; wildly different backstory context can change the read significantly",
-      "Response strategies are starting points, not scripts — adapt them to your voice"
-    ]
   }
 },
 {
@@ -3627,19 +2749,6 @@ export const tools = [
   headerColor: "#f5e0c0",
   description: "Stuck between choices? Describe the decision, your options, and what matters to you. Decision Prism looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.",
   guide: {
-    overview: "Decision Prism runs your decision through multiple thinking frameworks that therapists, strategists, and decision scientists use — but applied specifically to YOUR situation. It doesn't guess what you secretly want or predict how you'll feel. It shows you angles and unknowns you're missing, using only what you actually tell it.",
-    howToUse: [
-      "Describe the decision and what's making it hard",
-      "Name the options you're actually considering",
-      "Select the values this decision touches",
-      "Tell us what's making this hard — this shapes which considerations get surfaced",
-      "Review the per-option analysis, comparison matrix, and what's still unknown"
-    ],
-    example: {
-      scenario: "You got a job offer paying 40% more but requiring relocation. Current job is comfortable but stagnant. Partner is open to moving but not excited.",
-      action: "Describe the situation, add 'Take new job' and 'Stay' as options, select Career growth + Financial security + Family as values, pick 'I'm afraid I'll regret it' as what's making this hard.",
-      result: "Decision Prism offers a reframing question underneath the decision, runs each option through a pre-mortem, opportunity cost, reversibility, and values fit, shows a qualitative comparison matrix, summarizes what your own description actually established, flags what you still don't know, and lays out what the current facts favor versus what remains unresolved — without inventing how you'll feel or what anyone else will do."
-    },
     tips: [
       "The more context you provide, the sharper the analysis — but it will never invent facts you didn't give it",
       "Decision Prism only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it",
@@ -3732,19 +2841,6 @@ export const tools = [
   },
 
   guide: {
-    overview: "Mise en Place is a meal prep strategist, not a recipe finder. It solves the hard part of cooking at home: taking random ingredients and building an optimally sequenced plan that tells you what to do, when, and what to prep during downtime. Like having a sous chef in your ear.",
-    howToUse: [
-      "List what's in your fridge/pantry, or upload a photo",
-      "Set your time available, skill level, and dietary needs",
-      "Choose your meal type and available equipment",
-      "Get meal recommendations ranked by how well they use your ingredients",
-      "Follow the timeline minute by minute, with what to do while things cook and a nudge at the moments that matter"
-    ],
-    example: {
-      scenario: "You have chicken thighs, rice, bell peppers, garlic, soy sauce, and some wilting spinach. You want dinner in 45 minutes and you're an intermediate cook.",
-      action: "List ingredients, set 45 minutes, intermediate skill, dinner, stovetop + oven.",
-      result: "Mise en Place recommends teriyaki chicken bowls, provides a timeline starting with rice (longest cook time), then searing chicken during the first 10 minutes while prepping vegetables as a parallel task. Checkpoints tell you when rice should be absorbing, when to flip chicken. Leftovers strategy: tomorrow's fried rice."
-    },
     tips: [
       "Fridge photos work surprisingly well — AI identifies ingredients visually",
       "The parallel task suggestions are the real value — they cut total time significantly",
@@ -3846,30 +2942,12 @@ export const tools = [
   },
 
   guide: {
-    overview: "Ghost Writer solves one of the most procrastinated writing tasks: recommendation letters. It takes your rough knowledge of someone and produces polished letters that sound like YOU wrote them thoughtfully, with specific anecdotes and persuasive structure that actually moves reviewers.",
-    howToUse: [
-      "Enter the person's name and your relationship to them",
-      "Select what they're applying for and the letter type",
-      "Pick their standout qualities from the list",
-      "Add specific examples or stories (even rough bullet points work)",
-      "Choose from 3 versions: Narrative (memorable), Structured (comprehensive), or Concise (quick)"
-    ],
-    example: {
-      scenario: "Your direct report Sarah is applying for a Senior PM role at Google. You've managed her for 2 years. She led the Q3 launch, mentored junior team members, and is exceptionally good at stakeholder communication.",
-      action: "Enter Sarah's name, your relationship, the role, select Leadership + Communication + Initiative, add bullet points about the Q3 launch and mentoring.",
-      result: "Ghost Writer generates 3 versions: a narrative letter opening with the Q3 launch story, a structured letter with sections on leadership/communication/initiative, and a concise LinkedIn recommendation. Each highlights [BRACKETS] where you should add specific details only you'd know."
-    },
     tips: [
       "Even vague bullet points ('she's great with clients') get turned into compelling examples",
       "Placeholders in [BRACKETS] are flagged so you know exactly what to personalize",
       "The Refine button lets you adjust tone, length, or add specific details after generation",
       "Power Phrases section shows which lines carry the most persuasive weight — keep those"
     ],
-        pitfalls: [
-      "Vaguer inputs produce generic letters — the more specific the bullet points about the person, the stronger the output",
-      "The tool generates three style variations; reviewers often respond better to the 'warm' version than the 'formal' one",
-      "AI-generated reference letters should always be reviewed and personalised by the actual recommender before sending"
-    ]
   }
 },
 
@@ -3894,19 +2972,6 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.",
   guide: {
-    overview: "Caption Magic turns a photo into a small set of caption ideas without making you explain the picture back to yourself. Upload an image or describe it, then add anything the image cannot know — who is there, what was happening, an inside joke, or something to avoid. You get six captions with real range, from straightforward to warm, clever, funny, dry, or unexpectedly strange. From there you can ask for funnier, warmer, drier, more unhinged, a surprise, or six more, and refine a caption you like.",
-    howToUse: [
-      "Upload, paste, or describe the photo",
-      "Add optional context the image cannot show, especially relationships, backstory, or an inside joke that would make the caption better",
-      "Say if there is anything the captions should avoid mentioning",
-      "Choose the platform and preferred caption length",
-      "Pick from six captions, then ask for a different direction or refine one you like"
-    ],
-    example: {
-      scenario: "You have a photo from a family gathering where one person's expression is funny, but the picture alone cannot show the running joke behind it.",
-      action: "Upload the photo and add one sentence explaining the relationship and the joke.",
-      result: "Caption Magic returns six different caption ideas rather than six rewrites of the same joke. You can copy one immediately, ask for a funnier or drier batch, or work further on a caption that is close."
-    },
     tips: [
       "A short piece of real context often gives the captions more personality than adding more style instructions",
       "If the first six all feel too similar, use Surprise me or Six more rather than over-editing the form",
@@ -3943,29 +3008,11 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Low on energy and not sure what to do with it? Tell PEP how much you have in you right now. Get something that fits. Try it. Tell PEP how it went. PEP uses your own history to make better suggestions next time.",
   guide: {
-    overview: "PEP treats your energy as something you report, not something it measures. Tell it your capacity, available time, mood, and location, and it suggests one manageable activity plus a couple of alternatives — never framed as guaranteed to help. Try something and rate how it actually went, and that becomes real evidence PEP can use the next time you're in a similar spot. Save activities you want it to remember for another low-energy moment.",
-    howToUse: [
-      "Set your energy (1-10), how much time you have, and optionally your mood and location",
-      "Add anything else worth knowing — what you've been doing, what sounds awful right now, what you need to be ready for next",
-      "Get a top pick with a first step and a stopping point, plus up to two alternatives",
-      "In a hurry? 'Just tell me what to do' skips the menu and gives one suggestion",
-      "After trying something, tell PEP how helpful it was and your energy afterward — that's what personalizes future suggestions"
-    ],
-    example: {
-      scenario: "It's the evening. Energy is 2/10, you have 15 minutes, you've been staring at screens all day.",
-      action: "Set energy to 2, time to '15 minutes', and mention the screen fatigue in the open field, then submit.",
-      result: "Top pick: something low-demand and screen-free that fits the 15 minutes, with a first step, a duration, and a concrete stopping point — no promise about how it will make you feel."
-    },
     tips: [
       "The open 'anything else PEP should know?' field is powerful — mention what you've been doing or what sounds awful right now and the suggestion adjusts",
       "Rate activities after trying them — that's what makes future suggestions genuinely personal instead of generic",
       "My Menu shows real numbers (times tried, typical rating) only once you've actually logged a few attempts at the same activity"
     ],
-    pitfalls: [
-      "PEP won't tell you an activity is guaranteed to help — it explains why something fits what you reported, and lets your own rating be the evidence",
-      "A saved activity means only that you chose to keep it, not that it's proven to work — that only comes from your own ratings over time",
-      "My Menu's stats only show up once you've actually logged a few attempts at the same activity"
-    ]
   }
 },
 {
@@ -3989,22 +3036,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.",
   guide: {
-    overview: "BatchFlow groups your tasks by how your brain needs to work — not just by topic or deadline. Every time you switch between creative thinking, analytical work, social communication, or physical tasks, your brain pays a recovery tax of 15–25 minutes. BatchFlow eliminates unnecessary switches by sorting your tasks into coherent batches, scheduling them around your energy curve and fixed commitments, and giving you a ready-to-execute plan. Add your tasks, tell it what kind of day you're having and when your energy peaks, and get a complete batched schedule — with focus environment tips, break suggestions, and time estimates — in seconds.",
-    howToUse: [
-      "List everything on your plate — don't filter or prioritize yet, just dump it all in",
-      "Or use 'Paste List' to drop in a raw to-do list and let BatchFlow extract and structure it for you",
-      "Set your energy pattern (Morning Person, Night Owl, etc.) so high-focus batches land at your peak",
-      "Pick your day type — Maker Day, Meetings Day, Admin Day — to shape how batches are sequenced",
-      "Add fixed commitments (meetings, pickups) so BatchFlow works around them, not over them",
-      "Hit 'Batch My Tasks' — or use 'Compare' to see a Sprint vs Marathon version side-by-side",
-      "In the results, tick off tasks as you go, use '🔍 Expand' for step-by-step breakdowns, and hit 'What's next?' to recalibrate mid-day",
-      "Use 'Log time' after each batch to build time calibration data — after a few sessions it'll predict your durations accurately"
-    ],
-    example: {
-      scenario: "It's Monday morning. You have 11 tasks: 3 emails to write, a spreadsheet to update, 2 calls to make, a report to draft, groceries, a form to file, a meeting at 2pm, and a design review.",
-      action: "Enter all 11 tasks, set energy to 'Morning Person', day type to 'Mixed Bag', add the 2pm meeting as a fixed commitment. Hit Batch.",
-      result: "BatchFlow groups them into 4 batches: a 9–11am Creative batch (report + design review), an 11am–noon Social batch (calls + emails), a 1–2pm Mechanical batch (spreadsheet + form, before the meeting), and an afternoon Physical batch (groceries after the meeting). Each batch includes a focus preset, estimated duration, and a break suggestion. Context switches drop from 10 to 3."
-    },
     tips: [
       "The 'Paste List' mode is fastest — just dump your notes app or inbox and BatchFlow will extract tasks automatically",
       "Use 'Compare' (Sprint vs Marathon) when you're unsure how hard to push — it shows two different pacing strategies for the same tasks",
@@ -4037,27 +3068,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#ccdfc4",
   description: "Don't feel like working out? Tell us how much energy and time you have, what's bothering you, and what kind of day you've had. Lazy Workout Adapter turns that into movement you can actually manage right now.",
   guide: {
-      overview: "LazyWorkoutAdapter is for the moment you know you should move but don't want to. Instead of pretending you have motivation, it starts from your actual energy, what happened today, and where your body hurts — then builds something you can realistically do right now. Context triggers ('bad sleep', 'emotional day', 'been in meetings') change the workout more meaningfully than an energy number alone. Environment Stack eliminates the idea that movement is separate from your day by weaving micro-movements into things you're already doing. Sleep Prep helps you wind down before bed with progressive relaxation. Recovery handles the aftermath of life events — post-flight, post-argument, post-migraine. After enough sessions, Prove It shows your own data back to you: does movement actually raise your energy? By how much? What type works best? Your data convinces you, not motivational quotes.",
-
-      howToUse: [
-        "⚡ Right Now: Set energy, tap what happened today (context triggers), tap where your body hurts, choose time and setting. Get a tailored workout with timer, swap, and easier fallbacks for every exercise",
-        "⏱️ 2-Minute Floor: Three movements, 40 seconds each. For those days where even 5 minutes is impossible. Still counts toward your streak",
-        "🎯 Body Relief: Pick what hurts, choose intensity, get targeted movements that feel like relief — with prevention tips",
-        "📚 Environment Stack: Tell it what you're about to do (TV, cooking, phone call) and get micro-movements to sprinkle throughout — 30-60 seconds each, often invisible to anyone watching",
-        "🌙 Sleep Prep: Set your stress level and time. Get a progressive wind-down routine that ends with eyes closed and a breathing pattern. The physical equivalent of dimming the lights",
-        "🩹 Recovery: Tell it what happened (long flight, bad day, panic attack, surgery) and how rough it was. Get a recovery protocol that addresses physical and emotional residue, starting with the most immediately soothing thing",
-        "📅 My Week: Rate your typical energy by day, get a 7-day movement menu with minimums and 'feeling it' options. Skip days guilt-free",
-        "🫁 Breathe: Box breathing, 4-7-8, or calm pattern with visual countdown. Sometimes the movement you need is just breathing",
-        "📊 History: 30-day calendar with streak, energy shift tracking. Insights after 5+ sessions. 'Prove It' after 7+ sessions shows real evidence from your own data",
-        "💾 Presets: Save favorite workouts for one-tap repeat. 'Not Today' button logs a skip without guilt — the data is actually useful for pattern analysis"
-      ],
-
-      example: {
-        scenario: "It's 9pm Tuesday. You had back-to-back meetings all day, your neck is killing you, energy is 3/10, and you need to be in bed in an hour. You've been using the tool for 2 weeks.",
-        action: "Open the tool — it nudges you: 'It's Tuesday evening. You usually do a 10-minute session around now. How about your usual neck relief?' You tap 'Let's go' but switch to Right Now, set energy to 3, tap 'long meeting' and 'screen marathon' as context triggers, tap 'stiff neck.' 8 minutes. The workout is entirely floor-based with neck-specific movements, all doable while watching TV. You swap one exercise you don't like — it's replaced and remembered. After, you switch to Sleep Prep with stress level 'high.' 5-minute wind-down ending with 4-7-8 breathing.",
-        result: "Two sessions logged (workout + sleep prep). Energy went from 3 to 5 after the workout. Streak: 9 days. The tool notes you consistently feel better after evening sessions. After another week, you check Prove It: your energy increases an average of 1.6 points after moving, and neck-targeted sessions help the most. That's not motivation — it's your own data."
-      },
-
       tips: [
         "Context triggers are the biggest upgrade — 'bad sleep' and 'been in meetings' produce fundamentally different workouts even at the same energy level",
         "Environment Stack is for people who 'don't have time to exercise' — if you're watching TV for an hour, you have time for 6 invisible micro-movements",
@@ -4092,32 +3102,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Paste or upload a document you don't fully understand. Jargon Assassin translates the dense language, shows you what matters, flags terms worth a closer look, and helps you figure out what the document means for your situation.",
   guide: {
-      overview: "JargonAssassin is for the moment you're staring at a lease, medical consent form, insurance policy, or employment contract and thinking 'what does this actually mean for me?' Paste the document, pick your reading level, and get it translated with every red flag, deadline, and hidden catch identified. But translation is just the start — the tool completes the full arc from confusion to understanding to action. Red-Line tells you what to push back on with specific alternative language. Template Compare gives you a baseline for what's normal. Action Plan orders your next steps with deadlines pulled from the document. Letter Generator writes your response. And if you need to explain it to someone else — your parent, your roommate, your partner — the Explain To mode reframes everything for that specific person.",
-
-      howToUse: [
-        "📄 Translate: Paste any document, select type and reading level (ELI5 through Professional). Get plain translation, danger score, flagged sections with enforceability notes, glossary, and checklist",
-        "❓ Q&A: Ask anything about the translated document — 'Can I sublease?', 'What if I miss a payment?' Answers at your reading level with warnings if your question reveals a concern",
-        "🚩 Key Sections: View flagged sections (red flags, deadlines, decisions) with one-click deep-dive for line-by-line clause analysis including hidden catches",
-        "🗣️ Explain To: Enter who you're explaining to ('my 70-year-old mother', 'my business partner') and get the content reframed for their concerns, their language, and what they specifically need to know — plus advice on how to have the conversation",
-        "✏️ Red-Line: One-click generates specific edits to propose — what to change, what to add, what to remove — with priority ranking, alternative language, and a negotiation strategy for what to lead with and what to concede",
-        "📊 vs Normal: One-click compares your document against what's typical for this type — is your non-compete unusually broad? Is that late fee standard? Flags what's aggressive, what's missing, and what's actually better than usual",
-        "📋 Action Plan: Generates ordered steps with deadlines, quick wins you can do in 5 minutes, scripts for conversations, and consequences if you do nothing",
-        "🔀 Compare: Paste two versions of a document to see every meaningful change, what was removed (potentially concerning), and whether the revision is better or worse overall",
-        "📁 Dossier: Add 2+ related documents (lease + building rules, contract + handbook) and cross-reference them for conflicts, dependencies, and gaps between documents",
-        "✉️ Letter: Generate a professional response letter — dispute, negotiate, accept with conditions — that references specific clauses, with tone selection and send-via recommendation"
-      ],
-    pitfalls: [
-      "The 'ELI5' level is deliberately simplified — it strips nuance; use '5th Grade' or 'Professional' for legal or medical decisions",
-      "Red flags are flagged by pattern, not legal expertise — always have a qualified professional review anything with 'danger' flags before signing",
-      "The comparison feature needs both versions of the full document, not just the changed clauses, for accurate scoring"
-    ],
-
-      example: {
-        scenario: "You receive a new apartment lease renewal. The rent went up, some terms changed, and there's a new clause about 'property access' that sounds invasive. You also need to explain the changes to your roommate who panics about everything.",
-        action: "Translate the full lease — danger score shows 'Caution' with the property access clause flagged as a red flag with enforceability concerns. Deep-dive that clause: it allows 24-hour access without notice for 'maintenance.' Hit Red-Line — it suggests changing to 48-hour written notice except for emergencies, with specific language to propose. Template Compare shows the rent increase is standard for your area but the access clause is unusually broad. Action Plan gives you 6 steps, starting with emailing the landlord about clause 4.2 (script included), deadline to respond by the 15th. Then use Explain To for 'my anxious roommate' — it reframes everything calmly, tells them what NOT to worry about, and suggests having the conversation over dinner.",
-        result: "Full translation with 3 red flags and 2 deadlines identified. Red-line with 4 suggested changes ranked by priority. Template comparison showing 8 clauses rated against standard leases. 6-step action plan with scripts and deadlines. A roommate-friendly explanation that reduces anxiety. All saved for reference."
-      },
-
       tips: [
         "Start with Translate, then use the one-click buttons (Red-Line, vs Normal, Action Plan) to unlock the full analysis — each builds on the translation",
         "Red-Line + Action Plan together complete the arc: Red-Line tells you WHAT to push back on, Action Plan tells you HOW and WHEN",
@@ -4213,20 +3197,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "The strongest arguments are usually the ones we haven't heard yet. State your position and you'll get the strongest case against it — not to prove you wrong, but to help you think more clearly.",
   guide: {
-    overview: "Argue Smarter is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
-    howToUse: [
-      "🥊 Full Debate: State position, pick format (Freeform/Lincoln-Douglas/Cross-Exam/Oxford/Socratic), set challenge level, go. Use 🤝 to concede strategically, 🧑‍🏫 for coaching angles, 🔍 to source-check claims, 🔄 to switch sides. Adjust difficulty mid-debate",
-      "📊 Scorecard + Extras: After 2+ exchanges, end for sharpness score, blind spots, fallacy analysis, coaching note. Then unlock Audience Verdict (who was more persuasive to an undecided observer?) and Argument Map (visual tree of your claims with defended/abandoned branches)",
-      "🎯 Devil's Advocate Prep: Enter your position, audience, context, and stakes. Get the 5 hardest questions they'll ask, with angles, landmines to avoid, openers, and worst-case recovery. Jump to a full practice debate from any prep",
-      "🧩 Fallacy Gym: Spot logical fallacies at easy/medium/hard difficulty. Streak tracking. Get specific feedback on why you were right or wrong. Builds the skill that makes you better in actual debates",
-      "🔁 Rematch: From your log, rematch any previous debate. The AI targets your documented blind spots and sets traps for your habitual fallacies. Forces genuine growth",
-      "🏆 Highlight Reel: After 3+ debates, generate a cross-debate analysis — your Debater Type archetype, persistent strengths and weaknesses, most common fallacy with exercises, growth trajectory, and suggested topics to stretch your weakest areas"
-    ],
-    example: {
-      scenario: "You need to defend switching to remote-first at Thursday's board meeting. The CEO is risk-averse and the company lost revenue last quarter.",
-      action: "Devil's Advocate Prep: enter your position, describe the board, note the revenue context, set stakes to 'career-defining.' Get drilled on the 5 hardest questions. Then jump to a full debate in Oxford format at Rigorous. Use Cross-Exam format for a round to practice answering tough questions. Mid-debate, source-check the productivity data you're citing. Hit Coach when stuck on the innovation objection. After 5 turns, switch sides to understand the board's perspective. End & Score.",
-      result: "Prep gave you the 'but what about our culture' question you hadn't prepared for, plus a landmine to avoid ('don't mention competitor layoffs'). Debate scorecard: 7/10, blind spot on junior employee development. Audience Verdict: you were slightly more persuasive but lost them during the cost analysis. Argument Map shows you built wide but not deep — lots of claims, thin evidence. Rematch available targeting those exact weaknesses."
-    },
     tips: [
       "Devil's Advocate Prep before any important meeting, presentation, or difficult conversation — it's the highest-ROI mode",
       "Try Socratic format at least once — being questioned without the AI asserting anything forces you to examine your own assumptions in a way nothing else does",
@@ -4234,11 +3204,6 @@ tagline: "Work with the energy you have.",
       "The Fallacy Gym streak is addictive and genuinely useful — try 5 minutes a day at increasing difficulty",
       "Rematch is where real growth happens — same topic, but the AI remembers your blind spots and specifically targets them"
     ],
-    pitfalls: [
-      "The AI argues its assigned position forcefully — that's the point, not a bug. The goal is to strengthen your thinking, not to 'win'",
-      "Scorecard reflects reasoning quality, not factual correctness — a well-argued wrong position can score higher than a sloppy right one",
-      "Devil's Advocate Prep simulates an audience based on your description — the more detail you give, the more accurate the simulation"
-    ]
   }
 },
 {
@@ -4262,23 +3227,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Paste an abstract, excerpt, or research paper. Research Decoder explains what the researchers found, what they actually did, what the numbers mean, and what the study can—and cannot—tell you.",
   guide: {
-      overview: "Research Decoder explains the research in front of you — nothing more. Paste an abstract, excerpt, or paper text (or upload the file) and get the actual finding, what the researchers did, what the numbers mean, and what the study can and cannot support — without importing outside studies, filling in missing methodology, or manufacturing a confidence label the supplied text can't back up. Headline Check compares a headline against the actual paper, never against the headline alone. Compare shows what two papers can tell you together without ranking one over the other. Explain a Term handles the vocabulary. Recent keeps a light record of what you've looked at.",
-
-      howToUse: [
-        "📄 Decode: Paste the abstract, excerpt, or paper text — or upload the file. Optionally add the title and what you're most interested in. Get the finding, what they did, what the numbers mean, and what the study does and doesn't support",
-        "📰 Headline Check: Paste the research text and the headline or claim you saw. See what the research actually says compared to what the headline claims — the tool won't assess a headline from the headline alone",
-        "⚖️ Compare: Paste two papers on a related question. See what each supports, what may explain any difference, and what they establish together",
-        "🔤 Explain a Term: Paste a confusing term — with the sentence it appeared in, if you have it — for a plain explanation",
-        "🎯 After a decode, ask what it means for you: the tool checks the actual paper against your situation on three separate questions instead of collapsing them into one verdict",
-        "🕘 Recent keeps a light record of what you've decoded, checked, compared, or looked up — view it again, or revisit it to run a new pass"
-      ],
-
-      example: {
-        scenario: "You read a headline claiming a new study 'proves' processed food shortens your life. You find the actual abstract: a prospective cohort study linking a 10% increase in ultra-processed food intake to a 14% higher all-cause mortality hazard ratio, adjusted for confounders, with self-reported diet and an observational design.",
-        action: "Paste the abstract into Decode. Then paste the same headline into Headline Check alongside the research text.",
-        result: "Decode explains the finding as it's actually reported — an association, not a proven cause — notes plainly that the diet data was self-reported, and gives a bottom line that this is evidence worth noting, not a personal directive. Headline Check flags that 'proves' overstates an observational, hazard-ratio finding, and offers a more accurate version of the claim."
-      },
-
       tips: [
         "Only paste what you actually have — an abstract works fine, and the tool says so rather than treating it as the full paper",
         "Headline Check needs the underlying research, not just the headline — without the paper, there's no way to tell whether the coverage matches it",
@@ -4309,24 +3257,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Not sure what to say, how to join in, or what an interaction might have meant? Read the Room helps you prepare for social situations, find words in the moment, recover from awkward moments, and make sense of what happened afterward — without pretending it can read anyone's mind.",
   guide: {
-      overview: "Read the Room works from four moments, not thirteen modes: Prepare (an event, one person, a group, or a cross-cultural situation), Right Now (something to say, a stalled conversation, an awkward moment, or an exit), Decode (what an interaction might have meant, or whether to go deeper), and Afterward (making sense of how something went, a follow-up message, or understanding something that went badly). Each moment opens with one question and a plain-language list of choices — no second row of tabs to parse first. It reasons about plausible interpretations and gives real, specific advice — it never narrates what a stranger actually thought or felt, never predicts exactly what someone will say next, and never claims a personality from a job title or one short interaction. Your Playbook and saved plans are small utilities at the bottom of the page, not the main event; they only grow when you tell the tool something actually worked.",
-
-      howToUse: [
-        "Prepare → An Event: pick an event, add who's there and any concerns, get a simple plan, a few conversation starters, and one thing to watch for",
-        "Prepare → One Person / A Group / A Cross-Cultural Situation: get grounded prep that never invents a personality, a hidden group dynamic, or a fact about an individual from their culture",
-        "Right Now → I need something to say / Conversation stalled / I said something awkward / I need to leave: fast, in-the-moment help for exactly what's happening",
-        "Decode → What might that have meant?: a real read when the evidence points somewhere, honest uncertainty when it doesn't, and what to watch for next",
-        "Decode → Should I go deeper or back off?: reads observable reciprocity — whether they're engaging or winding down — rather than a fixed signal",
-        "Afterward → Help me make sense of how it went / Help me follow up / Something went badly: process what happened using only what you supply, with a manual save if a tactic actually worked",
-        "Track a recurring person under Prepare → One Person and log what happened after each interaction — the next strategy comes from your own logged outcomes"
-      ],
-
-      example: {
-        scenario: "You have a work dinner Thursday with clients from a culture you don't know well. Last week's networking event felt off and you can't figure out why.",
-        action: "Prepare → A Cross-Cultural Situation for Thursday's dinner. Afterward → Something went badly, describing what happened at the networking event.",
-        result: "Norms worth checking for the dinner, framed as tendencies to verify rather than facts about your specific guests, plus a safe fallback and a graceful recovery line. For the networking event: a plain restatement of what happened, what was actually in your control versus what you couldn't have known, one turning point tied to something that actually happened, and one thing not to overlearn from a single interaction."
-      },
-
       tips: [
         "Right Now → I said something awkward doesn't produce a severity score — most things need no repair at all, and the tool says so honestly",
         "Track recurring people and log what happened each time — after a few logged interactions, the fresh approach draws on real outcomes, not a guess at their personality",
@@ -4358,22 +3288,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.",
   guide: {
-      overview: "Money Diplomat handles the social side of money — the conversations, calculations, and etiquette nobody teaches you. Pick from 18 situation types (tipping, splitting, lending, dating, gifts, salary, inheritance, and more) and get tailored scripts, amounts, and strategies. Use Quick Math for instant tip/split calculations without AI. Track who owes you with They Owe Me and generate tactful nudge messages. Practice high-stakes money conversations in the simulator. Set your profile once (budget, culture, relationship status) and every response adapts automatically.",
-
-      howToUse: [
-        "⚙️ Set Profile first (optional but powerful): Enter your budget level, cultural background, relationship status, and country — this context auto-enriches every future request",
-        "🔥 Quick Math: For simple tip or split calculations, toggle Quick Math mode — enter bill amount, pick a tip percentage, set number of people, get instant results with no AI needed",
-        "🎯 Pick a Situation: Choose from 18 types (Tip, Split Bill, Venmo, Lending, Date, Gift, Salary, etc.), fill in the context fields, and get a tailored script with exact amounts and social strategy",
-        "🎭 Practice Mode: For high-stakes conversations (salary, lending, family money), open the simulator — the AI plays the other person in character while coaching your responses",
-        "📒 They Owe Me: Log debts, track who's paid, and generate culturally-aware nudge messages at the right escalation level — from gentle reminder to firm follow-up"
-      ],
-
-      example: {
-        scenario: "Your friend group is splitting a dinner bill, but two people only had salads while others ordered steak and cocktails. Someone suggests splitting evenly. You don't want to be 'that person' but it's a $40 difference.",
-        action: "Select 'Bill Splitter', enter the total bill, number of people, and describe the situation: 'Two people had $25 meals, others had $65+ with drinks. Someone wants to split evenly.' Click get advice.",
-        result: "You get a fair split calculation (itemized vs even, with the exact dollar difference), a ready-to-send group text that frames it positively ('Hey! Want to do a rough itemized split so nobody overpays? I can Venmo-request everyone their portion — easier than math at the table'), and a backup script if someone pushes back. The tone matches your profile's cultural context."
-      },
-
       tips: [
         "Set your profile once and forget it — every situation response will automatically factor in your budget comfort level and cultural norms without you re-explaining each time",
         "Use Quick Math mode for the 60% of situations that just need fast arithmetic — save the AI-powered mode for socially complex scenarios where you need scripts and strategy",
@@ -4404,23 +3318,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#ccdfc4",
   description: "Thinking about a career move? Skill Gap Map starts with what your own experience actually demonstrates, then shows possible connections and gaps worth checking against the roles or job postings you're considering.",
   guide: {
-      overview: "Skill Gap Map starts from evidence you supplied about your own work rather than guessing at your proficiency. In I Know My Target mode, it identifies experience that may transfer, separates that from candidate requirements that still need verification, and gives you one place to start plus one concrete next move. In Help Me Explore, it suggests plausible directions to investigate without pretending it has proven what suits you. Generic role knowledge can open a door — 'this may matter' or 'worth checking' — but it does not become a claim that a role requires, commonly uses, or typically values something unless the tool has actual role-specific evidence such as a job posting.",
-
-      howToUse: [
-        "🔍 Help Me Explore: Enter your current role, experience, and interests to get plausible directions worth investigating rather than one confident career verdict",
-        "🗺️ I Know My Target: Enter your current role, target role, and the experience you want considered",
-        "Review what your supplied experience clearly demonstrates and which connections to the target are reasonable possibilities rather than established requirements",
-        "Start with the one gap or unknown that would be most useful to verify next",
-        "Use an actual job posting when available — specific posting language can replace generic role hypotheses with concrete requirements",
-        "Open deeper sections only when useful for learning sequence, proof to build, economics, company targeting, interview preparation, or resume work",
-      ],
-
-      example: {
-        scenario: "You're a marketing coordinator considering product-management roles. You have project coordination, analytics, and stakeholder-communication experience but no specific job posting yet.",
-        action: "Enter your current role, the target role, and concrete examples of what you already do.",
-        result: "Skill Gap Map identifies the supplied experience that could transfer, suggests areas worth comparing with actual product-management postings, and picks one high-information next step — for example, finding two target postings and checking which requirements repeatedly appear. It does not label a capability 'core,' 'required,' or 'commonly expected' unless role-specific evidence establishes that."
-      },
-
       tips: [
         "Use Help Me Explore when the target itself is uncertain — the output should give you directions to investigate, not diagnose your ideal career",
         "'Not established yet' means the information you supplied does not show it; it does not mean you lack the skill",
@@ -4515,25 +3412,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Today's headlines rarely happen for the first time. Enter a current event, and DeftBrain will find historical situations that unfolded for similar reasons — including where the comparison succeeds and where it fails.",
   guide: {
-    overview: "Most historical analogies are lazy: 'This is just like the fall of Rome.' History Today goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.",
-    howToUse: [
-      "Describe any current event, trend, or controversy — be as specific or broad as you want",
-      "Optionally add a specific angle ('I'm interested in the labor dynamics' or 'What about the regulatory side?')",
-      "Hit Find Parallels to get 2-3 structural matches ranked by similarity",
-      "Each parallel shows structural mechanisms with Then/Now comparison cards",
-      "Read 'Where This Analogy Breaks Down' — it's the most important section",
-      "Hit Dig Deeper on any parallel for a full timeline, turning points, echoing quotes, and information environment",
-      "Hit Counter-Example to find a case where similar conditions went a different direction",
-      "The Synthesis section combines all parallels into a collective pattern and prediction",
-      "Copy any individual parallel or the full analysis"
-    ],
-    
-    example: {
-      scenario: "You want to understand the current wave of tech layoffs happening alongside record corporate profits.",
-      action: "Enter: 'Tech companies doing mass layoffs while reporting record profits'. Optional angle: 'Labor dynamics.'",
-      result: "Parallel 1: The Railroad Consolidation of the 1890s (82% match) — railroads laid off workers while posting record revenues during consolidation. Contemporary view: 'efficiency gains.' Actual cause: monopolistic extraction. What happened next: labor organizing, eventual antitrust. Breaks down because: tech workers are individually more mobile than railroad workers were. Parallel 2: British textile automation 1810s (67% match). Counter-example: Post-WWII corporate compact where record profits led to voluntary wage increases (different because of union density and Cold War pressure to prove capitalism works)."
-    },
-    
     tips: [
       "Specific events get better parallels than broad trends. 'Congress debating AI regulation' is better than 'AI is changing things.'",
       "Use the angle field to steer toward what you care about — same event can parallel different things depending on the lens.",
@@ -4543,12 +3421,6 @@ tagline: "Work with the energy you have.",
       "Try the same event with different angles to see multiple facets."
     ],
     
-    pitfalls: [
-      "History rhymes but doesn't repeat. These are analytical tools, not crystal balls.",
-      "The AI avoids the 5 most overused analogies (fall of Rome, Weimar, 1930s appeasement, dot-com bubble, Titanic) unless they're genuinely the best match.",
-      "Match scores are relative, not absolute. An 80% doesn't mean 80% certainty — it means the structural overlap is high compared to other candidates.",
-      "Further reading suggestions are real books/articles but check availability before purchasing."
-    ]
   }
 },
 
@@ -4632,28 +3504,6 @@ tagline: "Work with the energy you have.",
   description: "Most people remember their mistakes more easily than their accomplishments. Tell DeftBrain what you've been working on, and we'll help you recognize, organize, and communicate the value you've already created.",
   crossRefs: ['DifficultTalkCoach', 'ColdOpenCraft'],
   guide: {
-    overview: "Most people chronically understate their work. This tool fixes that — and then takes it five steps further. The core loop: add accomplishments in your own words, get them transformed into power statements with verb upgrades, then answer metrics questions to replace estimates with real numbers. But the real power is what comes after. The Strength Radar scores your sheet against role expectations and finds gaps. JD Tailoring rewrites bullets to match a specific job posting's language. The Interview Matrix maps everything to likely behavioral questions. Voice Match rewrites outputs to sound like you, not AI. And the Accomplishment Journal lets you log wins weekly so you never have to remember six months of work at once.",
-    
-    howToUse: [
-      "Can't remember what you did? Hit the Memory Jogger button for role-specific prompting questions across 6 categories",
-      "Or use the Journal to log wins weekly — import them when you're ready to build",
-      "Enter your role, industry, level, tone (Bold / Balanced / Quietly Powerful), and purposes",
-      "Add accomplishments one at a time — be as vague as you want — and hit Build",
-      "In Before → After: tweak any bullet (Softer / Stronger / custom Reword) or generate a STAR story from it",
-      "In Upgrade: answer metrics questions to replace estimates with real numbers — multi-round",
-      "In Radar: see your sheet scored across 6-8 dimensions with gap suggestions",
-      "In Tailor: paste a job description to get match scoring, tailored bullets, cover letter opening, and gap alerts",
-      "In Interview: get 10-15 likely questions mapped to your accomplishments, with opening lines and gaps",
-      "In Voice: paste a writing sample to rewrite everything in your natural voice",
-      "In Raise: get business-value estimates and a meeting script — then use Difficult Talk Coach to practice the conversation"
-    ],
-    
-    example: {
-      scenario: "You are a mid-level product manager. You need to update your resume, apply for a specific job, and prepare for behavioral interviews.",
-      action: "Role: Product Manager, Industry: Tech, Level: Mid-level, Purposes: Resume + Interview. Add accomplishments: 'helped improve onboarding', 'worked on the new dashboard', 'did some data analysis'. Build, then use Tailor with the JD and Interview to prep.",
-      result: "Before/After: 'helped improve onboarding' → 'Redesigned user onboarding flow, reducing time-to-first-value by [35%]'. Metrics Excavator: 'What was the completion rate before vs after?' Radar: Technical Execution 80, Leadership 45 — gap found. Tailor (with JD): 78% match, 3 tailored bullets using JD keywords, 1 critical gap in 'data pipeline experience'. Interview: 12/15 questions covered, 'Tell me about a time you led under pressure' is a gap. Voice Match: rewrites all bullets to match your casual, I-focused writing style."
-    },
-    
     tips: [
       "Use the Journal between reviews. Even one sentence a week produces dramatically better brag sheets.",
       "The Excavator is most powerful when you fill in role + industry first — questions get very specific.",
@@ -4664,12 +3514,6 @@ tagline: "Work with the energy you have.",
       "Voice Match works best with a 100+ word sample of casual professional writing."
     ],
     
-    pitfalls: [
-      "Don't inflate or lie. The tool reframes truthfully, and so should you.",
-      "Estimated metrics in [brackets] are starting points. Use the Upgrade tab to replace them with real numbers.",
-      "Tailor is for one JD at a time. For different applications, paste a different JD and re-tailor.",
-      "Voice Match needs a writing sample that represents how you actually write — not something polished by someone else."
-    ]
   }
 },
 
@@ -4755,26 +3599,6 @@ tagline: "Work with the energy you have.",
   },
   description: "Your layover isn't just a block of time. It's a puzzle to solve. DeftBrain looks at your connection, subtracts everything that gets in the way, and tells you what remains. Then it builds a plan around the hours you actually have—not the hours you thought you had.",
   guide: {
-    overview: "Layover Maximizer answers one question: what can I realistically do between these two flights? It subtracts deplaning, immigration, transit, security and a safety buffer from your layover, shows you that arithmetic so you can challenge it, and gives you a verdict — go, stay, or risky. Then it recommends one plan rather than a directory: where to eat, whether a lounge is worth the walk, and when to start heading for your gate. Anything it was not told stays unknown rather than assumed, and it says which missing fact would sharpen the answer. Tell it a delay and it re-runs the decision. It also compares layovers before you book, navigates gate-to-gate transfers, packs for the airport you are actually in, generates an offline survival kit, and tells you what missing the connection would cost.",
-
-    howToUse: [
-      "✈️ Plan: Enter airport, duration, passport, terminals → YES/NO/RISKY verdict with explore + stay plans",
-      "🚶 Gate-to-Gate: Enter arrival and departure gates → step-by-step transfer directions with time estimates",
-      "⏰ Delay Tracker: Enter delay minutes → see how your plan changes at 30/60/90/120min thresholds",
-      "⚖️ Compare: Enter 2-4 layover options → side-by-side comparison with scores and a winner",
-      "🛋️ Lounges: Airport + your credit cards → every lounge with access methods and worth-it verdicts",
-      "🎒 Packing: Context-aware grab list based on your specific layover — weather, currency, culture, phone",
-      "🧰 Survival Kit: WiFi password, emergency numbers, key phrases, currency, outlets — screenshot-ready",
-      "⚠️ Risk: What happens if you miss your connection — next flight, cost, hotel, rebooking",
-      "📌 Saved: Quick-access to airports you fly through often"
-    ],
-
-    example: {
-      scenario: "Booking a trip with two routing options: 4h Frankfurt or 6h Istanbul. You pick Istanbul, but your first flight gets delayed 50 minutes.",
-      action: "Compare FRA vs IST (⚖️). Book IST. Before the trip, generate a Survival Kit (🧰) and Packing List (🎒). At the airport, use Delay Tracker (⏰) to check if the 50min delay kills your explore plan.",
-      result: "Compare shows IST wins (86 vs 72) because you can visit the city visa-free. Packing list reminds you to grab cash and an umbrella. Delay tracker shows: 50min delay changes verdict from YES to RISKY — you have 1h40m of city time instead of 2h30m. Survival kit has the WiFi password and taxi scam warning ready."
-    },
-
     tips: [
       "Use Compare when booking — the layover can make or break a trip",
       "Gate-to-Gate is useful on every connection, not just long layovers",
@@ -4783,12 +3607,6 @@ tagline: "Work with the energy you have.",
       "Save your hub airports — frequent flyers keep rediscovering the same places"
     ],
 
-    pitfalls: [
-      "Immigration and security times are estimates — they vary by time of day and season",
-      "AI has general airport knowledge but may not reflect very recent terminal changes",
-      "Always verify visa requirements with official sources before leaving an airport in a foreign country",
-      "Lounge access policies change — confirm with the lounge before walking across the terminal"
-    ]
   }
 },
 
@@ -4812,21 +3630,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Some questions have an answer. Some arguments have two. The Final Word sorts out what’s true, what’s uncertain, and what’s just opinion — clearly, fairly, and without pretending to know more than it does.",
   guide: {
-      overview: "The Final Word is four tools in one, built for settling debates, answering disputed questions, checking facts, and hosting trivia nights. Quick Answer mode takes any factual question and delivers a bold, confident response with a confidence level (certain → uncertain), supporting facts, and a bonus fun fact. Settle It mode takes two opposing claims (with optional names and context), scores each side's accuracy 0–100, declares a winner, and suggests a fun way to move on. Fact Check mode rates any claim as TRUE, FALSE, MOSTLY TRUE, MOSTLY FALSE, MISLEADING, or IT'S COMPLICATED with an explanation and myth origin. Trivia Night generates multiple-choice questions across 10 categories at 3 difficulty levels, with full team management (1–6 teams), score and streak tracking, and an 'Actually...' challenge system for disputed answers. Voice input works on all text modes.",
-      howToUse: [
-        "Pick a mode: Quick Answer, Settle It, Fact Check, or Trivia Night",
-        "Quick Answer — type or speak a factual question and get a confident answer with confidence rating and supporting facts",
-        "Settle It — enter both sides of a dispute (with optional names and context), then get a verdict with accuracy scores for each person",
-        "Fact Check — enter any claim and get a clear TRUE/FALSE/MISLEADING ruling with explanation",
-        "Trivia Night — set up teams (1–6), choose a category and difficulty, then play quick-fire rounds with score tracking",
-        "Use the 'Actually...' button on any answer to challenge it if you think the tool got it wrong",
-        "Share, copy, or print verdicts using the action buttons on results"
-      ],
-      example: {
-        scenario: "You and a friend are arguing about whether the Great Wall of China is visible from space.",
-        action: "Choose Settle It mode. Enter your friend's name and their claim ('The Great Wall is visible from space with the naked eye'), then your name and your claim ('It's not visible from space — that's a myth'). Hit 'Deliver the Verdict.'",
-        result: "The Final Word rules in your favor with a bold verdict headline. Your friend scores ~15% accuracy (the Wall exists but isn't visible from low Earth orbit without aid). You score ~95% accuracy. The explanation cites astronaut testimony and the Wall's width relative to visibility thresholds. Settlement suggestion: 'Loser buys the next round — and agrees to stop spreading this myth.'"
-      },
       tips: [
         "Settle It mode works best when both sides state specific, clear claims rather than vague opinions",
         "In Trivia Night, the 'Actually...' challenge system is genuinely fair — if you have a legitimate counterpoint, it will acknowledge it and adjust",
@@ -4858,22 +3661,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#ccdfc4",
   description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
   guide: {
-      overview: "NameAudit is the other half of the naming problem. NameStorm gives you ideas; NameAudit tells you if they're any good. Enter a name you're considering and get a 12-dimension analysis: first impression, phonetic profile (mouth feel, sound psychology, accent compatibility), five memorability tests (day-after, tell-a-friend, phone, drunk, and shout), radio test (can someone spell it from hearing it?), visual analysis (how it looks in different cases, as a URL, as a logo), global language scan across 15+ languages, abbreviation audit, competitive landscape, SEO outlook, longevity check, and emotional resonance. For business and product names, live domain and social handle availability checks run automatically. Use Compare mode to pit 2-4 finalists against each other for a clear winner.",
-      howToUse: [
-        "Choose Analyze (single name) or Compare (2-4 names head to head)",
-        "Enter the name and select what it's for — Business, Product, Pet, Baby, etc.",
-        "Optionally add industry context and target audience for sharper analysis",
-        "Review the overall grade and verdict — STRONG, GOOD, FAIR, WEAK, or RECONSIDER",
-        "Check Strengths vs. Weaknesses at a glance, and watch for any Deal Breakers",
-        "Expand each analysis section for deep detail — phonetics, memorability tests, language scan, etc.",
-        "For business names, scroll to Live Availability to see domain and social handle status",
-        "Use the suggestions section for guidance on strengthening the name or pivoting direction"
-      ],
-      example: {
-        scenario: "You're about to register a domain and file a trademark for your new sustainable fashion brand called 'Verdana.' Before spending money, you want to know if it's a good name.",
-        action: "Enter 'Verdana' in Analyze mode, select Business, industry: 'Sustainable fashion,' target audience: 'Environmentally conscious millennials.'",
-        result: "NameAudit grades it RECONSIDER with a deal breaker: Verdana is an existing Microsoft typeface — you'd face trademark issues and impossible SEO competition. The language scan notes it derives from verdant (positive). The phonetic profile is strong — warm open vowels, 3-syllable rhythm. Memorability tests pass. But the competitive landscape and trademark flags are disqualifying. Suggestions direct you toward similar-sounding alternatives that don't conflict."
-      },
       tips: [
         "NameAudit and NameStorm are designed to work together — generate candidates with NameStorm, then bring your top 3 here to analyze and compare",
         "The global language scan checks 15+ languages — if you're going international, this section alone could save you from an expensive mistake",
@@ -4953,23 +3740,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Names are deceptively hard. They need to sound right, fit your audience, be easy to remember, and still feel right six months from now. Describe what you're naming, and DeftBrain will help you find a name that works before you commit.",
   guide: {
-      overview: "Naming things is hard because you need creativity, cultural awareness, and practical validation all at once. NameStorm generates 25-35 names across the style categories most relevant to what you're naming, then gives you tools to evaluate them: pronunciation guides, Name DNA explaining the linguistic psychology behind each name, problem flags for issues in other languages or phonetic traps, AI-curated Top 5 picks, a Say It Out Loud test, live domain and social handle availability checks, and a 'More Like This' button that generates 8-10 variations of any name you almost love.",
-      howToUse: [
-        "Select what needs a name — Business, Product, Pet, Baby, Character, Band, and more",
-        "Choose vibe chips and/or describe the energy you want in the text field",
-        "Optionally add constraints (length, sounds, letters) and industry context for business/product names",
-        "Review the Top Picks section for the AI's curated best choices with reasoning",
-        "Check the Say It Out Loud section for names that look good but sound bad",
-        "Browse names by style category — each name shows pronunciation, Name DNA, and problem flags",
-        "Star names you like to build a shortlist (toggle the Favorites view to see just your picks)",
-        "Hit 'Check Availability' on any name to run live domain and social handle lookups",
-        "Hit 'More Like This' on any name you almost love to get 8-10 variations with the same energy"
-      ],
-      example: {
-        scenario: "You're launching a sustainable clothing brand. You want something that feels earthy and modern but not cliché — not another 'Green' or 'Eco' brand. Needs to work as a domain and Instagram handle.",
-        action: "Select Business, choose vibe chips 'Earthy' + 'Sophisticated' + 'Minimalist', describe: 'Sustainable fashion brand, premium but accessible, nature-inspired without being hippie.' Industry: 'Sustainable fashion.' Constraints: 'Under 10 letters, easy to spell.'",
-        result: "You get 30+ names across Nature/Organic ('Loam', 'Selva'), Minimal ('Verd', 'Nua'), Mashup/Coined ('Terrawear', 'Soluma'), and more. Each shows Name DNA: 'Loam — the 'oh' vowel creates warmth, single syllable is premium-coded, literally means nutrient-rich soil.' Problem flags catch that 'Nua' means 'naked' in Portuguese. Top picks highlight 'Selva' with reasoning. You star 3 favorites, check domain availability (selva.co is likely available), and hit More Like This on 'Loam' to get 10 variations."
-      },
       tips: [
         "Vibe chips prime the AI's creative direction — select 2-4 that describe the energy, then add nuance in the text field",
         "The 'More Like This' button is the most powerful feature — when you see a name you 70% love, use it to find the one you 100% love",
@@ -4978,11 +3748,6 @@ tagline: "Work with the energy you have.",
         "For business names, the best names are often in the Mashup/Coined category — they're unique, trademarkable, and more likely to have domains available"
       ],
 
-      pitfalls: [
-        "Availability and trademark notes are early warnings, not clearance — search the trademark register and check the domain before you buy anything",
-        "Read each name's problem flags as well as the reasons it works; the most charming names often carry the biggest conflicts",
-        "Say the shortlist out loud to a few people who haven't seen it written — how they spell it back is the real test",
-      ]
     }
 },
 
@@ -5010,21 +3775,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Tell us who you want to thank and what they did. Get a few natural ways to say it—so your message feels specific, sincere, and like something you would actually send.",
   guide: {
-      overview: "The Gratitude Debt Clearer helps you convert bullet points of appreciation into polished thank-you messages. Instead of staring at a blank page wondering how to start, just list what you're grateful for and let AI craft 2-3 message options that sound like you, not a greeting card. Built specifically for people who feel gratitude deeply but struggle with the formality of expressing it in writing.",
-     howToUse: [
-        "Enter who you're thanking (name or description like 'the whole team')",
-        "List what you're grateful for in bullet points or free-form. Be specific! The more details you give, the more personal your message will be.",
-        "Select the context (post-interview, gift received, emotional support, etc.) and your relationship to the person",
-        "Choose your preferred tone (warm & casual, heartfelt, professional, or brief) and adjust the length slider",
-        "Click 'Generate Thank You Messages' to get 2-3 different versions. Each shows why it works and when to use it. Copy your favorite or use the 'Too mushy?' and 'More specific?' buttons to refine it."
-      ],
-      
-      example: {
-        scenario: "Your friend Sarah helped you move apartments last weekend. She spent 6 hours packing, drove the truck, brought snacks, and made you laugh when you were stressed. You want to thank her but don't know how to say it without sounding awkward or over-the-top.",
-        action: "You enter: 'Sarah' as the recipient, list the specifics in bullet points ('helped me pack for 6 hours, drove the truck, brought coffee and donuts, made me laugh when I was stressed about my lease ending'), select 'Personal favor' as context, 'Personal' as relationship, and choose 'Warm & casual' tone with medium length.",
-        result: "You get 2-3 message options like a warm text ('Sarah! I seriously can't thank you enough for yesterday. Six hours of packing and you never once complained — plus those donuts were clutch. You made what could've been a nightmare actually kind of fun. I owe you big time.') You can copy it directly, make it less intense, or add more specifics with one click."
-      },
-      
       tips: [
         "Be SPECIFIC in your gratitude points. Instead of 'helped me,' write 'spent 4 hours debugging my code' or 'listened without judging when I was struggling.' Specific details = personal messages.",
         "If a message feels too formal or mushy, click 'Too mushy?' to get a more understated version. If it's too vague, click 'More specific?' to elaborate on the details.",
@@ -5032,11 +3782,6 @@ tagline: "Work with the energy you have.",
         "Use the delivery suggestions! The AI recommends the best method (text, email, handwritten card) and timing based on your context. A post-interview thank-you should go out within 24 hours, but a friend who helped you move can get a card a few days later.",
         "Save the personalization tips — they're gold. They suggest specific details you could add to make the message even more meaningful, like mentioning how their help affected you or what you learned from them."
       ],
-          pitfalls: [
-      "Vague gratitude ('you've always been there for me') produces generic messages — list one to three specific moments instead",
-      "The 'awkwardness acknowledgment' section only appears if the AI detects the delay or situation is emotionally complicated",
-      "Handwritten card templates are intentionally shorter and simpler than the full message — that's by design"
-    ],
     }
 },
 // ── DifficultTalkCoach tools.js entry ──
@@ -5126,21 +3871,6 @@ tagline: "Work with the energy you have.",
   },
   description: "Some conversations become difficult long before they actually happen. Tell DeftBrain what's weighing on you, and we'll help you plan the conversation, practice it, and prepare for what might happen next.",
   guide: {
-    overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies.",
-    howToUse: [
-      "Describe the conversation you need to have — the more specific, the better your strategy",
-      "Select who it's with, your goals, their expected resistance level, and your communication style",
-      "Check any fears you have about the conversation and add custom fears in the text field",
-      "For a much stronger strategy: fill in their likely perspective and any previous attempts",
-      "Review the Situation Reading, Emotional Landmines, and conversation approaches",
-      "Switch to the Practice tab to run the conversation live — AI responds in character with real-time coaching",
-      "After the real conversation, use the Debrief tab to process what happened and identify growth areas"
-    ],
-    example: {
-      scenario: "You need to tell your boss that a coworker is taking credit for your work. You're afraid your boss will think you're being petty, and the coworker has more seniority.",
-      action: "Describe the situation, select Boss, set resistance to 60%, goals: 'Give feedback' and 'Request a change.' Biggest fear = 'They'll tell me to just let it go.'",
-      result: "You get a Situation Reading, 4 emotional landmines with strategic responses, and 3 approaches from documentation-based to direct. Each includes 6-8 anticipated responses with emotional triggers flagged. Then practice live — AI-as-boss pushes back realistically while a coach helps refine your delivery."
-    },
     tips: [
       "The 'biggest fear' field is the most important optional input — it directly shapes the emotional landmine analysis",
       "Practice mode calibrates to your resistance slider — start at 40% to build confidence, then crank it to 70-80% for stress testing",
@@ -5148,11 +3878,6 @@ tagline: "Work with the energy you have.",
       "If you get overwhelmed in practice mode, that's useful information — it tells you which moments need more preparation",
       "The debrief is more useful if you do it within 24 hours while the conversation is still fresh"
     ],
-    pitfalls: [
-      "Don't choose an approach that doesn't feel like you — forced scripts come across as inauthentic",
-      "Skipping the 'their perspective' field produces generic strategies; fill it in for the most accurate landmine analysis",
-      "Practice mode is a simulation, not a guarantee — real people are unpredictable, so stay flexible"
-    ]
   }
 },
 {
@@ -5241,25 +3966,6 @@ tagline: "Work with the energy you have.",
   },
   description: "When a company ignores you, the problem isn't always the complaint. It's knowing what to do next. Tell DeftBrain what happened, and we'll build a step-by-step escalation plan — from your next email to regulatory complaints and executive outreach if necessary.",
   guide: {
-    overview: "Most consumer complaints fail because people don't know what leverage they actually have. This tool analyzes your situation, identifies applicable consumer protection laws, and builds a 5-stage escalation campaign — each stage increasing pressure while maintaining professionalism. Every letter, regulatory complaint, social media post, and legal filing is pre-written and ready to copy-paste-send. You start at Stage 1 and only escalate if needed.",
-    
-    howToUse: [
-      "Name the company and select its industry (or let the tool auto-detect)",
-      "Describe what happened in detail — dates, amounts, what was promised vs. delivered, names of reps",
-      "Note previous resolution attempts, desired outcome, amount at stake, and what documentation you have",
-      "Review the Situation Assessment to understand your legal position and likelihood of success",
-      "Check the Evidence Checklist and gather documentation before sending anything",
-      "Start with step 1 — copy the letter and send it today",
-      "If there is no answer, step 2 is the regulatory complaint — and only if you need it",
-      "The timeline tells you when each step is due"
-    ],
-    
-    example: {
-      scenario: "You bought a $1,200 laptop from MegaTech. It arrived defective. You returned it within their 30-day policy but they denied the refund claiming 'user damage.' You've called 3 times with no resolution.",
-      action: "Enter MegaTech as the company, select Retail, describe the full situation including dates and call history, set desired outcome to 'Full $1,200 refund', amount at stake '$1,200', and documentation 'Order confirmation, photos of defect, call logs.'",
-      result: "You get: a Situation Assessment showing strong legal position under Magnuson-Moss Warranty Act, an Evidence Checklist with 6 items to gather, and a 5-stage campaign — Stage 1 letter citing specific warranty law, Stage 2 pre-written FTC/state AG complaint, Stage 3 executive email to the CEO, Stage 4 factual social media posts, and Stage 5 credit card chargeback instructions with the specific Visa reason code and 120-day filing window."
-    },
-    
     tips: [
       "The more specific your description, the stronger every stage of the campaign will be — include dates, amounts, names, reference numbers",
       "Gather your evidence before you send step 1 — the checklist tells you exactly what to collect",
@@ -5268,11 +3974,6 @@ tagline: "Work with the energy you have.",
       "There is no need to jump ahead — each step leaves a record that makes the next one easier"
     ],
 
-    pitfalls: [
-      "Escalating faster than the plan suggests can backfire — a company given a clear written deadline usually has to answer before a regulator will act",
-      "Any email address or department it suggests is a pattern to confirm, not a verified contact",
-      "The legal notes say what may apply, not what a court would decide; for large amounts, a consumer lawyer or legal aid office can confirm",
-    ]
   }
 },
 
@@ -5380,25 +4081,6 @@ tagline: "Work with the energy you have.",
   },
 
   guide: {
-    overview: "PlainTalk is a universal text comprehension tool. Paste any complex text — a contract, a research paper, a chapter of literature, a medical form, a political speech — and get two things: a plain-English translation anyone can understand, and a structural X-ray showing how the text is built, what each section is doing, and what matters most. The analysis adapts automatically to the type of text you provide.",
-
-    howToUse: [
-      "Paste text or upload a PDF — any length, any subject, any domain",
-      "Optionally select the text type or let PlainTalk auto-detect it",
-      "Optionally tell PlainTalk what you specifically want to understand",
-      "Review the Overview tab for key takeaways, obligations, and structural insights",
-      "Read the Full Translation tab for a complete plain-English version",
-      "Explore the X-Ray tab to see how the text is architecturally built",
-      "Use Side-by-Side to compare original and translation directly",
-      "Follow the specialist tool suggestion if you need deeper domain analysis"
-    ],
-
-    example: {
-      scenario: "You received a 12-page employment contract and you need to understand what you're actually agreeing to before signing tomorrow.",
-      action: "Paste the contract text, select 'Legal' (or let it auto-detect), and add the context: 'What obligations am I taking on and what are the exit terms?'",
-      result: "PlainTalk returns a plain-English translation of the entire contract, a structural X-ray showing which sections are boilerplate and which are substantive, a complete list of YOUR obligations vs. the COMPANY's obligations with asymmetry notes, all deadlines and notice periods extracted into one place, any internal contradictions flagged, and a suggestion to try OfferDissector for total compensation analysis."
-    },
-
     tips: [
       "PlainTalk works on anything — contracts, novels, research papers, speeches, manuals, medical forms, legislation",
       "The 'What do you want to understand?' field focuses the analysis on your specific question",
@@ -5430,18 +4112,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Sometimes the problem isn't your focus. It's what your ears have to deal with. Focus Sound Architect builds an adjustable background that can mask distractions, soften an uncomfortable space, or simply give you something better to work alongside.",
   guide: {
-      overview: "Focus Sound Architect doesn't know in advance what sound will make you focus — nobody's tool does. What it can do is build a sensible starting mix from your task, environment, and what's actually interfering, then adjust that mix as you tell it what isn't working. It starts with 1-3 layers, never more than the situation calls for, and every layer comes with a plain-language reason for being there.",
-      howToUse: [
-        "Pick a ready-made soundscape if a generic mix is enough, or answer four short questions: what you're trying to do, what's getting in the way, where you are, and any sounds you like or can't tolerate",
-        "Get a starting mix of 1-3 layers, each with a one-sentence reason it was picked",
-        "Play it, and use 'How does it sound?' — Too distracting, Too sleepy, Too harsh, Too monotonous, Still hearing voices, Not enough — to adjust the mix instead of starting over",
-        "Fine-tune manually any time: per-layer volume, mute/solo, a 3-band EQ, and optional layers you add yourself"
-      ],
-      example: {
-        scenario: "You need to do deep work in a noisy open-plan office, sudden sounds startle you, and you like brown noise.",
-        action: "Task = Deep work, What's getting in the way = General background noise, Environment = Noisy office + Open plan, Sounds = Brown noise, Sensitivities = Sensitive to sudden sounds",
-        result: "A two-layer starting mix — brown noise as a steady base, plus a second layer chosen to add gentle variation without sharp transients — each with a one-sentence reason tied to what you described. If it's not working, 'How does it sound?' adjusts the mix instead of asking you to start over."
-      },
       tips: [
         "Start with fewer layers than feels thorough — one steady layer you can actually ignore usually beats three that compete for attention",
         "Use 'How does it sound?' rather than regenerating from scratch — it changes the smallest number of layers needed and leaves the rest alone",
@@ -5472,23 +4142,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Turn an open-ended task into a clear stopping point, work toward one concrete result, and stop without losing your place. Focus Pocus helps define what \u201cenough for now\u201d means, gives you one next move if you get stuck, and saves a restart breadcrumb when time is up.",
   guide: {
-    overview: "Most timers only help you start. Focus Pocus is built around the other half: stopping. Before the clock runs you name one concrete thing that would make the session enough — not the whole project, a place to stop — and it will help you make that concrete if what you typed is vague. While it runs you can ask for the smallest next move if you are stuck, or say you finished early rather than filling the time. When the session ends it asks whether you reached the target. If you did, it says so and sends you off. If you did not, it writes the note that lets you close the laptop without carrying the task around. Extensions exist, but there are three of them and then there are none.",
-
-    howToUse: [
-      "Say what you are working on and how long you want to focus.",
-      "Write what would make this session enough. A stopping point, not the finish line — and if yours is vague, ask it to make that concrete.",
-      "Start. The countdown runs in your browser; the session itself is held on the server, so a refresh or a closed tab does not lose it.",
-      "If you stall, 'I'm stuck' gives you one small next move rather than a page of advice.",
-      "If you get there before the timer does, say you finished early. Filling the remaining time is not the point.",
-      "At the end, answer honestly. 'Almost' and 'I got stuck' both leave you a note about where to pick up."
-    ],
-
-    example: {
-      scenario: "A budget proposal you have been avoiding, and forty-five minutes before your next meeting.",
-      action: "Type the task, choose 45 minutes, and write 'draft the headline numbers and the headcount section' as what would make it enough.",
-      result: "A session that ends at a place you chose rather than when you run out of steam. If the headcount section is still open at the end, you leave with a sentence telling you exactly where to start next time, instead of the vague dread of an unfinished thing."
-    },
-
     tips: [
       "Pick the stopping point before you start; it is much harder to judge once you are absorbed",
       "'Enough for now' should be something you can answer yes or no to when the timer ends",
@@ -5496,11 +4149,6 @@ tagline: "Work with the energy you have.",
       "The three extensions are the whole budget; when they are gone that is the answer"
     ],
 
-    pitfalls: [
-      "The countdown runs in your browser, so the tab needs to stay open for the timer to be visible — the session itself is held server-side and survives a refresh",
-      "It is not a task manager and keeps no history; the breadcrumb is for the next hour, not the next month",
-      "If you close the browser and come back days later, the session will have expired"
-    ]
   }
 },
 // ── DecisionCoach tools.js entry ──
@@ -5526,22 +4174,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#f5e0c0",
   description: "Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.",
   guide: {
-    overview: "Choice paralysis happens when you're too overwhelmed to decide but still know what you want/need. This tool applies your constraints and preferences to make THE decision (singular), removing the burden of choice while respecting your values.",
-
-    howToUse: [
-      "Pick a decision category (food, task, purchase, activity)",
-      "Describe what needs to be decided",
-      "Tap quick constraints (low effort, cheap, no cooking, etc.) and add specifics",
-      "Set your current capacity level",
-      "Get ONE decision with step-by-step execution"
-    ],
-
-    example: {
-      scenario: "You're overwhelmed and can't decide what to eat for dinner. You're vegetarian, have no energy to cook, budget is under $15, want comfort food, and nothing spicy today. You've been staring at delivery apps for 20 minutes unable to choose.",
-      action: "Decision: 'What to eat for dinner', Preferences: 'Vegetarian, no dairy, under $15, no cooking energy, comfort food, nothing spicy', Capacity: Overwhelmed.",
-      result: "DECISION: Order veggie burrito bowl from Chipotle. Why: Meets all constraints - vegetarian, no dairy (skip cheese/sour cream), under $15, delivery (no cooking), comfort food, customizable to avoid spice. Steps: 1. Open Chipotle app, 2. Order burrito bowl with brown rice, black beans, veggies, guac, lettuce, salsa (skip cheese and sour cream), 3. Delivery, 4. Submit. DONE. This choice is FINAL."
-    },
-
     tips: [
       "Pre-load preferences clearly (hard constraints like allergies vs preferences like mood)",
       "The tool gives ONE answer intentionally - options would restart the paralysis",
@@ -5550,11 +4182,6 @@ tagline: "Work with the energy you have.",
       "The decision is good enough - perfect doesn't exist when you're overwhelmed"
     ],
 
-    pitfalls: [
-      "Don't ask for 'options' - that defeats the purpose. You need a decision made FOR you",
-      "If you second-guess the answer, you're probably not being honest about your preferences",
-      "This is for when you're too overwhelmed to choose, not for fun exploratory decisions"
-    ]
   }
 },
 {
@@ -5612,22 +4239,6 @@ tagline: "Work with the energy you have.",
   },
 
   guide: {
-    overview: "Everything in your life is connected by threads you've never noticed. This tool traces the chain between any two things -- your philosophy degree and your coding career, your fear of flying and your love of sushi. Build a profile once, then play endlessly.",
-
-    howToUse: [
-      "Fill in your About Me profile (once -- it persists and makes every chain richer)",
-      "Type any two things from your life into Thing A and Thing B",
-      "Hit 'Find the Chain' and see the hidden connections",
-      "Try 'Flip It' to trace the reverse path -- different route, different insight",
-      "Use 'Surprise me' for random pair starters to get ideas"
-    ],
-
-    example: {
-      scenario: "You studied philosophy in college and now you write software for a living. These feel completely unrelated.",
-      action: "Thing A: 'My philosophy degree', Thing B: 'My career in software'. Profile includes: schools, jobs, interests.",
-      result: "4-degree chain: Philosophy degree -> trained you to decompose arguments into logical premises -> you instinctively started modeling everything as boolean conditions -> your first 'program' was a decision tree you drew for a philosophy paper -> software engineering. Insight: You didn't change careers -- you just found a field that pays you for the same skill philosophy taught you for free."
-    },
-
     tips: [
       "The more profile context you give, the more personal and surprising the chains get",
       "Try pairing things from very different life domains -- the wider the gap, the more interesting the chain",
@@ -5636,11 +4247,6 @@ tagline: "Work with the energy you have.",
       "This is great for self-reflection, journaling prompts, and 'how did I get here' moments"
     ],
 
-    pitfalls: [
-      "Very abstract inputs ('happiness' and 'success') produce generic chains -- be specific",
-      "The chains are plausible interpretations, not proven facts -- enjoy the pattern-finding",
-      "Don't skip the profile -- without context, the connections will be surface-level"
-    ]
   }
 },
 
@@ -5665,20 +4271,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.",
   guide: {
-    overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
-
-    howToUse: [
-      "STEP 1: Pick 2 or more interests from the grid — the more you pick, the wilder the connections",
-      "STEP 2: Choose your depth — Quick Hit (2-3 sentences), Short Rabbit Hole (a paragraph with a twist), or Deep Dive (multi-section exploration)",
-      "STEP 3: Hit Spin! Or use Surprise Me to go completely random",
-      "STEP 4: Found something fascinating? Hit 'Go Deeper' to explore follow-up threads",
-      "STEP 5: Save your favorites to build a personal collection of mind-blowing connections"
-    ],
-    example: {
-      scenario: "You have History and Food selected, depth set to 'Short Rabbit Hole'",
-      action: "Hit Spin",
-      result: "You get a fascinating piece about how Roman gladiators were mostly vegetarian — nicknamed 'barley men' — and how their high-carb diet was deliberately designed to build a fat layer that protected them from surface wounds in the arena. The AI connects this to modern sports nutrition debates. Three 'Go Deeper' threads let you explore gladiator training diets, the economics of arena food vendors, or why we got gladiator diets completely wrong in movies."
-    },
     tips: [
       "Pick interests that seem unrelated — that's where the best connections hide",
       "Use 'Surprise Me' when your usual interests feel stale — the wildcard might reveal a new obsession",
@@ -5687,12 +4279,6 @@ tagline: "Work with the energy you have.",
       "Your spin streak tracks consecutive sessions — see how long you can keep it going",
       "The AI remembers what you've already seen and won't repeat topics"
     ],
-    pitfalls: [
-      "Selecting just one interest gives decent results, but 2-3 interests create much better cross-connections",
-      "If you get a dud, just spin again — the randomness means occasional misses",
-      "Deep Dive mode takes a bit longer to generate but is worth the wait",
-      "This tool is deliberately addictive — set a timer if you need to!"
-    ]
   },
   crossRefs: ['BeliefStressTest', 'SixDegreesOfMe', 'DecisionCoach'],
 },
@@ -5747,19 +4333,6 @@ tagline: "Work with the energy you have.",
   },
 
   guide: {
-      overview: "Final Wish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.",
-      howToUse: [
-        "Name your trusted person — their name is woven throughout the document to make it personal",
-        "Walk through 5 chapters: Digital Accounts, Documents, Financial Snapshot, Personal Messages, and Practical Wishes",
-        "Use the AI to extract and organize accounts from free-text descriptions — just dump what comes to mind",
-        "In the Messages chapter, the AI interviews you about each recipient then drafts a letter in your voice — edit, adjust tone, or rewrite",
-        "Review your completed document and download as a printable HTML file to hand to your trusted person"
-      ],
-      example: {
-        scenario: "You want to make sure your partner could handle your digital life if something happened to you",
-        action: "Start Final Wish, name your partner, and describe your accounts naturally: 'Gmail, Chase checking, Netflix, Instagram...' The AI extracts and categorizes them, then asks follow-ups about crypto, cloud storage, subscriptions you might forget.",
-        result: "A polished, printable document with 15 categorized accounts, document locations, a financial map, a heartfelt letter to your partner drafted from your interview answers, and pet care instructions — all in one downloadable file."
-      },
       tips: [
         "Don't include actual passwords — use access hints like 'password is in blue notebook' or 'use phone Face ID'",
         "The Messages chapter is the heart of the tool — take your time with it. Specific memories beat generic sentiment.",
@@ -5791,19 +4364,6 @@ tagline: "Work with the energy you have.",
   crossRefs: ['BuyWise', 'DecisionCoach'],
   description: "Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.",
   guide: {
-      overview: "Bike Medic walks you through diagnosing and fixing common bicycle problems with animated visual demos, interactive step tracking, and AI-powered deeper diagnosis when standard fixes fail. Set up your bike profile to skip irrelevant questions and get tailored advice.",
-      howToUse: [
-        "Select the problem category or describe your symptom in the AI analyzer to get routed to the right fix",
-        "Answer diagnostic questions to narrow down the exact cause — your bike profile auto-skips known answers",
-        "Follow the step-by-step fix with animated visual guide and check off steps as you complete them",
-        "If the fix doesn't resolve it, tap 'Still broken' for AI-powered deeper diagnosis that accounts for what you already tried",
-        "Use Quick Checks mode for pre-ride, post-crash, after-rain, long-storage, or before-tour checklists"
-      ],
-      example: {
-        scenario: "Your rear disc brake makes a constant scraping noise while riding",
-        action: "Select 'Brake Problems' → 'Disc brakes' → 'Rubbing' → Follow the caliper centering steps with animated demo",
-        result: "Step-by-step caliper alignment with play/pause animation. If it still rubs, hit 'Still broken' and the AI suggests checking for a bent rotor, warped caliper mount, or contaminated pads."
-      },
       tips: [
         "Set up your Bike Profile via the gear icon to auto-skip questions about brake type, shifting system, and tire setup",
         "The static troubleshooting tree works without AI — great for trailside or offline use",
@@ -5841,22 +4401,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#1e2a3a",
   description: "Something wrong with your plant? Upload a photo or describe what you're seeing and Plant Rescue helps you narrow down what may be happening, decide what to check next, and make a practical rescue plan.",
   guide: {
-    overview: "A plant symptom rarely has one cause — yellow leaves, brown tips, and drooping can each mean several different things. Plant Rescue lays out the plausible explanations for what you're seeing, tells you the one thing most worth checking before you change anything, and gives you a next step that depends on what you find, instead of a confident-sounding guess.",
-
-    howToUse: [
-      "Upload a clear photo OR describe what you're seeing OR select the symptoms that apply",
-      "Add how long it's been happening and anything that changed recently",
-      "Add light, how you water, drainage, and location if you have them",
-      "Get plausible explanations, the check that would distinguish them, and what to do first",
-      "Save the plant to compare a later check against what you reported this time"
-    ],
-
-    example: {
-      scenario: "A pothos in a 6-inch pot has lower leaves yellowing over the past two weeks, a few brown tips, and new growth that's smaller than before. Watered on a fixed weekly schedule.",
-      action: "Describe what you're seeing, select 'Yellowing leaves' and 'Brown tips', set duration to 'A week or two', and note the watering schedule and light level.",
-      result: "Bottom line: watch and check — new growth continuing is a good sign, but it's worth a closer look. Possible explanations: the mix may still be wet when watered on a fixed schedule, this could be normal lower-leaf turnover, or light may be on the low end. Check first: whether the soil is still damp an inch or two down at watering time. What to do now: switch from a schedule to checking the soil, and remove leaves that are already fully yellow."
-    },
-
     tips: [
       "A photo of the affected leaf and one of the soil surface help more than a single whole-plant shot",
       "How you decide to water (checking the soil vs. a fixed schedule) matters more than how often",
@@ -5865,13 +4409,6 @@ tagline: "Work with the energy you have.",
       "Save a plant to build a short observation history instead of starting over each time"
     ],
 
-    pitfalls: [
-      "A blurry or dark photo makes the plausible explanations less useful, not more certain",
-      "This tool won't give you a confident 'saveable' or 'not saveable' verdict — recovery depends on what you find, not a prediction",
-      "It won't hand you an exact watering interval or soil recipe out of thin air — it favors conditions to check over invented numbers",
-      "For toxicity around pets or children, an uncertain identification means the safety guidance is uncertain too",
-      "For a rare or unusual species, or a plant that keeps declining after the suggested checks, a local nursery can look at the actual plant"
-    ]
   }
 },
 
@@ -5896,19 +4433,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "A tense message can make the first reply feel urgent. Paste what you received, tell us the relationship and what you want the response to accomplish, and Conflict Coach lays out several ways to answer so you can choose deliberately before you send anything.",
   guide: {
-    overview: "Conflict Coach helps you answer a specific tense message without turning a few words into a diagnosis of the person who sent them. Paste the message, identify your relationship, and choose what you want your response to accomplish. The tool briefly points out wording that materially affects how the message can be answered, then gives you four complete, ready-to-send strategies that pursue your selected goal in different ways.",
-    howToUse: [
-      "Choose your relationship to the sender",
-      "Paste the message you received, or add earlier messages if the current one needs context",
-      "Optionally paste the response you are tempted to send so you can compare it with calmer alternatives",
-      "Choose one goal: fix the problem, set a limit, step away, acknowledge without agreeing, or take the conversation off text",
-      "Compare four ready-to-send responses, adjust the tone if needed, and use Follow-up Coaching if the person replies"
-    ],
-    example: {
-      scenario: "Your partner sends a short message that can be read as sarcastic but does not state a clear concern or request.",
-      action: "Paste the exact message, select Partner, and choose Set a limit.",
-      result: "Conflict Coach notes the specific wording and ambiguity without assigning a hidden motive, then gives four complete responses that set a limit in different ways — for example asking for directness, naming what you need from the exchange, or keeping the reply short and firm."
-    },
     tips: [
       "Use the exact message rather than paraphrasing when possible; wording is often what changes the response",
       "Pick the outcome you actually want before choosing a tone",
@@ -5939,32 +4463,12 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Stuck on a project that feels too big to start? Task Avalanche Breaker finds one useful place to begin — not another giant to-do list.",
   guide: {
-    overview: "Task Avalanche Breaker exists for the moment a project already feels too big to look at, not the moment you want it broken into a full plan. Describe what's looming and optionally say what makes starting hard. You get back one first move — grounded only in facts, constraints, and relationships you actually described, never a plausible-sounding project theory invented to make the move look smarter than it is — why it's the useful place to start, a visible done condition, and a genuinely smaller fallback if even that is too much. When an important dependency isn't clear from what you said, the first move may simply be finding it out, rather than the tool guessing. Up to two later footholds are there as a preview of what comes after, not a project plan to work through. The tool never diagnoses why something is hard and never invents facts, deadlines, stakeholders, or structure your project doesn't have — it just gives you one grounded thing to actually do.",
-    howToUse: [
-      "Describe what feels too big to start right now",
-      "Optionally note what's making it hard — too many moving parts, not knowing where to start, it being emotionally difficult, having put it off, or it being unfamiliar",
-      "Get one first move grounded in what you actually described, with why it's useful and a visible done condition",
-      "If even that feels like too much, open 'Still too much?' for a genuinely smaller version of the same move",
-      "Do the move, then click 'I did it — what's next?' to move to the next foothold, or stop — either is a complete use of the tool",
-      "Optionally expand 'See the path ahead' for up to two later footholds — a preview, not a plan to finish in one sitting"
-    ],
-    example: {
-      scenario: "You need to clean out your late father's garage. There are decades of tools, boxes, and paperwork, it's emotionally difficult, and you don't know where to start.",
-      action: "Describe the project and check 'It feels emotionally difficult' and \"I don't know where to start.\"",
-      result: "One first move grounded in what you actually described — something concrete you can do, not 'start sorting the garage' and not an invented claim about which part of the garage matters most. A visible done condition, a smaller fallback if it's still too much, and up to two later footholds you can look at or ignore."
-    },
     tips: [
       "The reasons you check aren't diagnosed or explained back to you — they just help size the first move to what's actually in the way",
       "'Still too much?' gives a smaller version of the SAME move, not a different, easier task",
       "If the right first move depends on something you haven't said, the tool will often make finding that out the move itself, rather than guess",
       "The later footholds are a preview, not a commitment — nothing requires you to do more than the one you're on"
     ],
-    pitfalls: [
-      "This tool won't turn your project into a full task list — it deliberately gives one move at a time, because a list is what already felt too big",
-      "It doesn't diagnose why the project is hard, and a reason you check describes your experience, not a cause the tool has identified",
-      "Completing the first move isn't guaranteed to make the rest of the project feel resolved — it's one available thing to do, not a fix for the whole project",
-      "It won't invent deadlines, requirements, stakeholder positions, or details about your project that you didn't supply"
-    ]
   }
 },
 
@@ -6003,21 +4507,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Not sure what to make of something your pet is doing? Describe what you're seeing and Pet Behavior Decoder helps you understand plausible explanations, what to watch for, and when it's worth calling a vet.",
   guide: {
-    overview: "Pet Behavior Decoder reasons about a described behavior without pretending to diagnose your pet. It separates what you actually reported from what's merely possible, offers 1-3 plausible explanations with what would make each more or less likely, and gives an action level — likely low concern, watch closely, vet contact recommended, or emergency — never a percentage or a diagnosis. Breed and age are used only when they genuinely help interpret the specific situation, not as a stereotype table. Save an observation to build a light history you and Pet Behavior Decoder can both refer back to, and generate a factual vet summary when you're ready to bring this up at an appointment.",
-    howToUse: [
-      "Select your pet type, and add breed and age",
-      "Describe the behavior in detail, including duration and frequency",
-      "Note anything else that changed (eating, energy, bathroom, sleep, mood, movement) with a short description of what changed",
-      "Optionally describe what happens just before, during, or after the behavior",
-      "Add medications, diet changes, or recent health visits if relevant — this is optional context, not required",
-      "Review the action level and the plausible explanations, each with what would make it more or less likely",
-      "Save the observation if you want to track it, and generate a vet summary before your appointment if a vet visit makes sense"
-    ],
-    example: {
-      scenario: "Your 4-year-old cat has been yowling at 3am and running through the apartment for about a week. She's spayed, indoor-only, and nothing in her environment has changed.",
-      action: "Select Cat, describe the behavior with when it happens (mostly around 3am, settles after 15-20 minutes), and submit.",
-      result: "An action level (likely watch closely, given a new week-long pattern), a few plausible explanations — an activity burst, an external stimulus, or a medical cause not yet showing other signs — each with specific things to watch for that would make it more or less likely, and what would make a vet visit worth it."
-    },
     tips: [
       "Be specific about what happens before, during, and after the behavior — that's often more useful than the behavior alone",
       "\"Anything else that changed?\" is worth checking carefully — a combination of changes matters more than any one alone",
@@ -6025,13 +4514,6 @@ tagline: "Work with the energy you have.",
       "The vet summary is meant to be handed to or emailed to your vet — it states only what you reported, never a suspected diagnosis",
       "If you're worried enough to use this tool and something feels urgent, don't wait for an answer — use the emergency guidance at the top"
     ],
-    pitfalls: [
-      "This won't diagnose your pet or tell you a behavior is 'completely normal' — only a vet exam can do that",
-      "A breed or age note only appears when it genuinely helps interpret this specific behavior, not as a general profile",
-      "No explanation is ranked by likelihood — a numbered percentage or a high/medium/low label isn't something this tool can responsibly produce",
-      "If a serious symptom is present, don't wait for this tool's analysis — seek urgent veterinary care first",
-      "It won't give you a treatment timeline ('improvement in 1-3 weeks') — next steps are tied to what you actually observe, not a countdown"
-    ]
   }
 },
 
@@ -6130,26 +4612,6 @@ tagline: "Work with the energy you have.",
     disclaimer: "This is a real, complete tool run against a realistic sample review set. Review-pattern analysis can identify reasons for caution, not prove who wrote a review or whether a particular review is fraudulent."
   },
   guide: {
-    overview: "Fake Review Detective uses a two-phase approach: first, JavaScript computes real statistics from your pasted reviews (star distribution, verified %, date clusters, language flags) — instant, no AI needed. Then AI scores each review individually for authenticity (0-100 with red/green flags) and analyzes cross-review patterns (manipulation detection, genuine consensus, purchase recommendation). Every number you see is computed, not hallucinated.",
-    
-    howToUse: [
-      "Paste a product URL to auto-extract reviews, OR paste review text manually",
-      "Extracted reviews appear in the text area — edit them if needed",
-      "Select the product category for category-specific benchmarking (auto-detected from URLs)",
-      "Click 'Detect Fakes' — instant stats appear immediately",
-      "AI then scores each review individually (Step 1) and analyzes patterns (Step 2)",
-      "Review the Quick Verdict card for the overall trust score",
-      "Expand individual review cards to see per-review red/green flags",
-      "Check the Genuine Consensus section for what real reviews actually say",
-      "Use the Purchase Recommendation to inform your decision"
-    ],
-    
-    example: {
-      scenario: "You're considering wireless headphones with 4.5 stars but the reviews seem suspicious — lots of 5-star reviews posted on the same day with generic language, plus a few detailed reviews from verified buyers",
-      action: "Paste all the reviews, select 'Electronics' category, click Detect Fakes",
-      result: "Instant stats show: 37% verified (red flag), date cluster of 3 reviews within 48 hours. AI scores the generic 5-star reviews at 15-25/100 (likely fake) and the detailed verified reviews at 80+/100 (likely genuine). Quick Verdict: Trust Score 42/100 — 'Approach with Caution.' Genuine consensus: decent sound quality, weak bass, comfortable for short sessions. Verdict: WAIT for more verified reviews."
-    },
-    
     tips: [
       "Include as many reviews as possible — pattern detection improves with volume (minimum 100 characters, 3+ reviews recommended)",
       "Copy reviews with their star ratings and dates for timeline analysis",
@@ -6159,13 +4621,6 @@ tagline: "Work with the energy you have.",
       "Try the example reviews to see the tool in action before pasting your own"
     ],
     
-    pitfalls: [
-      "Don't paste just 1 review — pattern detection requires multiple reviews",
-      "Not every 5-star review is fake — some products are genuinely great",
-      "URL extraction may fail on sites that require JavaScript or block automated requests — paste reviews manually as a fallback",
-      "AI analysis is guidance, not a guarantee — always use your own judgment",
-      "Low trust score means the review SET is unreliable, not that the product is bad"
-    ]
   }
 },
 
@@ -6190,22 +4645,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
   guide: {
-      overview: "Before the Crash tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and shows what tended to change in the days before the ones you marked. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
-      
-      howToUse: [
-        "Daily check-in: Rate energy (1-10), sleep quality (1-10), stress level (1-10), check activities, physical symptoms, and warning signs. Takes 60 seconds.",
-        "Save entry: Data stored locally. Do this every day, even (especially) when you 'feel fine'.",
-        "After 3+ days: Click 'Analyze Patterns' to see burnout risk assessment, your specific crash pattern, warning signs, and preventive actions.",
-        "Follow interventions: Sorted by urgency (urgent/high/medium/low). Do the urgent ones even if you don't feel like you need to.",
-        "Trust the data, not your feelings: If analysis says you're at high risk but you 'feel fine', the data is right. This is what poor interoception means."
-      ],
-      
-      example: {
-        scenario: "You've been logging for 2 weeks. Stress has been 8+ for 6 days, sleep averaging 4.5/10, energy declined from 7 to 3, zero rest days. You 'feel fine' and think you can keep going.",
-        action: "Compare your check-ins. It lines up the days before the ones you marked against your ordinary days.",
-        result: "Analysis shows: 'Your pattern: crash 2-4 days after stress hits 9 while sleep is below 6. Current status: BOTH thresholds met. Interventions: URGENT - Cancel tomorrow evening plans, call in sick if needed. HIGH - Delegate this week's project. Your current capacity: 30% below normal (can do 1-2 things today, not 5). Even if you feel fine, your logs show sleep deficit accumulating, no rest in 12 days, 4 warning signs present. Trust the data.' You cancel plans, take sick day, avoid the crash that would have forced shutdown for 2+ weeks."
-      },
-      
       tips: [
         "Log EVERY day, even when things are good - you need baseline data",
         "Be honest about ratings - this is for you, not performance",
@@ -6239,29 +4678,12 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Spots notable elements, possible associations, and recurring patterns in your dreams — then gives you thoughtful questions to explore what, if anything, they mean to you. Includes optional Jungian, Freudian, and dream-science perspectives for additional ways of looking at them.",
   guide: {
-    overview: "The Dream Pattern Spotter applies psychological frameworks to find patterns in your dream life. Single Dream mode provides deep analysis of one dream. Pattern mode analyzes 2-6 dreams together to find recurring themes, emotional signatures, and correlations to waking life. Not mysticism — pattern recognition for self-reflection.",
-    howToUse: [
-      "Single Dream: describe what happened in as much detail as you remember, note the date, select emotions you felt, and optionally add what's happening in your life right now",
-      "Pattern mode: add 2-6 dreams from recent nights, then analyze them together to find what keeps appearing",
-      "Review the themes, symbols, emotional landscape, and reflection questions",
-      "The reflection questions are the most valuable output — they're designed to connect dream patterns to waking life"
-    ],
-    example: {
-      scenario: "You've been dreaming about being lost in buildings and missing important deadlines for 3 weeks.",
-      action: "Add 3 dreams in pattern mode. Each describes a variation — lost in a school, late for a flight, can't find the right room for a meeting.",
-      result: "Pattern analysis surfaces: core theme of 'being unprepared or inadequate,' recurring symbol of institutional spaces, emotional signature of anxiety about evaluation. Reflection questions: 'Where in your waking life do you feel like you're failing to meet expectations? What would it mean to let go of the standard you're measuring yourself against?'"
-    },
     tips: [
       "Write down dreams immediately after waking — they fade fast",
       "The life context field significantly improves the analysis",
       "Pattern mode needs at least 2 dreams, but 4-5 gives much richer results",
       "Don't try to interpret before you see the analysis — your pre-formed interpretation may block deeper patterns"
     ],
-    pitfalls: [
-      "Vague descriptions like 'I had a weird dream' produce generic analysis — the more detail, the better",
-      "Not every dream is symbolically meaningful; some are just neural noise. Trust what actually resonates",
-      "This is for self-reflection, not diagnosis — a therapist can help go deeper with patterns that feel significant"
-    ]
   }
 },
 {
@@ -6285,30 +4707,12 @@ tagline: "Work with the energy you have.",
   headerColor: "#97b4d8",
   description: "Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.",
   guide: {
-      overview: "Most meeting-agenda tools hand you a ritual: ground rules, a round robin, a parking lot, a role for everyone. This one starts from the outcome you describe and asks what genuinely needs to happen live to reach it, then builds the lightest structure that gets there. It gives you facilitation language you could actually say out loud rather than corporate filler, and it is careful about what it does not know: it will not invent who has authority to decide, will not describe anyone in the room as dominant or quiet, and will not tell you to send something a fixed number of hours in advance.",
-      howToUse: [
-        "Say what needs to happen in the meeting — what should be decided, discussed, created, resolved or understood by the time it ends",
-        "Set the time you have and roughly who will be there; names or roles are optional and only used if you supply them",
-        "Optionally pick what tends to get in the way — a person taking a lot of airtime, conversation wandering, running out of time — and how decisions get made",
-        "Build the plan: an agenda with timings, what to say when it drifts, how you will reach the decision, and what to do before people leave",
-        "Run it live against a timer, then capture what you decided, what happens next and what is still open — and generate the follow-up from that and nothing else"
-      ],
-      example: {
-        scenario: "A 60-minute call with seven people to decide which two of four proposals move into design. You know one voice tends to fill the time and the conversation drifts.",
-        action: "Describe the outcome, set 60 minutes and seven people, tick 'One person takes a lot of airtime' and 'Conversation wanders', and leave the decision method as 'Not sure'.",
-        result: "An agenda that opens by settling the criteria AND who makes the final call if the group does not agree — because you said you were not sure, so it names that as something to clarify rather than assuming an answer. Then a block per proposal, an evaluation block, and a selection block, with a couple of minutes left unscheduled rather than padded. For each of your two concerns you get a prevention, a response, and a sentence to say: 'That is a real question, but it belongs in the design phase.' Nothing tells you who the talkative person is or why they do it — you did not say, so it does not either."
-      },
       tips: [
         "Describe the outcome, not the topic. 'Decide which two proposals advance' produces a usable agenda; 'discuss the proposals' produces a meeting about proposals",
         "The scripts are the point. Read them once before you go in — improvising a redirect while someone is mid-sentence is the hard part",
         "Leaving a field blank is a real answer. If you do not know who decides, say so, and the plan will treat that as the first thing to settle",
         "The follow-up is generated after the meeting from what you captured. Anything you leave blank stays out of it rather than becoming a placeholder"
       ],
-      pitfalls: [
-        "It cannot see the room. It works only from what you type, so the politics, the history and anyone's mood are invisible to it",
-        "A plan is not authority. If changing how the meeting runs is not yours to change, the agenda is a proposal to whoever owns it",
-        "The timer keeps the plan honest, not the conversation. Overrunning a block is information, not a failure"
-      ]
     }
 },
 
@@ -6412,30 +4816,12 @@ tagline: "Work with the energy you have.",
   },
   description: "Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain will translate them into plain English.",
   guide: {
-    overview: "The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time.",
-    howToUse: [
-      "Paste your visit summary/notes OR write what you remember the doctor saying — include medications, test results, diagnosis, and instructions",
-      "Select what you're translating: visit notes, prescription label, lab report, bill/EOB, or discharge instructions",
-      "Optionally add your main concerns — what you're worried or confused about",
-      "For medication interaction checks, add your current medications in the optional field",
-      "Review your plain English summary, action checklist, and questions to ask next time"
-    ],
-    example: {
-      scenario: "You left a doctor appointment where they said you have 'hypertension' and prescribed 'lisinopril 10mg.' Your blood pressure was 145/92. You're confused about what this means.",
-      action: "Paste: 'Doctor said I have hypertension. BP was 145/92. Prescribed lisinopril 10mg once daily. Need to reduce sodium and exercise. Come back in 3 months.' Add concern: 'Worried about medication side effects.' Select 'Diagnosis' visit type.",
-      result: "You receive a plain English summary, definition of 'hypertension' and what 145/92 means, action checklist (HIGH: Start medication, MEDIUM: Reduce sodium), lisinopril explanation with side effects, follow-up requirements, and questions to ask next visit."
-    },
     tips: [
       "The more detail you include, the more accurate the translation — paste the actual notes if possible",
       "Add your current medications to flag potential drug interactions",
       "Use the Symptom Journal to track symptoms over time and share trends with your doctor",
       "Save translations to your health history for comparison across visits"
     ],
-    pitfalls: [
-      "This tool explains medical information — it does not replace your doctor's advice. Always follow their instructions",
-      "Paraphrasing what you remember is less accurate than pasting actual notes or documents",
-      "Lab result interpretation is general context — your doctor knows your full history and may interpret values differently"
-    ]
   }
 },
 {
@@ -6459,25 +4845,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Analyze email urgency and cut through inbox anxiety. Find out what actually needs a response today vs what can wait.",
   guide: {
-    overview: "The Email Urgency Triager helps you cut through email anxiety by analyzing which messages actually need immediate responses versus which can wait or be ignored entirely. It separates real urgency from perceived urgency, giving you permission to focus on what matters and let the rest wait. Perfect for anyone drowning in their inbox or feeling anxious about unanswered emails.",
-    
-    howToUse: [
-      "Select your role/context (Employee, Manager, Freelancer, Student, etc.)",
-      "Paste one or more emails into the text area",
-      "Separate multiple emails with '---' or paste them all - the tool will figure it out",
-      "Click 'Analyze Urgency' to get your prioritized breakdown",
-      "Review the three-tier system: Reply Now, Reply This Week, Optional/Never",
-      "Expand any email card to see detailed reasoning and suggested response time",
-      "Use the quick response templates for urgent items",
-      "Read the 'Permission to Breathe' section for anxiety relief"
-    ],
-    
-    example: {
-      scenario: "You have 10 unread emails and feel anxious about which to respond to first",
-      action: "Paste all 10 emails, select your role, click Analyze",
-      result: "Get results like: 1 Reply Now (client with blocking issue), 4 Reply This Week (routine requests), 5 Optional (newsletters and FYIs you can ignore)"
-    },
-    
     tips: [
       "Include subject, sender, and body for best analysis - but messy formatting is fine",
       "The tool is intentionally conservative - most things go to 'Optional'",
@@ -6491,21 +4858,6 @@ tagline: "Work with the energy you have.",
       "Trust the analysis even if it feels wrong - sender anxiety ≠ actual urgency"
     ],
     
-    pitfalls: [
-      "Don't paste emails with sensitive information you don't want to share",
-      "The tool can't see your calendar - manually override if you know about conflicts",
-      "Very domain-specific terminology might not be understood (rare)",
-      "If you disagree with a categorization, trust your judgment",
-      "Don't feel obligated to respond just because someone marked it 'URGENT'"
-    ],
-    
-    quickReference: {
-      "Reply Now": "Explicit deadlines within 24hrs, business-critical issues, blocking others",
-      "Reply This Week": "Deadlines within a week, important but not blocking, routine requests",
-      "Optional/Never": "FYI emails, newsletters, no specific ask, CCs, automated notifications",
-      "Most common result": "1-2 Reply Now, 3-5 This Week, majority Optional",
-      "Anxiety relief": "Permission to ignore most emails"
-    }
   }
 },
 
@@ -6667,27 +5019,6 @@ tagline: "Work with the energy you have.",
   },
 
   guide: {
-    overview: "Lease Trap Detector analyzes rental agreements to protect tenants from predatory practices. Upload your lease or paste the text, specify your location (for local law comparison), and get comprehensive analysis: RED flags for serious concerns (illegal clauses, landlord overreach, exploitative fees), YELLOW flags for questionable provisions (vague language, missing details), GREEN flags for good tenant protections. Each flag includes the actual clause text, plain-language explanation of the problem, legal status (illegal/unenforceable/exploitative), your rights under local law, and specific negotiation strategies. Also identifies missing protections, unusual fees, and provides negotiation scripts plus local tenant rights resources.",
-    
-    howToUse: [
-      "UPLOAD YOUR LEASE: Either upload PDF file or paste lease text directly into the text box.",
-      "ENTER LOCATION: Type your city and state (e.g., 'San Francisco, CA' or 'Austin, TX') - this is critical for comparing to local housing laws.",
-      "SELECT LEASE TYPE: Choose Apartment, House, Room rental, or Commercial to get relevant analysis.",
-      "OPTIONAL CONCERNS: If you already noticed something fishy (like 'They want $500 cleaning fee' or 'Can landlord enter anytime?'), note it here for focused analysis.",
-      "CLICK ANALYZE: Wait 30-60 seconds for comprehensive analysis.",
-      "REVIEW COLOR-CODED FLAGS: RED = serious concerns/likely illegal, YELLOW = questionable/clarify with landlord, GREEN = good tenant protections.",
-      "READ PLAIN LANGUAGE EXPLANATIONS: Each flag explains what the clause means in normal English, why it's problematic, what the law says, and what to negotiate.",
-      "USE NEGOTIATION SCRIPTS: Copy the provided negotiation language to email or discuss with landlord.",
-      "CHECK MISSING PROTECTIONS: See what important clauses should be in your lease but aren't.",
-      "REVIEW UNUSUAL FEES: See which fees are higher than typical or potentially illegal."
-    ],
-    
-    example: {
-      scenario: "You're a first-time renter in California looking at an apartment lease. The lease has a clause saying 'Landlord may enter apartment at any time for inspections' and charges a $400 non-refundable cleaning fee plus $200 'lease processing fee'. You're not sure if this is normal or legal.",
-      action: "Upload the lease PDF, enter 'Los Angeles, CA' as location, select 'Apartment' as lease type, note in concerns: 'Landlord entry anytime clause seems wrong, fees seem high'. Click Analyze Lease.",
-      result: "RED FLAGS: (1) 'Landlord may enter at any time' - ILLEGAL in California. CA Civil Code 1954 requires 24-hour notice except emergencies. Your rights: Landlord MUST give 24-hour written notice and can only enter for specific reasons (repairs, showings with your permission, emergencies). Negotiation: 'This clause violates CA Civil Code 1954. Please revise to require 24-hour notice as required by law.' (2) $200 'lease processing fee' - LIKELY ILLEGAL. California law generally prohibits application fees over $55 and lease processing fees are often considered disguised application fees. Your rights: You can refuse to pay or negotiate removal. (3) $400 'non-refundable' cleaning fee - QUESTIONABLE. In California, cleaning fees must be itemized and can't exceed actual cleaning costs. 'Non-refundable' language is concerning. YELLOW FLAGS: (1) Security deposit amount not clearly stated - ask for specific dollar amount and confirm it doesn't exceed 2 months rent (CA limit for unfurnished). GREEN FLAGS: (1) Includes 60-day notice for rent increases - good, California requires this for increases over 10%. (2) Specifies habitability standards - protects your right to safe housing. MISSING PROTECTIONS: (1) No clause about landlord's duty to mitigate damages if you break lease early - California law requires this, should be explicit. NEGOTIATION SCRIPT: 'Hi [Landlord], I reviewed the lease and have concerns about three clauses that may violate California tenant law. [Details of violations]. Can we revise these sections to comply with state law? I'm happy to sign once these are corrected.' RESOURCES: Los Angeles Tenant Union, Housing Rights Center, LA County Department of Consumer Affairs."
-    },
-    
     tips: [
       "LOCATION IS CRITICAL - renting law varies sharply between regions and even between neighbouring cities, so name the city and the region or country it is in.",
       "UPLOAD FULL LEASE - don't just paste concerning clauses, the tool needs full context to spot patterns and missing protections.",
@@ -6701,18 +5032,6 @@ tagline: "Work with the energy you have.",
       "RED FLAGS = WALK AWAY WARNING - if lease has multiple red flags and landlord won't negotiate, consider walking away. Predatory lease = bad landlord."
     ],
     
-    pitfalls: [
-      "Don't skip location - 'New York City, NY' has VERY different tenant laws than 'Albany, NY'. Be specific with city AND state.",
-      "Don't assume 'standard lease' is safe - many 'standard' leases include illegal or exploitative clauses. Always analyze.",
-      "Don't sign first, analyze later - run lease through tool BEFORE signing. After signature, you're legally bound even to illegal clauses (until you fight in court).",
-      "Yellow flags aren't 'probably fine' - questionable clauses need clarification. Vague language always benefits landlord, never tenant.",
-      "Green flags don't mean entire lease is safe - a lease can have good protections AND predatory clauses. Review everything.",
-      "Don't trust 'this is required by law' from landlord - if tool says something is illegal, it's illegal. Landlords lie or are ignorant of law.",
-      "Negotiation scripts aren't optional suggestions - if tool says clause is illegal, you have RIGHT to demand removal. Be firm.",
-      "Don't ignore missing protections - if lease is silent on landlord's responsibilities (repairs, habitability, entry notice), you're vulnerable.",
-      "Unusual fees won't 'sort themselves out' - if charged $500 for 'administrative fee', negotiate NOW or you'll pay it.",
-      "Don't use tool as substitute for lawyer on complex commercial leases - this tool is built for residential rentals. Complex commercial needs attorney review."
-    ]
   }
 },
 
@@ -6737,24 +5056,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.",
   guide: {
-    overview: "Friendship Fade Alerter helps individuals maintain relationships despite time-blindness. Add important people with their ideal contact frequency (weekly, monthly, etc.), and the tool tracks days since last contact, alerts when overdue, and generates personalized conversation starters when you're ready to reach out. Color-coded visual indicators (red = overdue, yellow = coming due, green = recently contacted) remove guesswork. One-click conversation starter generation removes the 'what do I say?' barrier. Guilt-free framing acknowledges that time got away from you - that's okay. Snooze relationships during busy periods. Track successful reconnections. Low-friction design makes maintaining friendships actually doable.",
-    
-    howToUse: [
-      "ADD RELATIONSHIPS: Click 'Add Person', enter name, relationship type (close friend, family, mentor), ideal contact frequency (weekly to semi-annually), last contact date, and optional context notes (shared interests, ongoing topics).",
-      "VIEW DASHBOARD: See all relationships color-coded by urgency - RED (overdue), YELLOW (coming due within 3 days), GREEN (recently contacted).",
-      "GET ALERTED: Dashboard shows who needs contact, days since last contact, days until overdue.",
-      "GENERATE CONVERSATION STARTER: Click 'Reach Out Now' on any overdue person - get 3-5 personalized message options with tone, why it works, and follow-up ideas.",
-      "SEND MESSAGE: Copy conversation starter, send it, then click 'Mark as Contacted' to reset the timer.",
-      "SNOOZE IF NEEDED: Busy period? Snooze a relationship for 1-4 weeks - alerts pause, resume automatically.",
-      "TRACK CONNECTIONS: See your reconnection success rate, celebrate maintaining friendships."
-    ],
-    
-    example: {
-      scenario: "You've lost track of time. Your close friend Sarah - you talk monthly - you last contacted her 47 days ago (17 days overdue). You feel guilty and don't know what to say since it's been so long. You're avoiding reaching out because of shame.",
-      action: "Open Friendship Fade Alerter. Dashboard shows Sarah's card in RED with '47 days since contact (17 days overdue)'. Click 'Reach Out Now'. Tool generates conversation starters.",
-      result: "Conversation starters generated: (1) 'Hey! I realized it's been a minute - hope you're doing well! How's the new job going?' (Casual/warm tone, acknowledges time but doesn't apologize, references last conversation topic). (2) 'Thinking of you! Want to grab coffee this week and catch up?' (Direct invitation, low pressure). (3) 'I saw [thing related to shared interest] and thought of you - made me realize we should catch up soon!' (Shared interest hook). Guilt relief section: 'It's been 47 days, but that's life - you don't need to apologize for being busy. Just reach out now.' You copy option 1, text Sarah, she responds warmly, you click 'Mark as Contacted' - timer resets, Sarah's card turns GREEN. Success!"
-    },
-    
     tips: [
       "ADD EVERYONE WHO MATTERS - not just close friends, but also family, mentors, acquaintances you value. The tool tracks them all.",
       "BE HONEST about ideal frequencies - don't set 'weekly' because you think you should. Set realistic: if you realistically talk every 6 weeks, set 'Monthly' or create custom.",
@@ -6765,15 +5066,6 @@ tagline: "Work with the energy you have.",
       "CELEBRATE successes - reconnection counter shows you ARE maintaining relationships.",
       "Quick message templates ('thinking of you!') for super low-friction contact when overwhelmed."
     ],
-    pitfalls: [
-      "Don't set unrealistic frequencies thinking it will motivate you - 'weekly' for everyone will just make everything red and overwhelm you. Be honest.",
-      "Don't let the tool replace genuine connection - use it to prompt contact, but actually have conversations, not just check boxes.",
-      "Don't ignore yellow warnings — yellow turns red faster than you expect. Act when it turns yellow, not when it's already overdue.",
-      "Context notes aren't optional if you want good conversation starters - 'close friend' generates generic, 'close friend, loves rock climbing, planning Yosemite trip' generates specific.",
-      "Don't apologize in your messages for the time gap (tool explicitly tells you not to) - most people don't notice gaps like you do, leading with apology makes it awkward.",
-      "Mark as contacted immediately after sending - if you wait to update 'until they respond', you'll forget and the data becomes inaccurate.",
-      "Don't use snooze as avoidance - snooze is for 'I'm genuinely too busy right now', not 'I don't want to deal with this person'. If you keep snoozing someone, maybe reassess the relationship."
-    ]
   }
 },
 
@@ -6802,21 +5094,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#2a3820",
   description: "Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise hard to handle? Tell Trip Recon what matters to you and what you already know. It helps you prepare for possibilities, ask for what you need, and make a backup plan without inventing conditions at the place.",
   guide: {
-    overview: "Trip Recon treats you as the sensor. It starts with what matters to you, what you already know from past visits or other reliable information, and what you observe once you're there. From that, it suggests possibilities worth preparing for and practical ways to reduce friction. It does not predict crowd levels, noise, lighting, smells, temperature, wait times, layouts, or accommodation outcomes for a specific place and time unless those facts were supplied or actually verified. A place type can suggest what to consider; it cannot establish what this particular place will be like. Profiles are preference presets, not diagnoses.",
-    howToUse: [
-      "Save a profile if you want — choose what tends to matter to you so you don't have to re-enter it every time",
-      "Choose Prepare for a Place or Prepare for a Route",
-      "Enter the place or route and add anything you already know from a past visit, a call, a review, instructions, or another source you trust",
-      "Select the concerns you want help preparing for — noise, crowds, lighting, smells, temperature, and others",
-      "Review the preparation plan, the words you can use to ask for what you need, and a backup that respects the constraints you supplied",
-      "If reality differs once you're there, use Conditions Changed and describe what you actually observe so the plan can adapt",
-      "Afterward, save what was actually true if you want that experience to inform a future visit",
-    ],
-    example: {
-      scenario: "You have a hospital outpatient appointment. You've been told to arrive early, you cannot leave and return without risking your place, and on your last visit you waited about two hours.",
-      action: "Choose Prepare for a Place, enter the waiting area, select the concerns that matter to you, and add the facts you already know about arrival, waiting, and not being able to leave.",
-      result: "Trip Recon treats those supplied facts as established and the sensory conditions as possibilities to prepare for unless you also supplied evidence about them. It gives you low-burden preparation ideas, a script for asking whether you can wait somewhere else without missing your name being called, and a backup plan that does not tell you to leave when you've said you cannot."
-    },
     tips: [
       "What you already know about a place is stronger than what its category merely suggests — include past experience or verified details when you have them",
       "A selected concern says what matters to you; it does not prove the place will contain that problem",
@@ -6847,22 +5124,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Facing a negotiation? Describe the situation, what you want, and anything you think gives you leverage. Leverage Logic helps you see where each side has room to move, what you may be assuming, and how to make your case without giving away more than you need to.",
   guide: {
-      overview: "Leverage Logic helps you reason about negotiating power instead of manufacturing it. Describe the negotiation — a raise, a lease renewal, a vendor contract, a dispute — along with anything working in your favour and anything working in theirs, and it separates what you have actually established from what you are assuming on top of it. Where something important is unknown, it says so and tells you how to find it out, rather than filling the gap with a plausible guess. It does not rate your leverage strong or weak, invent the other side's budget or motives, predict what they will do, or score your readiness out of a hundred, because none of that can be known from what you typed.",
-
-      howToUse: [
-        "Describe the negotiation, what you want, and pick the type (salary, lease, vendor, purchase…)",
-        "Add anything working in your favour — and, separately, anything working in theirs",
-        "Read your position and theirs: each fact, what it may mean, and what its value depends on",
-        "Work through what is still unknown before you go in, using Am I ready?",
-        "Paste what they said into Counter for a read on what it settles and what it leaves open, or draft the ask as an email"
-      ],
-
-      example: {
-        scenario: "You're asking for a raise after two years without one, and you have a written offer from another company.",
-        action: "Enter the situation and what you want, list the offer and your billing-system knowledge in your favour, and leave their side blank because you genuinely do not know it.",
-        result: "Three established facts with what each may mean and what its worth depends on; an empty column for their position saying that is the biggest gap; five things to find out first, including whether the outside offer has an expiry; and an approach that names which fact it rests on."
-      },
-
       tips: [
         "Fill in their side if you can, even partially — with it blank, the tool will not guess it for you",
         "The amber lines are the point: they mark where a fact stops being worth what you think it is",
@@ -6894,22 +5155,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Have a meeting coming up? Paste the invite or describe what happens. Justify My Meeting looks at the goal of the meeting and whether having everyone there at the same time is the best use of everyone’s time. Then it tells you whether to keep it, shorten it, fix it, or replace it with something better.",
   guide: {
-    overview: "A meeting earns its place when the goal genuinely needs people thinking together in real time — a decision that needs the disagreement in the room, a conversation that would go wrong in writing, work that has to be built jointly. Justify My Meeting starts from the goal you describe, asks what synchronous time actually adds to it, and returns one of four answers: keep it, shorten it, fix it, or replace it with something asynchronous. It says which parts of its reasoning are inference rather than fact, and what it would need to know to say more.",
-
-    howToUse: [
-      "Judge a Meeting: paste the invite or describe what happens, add duration and headcount if you know them, and get the verdict with its reasoning",
-      "Zombie Check: for a recurring meeting — what it was set up for versus what it does now, and what to change",
-      "Week Audit: list the meetings in your week and see which ones earn their time",
-      "Rescue This Meeting: you are in one right now and it is going nowhere — get words you can say out loud",
-      "After a FIX IT verdict, build the agenda. After SHORTEN IT or MAKE IT ASYNC, draft the message."
-    ],
-
-    example: {
-      scenario: "A standing 60-minute engineering all-hands with 22 attendees. The agenda is 'status updates from each team lead' — no prep, no decisions, everyone reports out what they did last week.",
-      action: "Paste the invite, set duration to 1 hour and attendees to 22.",
-      result: "Verdict: MAKE IT ASYNC. The reasoning names what synchronous time is buying here — nothing a written update would not — and what would change the verdict, such as a decision that needs the disagreement in the room. The time footprint is computed from your own numbers: 22 × 1h = 22 person-hours. A better way: a written update thread with a short live slot kept only for what needs discussion. Then it drafts the message, which proposes rather than announces, because you may not have the authority to change someone else's meeting."
-    },
-
     tips: [
       "Describe what actually happens, not what the invite claims — that is where the answer usually lives",
       "Duration and headcount are optional, but supplying them is what makes the time footprint real rather than guessed",
@@ -6918,11 +5163,6 @@ tagline: "Work with the energy you have.",
       "Some meetings genuinely earn their hour. A tool that never says 'keep it' would not be worth consulting."
     ],
 
-    pitfalls: [
-      "It reads only what you supply — it cannot see the politics, the history, or the person who will take it personally",
-      "It never tells you that you are allowed to skip. It helps you propose a change, which is a different thing",
-      "In a meeting-heavy culture the verdict may be right and still not worth acting on this week"
-    ]
   }
 },
 
@@ -6947,23 +5187,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Something going wrong in the kitchen? Tell us what you're making, what happened, and what you have on hand. Recipe Chaos Solver helps you recover the dish, replace missing ingredients, fix the flavor, check a recipe before you start, or scale it without creating a new problem.",
   guide: {
-    overview: "Recipe Chaos Solver works from what you actually have — your recipe, your pantry, the problem in front of you — not a generic version pulled from memory. A missing ingredient gets a substitution scaled to what your recipe calls for, not an invented replacement recipe. A rescue tells you what to do now, what to expect, and why — without predicting a result it can't actually know.",
-
-    howToUse: [
-      "🍳 Rescue: Describe what you're making and what's going wrong (or paste/photograph the recipe) → get a fix grounded in your actual recipe, with a 'Walk Me Through It' step-by-step mode",
-      "🔄 Substitute: List what you're missing (one ingredient or several) → get a coherent plan that accounts for how multiple substitutions interact",
-      "✨ Fix the Flavor: Describe what's off → if the description is too vague to diagnose, it asks one clarifying question instead of guessing",
-      "✈️ Check Before I Start: Paste a recipe + what you have → a readiness read that only marks something missing when you've actually said so",
-      "⚖️ Scale: Paste a recipe and change servings → ingredients scale mathematically, non-linear ones (salt, leavening, eggs) get flagged instead of auto-adjusted",
-      "📋 Recent: Every check you've run, with View (see the original result) and Use Again (restore your inputs and rerun)"
-    ],
-
-    example: {
-      scenario: "You're halfway through a bolognese and realize you're out of red wine and canned tomatoes. You have diced tomatoes, tomato paste, beef broth, and balsamic vinegar.",
-      action: "Open Rescue, describe the dish and what's missing, and list what you have.",
-      result: "A fix using beef broth in place of the wine and diced tomatoes in place of the canned ones — both scaled to 'the same volume your recipe called for,' not an invented amount. Balsamic is suggested in a small, taste-as-you-go amount for acidity, described as a partial substitute for the wine, not a replacement for it. No total time is invented, and nothing assumes the pan is about to burn just because a step is missing."
-    },
-
     tips: [
       "Upload a photo of your recipe, your pantry, or the dish itself — Rescue reads what it can clearly make out from any of them",
       "Substitute handles one missing ingredient or several at once — list them all together so it can account for how the substitutions interact",
@@ -6972,12 +5195,6 @@ tagline: "Work with the energy you have.",
       "Recent keeps a running log across every mode — View shows the original result again, Use Again restores your inputs so you can adjust and rerun"
     ],
 
-    pitfalls: [
-      "Substitute won't force multiple alternatives per ingredient just to look thorough — it recommends the one coherent plan",
-      "Fix the Flavor is for boring food, not broken food — if something actually went wrong, use Rescue instead",
-      "Check Before I Start reads a status as 'missing' only when you've actually said it's missing — an item you didn't mention shows as unclear, not absent",
-      "Scale won't invent a new total cook time from the serving-count ratio — it flags what to watch instead"
-    ]
   }
 },
 
@@ -7081,26 +5298,6 @@ tagline: "Work with the energy you have.",
   },
   description: "That envelope, email, or collection notice doesn't have to ruin your week. Tell DeftBrain what's happening, and we'll help you turn an intimidating bill into a practical, step-by-step plan for understanding the bill, protecting your rights, reducing what you owe, and deciding what to do next.",
   guide: {
-    overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
-
-    howToUse: [
-      "🧾 Rescue: Full analysis — select bill type, enter details, get scripts, letters, rights, escalation ladder, and insider tips",
-      "⚡ Quick Check: Describe any charge → instant verdict: NORMAL, WORTH QUESTIONING, or DEFINITELY FIGHT THIS",
-      "📊 Triage: Enter 2-10 bills → priority ranking with budget allocation, danger zones, and quick wins",
-      "🎭 Rehearse: Practice the call — AI plays the billing rep (normal or hard mode), with coaching after every exchange",
-      "✉️ Letters: Generate 7 letter types: hardship, dispute, goodwill adjustment, insurance appeal, cease & desist, regulatory complaint, payment agreement",
-      "📋 Tracker: All saved plans with status updates (pending → in progress → resolved)",
-      "📞 Call Log: Record what happened — outcome, rep name, confirmation number, what was agreed, next follow-up",
-      "📅 Calendar: See overdue items, upcoming follow-ups, and total monthly obligations at a glance",
-      "🏆 Victories: Log every win with dollar amounts — running total of money saved, plus pattern insights after 3+ wins"
-    ],
-
-    example: {
-      scenario: "You have a $2,400 medical bill that's 60 days overdue. You lost your job and can afford $75/month. You think they overcharged you.",
-      action: "Quick Check the suspicious charge first (⚡). Then run full Rescue (🧾) with bill photo for autopsy. Practice the call in Rehearsal (🎭) on hard mode. Generate a hardship letter (✉️). Save the plan (📋) and track follow-ups (📅).",
-      result: "Quick Check flags a $340 duplicate facility fee. Rescue plan gives you the exact phone script with insider phrases. Rehearsal builds your confidence — you handle the hard-mode rep's pushback. Letter is ready to send. After the call, you log that they accepted $50/month and waived the late fees. Victory tracker shows you saved $640."
-    },
-
     tips: [
       "Start with Quick Check for any charge you're unsure about — it takes 5 seconds",
       "Use Rehearsal on Hard Mode before big calls — if you can handle the worst-case rep, the real one feels easy",
@@ -7109,12 +5306,6 @@ tagline: "Work with the energy you have.",
       "The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit"
     ],
 
-    pitfalls: [
-      "This is general guidance, not legal or financial advice — programs and rights vary by location",
-      "If your debt is in collections, read the Collections Defense Kit BEFORE doing anything else",
-      "Never acknowledge a collections debt verbally until it's validated in writing",
-      "Making a partial payment on old debt can restart the statute of limitations — the tool warns about this"
-    ]
   },
   crossRefs: ['MoneyDiplomat', 'ChaosPilot'],
 },
@@ -7222,23 +5413,6 @@ tagline: "Work with the energy you have.",
   },
   description: "Not every mistake needs the same apology, and getting the size wrong in either direction makes it worse. Describe what happened and you'll find out what this actually needs — the words to say, the ones that make it worse, and one thing to do today. It corrects over-apologizing as readily as under-apologizing.",
   guide: {
-    overview: "Many people over-apologize for minor things ('sorry to bother you' for legitimate questions) or under-apologize for genuine harm. This tool analyzes actual harm vs your responsibility to determine appropriate apology level (1-5) and provides calibrated templates.",
-    
-    howToUse: [
-      "Describe what happened",
-      "Add relationship context (friend/boss/partner/stranger)",
-      "Optionally note situation type (work/personal/public)",
-      "Get apology level (1=none needed, 5=major repair)",
-      "Receive appropriate templates for that level",
-      "See what NOT to say and why"
-    ],
-    
-    example: {
-      scenario: "You asked your boss a clarifying question about a project deadline during her lunch break. She seemed slightly annoyed. You're now spiraling about whether you should apologize.",
-      action: "What happened: 'Asked boss question during lunch, she seemed annoyed', Relationship: 'Boss', Context: 'Work'.",
-      result: "Appropriate level: 1 (No apology needed). Analysis: Actual harm = none (asking work questions is your job). Your responsibility = none (lunch breaks aren't sacred, reasonable question). Over-apologizing red flag: You're apologizing for existing/doing your job. What to say instead: Nothing, or 'Thanks for the quick answer' if you see her later. What NOT to say: 'Sorry to bother you', 'Sorry to interrupt your lunch'. Why: Asking clarifying questions is legitimate. You're not bothering her - you're doing your job. Permission: You don't need to apologize for taking up space or asking reasonable work questions. If she's annoyed, that's about her lunch being interrupted, not about you doing something wrong."
-    },
-    
     tips: [
       "Small misses are far more common than people think — most interactions don't need an apology at all",
       "Templates scale to relationship (different wording for boss vs close friend)",
@@ -7247,11 +5421,6 @@ tagline: "Work with the energy you have.",
       "Under-apologizing (level 3 when you need 4-5) damages relationships"
     ],
     
-    pitfalls: [
-      "Don't apologize just because someone is upset - their feelings don't always mean you did wrong",
-      "Don't skip apologies when you genuinely caused harm just because apologizing is uncomfortable",
-      "Don't use apology to manipulate ('I'm so sorry' to avoid consequences)"
-    ]
   }
 },
 
@@ -7276,21 +5445,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#ccdfc4",
   description: "Got an hour or two and want to do something different? Tell us where you are, how much time you have, what sounds good, and how you're getting around. Micro-Adventure Mapper builds a small local outing that fits the time, budget, and constraints you actually have.",
   guide: {
-    overview: "Adventures don't require expensive trips or full days. This tool creates specific micro-adventure plans - 2-4 hours, low/no cost, doable this week. Urban exploration, hidden local spots, photography walks, new neighborhoods. Makes exploration accessible.",
-    
-    howToUse: [
-      "Enter your location (or leave blank for general city ideas)",
-      "Set time available (defaults to 2-3 hours)",
-      "Set budget (defaults to free or low cost)",
-      "Add interests if you have preferences",
-      "Get complete adventure plan with itinerary, what to bring, timing"
-    ],
-    example: {
-      scenario: "You're in Chicago, have Saturday afternoon free (3 hours), budget $15, interested in architecture and photography.",
-      action: "Location: Chicago, Time: 3 hours, Budget: $15, Interests: Architecture, photography.",
-      result: "Micro-Adventure: 'Loop Architecture Photo Walk' - Category: Urban exploration + Creative. Cost: Free (just public transportation $5 if needed, coffee $5 optional). Time: 3 hours. Description: Explore Chicago's architectural treasures through photography lens, discovering hidden details most people miss. Why adventure: Most tourists rush through; you'll slow down and notice design elements. Itinerary: 1:00pm: Start at Willis Tower exterior, photograph the facade angles. Pro tip: Cross the street for better perspective. 1:30pm: Walk to Monadnock Building (lightest masonry skyscraper), photograph the interior atrium. Public lobby, free. 2:00pm: Chicago Cultural Center - photograph Tiffany dome. Free entry. 2:30pm: Millennium Park - Cloud Gate from unconventional angles. 3:00pm: Coffee at Intelligentsia, review photos. What to bring: Phone/camera, comfortable shoes, water. Best time: Afternoon for good light. Solo or social: Solo for contemplative experience, friend for sharing discoveries."
-    },
-    
     tips: [
       "Specific itineraries remove 'I don't know what to do' barrier",
       "Most micro-adventures are free or nearly free - cost isn't a barrier",
@@ -7299,11 +5453,6 @@ tagline: "Work with the energy you have.",
       "The 'pro tip' section adds insider knowledge that makes it feel special"
     ],
     
-    pitfalls: [
-      "Don't over-plan - the joy is in spontaneity within structure",
-      "Don't skip it because it seems 'too simple' - simple doesn't mean boring",
-      "Don't wait for perfect weather/timing - go this week while you're motivated"
-    ]
   }
 },
 {
@@ -7327,22 +5476,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#ccdfc4",
   description: "Tell DeftBrain where you are, what you want to spend, and what kind of night you're hoping for. You'll get a complete plan—including where to go, when to go, what it should cost, and what to do if plans change.",
   guide: {
-    overview: "Date Night turns 'I dunno, what do you want to do?' into a complete evening with a timeline, a cost for each stop, and room left in the budget. Say where you are and when, choose the kind of night you want, set what you can spend, and you get 2-4 stops suited to where you are — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — with something to do or say together at each one, and a backup for every stop.",
-    howToUse: [
-      "Say where you are, and whether it's tonight or another day",
-      "Choose the kind of night — casual, romantic, adventurous, first date, anniversary, or staying in",
-      "Set what you can spend: drag the slider, pick an amount, or type an exact figure",
-      "Open the extra sections if they apply — start time and weather, dietary needs, what your partner likes, what you did last time",
-      "Press the plan button, or ⌘↵",
-      "Read the plan: each stop has a time, a cost, something to do together, and a backup",
-      "Swap any stop you don't like, or use 'If something changes' when dinner falls through, the weather turns, or you're running late",
-      "Want a different feel? Choose more relaxed, more romantic or more adventurous, then reimagine the evening"
-    ],
-    example: {
-      scenario: "You have ¥8,000 for a romantic date in Shibuya, Tokyo, starting at 7:00 PM. Your partner doesn't eat seafood and you went to an izakaya last time.",
-      action: "Select JPY ¥, set budget to ¥8,000, select Romantic, enter 'Shibuya, Tokyo', add 'no seafood', note 'izakaya' as last time",
-      result: "Vibe: 'Neon Glow & Hidden Bars.' 7:00 PM: A standing yakitori bar in a narrow alley near Nonbei Yokocho (~¥2,500). 8:15 PM: A quiet Italian-Japanese fusion restaurant with handmade pasta (~¥3,500). 9:30 PM: Walk through the illuminated streets to Yoyogi Park's edge (free). Total: ~¥6,000, buffer: ~¥2,000 for drinks or dessert. Plus conversation starters, transit tips, and a Plan B ramen shop if the main spot is full."
-    },
     tips: [
       "First date? We'll favour places where conversation comes easily and you can comfortably wrap things up.",
       "Staying in? We'll account for delivery fees and tips.",
@@ -7350,11 +5483,6 @@ tagline: "Work with the energy you have.",
       "Want a different feel? Choose more relaxed, more romantic or more adventurous and reimagine the evening — no need to start over."
     ],
     beforeYouGo: "Hours, prices and availability can change. Confirm the details and make reservations where needed.",
-    pitfalls: [
-      "Venue suggestions are types, not specific business names — confirm availability before going",
-      "Prices are estimates for the area — check actual menus and local pricing",
-      "Make reservations if the tips suggest it, especially on weekends or holidays"
-    ]
   }
 },
 {
@@ -7440,24 +5568,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Everything feels urgent at once, and it's hard to trust your own read on what actually needs you first. Chaos Pilot works only from what you know — deadlines, consequences, who's waiting — to put your tasks in a defensible order. When a missing fact would change that order, it says so instead of guessing.",
   guide: {
-    overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), pasting everything in at once instead of listing it, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
-    howToUse: [
-      "Pick a timeframe: Right Now (today's triage), This Week (day-by-day), or Few Weeks (sustained crisis plan)",
-      "Use Quick Start templates or enter tasks manually — add deadlines and who's waiting via the ℹ️ button",
-      "Too scattered to list tasks? Paste it all in at once and let it pull the tasks out for you",
-      "Set your energy, emotional state, and preferred tone (Gentle / Direct / Tough Love)",
-      "Hit 'Prioritize' — after a brief breathing moment, see your reality check, anxiety audit, and ranked priorities",
-      "Use 'Build Schedule' for a concrete time-blocked plan, or 'Just One Thing' when you're paralyzed",
-      "Check off tasks as you go, then hit 'What's next?' for a fresh re-triage of what remains",
-      "Tap 🧩 on any task to split it into concrete sub-tasks, or 📨 to draft a delegation message",
-      "Share your plan with someone via the Accountability Snapshot for follow-through",
-      "Return later — the tool remembers past sessions, offers follow-up calibration, and spots patterns over time"
-    ],
-    example: {
-      scenario: "You're panicking with 8 tasks, low energy, and 3 hours before a meeting. You select 'Right Now', set energy to 'Running on fumes' and emotional state to 'Overwhelmed', and pick 'Direct' tone.",
-      action: "Enter all 8 tasks. Two have real deadlines. Hit Prioritize, then Build Schedule.",
-      result: "Reality check: Of 8 tasks, only 2 are time-sensitive today. Anxiety audit shows 4 tasks feel urgent due to guilt, not consequences. Time-blocked schedule maps 2 must-dos into 90 minutes with breaks. Remaining 6 tasks get guilt-free deferral permissions with specific reasoning."
-    },
     tips: [
       "The 'Just One Thing' panic button is there for your worst moments — it cuts through everything and gives you one clear action",
       "Paste-it-all-in mode works great when you can't even organize your thoughts into a list",
@@ -7466,11 +5576,6 @@ tagline: "Work with the energy you have.",
       "The Dashboard tracks your triage history — most people discover 60-70% of their 'urgent' tasks could always wait",
       "Task splitting (🧩) is powerful for tasks that feel huge — they're usually 3-5 smaller tasks in disguise"
     ],
-    pitfalls: [
-      "Don't use this tool in the middle of a genuine emergency — do the thing first, triage after",
-      "If every session shows 8+ critical tasks, that's a workload problem, not a prioritization problem",
-      "The delegation draft is a starting point — review before sending"
-    ]
   }
 },
 
@@ -7555,24 +5660,6 @@ tagline: "Work with the energy you have.",
   },
   description: "Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Say what you're working on, pick a companion, and you're not alone anymore.",
   guide: {
-    overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
-
-    howToUse: [
-      "Choose a session mode — each one changes your buddy's personality, check-in style, and ambient messages",
-      "Enter your task — tap 'Split' to have AI break it into sub-tasks with time estimates",
-      "Set duration, check-in frequency, environment, and mood",
-      "Start the session — your buddy's greeting, tips, and presence all match the mode you chose",
-      "Respond to check-ins, check off sub-tasks, use 'I'm stuck' for concrete micro-steps",
-      "When done, generate an accountability card to screenshot or share with friends",
-      "Save and repeat — past sessions show mode icon and offer one-tap repeat"
-    ],
-
-    example: {
-      scenario: "You need to write a quarterly report but keep opening other tabs instead.",
-      action: "Mode: Avoidance Buster. Task: 'Write Q1 report'. Split into sub-tasks. Duration: 45 min.",
-      result: "Buddy (extra gentle): 'The fact that you opened this tool is already a win. First step: just open the doc. That's it.' Sub-tasks appear as a checklist. Check-ins are compassionate, not judgy. When you tap 'drifting', buddy says 'That's totally okay — what's the next small thing you can type?' At the end, you generate an accountability card: '🌱 Avoidance Conquered — 45 min on a task you'd been dodging for a week.' You text the card to a friend."
-    },
-
     tips: [
       "Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Long Haul for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off",
       "The accountability card is designed for screenshots — use it to build social momentum",
@@ -7580,11 +5667,6 @@ tagline: "Work with the energy you have.",
       "Invite a real friend to cowork using the built-in message generator"
     ],
 
-    pitfalls: [
-      "Don't set 3-hour sessions hoping for a miracle. Start with 25 minutes and extend.",
-      "Don't ignore check-ins — the accountability only works if you engage",
-      "This provides presence and structure, not motivation. If the task is wrong, no timer will fix that."
-    ]
   }
 },
 
@@ -7665,26 +5747,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Got a thing later and can't start anything? That frozen feeling is real. This tool shows you how much free time you actually have, helps you decide what to do with it, and lets you stop thinking about the appointment until it's time.",
   guide: {
-    overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Enter your tasks and energy level — it assigns each one to a window it can actually fit. After the appointment, a 3-tap debrief compares your pre-appointment anxiety to how it actually went. Over sessions, the pattern becomes undeniable.",
-
-    howToUse: [
-      "Add events with time, type, prep, and travel. Tap + for multiple events.",
-      "Set energy level — AI adjusts task difficulty accordingly",
-      "Set anxiety level (1-10) — this builds your anxiety-vs-reality history",
-      "List what you'd do today without these events",
-      "AI maps tasks to free windows with intensity badges and starts a live countdown",
-      "'Start With Me' on any block walks you from frozen to doing in 60 seconds, then runs a block timer",
-      "'Just One Thing' for deep freezes — picks one absurdly small task",
-      "After your appointment, 3-tap debrief: Did you use the time? How was it? Any notes?",
-      "AI compares your anxiety to reality and spots patterns across sessions"
-    ],
-
-    example: {
-      scenario: "Dentist at 2pm, energy 2/5, anxiety 8/10. Tasks: answer emails, clean kitchen.",
-      action: "Event: 2pm Medical, 20m prep, 15m travel. Energy: Low. Anxiety: 8. Tasks entered.",
-      result: "Countdown: '3h 10m of free time.' All blocks tagged 🟢 Easy (matches low energy). Tap 'Start With Me' on first block → guided launch: '1. Open email app. 2. Find the easiest email. 3. Hit reply. 4. Type one sentence. Timer started: 25 minutes.' After dentist, debrief: 'Anxiety was 8/10 but the appointment was totally fine. Last 3 medical visits: anxiety averaged 7.5, reality averaged 'fine.' Your brain is overestimating by about 5 points.'"
-    },
-
     tips: [
       "'Start With Me' is the most important button. The gap between seeing the plan and doing the plan is where most tools fail — this one walks you across it.",
       "Always do the debrief, even if you skip the blocks. The anxiety data compounds fast.",
@@ -7692,11 +5754,6 @@ tagline: "Work with the energy you have.",
       "After 3+ debriefs for the same appointment type, check Patterns — the anxiety trend is eye-opening."
     ],
 
-    pitfalls: [
-      "Don't skip the debrief — it's 3 taps and makes every future session better",
-      "If energy is 1-2, trust the easy blocks. Don't override and attempt deep work.",
-      "This helps with appointment-triggered paralysis, not general procrastination"
-    ]
   }
 },
 
@@ -7721,26 +5778,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.",
   guide: {
-    overview: "Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.",
-
-    howToUse: [
-      "Choose context (optional) — work overwhelm, anxiety spiral, 3am thoughts, etc.",
-      "Pick input mode: type, rapid-fire, or voice (just talk into your phone)",
-      "Dump everything. Don't organize. Stream of consciousness.",
-      "If barely functioning, toggle Emergency Mode for just 3 things.",
-      "AI sorts into 9 categories with overwhelm meter. Check off your Do First.",
-      "Use Power Tools: Shrink the List (challenge every item), Map to My Day (build a schedule), Compare to Last Dump (see what resolved)",
-      "Dig deeper on any worry with the 🔍 button — AI finds hidden tasks.",
-      "Disagree with a category? Reclassify any item with the arrow buttons.",
-      "Re-dump carries unchecked items forward. Pattern analysis after 3+ dumps."
-    ],
-
-    example: {
-      scenario: "Sunday night brain spiral: dentist, work email, mom's birthday, overwhelmed, job offer decision, messy kitchen, groceries, electric bill, Sarah's text, no exercise...",
-      action: "Context: Life chaos. Free dump all of it.",
-      result: "Overwhelm meter: 22 thoughts → 6 real tasks. Shrink the List: 'Does the whole kitchen need cleaning? Wipe the counters — 3 minutes, 80% of the stress gone.' Map to My Day: 20-minute evening schedule with breaks. Worry Excavator on 'worried about job offer': hidden task found — 'Write a pro/con list for 10 minutes.' Dump Diff shows 3 items from last week resolved without noticing."
-    },
-
     tips: [
       "Voice mode is best when your hands are shaking or thoughts are racing fastest.",
       "Emergency mode isn't failure — it's the right tool for acute overwhelm.",
@@ -7749,11 +5786,6 @@ tagline: "Work with the energy you have.",
       "Reclassify freely — the AI's first sort is a starting point, not gospel."
     ],
 
-    pitfalls: [
-      "Don't pre-organize your dump. Raw chaos is the point.",
-      "If Shrink the List drops something you disagree with, that's fine — it's a negotiation, not an order.",
-      "This doesn't replace a task manager. It's for the moment of overwhelm when you can't think straight."
-    ]
   },
   // ChaosPilot appeared twice here before the 2026-09-19 rename (see
   // audit/RENAMES.md) — once correctly, as the old CrisisPrioritizer, and
@@ -7790,22 +5822,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#ccdfc4",
   description: "Turn something you'd like to get better at into a small, doable challenge just beyond what's comfortable today. No pep talks, no pressure—the attempt counts.",
   guide: {
-    overview: "Growth happens at the edge of comfort, but pushing too hard backfires. This tool creates micro-challenges sized to your current capacity - achievable but slightly scary. Success = attempting, not outcome. Gentle expansion, not forced change.",
-    
-    howToUse: [
-      "Describe your comfort zone",
-      "State where you want to grow",
-      "Set current capacity (low/medium/high)",
-      "Get sized challenge with easier/harder alternatives",
-      "Attempt counts as success, not completion"
-    ],
-    
-    example: {
-      scenario: "Comfort zone: You're comfortable texting friends but terrified of phone calls. Growth area: Social connection. Capacity: Medium.",
-      action: "Input exactly that.",
-      result: "Gentle push: Call one friend for 5-minute catch-up this week. Why this size: Small enough to be achievable (one friend, 5 min, full week to do it), big enough to be growth (actual phone call). If too much: Voice message instead of call (still voice, less pressure). If not enough: 10-minute call or call someone you're less close with. Celebration: Attempting counts as success regardless of outcome. If you call and it's awkward, you still succeeded. If you don't do it: That's okay too - you're not required to grow right now."
-    },
-    
     tips: [
       "Actually attempt the challenge if you can - reading about it isn't growth",
       "Use the 'if too much' alternative without guilt - it's there for a reason",
@@ -7814,11 +5830,6 @@ tagline: "Work with the energy you have.",
       "Multiple small pushes compound better than one giant leap"
     ],
     
-    pitfalls: [
-      "Don't beat yourself up if you don't do it - permission to decline is genuine",
-      "If you never do any challenges, you're not being honest about capacity or readiness",
-      "This is for voluntary growth, not required life tasks (those need different approach)"
-    ]
   }
 },
 
@@ -7843,19 +5854,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we’ll lay out a listening plan in phases — what each one should sound like, and search terms you can use in your music service.",
   guide: {
-    overview: "Brain State Deejay helps you use music as a transition between how you feel now and the state you want to move toward. It builds a phased listening plan, describes what each phase should sound like, and gives you search terms you can open in common music services. The plan can reflect your task, genre preferences, and listening sensitivities without pretending there is one scientifically correct soundtrack for a mental state.",
-    howToUse: [
-      "Choose your current state and the state you want to move toward",
-      "Optionally add the task you are doing, such as writing, studying, exercise, chores, or unwinding",
-      "Add genres you tend to like and any listening sensitivities that matter to you",
-      "Use the phased listening plan as a starting point rather than a prescription",
-      "Open a phase's search in your preferred music service, then adjust if the sound feels too sleepy, busy, intense, or distracting"
-    ],
-    example: {
-      scenario: "You feel scattered but need to settle into an hour of writing, and vocals tend to pull your attention away.",
-      action: "Choose Scattered / Unfocused → Focused, add Writing, and mark vocals as distracting.",
-      result: "Brain State Deejay lays out a progression from an easier-entry sound toward steadier instrumental focus and then a simpler sustained phase. Each phase includes a sound profile and music-service search terms, plus easy adjustments if the plan feels too stimulating or too flat."
-    },
     tips: [
       "Treat the first plan as a starting point; your own response to the music matters more than the label on a phase",
       "If a phase is distracting, simplify it rather than forcing yourself through it",
@@ -7894,19 +5892,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Sometimes the message you need to send starts out angrier than you want it to land. Velvet Hammer helps you keep what matters, lose what doesn't, and say it in a way the other person can actually hear.",
   guide: {
-    overview: "Velvet Hammer removes the heat without rewriting the history. Type your raw, unfiltered draft — insults, sarcasm, and all. The tool separates what you actually reported (facts, effects, what you want) from language that doesn't need to survive into the final message, then gives you The Point (what's left once the heat is gone) and three versions of it: Clear (the cleanest statement), Tactful (softer delivery, same substance), and Firm (unmistakable emphasis, never a threat). Nothing is added that you didn't already say.",
-    howToUse: [
-      "Type or paste your angry draft message — don't hold back",
-      "Optionally add context: your relationship to the recipient (boss, colleague, landlord, etc.)",
-      "Optionally specify your goal (apology, compensation, behavior change, etc.)",
-      "Optionally indicate the power dynamic — it only calibrates directness, never invents leverage",
-      "Read The Point first, then pick the version you'd actually send"
-    ],
-    example: {
-      scenario: "Your colleague took credit for your work in a meeting. You want to type: 'You're a backstabbing liar who steals other people's work. This is the third time you've done this and I'm sick of it.'",
-      action: "Paste that angry message, select 'colleague' as relationship, 'behavior change' as goal, and 'neutral' power dynamic. Generate.",
-      result: "The Point: this is the third time your work was presented as someone else's, and you want it to stop. Clear: a direct, factual statement of the pattern and the ask. Tactful: the same substance, delivered to lower defensiveness. Firm: unmistakable emphasis on the pattern and the ask — with no invented consequence attached."
-    },
     tips: [
       "The angrier your draft, the better — the tool is designed to find the point underneath it",
       "Context fields calibrate directness only — they never invent leverage or soften a boundary you stated plainly",
@@ -7914,11 +5899,6 @@ tagline: "Work with the energy you have.",
       "Read The Point before the three versions — it's the plain fact of what survived",
       "Your original angry draft stays completely private and is never stored anywhere"
     ],
-    pitfalls: [
-      "Don't assume Firm means aggressive — it means unmistakable, not escalating",
-      "Review all three variants and choose based on your actual relationship and goal, not just how satisfying a version feels",
-      "The tool preserves your factual claims exactly — quantities, timing, and scope stay as you stated them, never strengthened"
-    ]
   }
 },
 
@@ -8019,20 +5999,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Name the concept you're stuck on. Missing Link traces backwards through everything it depends on and finds the exact point where your understanding broke — the missing building block, not the hard part you keep re-reading.",
   guide: {
-    overview: "Missing Link solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. Missing Link traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
-    howToUse: [
-      "Enter the concept you're stuck on — be specific ('integration by parts' not just 'calculus')",
-      "Add subject, your level (high school through grad), and what you DO understand to help calibrate",
-      "Review the prerequisite chain — each node has a quick self-test and gap-likelihood rating",
-      "Click any node and answer honestly: Can't answer / Unsure / Got it",
-      "Review the likely gap, its refresher, and the 3-step study plan",
-      "Use Deep Dive for worked examples and practice problems on the specific gap"
-    ],
-    example: {
-      scenario: "You're in Calculus II and can't understand integration by parts. You've watched three YouTube videos and it still doesn't click.",
-      action: "Enter 'Integration by parts', subject 'Calculus', level 'Undergrad', add 'I can do basic integrals but u-substitution was already shaky'.",
-      result: "Missing Link builds a chain: Algebra → Functions → Limits → Derivatives → Product Rule → Integration by Parts. The likely gap is flagged at Product Rule (high likelihood) — you never internalized WHY the product rule works, so you can't reverse it into integration by parts. Quick refresher explains the connection, practice problems confirm the fix, and the forward connection shows exactly how understanding the product rule makes integration by parts click."
-    },
     tips: [
       "The 'What do you understand?' field is gold — it lets the tool skip prerequisites you already have",
       "Gap types matter: a conceptual gap needs explanation, a procedural gap needs practice, a definitional gap just needs a definition",
@@ -8042,11 +6008,6 @@ tagline: "Work with the energy you have.",
       "Works for any subject: STEM, humanities, social sciences, languages — anything with prerequisite knowledge"
     ],
 
-    pitfalls: [
-      "With only the name of a concept to go on, its confidence is lower — a sentence about where you get lost (\"I follow the code until the function calls itself\") makes the diagnosis much sharper",
-      "It finds the missing building block and gives you a way in; it doesn't replace a course, a textbook or practice problems",
-      "If several links in the chain feel shaky, the earliest one is usually the place to start — later ones often settle once it's in place",
-    ]
   }
 },
 
@@ -8071,25 +6032,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#c0d8b8",
   description: "Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.",
   guide: {
-      overview: "BuyWise gives you everything you'd learn from an hour of research in seconds. Enter any product, and it tells you if the price is fair, whether to buy now or wait, the true total cost of ownership (including consumables and maintenance), cheaper alternatives that do 90% of the job, common buyer regrets, where to buy, and negotiation scripts when haggling is realistic. Comparison mode lets you evaluate two products side by side weighted by your priorities. The impulse check is an honest gut-check for purchases you're not sure about.",
-      
-      howToUse: [
-        "Enter what you're buying — specific model or general product type both work",
-        "Add the price you've seen (optional — helps with fair price analysis)",
-        "Select your currency and urgency (need it today vs can wait)",
-        "Pick what matters most to you (price, durability, features, quality, convenience)",
-        "Toggle 'impulse buy' if you're not sure you need it — gets you an honest evaluation",
-        "Use 'Compare with another product' to evaluate two options head-to-head",
-        "Add any context that matters ('I bake once a month', 'replacing a 5-year-old laptop')",
-        "Hit Research and review each section"
-      ],
-      
-      example: {
-        scenario: "You're looking at a KitchenAid stand mixer for $350. You bake occasionally and your priority is durability. You can wait.",
-        action: "Enter 'KitchenAid stand mixer', price $350, urgency 'Can wait', priority 'Durability', context 'I bake once a month'",
-        result: "Verdict: 'Good mixer, but overpaying — and you might not need it.' Fair Price: Typically $250-280 on sale, $350 is full retail. Timing: Wait for Amazon Prime Day or Black Friday for 25-30% off. TCO: $350 + $40 in attachments = $390 year 1. Cheaper Alternative: Hamilton Beach stand mixer ($80) handles everything except bread dough. Regret Predictor: 'People who bake occasionally use their stand mixer about 8 times in the first year. That's $44 per use at this price.' Impulse check not triggered but context note: 'You said you bake once a month. A $35 hand mixer handles that. Save the stand mixer for when you're baking weekly.'"
-      },
-      
       tips: [
         "The Total Cost of Ownership often reveals the real price — a cheap printer needs expensive ink",
         "Impulse check mode is genuinely useful — it asks questions you're avoiding",
@@ -8099,11 +6041,6 @@ tagline: "Work with the energy you have.",
         "Timing advice includes sale calendars — waiting 3 weeks can save 30%"
       ],
       
-      pitfalls: [
-        "Prices are AI estimates from general market knowledge — always verify current prices",
-        "The tool can't check live inventory or current sales",
-        "Negotiation advice works best for big-ticket items where haggling is expected"
-      ]
     }
 },
 {
@@ -8127,23 +6064,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#1e2a3a",
   description: "Walking somewhere alone? Tell Safe Walk where you're going, when, and anything you already know about the route. It helps you think through the walk before you leave, make a simple check-in plan, and keep useful tools close while you're on the way.",
   guide: {
-    overview: "Safe Walk has two tabs. Plan takes what you actually know about a walk — the route, when, how long, anything you've noticed about it — and turns that into a practical plan: what matters, a short before-you-go list, a route choice if you described one, and a check-in message if the walk calls for one. It never assigns an overall safety score and never invents lighting, foot traffic, or crime information it doesn't have. Walking is a set of on-device tools for the walk itself: a check-in reminder (local to this device — it does not notify anyone automatically), a pretend call to create a reason to step away, a flashlight or screen light, a location link you copy or share yourself, and emergency tools you operate manually (call emergency services, sound an alarm, copy your location, copy an emergency message).",
-
-    howToUse: [
-      "PLAN: Enter where you're walking from and to, when, and about how long. Optionally add what you already know about the route and anything you're concerned about, then tap Help Me Plan the Walk.",
-      "Read through What Matters, the before-you-go list, and — if you described a choice between routes — the route guidance. Check off items as you prepare.",
-      "If the plan suggests a check-in message, copy it and send it yourself before you go.",
-      "WALKING: Start a check-in reminder for about how long you expect the walk to take. It reminds you on this device when time is up — it does not contact anyone on its own.",
-      "Use the location tile to get a map link for wherever you are, and the pretend-call tile if you want an easy reason to step away.",
-      "Emergency tools are a manual panel: call emergency services, sound a local alarm, or copy your location or an emergency message to send yourself. Nothing in it is automatic."
-    ],
-
-    example: {
-      scenario: "Walking home from a yoga class at night. You know the main road is better lit than the shortcut through the park, and a couple of blocks have streetlights that are out.",
-      action: "Plan tab: enter the studio and home addresses, choose Tonight and 10–20 min, and describe what you know about the route (main road better lit, a few dark stretches) plus the concern about the dark stretches.",
-      result: "What Matters restates the two things you already know — the lighting difference and the dark stretches — and says plainly that Safe Walk has no live information about the route beyond that. The before-you-go list and route guidance both point to the main road, grounded in what you said, not an invented safety score. A check-in message is suggested since it's an evening walk; you copy it and send it before heading out, then start a check-in reminder on the Walking tab."
-    },
-
     tips: [
       "What you already know about the route is the most useful field on the Plan tab — Safe Walk has no live data of its own, so specific details are what make the plan specific",
       "The check-in reminder is local to your device — pair it with copying the check-in message to someone yourself if you want another person to know",
@@ -8152,12 +6072,6 @@ tagline: "Work with the energy you have.",
       "If the browser can't access your phone's actual flashlight, the flashlight tile brightens the screen instead rather than failing silently"
     ],
 
-    pitfalls: [
-      "Safe Walk does not have live crime, lighting, or traffic data — it plans from what you tell it, plus the occasional verified local fact (like an official closure) it can find and cite",
-      "The check-in reminder does not notify anyone else automatically — sending a check-in message is something you do yourself",
-      "Flashlight requires camera permission — if denied or unsupported, the tool brightens the screen instead",
-      "Location tools require browser location permission — grant it before your walk, not during"
-    ]
   }
 },
 {
@@ -8181,21 +6095,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#e0b8b8",
   description: "Roommate problem? Tell Roommate Court what's happening and what each side says. It helps you separate the facts from the disagreement, figure out what might actually resolve it, and gives you words to start the conversation. Or use Chore Roulette to divide household chores and rotate the load over time.",
   guide: {
-    overview: "Roommate Court has two tabs. Work It Out: describe a roommate conflict — your side, and what you know of theirs — and get a read on where the disagreement actually sits, not a fault ruling. It has only your account, so it never invents the 'real conflict' behind the fight or scripts a conversation where the other person accepts a proposal that hasn't happened. Instead it gives you practical options, an opening line, a question worth asking, and a proposal to make — with escalation steps only if ordinary conversation doesn't work. Chore Roulette: add your household and the chores that need doing, optionally tell it how heavy each chore is, and get a rotation — no invented effort weights, no fake fairness percentage, just a reasonable division that a 'Something Doesn't Work?' button can revise using new information you supply.",
-
-    howToUse: [
-      "WORK IT OUT: Describe what's going on, and — if you know it — what they'd say in their own terms. Add how long it's been happening, what you've already tried, and your living situation for more specific options.",
-      "Read the read, where the disagreement sits, and what to try. Use the opening line and the question to start the actual conversation — the proposal is something to suggest, not something already agreed to.",
-      "CHORE ROULETTE: Add household members and the chores that need doing (quick-add pills or type your own). Optionally mark a chore Lighter, Medium, or Heavier — left unset, chores are treated as unweighted.",
-      "Check off chores as they're completed. Hit 'Save This Round' to add it to the rotation history — future rounds use it to rotate fairly.",
-      "If an assignment doesn't work, tap 'Something Doesn't Work?' and say why. It treats your answer as new information and only changes the assignment when that information actually calls for it."
-    ],
-
-    example: {
-      scenario: "Your roommate keeps leaving dishes in the sink and you've brought it up twice but nothing changed. You also need to divide this week's chores.",
-      action: "Work It Out: describe the dish situation, add 'Weeks' for duration and 'We're going in circles' for what you've tried. Then switch to Chore Roulette and add both names plus the week's chores, including dishes.",
-      result: "Work It Out tab: a read on where the disagreement actually is (not who's at fault), a concrete proposal you could make, and an opening line to start with. Chore Roulette: dishes rotate to whoever didn't have them last round, with a plain explanation of why — no fairness score, no fault percentages."
-    },
     tips: [
       "Only fill in 'What would they say?' if you actually know — leaving it blank is honest input, guessing isn't",
       "The proposal is something to bring to the conversation, not something already settled — say so if you use it",
@@ -8203,13 +6102,6 @@ tagline: "Work with the energy you have.",
       "Load labels (Lighter/Medium/Heavier) are optional and reflect your household's own sense of a chore's weight — nothing invents that for you",
       "Use 'Something Doesn't Work?' with a specific reason ('I did the bathroom last time') rather than a general complaint — it's treated as new information, not a fairness dispute to win"
     ],
-    pitfalls: [
-      "Roommate Court only has your account of the conflict — it says so, and won't pretend to know how the other person would tell it",
-      "It won't hand you a fault split or a hidden 'real reason' for the fight — if that's what you're looking for, it isn't here",
-      "The conversation section gives you an opening line and a possible response, not a full scripted exchange ending in agreement — that part is still up to the actual conversation",
-      "Chore assignments only rotate sensibly if you save rounds — skipping rounds means no history to rotate against",
-      "Clearing chore history removes what the rotation was tracking — only do this if you're starting fresh with a new household"
-    ]
   }
 },
 
@@ -8283,23 +6175,6 @@ tagline: "Work with the energy you have.",
   },
   description: "Don't get charged later for damage that was already there. Walk through your apartment once. We'll help you document its condition, take the right photos, and create a record you can send your landlord.",
   guide: {
-    overview: "Renter's Deposit Saver is your move-in documentation coach. It walks you through every room with a detailed checklist so you can note the condition of walls, floors, appliances, and fixtures before you unpack. Then it generates a formal condition report, a professional cover letter to send your landlord, a prioritized photo shot list, and a breakdown of your state's security deposit laws. When move-out day comes, you'll have irrefutable proof of what was already there.",
-
-    howToUse: [
-      "Enter your apartment address, move-in date, and state",
-      "Optionally add your landlord's name and email",
-      "Walk through each room using the interactive checklist",
-      "Rate each item (Good / Fair / Poor / Damaged) and add notes for anything not in perfect condition",
-      "Click 'Generate Report' to get your full documentation package",
-      "Copy the landlord letter and email it (with photos) to your landlord on move-in day"
-    ],
-
-    example: {
-      scenario: "You're moving into a 1BR apartment. The kitchen has a cracked countertop and the bathroom tile has mold in the grout. Everything else looks fine.",
-      action: "Mark kitchen countertop as 'Damaged' with note: '6-inch crack near sink edge'. Mark bathroom tile as 'Poor' with note: 'Black mold in grout lines around tub'. Rate everything else as 'Good'.",
-      result: "Generates: (1) A formal condition report listing every room and item with conditions. (2) A professional cover letter to email your landlord requesting acknowledgment. (3) A shot list of exactly which photos to take (prioritizing the cracked counter and moldy grout). (4) Your state's rules on deposit return timelines, allowable deductions, and penalties for violations."
-    },
-
     tips: [
       "Do this BEFORE unpacking — it's much easier to spot damage in an empty apartment",
       "Email the condition report + photos to your landlord AND yourself on move-in day (creates a timestamp)",
@@ -8309,12 +6184,6 @@ tagline: "Work with the energy you have.",
       "Pairs well with the Lease Trap Detector — use that before signing, use this on move-in day"
     ],
 
-    pitfalls: [
-      "This generates documentation, not legally binding proof — but it's extremely strong evidence in disputes",
-      "Deposit laws vary wildly by state — always check the 'Your Rights' section for your specific state",
-      "If your landlord won't acknowledge the report, that's a red flag — keep proof you sent it",
-      "This is not legal advice — consult a tenant rights attorney for active disputes"
-    ]
   }
 },
 
@@ -8338,19 +6207,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d4dde8",
   description: "Not sure how to wash it, remove the stain, read the care label, or fix what went wrong? LaundroMat gives you practical laundry help for the clothes in front of you.",
   guide: {
-    overview: "LaundroMat is a five-in-one laundry tool built around a simple idea — clothes are expensive and easy to ruin. (1) AI Load Advisor tells you exactly how to wash any combination of items, what to separate, and cycle settings. (2) Stain SOS gives urgent treatment steps using household supplies. (3) Garment Rescue is for when something's already gone wrong — shrunk, faded, colours bled — with honest recovery steps and a clear verdict on whether the item can be saved. (4) Care Symbols translates every laundry label into plain English. (5) Smart Timers count down your wash and dry cycles with audio alerts so nothing sits forgotten.",
-    howToUse: [
-      "🧠 Advisor: Describe your load (or snap a care label photo). AI tells you what goes together, what needs to be separate, cycle settings, and drying risks. Hit 'Set timers' to create countdown alerts from the time estimates.",
-      "🆘 Stain SOS: Pick the stain type, fabric, and how old it is. Get step-by-step treatment using what you already have — dish soap, vinegar, baking soda, hydrogen peroxide. Time-sensitive: act fast for the best chance.",
-      "🚑 Rescue: Something went wrong — shrunk, faded, colours bled, felted. Tell the AI what happened and what the item is. Get an honest assessment of whether recovery is possible, numbered rescue steps, and a clear 'when to stop trying' so you don't waste more time on a lost cause.",
-      "🏷️ Symbols: Upload a photo of any care label and AI translates every symbol into plain English with cycle recommendations.",
-      "⏱️ Timers: Set countdowns for washer and dryer. Get audio alerts and browser notifications before cycles end — run multiple timers for multiple machines at once."
-    ],
-    example: {
-      scenario: "You pull a favourite merino wool jumper out of the dryer and it's a size too small. It's been in there for 20 minutes on medium heat.",
-      action: "Open the Rescue tab. Select 'Shrunk', type 'merino wool jumper', pick 'Wool' and 'Already dried'. Hit Can I Save It?",
-      result: "AI explains the wool fibres have tightened but aren't permanently set yet. Step-by-step: soak in lukewarm water with a capful of hair conditioner for 30 minutes, then gently stretch the jumper back to shape while wet and dry flat. Honest success probability: Medium. Prevention tip: wool goes in a mesh bag on cold delicate — never in the dryer."
-    },
     tips: [
       "Rescue works best when you act quickly — the sooner after the incident, the better the chances",
       "Enable browser notifications on first use so Timer alerts work even when you've switched tabs",
@@ -8381,19 +6237,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#b8dcd8",
   description: "Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.",
   guide: {
-    overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you're facing and get a fear breakdown — what's a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a 'worst case + survive it' walkthrough. SOS mode is for when you're already in it: a 60-second reset sequence calibrated to your situation.",
-    howToUse: [
-      "Choose Prep mode for advance preparation (day before, morning of) or SOS mode if you need help right now",
-      "Describe the event: what it is, who's involved, what outcome you need",
-      "Add what specifically scares you — the more honest, the better the breakdown",
-      "In Prep mode: review your fear analysis, prep plan, and confidence anchor",
-      "In SOS mode: follow the real-time reset sequence step by step"
-    ],
-    example: {
-      scenario: "You have a panel interview at a company you really want. You bombed an interview six months ago and now your confidence is shot.",
-      action: "Select Interview, describe the role and format, add 'I bombed my last interview and I'm scared of freezing up again'.",
-      result: "Fear breakdown shows the freeze fear is based on a single data point, not a pattern. Prep plan covers the three most common panel questions for your field, how to pause gracefully when you need a moment, and a physical warm-up for the morning. Confidence anchor is a specific moment from your past work history the AI surfaces from your description."
-    },
     tips: [
       "The fear breakdown is the most valuable part — read it carefully. Most fears are real but inflated, and seeing that in writing changes your relationship to them",
       "SOS mode works best if you've done Prep mode first — it references your anchor",
@@ -8424,19 +6267,6 @@ tagline: "Work with the energy you have.",
   crossRefs: ['RentersDepositSaver', 'BillRescue', 'FinalWish'],
   description: "Pick a life event — moving, a new baby, a new job, marriage, divorce, a loss, buying a home, retiring — and Paperwork Path gives you the documents to gather, why each matters and where to get it, plus the order to handle everything so a later step never gets blocked by one you skipped. Requirements vary by location, so it flags what to confirm for your jurisdiction.",
   guide: {
-    overview: "Big life events come with a pile of paperwork and a hidden dependency order — you can't change your address everywhere until you have the new one, can't update benefits until HR has your details, can't settle an estate until you have the death certificate. Paperwork Path lays out the typical document checklist for your event and, more importantly, the sequence to do it in, so you're not redoing steps or discovering a missing prerequisite halfway through.",
-    howToUse: [
-      "Pick the life event you're handling.",
-      "Add your location — it sharpens the specifics (grace periods, local offices).",
-      "Add anything unusual about your situation (kids, out of state, simultaneous changes).",
-      "Work the checklist in the order shown — it's sequenced by dependency, not alphabetically.",
-      "Confirm the jurisdiction-specific figures it flags before you rely on them."
-    ],
-    example: {
-      scenario: "Moving out of state with two kids and starting a new job the same month.",
-      action: "Pick 'Moving', enter the destination state, and note the kids + new job.",
-      result: "A prioritized document checklist plus a 7-step order that starts with locking the new address (everything downstream depends on it) and slots the new-job I-9 and benefits enrollment into their real windows."
-    },
     tips: [
       "The order is the point — doing step 4 before step 2 is how people end up redoing paperwork.",
       "Add your location: 'within 30 days' beats 'within a grace period'.",
@@ -8474,18 +6304,6 @@ tagline: "Work with the energy you have.",
   crossRefs: ['LeverageLogic', 'ContractDecoder', 'ScamRadar'],
   description: "Paste a repair quote for an appliance, vehicle, or other repair — or upload the quote itself. Quote Check checks what the price actually includes, flags questions worth asking, compares a second quote if you have one, and helps you decide what to clarify before approving the work.",
   guide: {
-    overview: "Quote Check audits the quote you actually have — not a pricing database pretending to know a market it can't see. It reads what the quote says (or what an uploaded photo/PDF actually shows), checks whether the numbers add up, distinguishes a genuine red flag from an ordinary missing detail, and tells you plainly what it can't determine rather than manufacturing a 'typical price' or a fairness verdict it has no basis for. You get a clear-eyed summary of the quote, any specific concerns the evidence actually supports, the questions most worth asking before you approve, and a script for asking them.",
-
-    howToUse: [
-      "Select the repair type — appliance, car, or other",
-      "Describe the item and what's wrong, and what the repair person told you was the cause",
-      "Enter the price you were quoted, plus anything the quote says it includes (parts, labor, fees, warranty) — or paste/upload the actual document",
-      "Optionally upload a photo or PDF of the actual quote — Quote Check reads it directly and flags any conflict with what you typed",
-      "If you have a second quote, add its price and what it covers — a price alone isn't comparable if the scope differs",
-      "Add the item's age if repair-vs-replace is relevant to your decision",
-      "Review what the quote actually includes, any specific concerns, what's still unknown, and the questions or script to use before you approve anything",
-    ],
-
     tips: [
       "Be specific about what you were told — 'they said the compressor is bad' surfaces different questions than 'they didn't really explain it'",
       "A non-itemized lump-sum quote isn't automatically a red flag — it's a reason to ask for a breakdown, which Quote Check will tell you to do",
@@ -8494,10 +6312,6 @@ tagline: "Work with the energy you have.",
       "The script under 'What to Say' is meant to be used as-is — read it back or send it as a text/email",
     ],
 
-    example: {
-      scenario: "A refrigerator stops cooling. The repair company diagnoses a bad compressor and quotes $450 as a single lump sum, no breakdown, and says the technician needs an answer today to hold the appointment slot.",
-      result: "Verdict: NEEDS CLARIFICATION. Specific concern: the quote is a lump sum with no split between parts and labor. What the quote doesn't tell you: what testing confirmed the compressor diagnosis, whether the replacement is OEM or aftermarket, and what warranty applies. Questions to ask before approving: an itemized breakdown, the diagnostic basis, and the warranty terms in writing."
-    },
   },
 },
 {
@@ -8520,15 +6334,6 @@ tagline: "Work with the energy you have.",
   headerColor: "#d9a04e",
   description: "A ticket isn't automatically worth fighting—or paying. Ticket Tackler helps you understand what the citation says, spot the facts that may matter, gather the evidence worth preserving, and decide whether an appeal makes sense. If it does, it helps you make your case clearly.",
   guide: {
-    overview: "Most people either pay tickets they could have contested or spend hours fighting tickets they can't win. Ticket Tackler starts with the honest question — does this citation actually have a supported basis for contesting? — using only what the citation shows, what you report, and what you can verify. If something may matter, it says what it is, what still needs confirming, and what evidence would help. If there's a genuine basis for an appeal, it drafts one. If there isn't, it says so plainly — that's a legitimate answer, not a shortfall.",
-    howToUse: [
-      "Pick the ticket type — parking or automated camera",
-      "Enter your city — appeal processes are local, and the tool checks the current process where it can verify it",
-      "Paste the ticket text or upload a photo of it",
-      "Describe what happened in your own words — this is where anything that matters actually comes from",
-      "Add the fine amount and deadline if you have them",
-      "Click 'Review my ticket' and start with the assessment before reading anything else",
-    ],
     tips: [
       "Photograph everything today — signage, curb markings, your parked position, meter screens. Evidence can disappear or change, and the tool prioritizes exactly that",
       "The exact wording on the sign matters more than what you remember it meaning — a photo of the sign beats a description of it",
@@ -8536,10 +6341,6 @@ tagline: "Work with the energy you have.",
       "A 'verify first' assessment usually means one specific fact or rule decides it — check that before deciding to pay or contest",
       "Watch the deadline printed on the ticket — a well-supported appeal filed late is worth nothing",
     ],
-    example: {
-      scenario: "A parking ticket in Seattle for parking in a passenger load zone at 6:40 pm. The sign said the load-zone restriction ends at 6 pm, but it was partially bent behind a tree branch. Fine: $47, deadline in 15 days.",
-      result: "Assessment: worth contesting — the citation was issued after the load-zone hours the sign appears to state. What may matter: the restriction had likely ended by the time of citation, per the sign as described; needs verification: the sign's exact wording and whether it was legible at the time. Evidence to get: a close-up photo of the sign, a photo from the driver's approach angle, and the citation's front/back. A factual appeal letter is drafted around the strongest supported point, since one exists here."
-    },
   },
 },
 
@@ -8602,23 +6403,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. What's That Mean? tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.",
   guide: {
-    overview: "What's That Mean? identifies what kind of language a phrase actually is — idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or plain literal language that just sounds unusual — then explains what it means, in plain language and, when you give it context, in that specific situation. It never invents what the speaker was really thinking, and when a phrase genuinely could mean more than one thing, it says so instead of picking one and moving on.",
-
-    howToUse: [
-      "💬 Enter the phrase: type or paste exactly what was said or written",
-      "📝 Add context (optional): paste the sentence or conversation around it — context can change the meaning entirely",
-      "🏷️ Read the classification: what kind of expression it is, and why",
-      "💡 Read the plain meaning, then what it means here if you gave context",
-      "➕ Not enough? Add more of the sentence and What's That Mean? re-evaluates from scratch — it never treats its own earlier guess as a fact",
-      "🌍 Curious about another language? Ask for a functional equivalent — it will tell you honestly when no neat equivalent actually exists"
-    ],
-
-    example: {
-      scenario: "A coworker said \"that's above my pay grade\" after you asked who could approve an exception.",
-      action: "Enter the phrase and the one sentence of context.",
-      result: "Classified as an idiom and a workplace phrase. Plain meaning: a way of saying a decision isn't theirs to make. What it means here: they're indicating someone with more authority needs to approve this, not necessarily that they're avoiding the question. Say it plainly: \"I'm not the person who can approve that.\""
-    },
-
     tips: [
       "Context changes everything — the same words can be literal or figurative depending on the situation, and What's That Mean? classifies the use, not just the words",
       "If it comes back genuinely ambiguous, that's the honest answer, not a failure — add more context to narrow it down",
@@ -8626,11 +6410,6 @@ tagline: "Work with the energy you have.",
       "The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer"
     ],
 
-    pitfalls: [
-      "It won't guess at tone, hostility, or hidden intent from the phrase alone — if you want that read on a real exchange, that's a different kind of question than what a phrase means",
-      "For a whole document full of unfamiliar language — a lease, a contract, a policy — Jargon Assassin is the right tool; What's That Mean? is for one phrase or sentence at a time",
-      "It won't manufacture a folk origin story or claim a phrase is common/outdated/regional without a reliable basis"
-    ]
   }
 },
 
@@ -8698,22 +6477,6 @@ tagline: "Work with the energy you have.",
   ],
   description: "Tell us what you're facing in your own words. Someone Said It Better discovers documented real quotations that fit the moment — words of wisdom, comfort, perspective, wit, or hard-earned truth from people who found a way to say it better.",
   guide: {
-    overview: "Someone Said It Better is built around one rule: quotation text is never generated. It researches candidate quotations with live web search, verifies the exact wording and attribution against a source it actually visits, and only then picks 2-3 that genuinely fit your situation from that verified set — explaining the connection without inventing your feelings, history, or circumstances. If it can't verify enough quotations to feel confident, it tells you that plainly instead of quietly lowering its standards.",
-
-    howToUse: [
-      "📝 Describe your situation: in your own words, as much detail as actually matters",
-      "🎯 Pick what would help: perspective, courage, comfort, motivation, a reality check, humor, or let it surprise you",
-      "🎭 Pick a voice (optional): wise, reassuring, bracing, witty, unexpected, or any",
-      "📚 Get 2-3 verified quotes: each with the exact source, why it connects to what you said, and a link to check it yourself",
-      "🔁 Facing something else? Start over — each situation gets its own fresh research pass"
-    ],
-
-    example: {
-      scenario: "You've worked on something for two years and are starting to wonder whether you should quit.",
-      action: "Describe the situation, choose 'Perspective' for what would help, and 'Bracing' for the voice — you don't want to be told everything is fine.",
-      result: "Two or three verified quotes about persistence, timing, or knowing when to stop — each with a real author, source, and a one-line explanation of why it connects to two years of doubt, not just to 'giving up' in general."
-    },
-
     tips: [
       "The more specific your situation, the better the match — 'my daughter is getting married and I want to capture how big this feels' finds sharper quotes than 'big life moment'",
       "If it comes back with only 2 quotes instead of 3, that's it being honest that a third genuinely-different angle didn't verify cleanly — not a bug",
@@ -8721,11 +6484,6 @@ tagline: "Work with the energy you have.",
       "Every quote links to the actual source page — worth clicking, especially for anything you plan to repeat or share"
     ],
 
-    pitfalls: [
-      "It can occasionally return 'I could not verify enough quotations right now' — that's the source-verification step failing safely, not a broken tool; trying again or rephrasing the situation usually resolves it",
-      "It won't manufacture optimism — a bracing or unresolved quote can be the honest best fit, and it won't swap in something falsely upbeat instead",
-      "For putting a hard truth into your OWN words instead of someone else's, Truth Bomb is the better tool; this one only ever hands you words that are verifiably someone else's"
-    ]
   }
 },
 

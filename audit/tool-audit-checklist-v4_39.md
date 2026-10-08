@@ -125,7 +125,7 @@ Score each item: ✅ Pass | ⚠️ Needs Work | ❌ Fail | N/A
   # Count tags — flag if fewer than 8. Read and ask: what would a user search that isn't here?
   ```
 
-- [ ] 🔍 **No Rule 10 violations in metadata** — `description`, `guide.overview`, `guide.howToUse`, `guide.tips`, `guide.pitfalls`, and `guide.example` must not reference specific psychological or medical diagnoses.
+- [ ] 🔍 **No Rule 10 violations in metadata** — `description`, `primer`, `guide.tips`, `guide.beforeYouGo`, and `faq` must not reference specific psychological or medical diagnoses.
   ```bash
   grep -i "adhd\|autism\|neurodivergent\|executive function\|executive dysfunction\|sensory processing disorder\|spd\|bipolar\|ocd\|borderline" tools.js
   # Must return zero results

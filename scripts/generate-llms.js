@@ -163,22 +163,16 @@ function buildFull(tools, guides) {
       L.push('');
       if (t.description) L.push(t.description, '');
       const g = t.guide || {};
-      if (g.overview) L.push('**What it does.** ' + g.overview, '');
-      if (Array.isArray(g.howToUse) && g.howToUse.length) {
-        L.push('**How to use it.**', '');
-        g.howToUse.forEach((s, i) => L.push(`${i + 1}. ${s}`));
-        L.push('');
-      }
+      // What the page shows: In a Nutshell, Good to Know, Before You Go.
+      const p = t.primer || {};
+      [['When', p.when], ['You give', p.give], ['You get', p.get], ['The edge', p.edge]]
+        .filter(([, v]) => v).forEach(([k, v]) => L.push(`**${k}.** ${v}`, ''));
       if (Array.isArray(g.tips) && g.tips.length) {
-        L.push('**Tips.**', '');
+        L.push('**Good to know.**', '');
         g.tips.forEach(s => L.push(`- ${s}`));
         L.push('');
       }
-      if (g.example && (g.example.scenario || g.example.result)) {
-        L.push('**Example.**', '');
-        if (g.example.scenario) L.push(`Input: ${g.example.scenario}`, '');
-        if (g.example.result) L.push(`Output: ${g.example.result}`, '');
-      }
+      if (g.beforeYouGo) L.push('**Before you go.** ' + g.beforeYouGo, '');
     }
   }
 

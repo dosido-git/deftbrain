@@ -95,17 +95,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     }
   }
   
-  // Get guide content with fallback
-  const guide = detectedTool?.guide || {
-    overview: "This tool helps you accomplish your goals efficiently.",
-    howToUse: [
-      "Step 1: Enter your information",
-      "Step 2: Review the results",
-      "Step 3: Take action based on insights"
-    ],
-    example: null,
-    tips: []
-  };
+  const guide = detectedTool?.guide || { tips: [] };
   // Theme-aware classes
   const isDark = theme === 'dark';
 
