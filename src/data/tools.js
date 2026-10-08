@@ -1714,6 +1714,46 @@ export const tools = [
   icon: "🎤",
   categories: ['Work & Meetings'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Heckler Prep gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the presentation below — two of its questions, nothing reworded.",
+    sampleLabel: "The presentation",
+    sampleText: "Q3 security budget increase, to C-suite executives — CFO, COO, and CTO. Proposal: Increase our security tooling and headcount budget by 40% next quarter ($1.2M total) to address the gaps surfaced in the recent pen test. Expected pushback: They'll push on: why now, why this much, why we didn't catch it earlier, whether we explored cheaper alternatives, and what the ROI looks like in 12 months. High stakes.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "“What alternatives were assessed before landing on this number — reduced scope, phased spend, managed services, or something else — and why were they set aside?”",
+        tone: "yellow",
+        items: [
+          "What they're really asking: Tests whether the $1.2M is the result of a genuine cost-optimization process or the first number that was put together. If alternatives were not evaluated, the ask loses credibility.",
+          "If you don't know: We have not completed a formal alternatives analysis. That is a gap I can acknowledge directly. What I can speak to is why the gaps themselves require a response of this scale.",
+          "Don't say: We looked at options but this was clearly the best path forward.",
+        ],
+      },
+      {
+        label: "“Who owns the remediation plan once this budget is approved — your team, a vendor, or a shared structure — and what is the escalation path if a workstream falls behind schedule or encounters an obstacle?”",
+        tone: "yellow",
+        items: [
+          "What they're really asking: Tests whether ownership and escalation paths are defined, or whether approval buys spend without clear accountability.",
+          "If you don't know: The accountability structure is still being finalized; I can name that as a gap and bring a proposed RACI to the approval decision.",
+          "Don't say: The security team will handle it — avoid any answer that treats ownership as self-evident without naming a decision-maker.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I prepare for tough questions after a presentation?",
+      a: "List the questions you most hope nobody asks, then write a short answer for each — and an honest 'I don't know yet, here's when I'll have it' for the ones you can't answer. Rehearse those answers out loud, not just the talk." },
+    { q: "What should I say when I don't know the answer?",
+      a: "Say so plainly, say what you do know, and commit to when you'll follow up: 'I don't have that split yet; I'll send it by Friday.' Guessing in front of senior people costs more credibility than admitting a gap." },
+    { q: "How do I handle executives pushing on a budget request?",
+      a: "Expect three questions: why now, why this much, and what else you considered. Have the breakdown, the alternatives you ruled out and why, and who owns delivery ready before you walk in." },
+    { q: "Does Heckler Prep write the answers for me?",
+      a: "It drafts model answers built only from what you give it, with blanks where you need to supply a figure or date, and it says what to avoid saying." },
+  ],
   description: "About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.",
   guide: {
     tips: [
@@ -2046,6 +2086,61 @@ export const tools = [
   icon: "🗣️",
   categories: ['Conversations', 'Money'],
   headerColor: "#c0d8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Magic Mouth gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the ask below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The ask",
+    sampleText: "A refund on shoes I wore once — 2 weeks past the return window. The sole started peeling after one wear but I don't have the receipt.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The read",
+        tone: "neutral",
+        text: "This is really a product defect complaint wearing the costume of a late return — and that distinction is worth making loudly. The receipt gap is annoying but secondary once the conversation is about a shoe that fell apart on its first outing.",
+      },
+      {
+        label: "Best angle: Lead With The Defect",
+        tone: "green",
+        text: "If you open with the return, you're already losing — the window and the receipt become the whole story. If you open with the defect, you've reframed this as a quality issue, and the question becomes whether they stand behind what they sell, not whether you followed the right procedure.",
+      },
+      {
+        label: "What to say",
+        tone: "green",
+        items: [
+          "Hi — I'm hoping you can point me in the right direction, because I'm genuinely not sure who handles this kind of thing.",
+          "I bought a pair of shoes here and wore them exactly once. By the end of that first day the sole had already started peeling away from the upper — which I'd expect after a year, not a single outing. I don't have the receipt on me, and I know I'm past your usual return window, but this feels less like a return situation and more like the shoes were defective. Is there anything you can do for me — a replacement, a store credit, even just getting it looked at?",
+        ],
+      },
+      {
+        label: "If they hesitate",
+        tone: "neutral",
+        text: "I completely understand the window is the window — I'm not trying to make your job harder. I guess my question is just whether there's any path for something that was defective from the start, even if the process looks different. I'm open to whatever that looks like on your end.",
+      },
+      {
+        label: "Don't do this",
+        tone: "yellow",
+        text: "Don't lead by mentioning the return window or the missing receipt — those are obstacles, not your opening move. Let them raise the procedural issues; you stay focused on what actually happened to the shoe.",
+      },
+      {
+        label: "Backup: Go Directly To The Brand",
+        tone: "neutral",
+        text: "If the store hits a dead end, the shoe manufacturer may have a separate warranty or quality claim process that doesn't depend on a retailer receipt or return window at all.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Can I return something after the return window?",
+      a: "Sometimes. If the item was defective rather than unwanted, ask about that specifically — many stores and most manufacturers handle faults separately from ordinary returns. Lead with what went wrong, calmly, and ask what they can do." },
+    { q: "Can I get a refund without a receipt?",
+      a: "Often you can get a store credit or exchange, especially if the purchase shows on a card statement or in your account. A card or bank statement is worth bringing." },
+    { q: "How do I ask for something without sounding entitled?",
+      a: "Be specific about what happened, ask a question rather than make a demand ('Is there anything you can do?'), give the person a reason to say yes, and accept a no gracefully — politeness is what makes someone go out of their way." },
+    { q: "What kinds of asks does Magic Mouth help with?",
+      a: "Refunds, upgrades, discounts, fee waivers, favors and second chances. It also helps you get through a phone tree and plan escalation when the polite ask doesn't work." },
+  ],
   description: "Tell it what you want — a refund, an upgrade, a free donut, a waived fee, a table at a full restaurant. AI reads the situation, finds your best angle, writes the exact script, and coaches the delivery. Charm, not fraud.",
   guide: {
     tips: [

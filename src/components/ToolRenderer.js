@@ -56,6 +56,7 @@ const EXAMPLE_OUTPUT_TOOLS = new Set([
   'RecipeChaosSolver', 'BikeMedic', 'SleepArchitect', 'PronounceItRight', 'ToastWriter',
   'Giftology', 'VelvetHammer', 'ConflictCoach', 'LeverageLogic', 'SkillGapMap', 'DriveHome',
   'DecisionCoach', 'PaperworkPath', 'RoommateCourt', 'NameThatFeeling', 'ColdOpenCraft',
+  'HecklerPrep', 'MagicMouth',
 ]);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 

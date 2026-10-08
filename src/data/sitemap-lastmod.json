@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "8d1708c5f4971c12666e53bd7e1b5776eea040b1",
+  "hash": "8c093e7d2e657283f49255a22ca4c923a2077a47",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -357,6 +357,14 @@
  },
  "tool:PaperworkPath": {
   "hash": "80cb103594a2870313d52e8fa48dd0252ef2d50d",
+  "lastmod": "2026-10-08"
+ },
+ "tool:HecklerPrep": {
+  "hash": "3251aad195465abe632e9e81799195618a564340",
+  "lastmod": "2026-10-08"
+ },
+ "tool:MagicMouth": {
+  "hash": "2a2bdb526a44877e6a1a20ca451c3a013c1cda81",
   "lastmod": "2026-10-08"
  }
 }
