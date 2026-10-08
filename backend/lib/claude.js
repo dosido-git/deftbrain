@@ -334,6 +334,11 @@ function classifyApiError(err) {
   if (status === 401 || /authentication_error|invalid x-api-key/.test(msg)) return 'auth';
   if (status === 403 || /permission_error/.test(msg)) return 'auth';
   if (/credit balance|billing|insufficient.*(credit|quota)|payment required/.test(msg)) return 'billing';
+  // The account's own monthly spend cap (2026-10-08): a 400 invalid_request_error
+  // reading "You have reached your specified API usage limits. You will regain
+  // access on <date>". It took production down for every visitor and was
+  // classed as weather, so the out-of-credit alarm never sent.
+  if (/usage limits?|spend(ing)? limit|regain access/.test(msg)) return 'billing';
   if (status === 402) return 'billing';
   if (status === 404 || /not_found/.test(msg)) return 'retired';
   return 'transient';   // 429, 5xx, 529 overload, network — weather
@@ -452,6 +457,9 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       // stop claiming the service is fine while every tool 500s.
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} API error:`, err.message);
+      // A refusal (no credit, spend cap, bad key) answers the same way every
+      // time; retrying only triples the wait for an error.
+      if (classifyApiError(err) !== 'transient') break;
       if (attempt < maxRetries && !outOfTime()) {
         await new Promise(r => setTimeout(r, retryBackoffMs(attempt)));
         continue;

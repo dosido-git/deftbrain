@@ -390,12 +390,20 @@ function reportApiBlock({ kind, message } = {}) {
   if (!key) return { mailed: false, reason: 'no-key' };
   apiBlockMailedAt = now;
   const billing = kind === 'billing';
-  send(key, billing ? '🚨 DeftBrain is DOWN — Anthropic credit has run out' : '🚨 DeftBrain is DOWN — the Anthropic API key is being refused', [
-    billing
+  // Two billing refusals read differently and have different fixes: an empty
+  // credit balance, and the account's own monthly spend cap (2026-10-08).
+  const cap = billing && /usage limits?|spend(ing)? limit|regain access/i.test(String(message || ''));
+  send(key, cap ? '🚨 DeftBrain is DOWN — the monthly Anthropic spend limit is reached'
+    : billing ? '🚨 DeftBrain is DOWN — Anthropic credit has run out' : '🚨 DeftBrain is DOWN — the Anthropic API key is being refused', [
+    cap
+      ? 'Every tool is failing: the Anthropic API says this account has reached the monthly usage limit you set.'
+      : billing
       ? 'Every tool is failing: the Anthropic API says the credit balance is too low.'
       : 'Every tool is failing: the Anthropic API is refusing the API key.',
     '',
-    billing
+    cap
+      ? 'Fix: console.anthropic.com → Settings → Limits → raise the monthly spend limit. Tools recover within seconds, no deploy needed.'
+      : billing
       ? 'Fix: console.anthropic.com → Plans & Billing → add credit. Tools recover within seconds, no deploy needed. Turn on auto-reload while you are there.'
       : 'Fix: check ANTHROPIC_API_KEY in Railway (Variables → Apply), then redeploy.',
     '',
