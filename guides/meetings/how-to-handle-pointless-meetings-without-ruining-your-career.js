@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Handle Pointless Meetings",
   navTitle:      "How to handle pointless meetings without ruining your career",
 
-  description:   "You can't decline everything. You also can't sit through every hour of nothing. Here's how to manage a meeting-heavy culture without becoming the person who hates meetings.",
-  deck:          "You can't decline everything. You also can't sit through every hour of nothing. Here's how to manage a meeting-heavy culture without becoming the person who hates meetings.",
+  description:  "How to handle pointless meetings without hurting your career: pick battles by who called it, trim before declining, and decline on capacity.",
+  deck:         "To handle pointless meetings without hurting your career, choose your battles by who called the meeting, not just how useful it is. Ask to shorten a meeting before declining it, make the ones you must attend better from inside, and when you do decline, give a capacity reason ('I'm heads-down on the launch') rather than an opinion.",
+  answerList: [
+    "Pick your battles by who called it.",
+    "Ask to trim before you decline.",
+    "Sit through some quietly.",
+    "Improve the meeting from inside: ask for the desired outcome.",
+    "Decline on capacity, not on the meeting's quality.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `You've read the articles about declining meetings. You've watched the keynote about saying no. The advice was great in the abstract and falls apart in the actual workplace, where the person scheduling the meeting is your manager's manager and the meeting culture is the meeting culture and you can't just refuse all of it. So you sit through them. You half-attend. You become slightly bitter. None of that is a strategy.`,
@@ -29,7 +36,7 @@ module.exports = {
       body: "A pointless meeting from your skip-level boss is not the same as a pointless meeting from your peer. The first one you attend; the second one you push back on. People who decline indiscriminately get a reputation for being difficult; people who decline strategically get a reputation for managing their time. Same action, different reputations, depending entirely on whose meeting you skipped.",
     },
     {
-      name: "Trim before you decline",
+      name: "How do you get out of unnecessary meetings?",
       body: "Declining is the nuclear option. Trimming is the everyday move. 'Could we make this 30 minutes instead of 60?' or 'Mind if I drop after the first agenda item?' are far less politically expensive than not showing up — and they reclaim most of the time. Most organizers will agree to a trim because trimming makes them look efficient. Declining makes them look like their meeting wasn't important.",
     },
     {

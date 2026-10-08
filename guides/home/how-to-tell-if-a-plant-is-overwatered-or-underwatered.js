@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Tell If a Plant Is Overwatered or Underwatered",
   navTitle:      "How to tell if a plant is overwatered or underwatered when the symptoms look identical",
 
-  description:   "Wilting can mean either thing. So can yellowing, leaf drop, and limp stems. Telling the difference is a five-minute diagnostic — and getting it wrong is how most plants die.",
-  deck:          "Wilting can mean either thing. So can yellowing, leaf drop, and limp stems. Telling the difference is a five-minute diagnostic — and getting it wrong is how most plants die.",
+  description:  "How to tell if a plant is overwatered or underwatered: soil two inches down, leaf texture, the stem base and the roots, plus drainage problems.",
+  deck:         "To tell whether a plant is overwatered or underwatered, check the soil about two inches down: soggy means overwatered, dry means underwatered. Then look at the leaves (crispy edges mean too little water, soft yellow leaves too much) and the base of the stem, which goes soft or dark with overwatering. When unsure, check the roots.",
+  answerList: [
+    "Feel the soil two inches down, not just the surface.",
+    "Crispy, papery leaves: too little water.",
+    "Soft, yellow, limp leaves: too much water.",
+    "A soft or dark stem base points to overwatering.",
+    "Unsure? Check the roots: firm and pale is healthy.",
+  ],
 
   ledes: [
     `Your plant looks bad. The leaves are drooping, possibly yellowing, and you're standing in the kitchen with a watering can in your hand trying to decide whether to use it. The internet has unhelpfully told you that wilting can mean too little water *or* too much, which feels like the kind of advice designed to make you give up. Worse, the consequence of guessing wrong is significant — overwatering a plant that's actually drowning will finish what was started, and waiting on a plant that's bone-dry isn't going to help either.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Stick your finger in the soil — but go deeper than the surface",
+      name: "How do you check if a plant needs water?",
       body: "The top inch of potting mix dries out fast and tells you almost nothing. Push your finger in two inches down — or all the way to the second knuckle on a small pot, halfway down on a large one. Bone-dry at depth means underwatered. Wet, cool, and slightly heavy at depth means overwatered or poorly drained. Damp but not wet means the plant is fine and you came here for nothing, which is also a useful diagnostic outcome. The single most common mistake in plant care is watering based on the surface; the surface is a liar.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

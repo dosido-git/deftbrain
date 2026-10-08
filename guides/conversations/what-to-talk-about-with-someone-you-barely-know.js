@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "What to Talk About with Someone You Barely Know",
   navTitle:      "What to talk about with someone you barely know beyond weather and work",
 
-  description:   "You're stuck with this person for the next thirty minutes. The standard openers are exhausted. Here's how to find topics that actually go somewhere.",
-  deck:          "You're stuck with this person for the next thirty minutes. The standard openers are exhausted. Here's how to find topics that actually go somewhere.",
+  description:  "What to talk about with someone you barely know, beyond weather and work: ask about choices, share first, follow the friction, and invite more.",
+  deck:         "With someone you barely know, ask about things they chose — a show, a hobby, a trip — rather than job and hometown. Share a small, specific moment of your own first, follow up on the complicated part of their answers, ask questions with no right answer, and when they answer briefly, invite more rather than changing the subject.",
+  answerList: [
+    "Ask about things they chose, not facts about them.",
+    "Share a small, specific moment first.",
+    "Follow up on the complicated part of their answer.",
+    "Ask questions with no right answer.",
+    "After a short answer, invite more.",
+  ],
 
   ledes: [
     `You've covered the weather. You've covered what you each do. You've covered how you ended up at this event. You're four minutes in, and you're already in 'so anyway' territory. Standing across from this person for the next half-hour without retreating to your phone feels impossible. The problem isn't that there's nothing to say — it's that the standard openers are designed to skim, not to land.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Skip the resume — ask about something they choose, not something they were assigned",
+      name: "What do you talk about with someone you just met?",
       body: "Where they live and what they do are both 'assigned' topics — biographical facts. The richer territory is what they chose: the show they're currently watching, the recent purchase they're proud of, the trip they're planning. Choices reveal taste; biography reveals only category. People light up when asked about choices, because choices are about them.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

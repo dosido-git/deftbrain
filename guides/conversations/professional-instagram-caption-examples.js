@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "Professional Instagram Caption Examples",
   navTitle:      "Professional Instagram caption examples for when LinkedIn voice won't work",
 
-  description:   "You're posting from a work account but Instagram isn't LinkedIn. Here's how to keep it professional without making your account read like a press release.",
-  deck:          "You're posting from a work account but Instagram isn't LinkedIn. Here's how to keep it professional without making your account read like a press release.",
+  description:  "How to write professional Instagram captions that don't read like a press release: lead with value, add one human detail, and write real sentences.",
+  deck:         "A professional Instagram caption leads with what the post is actually about rather than 'We're excited to share', includes one human detail, and uses full sentences rather than corporate fragments. Mention the link in bio once, at the end, and match the caption's tone to the look of your photos.",
+  answerList: [
+    "Lead with what the post is about, not 'We're excited to share'.",
+    "Include one human, behind-the-scenes detail.",
+    "Write full sentences, not one-word fragments.",
+    "Mention 'link in bio' once, at the end.",
+    "Match the caption's energy to your visuals.",
+  ],
 
   ledes: [
     `You're running an Instagram account for work — your business, your studio, your brand, the company you're trying to build. The voice has to be more polished than your personal account, but it can't be LinkedIn-formal or it'll feel out of place on the platform. Most 'professional' captions you see online are either painfully corporate ('We are thrilled to announce...') or trying too hard to be casual in a way that reads as fake casual.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Lead with the value, not the announcement",
+      name: "How do you start a professional Instagram caption?",
       body: "Avoid 'We're excited to share that...' and similar openers. They burn the first line on phrasing instead of substance. Lead with what the post is actually about. The most professional thing a caption can do is respect the reader's time. Ready to paste — launch: 'The new studio is open. Same team, twice the space, and a calendar that finally has room for walk-ins. Booking is live.' Launch: 'Our spring collection dropped this morning. Twelve pieces, all cut from the deadstock fabric we spent the winter sourcing.' Educational tip: 'The mistake we see most: booking a photographer the week of the event. Six weeks out is the sweet spot — your date is still open and so is the good light.'",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

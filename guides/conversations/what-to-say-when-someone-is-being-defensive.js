@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "What to Say When Someone Is Being Defensive",
   navTitle:      "What to say when someone is being defensive and why pushing harder makes it worse",
 
-  description:   "Defensiveness isn't evidence the conversation is going wrong. It's evidence the conversation has gotten too close to something. Knowing the difference is what determines whether the next minute helps or hurts.",
-  deck:          "Defensiveness isn't evidence the conversation is going wrong. It's evidence the conversation has gotten too close to something. Knowing the difference is what determines whether the next minute helps or hurts.",
+  description:  "What to say when someone gets defensive: stop explaining, acknowledge the feeling, return with questions, and know when to pause the conversation.",
+  deck:         "When someone gets defensive, stop clarifying what you meant and acknowledge the feeling first — 'I can see this is frustrating.' Once things are calmer, come back to the point with questions rather than statements, don't argue about their defensiveness itself, and if they can't engage today, pause and return to it later.",
+  answerList: [
+    "Stop repeating what you meant.",
+    "Acknowledge the feeling: 'I can see this is frustrating.'",
+    "Come back with questions, not statements.",
+    "Don't argue about their defensiveness.",
+    "If they can't engage now, pause and return later.",
+  ],
 
   ledes: [
     `You brought up something specific. The thing you brought up was reasonable. The other person's response, however, has now scaled up to a defense of their entire character, possibly with a counter-accusation thrown in, and the conversation that started about a shared calendar has somehow become about whether you respect them as a person. You didn't say anything about respect. You said something about a calendar. And yet here you are, watching the exchange escalate in a direction you didn't intend and don't know how to redirect.`,
@@ -22,7 +29,7 @@ module.exports = {
       body: "Once someone has gone defensive, repeating what you actually said — even calmly, even reasonably — usually makes things worse. They're not misunderstanding the words; they're protecting themselves from what the words are pointing at. More words from you sound like more attack to them, regardless of how careful you're being. The first move is to stop adding new content. You don't have to take it back, you don't have to apologize for what you said — you just have to stop pushing the topic for the next few sentences. The conversation is currently above the speed limit; nothing useful happens until it slows down.",
     },
     {
-      name: "Acknowledge the feeling, not the argument",
+      name: "What do you say to someone who is being defensive?",
       body: "Defensiveness is a feeling state, and the person can't engage with the topic until the feeling state has been recognized. \"I can see this is frustrating\" or \"I get that this feels like it's coming out of nowhere\" or \"I didn't mean for this to feel like an attack\" — these aren't apologies for what you said. They're acknowledgments of how it landed. Most defensive responses soften meaningfully when the person feels heard at the emotional level, even if you haven't conceded anything substantive. You're not surrendering; you're separating the substantive disagreement from the emotional escalation, so you can address one without inflaming the other.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

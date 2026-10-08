@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    "Meeting Minutes vs Meeting Notes",
   navTitle:      "The difference between meeting minutes and meeting notes and which one you need",
 
-  description:   "Most teams use the terms interchangeably and produce a hybrid that fails at both jobs. Five steps for telling them apart, picking the right one, and not producing the wrong artifact for your situation.",
-  deck:          "Most teams use the terms interchangeably and produce a hybrid that fails at both jobs. Five steps for telling them apart, picking the right one, and not producing the wrong artifact for your situation.",
+  description:  "The difference between meeting minutes and meeting notes, which one your meeting needs, and how to avoid a hybrid that fails at both.",
+  deck:         "Meeting minutes are a formal record of who attended, what was decided and what was voted on, written for people who need an official account later. Meeting notes are a working document of actions, owners and open questions for the people doing the work. Choose by audience; avoid a hybrid that does neither job well.",
+  answerList: [
+    "Minutes: a formal record of attendance, decisions and votes.",
+    "Notes: a working list of actions, owners and open questions.",
+    "Choose by who will read it and why.",
+    "Avoid a hybrid that does neither job.",
+    "Some meetings need no record at all.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `You've been asked to take notes at the next meeting — or to send out the minutes. Maybe both, by different people, for the same meeting. The two terms get used interchangeably in most workplaces, which obscures a real distinction: minutes and notes are different artifacts with different purposes, different audiences, and different content. Most teams produce a hybrid of the two that ends up not quite serving either purpose, and the result is documents that get filed but not used.`,
@@ -28,7 +35,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Recognize they're different artifacts with different jobs",
+      name: "What is the difference between meeting minutes and notes?",
       body: "Meeting minutes are a formal record of what happened — who attended, what was decided, what was voted on, what motions were made. Their primary audience is future people who weren't in the meeting and may need to refer to the record months or years later: auditors, regulators, board members, legal teams, future employees. Their content is structured, complete, and somewhat dry by design. Meeting notes are a working document — what was discussed, what was decided, what action items came out, what's pending. Their primary audience is the team that was in the meeting and people adjacent to it who need to act on the outcomes in the next days and weeks. Their content is actionable, scannable, and biased toward usefulness over completeness. Both can include the same facts. They're organized for fundamentally different uses, and the same artifact does poorly at both jobs simultaneously.",
     },
     {

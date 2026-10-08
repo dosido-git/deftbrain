@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Send a Group Text That Won't Be Misread",
   navTitle:      "How to send a group text that won't be misread by anyone in the group",
 
-  description:   "Same words, different reactions across the group. Here's how to draft a message that reads roughly the same way to everyone who'll see it.",
-  deck:          "Same words, different reactions across the group. Here's how to draft a message that reads roughly the same way to everyone who'll see it.",
+  description:  "How to send a group text that reads the same way to everyone: state the purpose, drop the sarcasm, don't single anyone out, and check for double meanings.",
+  deck:         "To send a group text that won't be misread, say what the message is for in the first sentence, leave out sarcasm unless everyone reliably gets it, and don't single out one person in front of the group. Reread for any line that could be taken two ways, and use punctuation and emoji to make your tone clear.",
+  answerList: [
+    "Say what the message is for in the first sentence.",
+    "Skip sarcasm unless the whole group reliably reads it.",
+    "Don't single out one person in the group thread.",
+    "Reread for any line that could be read two ways.",
+    "Use punctuation and emoji to signal tone.",
+  ],
 
   ledes: [
     `You're sending a text to a group — your siblings, your friends, the parent group chat, the colleagues planning a thing. You write it. You hover over send. You can already feel the small risk: one person in the group will read it slightly wrong. The brother who takes things personally. The friend who'll think you're being passive-aggressive. The colleague who reads sarcasm into everything. You have one message and four interpretations to manage, and the wrong word will trigger a side-DM you didn't want to have.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Lead with what the message is for",
+      name: "How do you write a group text nobody misreads?",
       body: "Group texts get misread when readers have to guess the purpose. State it in the first sentence. 'Quick logistics question.' 'Just sharing for fun, no response needed.' 'Trying to figure out next weekend.' Once readers know what frame to hold the message in, individual phrasings get less weight. Without the frame, every word is up for interpretation.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

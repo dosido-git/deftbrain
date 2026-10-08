@@ -8,7 +8,7 @@
   "lastmod": "2026-10-08"
  },
  "conversations": {
-  "hash": "ce19beec89d9434a498fbdba937000d444739493",
+  "hash": "a22c903bb8da1d9774108d25af77112ec80b71b2",
   "lastmod": "2026-10-08"
  },
  "cooking": {
@@ -20,20 +20,20 @@
   "lastmod": "2026-10-08"
  },
  "health": {
-  "hash": "403ac1bcdfad1c21cfd28178e511b7871daf89d8",
+  "hash": "2416b4d7777d1b8641d8a79a5573a7bb00c35419",
   "lastmod": "2026-10-08"
  },
  "home": {
-  "hash": "2ef339c3381e52ff63aedc7d1897d7599a7610d9",
+  "hash": "738d4434e111e7451efe22892e351b252c135383",
   "lastmod": "2026-10-08"
  },
  "learning": {
-  "hash": "4d420096a170a7b8c8159c4f42e6c43751bfae80",
-  "lastmod": "2026-10-07"
+  "hash": "84227eef43da97f64254d6de3137984d0a129446",
+  "lastmod": "2026-10-08"
  },
  "meetings": {
-  "hash": "2ca42373b4218dc99f04d9ea4583f5ec4ac23b9c",
-  "lastmod": "2026-10-07"
+  "hash": "5d706bc6e7868ffd4da5af147c61b4c16cad863c",
+  "lastmod": "2026-10-08"
  },
  "money": {
   "hash": "2601e161435f2b19d697dbdb649bbb099351f175",
@@ -72,11 +72,11 @@
   "lastmod": "2026-10-08"
  },
  "_index": {
-  "hash": "d284b351e1ffa0b59fabd8ad244f2d97bc21b5ea",
+  "hash": "ad8e15e01dee647143fad8093eee9bcae528fabe",
   "lastmod": "2026-10-08"
  },
  "_by-tool": {
-  "hash": "7598771e9822cef8ef69a65e480be612da40d69e",
+  "hash": "1ddb43ab1cd2c190bf8cc5d03487c3e05bdf2c8b",
   "lastmod": "2026-10-08"
  }
 }

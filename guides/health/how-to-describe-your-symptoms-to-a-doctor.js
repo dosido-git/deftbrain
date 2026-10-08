@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Describe Your Symptoms to a Doctor",
   navTitle:      "How to describe your symptoms to a doctor so they can actually help you",
 
-  description:   "The same symptom can sound like a non-issue or a real problem depending on how you describe it. The right description is the one that gives the doctor enough to work with.",
-  deck:          "The same symptom can sound like a non-issue or a real problem depending on how you describe it. The right description is the one that gives the doctor enough to work with.",
+  description:  "How to describe your symptoms to a doctor so they can help: when it started, comparisons, frequency, duration and intensity, and what changes it.",
+  deck:         "To describe symptoms to a doctor, say exactly when they started and what came before, compare the sensation to something familiar instead of using one adjective, and give frequency, duration and intensity separately. Say what makes it better or worse, and describe what you actually feel, not what you think sounds medical.",
+  answerList: [
+    "When it started, and what happened just before.",
+    "A comparison: 'like a paper cut', not just 'sharp'.",
+    "Frequency, duration and intensity, given separately.",
+    "What makes it better and what makes it worse.",
+    "What you actually feel, not what sounds medical.",
+  ],
 
   ledes: [
     `The doctor walks in and asks what's been going on. You start to explain, but somehow the words coming out of your mouth don't match the thing you've been experiencing for the past three weeks. 'It just kind of hurts sometimes.' 'I've been more tired than usual.' 'It feels weird.' You can hear yourself saying it. You also can't seem to do better in the moment.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Pin down when it started, not just how long it's been",
+      name: "What should you tell a doctor about your symptoms?",
       body: "'For a few weeks' is less useful than 'starting Tuesday, March 14th, after a long drive.' If you can name the exact day or the event that preceded it — a meal, a workout, a stressful event, a change in medication — say so. Onset is one of the most diagnostically useful pieces of information. A symptom that started suddenly is a different category from one that crept in. You don't need a perfect memory; you need an honest best estimate.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

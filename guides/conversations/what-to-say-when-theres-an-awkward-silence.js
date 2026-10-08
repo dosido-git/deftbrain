@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "What to Say When There's an Awkward Silence",
   navTitle:      "What to say when there's an awkward silence without forcing it",
 
-  description:   "The silence is sitting there. The next thing you say sets the tone. Here's how to break it cleanly — without performative weather talk or panicked oversharing.",
-  deck:          "The silence is sitting there. The next thing you say sets the tone. Here's how to break it cleanly — without performative weather talk or panicked oversharing.",
+  description:  "What to say when there's an awkward silence: use what's around you, ask sideways questions, return to what they said, or name the pause lightly.",
+  deck:         "To break an awkward silence, comment on something you can both see, ask a sideways question such as 'What's the last thing you watched that was actually good?', go back to something they mentioned earlier, or lightly admit the pause. With people you're close to, it's fine to let a silence be.",
+  answerList: [
+    "Mention something you can both see.",
+    "Ask a sideways question, not 'How was your weekend?'",
+    "Go back to something they said earlier.",
+    "Name the silence, lightly.",
+    "With people you're close to, let it be.",
+  ],
 
   ledes: [
     `It's been four seconds. Then six. The other person isn't talking either. You can feel both of you looking for the exit. Whatever you say next has to do two things at once: actually be interesting, and look effortless. The first thing that comes to mind is the weather, but you'd rather not. The second thing that comes to mind is too personal. So you say nothing, and the silence gets one second longer, which is one second too long.`,
@@ -22,7 +29,7 @@ module.exports = {
       body: "The fastest fill is something you can both see. The painting on the wall, the song that just changed, the dog at the next table, the strange menu item. Reaching outward gives you both something to react to instead of forcing one of you to produce a topic from scratch. The shared object does most of the work.",
     },
     {
-      name: "Ask a sideways question, not a head-on one",
+      name: "What questions keep a conversation going?",
       body: "'How was your weekend?' is a head-on question that triggers a head-on answer ('fine, you?'). 'What's the last thing you watched that was actually good?' is sideways — it asks for an opinion, has a real answer, and gives them something to defend. Sideways questions almost always work better because they invite a real response instead of a polite one.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

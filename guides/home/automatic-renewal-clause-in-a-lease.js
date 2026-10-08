@@ -8,6 +8,13 @@ module.exports = {
   navTitle:      "automatic renewal clause in a lease",
   description:   "What an automatic renewal clause in a lease means, the wording to look for, the notice deadline that decides whether you can leave, and the state rules.",
   deck:          "An automatic renewal clause in a lease says the lease continues after its end date, month to month or for a whole new term, unless one side gives written notice by a set deadline, often 30 to 60 days before it ends. Missing that deadline can commit you to another full year, so the notice date is the one that matters.",
+  answerList: [
+    "Look for 'shall automatically renew', 'renewal term' or 'unless either party gives written notice'.",
+    "Find the notice period: often 30 to 60 days before the end date.",
+    "Count back from the end date: that is your real decision date.",
+    "Some states limit these clauses or require the landlord to remind you.",
+    "Before signing, ask for month-to-month continuation or a shorter notice period.",
+  ],
   ledes: [
     `Most people assume a lease simply ends on its end date. Many leases do not. An automatic renewal clause says the lease continues, sometimes month to month and sometimes for a whole new term, unless one side gives notice by a certain date. That date is often 30, 60, or even 90 days before the lease ends, which means the real decision about staying or leaving can come months earlier than it feels like it should.
 
@@ -35,5 +42,5 @@ The clause is usually short and easy to skim past. It matters most at the moment
     toolName: 'Lease Trap Detector',
   },
   published: '2026-10-05',
-  modified:  '2026-10-05',
+  modified:  '2026-10-08',
 };

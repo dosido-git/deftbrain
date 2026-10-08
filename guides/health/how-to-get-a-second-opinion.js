@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Get a Second Opinion",
   navTitle:      "How to get a second opinion without awkwardness or wasted time",
 
-  description:   "Second opinions are routine in medicine and most doctors expect them. The friction is rarely the doctor's — it's usually about not knowing the actual mechanics of getting one efficiently.",
-  deck:          "Second opinions are routine in medicine and most doctors expect them. The friction is rarely the doctor's — it's usually about not knowing the actual mechanics of getting one efficiently.",
+  description:  "How to get a medical second opinion without awkwardness: telling your doctor, the kind you need, the records to bring, and what to ask.",
+  deck:         "To get a second opinion, tell your current doctor you want one (you don't need permission), decide whether you need the diagnosis or the treatment plan checked, and send the second doctor your actual records: results, imaging and visit notes. Ask directly whether they agree and why, and if the two disagree, choose a third opinion carefully.",
+  answerList: [
+    "Tell your doctor; you don't need permission.",
+    "Decide what you want checked: the diagnosis or the treatment plan.",
+    "Send the records — results, imaging, notes — not just your account.",
+    "Ask the second doctor: do you agree, and why?",
+    "If they disagree, choose a third opinion carefully.",
+  ],
 
   ledes: [
     `You got a diagnosis or a treatment recommendation, and something about it doesn't sit right. Maybe the proposed surgery feels aggressive. Maybe the watchful-waiting feels too passive. Maybe the doctor seemed certain about something you've read is genuinely uncertain. You've been thinking about getting a second opinion for a week, and the only reason you haven't is that you don't know how to ask without it being weird.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Tell your current doctor — but you don't have to ask permission",
+      name: "Do you have to tell your doctor you want a second opinion?",
       body: "Most doctors are not offended by a second opinion. Many will help you arrange one. 'I want to get a second opinion before deciding on this — can you help me get my records sent?' is a normal, professional sentence that opens the conversation cleanly. You don't need their approval, but having them on board makes the records transfer faster and the second doctor's review more efficient. The only doctors who react badly to this are the ones whose reactions are themselves a red flag.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };
