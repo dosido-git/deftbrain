@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "d96d0207e02c65ce00e82274b534d347a8322806",
+  "hash": "fb6964479045df2474a58c789cc83f6cb7542a58",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -313,6 +313,30 @@
  },
  "tool:RecipeChaosSolver": {
   "hash": "0681be2206838e5e803d242d1cd0b3c0239b06ea",
+  "lastmod": "2026-10-08"
+ },
+ "tool:DriveHome": {
+  "hash": "405a2c09db2eea6a82c0ecb42fa6c494b1f59453",
+  "lastmod": "2026-10-08"
+ },
+ "tool:Giftology": {
+  "hash": "990e5382487b8617df6af61ca505fd1598b56bb4",
+  "lastmod": "2026-10-08"
+ },
+ "tool:SkillGapMap": {
+  "hash": "af13095a1c40cd44745864961e8887ec97c91577",
+  "lastmod": "2026-10-08"
+ },
+ "tool:ConflictCoach": {
+  "hash": "63d01b1755fe918fa27618939873b7152e8f11b1",
+  "lastmod": "2026-10-08"
+ },
+ "tool:LeverageLogic": {
+  "hash": "d26ef98dab6f1c9b9c2d0794b06ab8eb15dfd56d",
+  "lastmod": "2026-10-08"
+ },
+ "tool:VelvetHammer": {
+  "hash": "d131171370a8449943b3caf1354808e4d1c302fd",
   "lastmod": "2026-10-08"
  }
 }

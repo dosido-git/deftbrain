@@ -749,6 +749,60 @@ export const tools = [
   icon: "🚗",
   categories: ['Decisions', 'Health & Wellness', 'Home & Daily Life'],
   headerColor: "#1e2a3a",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Drive Home gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the drive below — the full result, nothing reworded.",
+    sampleLabel: "The drive",
+    sampleText: "Office in downtown Seattle to home in Bellevue, about 45 minutes, evening. Rain and heavy traffic, mixed roads. Feeling a little tired. \"I caught myself yawning on the walk to the car and it is raining harder than when I arrived.\"",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Pause: Wait and reassess your alertness before starting — the yawning before you even reach the car is worth taking seriously.",
+        tone: "yellow",
+        text: "You reported feeling a little tired and caught yourself yawning on the walk to the car. Combined with 45 minutes of heavy traffic in rain, this is worth pausing on before starting. The question is whether you feel clearly alert enough to sustain attention for the full drive, not just alert enough to begin.",
+      },
+      {
+        label: "What makes this drive harder",
+        tone: "neutral",
+        items: [
+          "Self-reported tiredness before departure",
+          "Yawning already present on the walk to the car",
+          "Reported heavy traffic — demands more sustained attention than light traffic",
+          "Reported rain, harder than earlier in the day",
+          "45-minute drive on mixed roads",
+        ],
+      },
+      {
+        label: "Before you decide",
+        tone: "green",
+        text: "Sit somewhere off the road for a genuine rest — not a brief pause — then honestly assess whether you feel clearly alert and able to hold attention for the full 45 minutes, not just the first few minutes. If the tiredness and yawning persist, that is your answer: do not start.",
+      },
+      {
+        label: "Safer options",
+        tone: "green",
+        items: [
+          "Wait in a safe, stationary location until you feel clearly alert, then reassess",
+          "If someone at your destination or nearby could collect you, that removes the driving requirement",
+          "If public transit is available and practical from your location, that removes the fatigue risk of driving",
+          "If the drive can be delayed until you have had proper rest, delay it",
+        ],
+      },
+    ],
+    disclaimer: "Drive Home doesn't have live traffic, weather, or road-condition data. This assessment uses only what you reported. If conditions change, reassess before leaving.",
+  },
+  faq: [
+    { q: "How do I know if I'm too tired to drive?",
+      a: "Yawning, heavy eyelids, drifting thoughts, missing an exit or not remembering the last few miles are all warning signs. The question isn't whether you can start the drive but whether you can stay clearly alert for all of it. If you're unsure, don't start." },
+    { q: "Does coffee or opening the window fix drowsy driving?",
+      a: "No. Coffee takes time to work and wears off, and cold air or loud music only mask tiredness briefly. Real options are rest before driving, a short nap somewhere safe, someone else driving, or another way home." },
+    { q: "Is it more dangerous to drive tired in rain and traffic?",
+      a: "Yes. Rain and heavy traffic need more sustained attention and quicker reactions, which is exactly what tiredness takes away. Each condition makes the others matter more." },
+    { q: "Does Drive Home check live traffic or weather?",
+      a: "No. It reasons only from what you report and doesn't certify a drive as safe. It helps you make the call before you start, and you should reassess if conditions change." },
+  ],
   description: "Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.",
   guide: {
     tips: [
@@ -1716,6 +1770,48 @@ export const tools = [
   icon: "🎁",
   categories: ['Money', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Giftology gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the person below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The person",
+    sampleText: "My mom, 60s, retired teacher, loves gardening and mystery novels. Practical person who says \"don't get me anything\" every year. Occasion: birthday.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "A substantial, well-made garden journal — not a pretty notebook, but one with structured space for planting dates, what worked, what didn't, and seasonal notes",
+        tone: "green",
+        text: "A practical person who actively gardens has accumulated years of hard-won knowledge and probably carries it in her head. A journal built for that purpose says: what you know is worth keeping. It is useful rather than decorative, which is exactly the kind of gift she will not feel guilty accepting.",
+      },
+      {
+        label: "A curated set of a few mystery novels from an author she has not read yet, chosen to extend rather than repeat what she already knows",
+        tone: "green",
+        text: "A mystery lover who reads widely has probably worked through the obvious names, and the most useful gift is a well-reasoned introduction to someone new. This requires actual thought on the giver's part — which is exactly what she will notice, and what separates it from a gift card.",
+      },
+      {
+        label: "A high-quality pair of gardening gloves — genuinely durable, properly fitted, the kind a serious gardener reaches for every single time",
+        tone: "green",
+        text: "Practical people often under-invest in their own tools because it feels indulgent. A really good pair of gloves — well made, the right weight for her kind of gardening — is something she uses constantly and would not necessarily buy for herself. It is unglamorous in exactly the right way.",
+      },
+      {
+        label: "The wildcard: Book a place on a half-day or full-day garden visit — a notable private or historic garden that opens to the public — and give the ticket as the gift, framed as a day out rather than an object",
+        tone: "neutral",
+        text: "Every other idea gives her something to use or read at home; this gives her somewhere to go, which approaches her through the gardening interest rather than around it.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What do you get someone who says they don't want anything?",
+      a: "Something useful they wouldn't buy for themselves — a better version of a tool they use constantly — or something that shows thought rather than money, such as a book chosen for them. Practical people accept practical gifts more easily than luxuries." },
+    { q: "How do I find a gift for someone who has everything?",
+      a: "Look at what they do, not what they own: an upgrade to something they use daily, a consumable they enjoy, or an experience connected to an interest. Specific beats expensive." },
+    { q: "What should I write in a gift card?",
+      a: "One or two sentences on why you chose it: 'I thought this would be useful for tracking what you grow.' A reason makes even a small gift feel considered." },
+    { q: "Does Giftology recommend specific products to buy?",
+      a: "It suggests the kind of thing to look for, why it fits the person, and where to find it, rather than naming a product or shop it can't check is in stock." },
+  ],
   description: "Tell us a little about who you're shopping for. Giftology turns what you know about them into thoughtful gift ideas—with help choosing, finding, and making each one feel personal.",
   guide: {
     tips: [
@@ -3665,6 +3761,51 @@ tagline: "Work with the energy you have.",
   icon: "🗺️",
   categories: ['Career', 'Decisions'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Skill Gap Map gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the move below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The move",
+    sampleText: "From: Software engineer, 5 years backend Python/APIs. No management experience. To: Product Manager at a mid-size tech company. Skills: Python, system design, API architecture, SQL, cross-functional collaboration, some informal product work — written specs, run user interviews once. About 5 hours a week.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Where you are starting",
+        tone: "neutral",
+        text: "Your backend engineering background gives you direct experience with system design, APIs, and SQL, plus some cross-functional collaboration and informal product work — written specs and at least one round of user interviews. That combination is a meaningful foundation to compare against PM roles you are considering.",
+      },
+      {
+        label: "What carries over",
+        tone: "green",
+        items: [
+          "Writing product specifications: Spec-writing experience may translate into producing the kind of written artifacts — requirements, briefs, acceptance criteria — that could be relevant in PM roles, depending on what those roles ask for.",
+          "System design and API knowledge: This technical depth may help you evaluate technical trade-offs, communicate with engineering teams, and scope work in roles where engineering collaboration is part of the job.",
+        ],
+      },
+      {
+        label: "Start here: Product decision reasoning and trade-offs",
+        tone: "yellow",
+        text: "There is no supplied evidence of how you reason through competing priorities or how you would explain a product decision to a non-technical audience.",
+      },
+      {
+        label: "Your next move",
+        tone: "green",
+        text: "Take a real decision from your current work — a spec you wrote, a trade-off you faced — and write out how you reasoned through it. The proof: A written decision narrative: what the situation was, what options existed, what you chose and why — a document you can review and refine, and potentially reference when talking through your product thinking.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I know which of my skills transfer to a new career?",
+      a: "List what you actually did, not your job titles, then match each piece to what real job postings in the target role ask for. Strengths you can show with evidence transfer; ones you can only claim need building first." },
+    { q: "Can a software engineer become a product manager?",
+      a: "Yes, it's one of the more common moves. Technical depth carries over directly; the usual gap is showing how you make product trade-offs and explain decisions to non-technical people, which you can practise and document before applying." },
+    { q: "What should I learn first for a career change?",
+      a: "The one capability the target role expects that you can't yet show evidence of — not the longest course on the list. Skill Gap Map picks that starting point and a concrete way to prove it." },
+    { q: "Does it work with a specific job posting?",
+      a: "Yes, and it's more precise that way: paste a real posting and the gaps come from that employer's requirements rather than general ones." },
+  ],
   description: "Thinking about a career move? Skill Gap Map starts with what your own experience actually demonstrates, then shows possible connections and gaps worth checking against the roles or job postings you're considering.",
   guide: {
       tips: [
@@ -4894,6 +5035,53 @@ tagline: "Work with the energy you have.",
   icon: "🧯",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Conflict Coach gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the message below — the full result, nothing reworded.",
+    sampleLabel: "The message you got",
+    sampleText: "I just think it's interesting how you only show up when it's convenient for you. Must be nice to have that kind of flexibility.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples. From a roommate; you felt hurt and frustrated.",
+    sections: [
+      {
+        label: "How the message reads",
+        tone: "neutral",
+        text: "'Only show up when it's convenient for you' makes a broad claim about a pattern without naming a specific incident. 'Must be nice to have that kind of flexibility' can read as sarcastic — it is not a direct ask for anything, which leaves the exchange without a clear opening to resolve.",
+      },
+      {
+        label: "Ask what's actually going on (calm)",
+        tone: "green",
+        text: "I'd rather talk about this directly than leave it hanging. What's been going on?",
+      },
+      {
+        label: "Name the impact and invite clarity (warm)",
+        tone: "green",
+        text: "I want to take this seriously. Can you tell me what specifically you've felt I've gotten wrong? I'd like to understand what you're referring to.",
+      },
+      {
+        label: "Acknowledge the tension, hold your ground gently (firm)",
+        tone: "green",
+        text: "I hear that something's not working for you, and I'm open to talking about it. I'd respond better if I knew what specifically you're pointing at. What's the thing that's been bothering you?",
+      },
+      {
+        label: "Short and direct (direct)",
+        tone: "green",
+        text: "What specifically have I done that's bothering you?",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I respond to a passive-aggressive message?",
+      a: "Don't argue with the tone; answer the subtext and ask for specifics: 'I'd rather talk about this directly — what's been going on?' Asking what exactly is bothering them gives them a way to say it plainly." },
+    { q: "Should I reply right away to a hurtful text?",
+      a: "Usually not. Waiting even twenty minutes lets you reply to what the message says rather than how it made you feel, and it rarely makes things worse." },
+    { q: "Why give several possible replies?",
+      a: "The right reply depends on the relationship and on what you want — to clear the air, to set a limit, or to keep it short. Conflict Coach writes options in different tones so you can pick the one that sounds like you." },
+    { q: "Can it check a reply I've already written?",
+      a: "Yes. Add your draft and what you actually want from the exchange, and it shows how your reply is likely to land and how to adjust its tone." },
+  ],
   description: "A tense message can make the first reply feel urgent. Paste what you received, tell us the relationship and what you want the response to accomplish, and Conflict Coach lays out several ways to answer so you can choose deliberately before you send anything.",
   guide: {
     tips: [
@@ -5642,6 +5830,60 @@ tagline: "Work with the energy you have.",
   icon: "⚖️",
   categories: ['Career', 'Decisions', 'Money'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Leverage Logic gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The situation",
+    sampleText: "Asking my employer to keep me remote. The company has announced four days in the office from January. I moved 90 minutes away two years ago, with my manager's written agreement that the role was remote-first. My side: The written agreement, and that I am the only person who knows the billing integration. Against that: they are not short of applicants, two colleagues have already agreed to come in, and I cannot actually afford to leave. Their side: They said the raise pool was set in January. Two people left the team this quarter. What I want: Keep two days remote permanently, in writing. I would settle for a six-month trial with a review date rather than a flat no.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What matters most",
+        tone: "yellow",
+        items: [
+          "Whether your manager has authority to grant an individual exception to the four-day policy. If the policy was set above your manager's level, the written agreement may be a useful reference point but your manager may not be the right — or only — decision-maker.",
+          "The content and formality of the written remote-first agreement. The practical weight of your strongest documented fact depends entirely on what the agreement actually says and the level at which it was made.",
+          "Whether your employer understands your billing integration knowledge as genuinely difficult to replace. If they do not, the transition-cost argument carries less weight; if they do, it may support a case for accommodation.",
+        ],
+      },
+      {
+        label: "The approach",
+        tone: "green",
+        text: "Present your request as a documented individual exception grounded in the written agreement, framed around continuity of a function the team depends on — not as resistance to the policy itself.",
+      },
+      {
+        label: "Don't give away",
+        tone: "red",
+        text: "Do not disclose that you cannot afford to leave, because once that is known it removes any implicit pressure that your request might otherwise carry.",
+      },
+      {
+        label: "What to say",
+        tone: "green",
+        items: [
+          "When opening the conversation with your manager. “I want to talk through the January office policy in the context of the arrangement we set up in writing two years ago, when I moved to a location 90 minutes away on the basis that this role was remote-first. I am hoping we can find a path that works.”",
+          "When making your specific ask. “What I am asking for is two remote days per week on a permanent basis, in writing. If that is difficult to commit to outright, I would welcome a six-month trial with a review date — I want something we can both point to.”",
+        ],
+      },
+      {
+        label: "Trap to avoid",
+        tone: "neutral",
+        text: "Treating the written agreement as legally enforceable without knowing what it says or what law applies. Reference it as a documented basis for your request and let its existence do the work, without making claims about its legal effect that you cannot establish.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I know how much leverage I have in a negotiation?",
+      a: "List what you have that they value and can't easily replace, what they have that you need, and what each side can do if there is no deal. Then separate what is established from what you are assuming — leverage the other side doesn't believe in doesn't count." },
+    { q: "Should I tell my employer I can't afford to leave?",
+      a: "Generally no. Once they know you have no alternative, a request carries less weight. You don't have to bluff either; just keep the conversation on your case, not your constraints." },
+    { q: "How do I ask to keep working remotely?",
+      a: "Ask for a specific arrangement in writing, ground it in anything already agreed, frame it around the work rather than objecting to the policy, and have a fallback ready, such as a trial period with a review date." },
+    { q: "What kinds of negotiation does Leverage Logic cover?",
+      a: "Salary and remote-work requests, freelance rates, vendor prices, lease renewals, purchases and more. It maps where you stand, what's unknown, what to say and what not to give away." },
+  ],
   description: "Facing a negotiation? Describe the situation, what you want, and anything you think gives you leverage. Leverage Logic helps you see where each side has room to move, what you may be assuming, and how to make your case without giving away more than you need to.",
   guide: {
       tips: [
@@ -6458,6 +6700,48 @@ tagline: "Work with the energy you have.",
   icon: "🔨",
   categories: ['Conversations', 'Relationships', 'Work & Meetings'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Velvet Hammer gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the draft below — the full result, nothing reworded.",
+    sampleLabel: "The angry draft",
+    sampleText: "This is the THIRD time this month you've sent me a 'final' contract that you then change two days later. Do you have any idea how much time I'm wasting reviewing the same document over and over because YOU can't get your act together? Stop sending me half-baked drafts.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples. To a vendor; goal: change the behavior; you have the leverage.",
+    sections: [
+      {
+        label: "What survives once the heat is gone",
+        tone: "neutral",
+        text: "You have received three contracts this month that were each described as final but then revised within days. You want the vendor to stop sending documents labeled final before they are actually ready for your review.",
+      },
+      {
+        label: "Clear — when you simply want the point understood",
+        tone: "green",
+        text: "This is the third time this month I've received a document marked as the final contract, only to get a revised version two days later. That cycle is costing me significant review time. Please don't send a contract as final until it's actually in its final state.",
+      },
+      {
+        label: "Tactful — when the relationship needs extra care",
+        tone: "green",
+        text: "Three times this month I've reviewed a document sent as the final contract, then received a revised version shortly after. Each round takes real time on my end. Going forward, could you hold off on sending until you're confident no further changes are coming?",
+      },
+      {
+        label: "Firm — when the point or boundary cannot be missed",
+        tone: "green",
+        text: "I've now received three contracts this month labeled as final, each followed by revisions within two days. I can't keep absorbing the time required to re-review the same document. I need what you send as final to actually be final before it comes to me.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I rewrite an angry email so it sounds professional?",
+      a: "Keep the facts and the request; drop the insults, the guesses about motive and the exaggeration. State what happened, what it is costing you, and what you need to change, in that order. A specific request ('don't send a contract as final until it is') does more than any amount of heat." },
+    { q: "Should I send an angry email?",
+      a: "Write it if you need to, but don't send the first draft. Wait, then rewrite it so it keeps your point at full strength without the parts that give the other person something else to argue about." },
+    { q: "What's the difference between clear, tactful and firm?",
+      a: "They make the same request. Clear states it plainly; tactful softens the delivery for a relationship that needs care; firm makes it impossible to miss, without threats you haven't decided on." },
+    { q: "Will it change what I'm asking for?",
+      a: "No. Velvet Hammer keeps your facts, numbers and request exactly as you gave them, and checks that nothing was added or widened." },
+  ],
   description: "Sometimes the message you need to send starts out angrier than you want it to land. Velvet Hammer helps you keep what matters, lose what doesn't, and say it in a way the other person can actually hear.",
   guide: {
     tips: [
