@@ -501,6 +501,26 @@ const LEGACY_REDIRECTS = {
 // meeting". The workplace one kept its URL (keep-list, indexed); the
 // meetings one's material (the scripted line, "decline early") merged in.
 const MERGED_GUIDE_REDIRECTS = {
+  // meetings/ and workplace/ held the same 9 meeting guides (2026-10-08, owner:
+  // merge overlapping guides); meetings/ is their topical home.
+  '/guides/workplace/how-to-make-sure-quiet-people-speak-up-in-meetings': '/guides/meetings/how-to-make-sure-quiet-people-speak-up-in-meetings',
+  '/guides/workplace/how-to-make-sure-quiet-people-speak-up-in-meetings.html': '/guides/meetings/how-to-make-sure-quiet-people-speak-up-in-meetings',
+  '/guides/workplace/how-to-tell-if-a-meeting-is-going-to-be-useful': '/guides/meetings/how-to-tell-if-a-meeting-is-going-to-be-useful',
+  '/guides/workplace/how-to-tell-if-a-meeting-is-going-to-be-useful.html': '/guides/meetings/how-to-tell-if-a-meeting-is-going-to-be-useful',
+  '/guides/workplace/how-to-set-a-meeting-agenda-that-actually-works': '/guides/meetings/how-to-set-a-meeting-agenda-that-actually-works',
+  '/guides/workplace/how-to-set-a-meeting-agenda-that-actually-works.html': '/guides/meetings/how-to-set-a-meeting-agenda-that-actually-works',
+  '/guides/workplace/how-to-run-a-meeting-that-doesnt-go-off-the-rails': '/guides/meetings/how-to-run-a-meeting-that-doesnt-go-off-the-rails',
+  '/guides/workplace/how-to-run-a-meeting-that-doesnt-go-off-the-rails.html': '/guides/meetings/how-to-run-a-meeting-that-doesnt-go-off-the-rails',
+  '/guides/workplace/how-to-bring-a-meeting-back-on-topic': '/guides/meetings/how-to-bring-a-meeting-back-on-topic',
+  '/guides/workplace/how-to-bring-a-meeting-back-on-topic.html': '/guides/meetings/how-to-bring-a-meeting-back-on-topic',
+  '/guides/workplace/how-to-handle-someone-who-dominates-meetings': '/guides/meetings/how-to-handle-someone-who-dominates-meetings',
+  '/guides/workplace/how-to-handle-someone-who-dominates-meetings.html': '/guides/meetings/how-to-handle-someone-who-dominates-meetings',
+  '/guides/workplace/signs-your-meeting-could-be-an-email': '/guides/meetings/signs-your-meeting-could-be-an-email',
+  '/guides/workplace/signs-your-meeting-could-be-an-email.html': '/guides/meetings/signs-your-meeting-could-be-an-email',
+  '/guides/workplace/how-to-suggest-making-a-meeting-async': '/guides/meetings/how-to-suggest-making-a-meeting-async',
+  '/guides/workplace/how-to-suggest-making-a-meeting-async.html': '/guides/meetings/how-to-suggest-making-a-meeting-async',
+  '/guides/workplace/should-this-be-a-meeting-or-an-email': '/guides/meetings/should-this-be-a-meeting-or-an-email',
+  '/guides/workplace/should-this-be-a-meeting-or-an-email.html': '/guides/meetings/should-this-be-a-meeting-or-an-email',
   // apologies/ and conversations/ held the same 5 apology guides (2026-10-08,
   // owner: merge overlapping guides). The apologies/ copies were about twice as full.
   '/guides/conversations/the-difference-between-an-apology-and-an-explanation': '/guides/apologies/the-difference-between-an-apology-and-an-explanation',
