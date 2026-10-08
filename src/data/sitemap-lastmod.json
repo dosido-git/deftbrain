@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "fb6964479045df2474a58c789cc83f6cb7542a58",
+  "hash": "8d1708c5f4971c12666e53bd7e1b5776eea040b1",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -337,6 +337,26 @@
  },
  "tool:VelvetHammer": {
   "hash": "d131171370a8449943b3caf1354808e4d1c302fd",
+  "lastmod": "2026-10-08"
+ },
+ "tool:ColdOpenCraft": {
+  "hash": "a550b84a2e26f5801972211975b13a9447897941",
+  "lastmod": "2026-10-08"
+ },
+ "tool:NameThatFeeling": {
+  "hash": "dbbe9dfe03d827d97e158e61e79f8e2cf73c518a",
+  "lastmod": "2026-10-08"
+ },
+ "tool:DecisionCoach": {
+  "hash": "b5f02ff8965b5f275ea9061517cd2adc7ca63d9f",
+  "lastmod": "2026-10-08"
+ },
+ "tool:RoommateCourt": {
+  "hash": "46213d794f50f5e117e66a53e9f2f9328983d9e0",
+  "lastmod": "2026-10-08"
+ },
+ "tool:PaperworkPath": {
+  "hash": "80cb103594a2870313d52e8fa48dd0252ef2d50d",
   "lastmod": "2026-10-08"
  }
 }

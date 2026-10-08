@@ -1383,6 +1383,43 @@ export const tools = [
   icon: "📬",
   categories: ['Career', 'Conversations'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Cold Open Craft gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the details below — one of three openers it wrote, nothing reworded.",
+    sampleLabel: "The details",
+    sampleText: "To: A senior engineering manager at Stripe whose Substack on on-call rotations I follow. Why: Open conversation about a Staff Engineer role she posted about last week. What I know: She wrote a thoughtful piece on reducing pager fatigue. Worked at Square before Stripe. Comments occasionally on Twitter about backend reliability — friendly tone. My background: 8 years backend at fintech startups (Plaid, Brex), currently tech-leading a 6-person team. Shipped a real-time risk system handling 50M events/day. By email.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Subject line",
+        tone: "neutral",
+        text: "Staff Engineer role — reaching out from Plaid/Brex background",
+      },
+      {
+        label: "Opens with the Substack, then surfaces the role",
+        tone: "green",
+        text: "Hi [Name],\n\nI follow your Substack — your piece on reducing pager fatigue was thoughtful.\n\nI noticed you posted a Staff Engineer role last week. I've spent eight years on backend systems at Plaid and Brex, and I'm currently tech-leading a six-person team. I shipped a real-time risk system handling 50M events per day.\n\nIf you have a few minutes to talk, I'd welcome it.\n\n[Your name]",
+      },
+      {
+        label: "Follow-up, if needed",
+        tone: "neutral",
+        text: "Hi [Name],\n\nJust bumping this up in case it got buried. Still interested in the Staff Engineer role if you have a moment to connect.\n\n[Your name] — Give the first message some room before following up, and adjust if the role has a posted deadline.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I write a cold email that gets a reply?",
+      a: "Keep it short, say why you're writing to this person specifically, state the ask in the first lines, and give one or two concrete facts about you that make the ask worth their time. End with an easy question they can say yes to." },
+    { q: "Should I mention their work in a cold message?",
+      a: "Yes, if it's genuine and specific — one line about something they wrote or did. Generic flattery ('love your work') reads as a template." },
+    { q: "When should I follow up on a cold email?",
+      a: "After about a week, once, briefly. If a role or event has a deadline, follow up before it." },
+    { q: "Will it invent things about me?",
+      a: "No. The openers use only the background you give it, so every claim in the message is one you can stand behind." },
+  ],
   description: "Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you three ready-to-send ways to begin — each opening differently and asking for something different — plus a follow-up for when nobody replies.",
   guide: {
     tips: [
@@ -2038,6 +2075,48 @@ export const tools = [
   icon: "🎭",
   categories: ['Health & Wellness', 'Self & Reflection'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Name That Feeling gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the feeling below — the main result, nothing reworded.",
+    sampleLabel: "The feeling",
+    sampleText: "That bittersweet feeling on the last day of a vacation — happy I went, sad it's ending, and somehow already nostalgic for it before I'm even home. Happens every time, even on short trips. Worse when the place felt like somewhere I could have lived.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What you described",
+        tone: "neutral",
+        text: "You are still in the middle of something good, but already missing it — the joy and the loss are happening simultaneously, not one after the other",
+      },
+      {
+        label: "Best match: bittersweet",
+        tone: "green",
+        text: "A mixture of happiness and sadness at the same time; the pleasure of something also carrying the pain of its ending or incompleteness. You named this feeling bittersweet yourself, and the word captures exactly what you described: genuine happiness about the trip alongside genuine sadness that it is ending. The word does not require the happiness or sadness to be false or secondary — both are real and present together.",
+      },
+      {
+        label: "Also: wistful (English)",
+        tone: "neutral",
+        text: "Captures: The premature nostalgia and the sense of longing for a place you could have lived. Wistful can name that particular note of 'what if' without requiring the joy to disappear.. Misses: Does not as naturally include the happiness you felt during the trip itself — wistful leans more into the longing and sadness than into the simultaneous joy of having been there.",
+      },
+      {
+        label: "Also: saudade (Portuguese, sow-DAH-duh)",
+        tone: "neutral",
+        text: "Captures: The way nostalgia arrives before you have even left — that tender, aching sense of already missing something while it is still happening. Misses: Saudade carries a weight of loss and longing that may outweigh the happiness you described. It is less about the joy of having been there and more about the pain of its distance.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Is there a word for feeling nostalgic about something before it's over?",
+      a: "'Bittersweet' covers the mix of happiness and sadness; 'anticipatory nostalgia' is used for missing something while it is still happening. Portuguese 'saudade' names a deeper longing for something absent." },
+    { q: "Why does naming a feeling help?",
+      a: "Putting a precise word to a feeling makes it easier to understand, talk about and decide what to do with. A vague 'I feel weird' is harder to work with than 'I feel wistful'." },
+    { q: "Does it only give English words?",
+      a: "No. It looks across languages — Portuguese saudade, German Wehmut, Japanese mono no aware — and says what each captures and misses for the feeling you described." },
+    { q: "What if no word fits?",
+      a: "It says so, gives a plain-English description, and, where useful, offers a made-up name so you have a handle for it." },
+  ],
   description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
   guide: {
     tips: [
@@ -4665,6 +4744,53 @@ tagline: "Work with the energy you have.",
   icon: "🎯",
   categories: ['Decisions', 'Tasks'],
   headerColor: "#f5e0c0",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Decision Coach gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the decision below — the full result, nothing reworded. The pay comparison is computed in code from the numbers given.",
+    sampleLabel: "The decision",
+    sampleText: "Two job offers and I have to answer by Friday. Brightline: $96,000 salary, plus a one-time $5,000 signing bonus. Northfield: $95,000 salary plus an annual bonus of up to $8,000, but it is discretionary and they said last year it was not paid to everyone. Both are hybrid, similar commute. Which should I take? Constraint: I need stable income; I have rent and a car loan.",
+    context: "Real run, 2026-10-08, on a decision written for this page.",
+    sections: [
+      {
+        label: "The call",
+        tone: "green",
+        text: "Take Brightline — unless you can confirm that Northfield's discretionary bonus is reliably paid to most employees most years.",
+      },
+      {
+        label: "Why",
+        tone: "neutral",
+        text: "You told me you need stable income to cover rent and a car loan. Brightline guarantees $96,000 every year and $101,000 in year one including the signing bonus. Northfield's $8,000 bonus is discretionary — they already told you it was not paid to everyone last year — so you cannot count on it. On guaranteed pay alone, Brightline leads by $6,000 in year one and $1,000 in every year after. Against fixed obligations, certain money is the right money.",
+      },
+      {
+        label: "The one thing that could change it",
+        tone: "yellow",
+        text: "Can you find out what percentage of Northfield employees actually received the bonus last year, and whether it has been paid consistently in prior years? If the bonus is reliably paid to most people most years, Northfield pays $7,000 more annually after year one — that gap is large enough to change the call even given your stability need. If it is genuinely hit-or-miss, Brightline wins cleanly.",
+      },
+      {
+        label: "If the answer confirms it",
+        tone: "green",
+        text: "The call stands: take Brightline.",
+      },
+      {
+        label: "If it changes it",
+        tone: "neutral",
+        text: "That changes the call: take Northfield — the recurring pay advantage outweighs the signing bonus and the stability risk shrinks considerably.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I make a decision when I'm stuck?",
+      a: "Write down the constraints that actually matter — money, time, energy — and let them eliminate options. If you still can't choose, hand the call to something outside your head: a coin, a trusted person, or a tool that picks one answer. Then act on it rather than reopening it." },
+    { q: "How do I compare two job offers?",
+      a: "Compare guaranteed pay first, then one-time pay (such as a signing bonus) for the first year only, and treat bonuses that may not be paid as uncertain rather than money in hand. Then weigh what the money can't capture: the work, the manager, the commute." },
+    { q: "Why does Decision Coach give one answer instead of options?",
+      a: "Because when you're stuck, more options make it worse. It commits to one call, says why, and names the single fact that could change it, so you know exactly what to check." },
+    { q: "What if I don't like the answer?",
+      a: "Reject it and say why. Your reaction is useful information, and the next answer takes it into account." },
+  ],
   description: "Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.",
   guide: {
     tips: [
@@ -6946,6 +7072,53 @@ tagline: "Work with the energy you have.",
   icon: "⚖️",
   categories: ['Home & Daily Life', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Roommate Court gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the dispute below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The dispute",
+    sampleText: "Dishes left in the sink for days at a time, sometimes a full week. My side: I work from home and the kitchen is right next to my desk. I end up staring at a sink full of dirty dishes for half my workday. I'm not asking for spotless — just for them not to sit overnight more than once. Her side: She works long hours at the hospital and says she's too tired to wash dishes when she gets home at 9pm. She'll do them on her days off. She thinks I'm being uptight because I'm home all day. Going on for months; raised more than once.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "You're talking past each other",
+        tone: "yellow",
+        text: "You are asking for a timeline — no dish sits overnight more than once. She is describing a physical limit — she cannot wash dishes at 9pm after a hospital shift. These are two different problems being treated as one. She is not refusing to do dishes; you are not asking for perfection. The gap is whether 'days off' is a workable schedule when you are looking at the sink all day, every day.",
+      },
+      {
+        label: "Where it collides",
+        tone: "neutral",
+        text: "Her reported 'days off' cycle may mean dishes sit for several days in a row — the exact situation that disrupts your workspace. Her solution may feel reasonable to her while still not solving your problem at all.",
+      },
+      {
+        label: "What to try",
+        tone: "green",
+        items: [
+          "Name the specific standard clearly — one overnight maximum — rather than asking her to 'clean up more' or 'do dishes sooner'. Vague requests are easy to feel you are meeting. A concrete threshold gives both of you something unambiguous to agree to or negotiate around.",
+          "Separate the timeline problem from the late-night washing problem. Ask whether she could rinse and stack dishes before bed — not fully wash them — so the sink is not visually overwhelming during your workday. A quick rinse and stack is much lighter than a full wash and may address your actual concern without requiring her to do the thing she says she cannot do at 9pm.",
+          "Propose a day-of-week anchor instead of a hourly rule — for example, any dishes from Sunday through Tuesday get done by Wednesday, and so on — timed around her known days off. This meets her where she actually is while giving you a predictable limit on how long the sink fills up.",
+        ],
+      },
+      {
+        label: "Start the conversation with",
+        tone: "green",
+        text: "Frame it around what you actually need: that staring at a full sink during your workday is affecting your ability to focus, and you want to find something workable given her schedule. Skip the exact words and go straight to: you need to talk about what a realistic timeline actually is for her, and what would reduce the visual disruption for you during work hours.",
+      },
+    ],
+    disclaimer: "Roommate Court only has your account of the conflict, and it says so. It looks for a workable arrangement, not a verdict on who is at fault.",
+  },
+  faq: [
+    { q: "How do I get my roommate to do the dishes?",
+      a: "Agree on a specific standard rather than 'clean up more' — for example, nothing left in the sink more than one night — and fit it to both schedules. If late evenings are impossible for them, a quick rinse-and-stack or a set catch-up day can work." },
+    { q: "How do I bring up a problem with a roommate without a fight?",
+      a: "Pick a calm time, describe it as a shared problem, ask how they see it before proposing anything, and suggest a simple system rather than a favor." },
+    { q: "What if we've already talked about it and nothing changed?",
+      a: "The request was probably too general. Name the exact standard you need, check what is actually stopping them, and agree a system you can both see working, such as a rota or a set day." },
+    { q: "Does Roommate Court decide who is right?",
+      a: "No. It shows where the two positions actually collide, what is still unknown, and what to try and say, so you can agree something that works for both of you." },
+  ],
   description: "Roommate problem? Tell Roommate Court what's happening and what each side says. It helps you separate the facts from the disagreement, figure out what might actually resolve it, and gives you words to start the conversation. Or use Chore Roulette to divide household chores and rotate the load over time.",
   guide: {
     tips: [
@@ -7171,6 +7344,54 @@ tagline: "Work with the energy you have.",
   icon: "🗂️",
   categories: ['Home & Daily Life', 'Money'],
   headerColor: "#c9d6e5",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Paperwork Path gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the move below — an excerpt of a longer checklist, nothing reworded.",
+    sampleLabel: "The situation",
+    sampleText: "Moving to a new home: moving out of state to Austin, Texas, with two kids and starting a new job the same month.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples. Each deadline comes with where to confirm it.",
+    sections: [
+      {
+        label: "The situation",
+        tone: "neutral",
+        text: "Out-of-state move to Austin, Texas with two children while starting a new job in the same month, requiring coordinated handling of address changes, Texas licensing, school enrollment, and employer onboarding paperwork under tight timing.",
+      },
+      {
+        label: "Texas Driver License (convert out-of-state license)",
+        tone: "yellow",
+        text: "Texas requires new residents to obtain a Texas DL within 90 days of establishing residency — confirm this figure at dps.texas.gov as current. Where: In person at a Texas DPS driver license office; bring your current out-of-state license, proof of Texas residency (two documents), Social Security card, and proof of citizenship or lawful presence.",
+      },
+      {
+        label: "USPS Change of Address",
+        tone: "green",
+        text: "Mail forwarding from your old address ensures no critical documents, tax notices, or financial statements are lost during the transition. Where: File online at usps.com/move or in person at any post office; there is a small identity-verification fee for the online option.",
+      },
+      {
+        label: "Children's School Enrollment Records",
+        tone: "green",
+        text: "Austin ISD and other local districts require proof of residency, immunization records, and prior school records before children can begin attending. Where: Contact your zoned Austin-area school district directly (Austin ISD at austinisd.org or the appropriate district for your address) to confirm their specific document list and enrollment timeline.",
+      },
+      {
+        label: "Children's Immunization Records (Texas-compliant)",
+        tone: "green",
+        text: "Texas schools require immunization records that meet state-mandated schedules, and records from another state may need a physician review to confirm compliance. Where: Obtain from your children's current pediatrician before moving; if gaps exist, schedule a catch-up appointment in Austin promptly through a new pediatrician or Austin Public Health.",
+      },
+      {
+        label: "Health Insurance Enrollment or Transfer",
+        tone: "green",
+        text: "Leaving a state can qualify as a Special Enrollment Period for ACA marketplace plans, and your new employer plan will have its own enrollment window — missing either window can leave your family uninsured. Where: For employer coverage, enroll through your new HR portal within the window they specify; for marketplace coverage, visit healthcare.gov and confirm your SEP eligibility and deadline.",
+      },
+      {
+        label: "Do this first",
+        tone: "green",
+        text: "Gather all critical documents you will need in Texas: both children's immunization records and school records, your out-of-state title and registration, Social Security cards, birth certificates, and passport or citizenship documents for the DL application. Nearly every downstream step — school enrollment, Texas DL, vehicle registration, and employer I-9 — requires original documents you cannot afford to be hunting for after you arrive.",
+      },
+    ],
+    disclaimer: "All deadlines and requirements listed here reflect commonly cited Texas rules as of this writing and should be confirmed directly with the Texas DPS (dps.texas.gov), TxDMV (txdmv.gov), Travis County tax office, Austin ISD or your local district, and your employer HR department before relying on them.",
+  },
   crossRefs: ['RentersDepositSaver', 'BillRescue', 'FinalWish'],
   description: "Pick a life event — moving, a new baby, a new job, marriage, divorce, a loss, buying a home, retiring — and Paperwork Path gives you the documents to gather, why each matters and where to get it, plus the order to handle everything so a later step never gets blocked by one you skipped. Requirements vary by location, so it flags what to confirm for your jurisdiction.",
   guide: {
