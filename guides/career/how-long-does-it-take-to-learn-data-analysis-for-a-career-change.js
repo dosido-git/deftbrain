@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Time to Learn Data Analysis",
   navTitle:      "How long does it take to learn data analysis for a career change",
 
-  description:   "The honest answer is between 6 and 18 months — and which end you land on depends on five specific things. Here's the realistic timeline, broken down by skill and by entry-point role.",
-  deck:          "The honest answer is between 6 and 18 months — and which end you land on depends on five specific things. Here's the realistic timeline, broken down by skill and by entry-point role.",
+  description:  "How long it takes to learn data analysis for a career change: a realistic 6 to 18 months, what decides the timeline, and how long the job search adds.",
+  deck:         "Learning data analysis well enough to change careers usually takes 6 to 18 months, plus three to six months of job search. Where you land depends on your starting point, how fast you move from tools to analytical thinking, whether you build a real portfolio, and which entry-level role you target first.",
+  answerList: [
+    "Typical range: 6 to 18 months to become employable.",
+    "Tools such as SQL take weeks; analytical thinking takes months.",
+    "Three or four real analyses beat a list of courses.",
+    "Some entry roles (BI, operations, marketing analyst) are closer than others.",
+    "Allow three to six months for the job search itself.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `You've decided to learn data analysis. You've watched the YouTube videos that say you can do it in three months and the Reddit comments that say it took two years. You've started a course, then stopped, then started a different course, then stopped that one too — partly because the path wasn't clear, partly because nobody seemed to agree on how long the path actually was. The timeline question matters because the answer changes whether the plan is realistic or fantasy.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Your starting point is half the answer",
+      name: "What decides how long it takes?",
       body: "If you already use Excel heavily, write SQL casually, and read data dashboards in your current job, you're closer to six months than to eighteen. If you've never written a formula past SUM, you're closer to eighteen. The starting line isn't shameful — it's just honest. The single biggest determinant of how long the transition takes is what you already have, and people who skip this audit consistently underestimate the work.",
     },
     {

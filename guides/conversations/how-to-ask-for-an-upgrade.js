@@ -6,14 +6,21 @@ module.exports = {
   titleHtml:     "How to Ask for an Upgrade <em>Without Being Annoying About It</em>",
   shortTitle:    "Ask for an Upgrade",
   navTitle:      "ask for an upgrade",
-  description:   "Upgrades happen for people who ask the right way at the right moment. Here is how to be that person without the cringe.",
-  deck:          "Upgrades happen for people who ask the right way at the right moment. Here is how to be that person without the cringe.",
+  description:  "How to ask for a hotel, flight or rental-car upgrade: the right moment, the right phrasing, a small reason, and how to take a no.",
+  deck:         "To ask for an upgrade, ask at the right moment — while the agent is looking at your booking, before anything is assigned — and phrase it as a question: 'By any chance is there a better room available?' Give a small, true reason such as an anniversary or a long trip, be warm, and accept a no gracefully.",
+  answerList: [
+    "Ask while they are looking at your booking, before keys or seats are assigned.",
+    "Phrase it as a question: 'Is there by any chance…?'",
+    "Give a small, true reason: an occasion, a long trip, loyalty status.",
+    "Be friendly enough to be remembered.",
+    "Take a no gracefully.",
+  ],
   ledes: [
     `Hotel check-in. Airport gate. The rental car counter. There is a moment when the agent is typing, and the screen in front of them shows what is empty, what is overbooked, what is available. You can feel it. You want to say something — could I move up to the suite, any chance of an exit row, what is your best car today — but you do not, because you do not want to be that person, the one who tries it on, the one who gets a tight smile and a no.\n\nThe people who get upgrades are not the pushy ones. They are the people who ask in a way that makes the agent want to help them. The difference is small and entirely about wording. Once you know the moves, the same situation that produced a no for years starts producing yes about a third of the time.`,
     `What follows: the timing, the phrasing, and the small touches that flip the math. Then a tool that writes the line for your specific situation.`,
   ],
   steps: [
-    { name: 'Time the ask. The window is small.', body: 'Asking before they have looked at your reservation is too early — they have nothing to offer. Asking after the keys are in your hand is too late. The window is the moment they are typing, before they hand back the document. At a hotel, that is right after they pull up your name. At the gate, it is the minute the agent opens the flight in their system. Watch for that beat. That is when the ask lands.' },
+    { name: "When is the best time to ask for an upgrade?", body: 'Asking before they have looked at your reservation is too early — they have nothing to offer. Asking after the keys are in your hand is too late. The window is the moment they are typing, before they hand back the document. At a hotel, that is right after they pull up your name. At the gate, it is the minute the agent opens the flight in their system. Watch for that beat. That is when the ask lands.' },
     { name: 'Frame it as a question, not a request', body: 'Could I get an upgrade is a request the agent has heard a hundred times today and is trained to refuse. By any chance is there a better room available is a question — and a question opens the system instead of triggering the policy script. Same goal, completely different reception. The phrasing is doing eighty percent of the work. Memorize a version that sounds like you.' },
     { name: 'Give them a reason. Even a small one.', body: 'Special occasions, long days, loyalty status, a rough trip — any small hook gives the agent permission to bend a rule for you. It is our anniversary. I have been traveling for eleven hours. I am a member, just hoping for a little something nice. None of these are bribes; they are reasons. Agents have discretion they almost never use unless given a story to attach it to. The story is the unlock.' },
     { name: 'Be polite to the point of memorable', body: 'The agent has dealt with three rude people this hour. If you are warm, easy, calling them by name from their nametag, they remember you in a way that matters when they look at the upgrade list. This is not flattery for points. It is being the version of yourself that someone wants to do a small favor for. Most upgrade decisions are vibes. Be a good vibe.' },
@@ -33,5 +40,5 @@ module.exports = {
     toolName: 'Magic Mouth',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

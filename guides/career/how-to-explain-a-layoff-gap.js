@@ -8,6 +8,13 @@ module.exports = {
   navTitle:      "how to explain a layoff gap",
   description:   "How to explain a layoff gap on your résumé and in interviews: one honest line, a fifteen-second answer, and what recruiters actually listen for.",
   deck:          "To explain a layoff gap, give the real dates, add one line such as \"Position eliminated in company-wide restructuring,\" and keep the spoken answer to about fifteen seconds: what happened, what you have done since, and why this role. Recruiters listen for a short, calm, true answer, not for whether there was a gap.",
+  answerList: [
+    "On the résumé: real dates, plus 'Position eliminated in company-wide restructuring'.",
+    "Out loud: about fifteen seconds — what happened, what you've done since, why this role.",
+    "Job searching counts as time accounted for.",
+    "For gaps near a year, show something current: a course, project or contract work.",
+    "Don't criticize the old employer or over-explain.",
+  ],
   ledes: [
     `A layoff usually has nothing to do with how well someone did the job. Whole teams, departments, and projects get cut. But the gap that follows can still feel like something to hide, and the effort to hide it is often what makes it look worse: vague dates, a long silence on LinkedIn, or an answer in an interview that goes on for two minutes when one sentence would have done.
 
@@ -35,5 +42,5 @@ Recruiters see this story constantly. What they listen for is not whether there 
     toolName: 'The Whole Story',
   },
   published: '2026-10-05',
-  modified:  '2026-10-05',
+  modified:  '2026-10-08',
 };

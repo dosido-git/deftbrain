@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Explain Something Without Making Them Feel Stupid",
   navTitle:      "How to explain something complicated without making the other person feel stupid",
 
-  description:   "The tone is the whole thing. Same words, slightly different framing — and they either lean in or quietly check out. Here's the calibration that works.",
-  deck:          "The tone is the whole thing. Same words, slightly different framing — and they either lean in or quietly check out. Here's the calibration that works.",
+  description:  "How to explain something complicated without being condescending: start from what they know, put the difficulty in the topic, and check understanding properly.",
+  deck:         "To explain something complicated without making someone feel stupid, start from what they already know, say 'we' about the hard parts, and treat difficulty as a property of the topic rather than of the listener. Ask 'where does this get fuzzy?' instead of 'does that make sense?', and leave space for them to finish your thoughts.",
+  answerList: [
+    "Start from something they already know.",
+    "Say 'we' about the parts that are hard.",
+    "Call the topic hard, not the person slow.",
+    "Ask 'where does this get fuzzy?' instead of 'does that make sense?'",
+    "Leave room for them to finish your sentences.",
+  ],
 
   ledes: [
     `Halfway through your explanation, you can feel it shift. They've stopped asking questions. They're nodding too much. The follow-up email arrives the next morning asking you to repeat the parts they just confirmed they understood. You weren't condescending on purpose — but somewhere in there, the dynamic flipped from 'two people figuring something out' to 'one person being talked down to,' and now they're embarrassed and you're confused about how it happened.`,
@@ -30,7 +37,7 @@ module.exports = {
       body: "When something genuinely is hard, name that out loud. 'This part is genuinely confusing — most people have to hear it twice.' 'This is the bit where the analogy breaks down.' You're telling them that struggling is normal, not a sign that they're slow. People will engage with hard material when they trust that the hardness is in the material, not in them.",
     },
     {
-      name: "Pause for them to talk, not just to nod",
+      name: "How do you check someone actually understood?",
       body: "Asking 'does that make sense?' invites them to lie. Asking 'where does that get fuzzy for you?' invites them to point at the actual gap. Build pauses that require them to say something specific — what they understood, what they didn't, where you went too fast. The questions you ask determine whether you get real feedback or polite reassurance.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

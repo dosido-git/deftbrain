@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Engineering to PM",
   navTitle:      "How to transition from engineering to product management",
 
-  description:   "You can already build it. The question is whether you can decide what to build, and whether you'll like the job once you have. Here's the realistic five-step engineer-to-PM transition.",
-  deck:          "You can already build it. The question is whether you can decide what to build, and whether you'll like the job once you have. Here's the realistic five-step engineer-to-PM transition.",
+  description:  "How to transition from software engineering to product management: test the work first, use your technical credibility, move internally, and expect to start junior.",
+  deck:         "To move from engineering to product management, test the work first by doing PM-style tasks in your current job, such as writing a spec or running a customer interview. Then use your technical credibility as the bridge, move internally if your company allows it, and expect to be a junior PM for about a year.",
+  answerList: [
+    "Do PM-shaped work in your current job first.",
+    "Expect your day to be measured in decisions, not code.",
+    "Use your technical credibility as the bridge.",
+    "Move internally if you can; it is far easier.",
+    "Plan to be a junior PM for about a year.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `You've been an engineer for four years. The work is fine. You're good at it. But you keep finding yourself in the room where the decisions get made — what to build, why to build it, what to cut — and noticing that the conversation is the part of the work you actually want. The PM on your team has the job you'd rather have. You've started reading PM job descriptions and they don't list anything you can't do. The transition seems obvious. Most of the people who think this also haven't actually made the move yet.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Test-drive the work before committing",
+      name: "How do you know if product management is right for you?",
       body: "Before you switch roles, do one PM-shaped piece of work in your current job. Write a real PRD for a feature your team is building. Run a customer interview. Drive a small launch end-to-end. The pivot looks great in the abstract; it looks different on the ground. Most engineers who try a slice and then commit to PM are happy in the new role; engineers who switch on hypothesis tend to bounce back to engineering within eighteen months.",
     },
     {
@@ -37,7 +44,7 @@ module.exports = {
       body: "Most career switchers are fighting their lack of credentials. You have the opposite problem — you have credentials, just for the wrong job. The smart pivot uses the technical fluency as a wedge: pitch yourself for technical PM roles, infrastructure PM, dev-tools PM, or the PM seat on the most engineering-heavy product in your company. The hiring bar for these roles is essentially 'good engineer who can also do the PM work,' which is exactly the candidate you'd be. When an interviewer asks why you're leaving engineering, [The Whole Story](/TheWholeStory) helps you tell the real reason in a way that fits who's asking.",
     },
     {
-      name: "Make the move internally if you can",
+      name: "Is it easier to move into product management internally?",
       body: "Internal pivots from engineer to PM are 5–10x easier than external ones. You already have the relationships, the context, and the credibility. Most companies have a process for this — sometimes formal, sometimes a quiet conversation with your manager. Have the conversation. Tell your manager you're thinking about PM. Ask what a path would look like. Internal moves rarely happen if nobody knows you want them; they happen surprisingly often if you ask out loud.",
     },
     {

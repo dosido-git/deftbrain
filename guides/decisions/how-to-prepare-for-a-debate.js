@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Prepare for a Debate",
   navTitle:      "How to prepare for a debate — five steps used by competitive debaters",
 
-  description:   "Most debate prep focuses on memorizing your own arguments. Real prep is about predicting the opposition. Here's the five-step protocol used by competitive debaters.",
-  deck:          "Most debate prep focuses on memorizing your own arguments. Real prep is about predicting the opposition. Here's the five-step protocol used by competitive debaters.",
+  description:  "How to prepare for a debate the way competitive debaters do: a one-paragraph case, the three strongest objections, prepared responses, and solid evidence.",
+  deck:         "To prepare for a debate, write your case as one tight paragraph, then spend at least as long on the other side: predict the three strongest objections, write your response to each, check that every piece of evidence says what you claim, and rehearse out loud the moments most likely to go wrong.",
+  answerList: [
+    "Write your case as one tight paragraph.",
+    "Predict the three strongest objections.",
+    "Write a response to each.",
+    "Check every source says what you claim.",
+    "Rehearse the opening, the hardest answer and the close out loud.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-10-03',
+  modified:      '2026-10-08',
 
   ledes: [
     `You have a debate coming up. It might be a formal one — a class assignment, a competition, a public forum — or a meeting where you'll be defending a position you know will be challenged. Either way, you've got a finite amount of prep time and an unclear sense of what to do with it. The instinct is to write down all your arguments, memorize a few good lines, and walk in confident. This is the wrong instinct, and it's why most prepared debaters still get caught flat-footed.`,
@@ -29,7 +36,7 @@ module.exports = {
       body: "Before anything else, write your position as a single tight paragraph. Not bullet points, not an outline — connected prose that argues itself. If you can't compress your case to a paragraph, you don't yet understand what you're arguing. The compressed version forces you to identify the actual claim, the load-bearing reasons, and the conclusion. Everything you build later — evidence, examples, rebuttals — hangs off this paragraph. Skipping this step is why most debate prep produces sprawling, disorganized cases.",
     },
     {
-      name: "Predict the three strongest objections",
+      name: "How do you prepare for the other side's arguments?",
       body: "Spend at least as much time on the opposition as on your own case. What are the three best objections a smart, well-prepared opponent would raise? Write each one in its strongest form. If you can't articulate the opposing case better than your opponent will, you're going to be surprised in real time — and the cost of being surprised is much higher than the cost of preparing for objections you don't end up facing.",
     },
     {

@@ -6,8 +6,15 @@ module.exports = {
   titleHtml:     "How to think through a job offer <em>when you're torn</em>",
   shortTitle:    "Job offer when you're torn",
   navTitle:      "job offer when torn",
-  description:   "A practical framework for evaluating a job offer that has real upside and real cost — when the spreadsheet says one thing and your stomach says another.",
-  deck:          "A practical framework for evaluating a job offer that has real upside and real cost — when the spreadsheet says one thing and your stomach says another.",
+  description:  "How to think through a job offer when you're torn: separate excitement from the comparison, imagine a bad week, remove the money, and ask a former employee.",
+  deck:         "To decide on a job offer when you're torn, separate the thrill of being wanted from the comparison itself. Imagine your first bad week in the new job, ask whether you would still take it at your current salary, talk to someone who has done the role there, and notice whether declining brings relief or panic.",
+  answerList: [
+    "Separate the excitement of an offer from the comparison.",
+    "Imagine your first bad week in the new job.",
+    "Ask: would you take it at the same salary?",
+    "Talk to someone who has done the role there.",
+    "Notice whether declining feels like relief or panic.",
+  ],
   ledes: [
     `The offer is in your inbox. The salary is better. The title is better. The commute is worse. The boss seems fine, in the limited time you spent with him. Your current job is not bad — that is most of the problem. If the current job were bad, you would already have said yes. Because the current job is fine, and the new one is better on paper, and you cannot tell whether the upgrade is worth the upheaval.\n\nYou have been thinking about this for four days. You have made the spreadsheet. You have called your sister. You are not closer to an answer. You are just tired.`,
     `Here is how to think about a job offer when the spreadsheet does not settle it.`,
@@ -15,7 +22,7 @@ module.exports = {
   steps: [
     { name: 'Separate the comparison from the celebration', body: 'When an offer comes in, there is a flush of excitement that is mostly about being wanted. Someone competent looked at you and said yes. That feeling is real, but it is not the same as wanting the job. Sit with the offer for forty-eight hours before deciding anything. The being-wanted glow fades. What is left is your actual feeling about the role itself — and that is the signal you should be evaluating against.' },
     { name: 'Imagine your first bad week at the new job', body: 'Every job has a bad week. The launch goes poorly. A colleague turns out to be difficult. A project you thought you would like turns out to be tedious. Imagine that week at the new job. Who do you call? What do you tell them? Now imagine a bad week at the current job. Compare which version is more bearable. The job you can have a bad week in is the job you can stay at — the one you cannot is the one you will quit in eight months.' },
-    { name: 'Ask what you would do if the salary were the same', body: 'Strip the money out and see what is left. If the new job paid exactly what the current one pays, would you take it? If yes, the money is a bonus and you should take it. If no, the money is the only reason you are considering it, and money is a poor reason to commit a year of your life to a place. Pay matters, but it should not be the deciding factor for a marginal upgrade — it should be the kicker on a job you already wanted.' },
+    { name: "Should you take a job offer just for the money?", body: 'Strip the money out and see what is left. If the new job paid exactly what the current one pays, would you take it? If yes, the money is a bonus and you should take it. If no, the money is the only reason you are considering it, and money is a poor reason to commit a year of your life to a place. Pay matters, but it should not be the deciding factor for a marginal upgrade — it should be the kicker on a job you already wanted.' },
     { name: 'Talk to someone who left a job like the new one', body: 'Public information about a company is what they want you to see. Private information is what their former employees say. Find one or two people who have done the role you are considering, and ask them what they wish they had known going in. Listen for what they hesitate to say. The thing they hedge on is usually the thing that ended up mattering most — the management style, the actual hours, the hidden tax on family life, the part of the work that is dull.' },
     { name: 'Notice your feeling when you imagine declining', body: 'Imagine emailing the recruiter tomorrow morning to decline. Sit with the imagined sent button. Do you feel relief, or do you feel a quiet panic? Relief means you have already decided — your conscious mind is just catching up. Panic means you want it more than you have admitted. Either signal is more reliable than the spreadsheet, because both of them come from the part of you that has already integrated all the information.' }
   ],
@@ -33,5 +40,5 @@ module.exports = {
     toolName: 'Which Life?',
   },
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

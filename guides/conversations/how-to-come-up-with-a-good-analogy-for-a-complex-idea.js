@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Come Up with a Good Analogy",
   navTitle:      "How to come up with a good analogy for a complex idea when nothing's coming to mind",
 
-  description:   "You know what you mean. The right comparison is on the tip of your tongue. Here's the systematic way to find it instead of waiting for inspiration.",
-  deck:          "You know what you mean. The right comparison is on the tip of your tongue. Here's the systematic way to find it instead of waiting for inspiration.",
+  description:  "How to come up with a good analogy for a complex idea: find the one feature that matters, search the listener's world, and say where it breaks.",
+  deck:         "To come up with a good analogy, reduce the idea to the one feature that does the explaining, then look for that feature in something your listener already knows well. Check it works in reverse, say where the comparison breaks, and leave the listener room to make the last connection themselves.",
+  answerList: [
+    "Reduce the idea to the one feature that matters.",
+    "Look for that feature in the listener's world.",
+    "Check it works backwards to the original idea.",
+    "Say where the analogy breaks.",
+    "Let them make the last connection.",
+  ],
 
   ledes: [
     `You're trying to explain something — to a colleague, in a presentation, in a piece of writing — and you can feel the right analogy hovering just out of reach. You know what you mean. You can't quite say it. Every comparison you try is either too obvious ('it's like a tree') or too clever ('it's like a quantum harmonic oscillator'), and neither helps the listener. So you fall back on the literal version, which is exactly what made you reach for an analogy in the first place.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Strip the idea down to the one feature that actually matters",
+      name: "How do you find a good analogy?",
       body: "An analogy doesn't need to capture everything — it needs to capture the one feature that's doing the explanatory work. Compound interest matters because of the recursion: gains generating their own gains. The internet matters because of the directionless connectivity: any node to any node. Once you know which feature you're highlighting, the search space narrows enormously. Most failed analogies fail because the author tried to carry over too many features at once.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

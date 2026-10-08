@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "How to Write Self-Review Bullets That Get the Raise",
   navTitle:      "How to write self-review bullets that get you the raise",
 
-  description:   "Most self-review bullets describe activity, not outcome. Five steps for bullets that read as case-for-promotion rather than year-in-review.",
-  deck:          "Most self-review bullets describe activity, not outcome. Five steps for bullets that read as case-for-promotion rather than year-in-review.",
+  description:  "How to write self-review bullets that support a raise or promotion: outcomes instead of activity, numbers or proxies, and what your manager values.",
+  deck:         "Self-review bullets that support a raise describe what changed because of your work, not the activity itself: 'cut support tickets 40%' rather than 'led the redesign'. Put a number or a proxy on each one, match them to what your manager and their manager value, and keep to depth in two or three areas.",
+  answerList: [
+    "Describe what changed, not what you did.",
+    "Add a number, or a proxy when there is none.",
+    "Match bullets to what your manager and skip-level value.",
+    "Show depth in two or three areas, not breadth in eight.",
+    "If your manager isn't advocating for you, fix that too.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `The self-review form is open. The deadline is end of day Friday. You've been staring at the empty bullets section for an hour, half-remembering things you did this year, half-flinching at how flat they sound when you write them down. You don't want to oversell. You also don't want to undersell, since the calibration meeting where bullets become decisions is happening in three weeks and your name is going to come up either way.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Stop describing what you did — describe what changed",
+      name: "What makes a good self-review bullet?",
       body: "Activity bullets describe the work as if the work itself were the achievement. 'Owned the migration project.' 'Led weekly customer calls.' 'Managed the vendor relationship.' These tell the reader you were busy. They don't tell the reader the company is different because of you. Outcome bullets name what changed in the world as a result of the work: customer churn dropped, revenue increased, a process got faster, a launch shipped, a team got unblocked. The shift is from 'here's what filled my calendar' to 'here's what's different now that wasn't different a year ago.' Every bullet in your self-review should be readable through the lens of 'what changed because of me.' If a bullet doesn't survive that test, the work isn't necessarily unimportant — but the bullet isn't doing the job a self-review bullet has to do.",
     },
     {

@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Respond When You Want to Respond But Shouldn't",
   navTitle:      "How to respond when you want to respond but shouldn't",
 
-  description:   "The message you're about to send is the one you'll regret tomorrow. There's a small set of moves between feeling that and actually sending it — and the moves take less time than the response would.",
-  deck:          "The message you're about to send is the one you'll regret tomorrow. There's a small set of moves between feeling that and actually sending it — and the moves take less time than the response would.",
+  description:  "What to do when you want to send an angry reply but shouldn't: put the phone down, write it elsewhere, ask one question, and send less.",
+  deck:         "When you want to fire back but shouldn't, put the phone down physically, then write the reply somewhere it can't be sent, such as a notes app. Before sending anything, ask whether this is the message you'd want them to remember. If a reply can't wait, send the shortest factual one possible.",
+  answerList: [
+    "Put the phone down, physically.",
+    "Write the reply somewhere it can't be sent.",
+    "Ask: is this how I want to be remembered?",
+    "If you must reply now, send the shortest factual version.",
+    "Notice whether the urge is about something bigger.",
+  ],
 
   ledes: [
     `The message just came in. You read it twice. Your face is hot, your jaw is tight, and a fully-formed reply is already writing itself in your head — sharp, precise, devastating, possibly unanswerable. Your thumbs are moving toward the keyboard. You know, somewhere in the back of your mind, that this is the kind of reply you'll be revisiting at 2 AM trying to remember exactly what you said. You also know you're going to send it anyway unless something physically stops you in the next ninety seconds.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Put the phone down — physically, not metaphorically",
+      name: "How do you stop yourself sending a message you'll regret?",
       body: "The single most effective move is to remove the response surface. Set the phone face-down on a table, in another room if you can, somewhere you have to actively retrieve it to type. The instinct to respond is mediated by physical proximity to the keyboard — the closer the device, the harder restraint becomes. Distance is not a metaphor here; it's a real intervention. Sixty seconds away from the phone, with the heat in your face still cooling, will sometimes be all you need to recognize that the response you were about to send is not actually the response you want on the record.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };

@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    "Apology vs Explanation",
   navTitle:      "The difference between an apology and an explanation and why it matters",
 
-  description:   "Most apologies that go wrong aren't insincere — they're explanations wearing apology costumes. Five steps for telling the difference, knowing which one you owe, and giving each the room it needs.",
-  deck:          "Most apologies that go wrong aren't insincere — they're explanations wearing apology costumes. Five steps for telling the difference, knowing which one you owe, and giving each the room it needs.",
+  description:  "The difference between an apology and an explanation, the 'but' test for telling them apart, and how to give both without one cancelling the other.",
+  deck:         "An apology takes ownership of harm; an explanation describes why something happened. The difference matters because an explanation offered as an apology sounds like an excuse. Use the 'but' test: if your apology only works with 'but' in it, it is an explanation. You may owe one, the other, or both, but give them separately.",
+  answerList: [
+    "An apology owns the harm; an explanation describes the cause.",
+    "The 'but' test: 'I'm sorry, but…' is an explanation.",
+    "You owe an apology when someone was harmed and you contributed.",
+    "Sometimes the other person needs an explanation, not an apology.",
+    "When you owe both, apologize first and explain separately.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `You apologized. They didn't seem to receive it. Or you walked away from the conversation feeling like nothing actually got resolved, even though you said the words. Or someone apologized to you and you couldn't quite say why it didn't land — only that it didn't. Most of these failures share a common cause: an apology and an explanation got tangled together in a way that detonated both.`,
@@ -28,7 +35,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Recognize they're different speech acts",
+      name: "What is the difference between an apology and an explanation?",
       body: "An apology says: 'I caused harm, I take responsibility, and I want to repair it.' An explanation says: 'Here's what happened and why.' These are not different versions of the same thing — they have different purposes, different content, and different effects on the listener. The apology centers the harmed party and your accountability for the harm; the explanation centers the event and the chain of circumstances that produced it. When someone is hurt, they want the first one. When someone is confused or wants context, they want the second one. Mixing them produces something that looks like both and functions as neither — which is the source of the most common failure mode in difficult conversations. Step one is recognizing that they aren't interchangeable, even when they're both honest.",
     },
     {

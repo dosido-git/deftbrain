@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Decide With Incomplete Info",
   navTitle:      "How to make a decision when you don't have enough information",
 
-  description:   "Most decisions get made under uncertainty. Waiting for full information often means waiting forever. Here's how to decide responsibly when the data is incomplete.",
-  deck:          "Most decisions get made under uncertainty. Waiting for full information often means waiting forever. Here's how to decide responsibly when the data is incomplete.",
+  description:  "How to make a decision when you don't have enough information: separate missing facts from real uncertainty, test cheaply, and choose what fails gracefully.",
+  deck:         "To make a decision without enough information, separate facts you could still get from uncertainty no one can resolve, then think in ranges of likely outcomes rather than one prediction. Run the cheapest experiment available, prefer the option whose worst case you can survive, and set a deadline so waiting doesn't become the decision.",
+  answerList: [
+    "Separate facts you could get from uncertainty nobody can resolve.",
+    "Think in ranges of outcomes, not one prediction.",
+    "Run the cheapest experiment available first.",
+    "Choose the option whose worst case you can survive.",
+    "Set a deadline to decide regardless.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `You're trying to decide about something — a job, a move, a partnership, a strategy — and you don't have enough information. You don't know how the team will turn out, whether the city will fit, what the partner will be like in six months. Every direction you turn, the relevant data is incomplete, and the people advising you don't have it either. The instinct is to keep researching until something resolves. The catch is that for most real decisions, nothing resolves — you decide under uncertainty, or you don't.`,
@@ -37,7 +44,7 @@ module.exports = {
       body: "Sometimes you can buy information at much lower cost than committing to the full decision. A trial period, a single conversation, a small experiment, a six-week test. If a low-cost experiment can resolve a key uncertainty before you commit, it's almost always worth running. Don't make the irreversible call when a reversible one would teach you the most important thing first. The framing isn't 'decide now' — it's 'what's the smallest move that gives me real information.'",
     },
     {
-      name: "Pick the option that fails gracefully",
+      name: "How do you choose when you can't predict the outcome?",
       body: "When the future is genuinely uncertain, the best decision isn't the one with the highest expected value — it's the one whose worst case is most survivable. If option A goes great, both A and B turn out well; if things go badly, A leaves you in a worse position than B. Take B. People who make good decisions under uncertainty consistently optimize for graceful failure rather than maximum upside, because they know they can't predict which world they'll end up in. To test the option you're leaning toward, [Argue Smarter](/ArgueSmarter) makes the strongest honest case against it.",
     },
     {

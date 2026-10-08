@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "First Dating App Message That Gets a Reply",
   navTitle:      "First message on a dating app that actually gets a reply",
 
-  description:   "'Hey' has a terrible response rate. 'Hi, you seem cool' is barely better. Here's the format that gets people to write back without feeling forced.",
-  deck:          "'Hey' has a terrible response rate. 'Hi, you seem cool' is barely better. Here's the format that gets people to write back without feeling forced.",
+  description:  "How to write a first dating-app message that gets a reply: one specific detail from their profile, one real question, under three sentences.",
+  deck:         "A first message on a dating app that gets a reply mentions one specific thing from their profile and asks a real question about it, in two or three sentences. Skip 'hey', compliments on looks and apologies for messaging. Something like: 'Was the book in your third photo good, or did you give up at chapter five?'",
+  answerList: [
+    "Mention one specific thing from their profile.",
+    "Ask a real question they can actually answer.",
+    "Keep it under three sentences.",
+    "Skip compliments on appearance.",
+    "Don't apologize for messaging.",
+  ],
 
   ledes: [
     `Their profile is good. You want to message. You stare at the open text box for a while. The pickup-line stuff feels gross. The 'hey' option feels lazy. The 'I noticed you like X, I love X too' option feels like every other message they've gotten this week. So you either send something mediocre or you don't send anything, and either way the match expires unanswered.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Reference one specific thing from their profile",
+      name: "What should your first message on a dating app say?",
       body: "Not their general vibe, not their photos generally, not 'you seem fun.' One specific thing they put in writing. The book on their shelf in photo three. The line in their bio about their cat being unimpressed. The hike they mentioned. Specificity proves you actually read the profile, which immediately separates you from 80% of incoming messages. The reference is the entire opener.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-04-29',
+  modified:  '2026-10-08',
 };

@@ -12,11 +12,18 @@ module.exports = {
   shortTitle:    "Decide Before the Deadline",
   navTitle:      "How to make a decision when you have to commit by a deadline",
 
-  description:   "The deadline is real, the decision matters, and you don't have time to keep deliberating. Here's how to compress good decision-making into the time you have — without panicking.",
-  deck:          "The deadline is real, the decision matters, and you don't have time to keep deliberating. Here's how to compress good decision-making into the time you have — without panicking.",
+  description:  "How to make a good decision under a deadline: stop researching, decide on paper, test the worst case, ask one experienced person, and commit.",
+  deck:         "When you must decide by a deadline, stop gathering new information, make a fast first call on paper with three reasons, and test it against the realistic worst case. Ask one person who has made this kind of decision, then commit when the deadline arrives and stop reopening the choice.",
+  answerList: [
+    "Stop gathering new information now.",
+    "Decide on paper in twenty minutes, with three reasons.",
+    "Test it against the realistic worst case.",
+    "Ask one person who knows this territory.",
+    "Commit by the deadline, then stop reopening it.",
+  ],
 
   published:     '2026-04-28',
-  modified:      '2026-04-28',
+  modified:      '2026-10-08',
 
   ledes: [
     `The deadline is Friday at 5pm. It's currently Wednesday afternoon. The decision is meaningful — accepting a job offer, signing a lease, committing to a contract — and the version of yourself that wishes you'd had three more weeks to decide is going to have to sit down. The deadline is fixed; the decision is not. The work between now and Friday is making the best decision you can in the time available, which is a different skill than making the best possible decision in unbounded time.`,
@@ -25,7 +32,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Stop seeking new information immediately",
+      name: "How do you decide quickly under a deadline?",
       body: "With a deadline approaching, the instinct is to gather more — read more reviews, ask more people, get more data. This almost always backfires. New information arriving close to a deadline doesn't get integrated well; it just adds noise to a decision you're already making. Cut off new inputs at least 12 hours before the deadline. Use the remaining time to think with what you have, not to scramble for what you don't.",
     },
     {

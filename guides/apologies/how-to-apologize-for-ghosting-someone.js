@@ -15,11 +15,18 @@ module.exports = {
   shortTitle:    "How to Apologize for Ghosting Someone",
   navTitle:      "How to apologize for ghosting someone and not make it weirder",
 
-  description:   "A ghost-apology done badly creates more discomfort than the original ghosting did. Five steps for getting back in touch in a way that doesn't put a burden on the person you went silent on.",
-  deck:          "A ghost-apology done badly creates more discomfort than the original ghosting did. Five steps for getting back in touch in a way that doesn't put a burden on the person you went silent on.",
+  description:  "How to apologize for ghosting someone without making it weirder: keep it short, give the real reason, and don't ask for forgiveness or a reply.",
+  deck:         "To apologize for ghosting someone, send one short message that names what you did without dramatizing it, gives the real reason (even if it is 'I avoided this'), and does not ask for forgiveness or a reply. First decide whether reaching out is welcome at all, and if they answer, don't go silent again.",
+  answerList: [
+    "Decide whether an apology is welcome at all.",
+    "Keep it to a few sentences.",
+    "Give the real reason, even if it is 'I avoided this'.",
+    "Don't ask for forgiveness or a reply.",
+    "If they answer, don't disappear again.",
+  ],
 
   published:     '2026-04-25',
-  modified:      '2026-04-25',
+  modified:      '2026-10-08',
 
   ledes: [
     `It's been weeks, or months, or longer. You meant to reply, then it got awkward to reply, then it got more awkward to acknowledge that it had gotten awkward, and now you're looking at a message thread that ended on their last message and wondering whether to reach out. Some part of you wants to apologize. Another part is worried that the apology will land worse than the silence did.`,
@@ -28,7 +35,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Decide whether to apologize at all",
+      name: "Should you apologize for ghosting someone?",
       body: "Not every ghost-apology is welcome. Sometimes the silence has done its work — the relationship cooled naturally, the person moved on, and reaching back out three months later is more disruptive than letting the thread stay closed. The honest question to ask: am I apologizing because they need to hear it, or because I want to feel less guilty? Those produce different answers. If the relationship was meaningful and the silence caused real harm — a friendship that mattered, a romantic interest that was genuine, a professional contact who was counting on you — yes, reach out. If the relationship was casual and the silence was a slow fade that you've now overweighted in your own head, the apology may create discomfort it would have been kinder not to introduce. Read the situation honestly before you draft anything.",
     },
     {

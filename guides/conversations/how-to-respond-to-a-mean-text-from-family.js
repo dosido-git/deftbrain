@@ -8,8 +8,15 @@ module.exports = {
   shortTitle:    "How to Respond to a Mean Text From Family",
   navTitle:      "How to respond to a mean text from family when you can't just block them",
 
-  description:   "A mean text from family is its own category — you can't ignore it, you can't fully address it, and the response will affect the next decade of holidays. Here's how to reply in a way you can live with.",
-  deck:          "A mean text from family is its own category — you can't ignore it, you can't fully address it, and the response will affect the next decade of holidays. Here's how to reply in a way you can live with.",
+  description:  "How to respond to a mean text from a family member: whether to reply, keeping to this message, 'I' language, and holding a boundary without an ultimatum.",
+  deck:         "To respond to a mean text from family, first decide whether to reply at all and when, since sometimes not replying is right. If you do, answer only the present message rather than the family history, speak in 'I' terms without apologizing for yourself, and state any limit without an ultimatum.",
+  answerList: [
+    "Decide whether to reply at all, and when.",
+    "Answer this message, not the whole history.",
+    "Use 'I' language without apologizing for yourself.",
+    "State a limit without an ultimatum.",
+    "Sometimes the goal is protecting yourself, not resolving it.",
+  ],
 
   ledes: [
     `You opened the message and the air left the room. It's from a parent, a sibling, a cousin, a grandparent — someone whose number you can't block without consequences that will follow you for years. The content is sharp in the specific way only family does sharp: hitting old material, knowing exactly which spot to press. You're now sitting with the message and the absolute certainty that whatever you do next will be wrong in some way. Reply too softly and you've absorbed it. Reply too directly and you've started a thing. Don't reply and you've ignored them, which somehow becomes the next family meeting's main agenda item.`,
@@ -18,7 +25,7 @@ module.exports = {
 
   steps: [
     {
-      name: "Decide whether to respond at all — and on what timeline",
+      name: "Should you respond to a mean text from family?",
       body: "Family mean-text response is one of the few cases where 'don't respond' is sometimes the right move. If the message is a one-off that's easier to absorb than to address, and the cost of a response would be larger than the cost of letting it sit, silence is a real option. If the message is part of a pattern, or hit something you can't let stand, response is necessary — but it doesn't have to be today. \"I'll think about this and respond\" is itself a complete answer, sent within a few hours, with the actual response coming a day or two later when you've drafted something you actually want to send. The deliberateness is itself the move; family text fights are usually won by whoever moves slowest.",
     },
     {
@@ -55,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-27',
-  modified:  '2026-04-27',
+  modified:  '2026-10-08',
 };
