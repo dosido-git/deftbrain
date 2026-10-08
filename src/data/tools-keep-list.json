@@ -57,6 +57,11 @@
     "GriefGuide",
     "PetBehaviorDecoder",
     "PlantRescue",
-    "LaundroMat"
+    "LaundroMat",
+    "RecipeChaosSolver",
+    "BikeMedic",
+    "SleepArchitect",
+    "PronounceItRight",
+    "ToastWriter"
   ]
 }

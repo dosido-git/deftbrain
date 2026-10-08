@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "07ac3e545bda957f9d504012ffbea12ce7212732",
+  "hash": "d96d0207e02c65ce00e82274b534d347a8322806",
   "lastmod": "2026-10-08"
  },
  "static:about": {
@@ -293,6 +293,26 @@
  },
  "tool:LaundroMat": {
   "hash": "55a7c2f87f8e6577a9d3059597ce088ffc396241",
+  "lastmod": "2026-10-08"
+ },
+ "tool:SleepArchitect": {
+  "hash": "9ffd6628d1ea606776dc9027c20547060873c9dd",
+  "lastmod": "2026-10-08"
+ },
+ "tool:ToastWriter": {
+  "hash": "1dc20ad77501becb1b0255d9d493e4fdaf992090",
+  "lastmod": "2026-10-08"
+ },
+ "tool:PronounceItRight": {
+  "hash": "967601bde34c6b2be3b564d78be414e9be5673c3",
+  "lastmod": "2026-10-08"
+ },
+ "tool:BikeMedic": {
+  "hash": "235c8d71cdf97d643e8445c944aa7e2ef58d7e91",
+  "lastmod": "2026-10-08"
+ },
+ "tool:RecipeChaosSolver": {
+  "hash": "0681be2206838e5e803d242d1cd0b3c0239b06ea",
   "lastmod": "2026-10-08"
  }
 }

@@ -245,6 +245,55 @@ export const tools = [
   icon: "😴",
   categories: ['Health & Wellness'],
   headerColor: "#c8c0e8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Sleep Architect gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the sleep below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The sleep",
+    sampleText: "Bed at midnight, up at 7am, about 5 hours of actual sleep. Disruptors: screens, stress, caffeine. I lie in bed for at least an hour before falling asleep. My mind just races. I have coffee at 3pm most days. I scroll my phone in bed every night. Weekends I sleep until 10am which I think messes up my weekday schedule.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What you described",
+        tone: "neutral",
+        text: "You report lying awake for roughly an hour most nights before sleep comes, with your mind racing during that time. Based on what you supplied, you are getting around 5 hours of sleep on weeknights despite a 7-hour window, and you note that weekend sleep until 10 AM may be affecting your weekday pattern. The variable most worth testing first is your phone use in bed, since you scroll every night and are trying to fall asleep at midnight — whether removing that habit shortens the time it takes your mind to settle is a question this experiment can help answer.",
+      },
+      {
+        label: "Tonight",
+        tone: "green",
+        items: [
+          "Tonight, stop scrolling and put your phone out of arm's reach before you get into bed — leave it across the room if that helps",
+          "If your mind is busy when you lie down, try spending 5 minutes writing out whatever is on your mind before you get into bed — not a to-do list, just a brain dump on paper",
+        ],
+      },
+      {
+        label: "This week's experiment: Take your phone out of bed for one week",
+        tone: "green",
+        text: "You report scrolling your phone in bed every night and lying awake for at least an hour. Testing what happens when the phone is no longer part of the in-bed experience is a direct way to find out whether that habit is connected to how long it takes your mind to settle.",
+      },
+      {
+        label: "Test next, one at a time",
+        tone: "neutral",
+        items: [
+          "Afternoon caffeine timing",
+          "Weekend wake time consistency",
+        ],
+      },
+    ],
+    disclaimer: "Sleep Architect suggests one experiment at a time; it does not diagnose sleep disorders. If you snore loudly, stop breathing in your sleep, or are sleepy enough to nod off while driving, see a doctor.",
+  },
+  faq: [
+    { q: "Why can't I fall asleep even when I'm tired?",
+      a: "Common reasons are a racing mind at bedtime, screens in bed, caffeine late in the day, and an irregular schedule, such as sleeping much later at weekends. Changing one thing at a time shows which one matters for you." },
+    { q: "How late can I drink coffee and still sleep?",
+      a: "Caffeine stays in the body for hours, so afternoon coffee can still affect sleep at night. Many sleep guides suggest stopping six or more hours before bed; testing a cut-off is the simplest way to find yours." },
+    { q: "Does using my phone in bed affect sleep?",
+      a: "It can: scrolling keeps your mind engaged and pushes bedtime later. Putting the phone out of reach and starting a short wind-down before bed is an easy experiment to see whether it makes a difference for you." },
+    { q: "Why one change at a time?",
+      a: "If you change five things at once and sleep improves, you won't know what worked or what you can drop. Sleep Architect gives you one experiment, then the next." },
+  ],
   description: "Tell us what sleep has been like lately — your schedule, what gets in the way, and what you want to improve. Sleep Architect turns it into one practical experiment you can try and learn from.",
   guide: {
     tips: [
@@ -1314,6 +1363,41 @@ export const tools = [
   icon: "🥂",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Toast Writer gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the details below — one of three versions it wrote, nothing reworded.",
+    sampleLabel: "The details",
+    sampleText: "Retirement toast for Maria. Worked together for 12 years; she was my mentor. Stories: She stayed late to help me through my first big presentation. She remembered everyone's birthday. She started every Monday with a corny joke that somehow made the week better. Tone: warm and funny.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples. It also wrote a story-led and a shorter version.",
+    sections: [
+      {
+        label: "The toast (straightforward version)",
+        tone: "green",
+        text: "I've worked with Maria for twelve years, and she's been my mentor through all of it. I want to tell you a few things about her before she goes.\n\nWhen I was preparing for my first big presentation, I was nervous — really nervous. Maria stayed late to help me through it. No fanfare, no big speech about believing in me. She just stayed, and we worked through it together.\n\nShe remembered everyone's birthday. Not just the milestone ones — everyone's. There's something about that kind of attention that makes you feel seen.\n\nAnd every Monday, without fail, she started the week with a corny joke. The kind that makes you groan a little. But somehow, it always made the week better.\n\nMaria, thank you for twelve years of showing up, remembering, and starting Mondays the right way. Congratulations on your retirement. [RAISE GLASS] To Maria.",
+      },
+      {
+        label: "Delivery tips",
+        tone: "neutral",
+        items: [
+          "When you describe staying late for the presentation, pause briefly after naming it — let the audience picture that night before you explain what happened.",
+          "The Monday-joke line invites a small smile before you deliver it. Give yourself a beat to let the audience picture those mornings.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How long should a toast be?",
+      a: "Usually one to three minutes. A wedding toast from a best man or parent can run to about three; retirement, birthday and dinner toasts work best around one or two. Short and specific beats long and general." },
+    { q: "What should a toast include?",
+      a: "Who you are to the person, one or two specific stories that show who they are, a line about what they mean to you or others, and a clear finish that raises the glass. Skip inside jokes nobody else will get." },
+    { q: "How do I end a toast?",
+      a: "Say their name and raise your glass: 'Please join me in raising a glass — to Maria.' A clear final line tells everyone when to drink." },
+    { q: "Will the toast sound like me?",
+      a: "It is built only from the stories and details you give it, in the tone you choose, and it writes three versions so you can pick the one that sounds most like you. Read it aloud and change any line you wouldn't say." },
+  ],
   description: "You know the stories. You know what the person means to you. Toast Writer helps you turn that into something worth saying out loud.",
   guide: {
     tips: [
@@ -2439,6 +2523,51 @@ export const tools = [
   icon: "🗣️",
   categories: ['Conversations', 'Learning'],
   headerColor: "#9a4040",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Pronounce It Right gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the name below — the main result, nothing reworded.",
+    sampleLabel: "The name",
+    sampleText: "Siobhan (a name), for an American English speaker",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "shih-VAWN  ·  /ʃɪˈvɔːn/",
+        tone: "green",
+        text: "Two syllables with clear stress on the second: shih-VAWN — the first syllable is short and unstressed, the second carries the weight.",
+      },
+      {
+        label: "Sounds like",
+        tone: "neutral",
+        text: "Rhymes with 'dawn' — the final syllable sounds like VAWN, as in 'fawn' with a V at the front.",
+      },
+      {
+        label: "Common mistakes",
+        tone: "yellow",
+        items: [
+          "Reading 'Si' as 'see' and 'bh' as 'b' produces something like 'see-uh-BON', following English letter-by-letter reading habits. The whole name sounds like shih-VAWN — the opening 'Siob' sounds like 'shiv' and the 'an' ending sounds like 'awn'.",
+          "Pronouncing the 'h' in 'Siobh' as a separate sound or omitting the SH entirely. The 'S' and 'iobh' together produce a SH sound followed by a V — say shih-VAWN as a single smooth unit.",
+        ],
+      },
+      {
+        label: "If you are meeting them",
+        tone: "green",
+        text: "If you are meeting this person, you might say: 'I want to make sure I say your name correctly — could you say it for me?' A common pronunciation is shih-VAWN, but individuals may say it differently.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do you pronounce Siobhan?",
+      a: "shih-VAWN, with the stress on the second syllable (IPA /ʃɪˈvɔːn/). It is an Irish name: 'Si' sounds like 'sh' and 'bh' like 'v'. As with any name, the person's own pronunciation is the one to use." },
+    { q: "How can I check how someone says their own name?",
+      a: "Ask once, early and simply: 'I want to make sure I say your name right — how do you say it?' Then use it. Email signatures, voicemail greetings and video introductions are other good sources." },
+    { q: "Does Pronounce It Right only do names?",
+      a: "No. It covers names, places, food, brands, music and art, and foreign phrases, and it gives the stress, a sounds-like guide and the common mistakes for each." },
+    { q: "Can it adjust for my own accent?",
+      a: "Yes. Tell it your first language or accent and the guide is written for the sounds you already make." },
+  ],
   description: "Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you how to say it, where the stress goes, and how to make unfamiliar sounds — with guidance adapted to the language you already speak. When the spelling alone can't settle a reading (a name especially), it says so instead of guessing.",
   guide: {
     tips: [
@@ -4584,6 +4713,60 @@ tagline: "Work with the energy you have.",
   icon: "🚲",
   categories: ['Home & Daily Life'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Bike Medic gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the problem below — an excerpt of a longer result, nothing reworded.",
+    sampleLabel: "The problem",
+    sampleText: "My rear derailleur is skipping under load when I push hard on the pedals, especially going uphill. Started after a wet ride last week.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples. Rated moderate, safe to ride.",
+    sections: [
+      {
+        label: "What is probably going on",
+        tone: "neutral",
+        text: "After a wet ride, water and grit work into the cable housing and increase friction, which changes the effective cable tension when you load the drivetrain. The derailleur then cannot hold the chain precisely on the sprocket under pedaling force, causing it to skip toward an adjacent sprocket and back. This is a cable-and-housing problem until proven otherwise — it is the most common mechanical consequence of riding in wet conditions and the cheapest to address.",
+      },
+      {
+        label: "Check these",
+        tone: "yellow",
+        items: [
+          "Cable friction or contamination from the wet ride: check by shifting through all gears while stationary — if indexing feels sluggish or imprecise, or if the barrel adjuster is already wound well out from its original position, this is the likely culprit. Confirm by inspecting the housing ends for grit and by feeling whether the cable moves freely when you pull it by hand at the derailleur.",
+          "Chain wear: wet conditions accelerate chain wear, and a worn chain skips under load even with perfect indexing. Measure with a chain-wear indicator tool — replace at 0.5% stretch for 11 or 12-speed chains, 0.75% for 10-speed and below. If the chain measures worn, check the cassette too: a worn cassette will skip with a new chain until the cassette is replaced as well.",
+        ],
+      },
+      {
+        label: "Fix it",
+        tone: "green",
+        items: [
+          "SAFETY FIRST: Confirm the derailleur hanger is not bent before any adjustment. Look directly behind the bike at the hanger — it should be parallel to the cassette and frame. A bent hanger will not index correctly no matter how much you adjust, and riding with a severely bent hanger risks the derailleur being pulled into the wheel. If it is visibly bent, stop here and take it to a shop for straightening before proceeding.",
+          "Check the barrel adjuster on the derailleur (and the one at the shifter if present). Wind it all the way in (clockwise) gently, then back it out two full turns. This gives you a neutral starting point.",
+          "Shift through all gears in a stand or slowly on flat ground. If the chain hesitates to shift to larger sprockets (easier gears), turn the barrel adjuster counter-clockwise (out) a half-turn, then test again. Repeat until shifts are clean in both directions.",
+        ],
+      },
+      {
+        label: "Pro tip",
+        tone: "green",
+        text: "When you re-lube the cable, put the lube at the housing entry points and then cycle the shifter several times to work it in — lubing only the exposed cable section between housing segments does little for the friction that actually causes indexing shift.",
+      },
+      {
+        label: "When to take it to a shop",
+        tone: "neutral",
+        text: "Take it to a shop if the derailleur hanger appears bent, if new cable and housing does not resolve the skipping under load, if the cassette shows worn teeth and you are unsure how to match a replacement to your drivetrain specification, or if you are not comfortable measuring chain wear accurately.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Why does my bike chain skip under load?",
+      a: "The usual causes are a shifting cable with grit or friction in its housing (common after a wet ride), indexing that needs a small barrel-adjuster tweak, a bent derailleur hanger, or a worn chain or cassette. Check the hanger first, then the cable, then measure the chain." },
+    { q: "When should I replace my bike chain?",
+      a: "Measure it with a chain-wear checker. A common rule is to replace at 0.5% stretch for 11- and 12-speed chains and 0.75% for 10-speed and below. A worn chain left too long wears the cassette too, and then both need replacing." },
+    { q: "Which way do I turn the barrel adjuster?",
+      a: "If the chain is slow to shift to bigger sprockets, turn the barrel adjuster counter-clockwise (out) a half-turn at a time to add cable tension. If it is slow to shift to smaller ones, turn it clockwise. Test after each half-turn." },
+    { q: "Is it safe to ride with a skipping chain?",
+      a: "Usually yes for a short, gentle ride, but a skip under hard pedaling can throw you off balance, and a badly bent hanger can pull the derailleur into the wheel. Bike Medic tells you whether it's safe to ride and when it needs a shop." },
+  ],
   crossRefs: ['BuyWise', 'DecisionCoach'],
   description: "Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.",
   guide: {
@@ -5522,6 +5705,53 @@ tagline: "Work with the energy you have.",
   icon: "🍳",
   categories: ['Home & Daily Life'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 so the page shows what the tool does before it is indexed.
+  exampleOutput: {
+    title: "See what Recipe Chaos Solver gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the problem below — the full result, nothing reworded.",
+    sampleLabel: "The problem",
+    sampleText: "Out of eggs and buttermilk. Baking a chocolate cake and just realized I'm out of both.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples (Substitute).",
+    sections: [
+      {
+        label: "The plan",
+        tone: "green",
+        text: "Use a flax egg for binding and structure, and make a quick buttermilk stand-in from whatever milk or milk alternative you have plus an acid — these two substitutes work compatibly and together cover what both originals contribute.",
+      },
+      {
+        label: "Eggs: workable with changes",
+        tone: "yellow",
+        text: "Mix ground flaxseed with water and let it rest a few minutes until thickened. Use one flax mixture per egg your recipe calls for. Flax egg provides binding when mixed and rested. It won't fully replicate the lift that eggs provide — your leavening agent will need to carry more of that responsibility.",
+      },
+      {
+        label: "Buttermilk: close match",
+        tone: "green",
+        text: "Take the milk or milk alternative you have on hand. Add an acid — white vinegar or lemon juice — at a ratio of about 1 tablespoon acid per cup of milk. Stir and let sit 5 minutes before using. A milk-and-acid mixture replaces both the liquid volume and acidity that buttermilk contributes. The acidity matters especially because it works with your leavening agent.",
+      },
+      {
+        label: "How the two swaps interact",
+        tone: "neutral",
+        text: "The flax egg contributes no acidity, so getting the buttermilk substitute right matters more than usual — the acid is what activates your baking soda, if the recipe uses it.",
+      },
+      {
+        label: "What will be different",
+        tone: "neutral",
+        text: "The main variable is how many eggs your recipe calls for — more eggs mean the flax substitute has more structural work to do. Without knowing the original egg quantity, it's difficult to predict the exact texture change.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What can I use instead of buttermilk?",
+      a: "Stir about 1 tablespoon of lemon juice or white vinegar into 1 cup of milk and let it sit for 5 minutes. Plain yogurt thinned with a little milk also works. The acid matters: it reacts with baking soda to make the cake rise." },
+    { q: "What can I substitute for eggs in a cake?",
+      a: "A flax egg — 1 tablespoon ground flaxseed mixed with about 3 tablespoons of water and left to thicken — replaces one egg's binding. It gives less lift, so it works best in recipes with one or two eggs." },
+    { q: "Can I swap two missing ingredients at once?",
+      a: "Yes, but the swaps affect each other. Recipe Chaos Solver checks the combination, for example making sure the acid that buttermilk provided is still there to react with the leavening." },
+    { q: "What else does Recipe Chaos Solver do?",
+      a: "It rescues a dish that went wrong partway through, scales a recipe up or down without breaking it, and checks you have what you need before you start." },
+  ],
   description: "Something going wrong in the kitchen? Tell us what you're making, what happened, and what you have on hand. Recipe Chaos Solver helps you recover the dish, replace missing ingredients, fix the flavor, check a recipe before you start, or scale it without creating a new problem.",
   guide: {
     tips: [
