@@ -14,6 +14,7 @@
 const { callClaudeWithRetry, withLanguage } = require('./claude');
 const { MODELS } = require('./models');
 const { getByPath, setByPath, NO_QUOTE_RULE } = require('./factCheck');
+const { currentRequestBody } = require('./outputStandard');
 
 // The seven checks. Deliberately phrased as things to FIND, not as advice.
 const V2_CHECKS = `1. Claims about a real person's thoughts, feelings, motives, intentions, needs, likely reactions, or future behaviour that were not supplied or established.
@@ -25,10 +26,48 @@ const V2_CHECKS = `1. Claims about a real person's thoughts, feelings, motives, 
 6. Sections that do not materially help complete the tool's promise.
 7. Output the tool promised that is missing.`;
 
+// Two defect TYPES that no single field shows (audit/DEFECT-TYPES.md T3, T7).
+// Kept separate so a route that is not on the v2 standard can run just these
+// (opts.only = 'consistency') without inheriting the whole v2 review.
+const CONSISTENCY_CHECKS = `8. Two parts of the output that CONTRADICT each other: one field says something and another says the opposite about the same thing — a count or total, a direction (higher/lower, for/against), a schedule or frequency, which option comes out ahead, whether something applies, what happened first. Each may read fine on its own; compare them. Flag one of the two and put the other field's exact identifier in "conflicts_with" — both will be rewritten together, so do not try to decide which one is right.
+9. A CHOICE THE VISITOR MADE that the output ignores or goes against: an option, mode, style, tone, length, frequency or setting they picked, or something they asked to include or avoid (see THE VISITOR'S CHOICES, and what they typed). Writing as if they had chosen differently, or as if they had chosen nothing, is the violation. Flag the field where it happens.`;
+
+// The visitor's own settings, from the request body (lib/outputStandard.js
+// carries it per request). Long free text is already in `supplied`; what
+// tends to get lost is the short stuff — "frequency: weekly", "avoid:
+// sudden sounds", "style: disagree_and_commit" — so only short scalar values
+// are listed. Locale plumbing, history and uploads are not choices.
+const NOT_A_CHOICE = /^(user(Language|Locale|Currency|Region|Timezone)|sessionHistory|history|previous.*|image.*|file.*|.*base64.*|.*Data|pdf.*|audio.*|context|text|input)$/i;
+function visitorChoices(body) {
+  if (!body || typeof body !== 'object') return '';
+  const out = [];
+  const add = (key, v) => {
+    if (out.length >= 30 || NOT_A_CHOICE.test(key.split('.').pop())) return;
+    if (typeof v === 'boolean') { if (v) out.push(`${key}: yes`); return; }
+    if (typeof v === 'number' && Number.isFinite(v)) { out.push(`${key}: ${v}`); return; }
+    if (typeof v === 'string') {
+      const t = v.trim();
+      if (t && t.length <= 80 && !t.includes('\n')) out.push(`${key}: ${t}`);
+      return;
+    }
+    if (Array.isArray(v)) {
+      const items = v.filter(x => typeof x === 'string' && x.trim() && x.length <= 60).slice(0, 8);
+      if (items.length && items.length === v.length) out.push(`${key}: ${items.join(', ')}`);
+    }
+  };
+  for (const [k, v] of Object.entries(body)) {
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      for (const [k2, v2] of Object.entries(v)) add(`${k}.${k2}`, v2);
+    } else add(k, v);
+  }
+  return out.join('\n');
+}
+
 // Named so a violation reads the same way in a log, a test and a guard.
 const VIOLATION_TYPES = [
   'invented_fact', 'contradicted_supplied_fact', 'mind_reading', 'unsupported_prediction',
   'unnecessary_section', 'self_explanation', 'false_precision', 'promise_not_fulfilled',
+  'contradicts_another_field', 'ignored_visitor_choice',
 ];
 
 /**
@@ -39,6 +78,10 @@ const VIOLATION_TYPES = [
  * @param opts.promise     one line: what this tool undertakes to deliver
  * @param opts.guard       router.outputGuard — { prohibit: [], require: [] }
  * @param opts.userLanguage / opts.locale
+ * @param opts.only       'consistency' runs only checks 8–9 (contradiction,
+ *                         ignored choice) — for routes not on the v2 standard
+ * @param opts.consistencyModel  model for checks 8–9 (default MODELS.SMART)
+ * @param opts.readOnly   field paths shown to the checks but never repaired
  * @param opts.model      check + repair model (default MODELS.FAST); a route
  *                         whose violations are subtle readings of a long
  *                         document can ask for MODELS.SMART
@@ -66,7 +109,12 @@ function withDeadline(promise, ms, fallback, label, stage) {
 }
 
 async function runOutputGuard(draft, opts) {
-  const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '', model = MODELS.FAST } = opts;
+  const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '', model = MODELS.FAST, only = '' } = opts;
+  const consistencyOnly = only === 'consistency';
+  const consistencyModel = opts.consistencyModel || process.env.CONSISTENCY_CHECK_MODEL || MODELS.SMART;
+  // Shown to the check as context, never rewritten (labels, enums, numbers).
+  const readOnly = new Set(Array.isArray(opts.readOnly) ? opts.readOnly : []);
+  const choices = visitorChoices(opts.body || currentRequestBody());
   if (!Array.isArray(fields) || !fields.length) return [];
 
   const prohibit = Array.isArray(guard.prohibit) ? guard.prohibit : [];
@@ -77,33 +125,46 @@ async function runOutputGuard(draft, opts) {
     require_.length ? `AND MUST DELIVER:\n${require_.map(x => `- ${x}`).join('\n')}` : '',
   ].filter(Boolean).join('\n\n');
 
-  const checkPrompt = `Review this proposed tool output against the DeftBrain V2 standard and the tool-specific guard.
+  // Two checks, run side by side so the slower one sets the wait, not the sum:
+  // the v2 standard on the route's own model, and the contradiction /
+  // ignored-choice check (T3, T7) on CONSISTENCY_MODEL. Measured 2026-10-09
+  // on a plan that ignored "Disagree & commit": Haiku caught it one run in
+  // two even with a per-choice accounting step, Sonnet two in two. Spotting
+  // that two fields disagree, or that a choice never shows, is reading across
+  // the whole answer — the step a small model skips.
+  const buildCheck = (cons) => `${cons ? 'Check this proposed tool output for two things only: parts that contradict each other, and choices the visitor made that it ignores.' : 'Review this proposed tool output against the DeftBrain V2 standard and the tool-specific guard.'}
 
 WHAT THIS TOOL PROMISES:
 ${promise}
 
 WHAT THE VISITOR ACTUALLY TYPED — the complete set of established facts:
 ${supplied}
-
-${guardBlock}
+${cons && choices ? `
+THE VISITOR'S CHOICES — settings and options they picked on the form:
+${choices}
+` : ''}
+${cons ? '' : guardBlock}
 
 PROPOSED OUTPUT:
 ${fields.map(([path, value]) => `${path}:\n${value}`).join('\n\n')}
 
 Look for:
-${V2_CHECKS}
+${cons ? CONSISTENCY_CHECKS : V2_CHECKS}
 
-Judge only against the standard and the guard. Say nothing about style, wording or how good the writing is.
+${cons ? 'Look ONLY for those two. Anything else, however imperfect, is out of scope here.' : 'Judge only against the standard and the guard.'} Say nothing about style, wording or how good the writing is.
 
 NEVER flag a bracketed placeholder. [Name], [the evidence], [duration], [the timeline], [what we can defer] — any of them, anywhere, however many. A placeholder is how this product marks a fact the visitor has to supply, so a sentence built around one is the CORRECT handling of a missing fact, not an invented one: "each visit lasts [duration]" asserts nothing. Rewriting placeholders away is a regression, and a field is not a violation for containing them.
 
-Return PASS, or FAIL with one entry per violation. Do not rewrite the output.
+${cons && choices ? `ACCOUNT FOR EVERY CHOICE FIRST. A choice is easy to miss when the output reads well, so do not judge it at a glance: for each line under THE VISITOR'S CHOICES that should shape the output (a mode, style, method, framework, tone, length, frequency, something to include or avoid — not a plain fact like a name or a count), write it in "choice_check" with the field that clearly carries it out, or "NONE". A field that merely mentions the choice without doing it does not count. Every "NONE" is also an ignored_visitor_choice violation, on the field where the choice should have shown.
+
+` : ''}Return PASS, or FAIL with one entry per violation. Do not rewrite the output.
 
 OUTPUT (JSON only):
-{
+{${cons && choices ? `
+  "choice_check": [ { "choice": "the line, as listed", "honored_in": "exact field identifier, or NONE" } ],` : ''}
   "verdict": "PASS or FAIL",
   "violations": [
-    { "field": "exact identifier from the proposed output", "violation_type": "one of: ${VIOLATION_TYPES.join(', ')}, or a guard term above", "offending_text": "the exact phrase, quoted", "reason": "a few words" }
+    { "field": "exact identifier from the proposed output", "violation_type": "one of: ${VIOLATION_TYPES.join(', ')}, or a guard term above", "offending_text": "the exact phrase, quoted", "reason": "a few words", "conflicts_with": "for contradicts_another_field only: the other field's exact identifier" }
   ]
 }
 
@@ -114,16 +175,22 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   // maxRetries: 0 — a check that failed once has already cost the visitor time,
   // and retrying it buys a nicety, not the answer.
-  const check = await withDeadline(
+  const runCheck = (cons) => withDeadline(
     callClaudeWithRetry({
-      model,
+      model: cons ? consistencyModel : model,
       max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(checkPrompt, userLanguage) }],
-    }, { label: `${label}-guard`, maxRetries: 0 }).catch(err => {
-      console.log(`[${label}] v2 guard: check failed (${err.message}) — returning the unguarded result`);
+      messages: [{ role: 'user', content: withLanguage(buildCheck(cons), userLanguage) }],
+    }, { label: `${label}-${cons ? 'consistency' : 'guard'}`, maxRetries: 0 }).catch(err => {
+      console.log(`[${label}] ${cons ? 'consistency' : 'v2 guard'}: check failed (${err.message}) — returning the unguarded result`);
       return null;
     }),
-    CHECK_BUDGET_MS, null, label, 'check');
+    CHECK_BUDGET_MS, null, label, cons ? 'consistency check' : 'check');
+  const [v2Check, consCheck] = await Promise.all([consistencyOnly ? null : runCheck(false), runCheck(true)]);
+  const isFail = (c) => String(c?.verdict).toUpperCase() === 'FAIL';
+  const check = {
+    verdict: isFail(v2Check) || isFail(consCheck) ? 'FAIL' : 'PASS',
+    violations: [v2Check, consCheck].flatMap(c => (isFail(c) && Array.isArray(c?.violations) ? c.violations : [])),
+  };
 
   // One repair per field: two violations in one field would otherwise be
   // rewritten independently against the original, and the second write would
@@ -141,7 +208,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   (Array.isArray(check?.violations) ? check.violations : [])
     .filter(v => {
       if (!v || typeof v.field !== 'string') return false;
-      if (typeof getByPath(draft, v.field) !== 'string') {
+      if (typeof getByPath(draft, v.field) !== 'string' || readOnly.has(v.field)) {
         if (getByPath(draft, v.field) !== undefined) containerHits.push(v.field);
         return false;
       }
@@ -151,6 +218,30 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
       if (!byField.has(v.field)) byField.set(v.field, []);
       byField.get(v.field).push(v);
     });
+  // Consistency-only runs fix just their two types; anything else the checker
+  // volunteers is out of scope and would rewrite fields nobody asked about.
+  if (consistencyOnly) {
+    for (const [f, vs] of [...byField]) {
+      const keep = vs.filter(v => v.violation_type === 'contradicts_another_field' || v.violation_type === 'ignored_visitor_choice');
+      if (keep.length) byField.set(f, keep); else byField.delete(f);
+    }
+  }
+  // A contradiction is two fields, and the checker cannot be trusted to pick
+  // the wrong one: tested on the logged cases, it kept the wrong side twice in
+  // three ("jazz every night" over "Thu–Sat", "differed sharply" over a
+  // detail that misread the logs). So both sides go to the repair together,
+  // which settles it against what the visitor typed.
+  for (const vs of [...byField.values()]) {
+    for (const v of vs) {
+      if (v.violation_type !== 'contradicts_another_field' || typeof v.conflicts_with !== 'string') continue;
+      const other = v.conflicts_with.trim();
+      if (other === v.field || typeof getByPath(draft, other) !== 'string' || readOnly.has(other)) continue;
+      if (!byField.has(other)) byField.set(other, []);
+      if (!byField.get(other).some(x => x.violation_type === 'contradicts_another_field')) {
+        byField.get(other).push({ field: other, violation_type: 'contradicts_another_field', offending_text: '', reason: v.reason, conflicts_with: v.field });
+      }
+    }
+  }
   const violations = [...byField.values()].map(vs => vs[0]);
   const allByField = [...byField.entries()];
 
@@ -192,6 +283,13 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
       .join(' | ');
   };
 
+  // Both sides of a contradiction are in this repair (see above); the note
+  // pairs them so the two rewrites land on the same answer.
+  const conflictNote = (v) => {
+    if (v.violation_type !== 'contradicts_another_field' || typeof v.conflicts_with !== 'string') return '';
+    return `\n  contradicts [${v.conflicts_with.trim()}], which is also being rewritten here. Decide from what the visitor typed which side is right and make BOTH fields agree with it. If what they typed does not settle it, take the disputed claim out of both rather than picking a side.`;
+  };
+
   const repairPrompt = `Rewrite only these fields of a tool's output. Every other field passed and must not be touched.
 
 WHAT THIS TOOL PROMISES:
@@ -199,7 +297,10 @@ ${promise}
 
 WHAT THE VISITOR ACTUALLY TYPED:
 ${supplied}
-
+${choices ? `
+THE VISITOR'S CHOICES — honor every one:
+${choices}
+` : ''}
 THE REST OF THE RESPONSE — these fields PASSED and are staying exactly as they are. Whatever you write must be consistent with them. If one of them states a conclusion, a choice or a recommendation, your rewrite must not contradict it or substitute a different one:
 ${untouched || '(no other fields)'}
 
@@ -209,7 +310,7 @@ current:
 ${getByPath(draft, field)}
 
 violations:
-${vs.map(v => `- ${v.violation_type}: "${v.offending_text}"${v.reason ? ` — ${v.reason}` : ''}`).join('\n')}`).join('\n\n')}
+${vs.map(v => `- ${v.violation_type}${v.offending_text ? `: "${v.offending_text}"` : ''}${v.reason ? ` — ${v.reason}` : ''}${conflictNote(v)}`).join('\n')}`).join('\n\n')}
 
 Preserve useful content and tone. Remove the identified violations and nothing else.
 
@@ -285,4 +386,68 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   return violations;
 }
 
-module.exports = { runOutputGuard, V2_CHECKS, VIOLATION_TYPES };
+// Every string (and number) leaf of a response, as [[path, text]] — the field list a
+// whole-response check needs, without each route hand-listing its schema.
+function stringFields(obj, max = 60) {
+  const out = [];
+  const walk = (v, p) => {
+    if (out.length >= max) return;
+    if (typeof v === 'string') { if (v.trim()) out.push([p, v]); return; }
+    // Numbers are shown so a check can see "minutes: 10" beside the prose;
+    // repairs only ever write strings, so they are read-only here.
+    if (typeof v === 'number' && Number.isFinite(v)) { out.push([p, String(v)]); return; }
+    if (Array.isArray(v)) { v.forEach((x, i) => walk(x, `${p}[${i}]`)); return; }
+    if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) walk(x, p ? `${p}.${k}` : k);
+  };
+  walk(obj, '');
+  return out;
+}
+
+// A value a renderer is likely to switch on or show as a chip — a number, an
+// enum ("activity", "HAS PROBLEMS"), an id, a time — rather than prose.
+// Rewriting one breaks a badge or a lookup, so whole-response checks only read
+// these. Prose is four words or more.
+function isLabel(v) {
+  const t = String(v).trim();
+  return /^-?\d/.test(t) || /^[A-Za-z0-9_-]+$/.test(t) || t.split(/\s+/).length < 4;
+}
+
+// What the visitor sent, as text, for checks that compare against it.
+function suppliedText(body, cap = 8000) {
+  if (!body || typeof body !== 'object') return '';
+  const lines = [];
+  for (const [k, v] of Object.entries(body)) {
+    if (/^user(Language|Locale|Currency|Region|Timezone)$/.test(k) || /base64|image|file|pdf|audio/i.test(k)) continue;
+    if (v === null || v === undefined || v === '' || v === false) continue;
+    lines.push(`${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`);
+  }
+  const text = lines.join('\n');
+  return text.length > cap ? text.slice(0, cap) + '…' : text;
+}
+
+/**
+ * T3 + T7 for any route, one line at the call site: does the answer
+ * contradict itself, and does it honor the choices the visitor made? Reads
+ * the request body from the route context, checks every string field, and
+ * repairs both sides of a contradiction together. Fail-open: an error here
+ * returns the draft as it was.
+ *
+ *   await checkConsistency(parsed, { label: 'date-night', promise: '…', userLanguage });
+ */
+async function checkConsistency(draft, { label, promise, userLanguage, locale = '', model, body } = {}) {
+  try {
+    if (!draft || typeof draft !== 'object') return [];
+    const reqBody = body || currentRequestBody() || {};
+    const fields = stringFields(draft);
+    return await runOutputGuard(draft, {
+      readOnly: fields.filter(([, v]) => isLabel(v)).map(([p]) => p),
+      label, promise: promise || 'Answers the visitor\'s request.', userLanguage, locale, model: model || MODELS.SMART, body: reqBody,
+      fields, supplied: suppliedText(reqBody), only: 'consistency',
+    });
+  } catch (err) {
+    console.log(`[${label}] consistency check skipped: ${err.message}`);
+    return [];
+  }
+}
+
+module.exports = { runOutputGuard, checkConsistency, stringFields, suppliedText, V2_CHECKS, CONSISTENCY_CHECKS, VIOLATION_TYPES, visitorChoices };

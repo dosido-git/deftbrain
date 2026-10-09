@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { checkConsistency } = require('../lib/outputGuard');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
@@ -571,6 +572,8 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     }
 
     fitAgendaToDuration(parsed.meeting_plan, duration);
+    // T7 (audit/DEFECT-TYPES.md): decision_plan ignored "Disagree & commit".
+    await checkConsistency(parsed, { label: 'meeting-hijack-stopper', promise: 'Plans a meeting that reaches its goal the way the visitor chose to decide, without claiming authority the facilitator may not have.', userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {

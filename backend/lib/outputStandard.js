@@ -259,8 +259,18 @@ const requestStandard = new AsyncLocalStorage();
 // than a page load through the site — see lib/requestClient.js. lib/claude.js
 // stamps it onto every llm_usage record so the metrics report can label
 // audit/dev-testing cost instead of it silently passing as visitor demand.
-function enterRouteStandard(standard, route, testClient) {
-  requestStandard.enterWith({ standard: standard || null, route: route || null, testClient: !!testClient });
+//
+// `body` is the request body, so a shared check can see the choices the
+// visitor made (a selected mode, a frequency, something to avoid) without each
+// route passing them along — lib/outputGuard.js reads it (T7 in
+// audit/DEFECT-TYPES.md).
+function enterRouteStandard(standard, route, testClient, body) {
+  requestStandard.enterWith({ standard: standard || null, route: route || null, testClient: !!testClient, body: body || null });
+}
+
+function currentRequestBody() {
+  const s = requestStandard.getStore();
+  return (s && s.body) || null;
 }
 
 function currentStandard() {
@@ -295,5 +305,6 @@ module.exports = {
   currentStandard,
   currentRoute,
   currentIsTestClient,
+  currentRequestBody,
   withOutputStandard,
 };

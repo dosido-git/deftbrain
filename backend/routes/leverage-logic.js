@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { checkConsistency } = require('../lib/outputGuard');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
@@ -497,6 +498,9 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     if (!parsed.read) {
       return res.status(500).json({ error: 'Could not read your situation. Please try again.' });
     }
+    // T3 (audit/DEFECT-TYPES.md): an explanation reversed which way an
+    // existing exception cuts.
+    await checkConsistency(parsed, { label: 'leverage-logic', promise: 'Reads the visitor\'s negotiating position from what they described.', userLanguage });
     res.json(validateResult(parsed, { theirSideSupplied }));
 
   } catch (error) {

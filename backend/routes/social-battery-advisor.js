@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, SMALL_SAMPLE_PATTERN_DISCIPLINE } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { checkConsistency } = require('../lib/outputGuard');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // Ground-up rebuild (2026-09-11), installed from an owner-supplied rewrite
@@ -279,6 +280,10 @@ router.post('/social-energy-audit', rateLimit(DEFAULT_LIMITS), async (req, res) 
       system: withLanguage(CONTRACT, userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'social-battery-advisor-patterns' });
+
+    // T3 (audit/DEFECT-TYPES.md): a contrast titled "differed sharply" whose
+    // own text said the two "align rather than contrast".
+    await checkConsistency(parsed, { label: 'social-battery-advisor', promise: 'Shows what the visitor\'s own logged ratings say, and nothing they do not.', userLanguage });
 
     const result = validateResult(parsed, counts);
     if (!result) return res.status(500).json({ error: 'Could not review your interaction logs. Please try again.' });

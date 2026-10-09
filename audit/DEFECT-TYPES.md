@@ -22,11 +22,11 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 |---|---|---|---|---|
 | T1 | Real-world facts from memory | Web search + compare against what it found | Exists; 18 of ~120 tools use it | 4 |
 | T2 | Arithmetic, counts, totals | Compute in code; else the number check | Exists; 15 tools use the number check | 4 |
-| T3 | Self-contradiction between fields | **None generic** | To build | 3 |
+| T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 47 routes | 0 (sweep: ~73 routes) |
 | T4 | Details the visitor never said | Output guard / supplied-facts check | Exists, but 43 frozen tools have neither | 5 |
 | T5 | Overreach (absolutes, legal/medical conclusions, false framing) | Facts-mode number check, guard terms | Partial | 2 |
 | T6 | Locale and wording leaks | Reply filter (`voiceFix` + `usSpelling`) | Exists, all tools | 1 |
-| T7 | A visitor's choice ignored | **None** | To build | 1 |
+| T7 | A visitor's choice ignored | Same check, reads the form choices itself | **Built 2026-10-09**; 47 routes | 0 (sweep: ~73 routes) |
 | T8 | Built-in examples stale or inconsistent | **None** | To build | 2 |
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 
@@ -97,18 +97,23 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 **What goes wrong.** Two parts of one answer say incompatible things. Each part looks fine on its own.
 
-**Shared fix: to build.** Add a generic `contradicts_another_field` check to the shared output guard's own prompt (`lib/outputGuard.js`). The guard already reads every field of every v2 answer, so this costs almost nothing extra. Done per tool so far:
-- Document Detective has its own term.
-- The guard repair now sees each field's sibling text.
+**Shared fix: built 2026-10-09.** A consistency check in `lib/outputGuard.js` (checks 8 and 9, `CONSISTENCY_CHECKS`):
+- Every route that calls `runOutputGuard` (43) gets it automatically, run **in parallel** with its v2 check, so it adds cost (~$0.03 a run), not wait.
+- Any other route wires it in one line: `await checkConsistency(parsed, { label, promise, userLanguage })`. It reads every string field itself.
+- It runs on **Sonnet**: on the logged cases Haiku caught an ignored choice one run in two, Sonnet every time.
+- **Both sides of a contradiction are repaired together**, settled against what the visitor typed. With one side flagged, the checker kept the wrong side 2 times in 3. If the input doesn't settle it, the disputed claim comes out of both.
+- Short label fields (enums, chips, numbers) are shown to the check but never rewritten.
+
+**Coverage:** 43 guarded routes + date-night, social-battery-advisor, leverage-logic, meeting-hijack-stopper = 47. **Sweep left:** the ~24 v2 routes with their own checks (validateResult and similar) and the frozen routes.
 
 | Instance | Status |
 |---|---|
 | DocumentDetective — break clause read two ways | fixed per tool (guard term + SMART) |
 | FocusSoundArchitect — "rain at 35" after rain was removed | fixed (menu filtered before writing) |
 | PlotHoleFinder — guard repair attached arguments to the wrong finding | **fixed with shared fix** (repair sees the owning item) |
-| **SocialBatteryAdvisor** — "differed sharply" / "align rather than contrast" | **open** |
-| **LeverageLogic** — explanation reverses which way an exception cuts | **open** |
-| **DateNight** — a repair left "every night" beside "Thu–Sat" | **open** |
+| SocialBatteryAdvisor — "differed sharply" / "align rather than contrast" | **fixed with shared fix** (both sides rewritten to match the logs) |
+| LeverageLogic — explanation reverses which way an exception cuts | **wired to shared fix** (not reproduced; real run also caught an ignored urgency/relationship choice) |
+| DateNight — a repair left "every night" beside "Thu–Sat" | **fixed with shared fix** (claim removed from both) |
 
 ---
 
@@ -182,13 +187,13 @@ Some have their own checks (several are grounded or number-checked), but none ch
 
 **What goes wrong.** The visitor picks a setting or supplies a field, and the answer behaves as if they hadn't.
 
-**Shared fix: to build.** A guard `require` term every v2 tool inherits: "every option the visitor explicitly chose is reflected". Or, better where possible, enforce the choice in code (as Focus Sound Architect now does).
+**Shared fix: built 2026-10-09** (same check as T3). The request body now travels with the route context (`lib/outputStandard.js` `currentRequestBody`), so the check lists the visitor's short form choices itself — no route passes them. The checker must account for each choice and name the field that carries it out, or NONE. Enforcing a choice in code (as Focus Sound Architect does) is still better where possible.
 
 | Instance | Status |
 |---|---|
 | FocusSoundArchitect — "avoid sudden sounds" vs rain | fixed (enforced in code) |
 | JustifyMyMeeting — "weekly" not used for yearly cost | fixed (read in code) |
-| **MeetingHijackStopper** — "Disagree & commit" ignored | **open** |
+| MeetingHijackStopper — "Disagree & commit" ignored | **fixed with shared fix** (reproduced, caught, plan now uses it) |
 
 ---
 
@@ -225,7 +230,7 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 ## Order of work
 
 1. ~~**T9 smoke test.**~~ Done 2026-10-09.
-2. **T3** generic contradiction term in the shared guard, plus **T7** require term. Every v2 tool gains both at once.
+2. ~~**T3 + T7**~~ Done 2026-10-09 for 47 routes. Sweep the rest with `checkConsistency` (one line each).
 3. **T4** for the 43 frozen tools: wire in the supplied-facts check (the shared fix), rather than converting each to v2 by hand.
 4. **T1 sweep:** grounding for PaperworkPath, TripRecon, MicroAdventureMapper first (place/law facts).
 5. **T2 sweep:** number check or code math for MoneyDiplomat, LaundroMat, SmallChange, BatchFlow, ToastWriter.

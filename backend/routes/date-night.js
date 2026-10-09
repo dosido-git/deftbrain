@@ -7,6 +7,7 @@ const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
 const { venueBlockFor, verifiedNamesFrom, markVerified, attachPlaceFacts, eventBlock } = require('../lib/venues');
 const { groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
 const { checkAgainstSupplied } = require('../lib/factCheck');
+const { checkConsistency } = require('../lib/outputGuard');
 
 // Venue NAMES are verified by web search (lib/venues.js); what the planner
 // writes AROUND them was not (2026-10-08). An Austin run, every stop marked
@@ -47,6 +48,10 @@ General advice that is not about a specific place (dress in layers, book ahead o
   } catch (err) {
     console.log(`[${label}] venue-claims check skipped: ${err.message}`);
   }
+  // T3/T7 (audit/DEFECT-TYPES.md): a repair above once left "live jazz every
+  // night" beside "Thu–Sat"; this also catches a plan that ignores what the
+  // visitor picked (budget, vibe, day).
+  await checkConsistency(parsed, { label: `${label}-consistency`, promise: 'Plans a date night from real, verified places that fits what the visitor chose.', userLanguage: body?.userLanguage, body });
 }
 
 // ═══════════════════════════════════════════
