@@ -637,6 +637,24 @@ app.use('/guides', (req, res, next) => {
   next();
 });
 
+// ── Trailing-slash redirect for /guides and /tools pages (2026-10-09) ──
+// Express routes match with or without a trailing slash, so /guides/health/
+// and /tools/money/ were served 200 as copies of /guides/health and
+// /tools/money (GSC: duplicate URLs). The production slash redirect further
+// down never sees them: these explicit routes answer first. One canonical
+// form, no slash, as for tool pages.
+['/guides', '/tools'].forEach(prefix => {
+  app.use(prefix, (req, res, next) => {
+    const isRead = req.method === 'GET' || req.method === 'HEAD';
+    const slashed = req.path.length > 1 ? req.path.endsWith('/') : req.originalUrl.split('?')[0].endsWith('/');
+    if (isRead && slashed) {
+      const clean = (req.baseUrl + req.path).replace(/\/+$/, '') || prefix;
+      return res.redirect(301, clean + req.url.slice(req.path.length));
+    }
+    next();
+  });
+});
+
 // /tools (AllToolsPage.js, added 2026-09-22) is a client-rendered React page,
 // not a standalone prerendered file like /guides or /about — it needs its own
 // explicit handler for the same reason a tool rename needs one added to
