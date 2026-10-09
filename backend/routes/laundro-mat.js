@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 // Helper: parse base64 data URL
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
@@ -201,6 +202,8 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       if (!data.load_assessment && !data.advice) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
+      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
+      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 
@@ -251,6 +254,8 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       if (!data.load_assessment && !data.advice) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
+      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
+      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 
@@ -394,6 +399,8 @@ Return ONLY valid JSON. Format:
       if (!data.urgency && !data.steps) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
+      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
+      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 
@@ -546,6 +553,7 @@ Return ONLY valid JSON:
       }
       // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
       await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
+      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 

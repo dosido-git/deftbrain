@@ -4,7 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
-import { currencySymbol } from '../utils/formatLocale';
+import { currencySymbol, exampleDate } from '../utils/formatLocale';
 import { CopyBtn } from '../components/ActionButtons';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
@@ -15,7 +15,7 @@ const EXAMPLES = [
   {
   ticketType: 'parking',
   city: 'Seattle, WA',
-  ticketText: 'CITY OF SEATTLE — PARKING INFRACTION NOTICE. Violation: SMC 11.23.180 — Parking in passenger load zone. Date: 07/22/2026 Time: 6:40 PM. Location: 1400 block, E Pine St. Penalty: $47. Respond within 15 days of issue date.',
+  ticketText: `CITY OF SEATTLE — PARKING INFRACTION NOTICE. Violation: SMC 11.23.180 — Parking in passenger load zone. Date: ${exampleDate(-3, 'us')} Time: 6:40 PM. Location: 1400 block, E Pine St. Penalty: $47. Respond within 15 days of issue date.`,
   whatHappened: "The load-zone sign says the restriction runs 'Passenger Load Zone 7AM–6PM'. I parked at 6:40 PM, after the posted end time. The sign is also partially bent behind a tree branch — you can barely read it from the street side.",
   fineAmount: '47',
   deadline: '15 days from issue',
@@ -23,13 +23,13 @@ const EXAMPLES = [
   {
   ticketType: 'camera',
   city: 'Chicago, IL',
-  ticketText: 'CITY OF CHICAGO — AUTOMATED SPEED ENFORCEMENT VIOLATION. Recorded speed: 36 MPH in a posted 30 MPH safety zone. Date: 08/03/2026 Time: 07:12 AM. Location: 4400 S Western Ave. Fine: $35.00. Photographs and video of the violation are available online using the notice number above.',
+  ticketText: `CITY OF CHICAGO — AUTOMATED SPEED ENFORCEMENT VIOLATION. Recorded speed: 36 MPH in a posted 30 MPH safety zone. Date: ${exampleDate(-5, 'us')} Time: 07:12 AM. Location: 4400 S Western Ave. Fine: $35.00. Photographs and video of the violation are available online using the notice number above.`,
   whatHappened: "The safety-zone limit only applies when the park is open or a school is in session, and 7:12am on a Sunday in August is neither. I have looked at the photos on the city site and they show the car and the plate clearly, but nothing in them establishes what time the zone became active.",
 },
   {
   ticketType: 'parking',
   city: 'Austin, TX',
-  ticketText: 'CITY OF AUSTIN — PARKING CITATION. Violation: Blocking fire hydrant, within 15 feet. Date: 09/02/2026 Time: 2:15 PM. Location: 600 Congress Ave. Fine: $150. Pay or contest within 21 days.',
+  ticketText: `CITY OF AUSTIN — PARKING CITATION. Violation: Blocking fire hydrant, within 15 feet. Date: ${exampleDate(-2, 'us')} Time: 2:15 PM. Location: 600 Congress Ave. Fine: $150. Pay or contest within 21 days.`,
   whatHappened: "I parked in front of a fire hydrant for about ten minutes to grab coffee. I know it's a fire hydrant — there's no ambiguity there. I just didn't think anyone would notice that fast.",
   fineAmount: '150',
   deadline: '21 days',
@@ -37,7 +37,7 @@ const EXAMPLES = [
   {
   ticketType: 'camera',
   city: 'Los Angeles, CA',
-  ticketText: 'CITY OF LOS ANGELES — RED LIGHT PHOTO ENFORCEMENT VIOLATION. Failure to stop at red signal. Date: 09/10/2026 Time: 5:48 PM. Location: Intersection of Sunset Blvd & Vine St. Fine: $490. Photographs and a short video clip are available online using the citation number above.',
+  ticketText: `CITY OF LOS ANGELES — RED LIGHT PHOTO ENFORCEMENT VIOLATION. Failure to stop at red signal. Date: ${exampleDate(-6, 'us')} Time: 5:48 PM. Location: Intersection of Sunset Blvd & Vine St. Fine: $490. Photographs and a short video clip are available online using the citation number above.`,
   whatHappened: "The video shows I entered the intersection on a yellow light, but the car in front of me stopped short, so I was already committed and could not stop safely without risking a rear-end collision.",
   fineAmount: '490',
   deadline: '30 days',
@@ -45,7 +45,7 @@ const EXAMPLES = [
   {
   ticketType: 'parking',
   city: 'Boston, MA',
-  ticketText: 'CITY OF BOSTON — PARKING VIOLATION NOTICE. Violation: Expired meter. Date: 09/15/2026 Time: 11:20 AM. Location: 200 Newbury St. Fine: $40. Pay within 14 days or request a hearing.',
+  ticketText: `CITY OF BOSTON — PARKING VIOLATION NOTICE. Violation: Expired meter. Date: ${exampleDate(-1, 'us')} Time: 11:20 AM. Location: 200 Newbury St. Fine: $40. Pay within 14 days or request a hearing.`,
   whatHappened: "I paid through the ParkBoston app and have a screenshot of the payment confirmation timestamped before the ticket was issued, but the officer's handheld apparently had not yet synced with the system when they wrote it up.",
   fineAmount: '40',
   deadline: '14 days',

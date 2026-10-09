@@ -88,14 +88,21 @@ function pushBase() {
   return '';
 }
 
-// Lines of `src` that sit inside a template literal's text — where this
-// codebase writes its prompts. A rough scanner (strings, comments, `${}`
-// nesting); good enough to tell prompt text from code.
+// Lines of `src` inside the text of a template literal long enough to be a
+// prompt (120+ characters) — where this codebase writes its prompts. A short
+// template ("about ${secs} seconds") is output formatting, not a prompt. A
+// rough scanner (strings, comments, `${}` nesting); good enough to tell
+// prompt text from code.
 function templateLines(src) {
   const lines = new Set();
   let line = 1, i = 0;
-  const stack = []; // 'tpl' | 'expr'
-  let mode = 'code', braces = [];
+  const braces = [];
+  const open = []; // per open template: { lines: Set, chars }
+  let mode = 'code';
+  const close = () => {
+    const t = open.pop();
+    if (t && t.chars >= 120) t.lines.forEach(n => lines.add(n));
+  };
   while (i < src.length) {
     const ch = src[i], nx = src[i + 1];
     if (ch === '\n') line++;
@@ -103,21 +110,21 @@ function templateLines(src) {
     if (mode === 'block') { if (ch === '*' && nx === '/') { mode = 'code'; i += 2; continue; } i++; continue; }
     if (mode === "'" || mode === '"') { if (ch === '\\') { i += 2; continue; } if (ch === mode || ch === '\n') mode = 'code'; i++; continue; }
     if (mode === 'tpl') {
-      lines.add(line);
+      const t = open[open.length - 1];
+      t.lines.add(line); t.chars++;
       if (ch === '\\') { i += 2; continue; }
-      if (ch === '`') { mode = stack.pop() === 'expr' ? 'code' : 'code'; i++; continue; }
-      if (ch === '$' && nx === '{') { stack.push('tpl'); braces.push(0); mode = 'code'; i += 2; continue; }
+      if (ch === '`') { close(); mode = 'code'; i++; continue; }
+      if (ch === '$' && nx === '{') { braces.push(0); mode = 'code'; i += 2; continue; }
       i++; continue;
     }
-    // code
     if (ch === '/' && nx === '/') { mode = 'line'; i += 2; continue; }
     if (ch === '/' && nx === '*') { mode = 'block'; i += 2; continue; }
     if (ch === "'" || ch === '"') { mode = ch; i++; continue; }
-    if (ch === '`') { stack.push('code'); mode = 'tpl'; i++; continue; }
+    if (ch === '`') { open.push({ lines: new Set([line]), chars: 0 }); mode = 'tpl'; i++; continue; }
     if (braces.length) {
       if (ch === '{') braces[braces.length - 1]++;
       else if (ch === '}') {
-        if (braces[braces.length - 1] === 0) { braces.pop(); stack.pop(); mode = 'tpl'; i++; continue; }
+        if (braces[braces.length - 1] === 0) { braces.pop(); mode = 'tpl'; i++; continue; }
         braces[braces.length - 1]--;
       }
     }
@@ -126,6 +133,9 @@ function templateLines(src) {
   return lines;
 }
 
+// Comments and require lines change nothing a case can see on their own.
+const INERT = /^\s*(\/\/|\*|\/\*)|^\s*const\s+\{[^}]*\}\s*=\s*require\(|^\s*const\s+[\w$]+\s*=\s*require\(/;
+
 // { tier, reason, newLines } for one route file's diff since the push base.
 function classify(slug, base) {
   const rel = `backend/routes/${slug}.js`;
@@ -133,7 +143,9 @@ function classify(slug, base) {
   if (oldSrc.status !== 0) return { tier: 'live', reason: 'new route file', newLines: [] };
   if (process.env.GOLDEN_LIVE === '1') return { tier: 'live', reason: 'GOLDEN_LIVE=1', newLines: changedLines(base, rel).added.map(a => a.n) };
   const newSrc = fs.readFileSync(path.join(ROOT, rel), 'utf8');
-  const { added, removed } = changedLines(base, rel);
+  const { added: allAdded, removed: allRemoved } = changedLines(base, rel);
+  const added = allAdded.filter(a => !INERT.test(a.text));
+  const removed = allRemoved.filter(r => !INERT.test(r.text));
   const tplNew = templateLines(newSrc), tplOld = templateLines(oldSrc.stdout);
   for (const a of added) {
     if (tplNew.has(a.n)) return { tier: 'live', reason: `prompt text changed (line ${a.n})`, newLines: added.map(x => x.n) };
@@ -278,13 +290,15 @@ async function replay(slugs, base) {
       if (!forEp.length || forEp.some(c => done.has(c.name))) continue;
       pick.push(forEp[0].name);
     }
-    if (!pick.length && !cases.some(c => done.has(c.name)) && cases.length && ![...endpoints].some(ep => cases.some(c => c.endpoint === ep))) pick.push(cases[0].name);
-    return { ...x, fp, cases, pick };
+    // A changed endpoint with no saved case is reported, not substituted: a
+    // case for a different endpoint would cost money and test nothing changed.
+    const uncovered = [...endpoints].filter(ep => !cases.some(c => c.endpoint === ep));
+    return { ...x, fp, cases, pick, uncovered };
   });
   const toRun = plan.reduce((n, p) => n + p.pick.length, 0);
 
   console.log(`golden-for-push: ${replaySlugs.length} tool(s) replayed free, ${toRun} live case(s) (~$${(toRun * COST_PER_CASE).toFixed(2)}).`);
-  for (const p of plan) console.log(`  ${p.slug}: LIVE — ${p.reason}; ${p.pick.length ? `${p.pick.length} case(s): ${p.pick.join(', ')}` : 'already passed on this code'}`);
+  for (const p of plan) console.log(`  ${p.slug}: LIVE — ${p.reason}; ${p.pick.length ? `${p.pick.length} case(s): ${p.pick.join(', ')}` : 'nothing to run'}${p.uncovered.length ? ` (no saved case for ${p.uncovered.join(', ')} — not checked)` : ''}`);
 
   if (process.env.GOLDEN_DRY === '1') { console.log(`  replay: ${replaySlugs.join(', ') || 'none'}`); process.exit(0); }
 

@@ -90,6 +90,7 @@ ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.bo
           if (!parsed.breathe && !parsed.one_task) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
+        await checkConsistency(parsed, { label: 'brain-dump-buddy', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
         }
 
@@ -183,6 +184,7 @@ ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.bo
             can_drop: parsed.can_drop?.length ?? 0,
           };
         }
+        await checkConsistency(parsed, { label: 'brain-dump-buddy', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 

@@ -4,7 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { checkConsistency, stringFields } = require('../lib/outputGuard');
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write place names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper.
@@ -564,6 +565,8 @@ Important:
 Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
+      // T1 (audit/DEFECT-TYPES.md): place facts from a cached web search, run alongside the itinerary.
+      const research = researchFacts({ topic: ['micro-adventure', location], label: 'micro-adventure-mapper', brief: `Facts about the best-known places in and around ${location} that a short local outing might include: named landmarks, parks, trails, streets and neighborhoods, where they sit relative to each other (which end, which side, start or finish of a route), how to get between them, and opening hours.` });
       const data = await callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 4000,
@@ -574,6 +577,8 @@ ${RESPONSE_SCHEMA}`;
       if (!data.adventure) {
         return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
       }
+      await checkWorldFacts(data, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage });
+      await checkConsistency(data, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 
@@ -619,6 +624,8 @@ Do not invent local facts, businesses, prices, hours, addresses, or precise rout
 Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
+      // T1 (audit/DEFECT-TYPES.md): place facts from a cached web search, run alongside the itinerary.
+      const research = researchFacts({ topic: ['micro-adventure', location], label: 'micro-adventure-mapper', brief: `Facts about the best-known places in and around ${location} that a short local outing might include: named landmarks, parks, trails, streets and neighborhoods, where they sit relative to each other (which end, which side, start or finish of a route), how to get between them, and opening hours.` });
       const data = await callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 4000,
@@ -629,6 +636,8 @@ ${RESPONSE_SCHEMA}`;
       if (!data.adventure) {
         return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
       }
+      await checkWorldFacts(data, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage });
+      await checkConsistency(data, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 

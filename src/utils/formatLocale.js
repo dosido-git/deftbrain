@@ -81,3 +81,29 @@ export const currencySymbol = (userLocale, userCurrency) => {
     return '$';
   }
 };
+
+/**
+ * A day-and-month N days from today, in the given language ("November 20",
+ * "20. November", "11月20日"). For built-in examples that mention dates: a
+ * fixed date goes stale the day it passes (T8, audit/DEFECT-TYPES.md).
+ */
+export const dayMonthFromToday = (days, lang) => {
+  try {
+    return new Intl.DateTimeFormat(lang || 'en', { day: 'numeric', month: 'long' }).format(new Date(Date.now() + days * 86400000));
+  } catch {
+    return '';
+  }
+};
+
+/**
+ * A date N days from today (negative = ago) as text for an example field:
+ * 'iso' 2026-10-09 (date inputs), 'us' 10/09/2026 (a US ticket), 'long'
+ * October 9, 2026 (an English document). Same reason as dayMonthFromToday.
+ */
+export const exampleDate = (days, style = 'iso') => {
+  const d = new Date(Date.now() + days * 86400000);
+  const p2 = n => String(n).padStart(2, '0');
+  if (style === 'us') return `${p2(d.getMonth() + 1)}/${p2(d.getDate())}/${d.getFullYear()}`;
+  if (style === 'long') return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+};

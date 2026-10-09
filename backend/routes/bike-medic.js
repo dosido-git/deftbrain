@@ -166,6 +166,7 @@ Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. Th
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
         return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
       }
+      await checkConsistency(parsed, { label: 'bike-medic', userLanguage: req.body?.userLanguage });
       return res.json(parsed);
     }
 
@@ -221,6 +222,7 @@ Generate 5-10 tasks, ordered by priority. Be specific to the situation and the b
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
         return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
       }
+      await checkConsistency(parsed, { label: 'bike-medic', userLanguage: req.body?.userLanguage });
       return res.json(parsed);
     }
 
@@ -273,6 +275,7 @@ Return ONLY valid JSON:
       parsed.recommended_category = canon(parsed.recommended_category) || 'custom';
       parsed.alternative_categories = (parsed.alternative_categories || [])
         .map(canon).filter(Boolean).filter(id => id !== parsed.recommended_category);
+      await checkConsistency(parsed, { label: 'bike-medic', userLanguage: req.body?.userLanguage });
       return res.json(parsed);
     }
 

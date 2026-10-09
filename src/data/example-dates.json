@@ -1,0 +1,23 @@
+{
+ "_note": "Accepted dated examples. Regenerate: node scripts/example-dates-audit.js --write-state",
+ "accepted": [
+  "ArgueSmarter.js:EXAMPLES | 2026",
+  "ArgueSmarter.js:EXAMPLES | 2050",
+  "BrainStateDeejay.js:EXAMPLES | 2009",
+  "BuyWise.js:EXAMPLES | 2017, 1900",
+  "BuyWise.js:EXAMPLES | 2021",
+  "FinalWish.js:EXAMPLES | 2024, 2018",
+  "HistoryToday.js:EXAMPLES | 1989, 1918, 2008",
+  "LeaseTrapDetector.js:EXAMPLES | June 1",
+  "Mend.js:EXAMPLES | 2024",
+  "RentersDepositSaver.js:EXAMPLES | 2024, 2023",
+  "ResearchDecoder.js:EXAMPLES | 2014",
+  "cold-open-craft.js:coc_ex2_know | 2023",
+  "email-urgency-triager.js:eut2_example_emails | 2024",
+  "quote-check.js:qc_example2_item | 2016",
+  "quote-check.js:qc_example4_item | 2019",
+  "recall.js:rec_ex2_transcript | 1968",
+  "room-reader.js:rr_example2_people | 2019",
+  "the-alibi.js:ta_ex1_situation | 2021, 2023"
+ ]
+}

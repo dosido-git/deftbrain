@@ -121,3 +121,9 @@ node scripts/golden-for-push.js
 if [ -n "$base" ]; then
   node scripts/smoke-tools.js --if-changed "$base" || exit 1
 fi
+
+# Gate 13 — built-in examples must not name a fixed date (T8 in
+# audit/DEFECT-TYPES.md): Email Urgency Triager asked about "a Sept 12 hard
+# date instead of Oct 1" for weeks after it passed. Baselined; only a NEW dated
+# example fails. Compute dates (formatLocale dayMonthFromToday / exampleDate).
+node scripts/example-dates-audit.js

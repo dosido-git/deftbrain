@@ -591,13 +591,15 @@ Write "rule" as the exact English word equal, itemised or custom whatever langua
     }
     await withNumberCheck(parsed, {
       label: 'money-diplomat-split',
-      context: visitorContext(req.body) + (fig ? `\n\nCOMPUTED IN CODE (correct — take as given): grand total ${money(fig.grand_total)} = subtotal ${money(fig.subtotal)} + tax ${money(fig.tax)} + tip ${money(fig.tip)} (${fig.tip_pct}%); items listed ${money(fig.item_total)}; unaccounted ${money(fig.unassigned)}; equal share ${money(Object.values(fig.equal)[0])}; itemised: ${Object.entries(fig.itemised).map(([n, v]) => `${n} ${money(v)}`).join(', ')}.` : ''),
+      context: visitorContext(req.body) + (fig ? `\n\nCOMPUTED IN CODE (correct — take as given): grand total ${money(fig.grand_total)} = subtotal ${money(fig.subtotal)} + tax ${money(fig.tax)} + tip ${money(fig.tip)} (${fig.tip_pct}%); items listed ${money(fig.item_total)}; unaccounted ${money(fig.unassigned)}; equal share ${money(Object.values(fig.equal)[0])}; itemised: ${Object.entries(fig.itemised).map(([n, v]) => `${n} ${money(v)}`).join(', ')}.\n\nFINAL AMOUNTS SHOWN TO THE VISITOR (code set these, after rescaling any custom split to the real total — every explanation must match them): ${parsed.options.map(o => `${o.method || 'option'}: ${(o.breakdown || []).map(b => `${b.person} ${b.amount}`).join(', ')}`).join(' | ')}.` : ''),
       // Amounts are code-owned when the ledger worked; check only the prose around them.
       fields: fig ? [
         ['the_awkward_part', parsed.the_awkward_part], ['recommended', parsed.recommended],
         ['how_to_bring_it_up', parsed.how_to_bring_it_up], ['tip_recommendation.note', parsed.tip_recommendation?.note],
         ...parsed.options.flatMap((o, i) => [[`options[${i}].best_for`, o.best_for], ...(o.breakdown || []).map((b, j) => [`options[${i}].breakdown[${j}].reasoning`, b.reasoning])]),
-      ].filter(([, v]) => typeof v === 'string' && /\d/.test(v)) : undefined,
+      // Not only fields with digits: "Social Split" explained who pays more in
+      // words while code had rescaled the amounts underneath it (T2).
+      ].filter(([, v]) => typeof v === 'string' && v.trim()) : undefined,
       userLanguage,
     });
     await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });

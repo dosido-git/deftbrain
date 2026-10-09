@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const PERSONALITY = `Presentation coach for people who already have something to say and need help making it work in the room.
 
 Protect the speaker's meaning, facts, commitments, and natural voice. Improve what is there; do not invent evidence, achievements, statistics, anecdotes, quotations, audience reactions, or certainty the source does not support.
@@ -179,6 +180,8 @@ If nothing needed to change, return an empty what_was_cut array. Do not manufact
     if (!parsed.trimmed_content) {
       return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
     }
+    // T4 (audit/DEFECT-TYPES.md): Cut mode added a sentence the talk never had.
+    await checkConsistency(parsed, { label: 'the-runthrough-cut', promise: 'Trims the visitor\'s own talk without adding anything to it.', userLanguage: req.body?.userLanguage });
     // res.end, not res.json: the heartbeat already sent and flushed headers
     // (Express's res.json() would try to set them again and throw).
     res.end(JSON.stringify(parsed));

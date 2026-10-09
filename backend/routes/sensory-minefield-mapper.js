@@ -24,6 +24,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 function cleanString(value, max = 4000) {
   if (typeof value !== 'string') return '';
   return value.trim().slice(0, max);
@@ -478,6 +479,11 @@ router.post('/sensory-minefield-mapper', rateLimit(DEFAULT_LIMITS), async (req, 
 ${placeType ? `WHAT KIND OF PLACE: ${placeType}\n` : ''}${visitDateTime ? `WHEN: ${visitDateTime}\n` : ''}WHAT THEY'D LIKE HELP WITH: ${concerns.length ? concerns.join(', ') : 'not specified'}
 ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${specificNotes ? `ANYTHING ELSE: ${specificNotes}\n` : ''}${profileNotes ? `SAVED PROFILE NOTES (a preference preset, not a diagnosis): ${profileNotes}\n` : ''}${pastBlock}`;
 
+    // T1 (audit/DEFECT-TYPES.md): facts about the place from a cached web
+    // search, run alongside the plan. Without it the model put a train
+    // between Denver airport's garage and terminal.
+    const research = researchFacts({ topic: ['place', location], label: 'sensory-minefield-mapper', brief: `Facts about the physical place "${location}"${placeType ? ` (${placeType})` : ''}: its layout, entrances, how people get in and between its parts (garages, trains, shuttles, walkways), opening hours, and busy times or crowd and noise information the place or reliable guides publish.` });
+
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4500,
@@ -504,6 +510,7 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
     // catches blanks already in the raw model output, not ones the repair
     // step introduces afterward. (Caught live during v2.1/v3.1 verification —
     // don't move this back above runOutputGuard.)
+    await checkWorldFacts(parsed, research, { label: 'sensory-minefield-mapper', fields: collectProseFields(parsed), subject: location, userLanguage });
     const cleaned = stripEmptyItems(parsed);
 
     res.json(cleaned);

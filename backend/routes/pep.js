@@ -298,6 +298,7 @@ ${oneOnly ? `Return ONLY valid JSON:
       if (!parsed || (oneOnly ? !parsed.activity : !parsed.top_pick?.activity)) {
         return res.status(500).json({ error: 'Could not generate a suggestion. Please try again.' });
       }
+      await checkConsistency(parsed, { label: 'pep', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(parsed));
     }
 

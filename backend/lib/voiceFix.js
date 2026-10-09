@@ -37,25 +37,40 @@ function mapStrings(v, fn) {
   return v;
 }
 
-// Express middleware for /api: wraps res.json. Also applies US spelling
-// (lib/usSpelling.js) to English replies for US visitors.
+// Prompt-internal labels that reach the page as prose (T6, audit/DEFECT-
+// TYPES.md): Future Proof printed "INFERRED: these signals are consistent
+// with…". Prompts write evidence tags and worked-example labels in capitals
+// with a colon; the visitor should see the sentence, not the tag. Only a tag
+// FOLLOWED BY TEXT is removed — a field whose whole value is "INFERRED" is an
+// enum a renderer may switch on, and stays. Any language: the tags stay
+// English inside translated prose.
+const MARKER_RE = /(^|[.!?]\s+|\n\s*)(?:OBSERVED|INFERRED|ASSUMED|EMERGING|PLAUSIBLE|SPECULATIVE|UNVERIFIED|VERIFIED|ESTABLISHED|ESTIMATED|HYPOTHESIS|UNKNOWN|GOOD|BAD|BETTER|VIOLATION|NOT A VIOLATION|RULE|NOTE TO SELF|INTERNAL)\s*:\s+(\S)/g;
+function stripMarkers(s) {
+  if (typeof s !== 'string' || !/[A-Z]{4,}[^:]*:/.test(s)) return s;
+  return s.replace(MARKER_RE, (m, pre, first) => pre + first.toUpperCase());
+}
+
+// Express middleware for /api: wraps res.json. Strips prompt markers from
+// every reply; for English replies also fixes "the visitor" and applies US
+// spelling (lib/usSpelling.js) for US visitors.
 function voiceFixMiddleware(req, res, next) {
   if (req.method !== 'POST') return next();
   const lang = String(req.body?.userLanguage || 'en').toLowerCase();
-  if (!lang.startsWith('en')) return next();
+  const english = lang.startsWith('en');
   let typed = '';
   try { typed = JSON.stringify(req.body || {}); } catch (_) { typed = ''; }
-  const fixVisitor = !/visitor/i.test(typed);
-  const fixSpelling = spelling.wantsUS(req.body);
-  if (!fixVisitor && !fixSpelling) return next();
+  const fixVisitor = english && !/visitor/i.test(typed);
+  const fixSpelling = english && spelling.wantsUS(req.body);
   const keep = fixSpelling ? spelling.typedBritish(req.body) : null;
   const json = res.json.bind(res);
   res.json = (body) => {
     if (res.statusCode < 400 && body && typeof body === 'object') {
       const visitor = { n: 0 };
       const spelt = { n: 0 };
+      const marked = { n: 0 };
       const fix = (s) => {
         let out = s;
+        { const f = stripMarkers(out); if (f !== out) marked.n++; out = f; }
         if (fixVisitor) { const f = fixText(out); if (f !== out) visitor.n++; out = f; }
         if (fixSpelling) { const f = spelling.fixText(out, keep); if (f !== out) spelt.n++; out = f; }
         return out;
@@ -63,10 +78,11 @@ function voiceFixMiddleware(req, res, next) {
       try { body = mapStrings(body, fix); } catch (_) { /* never break a reply */ }
       if (visitor.n) console.log(`[voiceFix] ${req.path}: ${visitor.n} field(s) said "visitor" — rewritten to "you"`);
       if (spelt.n) console.log(`[voiceFix] ${req.path}: ${spelt.n} field(s) had British spelling — made US`);
+      if (marked.n) console.log(`[voiceFix] ${req.path}: ${marked.n} field(s) carried a prompt marker (INFERRED: …) — removed`);
     }
     return json(body);
   };
   next();
 }
 
-module.exports = { voiceFixMiddleware, fixText };
+module.exports = { voiceFixMiddleware, fixText, stripMarkers };

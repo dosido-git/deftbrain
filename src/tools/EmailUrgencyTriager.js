@@ -4,6 +4,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { dayMonthFromToday } from '../utils/formatLocale';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { useScrollToSection } from '../hooks/useScrollToSection';
@@ -65,7 +66,7 @@ function normalizeTier(v) {
 export default function EmailUrgencyTriager({ tool }) {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tx = useCallback((key, vars) => t(`eut2_${key}`, vars), [t]);
 
   const c = {
@@ -205,9 +206,11 @@ export default function EmailUrgencyTriager({ tool }) {
   // quiet mostly-newsletter day with nothing same-day, and a family signal
   // (a terse message about a hospitalized parent) buried under retail spam.
   const loadExample = () => {
+    // Deadlines are computed from today so the example never asks about a
+    // date that has already passed (T8, audit/DEFECT-TYPES.md).
     setEmailContent(t(pickExample('EmailUrgencyTriager', [
       'eut2_example_emails', 'eut2_example2_emails', 'eut2_example3_emails', 'eut2_example4_emails', 'eut2_example5_emails',
-    ])));
+    ]), { early: dayMonthFromToday(18, i18n.language), planned: dayMonthFromToday(39, i18n.language), deadline: dayMonthFromToday(6, i18n.language) }));
     setMode('input');
   };
 

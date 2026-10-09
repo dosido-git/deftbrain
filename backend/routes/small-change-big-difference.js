@@ -4,6 +4,7 @@ const { anthropic, withLanguage, withLocaleContext, cleanJsonResponse, repairMal
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 // ════════════════════════════════════════════════════════════
 // POST /one-percenter — Small Change, Big Difference (was One Percenter).
 // Route/endpoint/i18n prefix `op_` deliberately stay put per the
@@ -881,6 +882,11 @@ to choose a label and icon; a translated value renders as unlabeled.`;
       try { parsedFinal = JSON.parse(repairMalformedJson(cleanJsonResponse(fullText))); } catch (_) { /* frontend fallback */ }
     }
     if (parsedFinal) parsedFinal = validateResult(parsedFinal);
+    // T2 (audit/DEFECT-TYPES.md): "20 min x 5 weekdays = 100 min/week" then
+    // "x 365 days = ~122 hours/year". Arithmetic gets the shared number check,
+    // not another prompt rule; it runs before done, while the visitor waits on
+    // the same stream.
+    if (parsedFinal) await withNumberCheck(parsedFinal, { label: 'small-change-big-difference', context: visitorContext(req.body), userLanguage });
     res.write(`data: ${JSON.stringify({ done: true, ...(parsedFinal ? { parsed: parsedFinal } : {}) })}\n\n`);
     res.end();
 

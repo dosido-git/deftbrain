@@ -32,6 +32,13 @@ const V2_CHECKS = `1. Claims about a real person's thoughts, feelings, motives, 
 const CONSISTENCY_CHECKS = `8. Two parts of the output that CONTRADICT each other: one field says something and another says the opposite about the same thing — a count or total, a direction (higher/lower, for/against), a schedule or frequency, which option comes out ahead, whether something applies, what happened first. Each may read fine on its own; compare them. Flag one of the two and put the other field's exact identifier in "conflicts_with" — both will be rewritten together, so do not try to decide which one is right.
 9. A CHOICE THE VISITOR MADE that the output ignores or goes against: an option, mode, style, tone, length, frequency or setting they picked, or something they asked to include or avoid (see THE VISITOR'S CHOICES, and what they typed). Writing as if they had chosen differently, or as if they had chosen nothing, is the violation. Flag the field where it happens.`;
 
+// T4 (audit/DEFECT-TYPES.md) for routes NOT on the v2 guard, which already
+// checks invented facts (check 2). Same call, so it adds no cost: a toast set
+// "the night before" when the input only said she stayed late; a caption put
+// sand "on my face"; a workout "why" said "you mentioned stiff shoulders" when
+// it was the neck.
+const INVENTED_CHECK = `10. A DETAIL ABOUT THE VISITOR OR THEIR SITUATION THAT THEY NEVER GAVE: an event, time, place, person, feeling, body part, history or backstory stated as fact, or "you mentioned…" / "you said…" for something they did not say. Compare every such detail with what they typed. General advice, suggestions and clearly-marked examples are not details about them. Bracketed placeholders are never violations.`;
+
 // The visitor's own settings, from the request body (lib/outputStandard.js
 // carries it per request). Long free text is already in `supplied`; what
 // tends to get lost is the short stuff — "frequency: weekly", "avoid:
@@ -67,7 +74,7 @@ function visitorChoices(body) {
 const VIOLATION_TYPES = [
   'invented_fact', 'contradicted_supplied_fact', 'mind_reading', 'unsupported_prediction',
   'unnecessary_section', 'self_explanation', 'false_precision', 'promise_not_fulfilled',
-  'contradicts_another_field', 'ignored_visitor_choice',
+  'contradicts_another_field', 'ignored_visitor_choice', 'invented_visitor_detail',
 ];
 
 /**
@@ -78,8 +85,8 @@ const VIOLATION_TYPES = [
  * @param opts.promise     one line: what this tool undertakes to deliver
  * @param opts.guard       router.outputGuard — { prohibit: [], require: [] }
  * @param opts.userLanguage / opts.locale
- * @param opts.only       'consistency' runs only checks 8–9 (contradiction,
- *                         ignored choice) — for routes not on the v2 standard
+ * @param opts.only       'consistency' runs only checks 8–10 (contradiction,
+ *                         ignored choice, invented detail) — routes off the v2 guard
  * @param opts.consistencyModel  model for checks 8–9 (default MODELS.SMART)
  * @param opts.readOnly   field paths shown to the checks but never repaired
  * @param opts.model      check + repair model (default MODELS.FAST); a route
@@ -132,7 +139,7 @@ async function runOutputGuard(draft, opts) {
   // two even with a per-choice accounting step, Sonnet two in two. Spotting
   // that two fields disagree, or that a choice never shows, is reading across
   // the whole answer — the step a small model skips.
-  const buildCheck = (cons) => `${cons ? 'Check this proposed tool output for two things only: parts that contradict each other, and choices the visitor made that it ignores.' : 'Review this proposed tool output against the DeftBrain V2 standard and the tool-specific guard.'}
+  const buildCheck = (cons) => `${cons ? `Check this proposed tool output for ${consistencyOnly ? 'three things only: parts that contradict each other, choices the visitor made that it ignores, and details about the visitor they never gave' : 'two things only: parts that contradict each other, and choices the visitor made that it ignores'}.` : 'Review this proposed tool output against the DeftBrain V2 standard and the tool-specific guard.'}
 
 WHAT THIS TOOL PROMISES:
 ${promise}
@@ -149,9 +156,9 @@ PROPOSED OUTPUT:
 ${fields.map(([path, value]) => `${path}:\n${value}`).join('\n\n')}
 
 Look for:
-${cons ? CONSISTENCY_CHECKS : V2_CHECKS}
+${cons ? CONSISTENCY_CHECKS + (consistencyOnly ? `\n${INVENTED_CHECK}` : '') : V2_CHECKS}
 
-${cons ? 'Look ONLY for those two. Anything else, however imperfect, is out of scope here.' : 'Judge only against the standard and the guard.'} Say nothing about style, wording or how good the writing is.
+${cons ? 'Look ONLY for those. Anything else, however imperfect, is out of scope here.' : 'Judge only against the standard and the guard.'} Say nothing about style, wording or how good the writing is.
 
 NEVER flag a bracketed placeholder. [Name], [the evidence], [duration], [the timeline], [what we can defer] — any of them, anywhere, however many. A placeholder is how this product marks a fact the visitor has to supply, so a sentence built around one is the CORRECT handling of a missing fact, not an invented one: "each visit lasts [duration]" asserts nothing. Rewriting placeholders away is a regression, and a field is not a violation for containing them.
 
@@ -222,7 +229,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // volunteers is out of scope and would rewrite fields nobody asked about.
   if (consistencyOnly) {
     for (const [f, vs] of [...byField]) {
-      const keep = vs.filter(v => v.violation_type === 'contradicts_another_field' || v.violation_type === 'ignored_visitor_choice');
+      const keep = vs.filter(v => ['contradicts_another_field', 'ignored_visitor_choice', 'invented_visitor_detail'].includes(v.violation_type));
       if (keep.length) byField.set(f, keep); else byField.delete(f);
     }
   }
@@ -417,8 +424,10 @@ function suppliedText(body, cap = 8000) {
   if (!body || typeof body !== 'object') return '';
   const lines = [];
   for (const [k, v] of Object.entries(body)) {
-    if (/^user(Language|Locale|Currency|Region|Timezone)$/.test(k) || /base64|image|file|pdf|audio/i.test(k)) continue;
+    if (/^user(Language|Locale|Currency|Region|Timezone)$/.test(k) || /base64|image|file|pdf|audio|photo|data$/i.test(k)) continue;
     if (v === null || v === undefined || v === '' || v === false) continue;
+    // An upload under an unexpected key: a long run with no spaces is not text.
+    if (typeof v === 'string' && v.length > 2000 && !/\s/.test(v.slice(0, 2000))) continue;
     lines.push(`${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`);
   }
   const text = lines.join('\n');

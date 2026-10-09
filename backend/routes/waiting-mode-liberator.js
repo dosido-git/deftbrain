@@ -159,6 +159,7 @@ Return ONLY valid JSON:
         if (parsed.total_free_minutes == null && !parsed.windows && !parsed.events_summary) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
+        await checkConsistency(parsed, { label: 'waiting-mode-liberator', userLanguage: req.body?.userLanguage });
         return res.json(fixWindowMinutes(parsed));
       }
 
@@ -213,6 +214,7 @@ Return ONLY valid JSON:
         if (!parsed.launch_line) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
+        await checkConsistency(parsed, { label: 'waiting-mode-liberator', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 
@@ -287,6 +289,7 @@ Return ONLY valid JSON:
         if (!parsed.anxiety_check) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
+        await checkConsistency(parsed, { label: 'waiting-mode-liberator', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 

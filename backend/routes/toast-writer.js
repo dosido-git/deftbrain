@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // POST /toast-writer — Write a Toast, Speech, or Tribute
 // ════════════════════════════════════════════════════════════
@@ -116,6 +117,17 @@ model: MODELS.FAST,
     if (!Array.isArray(parsed.versions) || !parsed.versions.length) {
       return res.status(500).json({ error: 'Could not write your toast. Please try again.' });
     }
+    // T2 (audit/DEFECT-TYPES.md): speaking time is arithmetic, not a guess —
+    // asked for two minutes, the model's own estimates ran 0:50-1:15 against
+    // speeches it had written. ~130 spoken words a minute; [CUES] are not words.
+    for (const v of parsed.versions) {
+      const words = String(v?.speech || '').replace(/\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length;
+      if (!words) continue;
+      const secs = Math.max(15, Math.round((words / 130) * 60 / 5) * 5);
+      v.estimated_time = secs < 60 ? `about ${secs} seconds` : `about ${Math.floor(secs / 60)} min${secs % 60 ? ` ${secs % 60} sec` : ''}`;
+    }
+    // T4: "the night before" a presentation the visitor only said she stayed late for.
+    await checkConsistency(parsed, { label: 'toast-writer', promise: 'Writes a toast from only the facts and meaning the visitor supplied.', userLanguage });
     return res.json(parsed);
 
   } catch (error) {

@@ -4,7 +4,8 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { checkConsistency, stringFields } = require('../lib/outputGuard');
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 // ════════════════════════════════════════════════════════════
 // POST /paperwork-path — document checklist + the order to handle it
 // for a life event (move, baby, job change, marriage, death, …)
@@ -72,6 +73,11 @@ RULES:
 
 Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
+    // T1 (audit/DEFECT-TYPES.md): official requirements from a cached web
+    // search, run alongside the checklist. Without it the model said a Texas
+    // move needs a safety inspection and online voter registration.
+    const research = locationText ? researchFacts({ topic: ['paperwork', lifeEvent, locationText], label: 'paperwork-path', brief: `Official requirements for someone handling this life event: "${lifeEvent}" in ${locationText}. What must be registered, transferred, inspected, renewed or filed, with which office, by when, whether it can be done online or only in person or by mail, and fees. Include requirements people commonly assume that do NOT apply there (abolished inspections, registrations that cannot be done online).` }) : null;
+
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3500,
@@ -84,6 +90,7 @@ Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, use
 
     // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
 
+    if (research) await checkWorldFacts(parsed, research, { label: 'paperwork-path', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: `${lifeEvent} in ${locationText}`, userLanguage });
     await checkConsistency(parsed, { label: 'paperwork-path', userLanguage: req.body?.userLanguage });
 
     res.json(parsed);

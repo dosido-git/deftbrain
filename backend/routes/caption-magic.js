@@ -557,8 +557,11 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // other way to protect the enum, but it also puts a German draft in front of
   // an English-reasoning check, and S7.4 exists because that kind of local
   // exception is how a route quietly stops speaking the visitor's language.
+  // SMART since 2026-10-09 (T4, audit/DEFECT-TYPES.md): on Haiku this check
+  // let "sand on my face" and a rescue backstory through; reading every
+  // caption against the evidence is the cross-reading step a small model skips.
   const check = await callClaudeWithRetry({
-    model: MODELS.FAST,
+    model: MODELS.SMART,
     max_tokens: 2000,
     messages: [{ role: 'user', content: withLanguage(validatePrompt, userLanguage) }],
   }, { label: 'CaptionMagicValidate' });

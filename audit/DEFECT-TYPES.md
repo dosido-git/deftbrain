@@ -20,14 +20,14 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 | # | Type | Shared fix | Status | Open instances |
 |---|---|---|---|---|
-| T1 | Real-world facts from memory | Web search + compare against what it found | Exists; 18 of ~120 tools use it | 4 |
-| T2 | Arithmetic, counts, totals | Compute in code; else the number check | Exists; 15 tools use the number check | 4 |
+| T1 | Real-world facts from memory | `lib/worldFacts.js` (cached search + Sonnet contradiction check) | 21 tools; built 2026-10-09 | 2 (BuyWise, PlotHoleFinder) |
+| T2 | Arithmetic, counts, totals | Compute in code; else the number check | 18 tools; 2026-10-09 sweep done | 0 |
 | T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 96 routes | 0 |
-| T4 | Details the visitor never said | Output guard / supplied-facts check | Exists, but 43 frozen tools have neither | 5 |
+| T4 | Details the visitor never said | Output guard, or `checkConsistency` check 10 (same call) | ~99 tools; 2026-10-09 | 0 |
 | T5 | Overreach (absolutes, legal/medical conclusions, false framing) | Facts-mode number check, guard terms | Partial | 2 |
-| T6 | Locale and wording leaks | Reply filter (`voiceFix` + `usSpelling`) | Exists, all tools | 1 |
+| T6 | Locale and wording leaks | Reply filter (`voiceFix`: markers, "visitor", US spelling) | All tools | 1 minor |
 | T7 | A visitor's choice ignored | Same check, reads the form choices itself | **Built 2026-10-09**; 96 routes | 0 |
-| T8 | Built-in examples stale or inconsistent | **None** | To build | 2 |
+| T8 | Built-in examples stale or inconsistent | `scripts/example-dates-audit.js` (Gate 13) + `exampleDate`/`dayMonthFromToday` | Built 2026-10-09 | 0 |
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 
 ---
@@ -40,7 +40,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 **Shared fix.** Fetch the facts with web search (`lib/groundedFacts.js`, cached, stale-while-revalidate). Then compare the answer against what was found, a reading job rather than a memory job (`factCheck.checkAgainstSupplied`, `model: MODELS.SMART`). Related: `lib/venues.js`, `lib/airportPlaces.js`, `lib/claimResearch.js`, `attachSourceUrls`.
 
-**Tools using it (18):** bill-rescue, bookmark, bike-medic, buy-wise, brain-roulette, contract-decoder, date-night, future-proof, lease-trap-detector, layover-maximizer, name-audit, plain-talk, procedure-probe, plot-hole-finder, renters-deposit-saver, signal-vs-noise, someone-said-it-better, ticket-tackler.
+**Tools using it (21; `lib/worldFacts.js` added 2026-10-09 for paperwork-path, sensory-minefield-mapper, micro-adventure-mapper):** bill-rescue, bookmark, bike-medic, buy-wise, brain-roulette, contract-decoder, date-night, future-proof, lease-trap-detector, layover-maximizer, name-audit, plain-talk, procedure-probe, plot-hole-finder, renters-deposit-saver, signal-vs-noise, someone-said-it-better, ticket-tackler.
 
 | Instance | Status |
 |---|---|
@@ -55,9 +55,9 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | FanTheory — invented Severance scenes | fixed (SMART canon check) |
 | AnalogyEngine — wrong reason vaccines get updated | fixed (facts-mode check) |
 | SignalVsNoise — figures not in the sources | fixed (`dropUnsourcedFigures`) |
-| **PaperworkPath** — Texas safety inspection, online voter registration | **open** |
-| **TripRecon** — Denver airport "train from the garage" | **open** |
-| **MicroAdventureMapper** — Boston Common "at the north end" of the Freedom Trail | **open** |
+| PaperworkPath — Texas safety inspection, online voter registration | **fixed with shared fix** (`worldFacts`; live run now says emissions inspection only. Voter line now names Texas.gov, which offers registration only alongside a DPS licence transaction — watch) |
+| TripRecon — Denver airport "train from the garage" | **fixed with shared fix** (live run: train runs terminal → A → B → C) |
+| MicroAdventureMapper — Boston Common "at the north end" of the Freedom Trail | **wired to shared fix** (not reproduced on the live run) |
 | **BuyWise** — "sold largely direct"; no price lookup | **open** |
 | **PlotHoleFinder** — story timing errors; plot summary lacks timing | **open (held from search)** |
 
@@ -83,11 +83,11 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | JustifyMyMeeting — no yearly cost for a weekly meeting | fixed (computed in code) |
 | BeforeTheCrash — "3 of the 5" (was 2) | **fixed with shared fix** |
 | WhereDidTheTimeGo — free time added up wrong | **fixed with shared fix** |
-| **MoneyDiplomat** — "Social Split" explanation vs its amounts | **open** (code rescales amounts without checking the explanation) |
-| **LaundroMat** — "three loads" vs four in its own list | **open** |
-| **SmallChangeBigDifference** — weekday rate × 365 days | **open** |
-| **BatchFlow** — padded batch time exceeds its own window | **open** (computable in code) |
-| ToastWriter — asked for 2 minutes, writes about 1 | **open** (length is computable: words ÷ ~130/min) |
+| MoneyDiplomat — "Social Split" explanation vs its amounts | **fixed with shared fix** (number check now sees the final rescaled amounts and every prose field) |
+| LaundroMat — "three loads" vs four in its own list | **fixed with shared fix** (number check + consistency check, every mode) |
+| SmallChangeBigDifference — weekday rate × 365 days | **fixed with shared fix** (number check before the stream's done event) |
+| BatchFlow — padded batch time exceeds its own window | **fixed with shared fix** (number check, all 13 modes) |
+| ToastWriter — asked for 2 minutes, writes about 1 | **fixed in code** (estimated_time = words ÷ 130/min; length stays a ceiling by design) |
 
 **Sweep needed.** Every tool whose output contains numbers it derived itself (totals, durations, counts, per-year figures) and doesn't run the number check.
 
@@ -125,7 +125,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 **Shared fix.** `runOutputGuard` (`invented_fact`, `mind_reading`) and `checkAgainstSupplied`.
 
-**The gap.** 43 routes on the FROZEN_V1 list run neither check:
+**Closed 2026-10-09.** `checkConsistency` gained check 10 (a detail about the visitor they never gave), in the same Sonnet call, so every route wired for T3/T7 got T4 at no extra cost. Before that, 43 routes on the FROZEN_V1 list ran neither check:
 
 > alternate-path, analogy-engine, argue-smarter, awkward-silence-filler, batch-flow, belief-stress-test, bike-medic, bill-rescue, bookmark, brain-dump-buddy, brain-roulette, brainstate-deejay, buy-wise, complaint-escalation-writer, context-collapse, decoder-ring, doctor-visit-prep, fake-review-detective, final-wish, ghost-writer, history-today, layover-maximizer, lease-trap-detector, markup-detective, mental-health-navigator, mise-en-place, name-storm, plain-talk, procedure-probe, pronounce-it-right, renters-deposit-saver, roast-me, not-so-fast, six-degrees-of-me, the-whole-story, the-debrief, missing-link, tip-of-tongue, tool-finder, virtual-body-double, waiting-mode-liberator, wrong-answers-only
 
@@ -134,11 +134,11 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | Instance | Status |
 |---|---|
 | BragSheetBuilder — résumé bullets with facts not supplied | fixed (supplied-facts check) |
-| **ToastWriter** — "the night before" | **open** |
-| **CaptionMagic** — sand "on my face", rescue backstory | **open** |
-| **LazyWorkoutAdapter** — "you mentioned stiff shoulders" | **open** |
-| **TheRunthrough** — Cut mode adds a sentence | **open** |
-| **LeverageLogic** — visitor's own assessment recast as "your employer indicated" | **open** |
+| ToastWriter — "the night before" | **fixed with shared fix** (check 10) |
+| CaptionMagic — sand "on my face", rescue backstory | **fixed** (its own evidence check moved to Sonnet) |
+| LazyWorkoutAdapter — "you mentioned stiff shoulders" | **fixed with shared fix** (check 10) |
+| TheRunthrough — Cut mode adds a sentence | **fixed with shared fix** (check 10) |
+| LeverageLogic — visitor's own assessment recast as "your employer indicated" | **fixed with shared fix** (check 10) |
 
 ---
 
@@ -180,7 +180,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | "the visitor" in replies | **fixed with shared fix** |
 | Giftology / BreakMyPlan / FutureProof British spellings | **fixed with shared fix** |
 | DateNight repair wrote "the confirmed notes describe…" | fixed per tool (repair wording) |
-| **FutureProof** — "INFERRED:" marker in prose | **open** (add marker-stripping to the reply filter) |
+| FutureProof — "INFERRED:" marker in prose | **fixed with shared fix** (reply filter strips prompt markers in every language; a bare enum value is kept) |
 | UpsellShield — "out-of-door price" | open, minor |
 
 ---
@@ -203,15 +203,15 @@ Some have their own checks (several are grounded or number-checked), but none ch
 
 **What goes wrong.** The tool's own "Try an example" content has passed dates, or fields that contradict each other.
 
-**Shared fix: to build.** A lint script over every tool's EXAMPLES and its 13 locale strings:
+**Shared fix: built 2026-10-09.** `scripts/example-dates-audit.js` (Gate 13) fails on any NEW fixed date in an example (18 historical years baselined in `src/data/example-dates.json`). Dates are computed with `exampleDate` / `dayMonthFromToday` (`src/utils/formatLocale.js`); also fixed TicketTackler (tickets dated weeks ago, response windows closed) and LeaseTrapDetector (a lease that had already ended). Still by eye: example fields that disagree with each other. Original plan:
 - flag month names, dates and years;
 - flag example fields that disagree with each other (type vs description), for a person to review.
 
 | Instance | Status |
 |---|---|
 | ConceptCoach — example 3 stage/churn | fixed |
-| **EmailUrgencyTriager** — "Sept 12 instead of Oct 1" | **open** |
-| **ReadTheRoom** — "Work Happy Hour" type, offsite description | **open** |
+| EmailUrgencyTriager — "Sept 12 instead of Oct 1" | **fixed** (dates computed from today, 13 languages) |
+| ReadTheRoom — "Work Happy Hour" type, offsite description | **fixed** (description now a happy hour, 13 languages) |
 
 ---
 
@@ -233,7 +233,7 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 
 1. ~~**T9 smoke test.**~~ Done 2026-10-09.
 2. ~~**T3 + T7**~~ Done 2026-10-09: 96 routes, 25 short-output tools skipped on purpose.
-3. **T4** for the 43 frozen tools: wire in the supplied-facts check (the shared fix), rather than converting each to v2 by hand.
-4. **T1 sweep:** grounding for PaperworkPath, TripRecon, MicroAdventureMapper first (place/law facts).
-5. **T2 sweep:** number check or code math for MoneyDiplomat, LaundroMat, SmallChange, BatchFlow, ToastWriter.
-6. **T6** marker stripping in the reply filter; **T8** example lint.
+3. ~~**T4**~~ Done 2026-10-09 (check 10 in `checkConsistency`).
+4. ~~**T1**~~ PaperworkPath, TripRecon, MicroAdventureMapper done 2026-10-09 (`lib/worldFacts.js`). Still to sweep: the candidate list above.
+5. ~~**T2**~~ Done 2026-10-09.
+6. ~~**T6, T8**~~ Done 2026-10-09.
