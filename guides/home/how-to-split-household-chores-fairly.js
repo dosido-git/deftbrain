@@ -44,7 +44,7 @@ module.exports = {
   "sources": [
     {
       "label": "US Bureau of Labor Statistics: American Time Use Survey News Release",
-      "url": "https://www.bls.gov/news.release/atus.nr0.htm"
+      "url": "https://www.bls.gov/news.release/atus.htm"
     },
     {
       "label": "University of Mary Washington Residence Life: Roommate Agreements",

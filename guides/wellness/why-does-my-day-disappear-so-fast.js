@@ -34,7 +34,7 @@ module.exports = {
     },
     {
       "name": "Where does the time go during a workday?",
-      "body": "A two-minute interruption costs more than two minutes, because getting back into what you were doing takes extra time and attention. A morning with five small interruptions can cost far more than the ten minutes they seemed to take. You felt busy all morning, and you were, but much of the effort went into getting back on track rather than moving forward."
+      "body": "A two-minute interruption costs more than two minutes, because getting back into what you were doing takes extra time and attention. In one observational study of office workers (Mark, González and Harris, 2005), interrupted tasks were usually picked up again the same day, but only after about 25 minutes on average and two other tasks in between. A morning with five small interruptions can cost far more than the ten minutes they seemed to take. You felt busy all morning, and you were, but much of the effort went into getting back on track rather than moving forward."
     },
     {
       "name": "Why is it harder to focus in the afternoon?",
@@ -45,6 +45,10 @@ module.exports = {
     {
       "label": "American Psychological Association: Multitasking: Switching costs",
       "url": "https://www.apa.org/topics/research/multitasking"
+    },
+    {
+      "label": "Mark, González & Harris (2005), No Task Left Behind? Examining the Nature of Fragmented Work (CHI '05)",
+      "url": "https://research.manchester.ac.uk/en/publications/no-task-left-behind-examining-the-name-of-fragmented-work/"
     }
   ],
   "cta": {

@@ -437,7 +437,7 @@ Generated 2026-10-09. 510 guides in scope, 510 with no flags.
 | wellness/why-do-i-keep-having-the-same-dream | yes | 533 |  |  |
 | wellness/why-does-it-feel-like-i-did-nothing-today | yes | 557 |  |  |
 | wellness/why-does-multitasking-make-me-so-tired | yes | 524 |  |  |
-| wellness/why-does-my-day-disappear-so-fast | yes | 501 |  |  |
+| wellness/why-does-my-day-disappear-so-fast | yes | 537 |  |  |
 | wellness/why-is-it-so-hard-to-name-what-im-feeling | yes | 566 |  |  |
 | wellness/why-scheduled-rest-never-feels-like-enough | yes | 496 |  |  |
 | wellness/why-you-cant-focus-before-something-stressful | yes | 490 |  |  |
