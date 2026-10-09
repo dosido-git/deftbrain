@@ -5328,30 +5328,65 @@ Once all those costs are paid, the margin on an ordinary bottle is not unusual f
 
 ## Pets
 
+### Do Dogs Just Vomit Sometimes? Yes — But Here's When It Matters
+
+URL: https://deftbrain.com/guides/pets/do-dogs-just-vomit-sometimes
+Updated: 2026-10-09
+
+Healthy dogs vomit occasionally, and one episode in a dog that's otherwise bright and eating is usually nothing. Call the vet if vomiting repeats, lasts beyond a day or comes with lethargy, blood or appetite loss. A swollen belly with unproductive retching, or a suspected toxin, is an emergency.
+
+Occasional vomiting is common in healthy dogs, often from eating too fast, an empty stomach, grass or something from the trash. What matters is frequency and what comes with it: repeated vomiting, vomiting that lasts past a day, or vomiting with lethargy, blood, fever or appetite loss needs a vet. Unproductive retching with a swollen belly can be bloat (gastric dilatation-volvulus), which is an emergency.
+
+Your dog just threw up, and you're cleaning it up trying to decide whether to call the vet, watch and wait, or forget it happened. The answer depends on a few details, most of them right in front of you.
+
+**When is a dog throwing up nothing to worry about?**
+
+Most one-off vomiting in an otherwise-healthy dog is harmless and explainable. Yellow bile on an empty stomach in the morning means they need a small bedtime snack or earlier breakfast. Undigested kibble back up minutes after eating means they ate too fast — slow-feeder bowls fix this. A pile of grass and a little stomach foam means they ate grass and grass came back. The marker for this category: one episode, no recurrence within hours, dog otherwise themselves — eyes bright, appetite returns by the next meal, wants their walk. If your dog throws up and twenty minutes later is asking for their tennis ball, you're almost certainly here.
+
+**What should you do if your dog has an upset stomach?**
+
+Dietary indiscretion (raided the trash, ate something off the sidewalk, got into cat food), a recent food change, something fatty, mild gastritis. A few episodes within a 12-to-24-hour window, dog stays mostly okay between, rights itself within a day. Standard home approach: withhold food for 12 hours, then offer something bland (boiled chicken and rice, or plain canned pumpkin), then resume normal feeding gradually. If your dog perks back up between episodes and the vomiting tapers off rather than escalating, you're in this category. If it's not resolving by hour 24, escalate to step 3 — that's the line.
+
+**When should you call the vet about a vomiting dog?**
+
+More than three episodes in a day, vomiting that persists past 24 hours despite withholding food, or vomiting that recurs every time food goes in. Possible causes range from GI infection, parasites, or food allergy to pancreatitis or partial foreign-body obstruction. The directive here is clean: at three-plus episodes in a day, or vomiting that's still going at hour 24, call the vet. Same day if you can, next morning if you can't. The 'we'll see' window has closed. Bring a description of what came up (color, contents, frequency) and what your dog has eaten in the last 48 hours — the vet will want both.
+
+**Which symptoms with vomiting are more serious?**
+
+Pairings change the urgency more than the vomiting itself does. Vomiting plus lethargy. Vomiting plus appetite that doesn't return. Vomiting with blood or coffee-ground-appearance flecks. Vomiting plus fever. Vomiting plus a distended belly. Vomiting plus wobbliness or pale gums. A single vomiting episode in a flat, miserable dog is more serious than five episodes in an otherwise-engaged dog — that's the rule worth memorizing. When vomiting appears alongside another sign, the vomiting is usually a symptom of the other sign rather than the main event. Don't treat it in isolation. Call the vet describing the cluster, not just the vomiting.
+
+**When is a vomiting dog an emergency?**
+
+Some presentations aren't 'vomiting questions' anymore. Unproductive retching paired with a distended, hard belly — that's bloat (gastric dilatation-volvulus), and it kills dogs in hours. Repeated vomiting of bright red blood. Vomiting after suspected toxin ingestion — chocolate, grapes or raisins, xylitol, antifreeze, rat poison, certain houseplants (call ASPCA Animal Poison Control: 888-426-4435 before driving, if you have time). Vomiting after trauma. Vomiting paired with collapse, seizure, or sudden inability to stand. These are ER visits, not vet appointments. The 24-hour wait-and-see rule from earlier in the guide does not apply. Go now.
+
+> Once or repeated? Dog otherwise themselves? Anything else off?
+
+The three questions that resolve most vomiting worry. Once + dog acting normal + nothing else wrong = almost always nothing. Repeated, or paired with anything else, or dog clearly off = call. The combination matters more than the vomit itself — what comes up, how often, and what's happening alongside it tell you almost everything.
+
 ### How Do I Know If My Dog Is Sick? The Signs That Actually Matter
 
 URL: https://deftbrain.com/guides/pets/how-do-i-know-if-my-dog-is-sick
-Updated: 2026-10-08
+Updated: 2026-10-09
 
-The signs a dog is sick are changes across a day or more in appetite, toilet habits, energy and engagement, and physical signs such as gum color. One skipped meal in a bright dog is usually nothing. Pale, white or blue gums, collapse, a swollen belly with unproductive retching, or difficulty breathing need a vet immediately.
+A dog is likely sick when appetite, toilet habits, energy or engagement change for a day or more, or gum color changes. One skipped meal in a bright dog is usually nothing. Pale, white or blue gums, collapse, a swollen belly with retching, or labored breathing need a vet now.
 
-You can't ask your dog how they're feeling. You can only watch. And dogs are spectacular at hiding when something's wrong — leftover wolf wiring tells them showing weakness gets you eaten. They will compensate, conceal, and carry on long after a person in the same condition would be on the couch.
+Signs of illness in dogs usually show up as changes from normal in four areas: appetite, toilet habits (vomiting, diarrhea, urination), energy and engagement, and physical signs you can check, such as gum color, breathing and temperature. A dog's normal temperature is about 101 to 102.5°F (Merck Veterinary Manual). Duration and combinations matter more than any single episode.
 
-That makes the signs harder to read but not unreadable. Most illness in dogs shows up across a small number of categories: appetite, bathroom, energy, and a handful of physical signals you can check yourself. Knowing what to look for is the difference between catching something on day one and catching it three weeks in.
+You can't ask your dog how they feel; you can only watch. Dogs often carry on long after a person in the same condition would be on the couch, which makes the signs harder to read but not unreadable.
 
-**Watch the appetite — but not just one meal**
+**Is it normal for a dog to skip a meal?**
 
 Dogs skip meals for all kinds of harmless reasons: heat, hormones, too many treats, food they're bored of. One missed meal in an otherwise-bright dog is almost never the signal. Sustained refusal across 24 hours is. Refusing a high-value treat your dog always takes — chicken, cheese, peanut butter — is. A dog who turns down food from your hand is more diagnostic than a dog who turns down their bowl. Keep this rule in mind: a one-day appetite dip in a dog who's otherwise themselves is a watch. A multi-day dip, or refusal of food they normally inhale, is a call.
 
-**Read the bathroom changes**
+**Which toilet changes mean a dog is sick?**
 
 This is the single highest-yield category for catching illness early. Vomiting once and bouncing back is usually fine. Repeated vomiting, vomiting blood, or vomiting paired with lethargy is not. Diarrhea for a day is usually fine; bloody diarrhea, persistent diarrhea past 48 hours, or diarrhea plus low energy is not. Drinking dramatically more or less than usual matters. Peeing more, less, or with visible difficulty (squatting without producing, repeated trips, accidents in a house-trained dog) matters. The pattern: one episode that resolves on its own is usually nothing. Duration, blood, or pairing with energy changes is something.
 
-**Spot the engagement shift**
+**How can you tell if a dog is not acting like themselves?**
 
 Healthy dogs have a recognizable engagement level — they meet you at the door, respond to their name, perk up at the leash. The concerning shift isn't 'moving slower,' which can be normal aging or just a quiet day. The concerning shift is checked-out: a dog who used to greet you and doesn't, a dog whose eyes used to track you and now don't, a dog who responds to nothing that used to work. Eyes are usually the first place this shows. Engagement loss in an otherwise-physically-fine dog is often the earliest sign that something is wrong, and it's the one most worth trusting your gut on.
 
-**Check the physical signals**
+**How do you check your dog's gums, breathing and temperature?**
 
 Five things you can actually check, not just observe. Gum color: pink and moist is normal; pale, white, blue, yellow, or brick-red is not. Press your fingertip on the gum — color should return in under two seconds. Breathing: rapid panting at rest, or visible effort when not exercising or hot, is concerning. Hydration: pinch the skin between the shoulder blades; it should snap back. Skin that stays tented is dehydration. Temperature: a warm or dry nose is not a reliable test — take a real temp if you suspect fever. Normal is 101–102.5°F; over 103°F is fever territory. Belly: a hard, distended, painful belly, especially with restlessness or unproductive retching, is a same-day emergency.
 
@@ -5366,19 +5401,19 @@ Three questions that turn a vague worry into a useful read. New + brief + isolat
 ### Is My Dog Sick or Just Tired? How to Tell the Difference
 
 URL: https://deftbrain.com/guides/pets/is-my-dog-sick-or-just-tired
-Updated: 2026-10-08
+Updated: 2026-10-09
 
-A tired dog still engages — eyes follow you, the tail thumps, they eat, if slowly — and bounces back after a night's rest. A sick dog stops engaging, loses interest in food, is still off the next day, or shows several symptoms together. Abnormal gum color, collapse or a swollen belly with retching need a vet now.
+A tired dog still engages: eyes follow you, the tail thumps, they eat, if slowly, and they're normal after a night's rest. A sick dog withdraws, loses interest in food, is still off the next day, or has several symptoms together. Abnormal gums or collapse need a vet now.
 
-Your dog has been quiet all afternoon. Not interested in their toy. Got up for dinner but barely ate. They're not limping, not throwing up, not panting weird — they're just... off. You're 90% sure it's nothing. The other 10% is what made you open this tab at 11pm.
+Tiredness and illness can look alike in a dog, but they differ in three ways: a tired dog still responds to you and still eats, and recovers after rest, usually by the next morning; a sick dog withdraws, loses interest in food and stays off. Two or three changes at once (low energy plus appetite loss plus vomiting, say) are more significant than one.
 
-Tired and sick can look identical at first glance. Both lie around. Both lose interest. Both can come on out of nowhere. The difference is in the details — how long it's lasted, what else is happening, and whether your dog is still showing up. Five signals that separate one from the other, plus the emergencies that don't wait.
+Your dog has been quiet all afternoon, not interested in their toy, and barely ate dinner. Nothing dramatic, just off, and you're fairly sure it's nothing without being sure enough to stop thinking about it.
 
-**Watch the engagement, not just the activity**
+**How can you tell if your dog is sick or just tired?**
 
 A tired dog is still your dog. Their eyes track you when you walk in. They lift their head when you say their name. The tail thumps even if they don't get up. A sick dog goes flat — eyes unfocused, no response to triggers that usually work, indifference that feels different from sleepiness. The activity level can look identical (lying down, not playing). The engagement level is what separates them. If your dog is still in there — still aware, still acknowledging you — they're probably just tired. If your dog has checked out, that's the part to take seriously.
 
-**Read the appetite through the tired-versus-sick lens**
+**Does a tired dog still eat?**
 
 Tiredness dulls enthusiasm; sickness switches off interest. A dog who is merely wiped out will still amble over for dinner — maybe eat slower, maybe leave some behind — because being tired doesn't turn off hunger. A dog who ignores the bowl entirely, or sniffs it and walks away, is telling you something different. Weigh it against the day, too: a long hike, a hot afternoon, or a stressful outing can flatten a single meal without meaning anything. In a dog who's just tired, it's the next meal that decides — appetite comes back with the energy. If the energy returns and the appetite doesn't, stop filing it under tired.
 
@@ -5386,11 +5421,11 @@ Tiredness dulls enthusiasm; sickness switches off interest. A dog who is merely 
 
 Tired bounces back. Sick doesn't. A dog who had a quiet afternoon and is bright the next morning was just tired — case closed. A dog who's been off for 24 hours and is still off the next morning isn't recovering on the normal timeline, and that's the cleanest single test in this guide. Most 'tired' resolves by the next day. Most 'sick' doesn't. If you're somewhere on the line at 11pm, the smartest move is often to sleep on it and re-evaluate in the morning. If they're back to normal, you have your answer. If they're not, call the vet.
 
-**Notice the cluster, not just the symptom**
+**When do several small symptoms add up to a vet visit?**
 
 One weird thing in isolation usually isn't worth worrying about. Two or three together usually is. A dog who's lying around but eating, drinking, peeing, and engaging normally is almost always fine. A dog who's lying around AND off their food AND drinking more (or less) than usual AND vomited once is a different conversation, even if each individual symptom seems mild on its own. Illness shows up as a pattern, not a single signal. Count the things that are different from baseline. One — probably nothing. Three — vet conversation today.
 
-**Know when the question stops being tired-or-sick**
+**Which signs mean it's an emergency, not tiredness?**
 
 A handful of signs take the tired-or-sick question off the table entirely: gums that aren't their normal pink, collapse, a hard swollen belly with retching that produces nothing, labored breathing at rest, a seizure, or anything after possible toxin exposure. Those are emergency-room-now situations — no overnight test, no cluster-counting. Our companion guide, 'How Do I Know If My Dog Is Sick,' walks through each emergency sign and the at-home physical checks in detail. For this guide, the rule is simpler: everything above assumes what you're seeing is subtle. The moment it's dramatic instead of subtle, you're not choosing between tired and sick anymore. Go.
 
@@ -5403,35 +5438,105 @@ The three questions that separate tired from sick. Hours usually mean tired; a f
 URL: https://deftbrain.com/guides/pets/weird-cat-behaviors-explained
 Updated: 2026-10-09
 
-Most weird cat behavior, such as staring at walls, hiding and night-time noise, is normal because cats sense sounds, smells and movement people miss. What matters is a change from your cat's usual behavior: over-grooming with bald patches, hiding that is new, eating non-food items, or an older cat who starts yowling at night are worth a vet visit.
+Most odd cat behavior, such as staring at walls, hiding and night-time noise, is normal: cats sense sounds, smells and movement people miss. What matters is change. Over-grooming with bald patches, new or constant hiding, eating non-food items, or an older cat newly yowling at night need a vet.
 
-Your cat is staring at the wall. Or the ceiling. Or, somehow, both at once. They've been doing it for ten minutes. You are now Googling, against your better judgment.
+Most behavior that looks strange in cats, such as staring at a blank wall, sudden hiding or night-time activity, reflects senses sharper than ours. The signs worth a vet visit are changes from a cat's normal pattern: over-grooming that leaves bald or raw patches, new hiding with less eating, eating non-food items (pica), and new loud night-time vocalizing in an older cat, which can accompany conditions such as hyperthyroidism.
 
-Cats are weird on purpose. Their wiring is built around predator senses we can't access — sounds we can't hear, scents we can't track, motion we can't see. Most of what looks like cosmic horror to us is them processing the world. A small fraction is something to act on. The difference usually comes down to whether the behavior is new.
+Your cat has been staring at the wall for ten minutes. You are now searching, against your better judgment. Usually the answer is reassuring, and the difference comes down to whether the behavior is new.
 
-**Decode the wall-staring**
+**Why does my cat stare at the wall?**
 
 Cats see, hear, and smell things you don't. Air currents, dust motes catching light, the high-frequency hum of a power supply, an insect on the ceiling, the soft scrape of a mouse two rooms away. When your cat stares at 'nothing,' they're almost always processing something real to them. This is the most reliably quirky behavior in this guide. The pattern — sudden focus, locked posture, occasional ear-tracking — is normal predator wiring. The concerning version is rare: persistent wall-staring without focus, often combined with disorientation or unusual vocalization, which can signal cognitive changes in elderly cats. For a cat under 10 with intermittent wall-watching, you're fine.
 
-**When is a cat's behavior a sign something is wrong?**
+**When is a cat's grooming a sign something is wrong?**
 
-Cats spend a large part of their waking time grooming. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.
+Cats spend a large part of their waking time grooming, and that's normal. Over-grooming, with bald patches, broken hairs, raw skin or fixating on one spot, is not. It usually has one of two causes: stress (a new pet, a move, a schedule change) or physical discomfort such as skin conditions, allergies or pain, which cats sometimes respond to by grooming the area. If there's an obvious recent stressor, reduce it and watch closely; if there isn't, or the grooming continues, have a vet check for a physical cause.
 
-**Spot the meaningful hiding**
+**Why is my cat suddenly hiding?**
 
 Cats hide. Their wiring tells them small dark spaces are safer than open ones, and a cat retreating to the closet during a thunderstorm is just being a cat. The quirky version is contextual — visitors, vacuum, fireworks, a delivery — and ends when the trigger does. The concerning version is sudden hiding without a context, especially in a previously confident cat, especially combined with reduced eating, reduced grooming, or unusual quietness. Cats hide pain by hiding themselves. A cat who suddenly stops appearing for meals or for company is often telling you something is wrong.
 
-**Recognize the eating-non-food**
+**Why does my cat eat plastic, wool or other non-food things?**
 
 Pica — cats eating wool, plastic, hair ties, cardboard, dirt — is not a quirky cat thing. It's worth treating as concerning even when you're not sure. The medical version can signal mineral deficiency, anemia, gastrointestinal issues, or compulsive behavior. The behavioral version often points at boredom, weaning issues, or stress. A cat who licks a cardboard box once is fine. A cat who eats a sock is a cat headed to the vet — and not just because the sock has to come back out, but because the urge itself wants explaining.
 
-**Know the late-night yowl**
+**Why is my older cat yowling at night?**
 
 Cats vocalize for many reasons: hunger, boredom, demanding attention, a closed door. That's quirky. The concerning version is a specific shift — an older cat who develops a new pattern of loud yowling, especially at night, especially in unfamiliar parts of the house, especially in a cat who used to be quiet. That pattern can signal cognitive dysfunction, hyperthyroidism, hypertension, or pain. Unlike most things in this guide, this one rarely improves on its own. A senior cat with new-onset nighttime vocalization is a vet visit, not a watch-and-wait.
 
 > Is this new? Is it persistent? Is my cat otherwise themselves?
 
 Cats are masters at hiding distress — a cat who's still eating, grooming, and showing up for company is usually fine even when their behavior is bizarre. A cat whose baseline has shifted (quieter, hungrier, hiding more, grooming less) is communicating something. The change matters more than the strange behavior itself.
+
+### Weird Dog Behaviors, Explained (And When to Actually Worry)
+
+URL: https://deftbrain.com/guides/pets/weird-dog-behaviors-explained
+Updated: 2026-10-09
+
+Most odd dog behaviors, such as eating grass, chasing tails, staring at nothing or eating poop, are harmless when occasional. A sudden change is what matters: frantic grass-eating with drooling, obsessive spinning, new fearfulness at home. A dog pressing its head against a wall needs a vet the same day.
+
+Many behaviors that worry dog owners are common and harmless: eating grass, chasing the tail, staring at something unseen, and eating feces (coprophagia). The warning sign is usually a change: a behavior that starts suddenly in an adult dog, becomes obsessive, or comes with drooling, retching or fearfulness. One behavior has no harmless version: head pressing, a dog pushing its head against a wall, which can indicate a neurological problem.
+
+Your dog just did the thing again: the head-tilt, the staring, the sudden shake when nothing happened. Most of it is wiring; a small part is your dog telling you something is off.
+
+**Why does my dog eat grass?**
+
+Dogs eat grass. Most do, regularly, and most of the time it means nothing more than they wanted to. The myth that grass means stomach upset doesn't hold up well — most grass-eating dogs aren't sick before or after, and don't vomit. The quirky version is occasional, post-meal, on a familiar lawn. The concerning version is sudden frantic grass-eating accompanied by lip-licking, drooling, or unproductive retching. That pattern points at nausea your dog is trying to relieve, and warrants a vet call if it lasts more than a day.
+
+**Is it normal for dogs to chase their tails?**
+
+Puppies chase their tails because tails move and puppies are absurd. That's quirky and almost always grows out of it. The concerning version shows up in adult dogs who do it for long stretches, can't be redirected, or seem distressed during. That can signal compulsive behavior, neurological issues, or skin or anal-gland irritation they're trying to reach. A few minutes of zoomies-with-tail-chasing is fine. Ten minutes of tight obsessive spinning is a vet conversation.
+
+**Why does my dog stare at nothing, or suddenly seem scared?**
+
+Dogs hear and smell things you can't. The pause-stare-listen sequence — head up, ears forward, focused on nothing visible — is your dog processing something real to them. That's quirky and reflects how good their senses are. The concerning version is a sudden change: a dog who's been confident in their own home now flinching at corners, refusing rooms, or showing fear at the same spot repeatedly. Sudden onset of fear behaviors in a previously confident dog can point at vision loss, hearing changes, or pain — and warrants a vet visit even if your dog seems fine otherwise.
+
+**Why does my dog eat poop?**
+
+Coprophagia is incredibly common, almost always disgusting, and mostly not medically serious. Puppies do it as part of investigating the world; some dogs do it for nutritional reasons; some do it because the behavior was reinforced when an owner ran over yelling. The quirky version is occasional and stops with management — clean the yard, train 'leave it,' redirect. The concerning version is sudden onset in an adult dog who never did it before, which can signal nutritional deficiency, parasites, or an underlying digestive condition. Recent change matters more than the behavior itself.
+
+**What does it mean when a dog presses its head against a wall?**
+
+Head pressing — a dog standing with their head pushed against a wall, corner, or piece of furniture, often for extended periods, often with a vacant or unfocused expression — is not a quirky behavior. It's a classic sign of neurological problems: liver shunts, toxin exposure, brain inflammation, head trauma. Unlike everything else in this guide, head pressing has no quirky version. If your dog is doing it, they need a vet that day, not next week. The other behaviors here are usually fine; this one is usually not.
+
+> Is this new? Is it persistent? Is my dog otherwise themselves?
+
+The three questions that turn a worried Google search into a useful read on what's happening. New + persistent + change in baseline behavior = worth a call. Familiar + occasional + dog otherwise themselves = almost certainly quirky. Most weird-behavior questions resolve cleanly when you answer all three.
+
+### Why Is My Cat Throwing Up Undigested Food? The 5 Real Reasons
+
+URL: https://deftbrain.com/guides/pets/why-is-my-cat-throwing-up-undigested-food
+Updated: 2026-10-09
+
+Cats most often bring up undigested food because they eat too fast, which slow-feeder bowls fix. Other causes are hairballs, food sensitivity, and passive regurgitation, which can signal an esophagus problem. Vomiting more than once a week, or with weight loss, lethargy or blood, needs a vet.
+
+The Cornell Feline Health Center notes that healthy cats vomit now and then, and that a hairball every week or two can be normal; cats that vomit more than once a week, or with lethargy, weakness, reduced appetite, blood, increased thirst or diarrhea, should see a vet promptly. Undigested food brought up minutes after eating is most often from eating too fast.
+
+You watched your cat inhale dinner, and ten minutes later there's a pile on the floor that looks barely chewed. Here are the real causes, from most fixable at home to most worth calling about.
+
+**Why does my cat throw up right after eating?**
+
+This is the single most common cause and the easiest to fix. Cats — especially in multi-cat households, food-anxious rescues, or cats on a once-a-day feeding schedule — bolt their food, swallow large pieces without chewing, and a stomach full of barely-touched kibble triggers the food right back up. The classic presentation: food comes up within minutes of eating, in a tube shape (the shape of the esophagus), still recognizable as kibble. The fix is mechanical: a slow-feeder bowl, a puzzle feeder, scattering food across a tray, or splitting one meal into several smaller ones across the day. If the regurgitation stops when you slow them down, you've found your answer and you don't need a vet.
+
+**How can you tell a hairball from regular vomit?**
+
+Cats groom constantly and swallow hair, which can form a wad in the stomach and come back up, often mixed with food. A hairball is usually a damp, cylindrical, cigar-shaped mass rather than a ball, shaped by the esophagus on the way out. Long-haired cats and shedding seasons make them more frequent; regular brushing and hairball-control food help. The Cornell Feline Health Center says a hairball every week or two can be normal; more often than that, or with other signs, is worth a vet visit.
+
+**Can food allergies make a cat vomit?**
+
+This shows up as a pattern, not an episode. Cats with a sensitivity to a specific protein — chicken, beef, fish, and dairy are the common culprits — vomit consistently after eating that food, sometimes within minutes, sometimes within hours, often with the food only partially digested. The tell is consistency: it happens with a specific food and stops if you change to a different protein source or a limited-ingredient diet. This usually warrants a vet conversation rather than DIY trial-and-error, because diagnosis ideally involves a structured elimination diet — running it informally tends to confound the result.
+
+**What is the difference between vomiting and regurgitation in cats?**
+
+This step is worth a paragraph because vets care about it: vomiting is active (heaving, abdominal contractions, the cat is clearly working at it for a few seconds before food comes up); regurgitation is passive (food just comes back up with no effort, often right after eating, sometimes still in tube shape). They look similar. They mean different things. Passive regurgitation of undigested food can point at an upper-GI issue — esophageal motility problems, megaesophagus, partial obstruction, or rarely a tumor. If your cat brings food up without retching, especially shortly after eating, especially repeatedly, that's the kind of detail your vet specifically wants to know. Tell them which it is — it changes what they investigate.
+
+**When should you take a vomiting cat to the vet?**
+
+Frequent vomiting (more than once a week as a sustained pattern) paired with anything else is the line where home fixes stop applying. Anything else means: weight loss, change in appetite or thirst, lethargy, hiding, changes in litter-box habits, or blood in what comes up. That cluster points at conditions bowl swaps don't reach — chronic kidney disease, hyperthyroidism, IBD, lymphoma, intestinal obstruction, pancreatitis. None get better on their own; some get much worse. And there are emergency markers worth knowing: vomiting that won't stop across hours, inability to keep water down, severe lethargy, suspected ingestion of string or ribbon (a swallowed string can saw through intestines — never pull on a visible end), or suspected toxin ingestion (lilies, antifreeze, human medications). Those go to the ER. The rest is a vet workup, not wait-and-see — bring a record of how often it's happening and what you've already tried.
+
+> How fast did they eat? How often is it happening? Is anything else changing?
+
+Three questions that route most cases. Eating fast + occasional + cat otherwise fine = mechanical fix at the bowl. Steady pattern + nothing else off = food sensitivity or hairball worth flagging. A pattern + other changes (weight, thirst, energy, litter box) = vet workup. The third question is the most important one — undigested food coming up alone is usually fixable; undigested food coming up alongside anything else is usually not.
 
 ## Practical
 
@@ -5871,13 +5976,11 @@ Long passages, because a toast is not a reading and attention drops fast. Quotes
 URL: https://deftbrain.com/guides/travel/can-you-leave-the-airport-during-a-layover
 Updated: 2026-10-09
 
-You can leave the airport during a layover if your passport and visa allow entry to that country — always on domestic layovers, and on international ones only where the transit rules permit — and you have enough time. Allow at least four hours of buffer before departure, plan one specific thing to do, and know where to leave bags.
+You can leave the airport on a layover if your passport and visa allow entry to that country (always on domestic trips; on international ones only where transit rules allow) and there's enough time. Allow two to three hours to get back through check-in and security, and plan one thing.
 
-You have an eight-hour layover. The airport is a known dead zone. There is a city you have wanted to see right outside, and you can see the skyline from the gate. You are wondering whether you can just leave, do something for a few hours, and come back in time for your flight. You also have a creeping suspicion that this is exactly how people end up missing flights — overconfidence in their ability to manage time in an unfamiliar city.
+Leaving the airport during a layover depends on two things: whether you can legally enter the country, which on an international layover depends on your nationality and that country's transit and visa rules, and whether you have time. Getting back usually takes two to three hours of travel, check-in, security and boarding, so layovers of about six hours or more leave useful time outside. Checked bags transferred through to your destination don't need collecting.
 
-Leaving the airport during a layover is sometimes a great call. Sometimes it is a disaster. The question is not really whether you can leave. The question is whether you can manage the four specific risks that come with leaving — and whether the time and the city actually justify them.
-
-What follows: the framework for deciding. Then a tool that gives you a verdict and a plan.
+You have an eight-hour layover and a city you've wanted to see is right outside. It can be a great call or the way people miss flights; it depends on a few risks you can check in advance.
 
 **Do you need a visa to leave the airport on a layover?**
 
@@ -5887,32 +5990,92 @@ On a domestic layover, you can always leave. On international layovers, your abi
 
 The math: 60 minutes for transit back to the airport, 30 to 60 minutes for international check-in and security, 30 minutes of cushion for traffic or unexpected delays, 20 minutes for boarding. That is roughly 2.5 to 3 hours of return logistics. To leave, you want a layover of at least 6 hours — meaning at least 3 hours of usable time in the city after subtracting return logistics. If you have 4 to 5 hours total, the actual usable city time is too short to be worth the stress of return. Shorter connections are a different question: see [is a 60-minute layover enough](/guides/travel/is-a-60-minute-layover-enough).
 
-**Plan for one specific thing, not a city tour**
+**What should you do on a short layover in a city?**
 
 The mistake people make is treating a layover like a vacation day. You do not have time to see the city — you have time for one specific experience. Pick one: a meal at a place you have wanted to try, a single museum, a single neighborhood walk, a specific vista. The plan should fit in your usable time with a 30-minute buffer. Trying to fit two things in an unfamiliar city is how you end up sprinting back to the airport in a panic.
 
-**Account for bag storage if you have luggage**
+**What do you do with your luggage on a layover?**
 
 Most airports have left-luggage facilities — but they are usually priced per bag per day, and queues add time on each end. If your bags are checked through to the final destination, you have nothing to worry about. If you have carry-on you do not want to drag through the city, factor in the storage cost and the queue time. Sometimes the storage logistics make leaving not worth it for a shorter layover.
 
-**Have a Plan B at the airport**
+**What if leaving the airport turns out to be a bad idea?**
 
 Always have a backup for if leaving turns out to be a mistake — a transit option that fails, a queue that ate your buffer, a wave of jet lag at hour two of your layover that makes you not want to do anything. The backup is typically a lounge with shower access (Priority Pass, your card-linked lounge), a quiet place to eat, or just a known good seat near your gate. The Plan B prevents the trip into the city from being an all-or-nothing bet on something you might not actually be up for.
+
+### How to Handle a Missed Connection When It Is Not Your Fault
+
+URL: https://deftbrain.com/guides/travel/how-to-handle-a-missed-connection-when-its-not-your-fault
+Updated: 2026-10-09
+
+If the airline caused your missed connection, rebook in the app before joining the line, call the airline while you queue, and ask for what it owes you. The ten largest US airlines commit to free rebooking and meals for delays they cause, and most to hotels. Keep every receipt.
+
+When a delay or cancellation is within the airline's control (maintenance, crew, cleaning, baggage loading), the ten largest US airlines commit to rebooking you at no extra cost and providing meals, and most commit to hotels for overnight delays; the US Department of Transportation tracks these commitments on its dashboard. Weather delays usually don't qualify. On flights covered by EU rules, passengers can also be owed cash compensation, claimed afterwards.
+
+The inbound flight was late, the door is closed, and the next flight is nine hours away. Do the right things in the right order and this is often manageable within an hour.
+
+**What should you do first when you miss a connecting flight?**
+
+The line at the gate is full of people in your situation. While they wait to talk to a single agent, open the airline app and look for the next flight to your destination. Try the website too — sometimes it shows different inventory than the app. Sometimes you can rebook yourself in 90 seconds and skip the line entirely. The first move is always to try to solve it without the line, because the line is often the slowest path to a solution.
+
+**Is it faster to call the airline or wait in line?**
+
+If the app cannot rebook you (sometimes the system requires an agent), call customer service while you stand in line. Phone hold times are often shorter than the line — and a phone agent has the same authority as a gate agent. Whoever picks you up first wins. International phone numbers (sometimes the airline's overseas customer service) are often less congested than the domestic line. This is one of the cleanest tricks in stranded-traveler arsenals.
+
+**What does an airline owe you for a missed connection?**
+
+Ask for what applies, because agents don't always volunteer it. When the airline caused the delay, US airlines commit to rebooking you, usually on their own next flight, and to meal vouchers for longer waits; most also commit to a hotel and transport for an overnight delay, which you can check for your airline on the Department of Transportation's dashboard at FlightRights.gov. Weather and air-traffic-control delays generally don't qualify. Under EU rules (EU261), passengers on covered flights can also be owed care, rerouting and cash compensation for long delays, claimed after the trip.
+
+**How do you get better help from a gate agent?**
+
+Gate agents have wide latitude. They can rebook you on partner airlines, upgrade you on the rebooked flight, give you better hotel vouchers, or extend amenities they do not have to. They can also give you the bare minimum and walk away. Politeness is not weakness — it is leverage. The polite traveler often gets meaningfully better treatment than the angry one. Express frustration with the situation, not the agent. Make their job easy and they will often make yours easy in return.
+
+**What should you keep for a compensation claim?**
+
+Keep your boarding passes, original itinerary, screenshots of the cancellation notice, receipts for any expenses you incurred (food, hotel, ground transport), and a record of when you were rebooked. If you are flying within the EU, EU 261 compensation can be substantial and is claimed afterward, not at the airport. If you have travel insurance, the documentation is the key to claims. The traveler who keeps records gets compensation. The one who throws away receipts in frustration usually does not.
+
+### How to Know if You'll Make Your Connection
+
+URL: https://deftbrain.com/guides/travel/how-to-know-if-youll-make-your-connection
+Updated: 2026-10-09
+
+To know if you'll make a connection, check the live gate in the airline app, subtract taxi time and the boarding cutoff (often 15 to 20 minutes before departure) from the layover, and tell a flight attendant early if it's tight. If you'll miss it, rebook before landing.
+
+Whether you'll make a connection depends on the real time between the plane's door opening and the next flight's boarding cutoff, often 15 to 20 minutes before departure and earlier on some international flights, and on the distance between the two gates. Checking the live gate in the airline app during the flight, and rebooking early if the numbers don't work, gives the best odds.
+
+Your inbound is late and you're doing math in your seat about gate D34 to gate B12. Working the problem starts in your seat with the flight tracker open, not after you deplane.
+
+**How do you find out which gate your connection leaves from?**
+
+Gates change constantly. The gate on your printed boarding pass is from booking time and is often outdated by the time you fly. Open the airline app, or look at the airport's live departures board, and find your real connecting gate. The distance between gates is the single biggest variable in whether you make a connection — and getting the wrong gate can mean confidently walking the wrong direction for ten minutes you cannot afford.
+
+**How much time do you really have to make a connection?**
+
+Posted layover is gate-arrival to gate-departure. Your real connection window starts when the cabin door opens (5 to 15 minutes after touchdown depending on taxi time) and ends when boarding closes (typically 15 to 20 minutes before departure, sometimes earlier on international). Subtract those numbers from the posted layover and you have the actual minutes you have to walk. A 60-minute posted layover is often a 25-minute walking window.
+
+**Can a flight attendant help you make a tight connection?**
+
+If your inbound is delayed and you are at risk, ask a flight attendant to check on your connection. They have access to the system and can sometimes call ahead. Some airlines will have a gate agent meet you with directions. On rare occasions, they will hold the connecting flight if many passengers are connecting from your delayed flight. None of this is guaranteed, but the request is free, and asking it 30 minutes before landing gives them time to do something. Asking after deplaning is too late.
+
+**Can you move to the front of the plane for a tight connection?**
+
+If your connection is genuinely tight (under 25 real minutes after deplaning), politely ask the flight attendant during taxi if you can move forward. Most will allow it once the plane is on the ground. The difference between being in row 35 and row 8 is often 7 to 10 minutes — which is sometimes the entire difference between making and missing a tight connection. Do not be obnoxious about it. Do ask early, before the seatbelt sign is off.
+
+**What should you do if you're going to miss your connection?**
+
+If the numbers show you won't make it, don't wait for the line at the gate. Open the airline app or call while still in the air if there's Wi-Fi, and get onto the next available flight before the other connecting passengers from your flight try the same. Seats on the next departure go to whoever asks first, so a few minutes' head start can decide whether you leave tonight or tomorrow.
 
 ### How to Sleep in an Airport During a Long Layover
 
 URL: https://deftbrain.com/guides/travel/how-to-sleep-in-an-airport-during-a-long-layover
 Updated: 2026-10-09
 
-To sleep in an airport during a long layover, check the airport's reputation for it first, sleep airside after security rather than in public arrivals, and bring real gear: an eye mask, earplugs, a proper travel pillow and a layer. Set several alarms well before boarding, and consider a lounge or transit hotel if you need to function the next day.
+To sleep in an airport, check its reputation for sleeping first, sleep airside after security in a quiet area, and bring an eye mask, earplugs, a good pillow and a layer. Set several alarms well before boarding. If you must function tomorrow, a lounge or transit hotel is worth it.
 
-You have a 13-hour layover overnight. A hotel would be sensible but it is also another $150 you are not excited about spending, and you would barely sleep there before having to come back to the airport anyway. Sleeping in the airport seems plausible. You have seen people do it — heads tilted back, legs stretched across two seats, somehow at peace. You have also tried it once before, and you barely slept and woke up feeling worse than if you had stayed up.
+Sleeping in an airport works best airside, after security, in a quiet area away from food courts and announcements, with an eye mask, earplugs, a proper travel pillow and an extra layer. Some airports, such as Singapore Changi, offer rest zones and transit hotels; others discourage sleeping. Setting several alarms and confirming the gate before sleeping avoids the worst outcome, a missed flight.
 
-There is a real difference between airports that work for sleeping and airports that do not, and there is a real difference between travelers who get five decent hours and travelers who get none. The variables are mostly which airport you are in, where you sleep within the airport, and what gear you brought. Each one is solvable in advance.
+You have a 13-hour overnight layover. A hotel feels like a lot of money for a few hours' sleep; the bench feels like a bad night. The difference between some sleep and none is mostly which airport, where you sleep in it, and what you brought.
 
-What follows: how to actually get sleep in an airport. Then a tool that scopes the layover and tells you whether sleep is realistic at this specific one.
-
-**Know the airport's sleep reputation before you commit**
+**Which airports are good for sleeping?**
 
 Some airports are widely regarded as good for sleeping (Singapore Changi, Munich, Helsinki, Seoul Incheon — designated sleep areas, dimmed lighting, decent temperature). Some are hostile (any airport with armrests on every bench, frequent floor-cleaning announcements, bright lighting all night). Sites like sleepinginairports.net rank them honestly. If you are arriving at an airport with a poor sleep reputation, plan for a hotel or a transit hotel before you commit to the bench.
 
@@ -5920,50 +6083,79 @@ Some airports are widely regarded as good for sleeping (Singapore Changi, Munich
 
 Do not sleep in the public arrivals area before security. It is louder, less safe, and often patrolled by police asking people to move. Once you have a boarding pass for an outbound flight, go through security and find the quietest part of the secure area — usually the gates farthest from the food court, near a closed wing or a chapel/prayer room. Some airports have designated sleep zones or rest pods; use them. The quietest 20 minutes you spend exploring the terminal pays off in the best location.
 
-**Bring real sleep gear, not improvised**
+**What do you need to sleep in an airport?**
 
-Eye mask. Earplugs. Travel pillow (preferably a good one, not the cheap horseshoe). Light blanket or large scarf. A bag you can lock and use as a pillow if you have to. Without these you will not sleep. With them, you will. The difference between not sleeping and getting four solid hours is approximately the cost of a $40 sleep kit you can use for years. Bring it on every trip with a long layover. If you forget it, the airport convenience store often has overpriced versions.
+Eye mask. Earplugs. A good travel pillow. A light blanket or large scarf. A bag you can keep close or use as a pillow. Without these, sleep is unlikely; with them, a few hours is realistic. A basic kit is cheap and lasts for years, so it is worth packing for any long layover. Airport shops usually sell versions at airport prices if you forget.
 
-**Set redundant alarms and verify your boarding time**
+**How do you avoid missing your flight if you sleep at the airport?**
 
 Sleeping through a flight is the worst-case outcome. Set at least three alarms — phone, watch, second device. Set the first one for 90 minutes before boarding — that is enough time to wake up, hit the bathroom, and get to the gate without panic. Confirm boarding time and gate before you sleep, and re-confirm in the morning (gates change overnight). Tell the gate agent if there is one nearby that you might be sleeping; some will note it and check on you.
 
-**Consider lounges and transit hotels if sleep matters**
+**Is a lounge or transit hotel worth it on a long layover?**
 
 If your trip depends on you being functional the next day, paying for sleep is often the right call. Most major airports have day-rate transit hotels (you book by the hour, not the night) where a few hours usually costs much less than a full night. Lounges with sleep pods or recliners (Priority Pass, card-linked, or paid) are another option. The mental cost of arriving at your destination in a fog from a sleepless terminal night is sometimes higher than the cost of just buying real sleep.
 
 ### Is a 60-Minute Layover Enough? (When It Works and When It Is a Gamble)
 
 URL: https://deftbrain.com/guides/travel/is-a-60-minute-layover-enough
-Updated: 2026-10-05
+Updated: 2026-10-09
 
-A 60-minute layover is usually enough for a domestic connection on a single ticket, especially in the same terminal with no checked bags. It is usually too short for an international arrival into the U.S., where you clear immigration and customs and recheck bags, and risky on separate tickets, where a missed flight is your cost.
+A 60-minute layover is usually enough for a domestic connection on one ticket, especially in the same terminal without checked bags. It's usually too short arriving internationally into the US, where you clear immigration and customs and recheck bags, and risky on separate tickets.
 
-Sixty minutes sounds tight, and sometimes it is. But airlines sell hour-long connections every day, and many of them work without anyone breaking into a run. The difference between an easy hour and an impossible one comes down to a handful of facts about the trip, most of which you can check before you book.
+Airlines only sell connections that meet each airport's minimum connection time, so a 60-minute layover on one ticket is considered workable, and if a delay makes you miss it, the airline rebooks you. It is usually comfortable for a domestic connection in one terminal, tight when gates are in different terminals, and usually too short when arriving internationally into the US, where you clear immigration and customs and recheck bags.
 
-An hour is a different question from 90 minutes, because there is much less room for anything to go slightly wrong: a late arrival, a slow walk off the plane, a long line at passport control. So the factors below matter more, and the margin for each one is thinner.
+Sixty minutes sounds tight, and sometimes it is. The difference between an easy hour and an impossible one comes down to a few facts you can check before you book.
 
-What follows: the factors that decide whether an hour is enough, and how to think about the risk. For a little more time, see [is a 90-minute layover long enough](/guides/travel/is-a-90-minute-layover-long-enough).
-
-**One ticket or two**
+**Is a 60-minute layover OK on separate tickets?**
 
 This matters more than anything else. When both flights are on one ticket, the airline has agreed the connection is possible: it only sells connections that meet the airport's published minimum connection time. If the first flight is late and you miss the second, the airline is responsible for rebooking you. When the flights are on separate tickets, nobody has checked the connection, and missing the second flight usually means buying a new ticket. A 60-minute connection on separate tickets is a gamble most travelers come to regret.
 
 **Is 60 minutes enough for an international connection?**
 
-A domestic connection within the same terminal is the easiest case, and an hour is often enough. Arriving on an international flight into the United States is the hardest: you clear immigration, collect your bags, clear customs, recheck the bags, and go through security again, even when you are only connecting. An hour for that is very tight at most large airports. In Europe, flying between the Schengen area and elsewhere adds a passport check between terminals, which can take a few minutes or most of an hour depending on the time of day.
+A domestic connection within the same terminal is the easiest case, and an hour is often enough. Arriving on an international flight into the United States is the hardest: at most airports you clear immigration, collect your bags, clear customs, recheck the bags, and go through security again, even when you are only connecting. The exceptions are flights from airports with US preclearance (several in Canada, Ireland and the Caribbean, among others), where you clear US immigration before departure. An hour for that is very tight at most large airports. In Europe, flying between the Schengen area and elsewhere adds a passport check between terminals, which can take a few minutes or most of an hour depending on the time of day.
 
-**The airport and the walk**
+**How long does it take to change terminals?**
 
 Some airports are compact, and a connection means a short walk. Others put connecting gates in different terminals linked by trains or buses, and the transfer alone can take 20 to 30 minutes. A terminal map from the airport's website shows the distance between your arrival and departure gates, and the airline's app usually shows the departure gate a few hours ahead. Boarding typically closes 10 to 20 minutes before departure, so the time you actually have is the layover minus that.
 
-**Bags, seats, and the first flight's record**
+**What makes a short layover easier?**
 
 Traveling with only a carry-on removes one of the biggest variables, especially on international arrivals. A seat near the front of the first plane can save several minutes getting off. And the first flight's on-time record matters: a flight that is regularly 20 minutes late turns a 60-minute layover into a 40-minute one. Flight-tracking sites show recent arrival times for a given flight number, which gives a realistic picture rather than the schedule's.
 
-**What happens if you miss it**
+**What happens if you miss a 60-minute connection?**
 
 On a single ticket, a missed connection caused by a delay usually means being rebooked on the next available flight, so the real cost depends on when that flight is. If there are several flights a day, missing one is an inconvenience. If it is the last flight of the day, it can mean a night at the airport or a hotel, and airlines differ in what they cover. Weighing the layover against the cost of missing it, not only against the odds, is what turns this from a guess into a decision. If it does go wrong, see [how to handle a missed connection that is not your fault](/guides/travel/how-to-handle-a-missed-connection-when-its-not-your-fault).
+
+### Is a 90-Minute Layover Long Enough? (It Depends on These Five Things)
+
+URL: https://deftbrain.com/guides/travel/is-a-90-minute-layover-long-enough
+Updated: 2026-10-09
+
+A 90-minute layover is usually plenty for a domestic connection and often enough internationally when your bags are checked through. It's tight when you must clear customs and recheck bags, as on arrival into the US, or change terminals at a large hub, and risky on separate tickets.
+
+Whether 90 minutes is enough depends on five things: domestic or international, same or different terminal, whether you must collect and recheck bags (required when entering the US even to connect), how reliable the arriving flight is, and what missing it would cost. On one ticket, the airline rebooks you if a delay causes a miss; on separate tickets, it usually doesn't.
+
+The booking site says it's a legal connection, which means technically possible, not necessarily comfortable. Once you know the variables, you can judge any layover in a couple of minutes.
+
+**Is 90 minutes enough for an international connection?**
+
+A domestic-to-domestic connection in the same terminal can be made in 30 to 45 minutes if everything goes well. An international arrival adds roughly 30 to 60 minutes for immigration, sometimes more at large hubs during peak hours. International-to-international through a country requires customs and re-clearing security in many cases. Domestic 90 minutes is usually plenty. International 90 minutes is often tight. International with a customs/recheck is usually too tight.
+
+**How long does it take to change terminals at a big airport?**
+
+Same terminal, gates near each other: 15 minutes of walking, plus boarding time. Same terminal, opposite ends: 25 to 35 minutes including a tram or shuttle. Different terminals at large airports (DFW, LAX, JFK): 30 to 50 minutes — sometimes longer if a bus is involved. Some airports (Beijing, Doha, Frankfurt) have notoriously long terminal-to-terminal transfers that can eat 45 minutes of your layover by themselves.
+
+**Do you have to recheck bags on a connecting flight?**
+
+If you are checking bags through, the airline handles the transfer and you do not need to claim and recheck. If you are stopping in a country that requires you to clear customs even for connections (the U.S., Canada in many cases, Australia), you will claim, clear, and recheck — that adds 30 to 60 minutes minimum. If you have a separate ticket on a different airline, you almost always have to claim and recheck. Separate tickets with a 90-minute layover are rarely safe.
+
+**Does the time of day affect whether you'll make a connection?**
+
+Delays tend to build through the day, so morning arrivals are generally more punctual than evening ones, and a 90-minute layover after an early arrival is safer than the same layover late in the day. Connections through weather-prone hubs carry more risk in winter storms and summer thunderstorm season. Flight-tracking sites show how late a specific flight number has actually been running recently, which is a better guide than its schedule.
+
+**What happens if you miss a 90-minute connection?**
+
+If you miss a connection on a single ticket and the cause is the airline's fault (delay), they rebook you free, often on the next flight. If the next flight is in two hours, the cost of missing is small. If it is the only flight that day, the cost is a hotel night and a delayed trip. If you are on separate tickets and miss the connection, you are paying for the second ticket again — sometimes the full walk-up fare. Build the layover length around the cost of missing, not just the average case.
 
 ## Wellness
 

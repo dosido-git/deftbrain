@@ -68,7 +68,7 @@ for (const cat of fs.readdirSync(DIR)) {
     if (!g.deck || !Array.isArray(g.answerList) || !g.answerList.length) flags.push('NO_ANSWER');
     if (stats && !(Array.isArray(g.sources) && g.sources.length)) flags.push('STATS');
     if (g.reviewed !== true) flags.push('UNREVIEWED');
-    guides.push({ key, title: g.title || '', wc, stats, toolMentions, toolId, indexed: indexed.has(key), flags, tokens: new Set(words(g.shortTitle || g.title)) });
+    guides.push({ key, reviewed: g.reviewed === true, title: g.title || '', wc, stats, toolMentions, toolId, indexed: indexed.has(key), flags, tokens: new Set(words(g.shortTitle || g.title)) });
   }
 }
 
@@ -85,7 +85,8 @@ for (let i = 0; i < guides.length; i++) {
     }
   }
 }
-for (const g of guides) if (g.overlap) g.flags.push('OVERLAP');
+// A reviewed guide has been read against its look-alikes; it stays separate on purpose.
+for (const g of guides) if (g.overlap && !g.reviewed) g.flags.push('OVERLAP');
 
 const scope = process.argv.includes('--all') ? guides : guides.filter(g => !g.indexed);
 const tally = {};
@@ -93,6 +94,21 @@ for (const g of scope) for (const f of g.flags) tally[f] = (tally[f] || 0) + 1;
 const clean = scope.filter(g => !g.flags.length).length;
 console.log(`guide-review: ${scope.length} guide(s) in scope (${guides.length} total, ${indexed.size} indexed). Clean: ${clean}.`);
 console.log(Object.entries(tally).sort((a, b) => b[1] - a[1]).map(([f, n]) => `  ${f}: ${n}`).join('\n'));
+
+// --promote: put every index-ready guide (no flags) on the guide keep-list.
+if (process.argv.includes('--promote')) {
+  const kp = path.join(DIR, 'keep-list.json');
+  const data = JSON.parse(fs.readFileSync(kp, 'utf8'));
+  let added = 0;
+  for (const g of guides) {
+    if (g.flags.length) continue;
+    const [cat, slug] = g.key.split('/');
+    const list = data.keep[cat] = data.keep[cat] || [];
+    if (!list.includes(slug)) { list.push(slug); added++; }
+  }
+  fs.writeFileSync(kp, JSON.stringify(data, null, 2) + '\n');
+  console.log(`guide-review: ${added} index-ready guide(s) added to guides/keep-list.json`);
+}
 
 if (process.argv.includes('--write')) {
   const rows = scope.sort((a, b) => b.flags.length - a.flags.length || a.key.localeCompare(b.key))
