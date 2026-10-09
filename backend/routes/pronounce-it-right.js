@@ -4,6 +4,8 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
+const { stringFields } = require('../lib/outputGuard');
 // Deterministic backstop for one observed glitch: the model occasionally
 // wraps a respelling in markdown emphasis (**NJOK-ki**) instead of using the
 // CAPS convention the prompt asks for. Safe to strip unconditionally — a
@@ -162,6 +164,9 @@ Return ONLY valid JSON in exactly this shape:
 
 Keep variants to 0-2 entries and watch_out_for to 0-3 entries. Every prose field should be one concise sentence except confirmation_script, which may be 1-2 short sentences. If any field quotes a phrase someone would say aloud (confirmation_script, useful_in_context, watch_out_for), use single quotes ' for it — never a double-quote (") character inside any string value, in any language. A double-quote inside a string value breaks the JSON.`;
 
+    // T1: how the word is actually said, from a cached web search, run alongside the guide.
+    const research = researchFacts({ topic: ['pronounce', word, category || ''], label: 'pronounce-it-right', brief: `How "${word}"${category ? ` (${category})` : ''}${context ? ` — ${String(context).slice(0, 120)}` : ''} is pronounced: the authoritative or native pronunciation (IPA if a source gives it), common mispronunciations, regional variants, and the origin of the word or name.` });
+    
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART, // 2026-09-07: Haiku confidently got Hermès's final /s/ wrong as /z/
       // (verified against real French phonology) across repeated prompt-only fixes; the
@@ -182,6 +187,7 @@ Keep variants to 0-2 entries and watch_out_for to 0-3 entries. Every prose field
       if (Array.isArray(parsed.pronunciation.syllables)) parsed.pronunciation.syllables = parsed.pronunciation.syllables.map(stripMarkdown);
     }
     (parsed.variants || []).forEach(v => { if (v) v.phonetic = stripMarkdown(v.phonetic); });
+    await checkWorldFacts(parsed, research, { label: 'pronounce-it-right', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: word, userLanguage });
     res.json(parsed);
 
   } catch (error) {

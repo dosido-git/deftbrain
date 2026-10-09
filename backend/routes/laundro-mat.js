@@ -4,8 +4,9 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { checkConsistency, stringFields } = require('../lib/outputGuard');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 // Helper: parse base64 data URL
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
@@ -389,6 +390,9 @@ Return ONLY valid JSON. Format:
 }`
       });
 
+      // T1: stain-removal facts from a cached web search (care-label and cleaning sources), run alongside the plan.
+      const research = (stainType || stainCustom) ? researchFacts({ topic: ['stain', stainType || stainCustom, fabric || ''], label: 'laundro-mat-stain', brief: `How to remove a ${stainType || stainCustom} stain from ${fabric || 'common fabrics'}: what works, what sets the stain permanently (heat, wrong products), water temperature, and which products are unsafe on that fabric. Prefer fabric-care and manufacturer guidance.` }) : Promise.resolve(null);
+      
       const data = await callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 2000,
@@ -399,6 +403,7 @@ Return ONLY valid JSON. Format:
       if (!data.urgency && !data.steps) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
+      await checkWorldFacts(data, research, { label: 'laundro-mat-stain', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: `removing ${stainType || stainCustom} from ${fabric || 'fabric'}`, userLanguage: req.body?.userLanguage });
       await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
       await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));

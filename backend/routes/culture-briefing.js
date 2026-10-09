@@ -3,8 +3,9 @@ const router  = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { runOutputGuard } = require('../lib/outputGuard');
+const { runOutputGuard, stringFields } = require('../lib/outputGuard');
 
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 // The governing standard for this tool. One text, used to write the
 // briefing and to check it, so the two cannot drift into paraphrases.
 const STANDARD = `Describe common practices and useful tendencies without treating a country, city, religion, or population as culturally uniform. Distinguish strong conventions from variable practices. Avoid invented precision and categorical claims about how locals will react. Never claim insider knowledge. For legal, safety, payment, tipping, religious, or rapidly changing practical information, clearly qualify uncertainty and avoid presenting potentially changing information as guaranteed fact.`;
@@ -231,6 +232,9 @@ Rules:
 - CRITICAL: Return ONLY valid JSON. No markdown fences, no commentary.`;
 
   try {
+    // T1 (audit/DEFECT-TYPES.md): customs and rules from a cached web search, run alongside the briefing.
+    const research = researchFacts({ topic: ['culture', destination], label: 'culture-briefing', brief: `Facts a visitor to ${destination} should know: greetings and etiquette, tipping, dress norms (including at religious sites), laws visitors break by accident, alcohol and photography rules, public holidays and opening-hour norms, and emergency numbers.` });
+    
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 7000,
@@ -251,6 +255,7 @@ Rules:
 
     await guardResult(parsed, req.body);
 
+    await checkWorldFacts(parsed, research, { label: 'culture-briefing', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: destination, userLanguage });
     return res.json(parsed);
   } catch (err) {
     console.error('culture-briefing error:', err);

@@ -5,7 +5,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { checkConsistency, stringFields } = require('../lib/outputGuard');
+const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 const AREA_LABELS = {
   anxiety:      'anxiety / excessive worry',
   mood:         'low mood / depression',
@@ -118,6 +119,9 @@ Guidelines:
 - Return ONLY the JSON object`;
 
   try {
+    // T1: crisis lines and services from a cached web search — a wrong number here is the worst error this tool can make.
+    const research = country ? researchFacts({ topic: ['mental-health', country], label: 'mental-health-navigator', brief: `Mental health support in ${country}: national crisis and suicide-prevention lines (exact numbers and hours), how to see a therapist or psychiatrist (referral needed or not, public vs private, typical costs or coverage), free and low-cost options, and online services available there.` }) : null;
+    
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5000,
@@ -131,6 +135,7 @@ Guidelines:
 
     // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
 
+    if (research) await checkWorldFacts(parsed, research, { label: 'mental-health-navigator', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: `mental health support in ${country}`, userLanguage });
     await checkConsistency(parsed, { label: 'mental-health-navigator', userLanguage: req.body?.userLanguage });
 
     res.json({

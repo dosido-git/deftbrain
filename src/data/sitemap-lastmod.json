@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "00c410b5970fbf5357a9bfd6e5d36eb694651894",
+  "hash": "9d102c44e02f87ae4a8c5e5c21699c6ebbb277b5",
   "lastmod": "2026-10-09"
  },
  "static:about": {
@@ -348,8 +348,8 @@
   "lastmod": "2026-10-08"
  },
  "tool:DecisionCoach": {
-  "hash": "b5f02ff8965b5f275ea9061517cd2adc7ca63d9f",
-  "lastmod": "2026-10-08"
+  "hash": "da4a7371561139ef96fab5808267fee7b948026a",
+  "lastmod": "2026-10-09"
  },
  "tool:RoommateCourt": {
   "hash": "46213d794f50f5e117e66a53e9f2f9328983d9e0",
@@ -404,8 +404,8 @@
   "lastmod": "2026-10-08"
  },
  "tool:BreakMyPlan": {
-  "hash": "5ab5490b73fc5c0f276fcaa1aedfe2975acdd5ef",
-  "lastmod": "2026-10-08"
+  "hash": "2b83c12b8df35a371d8045becab1f01a0e48a5ff",
+  "lastmod": "2026-10-09"
  },
  "tool:DocumentDetective": {
   "hash": "58a390f405fff2d56db744848f73d69e84e450ec",

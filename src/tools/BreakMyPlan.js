@@ -162,12 +162,9 @@ const BreakMyPlan = ({ tool }) => {
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const pm = results.the_postmortem;
-    let txt = `💀 ${t('pm_copy_title')}\n\n${pm?.memo_header || t('pm_copy_report_default')}\n\n`;
-    txt += `${pm?.executive_summary}\n\n`;
-    txt += `${t('pm_copy_narrative')}\n${pm?.narrative}\n\n`;
-    if (results.assumption_to_test_first?.dependency) txt += `${t('pm_copy_fatal')} ${results.assumption_to_test_first.dependency}\n`;
-    if (results.when_to_reconsider?.condition)         txt += `${t('pm_copy_pnr')} ${results.when_to_reconsider.condition}\n\n`;
+    let txt = `💀 ${t('pm_copy_title')}\n\n`;
+    if (results?.assumption_to_test_first?.dependency) txt += `${t('pm_copy_fatal')} ${results?.assumption_to_test_first.dependency}\n`;
+    if (results.when_to_reconsider?.condition)         txt += `${t('pm_copy_pnr')} ${results?.when_to_reconsider.condition}\n\n`;
     if (results.primary_failure_path) {
       txt += `${t('pm_copy_most_likely')} ${results.primary_failure_path.failure_mode}\n${t('pm_copy_prevention')} ${results.primary_failure_path.one_prevention}\n\n`;
     }
@@ -201,7 +198,6 @@ const BreakMyPlan = ({ tool }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  const pm = results?.the_postmortem;
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -320,28 +316,35 @@ const BreakMyPlan = ({ tool }) => {
       {results && (
         <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
 
-          {/* Memo header */}
-          <div className={`${c.card} border-2 rounded-2xl overflow-hidden ${isDark ? 'border-red-600/50' : 'border-red-200'}`}>
-            <div className={`px-6 py-4 ${isDark ? 'bg-red-600/10' : 'bg-red-50'}`}>
-              <p className={`text-xs font-black uppercase tracking-widest mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                💀 {t('pm_report_label')}
-              </p>
-              <p className={`text-sm font-mono font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{pm?.memo_header}</p>
-            </div>
-            <div className="px-6 py-4">
-              <p className={`text-sm font-semibold leading-relaxed ${c.textSecondary}`}>{pm?.executive_summary}</p>
-            </div>
-          </div>
-
-          {/* Narrative */}
-          {pm?.narrative && (
-            <div className={`border-t ${c.border} pt-5`}>
-              <p className={`text-[15px] font-semibold mb-3 ${c.labelText}`}>📖 {t('pm_how_unfolded')}</p>
-              <div className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`} style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
-                {pm.narrative}
+          {/* Opens with the assumption the plan most depends on (owner decision
+              2026-10-09): the imagined failure story is no longer shown — a
+              made-up story reads like evidence. */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {results?.assumption_to_test_first?.dependency && (
+              <div className={`rounded-2xl border p-4 ${isDark ? 'bg-red-600/10 border-red-600/40' : 'bg-red-50 border-red-200'}`}>
+                <p className={`text-[13px] font-boldr mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>💣 {t('pm_fatal_assumption')}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results?.assumption_to_test_first.dependency}</p>
+                {results?.assumption_to_test_first.why_it_matters && (
+                  <p className={`text-xs mt-1 ${c.textMuted}`}>{results?.assumption_to_test_first.why_it_matters}</p>
+                )}
+                {results?.assumption_to_test_first.what_is_known && (
+                  <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-zinc-900/40' : 'bg-white/70'}`}>
+                    <p className={`text-[13px] font-bold mb-0.5 ${c.textMuted}`}>{t('pm_what_we_know')}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{results?.assumption_to_test_first.what_is_known}</p>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            )}
+            {results?.when_to_reconsider?.condition && (
+              <div className={`rounded-2xl border p-4 ${c.cardAlt} ${c.border}`}>
+                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>🚧 {t('pm_point_no_return')}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results?.when_to_reconsider.condition}</p>
+                {results?.when_to_reconsider.response && (
+                  <p className={`text-xs mt-1 ${c.textMuted}`}>→ {results?.when_to_reconsider.response}</p>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Warning signs */}
           {results.warning_signs?.length > 0 && (
@@ -370,33 +373,6 @@ const BreakMyPlan = ({ tool }) => {
             </div>
           )}
 
-          {/* Assumption to test first + when to reconsider */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {results.assumption_to_test_first?.dependency && (
-              <div className={`rounded-2xl border p-4 ${isDark ? 'bg-red-600/10 border-red-600/40' : 'bg-red-50 border-red-200'}`}>
-                <p className={`text-[13px] font-boldr mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>💣 {t('pm_fatal_assumption')}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results.assumption_to_test_first.dependency}</p>
-                {results.assumption_to_test_first.why_it_matters && (
-                  <p className={`text-xs mt-1 ${c.textMuted}`}>{results.assumption_to_test_first.why_it_matters}</p>
-                )}
-                {results.assumption_to_test_first.what_is_known && (
-                  <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-zinc-900/40' : 'bg-white/70'}`}>
-                    <p className={`text-[13px] font-bold mb-0.5 ${c.textMuted}`}>{t('pm_what_we_know')}</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{results.assumption_to_test_first.what_is_known}</p>
-                  </div>
-                )}
-              </div>
-            )}
-            {results.when_to_reconsider?.condition && (
-              <div className={`rounded-2xl border p-4 ${c.cardAlt} ${c.border}`}>
-                <p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>🚧 {t('pm_point_no_return')}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results.when_to_reconsider.condition}</p>
-                {results.when_to_reconsider.response && (
-                  <p className={`text-xs mt-1 ${c.textMuted}`}>→ {results.when_to_reconsider.response}</p>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* Failure modes */}
           {results.failure_modes?.length > 0 && (

@@ -465,6 +465,122 @@
           ]
         }
       }
+    },
+    {
+      "name": "split-birthday-covered",
+      "endpoint": "/api/money-diplomat-split",
+      "input": {
+        "situation": "Birthday dinner for Priya, the rest of us cover her. Sam only had a salad and water, Jordan and I shared a bottle of wine.",
+        "people": "Me, Sam, Jordan, Priya (birthday)",
+        "totalBill": "212.40",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "options": [
+          {
+            "method": "Equal Split",
+            "rule": "equal",
+            "breakdown": [
+              {
+                "person": "You",
+                "amount": "$70.80",
+                "reasoning": "One of three payers splitting $212.40 equally, covering Priya's share."
+              },
+              {
+                "person": "Sam",
+                "amount": "$70.80",
+                "reasoning": "Equal third of the total, even though Sam ordered less."
+              },
+              {
+                "person": "Jordan",
+                "amount": "$70.80",
+                "reasoning": "Equal third of the total."
+              },
+              {
+                "person": "Priya",
+                "amount": "$0.00",
+                "reasoning": "Birthday guest — fully covered by the group."
+              }
+            ],
+            "total_with_tip": "212.40 — tip not yet added; see tip recommendation below.",
+            "fairness_score": 60,
+            "social_score": 80,
+            "best_for": "When everyone wants to keep it simple and nobody minds absorbing a bit of imbalance."
+          },
+          {
+            "method": "Social Split",
+            "rule": "custom",
+            "breakdown": [
+              {
+                "person": "Sam",
+                "amount": "$53.10",
+                "reasoning": "Pays less than a full equal share because Sam ordered significantly less — the remaining balance is distributed between the other two payers; split of Priya's share is equal among all three."
+              },
+              {
+                "person": "You",
+                "amount": "$79.65",
+                "reasoning": "Full equal payer share plus half of the wine cost shared with Jordan; split of Priya's share is equal among all three."
+              },
+              {
+                "person": "Jordan",
+                "amount": "$79.65",
+                "reasoning": "Same as You — equal payer share plus half of the wine cost shared with you; mirrors your consumption."
+              },
+              {
+                "person": "Priya",
+                "amount": "$0.00",
+                "reasoning": "Birthday guest — fully covered."
+              }
+            ],
+            "total_with_tip": "212.40 — the three amounts above sum to 212.40 before tip; note that the Sam reduction and wine adjustment above are illustrative allocations based on the ordering pattern you described, not itemised receipts — adjust if you have the actual line items.",
+            "fairness_score": 78,
+            "social_score": 90,
+            "best_for": "When you want to acknowledge that Sam ate much less without making it a big deal."
+          },
+          {
+            "method": "Proportional",
+            "rule": "itemised",
+            "breakdown": [
+              {
+                "person": "Sam",
+                "amount": "Sam's food + water + one third of Priya's share + proportional tax/tip",
+                "reasoning": "Pays only for what Sam consumed, then shares Priya's tab equally with You and Jordan — fill in Sam's actual line items from the receipt."
+              },
+              {
+                "person": "You",
+                "amount": "Your food + half the wine + one third of Priya's share + proportional tax/tip",
+                "reasoning": "Pays for your food and your half of the shared wine, then equal share of Priya's tab."
+              },
+              {
+                "person": "Jordan",
+                "amount": "Jordan's food + half the wine + one third of Priya's share + proportional tax/tip",
+                "reasoning": "Same structure as You — mirrors your actual consumption."
+              },
+              {
+                "person": "Priya",
+                "amount": "$0.00",
+                "reasoning": "Birthday guest — fully covered."
+              }
+            ],
+            "total_with_tip": "212.40 plus tip — to use this option you need the itemised receipt; the amounts above are placeholders until you have it.",
+            "fairness_score": 95,
+            "social_score": 70,
+            "best_for": "When the bill has a large enough spread between diners that everyone expects itemised settling."
+          }
+        ],
+        "recommended": "Social Split — it honors the group norm of covering Priya, gives Sam a lighter share without requiring a receipt audit, and keeps the mood celebratory rather than transactional.",
+        "the_awkward_part": "Sam had a salad and water while the rest of you had food and wine — the tension is whether to raise that or let it go.",
+        "how_to_bring_it_up": "Hey, Sam you only had a salad — how about we just throw in a bit less for you tonight?",
+        "tip_recommendation": {
+          "percentage": 20,
+          "total_tip": "42.48",
+          "note": "Add $42.48 to the $212.40 subtotal for a $254.88 total, then apply whichever split you choose to that full amount."
+        },
+        "next_time": "Before ordering, take thirty seconds to agree out loud whether you are splitting equally or by what each person has — it removes all ambiguity before the bill arrives."
+      }
     }
   ]
 }

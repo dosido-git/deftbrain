@@ -20,7 +20,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 | # | Type | Shared fix | Status | Open instances |
 |---|---|---|---|---|
-| T1 | Real-world facts from memory | `lib/worldFacts.js` (cached search + Sonnet contradiction check) | 21 tools; built 2026-10-09 | 2 (BuyWise, PlotHoleFinder) |
+| T1 | Real-world facts from memory | `lib/worldFacts.js` (cached search + Sonnet contradiction check) | 25 tools; built 2026-10-09 | 2 (PaperworkPath voter line, PlotHoleFinder) |
 | T2 | Arithmetic, counts, totals | Compute in code; else the number check | 18 tools; 2026-10-09 sweep done | 0 |
 | T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 96 routes | 0 |
 | T4 | Details the visitor never said | Output guard, or `checkConsistency` check 10 (same call) | ~99 tools; 2026-10-09 | 0 |
@@ -40,7 +40,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 **Shared fix.** Fetch the facts with web search (`lib/groundedFacts.js`, cached, stale-while-revalidate). Then compare the answer against what was found, a reading job rather than a memory job (`factCheck.checkAgainstSupplied`, `model: MODELS.SMART`). Related: `lib/venues.js`, `lib/airportPlaces.js`, `lib/claimResearch.js`, `attachSourceUrls`.
 
-**Tools using it (21; `lib/worldFacts.js` added 2026-10-09 for paperwork-path, sensory-minefield-mapper, micro-adventure-mapper):** bill-rescue, bookmark, bike-medic, buy-wise, brain-roulette, contract-decoder, date-night, future-proof, lease-trap-detector, layover-maximizer, name-audit, plain-talk, procedure-probe, plot-hole-finder, renters-deposit-saver, signal-vs-noise, someone-said-it-better, ticket-tackler.
+**Tools using it (25; `lib/worldFacts.js` added 2026-10-09 for paperwork-path, sensory-minefield-mapper, micro-adventure-mapper, culture-briefing, mental-health-navigator, pronounce-it-right, laundro-mat stain):** bill-rescue, bookmark, bike-medic, buy-wise, brain-roulette, contract-decoder, date-night, future-proof, lease-trap-detector, layover-maximizer, name-audit, plain-talk, procedure-probe, plot-hole-finder, renters-deposit-saver, signal-vs-noise, someone-said-it-better, ticket-tackler.
 
 | Instance | Status |
 |---|---|
@@ -60,6 +60,10 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | MicroAdventureMapper — Boston Common "at the north end" of the Freedom Trail | **wired to shared fix** (not reproduced on the live run) |
 | **BuyWise** — "sold largely direct"; no price lookup | **open** |
 | **PlotHoleFinder** — story timing errors; plot summary lacks timing | **open (held from search)** |
+
+**Known limit (2026-10-09).** A topic search only catches claims it happens to cover: Paperwork Path still said Texas voters can register online (they can't, except during a DPS licence transaction; verified by search) because the research never covered voting. Brief widened for that tool; the type-level fix is claim-by-claim verification (search each specific high-stakes claim the answer makes), the same mechanism Plot Hole Finder's timing errors need. Not built yet.
+
+**Deliberately not grounded:** DoctorVisitPrep / DoctorVisitTranslator (claims are per-visit, research would run every time), Giftology, PartyArchitect, HobbyMatch (low-stakes, per-request). BuyWise already says it could not verify a price rather than guessing.
 
 **Sweep needed.** List every tool that states place, law, price, health, product or story facts without a search step. Likely candidates: PaperworkPath, TripRecon, MicroAdventureMapper, CultureBriefing, DoctorVisitPrep/Translator, MentalHealthNavigator, PronounceItRight, LaundroMat, Giftology, PartyArchitect, HobbyMatch.
 
@@ -161,8 +165,8 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | DocumentDetective — "removes any argument" | fixed |
 | NameAudit — "likely trademark infringement" | fixed (rule in its update step) |
 | AnalogyEngine — "nothing capable of causing disease" | **fixed with shared fix** |
-| **BreakMyPlan** — opens with an imagined failure story | **open** (design question) |
-| **DecisionCoach** — page promise "One answer. Not options." vs charter | **open (owner decision)** |
+| BreakMyPlan — opens with an imagined failure story | **fixed** (owner decision 2026-10-09: story no longer shown; results open with the assumption to test first) |
+| DecisionCoach — page promise "One answer. Not options." vs charter | **fixed** (owner decision 2026-10-09: "A clear recommendation, and what would change it", 13 languages) |
 
 ---
 

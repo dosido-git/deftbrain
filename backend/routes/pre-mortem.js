@@ -333,6 +333,10 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       console.log('[pre-mortem] v2 guard skipped:', guardErr.message);
     }
 
+    // Owner decision 2026-10-09: the imagined failure story is not shown — a
+    // made-up story reads like evidence. It is still written (the warning
+    // signs are derived from it) but never leaves the server.
+    delete parsed.the_postmortem;
     return res.json(parsed);
   } catch (err) {
     console.error('pre-mortem error:', err);

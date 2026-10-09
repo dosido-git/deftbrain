@@ -2569,9 +2569,9 @@ Have a plan you're about to put into action? Describe it and Break My Plan? will
 
 **You give.** The plan in specific terms and what type it is.
 
-**You get.** The memo from the future explaining why it failed, working backward to what you'd change now.
+**You get.** The assumption your plan leans on most, the warning signs to watch, and what to change now.
 
-**The edge.** Assuming failure surfaces risks that forward planning misses. NASA and venture investors use the same inversion.
+**The edge.** It works backward from failure to find the assumptions forward planning skips.
 
 **Good to know.**
 
@@ -2608,7 +2608,7 @@ Thinking about a purchase? Tell Buy Wise what you're considering, the price you 
 ### Decision Coach
 
 URL: https://deftbrain.com/DecisionCoach
-Tagline: One answer. No second-guessing.
+Tagline: A clear recommendation when you're too stuck to choose.
 Categories: Decisions, Tasks
 
 Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.
@@ -2617,9 +2617,9 @@ Makes the decision for you when you're too stuck to choose. Applies your constra
 
 **You give.** A sentence saying what you are stuck on. Constraints and preferences are optional.
 
-**You get.** One answer. Not options.
+**You get.** A clear recommendation, and what would change it.
 
-**The edge.** It gives a single decision on purpose. A ranked list is another choice to make, which is the thing you couldn't do.
+**The edge.** It recommends one choice on purpose, because a ranked list is another choice to make. It also names the one thing that would change the recommendation, so the call stays yours.
 
 **Good to know.**
 
@@ -4245,6 +4245,37 @@ After the translation, sort each piece of information into one of four buckets: 
 
 Sometimes you sort everything, look up every word, and you're still left with something genuinely unclear: a number you can't contextualize, a recommendation that doesn't match what you thought you heard, a phrase that could mean two different things. That's not a sign you're failing at this. That's the signal to send a short message through the patient portal: 'I'm reviewing my notes from yesterday's visit and want to clarify what you meant by [X]. Can you confirm whether it means [A] or [B]?' Most doctors answer these within a day or two. The cost of asking is much lower than the cost of acting on the wrong interpretation.
 
+### Questions to Ask Before a Medical Procedure (Before You Say Yes)
+
+URL: https://deftbrain.com/guides/health/questions-to-ask-before-a-medical-procedure
+Updated: 2026-10-09
+
+Before agreeing to a procedure, ask what it involves and what it is meant to change, why it is recommended for you now and what happens if you wait, what the alternatives are (including doing nothing for now), what the common and serious risks are for someone like you and how often this team does it, what recovery looks like, and what it will cost you after insurance.
+
+A doctor recommended a procedure. It might be a scope, an injection, a biopsy, a joint replacement or something you had never heard of until twenty minutes ago. The appointment was short, the doctor sounded sure, and you said you would think about it. Now you are at home, and the questions you didn't think to ask are arriving one at a time.
+
+Asking questions before you agree is not second-guessing your doctor. Informed consent exists so that you understand what you are agreeing to, and good clinicians expect questions. The ones below are the questions that most often change what people decide, or at least how they feel about deciding.
+
+**What is it, and what is it supposed to change?**
+
+Ask for the plain-language version: what happens, how long it takes, whether you will be awake, and what the doctor expects to be different afterwards. 'What will this tell us, or fix, that we don't know or have now?' is the core question. For a diagnostic procedure, ask what happens next for each likely result; for a treatment, ask how much improvement is realistic and how soon. If the honest answer is 'it may not change much', that is worth knowing before you agree.
+
+**Why now, and what happens if I wait?**
+
+Some procedures are urgent; many are not, and the difference matters. Ask whether waiting a few weeks or months would change your options or your outcome, and what you would watch for in the meantime. 'What would make you say we should do this sooner?' and 'What would make you say we don't need it?' turn a yes-or-no into a picture of the decision. Watchful waiting is a real option for some conditions, not a failure to act.
+
+**What are the alternatives, including doing nothing for now?**
+
+Ask what else could be done: medication, physical therapy, a less invasive version, a different specialist's approach, or monitoring. Then ask why this option is being recommended over those for you specifically. If the alternatives were never mentioned, asking for them is reasonable, and so is a second opinion before a major or elective procedure. A clear answer to 'why this one' is one of the best signs the recommendation fits your situation.
+
+**What are the risks for me, and how often does this team do it?**
+
+General risk lists are long and hard to use. Ask which complications are common, which are rare but serious, and whether anything about you (age, other conditions, medications, previous surgery) changes those odds; ask about anesthesia separately if you will have it, and about the risks of not having the procedure, so the comparison is two-sided. For many procedures, teams that do them often tend to have better results, so 'How many of these do you do in a typical year?' and 'Where will it be done, and why there?' are normal questions. A doctor who answers them plainly is giving you useful information, not taking offence.
+
+**What does recovery look like, and what will it cost me?**
+
+Ask how long until you can drive, work, lift and exercise, whether you will need someone with you, and what warning signs mean you should call. Then ask about money before the date is set: whether it needs prior authorization from your insurer, whether every provider involved is in network (including anesthesia and pathology), and what your out-of-pocket estimate is. In the US, you can ask the provider for a written estimate.
+
 ## Home
 
 ### Apartment Move-In Checklist (The Five Things That Actually Matter)
@@ -5038,7 +5069,7 @@ That's the whole manual method, in the order that finds problems fastest. It wor
 ### Why Does Bottled Water Cost So Much (When the Stuff in It Is Basically Free)
 
 URL: https://deftbrain.com/guides/money/why-does-bottled-water-cost-so-much
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 Bottled water costs so much because you are paying almost entirely for things other than the water: the bottle, label and cap, transporting heavy cases and paying for shelf space, the brand, and the seller's margin — which is highest where you have no alternative, such as airports, stadiums and hotel minibars.
 
@@ -5046,25 +5077,25 @@ You're at the gas station, the airport, the hotel mini-bar, the music festival. 
 
 Bottled water is one of the most marked-up consumer products in regular circulation. The actual liquid is a rounding error in the price; nearly everything you're paying for is something other than the water itself. Once you can see the breakdown, you can also see why the markup works — and where the soft spots are if you'd rather not keep paying it.
 
-**The water itself: less than 1% of the price**
+**The water itself: a tiny share of the price**
 
-Municipal tap water in the US runs about $0.005 per gallon. Even bottled-water companies that source from springs are paying pennies for the input. A 16-oz bottle contains roughly half a cent's worth of liquid. Whether you're buying $1 store-brand or $4 boutique, the water in your hand cost the company about the same. Everything else in the price tag is something else — and the something-else is where the entire industry lives.
+Municipal tap water in the US typically costs less than a penny a gallon. Even bottled-water companies that source from springs pay very little for the water itself, so the liquid in a single bottle is worth a fraction of a cent. Whether you're buying $1 store-brand or $4 boutique, the water in your hand cost the company about the same. Everything else in the price tag is something else — and the something-else is where the entire industry lives.
 
-**The bottle, label, and cap: ~10–15%**
+**The bottle, label, and cap**
 
-Plastic bottles are cheap individually but not free. The bottle, the label, the cap, and the printing of any branding adds up to roughly 10 to 15 cents per unit at scale. This is the largest physical-input cost in the entire product. The company makes more from the bottle as a packaging vehicle than it does from the water inside it — which tells you what they're actually selling.
+Plastic bottles are cheap individually but not free. The bottle, the label, the cap and the printing add up to far more than the water inside, which makes packaging the largest physical cost in the product. The company makes more from the bottle as a packaging vehicle than it does from the water inside it — which tells you what they're actually selling.
 
-**Distribution and shelf placement: 30–40%**
+**Distribution and shelf placement**
 
-Water is heavy. A 24-pack weighs 30 pounds, and trucking it from a bottling plant to a retail shelf is the largest single line item in the cost stack — fuel, labor, refrigeration in some cases, plus 'slotting fees' paid to retailers for prime shelf placement. This is the part of the price that scales with where you buy it. A bottle at a grocery store has been moved a few miles efficiently; a bottle at an airport has been moved through three times the logistics chain. That's why the same product costs $1.29 at Target and $5.49 at the gate.
+Water is heavy. A 24-pack weighs 30 pounds, and trucking it from a bottling plant to a retail shelf is one of the biggest costs in the price — fuel, labor, refrigeration in some cases, plus 'slotting fees' paid to retailers for prime shelf placement. This is the part of the price that scales with where you buy it. A bottle at a grocery store has been moved a few miles efficiently; a bottle at an airport has been moved through three times the logistics chain. That's part of why the same bottle costs a dollar or so at a supermarket and several dollars at the gate.
 
-**Brand premium: 20–30% on the higher-priced bottles**
+**Brand premium on the higher-priced bottles**
 
-This is the part that varies most. Store-brand water is ~$0.20–0.40 per bottle wholesale. Aquafina and Dasani are roughly the same product wearing better packaging, sold at a 30% premium. Fiji, VOSS, and Smartwater layer on additional brand premium that's pure margin — not better water, not better logistics, just the right shape, the right name, and the right shelf adjacency. The minute the bottle is designed to look luxurious, you're paying for the design.
+This is the part that varies most. Store-brand water is the cheapest version of the product. Big national brands are largely purified tap water too, sold for more because of the name and the packaging. Fiji, VOSS, and Smartwater layer on additional brand premium that's pure margin — not better water, not better logistics, just the right shape, the right name, and the right shelf adjacency. The minute the bottle is designed to look luxurious, you're paying for the design.
 
 **Why is bottled water so expensive at airports?**
 
-After all the costs, bottled water margins typically run 25–50%, which is high but not extraordinary for consumer products. The extraordinary part is *where* you're buying it. Airports, stadiums, and hotels know you can't bring water in, can't easily leave to find cheaper, and are physiologically pressured to buy. These are not pricing-the-product venues; they are pricing-your-circumstance venues. The $5 airport water isn't $5 because the water is special. It's $5 because you have nowhere else to go.
+Once all those costs are paid, the margin on an ordinary bottle is not unusual for a packaged drink. The unusual part is *where* you're buying it. Airports, stadiums, and hotels know you can't bring water in, can't easily leave to find cheaper, and are physiologically pressured to buy. These are not pricing-the-product venues; they are pricing-your-circumstance venues. The $5 airport water isn't $5 because the water is special. It's $5 because you have nowhere else to go.
 
 ## Pets
 

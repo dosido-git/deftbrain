@@ -22,11 +22,6 @@
         "assumptions": "Consistent weekly publishing will build enough of an audience through LinkedIn distribution"
       },
       "output": {
-        "the_postmortem": {
-          "memo_header": "Post-Mortem: The Newsletter That Borrowed Time It Could Not Repay",
-          "executive_summary": "The newsletter launched with genuine momentum but never found a reliable distribution engine on LinkedIn. Publishing continued to draw from the same hours reserved for the book, and when it became clear that free subscriber growth was not approaching the threshold needed to justify the paid tier, the project was paused — leaving both the newsletter and the book behind schedule.",
-          "narrative": "The first several issues went out on time. The content was substantive and the systems-thinking angle felt distinct. But LinkedIn distribution proved inconsistent: some posts reached well beyond the immediate network, others reached almost no one, and there was no reliable pattern connecting effort to reach. Free subscriber growth came in early bursts tied to individual posts performing well, then slowed to a trickle. The 1,000-subscriber threshold — the gate before launching the paid tier — began to feel further away rather than closer.\n\nMeanwhile, the book did not pause to wait. The weekly publishing cadence, including drafting, editing, and formatting each issue, consumed more of the writing window than the original estimate had allowed. On weeks when a LinkedIn post underperformed and the subscriber count barely moved, the opportunity cost of the newsletter became harder to ignore. The plan had assumed that consistent publishing would produce compounding distribution; instead, distribution remained dependent on individual posts breaking through, which happened unpredictably.\n\nThe decision to pause came not from one bad week but from an accumulating weight: slow subscriber growth, a book falling further behind, and no clear evidence that continuing at the same pace would produce a different result. The newsletter had not failed because the content was weak — it had failed because the growth mechanism was never validated before the time cost became real."
-        },
         "warning_signs": [
           {
             "stage": "EARLY",
@@ -146,11 +141,6 @@
         "assumptions": "Influencer-Marketing wird günstig genug Nutzer bringen und die Leute zahlen monatlich weiter"
       },
       "output": {
-        "the_postmortem": {
-          "memo_header": "Abschlussbericht: Warum die App vor dem Durchbruch eingestellt wurde",
-          "executive_summary": "Die App wurde drei Monate nach Launch eingestellt, nachdem das Startkapital weitgehend aufgebraucht war und die zahlenden Nutzer nicht in ausreichender Zahl zurückkehrten. Der Influencer-Kanal brachte anfänglich Installationen, aber die monatliche Verlängerungsrate blieb zu niedrig, um die laufenden Kosten zu decken. Das Team hatte kein frühes Signal ernst genug genommen: Der Unterschied zwischen neugierigen Erstnutzern und dauerhaft zahlenden Abonnenten erwies sich als entscheidend.",
-          "narrative": "Die Influencer-Kampagnen liefen an und erzeugten Downloads. Das verfügbare Budget wurde über mehrere Kooperationen verteilt. Was dabei nicht ausreichend beobachtet wurde: Wie viele dieser Nutzer nach dem ersten Monat noch zahlten. Die Churn-Rate — der Anteil der Nutzer, die nach kurzer Zeit kündigten — erwies sich als entscheidend.\n\nDas eigentliche Problem lag darin, dass die Kosten pro zahlender Nutzerin zu hoch waren oder die Nutzerbindung zu schwach ausfiel, um mit dem verfügbaren Budget einen selbsttragenden Kundenstamm aufzubauen. Die App wurde eingestellt, nicht weil das Produkt offensichtlich schlecht war, sondern weil die zentrale Annahme des Plans — dass Influencer-Reichweite sich wirtschaftlich in regelmäßige Zahlungen umwandeln würde — nie ausreichend geprüft worden war, bevor das gesamte Budget darauf ausgerichtet wurde."
-        },
         "warning_signs": [
           {
             "stage": "EARLY",
@@ -270,11 +260,6 @@
         "assumptions": "The two teams use similar enough workflows that a single cutover will not cause major disruption"
       },
       "output": {
-        "the_postmortem": {
-          "memo_header": "Post-Incident Review: Combined Support Team Launch — Closed",
-          "executive_summary": "The single-cutover merge of the two support teams did not hold. Workflow differences that were believed to be minor turned out to require resolution at the operational level, and the shared queue created enough confusion in the early days that customer tickets were delayed or misrouted. The transition period also put the reporting relationship between the two managers under visible strain, which added friction to decisions that needed to move quickly.",
-          "narrative": "On the cutover date, both teams began working from the shared queue. Within the first week, it became clear that the two teams had been handling ticket routing, escalation, and priority classification differently enough that agents were uncertain which conventions to follow. Some tickets were worked by both sides in parallel; others waited while agents assumed the other group had claimed them. Throughput slowed during a period when customers would have noticed any degradation most acutely.\n\nAt the same time, the manager who had not been selected for the lead role was now responsible for fielding questions about operational decisions that had not yet been formally settled. Agents from both legacy teams directed their questions differently depending on who they had previously reported to, and the new reporting structure had not yet been internalized. This did not resolve quickly, because the decisions needed to clarify the structure required agreement between the two managers, and that agreement moved slowly.\n\nBy the time the operational ambiguities were being worked through, the team had already absorbed the reputational cost of a rough launch. Several issues that might have been caught in a staged rollout reached customers directly. The project was eventually considered complete, but the transition window stretched well beyond what had been planned, and the customer experience during that window did not reflect the combined team at its intended capability."
-        },
         "warning_signs": [
           {
             "stage": "EARLY",
@@ -386,11 +371,6 @@
         "stakes": "My savings and 6 months of full-time work"
       },
       "output": {
-        "the_postmortem": {
-          "memo_header": "Project Indie Box — Retrospective, Filed After Wind-Down",
-          "executive_summary": "The venture never achieved the combination of conditions it required to become viable. Manufacturing costs did not come down far enough to make the $40/month price point sustainable, publisher deals took longer to close than the timeline could absorb, and subscriber acquisition remained too slow to generate the revenue needed to bridge the gap. With savings depleted and no clear path to all three conditions holding simultaneously, the project was closed.",
-          "narrative": "The plan launched with a clear model: low enough manufacturing costs, enough paying subscribers, and exclusive publisher relationships — all three working together. The difficulty was that each condition depended in part on the others. Publishers were more willing to discuss exclusivity once meaningful subscriber numbers could be demonstrated. Subscribers were harder to attract without confirmed exclusive titles to point to. And manufacturing cost reductions required volume commitments that could not be made without a subscriber base large enough to justify them. Early progress on any one front was real but not enough to unlock the others.\n\nPublisher outreach proved slower than expected. Some publishers expressed interest but were unwilling to commit to exclusivity without seeing proof of demand. Others had concerns about small-run manufacturing compatibility with their existing production relationships. Months passed securing even preliminary agreements, and the titles available for early boxes were not exclusive — which made the subscriber proposition harder to differentiate. Meanwhile, manufacturing quotes at realistic early volumes kept the per-box cost too high to hit margins that worked at $40/month.\n\nSubscriber acquisition continued throughout, but growth was not fast enough to change the economics materially before savings ran out. The project did not fail because any single piece collapsed dramatically — it ran out of runway while all three dependencies remained partially unresolved, each one waiting on the others. Six months of full-time work and the allocated savings were exhausted before the flywheel had a chance to turn."
-        },
         "warning_signs": [
           {
             "stage": "EARLY",
