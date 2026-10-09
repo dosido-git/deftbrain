@@ -4764,6 +4764,44 @@ tagline: "Work with the energy you have.",
   icon: '✨',
   categories: ['Health & Wellness', 'Self & Reflection'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-09 — the one tool left out of the 2026-10-08 indexing pass.
+  exampleOutput: {
+    title: "See what PEP gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the check-in below. The whole result is shown; nothing is reworded.",
+    sampleLabel: "The check-in",
+    sampleText: "Energy 2 of 10, feeling numb, 15 minutes, at home. \"Been staring at screens all day, doom-scrolling between meetings. A hike sounds awful right now.\"",
+    context: "Real run, 2026-10-09 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What it heard",
+        tone: "blue",
+        text: "Capacity 2/10, numb, 15 minutes at home, screen-saturated from a day of doom-scrolling and meetings. Nothing physically demanding and no more screens.",
+      },
+      {
+        label: "Try this: Lie down in a quiet room with your eyes closed",
+        tone: "green",
+        text: "You have 15 minutes, you're at home, and you've been visually and cognitively bombarded all day. This asks for no setup, barely any decision-making, and zero screen time. You don't have to sleep or do anything in particular — just stop taking input for a few minutes. First step: Find a flat surface — bed, couch, floor — close your eyes, and let your body go still.",
+      },
+      {
+        label: "Or",
+        tone: "yellow",
+        items: [
+          "Step outside for a very short walk around the block (10 minutes): You ruled out a hike, and this is nothing like one — it's just a few minutes outside with no destination, no distance goal, and no planning. The only demand is putting shoes on. Skip this if even that feels like too much right now.",
+          "Listen to something audio-only — music, a podcast, ambient sound (15 minutes): No screen required, very little setup if you already have something you like queued up. It keeps your eyes free and asks almost nothing cognitively, especially if you choose something familiar rather than something new.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What should I do when I have no energy?",
+      a: "Pick something that asks almost nothing to start — no setup, no decisions, no screen — and fits the time you actually have. PEP suggests one thing that fits your energy, time and place right now, plus a couple of alternatives." },
+    { q: "How does PEP learn what works for me?",
+      a: "After you try a suggestion you can report how your energy changed and whether it helped. PEP uses those reports the next time, and says so when one result is too little to go on." },
+    { q: "Do I need an account?",
+      a: "No. Your check-ins and reports stay in your browser." },
+  ],
   description: "Low on energy and not sure what to do with it? Tell PEP how much you have in you right now. Get something that fits. Try it. Tell PEP how it went. PEP uses your own history to make better suggestions next time.",
   guide: {
     tips: [
