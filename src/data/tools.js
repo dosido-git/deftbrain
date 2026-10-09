@@ -5662,6 +5662,46 @@ tagline: "Work with the energy you have.",
   icon: "🔍",
   categories: ['Career', 'Decisions'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08, after venue / existing-name grounding made it reliable.
+  exampleOutput: {
+    title: "See what Name Audit gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the name below, including what a web search found already using it. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The name",
+    sampleText: "Loomly — for a business. B2B SaaS for social media management; audience: small marketing teams (3–15 people) at agencies and mid-size brands. What matters most: professional, easy to spell.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Verdict: has problems",
+        tone: "yellow",
+        text: "An active SaaS product and registered trademarks already use Loomly in the same field. Before committing, you need a trademark search and legal review to determine whether your use would create infringement risk or confusion.",
+      },
+      {
+        label: "What a web search found",
+        tone: "purple",
+        items: [
+          "An existing social-media scheduling and analytics product already uses Loomly (loomly.com) in the same SaaS field.",
+        ],
+      },
+      {
+        label: "What works",
+        tone: "green",
+        items: [
+          "Two syllables, phonetically transparent spelling, and no awkward consonant clusters make it easy to say and spell from hearing alone.",
+          "The invented construction gives it some distinctiveness over generic category terms like 'SocialHub' or 'PostManager'.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I check if a business name is already taken?",
+      a: "Search the exact name with your industry, check the trademark databases where you'll operate (USPTO in the US, EUIPO in the EU), and look at domains and social handles. Name Audit runs a web search for existing uses and checks common domains." },
+    { q: "Does Name Audit give trademark advice?",
+      a: "No. It reports what a search found and what to check; whether a mark conflicts legally is a question for a trademark attorney." },
+    { q: "What else does it check?",
+      a: "How the name sounds and spells, whether people could repeat it after hearing it once, abbreviations and hashtags, and language flags." },
+  ],
   description: "The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.",
   guide: {
       tips: [
@@ -8372,6 +8412,54 @@ tagline: "Work with the energy you have.",
   icon: "💘",
   categories: ['Money', 'Relationships', 'Travel & Events'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08, after venue / existing-name grounding made it reliable.
+  exampleOutput: {
+    title: "See what Date Night gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the request below. Every place it names was confirmed by a web search to exist and be open. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The request",
+    sampleText: "Anniversary (5 years) in downtown Austin, budget $200, starting 6:30 PM. No seafood; love live music. Last time: dinner and a movie.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Jazz, Craft Cocktails & Starlight Walk",
+        tone: "blue",
+        text: "Start with expertly crafted drinks, move to live jazz in a legendary basement, then steal a quiet moment under the stars along Lady Bird Lake.",
+      },
+      {
+        label: "The evening",
+        tone: "green",
+        items: [
+          "6:30 PM — The Roosevelt Room: Toast to one specific thing that surprised you about each other this year.",
+          "7:45 PM — The Elephant Room: Lean in during a quiet instrumental moment and tell each other what song reminds you of your relationship.",
+          "9:30 PM — Zilker Park Hike-and-Bike Trail: Walk hand-in-hand and each name one moment from your relationship you want to remember forever.",
+        ],
+      },
+      {
+        label: "If you need a backup",
+        tone: "yellow",
+        items: [
+          "The Roosevelt Room → Bar Hacienda (tropically inspired speakeasy vibe, opened 2025, same price range)",
+          "The Elephant Room → ACL Live at the Moody Theater (seated indoor concert hall, bigger room, $$, check lineup ahead)",
+          "Zilker Park Hike-and-Bike Trail → Ann W. Richards Congress Avenue Bridge (free, downtown, dusk bat emergence — check emergence times for October before you go)",
+        ],
+      },
+      {
+        label: "Do this now",
+        tone: "purple",
+        text: "Check The Elephant Room's Thu lineup online",
+      },
+    ],
+  },
+  faq: [
+    { q: "What should we do for an anniversary date night?",
+      a: "Plan an arc rather than a single dinner: somewhere to toast, something to watch or do together, and a quiet ending like a walk. Build in one small ritual — a toast to something specific, a memory you each name." },
+    { q: "Are the places real?",
+      a: "It names only places a web search confirmed are open, and marks when it couldn't verify one. Still check hours and book ahead." },
+    { q: "Can it plan a cheap or stay-at-home date?",
+      a: "Yes — set any budget, including stay-in dates, and add dietary needs and what you did last time so it doesn't repeat." },
+  ],
   description: "Tell DeftBrain where you are, what you want to spend, and what kind of night you're hoping for. You'll get a complete plan—including where to go, when to go, what it should cost, and what to do if plans change.",
   guide: {
     tips: [

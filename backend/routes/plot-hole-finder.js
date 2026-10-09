@@ -4,6 +4,72 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
+const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+const { checkAgainstSupplied } = require('../lib/factCheck');
+
+// Story facts from a source, not from memory (2026-10-08). A Dark Knight Rises
+// run said Gordon chose not to deliver his speech (Bane reads it out) and that
+// five months were "unaccounted for" after the pit. A second model's memory
+// made it worse (it "corrected" the reactor detail into an error), so this
+// fetches a plot summary by web search instead — cached per title for 30
+// days, fetched in parallel with the analysis — and a reader then flags any
+// story claim that CONTRADICTS the summary. Contradicts, not "is missing
+// from": a summary leaves out most detail, and absence proves nothing.
+const PLOT_SEARCH_WAIT_MS = Number(process.env.PLOT_SEARCH_WAIT_MS ?? 45000);
+
+async function plotSynopsis(title, mediaType) {
+  const key = `plot:${normalizeKeyPart(title)}:${normalizeKeyPart(mediaType || 'movie')}`;
+  await groundedFacts({
+    cacheKey: key,
+    label: 'plot-hole-synopsis',
+    ttlMs: 30 * 24 * 60 * 60 * 1000,
+    coldWaitMs: PLOT_SEARCH_WAIT_MS,
+    maxUses: 2,
+    maxTokens: 4000,
+    system: 'You find and summarize the plot of a specific film, show, book or game using web search — an encyclopedia plot section or a detailed published synopsis. Report only what the sources say happens. Never fill gaps from memory. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Find a detailed plot summary of "${title}" (${mediaType || 'movie'}). If the title is ambiguous, use the best-known one and name it.
+
+Return ONLY valid JSON:
+{ "work": "Exact title and year", "summary": "The plot in order, 400-700 words: who does what, what is said that matters, and how much time passes between events when the source says so", "source": "the domain of the page the summary is taken from" }`,
+    render: (facts, searchResults) => {
+      const summary = typeof facts?.summary === 'string' ? stripCites(facts.summary).trim() : '';
+      // "source" often comes back as several domains ("imdb.com, gradesaver.com");
+      // the summary counts as sourced if any of them was actually retrieved.
+      const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+      const claimed = String(facts?.source || '').split(/[,;\s]+/).map(d => d.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]).filter(d => d.includes('.'));
+      const sourced = claimed.some(d => searchResults.some(r => host(r.url) === d || host(r.url).endsWith(`.${d}`)));
+      if (summary.length < 200 || !sourced) {
+        console.log(`[plot-hole-synopsis] rejected: summary ${summary.length} chars, source ${facts?.source || 'none'} ${sourced ? 'matched' : 'not among ' + searchResults.length + ' retrieved pages'}`);
+        return '';
+      }
+      return { block: summary, data: { work: String(facts.work || title), source: String(facts.source), summary } };
+    },
+  });
+  return groundedData(key);
+}
+
+async function checkStoryClaims(parsed, synopsis, { title, userLanguage }) {
+  if (!synopsis?.summary) return;
+  const fields = [];
+  if (parsed.focus_answer?.show && typeof parsed.focus_answer.explanation === 'string') fields.push(['focus_answer.explanation', parsed.focus_answer.explanation]);
+  (parsed.findings || []).forEach((f, i) => ['what_happens', 'case_against', 'best_defense'].forEach(k => typeof f?.[k] === 'string' && fields.push([`findings[${i}].${k}`, f[k]])));
+  if (typeof parsed.overall_verdict?.summary === 'string') fields.push(['overall_verdict.summary', parsed.overall_verdict.summary]);
+  if (!fields.length) return;
+  try {
+    await checkAgainstSupplied(parsed, {
+      label: 'plot-hole-story-check',
+      fields,
+      supplied: `PLOT SUMMARY OF ${synopsis.work} (from ${synopsis.source}):\n${synopsis.summary}`,
+      lookFor: `- a statement about what happens in ${title} — who does what, what is said, in what order, how much time passes — that CONTRADICTS the plot summary above.
+Do NOT flag a detail merely because the summary does not mention it: a summary leaves most details out. Flag only a clash with what the summary says. Arguments, interpretations and verdicts are not story facts.`,
+      repairNote: 'Correct the story detail to match the summary and keep the argument if it still stands; if the argument rested entirely on the wrong detail, say plainly that the point does not hold. Do not mention the summary or any source in the text.',
+      userLanguage,
+      model: MODELS.SMART,
+    });
+  } catch (err) {
+    console.log(`[plot-hole-find] story check skipped: ${err.message}`);
+  }
+}
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted phrases or example wording must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -290,6 +356,7 @@ ${NO_QUOTE_RULE}`;
 
     const systemPrompt = withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
+    const synopsisPromise = plotSynopsis(title.trim(), mediaType).catch(() => null);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5000,
@@ -327,6 +394,8 @@ ${NO_QUOTE_RULE}`;
     } catch (guardErr) {
       console.log('[plot-hole-find] v2 guard skipped:', guardErr.message);
     }
+
+    await checkStoryClaims(parsed, await synopsisPromise, { title: title.trim(), userLanguage });
 
     res.json(parsed);
   } catch (error) {

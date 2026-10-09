@@ -125,6 +125,8 @@
     "FriendshipFadeAlerter",
     "TripRecon",
     "MicroAdventureMapper",
-    "ToolFinder"
+    "ToolFinder",
+    "DateNight",
+    "NameAudit"
   ]
 }

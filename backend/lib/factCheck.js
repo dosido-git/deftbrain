@@ -92,9 +92,10 @@ function setByPath(obj, path, value) {
  * @param opts.lookFor     tool-specific bullet list of what counts as invention
  * @param opts.repairNote  tool-specific guidance for the rewrite
  * @param opts.userLanguage / opts.locale
+ * @param opts.model       check + repair model (default MODELS.FAST)
  */
 async function checkAgainstSupplied(draft, opts) {
-  const { label, supplied, fields, lookFor, repairNote, userLanguage, locale = '' } = opts;
+  const { label, supplied, fields, lookFor, repairNote, userLanguage, locale = '', model = MODELS.FAST } = opts;
   if (!Array.isArray(fields) || !fields.length) return;
 
   const drafts = fields.map(([path, value]) => `${path}:\n${value}`).join('\n\n');
@@ -126,7 +127,7 @@ ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   const check = await callClaudeWithRetry({
-    model: MODELS.FAST,
+    model,
     max_tokens: 2000,
     messages: [{ role: 'user', content: withLanguage(checkPrompt, userLanguage) }],
   }, { label: `${label}-check` });
@@ -168,7 +169,7 @@ ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   const repair = await callClaudeWithRetry({
-    model: MODELS.FAST,
+    model,
     max_tokens: 2500,
     messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
   }, { label: `${label}-repair` });

@@ -4,8 +4,88 @@ const dns = require('dns').promises;
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, groundedData, normalizeKeyPart, attachSourceUrls, stripCites } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted names or phrases must be written plainly or with single quotes, or it breaks the JSON.';
+
+// ═══════════════════════════════════════════════════
+// HELPER: who already uses this name — a web search, not memory
+// ═══════════════════════════════════════════════════
+// 2026-10-08: the built-in example "Loomly" (a social-media scheduling SaaS)
+// came back GOOD FIT, and Loomly is an existing social-media scheduling
+// product. The tool was right not to assert conflicts from memory; what it
+// lacked was a way to look. This searches, keeps only matches whose page the
+// search actually retrieved (attachSourceUrls — never a URL the model merely
+// claims), and caches per name + field for two weeks. Runs alongside the
+// analysis; waits at most NAME_SEARCH_WAIT_MS on a name nobody has searched,
+// then answers without it (checks_needed still tells the visitor to look).
+const NAME_SEARCH_WAIT_MS = Number(process.env.NAME_SEARCH_WAIT_MS ?? 45000);
+
+async function existingUses(name, context, industry) {
+  const key = `name-uses:${normalizeKeyPart(name)}:${normalizeKeyPart(industry || context || '')}`;
+  await groundedFacts({
+    cacheKey: key,
+    label: 'nameaudit-existing-uses',
+    coldWaitMs: NAME_SEARCH_WAIT_MS,
+    maxUses: 3,
+    maxTokens: 3000,
+    system: 'You check, with web search, whether a proposed name is already used by an existing business, product, app, project or registered trademark. Report only uses you found on a real page. Never invent a company. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Proposed name: ${name}
+What it is for: ${context || 'not specified'}${industry ? `\nField: ${industry}` : ''}
+
+Use web_search to find existing businesses, products, apps, projects or trademarks using this exact name or a near-identical spelling. Look first in the same field, then generally.
+
+Return ONLY valid JSON:
+{ "matches": [ { "name": "The name exactly as that business uses it", "what": "What it is, one short clause", "source": "the domain or URL of the page that shows it", "same_space": true if it operates in the same or a closely overlapping field as the proposed use, else false, "active": true if it appears to be operating now, false if defunct, null if unclear } ] }
+At most 5 matches, same-field ones first. An empty list is the correct answer if you found none.`,
+    render: (facts, searchResults) => {
+      const list = (Array.isArray(facts?.matches) ? facts.matches : []).filter(m => m && m.name && m.what);
+      const verified = attachSourceUrls(list, searchResults).filter(m => m.url).slice(0, 5)
+        .map(m => ({ name: stripCites(String(m.name)), what: stripCites(String(m.what)), url: m.url, same_space: m.same_space === true, active: m.active === true ? true : m.active === false ? false : null }));
+      // A search that found nothing is still an answer worth caching.
+      return { block: verified.length ? 'matches' : 'none', data: { matches: verified, searched_at: new Date().toISOString().slice(0, 10) } };
+    },
+  });
+  return groundedData(key);
+}
+
+// Folds verified existing uses into the verdict and the problems list, in the
+// visitor's language. Only runs when the search found something.
+async function applyExistingUses(result, uses, { name, context, userLanguage }) {
+  const matches = uses?.matches || [];
+  if (!matches.length) return;
+  const sameSpace = matches.filter(m => m.same_space && m.active !== false);
+  const lines = matches.map(m => `- ${m.name} — ${m.what} (${(() => { try { return new URL(m.url).hostname.replace(/^www\./, ''); } catch { return m.url; } })()})${m.same_space ? ' [same field]' : ''}${m.active === false ? ' [appears defunct]' : ''}`).join('\n');
+  const prompt = `A name audit for "${name}" (${context}) was written before a web search found these existing uses of the name:
+${lines}
+
+CURRENT VERDICT: ${result.verdict}
+CURRENT BOTTOM LINE: ${result.bottom_line}
+CURRENT PROBLEMS: ${JSON.stringify(result.what_could_get_in_the_way || [])}
+
+Update three things to account for what the search found — and nothing else:
+- verdict: exactly one of STRONG FIT, GOOD FIT, MIXED, HAS PROBLEMS, RECONSIDER. ${sameSpace.length ? 'An active business or product in the same field already uses this name, so the verdict cannot be STRONG FIT or GOOD FIT.' : 'None of the matches is in the same field; lower the verdict only if a match would still cause real confusion.'}
+- bottom_line: 1-2 sentences that account for it.
+- what_could_get_in_the_way: the current list, plus one item per relevant match, naming it and its domain — e.g. "An existing social-media scheduling product already uses the name (loomly.com)." State only what the list above says; it was found by search, so it may be stated as found ("a web search found…"), but do not add funding, size, trademarks or anything else not listed. Report what was found; never draw a legal conclusion from it (infringement, likelihood of confusion in the legal sense, whether a mark is enforceable) — say a trademark lawyer or search is the place for that.
+Keep the same language as the current text. ${NO_QUOTE_RULE}
+Return ONLY valid JSON: { "verdict": "…", "bottom_line": "…", "what_could_get_in_the_way": ["…"] }`;
+  try {
+    const upd = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+    }, { label: 'NameAudit-existing-uses' });
+    if (typeof upd?.bottom_line === 'string' && upd.bottom_line.trim()) result.bottom_line = upd.bottom_line.trim();
+    if (Array.isArray(upd?.what_could_get_in_the_way) && upd.what_could_get_in_the_way.length) result.what_could_get_in_the_way = upd.what_could_get_in_the_way.filter(x => typeof x === 'string' && x.trim()).slice(0, 6);
+    const v = String(upd?.verdict || '').toUpperCase().trim();
+    if (VERDICTS.includes(v)) result.verdict = v;
+  } catch (err) {
+    console.log(`[NameAudit] existing-uses update failed: ${err.message}`);
+  }
+  // Code has the last word on the one thing that matters: a live same-field
+  // business with this name is never a strong or good fit.
+  if (sameSpace.length && ['STRONG FIT', 'GOOD FIT'].includes(result.verdict)) result.verdict = 'HAS PROBLEMS';
+}
 
 // ═══════════════════════════════════════════════════
 // HELPER: Domain DNS check — a signal, not a registration check
@@ -390,6 +470,9 @@ router.post('/nameaudit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const showDomainChecks = ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'App', 'Event', 'Domain Name'].includes(context);
 
+    // Started first: on a name nobody has searched, the search is the slow part.
+    const usesPromise = existingUses(name.trim(), context, industry).catch(() => null);
+
     const [aiAnalysis, domainResults] = await Promise.all([
       (async () => {
         const prompt = `${NAME_AUDIT_CORE}
@@ -582,6 +665,8 @@ ${NO_QUOTE_RULE}`;
       suggested_handle: suggestedHandle(name),
     } : null;
     result.check_before_you_commit = checklistFor(showDomainChecks);
+    const uses = await usesPromise;
+    await applyExistingUses(result, uses, { name: name.trim(), context, userLanguage });
 
     if (!result.verdict) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });

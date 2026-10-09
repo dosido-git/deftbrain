@@ -6,6 +6,48 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
 const { venueBlockFor, verifiedNamesFrom, markVerified, attachPlaceFacts, eventBlock } = require('../lib/venues');
 const { groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
+const { checkAgainstSupplied } = require('../lib/factCheck');
+
+// Venue NAMES are verified by web search (lib/venues.js); what the planner
+// writes AROUND them was not (2026-10-08). An Austin run, every stop marked
+// venue_confirmed, still said the burnt ends "sell out by evening", that the
+// jazz club plays "Thu-Sat" (it plays nightly), that a lakeside trail is
+// "well-lit" for a 10:45 PM walk, and offered a backup restaurant that does
+// not appear to exist. A second reader compares every place-specific detail
+// against what the search actually returned and cuts what it cannot find
+// there. Comparing against supplied text is a reading job, not a memory one —
+// the kind of check that holds up. Fail-open.
+async function checkVenueClaims(parsed, { venuesBlock, datedEvents, body, label }) {
+  const fields = [];
+  const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
+  (Array.isArray(parsed?.itinerary) ? parsed.itinerary : []).forEach((st, i) => {
+    ['description', 'pro_tip', 'plan_b'].forEach(k => add(`itinerary[${i}].${k}`, st?.[k]));
+  });
+  if (parsed?.stop) ['description', 'pro_tip', 'plan_b'].forEach(k => add(`stop.${k}`, parsed.stop[k]));
+  ['vibe_description', 'plan_b', 'one_thing_now', 'transportation'].forEach(k => add(k, parsed?.[k]));
+  (Array.isArray(parsed?.tips) ? parsed.tips : []).forEach((t, i) => add(`tips[${i}]`, t));
+  if (!fields.length) return;
+  const typed = ['location', 'restrictions', 'lastTime', 'startTime', 'weather', 'dateType']
+    .map(k => body?.[k] ? `${k}: ${body[k]}` : '').filter(Boolean).join('\n');
+  try {
+    await checkAgainstSupplied(parsed, {
+      label,
+      fields,
+      supplied: `${typed}\n\nWHAT THE WEB SEARCH CONFIRMED ABOUT PLACES (the only source for any place-specific detail):${venuesBlock || '\n(nothing — no place was verified)'}${datedEvents || ''}`,
+      lookFor: `- a named business or place that is not in the confirmed list or the dated events (a generic kind of place — "a wine bar nearby" — is fine);
+- any specific detail about a named place that the confirmed notes do not state: which days or hours it is open, its music or show schedule, dishes and whether they sell out, when it was founded or built, what the building is like, reservation rules, minimums or cover charges, crowds, lighting or safety, how long a trail or route is;
+- a claim that a place is safe, well-lit or quiet at night.
+General advice that is not about a specific place (dress in layers, book ahead on weekends, the season's weather in broad terms) is fine. Costs are estimates and are fine.`,
+      repairNote: 'Keep the stop and the suggestion. Remove the unconfirmed detail, or turn it into something to check ("check the music schedule before you go"). Never name a different place to replace one that was cut. Write to the couple, never about the checking: no "notes", "sources", "confirmed", "verified" or "the search".',
+      userLanguage: body?.userLanguage,
+      // FAST passed invented tips ("a signature drink you won't find on the
+      // menu", a second set "10:30 PM-midnight"). ~$0.02 a plan on SMART.
+      model: MODELS.SMART,
+    });
+  } catch (err) {
+    console.log(`[${label}] venue-claims check skipped: ${err.message}`);
+  }
+}
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
@@ -244,6 +286,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
       if (!parsed.itinerary) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    await checkVenueClaims(parsed, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' });
     markVerified(parsed.itinerary, verified);
     attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
     return res.json(parsed);
@@ -294,6 +337,7 @@ Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
       if (!parsed.itinerary && !parsed.plan) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    await checkVenueClaims(parsed, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' });
     markVerified(parsed.itinerary, verified);
     attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
     return res.json(parsed);
@@ -410,6 +454,7 @@ Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!ven
       if (!parsed.itinerary) {
         return res.status(500).json({ error: 'Could not rework the evening. Please try again.' });
       }
+      await checkVenueClaims(parsed, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' });
       markVerified(parsed.itinerary, verified);
     attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
       return res.json(parsed);
@@ -456,6 +501,7 @@ Return ONLY valid JSON:
       if (!parsed.stop) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    await checkVenueClaims(parsed, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' });
     markVerified([parsed.stop], verified);
     return res.json(parsed);
     }
@@ -649,6 +695,7 @@ Return ONLY valid JSON:
       if (!parsed.itinerary && !parsed.plan) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    await checkVenueClaims(parsed, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' });
     markVerified(parsed.itinerary, verified);
     attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
     return res.json(parsed);
