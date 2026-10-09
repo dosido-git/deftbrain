@@ -259,6 +259,66 @@ function sanitizeResult(parsed, packet) {
   return parsed;
 }
 
+// Figures must come from the packet (2026-10-08). A sleep run cited "a 90%
+// dropout rate" and "a study of 12,637 adults" that could not be traced to
+// any source it listed. Prompt rule 1 already forbids figures from memory, so
+// this checks in code: every figure in the synthesized prose has to appear in
+// the research packet or in what the visitor typed. A sentence carrying one
+// that doesn't is dropped; a card left without its claim or basis is then
+// dropped by sanitizeResult like any other incomplete card. Small whole
+// numbers (counts like "3 trials", "7-9 hours", source IDs like S4) are not
+// checked — they are too common to trace and rarely the invented part.
+const FIGURE = /\d[\d,.  ]*\d|\d/g;
+function normFigure(f) {
+  let x = f.replace(/[  ]/g, '');
+  if (/^\d{1,3}([,.]\d{3})+$/.test(x)) x = x.replace(/[,.]/g, ''); // 12,637 / 12.637
+  else x = x.replace(',', '.');                                     // decimal comma
+  return x.replace(/\.$/, '');
+}
+const figures = text => (String(text || '').match(FIGURE) || []).map(normFigure);
+const material = f => !/^\d+$/.test(f) || Number(f) > 12;
+const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[A-Z0-9"“'(¿¡])|(?<=[。！？])/;
+
+function dropUnsourcedFigures(parsed, packet, typed) {
+  const known = new Set([...figures(JSON.stringify(packet)), ...figures(typed)]);
+  const dropped = [];
+  const clean = (text) => {
+    if (typeof text !== 'string' || !/\d/.test(text)) return text;
+    let changed = false;
+    // Sentence by sentence, and within a sentence clause by clause on "; " —
+    // "a panel found X; a separate study found Y%" keeps the panel.
+    const kept = text.split(SENTENCE_BREAK).map(sentence => {
+      const clauses = sentence.split(/;\s+/);
+      const ok = clauses.filter(clause => {
+        const bad = figures(clause).filter(f => material(f) && !known.has(f));
+        if (bad.length) dropped.push(bad.join('/'));
+        return !bad.length;
+      });
+      if (ok.length === clauses.length) return sentence;
+      changed = true;
+      const joined = ok.join('; ').trim();
+      return joined && !/[.!?。！？]$/.test(joined) ? `${joined}.` : joined;
+    }).filter(Boolean);
+    return changed ? kept.join(' ').trim() : text;
+  };
+  const fix = (obj, keys) => { if (obj) for (const k of keys) if (typeof obj[k] === 'string') obj[k] = clean(obj[k]); };
+  const fixList = (arr) => Array.isArray(arr) ? arr.map(clean) : arr;
+
+  if (typeof parsed.framing === 'string') parsed.framing = clean(parsed.framing);
+  (parsed.the_signal?.items || []).forEach(x => fix(x, ['claim', 'basis', 'limits']));
+  (parsed.the_noise || []).forEach(x => fix(x, ['what_the_evidence_supports_instead', 'what_went_wrong', 'kernel_of_truth']));
+  (parsed.still_worth_verifying || []).forEach(x => fix(x, ['why_it_matters', 'what_would_help']));
+  (parsed.sources_of_noise || []).forEach(x => fix(x, ['how_it_distorts', 'how_to_recognize_it']));
+  parsed.what_general_claims_cant_decide = fixList(parsed.what_general_claims_cant_decide);
+  if (parsed.the_bottom_line) {
+    for (const key of ['supported_takeaways', 'treat_skeptically', 'what_would_change_the_answer']) {
+      parsed.the_bottom_line[key] = fixList(parsed.the_bottom_line[key]);
+    }
+  }
+  if (dropped.length) console.log(`[signal-vs-noise] dropped ${dropped.length} sentence(s) with figures not in the research packet: ${dropped.join(', ')}`);
+  return dropped.length;
+}
+
 function buildSupplied(topic, conflictingAdvice, userContext) {
   return `TOPIC:\n${topic.trim()}\n\n${conflictingAdvice?.trim() ? `CLAIMS / CONFLICTING ADVICE:\n${conflictingAdvice.trim()}\n\n` : ''}${userContext?.trim() ? `VISITOR-SUPPLIED CONTEXT:\n${userContext.trim()}\n\n` : ''}`;
 }
@@ -468,6 +528,7 @@ ${SHARED_RULES}`;
       userLanguage,
     });
 
+    dropUnsourcedFigures(parsed, research.packet, supplied);
     // Guard repair can touch prose, but source IDs are code-owned. Re-run the
     // structural/source validation before anything reaches the visitor.
     parsed = sanitizeResult(parsed, research.packet);

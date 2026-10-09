@@ -55,3 +55,12 @@ line "at a wedding" — fixed in 6b7bbc3b (origin rule + supplied-facts check).
 - **AnalogyEngine** — one "where it breaks" line says vaccines get updated because live weakened germs "change a tiny bit" (updates follow the circulating virus, e.g. flu). The misconception line says no vaccine can cause the disease "in a healthy person" (live vaccines can, rarely). Both left out.
 - **JustifyMyMeeting** — `time_footprint.occurrences_per_year` came back null for a meeting described as weekly, so the annual cost (~1,144 person-hours) never shows. Should be computed in code from "weekly/daily/monthly".
 - **MeetingHijackStopper** — the user picked "Disagree & commit", but `decision_plan` ignored it. Left out.
+
+## Fixed 2026-10-08 (same day)
+
+- **British spelling (all tools)** — `lib/usSpelling.js`, applied in the voiceFix middleware to every English reply for a US (or region-less) visitor. Fixed word list (not a suffix rule), skips URLs, mid-sentence capitalized names, and any British form the visitor typed.
+- **JustifyMyMeeting** — judge view reads how often the meeting happens from the visitor's own words (`perYearFromText`, English only); weekly all-hands now shows 1,144 person-hours a year.
+- **AnalogyEngine** (shared `factCheck.js`, facts mode) — checker now flags absolute words on facts with known exceptions and wrong reasons/mechanisms, including inside "where it breaks" lines. Re-run on the saved vaccine output: the wrong reason was caught and corrected.
+- **DocumentDetective** — reading rule (keep a time condition on the event the document attaches it to) + two guard terms; guard check/repair moved to SMART (`runOutputGuard` gained `opts.model`). Re-run: every field now says serve notice so it expires at end of month 12.
+- **SignalVsNoise** — `dropUnsourcedFigures`: any figure (>12 or non-integer) not found in the research packet or the visitor's input drops its sentence/clause. Note: "12,637 adults" was in fact sourced (S14's title); the 90% dropout figure is what this now catches.
+- **ConceptCoach** — example 3 now `launched`, churn "2 teams … both" in all 13 languages.

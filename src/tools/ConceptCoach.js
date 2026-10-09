@@ -44,7 +44,7 @@ const EXAMPLES = [
   descKey: 'ia_ex2_desc', evidenceKey: 'ia_ex2_evidence', founderKey: 'ia_ex2_founder',
 },
   {
-  ideaStage: 'idea',
+  ideaStage: 'launched',
   focusAreas: ['market', 'competition'],
   descKey: 'ia_ex3_desc', evidenceKey: 'ia_ex3_evidence', founderKey: 'ia_ex3_founder',
 },

@@ -422,6 +422,23 @@ function timeFootprint(durationHours, attendees, perYear) {
 
 const PER_YEAR = { daily: 250, weekly: 52, biweekly: 26, fortnightly: 26, monthly: 12, quarterly: 4 };
 
+// The judge view has no frequency field, so a "weekly all-hands" showed its
+// per-meeting cost but never its yearly one (2026-10-08). How often it
+// happens is read from the visitor's own words, in code — English phrasing
+// only; anything else leaves the yearly figure out rather than guessing.
+// A text that also calls itself one-off is ambiguous and gets no figure.
+function perYearFromText(text) {
+  const t = String(text || '').toLowerCase();
+  if (/\b(one-off|one off|one-time|one time|single session|ad hoc|ad-hoc)\b/.test(t)) return null;
+  if (/\b(daily|every (week)?day|each (week)?day|every morning)\b/.test(t)) return PER_YEAR.daily;
+  if (/\b(twice (a|per|every) week|twice weekly|two times a week)\b/.test(t)) return 104;
+  if (/\b(bi-?weekly|fortnightly|every (two|2|other) weeks?)\b/.test(t)) return PER_YEAR.biweekly;
+  if (/\b(weekly|every week|once (a|per) week|each week)\b/.test(t)) return PER_YEAR.weekly;
+  if (/\b(monthly|every month|once (a|per) month|each month)\b/.test(t)) return PER_YEAR.monthly;
+  if (/\b(quarterly|every quarter|once (a|per) quarter)\b/.test(t)) return PER_YEAR.quarterly;
+  return null;
+}
+
 // The frontend colours and localises these by value, so they have to survive
 // withLanguage exactly. The prompt asks for English; this makes it true. Note
 // the frontend maps the pinned value to a t() key — pinning to English here
@@ -495,7 +512,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     pinVerdict(parsed, VERDICTS, 'NOT ENOUGH TO TELL');
     if (parsed.better_format) parsed.better_format.recommendation = pinTo(parsed.better_format.recommendation, FORMATS, 'Other');
-    parsed.time_footprint = timeFootprint(duration, attendees, null);
+    parsed.time_footprint = timeFootprint(duration, attendees, perYearFromText(`${meetingText} ${context || ''}`));
     await withNumberCheck(parsed, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage });
     const fields = [];
     const walk = (v, path) => {

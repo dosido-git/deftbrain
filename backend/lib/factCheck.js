@@ -253,7 +253,9 @@ Find ONLY real errors:
 - totals that do not match their parts, percentages that do not match the numbers they come from, wrong unit or time conversions, durations and times that do not add up;
 - the same quantity given two different values in different places, or a worked example whose numbers change partway through;
 - a comparison word pointing the wrong way (more/less, higher/lower, longer/shorter, before/after, base/exponent).${facts ? `
-- a false or overstated factual claim; a "misconception" that is actually true, or a correction that does not contradict it.` : ''}
+- a false or overstated factual claim; a "misconception" that is actually true, or a correction that does not contradict it;
+- an absolute word (never, nothing, no, always, cannot, completely, all) on a scientific, medical or legal fact that has well-known exceptions — the fix keeps the point and names the exception ("very rarely", "in almost all cases");
+- a wrong reason or mechanism: a "which is why", "because" or "so" that explains a real fact with the wrong cause. This applies inside caveats, limitations and "where it breaks" lines too — a side remark teaches as much as the main claim.` : ''}
 Take as GIVEN: anything the visitor supplied, and real-world figures you cannot verify (prices, fees, rates, laws, schedules, estimates). Check the arithmetic that uses them, not the figures themselves. Ranges and rough estimates are fine if internally consistent.
 ${extraRules}
 Read each item in light of its field name: a field can state something on purpose that is not the answer's own claim (a misconception, a claim being tested, a 'before' figure). Judge it as what it is.

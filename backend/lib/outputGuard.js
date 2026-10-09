@@ -39,6 +39,9 @@ const VIOLATION_TYPES = [
  * @param opts.promise     one line: what this tool undertakes to deliver
  * @param opts.guard       router.outputGuard — { prohibit: [], require: [] }
  * @param opts.userLanguage / opts.locale
+ * @param opts.model      check + repair model (default MODELS.FAST); a route
+ *                         whose violations are subtle readings of a long
+ *                         document can ask for MODELS.SMART
  * @returns violations (possibly empty); never throws past its caller's catch
  */
 // A guarded call is generate + check + repair. Each stage is bounded here so
@@ -63,7 +66,7 @@ function withDeadline(promise, ms, fallback, label, stage) {
 }
 
 async function runOutputGuard(draft, opts) {
-  const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '' } = opts;
+  const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '', model = MODELS.FAST } = opts;
   if (!Array.isArray(fields) || !fields.length) return [];
 
   const prohibit = Array.isArray(guard.prohibit) ? guard.prohibit : [];
@@ -113,7 +116,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // and retrying it buys a nicety, not the answer.
   const check = await withDeadline(
     callClaudeWithRetry({
-      model: MODELS.FAST,
+      model,
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(checkPrompt, userLanguage) }],
     }, { label: `${label}-guard`, maxRetries: 0 }).catch(err => {
@@ -203,7 +206,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   const repair = await withDeadline(
     callClaudeWithRetry({
-      model: MODELS.FAST,
+      model,
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
     }, { label: `${label}-guard-repair`, maxRetries: 0 }).catch(err => {

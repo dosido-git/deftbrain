@@ -8,6 +8,8 @@
 // English only, and only when the visitor did not use the word themselves —
 // someone asking about a visitor at their door keeps their own word.
 
+const spelling = require('./usSpelling');
+
 const BE = { is: 'are', was: 'were', has: 'have', does: 'do', "isn't": "aren't", "wasn't": "weren't", "hasn't": "haven't", "doesn't": "don't" };
 
 function verbFor(w) {
@@ -28,27 +30,39 @@ function fixText(s) {
     .replace(/\b(the )?visitor\b/gi, (m) => (/^T|^V/.test(m) ? 'You' : 'you'));
 }
 
-function fixDeep(v, counter) {
-  if (typeof v === 'string') { const f = fixText(v); if (f !== v) counter.n++; return f; }
-  if (Array.isArray(v)) return v.map(x => fixDeep(x, counter));
-  if (v && typeof v === 'object') { for (const k of Object.keys(v)) v[k] = fixDeep(v[k], counter); return v; }
+function mapStrings(v, fn) {
+  if (typeof v === 'string') return fn(v);
+  if (Array.isArray(v)) return v.map(x => mapStrings(x, fn));
+  if (v && typeof v === 'object') { for (const k of Object.keys(v)) v[k] = mapStrings(v[k], fn); return v; }
   return v;
 }
 
-// Express middleware for /api: wraps res.json.
+// Express middleware for /api: wraps res.json. Also applies US spelling
+// (lib/usSpelling.js) to English replies for US visitors.
 function voiceFixMiddleware(req, res, next) {
   if (req.method !== 'POST') return next();
   const lang = String(req.body?.userLanguage || 'en').toLowerCase();
   if (!lang.startsWith('en')) return next();
   let typed = '';
   try { typed = JSON.stringify(req.body || {}); } catch (_) { typed = ''; }
-  if (/visitor/i.test(typed)) return next();
+  const fixVisitor = !/visitor/i.test(typed);
+  const fixSpelling = spelling.wantsUS(req.body);
+  if (!fixVisitor && !fixSpelling) return next();
+  const keep = fixSpelling ? spelling.typedBritish(req.body) : null;
   const json = res.json.bind(res);
   res.json = (body) => {
     if (res.statusCode < 400 && body && typeof body === 'object') {
-      const counter = { n: 0 };
-      try { body = fixDeep(body, counter); } catch (_) { /* never break a reply */ }
-      if (counter.n) console.log(`[voiceFix] ${req.path}: ${counter.n} field(s) said "visitor" — rewritten to "you"`);
+      const visitor = { n: 0 };
+      const spelt = { n: 0 };
+      const fix = (s) => {
+        let out = s;
+        if (fixVisitor) { const f = fixText(out); if (f !== out) visitor.n++; out = f; }
+        if (fixSpelling) { const f = spelling.fixText(out, keep); if (f !== out) spelt.n++; out = f; }
+        return out;
+      };
+      try { body = mapStrings(body, fix); } catch (_) { /* never break a reply */ }
+      if (visitor.n) console.log(`[voiceFix] ${req.path}: ${visitor.n} field(s) said "visitor" — rewritten to "you"`);
+      if (spelt.n) console.log(`[voiceFix] ${req.path}: ${spelt.n} field(s) had British spelling — made US`);
     }
     return json(body);
   };

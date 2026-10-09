@@ -49,6 +49,11 @@ router.outputGuard = {
     'invented_legal_consequence_from_signing',
     'invented_visitor_context_not_supplied',
     'document_called_incomplete_rather_than_silent',
+    // 2026-10-08: a break clause read two ways in one answer (bottom line:
+    // notice can only be GIVEN after month 12; another card: serve it by month
+    // 10 so it EXPIRES at month 12). Each field alone looked fine to the check.
+    'two_fields_read_the_same_clause_incompatibly',
+    'time_condition_moved_to_a_different_event',
   ],
   require: [
     'source_field_names_where_in_the_document',
@@ -127,6 +132,8 @@ not specified ≠ permitted
 not prohibited ≠ covered
 
 Do not strengthen or weaken document language.
+
+Keep every time condition on the event the document attaches it to. Giving notice, notice expiring, termination taking effect, payment falling due and a right first becoming available are different events: a rule about when notice must EXPIRE says nothing about when it may be GIVEN, unless the document also says that.
 
 If two provisions create genuine ambiguity, say so.
 
@@ -622,10 +629,18 @@ Flag "your claim is almost certainly still valid" (the document alone can't esta
 
 THE MOST IMPORTANT ONE: governing-law and enforceability reasoning. Flag "the absence of a governing-law clause is a material gap," calling that absence "the primary factor" in an unresolved question, "governing law clauses are typically present in agreements of this type," and any explanation of how different states or jurisdictions treat a clause (e.g. "some states void non-competes entirely; others enforce them with modifications") — all of that is outside legal knowledge, not document content, however naturally it reads. The correct handling is flat and short: "This document does not state which law governs the agreement," and if that's what stands between the document and the visitor's question, "the document alone cannot answer that." Also flag a legal-effect verb standing in for a consequence ("by signing, you accept these waivers") when the document itself only states what the clause provides, and any visitor fact that got invented rather than supplied (unvested equity, an existing non-compete, a resignation plan the visitor never mentioned).
 
+CONSISTENCY ACROSS FIELDS. Read every field against every other. When two fields describe the same clause, deadline or amount in ways that cannot both be true (one says notice can only be given after month 12, another says notice can be served in month 10 so that it expires at the end of month 12), flag the field whose reading goes BEYOND the document's words — here, the clause sets when notice must expire, and nothing in it says when notice may be given — as two_fields_read_the_same_clause_incompatibly. The fix keeps the reading the text actually supports; where the text genuinely allows both, it says so plainly instead of picking one.
+
+Flag time_condition_moved_to_a_different_event wherever ANY field — the bottom line included, even when every field agrees — attaches a time condition to a different event than the document does: "notice cannot be given until month 12" when the clause only says notice must expire on or after month 12 is the pattern. The fix states the condition on the document's own event.
+
 Do not flag a status of REASONABLE READING or NEEDS CLARIFICATION merely for existing — those are the tool's own way of showing real uncertainty, which is correct, not a violation.`,
         guard: router.outputGuard,
         requiredNonEmpty: ['document.bottom_line'],
         userLanguage,
+        // SMART since 2026-10-08: the FAST check passed an answer that read one
+        // break clause two incompatible ways. Contradictions between fields of
+        // a legal document are this tool's costliest mistake (~$0.03/run).
+        model: MODELS.SMART,
       });
     } catch (guardErr) {
       console.log('[document-detective] v2 guard skipped:', guardErr.message);
