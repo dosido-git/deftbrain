@@ -26,7 +26,7 @@ module.exports = {
   steps: [
     {
       name: "What should your first message on a dating app say?",
-      body: "Not their general vibe, not their photos generally, not 'you seem fun.' One specific thing they put in writing. The book on their shelf in photo three. The line in their bio about their cat being unimpressed. The hike they mentioned. Specificity proves you actually read the profile, which immediately separates you from 80% of incoming messages. The reference is the entire opener.",
+      body: "Not their general vibe, not their photos generally, not 'you seem fun.' One specific thing they put in writing. The book on their shelf in photo three. The line in their bio about their cat being unimpressed. The hike they mentioned. Specificity proves you actually read the profile, which immediately separates you from most of the messages they get. The reference is the entire opener.",
     },
     {
       name: "Ask a real question, not 'how are you'",
@@ -62,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-10-08',
+  modified:  '2026-10-09',
 };

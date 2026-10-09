@@ -26,7 +26,7 @@ module.exports = {
   ],
 
   published:     '2026-04-25',
-  modified:      '2026-10-08',
+  modified:  '2026-10-09',
 
   ledes: [
     `Your cat is staring at the wall. Or the ceiling. Or, somehow, both at once. They've been doing it for ten minutes. You are now Googling, against your better judgment.`,
@@ -40,7 +40,7 @@ module.exports = {
     },
     {
       name: "When is a cat's behavior a sign something is wrong?",
-      body: "Cats groom roughly 30% of their waking time. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.",
+      body: "Cats spend a large part of their waking time grooming. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.",
     },
     {
       name: "Spot the meaningful hiding",

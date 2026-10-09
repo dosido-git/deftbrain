@@ -3108,7 +3108,7 @@ Same work, two completely different bullets. The activity version tells the read
 ### First Message on a Dating App That Actually Gets a Reply
 
 URL: https://deftbrain.com/guides/conversations/first-message-on-a-dating-app-that-actually-gets-a-reply
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 A first message on a dating app that gets a reply mentions one specific thing from their profile and asks a real question about it, in two or three sentences. Skip 'hey', compliments on looks and apologies for messaging. Something like: 'Was the book in your third photo good, or did you give up at chapter five?'
 
@@ -3118,7 +3118,7 @@ First messages on dating apps fail for a small set of reasons: they're generic, 
 
 **What should your first message on a dating app say?**
 
-Not their general vibe, not their photos generally, not 'you seem fun.' One specific thing they put in writing. The book on their shelf in photo three. The line in their bio about their cat being unimpressed. The hike they mentioned. Specificity proves you actually read the profile, which immediately separates you from 80% of incoming messages. The reference is the entire opener.
+Not their general vibe, not their photos generally, not 'you seem fun.' One specific thing they put in writing. The book on their shelf in photo three. The line in their bio about their cat being unimpressed. The hike they mentioned. Specificity proves you actually read the profile, which immediately separates you from most of the messages they get. The reference is the entire opener.
 
 **Ask a real question, not 'how are you'**
 
@@ -3548,7 +3548,7 @@ Punctuation does real work in group texts. A period at the end of a short reply 
 ### How to tell if someone is actually mad or just busy
 
 URL: https://deftbrain.com/guides/conversations/how-to-tell-if-someone-is-actually-mad-or-just-busy
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 To tell whether someone is mad at you or just busy, check whether they have gone quiet with everyone or only with you, whether their few messages still sound like them, and whether they have stopped asking about things you told them. Send a light message rather than 'Are you mad at me?', and give it a few more days.
 
@@ -3558,7 +3558,7 @@ Here is how to read the silence honestly, and how Decoder Ring helps you separat
 
 **How can you tell if someone is upset with you?**
 
-The single biggest signal is whether they have gone dark on everyone or just on you. If they are still posting, replying to other people, showing up in group chats, but specifically not engaging with you — that is selective silence, which usually means there is something. If their entire output has dropped — no posts, no replies anywhere you can see, calendar visibly stuffed — that is general silence, which usually really is the slammed week. This one observation resolves about 60% of these situations.
+The single biggest signal is whether they have gone dark on everyone or just on you. If they are still posting, replying to other people, showing up in group chats, but specifically not engaging with you — that is selective silence, which usually means there is something. If their entire output has dropped — no posts, no replies anywhere you can see, calendar visibly stuffed — that is general silence, which usually really is the slammed week. This one observation settles a lot of these situations.
 
 **Look at the warmth of what little they have sent**
 
@@ -4058,7 +4058,7 @@ When the deadline arrives, commit. Put the decision in writing — accept the of
 ### How to Prepare for a Debate
 
 URL: https://deftbrain.com/guides/decisions/how-to-prepare-for-a-debate
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 To prepare for a debate, write your case as one tight paragraph, then spend at least as long on the other side: predict the three strongest objections, write your response to each, check that every piece of evidence says what you claim, and rehearse out loud the moments most likely to go wrong.
 
@@ -4084,7 +4084,7 @@ Most debaters cite evidence sloppily — partial quotes, stale statistics, sourc
 
 **Rehearse the parts you'll likely flub**
 
-Identify the moments most likely to go wrong: the opening, the response to the hardest objection, the close. Rehearse those out loud — actually out loud, not in your head. The gap between thinking something and saying it cleanly is much bigger than people realize, and competitive debaters don't trust the head version. The other 80% of the debate, you can wing if you've done the prior steps. The 20% you can't wing is what rehearsal is for.
+Identify the moments most likely to go wrong: the opening, the response to the hardest objection, the close. Rehearse those out loud — actually out loud, not in your head. The gap between thinking something and saying it cleanly is much bigger than people realize, and competitive debaters don't trust the head version. Most of the rest you can handle on your feet if you've done the prior steps; these few moments are what rehearsal is for.
 
 ### How to think through a job offer when you're torn
 
@@ -4380,7 +4380,7 @@ This opens the conversation without taking a position. It also makes the landlor
 ### How to Set Boundaries with a Roommate Without Making It Weird
 
 URL: https://deftbrain.com/guides/home/how-to-set-boundaries-with-a-roommate-without-making-it-weird
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 To set a boundary with a roommate, name the specific behavior rather than a vague feeling, frame it as your need ('I need the kitchen quiet after 9:30 on weeknights'), and make the request small enough to say yes to. Then stop talking and let them respond before adding anything.
 
@@ -4400,7 +4400,7 @@ Here is the structure — and how RoommateCourt calibrates the script.
 
 **Make the request small and specific enough that they can say yes**
 
-'No more boyfriend over' is too big and probably will not happen. 'Could we cap weekday sleepovers at two a week?' is small enough to be doable and specific enough to verify. Big asks fail. Small asks stick. If the situation is bigger than a small ask can address, you may need a different conversation — but starting with the smallest viable change works in roughly 80% of cases.
+'No more boyfriend over' is too big and probably will not happen. 'Could we cap weekday sleepovers at two a week?' is small enough to be doable and specific enough to verify. Big asks fail. Small asks stick. If the situation is bigger than a small ask can address, you may need a different conversation — but starting with the smallest viable change is usually the easiest way in.
 
 **Wait for their response before adding more**
 
@@ -4512,7 +4512,7 @@ RoommateCourt takes the situation, what triggered it, and your goal (repair or p
 ### How to Find That Movie Where Something Specific Happened
 
 URL: https://deftbrain.com/guides/learning/whats-that-movie-where-something-happens
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 To find a movie from one scene you remember, list the unusual details rather than the generic ones, narrow the era (color, phones, cars), and search a film database by actor or director if you remember either. Communities such as r/tipofmytongue are good at identifying films from fragments.
 
@@ -4528,7 +4528,7 @@ Hotel hallway is not unique — thousands of movies have hotel scenes. The chara
 
 **Pin down the era as tightly as you can**
 
-Was it filmed in the last ten years or older? Black and white or color? Were cell phones in it? Cars look modern or vintage? Movie databases let you filter by year, and even a rough range cuts the candidate set by 90%. You probably do not know the exact year, but 'roughly 2010s, definitely color, definitely modern phones' is enough information to narrow significantly.
+Was it filmed in the last ten years or older? Black and white or color? Were cell phones in it? Cars look modern or vintage? Movie databases let you filter by year, and even a rough range cuts the candidates down a lot. You probably do not know the exact year, but 'roughly 2010s, definitely color, definitely modern phones' is enough information to narrow significantly.
 
 **Try genre-specific subreddits or movie forums**
 
@@ -5172,7 +5172,7 @@ The three questions that separate tired from sick. Hours usually mean tired; a f
 ### Weird Cat Behaviors, Explained (And When to Actually Worry)
 
 URL: https://deftbrain.com/guides/pets/weird-cat-behaviors-explained
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 Most weird cat behavior, such as staring at walls, hiding and night-time noise, is normal because cats sense sounds, smells and movement people miss. What matters is a change from your cat's usual behavior: over-grooming with bald patches, hiding that is new, eating non-food items, or an older cat who starts yowling at night are worth a vet visit.
 
@@ -5186,7 +5186,7 @@ Cats see, hear, and smell things you don't. Air currents, dust motes catching li
 
 **When is a cat's behavior a sign something is wrong?**
 
-Cats groom roughly 30% of their waking time. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.
+Cats spend a large part of their waking time grooming. That's normal. Over-grooming — bald patches, broken hairs, raw skin, grooming the same spot for thirty minutes straight — is not. The quirky version doesn't really exist; cats don't accidentally over-groom. The concerning version splits two ways: stress-driven (new pet in the house, move, schedule change) or pain-driven. Cats often groom over a hidden ache — joints, urinary tract, skin condition — as a self-soothing response. If you can identify a recent stressor and the grooming started within weeks of it, manage the stressor and watch. If there's no obvious stressor, treat it as pain until proven otherwise; that's the rule among cat-knowledgeable vets.
 
 **Spot the meaningful hiding**
 
@@ -5640,7 +5640,7 @@ Long passages, because a toast is not a reading and attention drops fast. Quotes
 ### Can You Leave the Airport During a Layover? (When It Is Worth It and When It Is Not)
 
 URL: https://deftbrain.com/guides/travel/can-you-leave-the-airport-during-a-layover
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 You can leave the airport during a layover if your passport and visa allow entry to that country — always on domestic layovers, and on international ones only where the transit rules permit — and you have enough time. Allow at least four hours of buffer before departure, plan one specific thing to do, and know where to leave bags.
 
@@ -5664,7 +5664,7 @@ The mistake people make is treating a layover like a vacation day. You do not ha
 
 **Account for bag storage if you have luggage**
 
-Most airports have left-luggage facilities — but they can be expensive (typically $10–25 per bag per day) and queues add 15 minutes on each end. If your bags are checked through to the final destination, you have nothing to worry about. If you have carry-on you do not want to drag through the city, factor in the storage cost and the queue time. Sometimes the storage logistics make leaving not worth it for a shorter layover.
+Most airports have left-luggage facilities — but they are usually priced per bag per day, and queues add time on each end. If your bags are checked through to the final destination, you have nothing to worry about. If you have carry-on you do not want to drag through the city, factor in the storage cost and the queue time. Sometimes the storage logistics make leaving not worth it for a shorter layover.
 
 **Have a Plan B at the airport**
 
@@ -5673,7 +5673,7 @@ Always have a backup for if leaving turns out to be a mistake — a transit opti
 ### How to Sleep in an Airport During a Long Layover
 
 URL: https://deftbrain.com/guides/travel/how-to-sleep-in-an-airport-during-a-long-layover
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 To sleep in an airport during a long layover, check the airport's reputation for it first, sleep airside after security rather than in public arrivals, and bring real gear: an eye mask, earplugs, a proper travel pillow and a layer. Set several alarms well before boarding, and consider a lounge or transit hotel if you need to function the next day.
 
@@ -5701,7 +5701,7 @@ Sleeping through a flight is the worst-case outcome. Set at least three alarms �
 
 **Consider lounges and transit hotels if sleep matters**
 
-If your trip depends on you being functional the next day, paying for sleep is often the right call. Most major airports have day-rate transit hotels (you book by the hour, not the night) that run $30 to $100 for 6 hours. Lounges with sleep pods or recliners (Priority Pass, card-linked, or paid) are another option. The mental cost of arriving at your destination in a fog from a sleepless terminal night is sometimes higher than the cost of just buying real sleep.
+If your trip depends on you being functional the next day, paying for sleep is often the right call. Most major airports have day-rate transit hotels (you book by the hour, not the night) where a few hours usually costs much less than a full night. Lounges with sleep pods or recliners (Priority Pass, card-linked, or paid) are another option. The mental cost of arriving at your destination in a fog from a sleepless terminal night is sometimes higher than the cost of just buying real sleep.
 
 ### Is a 60-Minute Layover Enough? (When It Works and When It Is a Gamble)
 
@@ -5741,13 +5741,13 @@ On a single ticket, a missed connection caused by a delay usually means being re
 ### Do Binaural Beats Actually Work for Focus, or Is It Hype?
 
 URL: https://deftbrain.com/guides/wellness/do-binaural-beats-actually-work-for-focus
-Updated: 2026-10-08
+Updated: 2026-10-09
 
-Binaural beats may help focus a little for some people, but the research is mixed: studies show small effects on attention and anxiety that vary a lot between studies, and marketing claims go far beyond the evidence. They only work through stereo headphones. The practical answer is to test them on yourself for two weeks.
+Binaural beats may help focus a little for some people, but the research is mixed: one meta-analysis found a moderate average effect on attention, memory and anxiety, while a later review found the brainwave explanation behind them inconsistent, and marketing claims go far beyond the evidence. They only work through stereo headphones. The practical answer is to test them on yourself for two weeks.
 
 Someone on YouTube swears 40 Hz binaural beats changed their study habits. The comments are full of testimonials. The sidebar is full of two-hour focus tracks with millions of views. You try one. You feel slightly different — maybe more focused, maybe placebo, hard to tell. You try a second. Nothing. You are not sure if you are picking up real effects or just hearing what you expected to hear.
 
-This is roughly where the science is too. Some studies show modest effects on attention and working memory. Others show nothing. The honest take is that binaural beats might do something small for some people, and the only way to know about you specifically is to test in a way that controls for placebo.
+This is roughly where the science is too. Some studies find modest effects on attention and working memory. Others find nothing. The honest take is that binaural beats might do something small for some people, and the only way to know about you specifically is to test in a way that controls for placebo.
 
 What follows: a quick primer on what binaural beats actually are, what the research says, and how to run a real test on yourself. Then a tool that includes binaural layers in custom mixes.
 
@@ -5757,7 +5757,7 @@ Play a 200 Hz tone in your left ear and a 240 Hz tone in your right ear, through
 
 **What does the research say about binaural beats?**
 
-Meta-analyses generally show small effects on attention, working memory, and anxiety reduction, but with high variability between studies. Some well-controlled studies find nothing. The effect sizes that do show up are modest — not the dramatic transformations the marketing promises. If you are expecting binaural beats to fix your focus, they will not. If you are expecting a small nudge that might add up over time, that is closer to what the evidence supports.
+A 2019 meta-analysis pooling studies of cognition, anxiety and pain found a moderate average effect, larger when people listened before a task rather than only during it. A 2023 systematic review of brain-recording studies found the core idea, that the brain locks onto the beat frequency, inconsistent: five studies supported it and eight did not. Individual results vary widely — nothing like the dramatic transformations the marketing promises. If you are expecting binaural beats to fix your focus, they will not. If you are expecting a small nudge that might add up over time, that is closer to what the evidence supports.
 
 **Wear actual headphones, not earbuds in one ear**
 
@@ -5765,7 +5765,7 @@ Binaural beats only work if each ear receives a different frequency. That requir
 
 **Run a real two-week test**
 
-Pick a single task you do daily — same kind, same time, same conditions. Track something measurable: pages read, problems solved, words written. For five days, do the task without binaural audio. For five days, do it with a 40 Hz beta or gamma track underneath your usual masking sound. If you see a clear difference in the numbers, binaural beats are doing something for you. If the numbers look the same, they are not, and you can stop paying attention to the marketing.
+Pick a single task you do daily — same kind, same time, same conditions. Track something measurable: pages read, problems solved, words written. For five days, do the task without binaural audio. For five days, do it with a binaural track (for example 40 Hz) underneath your usual masking sound. If you see a clear difference in the numbers, binaural beats are doing something for you. If the numbers look the same, they are not, and you can stop paying attention to the marketing.
 
 **Do not use them as a single layer**
 
@@ -5840,7 +5840,7 @@ On any off day, your body's signal during movement matters more than your traini
 ### How to Organize a Brain Dump into Actual Tasks (Without It Becoming Another Mess)
 
 URL: https://deftbrain.com/guides/wellness/how-to-organize-a-brain-dump-into-actual-tasks
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 To turn a brain dump into tasks, first cross out anything no longer relevant, then sort each remaining fragment into a task, a decision, a worry or a note. Rewrite tasks as specific next actions ('Call Mom this weekend', not 'Mom'), keep decisions and worries on separate lists, and treat the result as today's snapshot, not a permanent system.
 
@@ -5850,7 +5850,7 @@ Organizing a brain dump isn't a categorization problem — it's a translation pr
 
 **First pass: cross out anything that's not still relevant**
 
-A brain dump captures everything, including things that have already resolved themselves or you've stopped caring about. Read the list once and just cross out anything that's no longer alive. You'd be surprised how much of the list is already dead weight by the time you sort it. The list shrinks by 20-30% before you've done any real organizing.
+A brain dump captures everything, including things that have already resolved themselves or you've stopped caring about. Read the list once and just cross out anything that's no longer alive. You'd be surprised how much of the list is already dead weight by the time you sort it. The list often shrinks noticeably before you've done any real organizing.
 
 **How do you turn a brain dump into a to-do list?**
 

@@ -26,7 +26,7 @@ module.exports = {
   steps: [
     {
       name: "First pass: cross out anything that's not still relevant",
-      body: "A brain dump captures everything, including things that have already resolved themselves or you've stopped caring about. Read the list once and just cross out anything that's no longer alive. You'd be surprised how much of the list is already dead weight by the time you sort it. The list shrinks by 20-30% before you've done any real organizing.",
+      body: "A brain dump captures everything, including things that have already resolved themselves or you've stopped caring about. Read the list once and just cross out anything that's no longer alive. You'd be surprised how much of the list is already dead weight by the time you sort it. The list often shrinks noticeably before you've done any real organizing.",
     },
     {
       name: "How do you turn a brain dump into a to-do list?",
@@ -62,5 +62,5 @@ module.exports = {
   },
 
   published: '2026-04-29',
-  modified:  '2026-10-08',
+  modified:  '2026-10-09',
 };

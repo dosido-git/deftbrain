@@ -501,6 +501,13 @@ const LEGACY_REDIRECTS = {
 // meeting". The workplace one kept its URL (keep-list, indexed); the
 // meetings one's material (the scripted line, "decline early") merged in.
 const MERGED_GUIDE_REDIRECTS = {
+  // Guide review 2026-10-09: same question asked twice; the longer guide stays.
+  '/guides/conversations/how-to-de-escalate-a-text-fight-with-your-partner': '/guides/conversations/how-to-de-escalate-a-fight-over-text',
+  '/guides/conversations/how-to-de-escalate-a-text-fight-with-your-partner.html': '/guides/conversations/how-to-de-escalate-a-fight-over-text',
+  '/guides/decisions/how-to-stop-secondguessing-decisions-you-already-made': '/guides/decisions/how-to-stop-second-guessing-yourself-after-you-decide',
+  '/guides/decisions/how-to-stop-secondguessing-decisions-you-already-made.html': '/guides/decisions/how-to-stop-second-guessing-yourself-after-you-decide',
+  '/guides/health/questions-to-ask-your-doctor': '/guides/health/what-questions-to-ask-your-doctor',
+  '/guides/health/questions-to-ask-your-doctor.html': '/guides/health/what-questions-to-ask-your-doctor',
   // meetings/ and workplace/ held the same 9 meeting guides (2026-10-08, owner:
   // merge overlapping guides); meetings/ is their topical home.
   '/guides/workplace/how-to-make-sure-quiet-people-speak-up-in-meetings': '/guides/meetings/how-to-make-sure-quiet-people-speak-up-in-meetings',

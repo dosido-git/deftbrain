@@ -21,7 +21,7 @@ module.exports = {
   ],
   steps: [
     { name: "How do you find a movie from a scene you remember?", body: 'Hotel hallway is not unique — thousands of movies have hotel scenes. The character with the specific quirk is unique. The unusual prop, the specific line of dialogue, the strange transition from one scene to another — those are the searchable details. Write down what you remember and circle the things that feel specific to this movie. Search those, not the generic backdrop.' },
-    { name: 'Pin down the era as tightly as you can', body: 'Was it filmed in the last ten years or older? Black and white or color? Were cell phones in it? Cars look modern or vintage? Movie databases let you filter by year, and even a rough range cuts the candidate set by 90%. You probably do not know the exact year, but \'roughly 2010s, definitely color, definitely modern phones\' is enough information to narrow significantly.' },
+    { name: 'Pin down the era as tightly as you can', body: 'Was it filmed in the last ten years or older? Black and white or color? Were cell phones in it? Cars look modern or vintage? Movie databases let you filter by year, and even a rough range cuts the candidates down a lot. You probably do not know the exact year, but \'roughly 2010s, definitely color, definitely modern phones\' is enough information to narrow significantly.' },
     { name: 'Try genre-specific subreddits or movie forums', body: 'Communities like r/tipofmytongue exist for exactly this. Post your description with whatever fragments you have. Crowdsourced memory is often the fastest path — somebody else has seen the movie and recognizes the scene. The post needs to be specific. Vague descriptions get vague answers; specific ones get titles within hours.' },
     { name: 'Use the actor or director if you remember either', body: 'If you remember an actor, look at their filmography on a database site. Most actors have 20-50 films listed; you can scan and recognize the right one. Same for directors. This is often faster than describing the scene to a search engine, because filmographies are concrete lists you can recognize. Even partial actor memories — "I think it was the guy who was in that other movie about X" — can chain into the right film.' },
     { name: 'Use Tip of Tongue to identify the movie from your description', body: 'Describe what you remember to Tip of Tongue — scene, era, vibe, half-remembered actor. The output suggests candidate movies ranked by match strength. Often one is clearly the right answer; sometimes two or three need to be ruled out by checking trailers or summaries. Faster and more accurate than search engines for this kind of fuzzy query, because the matching is over the actual content of the movie, not its keywords.' }
@@ -40,5 +40,5 @@ module.exports = {
     toolName: 'Tip of Tongue',
   },
   published: '2026-04-29',
-  modified:  '2026-10-08',
+  modified:  '2026-10-09',
 };

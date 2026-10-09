@@ -23,7 +23,7 @@ module.exports = {
   ],
 
   published:     '2026-04-28',
-  modified:      '2026-10-08',
+  modified:      '2026-10-09',
 
   ledes: [
     `You have a debate coming up. It might be a formal one — a class assignment, a competition, a public forum — or a meeting where you'll be defending a position you know will be challenged. Either way, you've got a finite amount of prep time and an unclear sense of what to do with it. The instinct is to write down all your arguments, memorize a few good lines, and walk in confident. This is the wrong instinct, and it's why most prepared debaters still get caught flat-footed.`,
@@ -49,7 +49,7 @@ module.exports = {
     },
     {
       name: "Rehearse the parts you'll likely flub",
-      body: "Identify the moments most likely to go wrong: the opening, the response to the hardest objection, the close. Rehearse those out loud — actually out loud, not in your head. The gap between thinking something and saying it cleanly is much bigger than people realize, and competitive debaters don't trust the head version. The other 80% of the debate, you can wing if you've done the prior steps. The 20% you can't wing is what rehearsal is for.",
+      body: "Identify the moments most likely to go wrong: the opening, the response to the hardest objection, the close. Rehearse those out loud — actually out loud, not in your head. The gap between thinking something and saying it cleanly is much bigger than people realize, and competitive debaters don't trust the head version. Most of the rest you can handle on your feet if you've done the prior steps; these few moments are what rehearsal is for.",
     },
   ],
 

@@ -26,7 +26,7 @@ There is a real difference between airports that work for sleeping and airports 
     { name: "Where is the best place to sleep in an airport?", body: 'Do not sleep in the public arrivals area before security. It is louder, less safe, and often patrolled by police asking people to move. Once you have a boarding pass for an outbound flight, go through security and find the quietest part of the secure area — usually the gates farthest from the food court, near a closed wing or a chapel/prayer room. Some airports have designated sleep zones or rest pods; use them. The quietest 20 minutes you spend exploring the terminal pays off in the best location.' },
     { name: 'Bring real sleep gear, not improvised', body: 'Eye mask. Earplugs. Travel pillow (preferably a good one, not the cheap horseshoe). Light blanket or large scarf. A bag you can lock and use as a pillow if you have to. Without these you will not sleep. With them, you will. The difference between not sleeping and getting four solid hours is approximately the cost of a $40 sleep kit you can use for years. Bring it on every trip with a long layover. If you forget it, the airport convenience store often has overpriced versions.' },
     { name: 'Set redundant alarms and verify your boarding time', body: 'Sleeping through a flight is the worst-case outcome. Set at least three alarms — phone, watch, second device. Set the first one for 90 minutes before boarding — that is enough time to wake up, hit the bathroom, and get to the gate without panic. Confirm boarding time and gate before you sleep, and re-confirm in the morning (gates change overnight). Tell the gate agent if there is one nearby that you might be sleeping; some will note it and check on you.' },
-    { name: 'Consider lounges and transit hotels if sleep matters', body: 'If your trip depends on you being functional the next day, paying for sleep is often the right call. Most major airports have day-rate transit hotels (you book by the hour, not the night) that run $30 to $100 for 6 hours. Lounges with sleep pods or recliners (Priority Pass, card-linked, or paid) are another option. The mental cost of arriving at your destination in a fog from a sleepless terminal night is sometimes higher than the cost of just buying real sleep.' }
+    { name: 'Consider lounges and transit hotels if sleep matters', body: 'If your trip depends on you being functional the next day, paying for sleep is often the right call. Most major airports have day-rate transit hotels (you book by the hour, not the night) where a few hours usually costs much less than a full night. Lounges with sleep pods or recliners (Priority Pass, card-linked, or paid) are another option. The mental cost of arriving at your destination in a fog from a sleepless terminal night is sometimes higher than the cost of just buying real sleep.' }
   ],
   cta: {
     glyph:    '✈️',
@@ -42,5 +42,5 @@ There is a real difference between airports that work for sleeping and airports 
     toolName: 'Layover Maximizer',
   },
   published: '2026-04-29',
-  modified:  '2026-10-08',
+  modified:  '2026-10-09',
 };
