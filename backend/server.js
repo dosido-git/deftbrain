@@ -601,6 +601,29 @@ Object.entries(MERGED_GUIDE_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
 });
 
+// ── One URL per page (2026-10-09 live URL scan) ──
+// Every page also answered 200 at its .html file name (/ToastWriter.html,
+// /guides/health/how-to-x.html — express.static's extensions option serves
+// the file under both names), at /index.html for hub pages, with a doubled
+// leading slash (//about), and /tools/... in capitals. Each was a duplicate
+// copy of a real page. They now 301 to the one clean URL. Assets (/static,
+// /og, anything with another extension) and /api are untouched.
+app.use((req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  const raw = req.originalUrl.split('?')[0];
+  const query = req.originalUrl.slice(raw.length);
+  if (/^\/(api|static|og|fonts|icons|images)\//i.test(raw)) return next();
+  let clean = raw.replace(/\/{2,}/g, '/');
+  clean = clean.replace(/\/index\.html$/i, '') || '/';
+  if (/\.html$/i.test(clean)) clean = clean.replace(/\.html$/i, '') || '/';
+  if (/^\/tools(\/|$)/i.test(clean)) clean = clean.toLowerCase();
+  if (clean.length > 1) clean = clean.replace(/\/+$/, '');
+  if (clean !== raw && !(raw.endsWith('/') && clean === raw.replace(/\/+$/, '') && !/^\/(guides|tools)(\/|$)/i.test(clean))) {
+    return res.redirect(301, clean + query);
+  }
+  next();
+});
+
 // ── Guide index pages ──
 // These must come BEFORE the case-insensitive tool slug middleware below,
 // so /guides isn't interpreted as a tool ID lookup.
