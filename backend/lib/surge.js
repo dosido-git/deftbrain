@@ -147,8 +147,18 @@ function swappable(params) {
  * straight through.
  */
 function withSurge(create) {
-  return async function surgeCreate(params, ...rest) {
+  // NOT async (2026-10-08): the SDK's messages.stream() calls
+  // create({ stream: true }).withResponse(). An async wrapper hands back a
+  // plain Promise, which has no withResponse, so every streaming route threw
+  // "withResponse is not a function" from the day this layer landed
+  // (Small Change, Big Difference and Which Life? both down). A stream call
+  // must get the SDK's own APIPromise back untouched.
+  return function surgeCreate(params, ...rest) {
     if (!params || typeof params !== 'object' || params.stream) return create(params, ...rest);
+    return surgeRun(params, ...rest);
+  };
+
+  async function surgeRun(params, ...rest) {
     let request = params;
     const fallback = fallbackFor(params.model);
     if (fallback && swappable(params) && (mode() === 'on' || familyStrained(familyOf(params.model)))) {
@@ -173,7 +183,7 @@ function withSurge(create) {
     } finally {
       inflight--;
     }
-  };
+  }
 }
 
 /**
