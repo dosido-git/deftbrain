@@ -26,7 +26,7 @@ module.exports = {
     },
     {
       "name": "Is an HSA worth it?",
-      "body": "If you are eligible for a health savings account through a high-deductible plan, it is often one of the most underused benefits. HSA contributions come with significant federal tax advantages, the balance stays with you if you change jobs, and unspent money rolls over from year to year, so for people who can afford to contribute and not spend it, an HSA can double as long-term savings. Some employers add their own contribution. The tax treatment varies in a few states, so check the plan's materials. Many people skip the HSA because the high-deductible plan looks scary on paper; compare the plans on total cost first, with the HSA counted in."
+      "body": "If you are eligible for a health savings account through a high-deductible plan, it is often one of the most underused benefits. Under IRS Publication 969, contributions are tax-deductible (or pre-tax through payroll), growth is tax-free, and withdrawals for qualified medical expenses are tax-free; the balance stays with you if you change jobs, and unspent money rolls over from year to year, so for people who can afford to contribute and not spend it, an HSA can double as long-term savings. Some employers add their own contribution. The tax treatment varies in a few states, so check the plan's materials. Many people skip the HSA because the high-deductible plan looks scary on paper; compare the plans on total cost first, with the HSA counted in."
     },
     {
       "name": "How do you know if you're getting the full 401(k) match?",
@@ -53,6 +53,10 @@ module.exports = {
     {
       "label": "CMS: Understanding the Summary of Benefits and Coverage (PDF)",
       "url": "https://www.cms.gov/marketplace/technical-assistance-resources/summary-of-benefits-fast-facts.pdf"
+    },
+    {
+      "label": "IRS Publication 969: Health Savings Accounts and Other Tax-Favored Health Plans",
+      "url": "https://www.irs.gov/publications/p969"
     }
   ],
   "cta": {

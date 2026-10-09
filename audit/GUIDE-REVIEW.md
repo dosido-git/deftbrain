@@ -6,20 +6,20 @@ Generated 2026-10-09. 510 guides in scope, 510 with no flags.
 
 | Guide | Indexed | Words | Flags | Overlaps with |
 |---|---|---|---|---|
-| apologies/how-to-apologize-at-work-for-a-mistake-everyone-saw |  | 890 |  |  |
+| apologies/how-to-apologize-at-work-for-a-mistake-everyone-saw | yes | 890 |  |  |
 | apologies/how-to-apologize-for-ghosting-someone | yes | 843 |  |  |
-| apologies/how-to-apologize-to-your-partner-without-making-it-worse |  | 853 |  |  |
-| apologies/how-to-apologize-when-you-really-screwed-up-at-work |  | 822 |  |  |
+| apologies/how-to-apologize-to-your-partner-without-making-it-worse | yes | 853 |  |  |
+| apologies/how-to-apologize-when-you-really-screwed-up-at-work | yes | 822 |  |  |
 | apologies/the-difference-between-an-apology-and-an-explanation | yes | 942 |  |  |
 | career/how-long-does-it-take-to-learn-data-analysis-for-a-career-change | yes | 575 |  |  |
 | career/how-to-explain-a-layoff-gap | yes | 666 |  |  |
-| career/how-to-talk-about-your-work-without-sounding-arrogant |  | 923 |  |  |
+| career/how-to-talk-about-your-work-without-sounding-arrogant | yes | 923 |  |  |
 | career/how-to-transition-from-engineering-to-product-management | yes | 580 |  |  |
-| career/how-to-write-resume-bullets-for-the-job-you-actually-did |  | 966 |  |  |
+| career/how-to-write-resume-bullets-for-the-job-you-actually-did | yes | 966 |  |  |
 | career/how-to-write-self-review-bullets-that-get-you-the-raise | yes | 856 |  |  |
-| career/is-a-college-degree-still-worth-it |  | 579 |  |  |
-| career/should-i-learn-ai-in-2026 |  | 555 |  |  |
-| career/what-to-say-in-a-performance-review-when-you-cant-remember |  | 838 |  |  |
+| career/is-a-college-degree-still-worth-it | yes | 579 |  |  |
+| career/should-i-learn-ai-in-2026 | yes | 555 |  |  |
+| career/what-to-say-in-a-performance-review-when-you-cant-remember | yes | 838 |  |  |
 | conversations/captions-for-solo-travel-photos | yes | 489 |  |  |
 | conversations/first-message-on-a-dating-app-that-actually-gets-a-reply | yes | 492 |  |  |
 | conversations/funny-captions-for-couples-photos | yes | 489 |  |  |
@@ -107,42 +107,42 @@ Generated 2026-10-09. 510 guides in scope, 510 with no flags.
 | conversations/why-does-my-writing-feel-cold-even-when-im-being-friendly | yes | 519 |  |  |
 | conversations/why-your-closest-friendships-fade-even-when-nothing-went-wrong | yes | 547 |  |  |
 | cooking/common-cooking-mistakes-and-how-to-fix-them | yes | 591 |  |  |
-| cooking/how-to-cook-efficiently-when-you-have-limited-counter-space |  | 568 |  |  |
+| cooking/how-to-cook-efficiently-when-you-have-limited-counter-space | yes | 568 |  |  |
 | cooking/how-to-cook-for-a-dinner-party-without-losing-your-mind | yes | 554 |  |  |
-| cooking/how-to-cook-for-guests-with-different-dietary-needs |  | 550 |  |  |
-| cooking/how-to-halve-or-double-a-recipe |  | 571 |  |  |
-| cooking/how-to-plan-a-multi-course-meal |  | 530 |  |  |
-| cooking/how-to-rescue-a-meal-thats-going-wrong |  | 556 |  |  |
-| cooking/how-to-time-a-meal-so-everythings-ready-at-once |  | 505 |  |  |
-| cooking/what-to-substitute-for-an-ingredient-youre-missing |  | 564 |  |  |
-| decisions/how-to-anticipate-the-strongest-argument-against-your-position |  | 508 |  |  |
-| decisions/how-to-argue-better |  | 553 |  |  |
-| decisions/how-to-argue-with-someone-whos-smarter-than-you |  | 529 |  |  |
-| decisions/how-to-argue-without-getting-emotional |  | 553 |  |  |
-| decisions/how-to-choose-between-two-good-options |  | 526 |  |  |
-| decisions/how-to-decide-what-to-eat-when-nothing-sounds-good |  | 557 |  |  |
-| decisions/how-to-decide-when-your-gut-and-your-logic-disagree |  | 530 |  |  |
+| cooking/how-to-cook-for-guests-with-different-dietary-needs | yes | 550 |  |  |
+| cooking/how-to-halve-or-double-a-recipe | yes | 571 |  |  |
+| cooking/how-to-plan-a-multi-course-meal | yes | 530 |  |  |
+| cooking/how-to-rescue-a-meal-thats-going-wrong | yes | 556 |  |  |
+| cooking/how-to-time-a-meal-so-everythings-ready-at-once | yes | 505 |  |  |
+| cooking/what-to-substitute-for-an-ingredient-youre-missing | yes | 564 |  |  |
+| decisions/how-to-anticipate-the-strongest-argument-against-your-position | yes | 508 |  |  |
+| decisions/how-to-argue-better | yes | 553 |  |  |
+| decisions/how-to-argue-with-someone-whos-smarter-than-you | yes | 529 |  |  |
+| decisions/how-to-argue-without-getting-emotional | yes | 553 |  |  |
+| decisions/how-to-choose-between-two-good-options | yes | 526 |  |  |
+| decisions/how-to-decide-what-to-eat-when-nothing-sounds-good | yes | 557 |  |  |
+| decisions/how-to-decide-when-your-gut-and-your-logic-disagree | yes | 530 |  |  |
 | decisions/how-to-decide-whether-to-move-to-a-new-city | yes | 626 |  |  |
-| decisions/how-to-evaluate-a-wellness-trend-before-buying-in |  | 589 |  |  |
-| decisions/how-to-know-if-youll-regret-saying-no-to-something |  | 586 |  |  |
-| decisions/how-to-know-if-youre-overthinking-a-decision |  | 515 |  |  |
-| decisions/how-to-know-if-youve-actually-won-an-argument |  | 511 |  |  |
-| decisions/how-to-make-a-decision-when-everything-feels-equally-bad |  | 624 |  |  |
+| decisions/how-to-evaluate-a-wellness-trend-before-buying-in | yes | 589 |  |  |
+| decisions/how-to-know-if-youll-regret-saying-no-to-something | yes | 586 |  |  |
+| decisions/how-to-know-if-youre-overthinking-a-decision | yes | 515 |  |  |
+| decisions/how-to-know-if-youve-actually-won-an-argument | yes | 511 |  |  |
+| decisions/how-to-make-a-decision-when-everything-feels-equally-bad | yes | 624 |  |  |
 | decisions/how-to-make-a-decision-when-you-dont-have-enough-information | yes | 561 |  |  |
 | decisions/how-to-make-a-decision-when-you-have-to-commit-by-deadline | yes | 494 |  |  |
-| decisions/how-to-make-a-hard-decision-when-you-keep-going-back-and-forth |  | 514 |  |  |
-| decisions/how-to-make-a-major-life-decision-without-regretting-it |  | 590 |  |  |
+| decisions/how-to-make-a-hard-decision-when-you-keep-going-back-and-forth | yes | 514 |  |  |
+| decisions/how-to-make-a-major-life-decision-without-regretting-it | yes | 590 |  |  |
 | decisions/how-to-prepare-for-a-debate | yes | 532 |  |  |
-| decisions/how-to-spot-a-logical-fallacy-in-real-time |  | 547 |  |  |
-| decisions/how-to-spot-wellness-marketing-dressed-as-science |  | 556 |  |  |
-| decisions/how-to-stop-decision-paralysis-when-youre-burned-out |  | 614 |  |  |
-| decisions/how-to-stop-second-guessing-yourself-after-you-decide |  | 537 |  |  |
-| decisions/how-to-tell-what-actually-works |  | 546 |  |  |
-| decisions/how-to-think-about-a-decision-when-both-paths-feel-right |  | 531 |  |  |
+| decisions/how-to-spot-a-logical-fallacy-in-real-time | yes | 547 |  |  |
+| decisions/how-to-spot-wellness-marketing-dressed-as-science | yes | 556 |  |  |
+| decisions/how-to-stop-decision-paralysis-when-youre-burned-out | yes | 614 |  |  |
+| decisions/how-to-stop-second-guessing-yourself-after-you-decide | yes | 537 |  |  |
+| decisions/how-to-tell-what-actually-works | yes | 546 |  |  |
+| decisions/how-to-think-about-a-decision-when-both-paths-feel-right | yes | 531 |  |  |
 | decisions/how-to-think-through-a-job-offer-when-youre-torn | yes | 555 |  |  |
-| decisions/is-this-health-claim-actually-backed-by-evidence |  | 583 |  |  |
-| decisions/why-am-i-so-bad-at-making-small-decisions-when-im-tired |  | 598 |  |  |
-| decisions/why-does-every-expert-contradict-every-other-expert |  | 527 |  |  |
+| decisions/is-this-health-claim-actually-backed-by-evidence | yes | 583 |  |  |
+| decisions/why-am-i-so-bad-at-making-small-decisions-when-im-tired | yes | 598 |  |  |
+| decisions/why-does-every-expert-contradict-every-other-expert | yes | 527 |  |  |
 | health/how-to-describe-your-symptoms-to-a-doctor | yes | 595 |  |  |
 | health/how-to-get-a-second-opinion | yes | 583 |  |  |
 | health/how-to-get-your-concerns-taken-seriously-at-the-doctor | yes | 566 |  |  |
@@ -157,362 +157,362 @@ Generated 2026-10-09. 510 guides in scope, 510 with no flags.
 | health/what-questions-to-ask-your-doctor | yes | 538 |  |  |
 | home/apartment-move-in-checklist | yes | 653 |  |  |
 | home/automatic-renewal-clause-in-a-lease | yes | 762 |  |  |
-| home/can-a-landlord-keep-your-security-deposit |  | 568 |  |  |
-| home/how-to-break-a-lease-legally |  | 555 |  |  |
-| home/how-to-do-a-rental-walkthrough-with-your-landlord |  | 722 |  |  |
-| home/how-to-handle-pre-existing-damage-in-a-rental |  | 698 |  |  |
+| home/can-a-landlord-keep-your-security-deposit | yes | 568 |  |  |
+| home/how-to-break-a-lease-legally | yes | 555 |  |  |
+| home/how-to-do-a-rental-walkthrough-with-your-landlord | yes | 722 |  |  |
+| home/how-to-handle-pre-existing-damage-in-a-rental | yes | 698 |  |  |
 | home/how-to-negotiate-a-lease-before-signing | yes | 603 |  | home/how-to-read-a-lease-before-signing-it |
-| home/how-to-protect-your-security-deposit-before-you-even-move-in |  | 679 |  |  |
-| home/how-to-read-a-lease-before-signing-it |  | 548 |  | home/how-to-negotiate-a-lease-before-signing |
-| home/how-to-revive-a-dying-plant |  | 711 |  |  |
+| home/how-to-protect-your-security-deposit-before-you-even-move-in | yes | 679 |  |  |
+| home/how-to-read-a-lease-before-signing-it | yes | 548 |  | home/how-to-negotiate-a-lease-before-signing |
+| home/how-to-revive-a-dying-plant | yes | 711 |  |  |
 | home/how-to-set-boundaries-with-a-roommate-without-making-it-weird | yes | 534 |  |  |
-| home/how-to-split-household-chores-fairly |  | 519 |  |  |
+| home/how-to-split-household-chores-fairly | yes | 519 |  |  |
 | home/how-to-talk-to-your-roommate-about-a-problem | yes | 644 |  |  |
 | home/how-to-tell-if-a-plant-is-overwatered-or-underwatered | yes | 655 |  |  |
-| home/how-to-tell-if-its-bugs-or-disease-on-your-plant |  | 636 |  |  |
-| home/how-to-write-a-move-in-condition-report |  | 642 |  |  |
-| home/red-flags-in-a-rental-lease |  | 554 |  |  |
+| home/how-to-tell-if-its-bugs-or-disease-on-your-plant | yes | 636 |  |  |
+| home/how-to-write-a-move-in-condition-report | yes | 642 |  |  |
+| home/red-flags-in-a-rental-lease | yes | 554 |  |  |
 | home/what-to-do-when-you-and-your-roommate-arent-speaking | yes | 560 |  |  |
-| home/what-to-do-when-your-roommate-isnt-pulling-their-weight |  | 531 |  |  |
-| home/what-to-look-for-in-an-apartment-lease |  | 553 |  |  |
-| home/what-to-photograph-when-moving-into-a-rental |  | 570 |  |  |
-| home/when-its-time-to-give-up-on-a-plant |  | 690 |  |  |
-| home/why-does-my-plant-have-brown-leaf-tips |  | 654 |  |  |
-| home/why-is-my-plant-turning-yellow |  | 701 |  |  |
-| learning/common-myths-most-people-still-believe |  | 571 |  |  |
-| learning/how-to-ask-a-question-when-you-dont-know-what-to-ask |  | 586 |  |  |
-| learning/how-to-extract-the-important-parts-from-a-long-lecture |  | 494 |  |  |
-| learning/how-to-fact-check-a-news-article-that-cites-a-study |  | 538 |  |  |
-| learning/how-to-fact-check-something-you-read-online |  | 522 |  |  |
-| learning/how-to-find-a-book-you-cant-remember-the-title-of |  | 531 |  |  |
-| learning/how-to-find-the-original-study-a-news-article-is-talking-about |  | 480 |  |  |
-| learning/how-to-know-if-a-study-is-reliable |  | 536 |  |  |
-| learning/how-to-know-whats-going-to-be-on-the-test |  | 543 |  |  |
-| learning/how-to-learn-when-youve-fallen-behind-in-class |  | 519 |  |  |
-| learning/how-to-politely-tell-someone-theyre-wrong-about-a-fact |  | 555 |  |  |
-| learning/how-to-read-a-research-paper-without-a-phd |  | 490 |  |  |
-| learning/how-to-remember-a-word-thats-on-the-tip-of-your-tongue |  | 532 |  |  |
-| learning/how-to-settle-an-argument-with-facts |  | 565 |  |  |
-| learning/how-to-spot-when-a-study-is-being-misrepresented |  | 497 |  |  |
-| learning/how-to-study-when-you-have-hours-of-recorded-content |  | 514 |  |  |
-| learning/how-to-take-notes-from-a-lecture-you-missed |  | 474 |  |  |
-| learning/how-to-tell-the-difference-between-not-getting-it-and-almost-getting-it |  | 483 |  |  |
-| learning/how-to-turn-a-transcript-into-a-study-guide |  | 454 |  |  |
-| learning/how-to-understand-a-hard-concept-when-explanations-dont-click |  | 498 |  |  |
-| learning/how-to-win-an-argument-with-facts-not-feelings |  | 546 |  |  |
+| home/what-to-do-when-your-roommate-isnt-pulling-their-weight | yes | 531 |  |  |
+| home/what-to-look-for-in-an-apartment-lease | yes | 553 |  |  |
+| home/what-to-photograph-when-moving-into-a-rental | yes | 570 |  |  |
+| home/when-its-time-to-give-up-on-a-plant | yes | 690 |  |  |
+| home/why-does-my-plant-have-brown-leaf-tips | yes | 654 |  |  |
+| home/why-is-my-plant-turning-yellow | yes | 701 |  |  |
+| learning/common-myths-most-people-still-believe | yes | 571 |  |  |
+| learning/how-to-ask-a-question-when-you-dont-know-what-to-ask | yes | 586 |  |  |
+| learning/how-to-extract-the-important-parts-from-a-long-lecture | yes | 494 |  |  |
+| learning/how-to-fact-check-a-news-article-that-cites-a-study | yes | 538 |  |  |
+| learning/how-to-fact-check-something-you-read-online | yes | 522 |  |  |
+| learning/how-to-find-a-book-you-cant-remember-the-title-of | yes | 531 |  |  |
+| learning/how-to-find-the-original-study-a-news-article-is-talking-about | yes | 480 |  |  |
+| learning/how-to-know-if-a-study-is-reliable | yes | 536 |  |  |
+| learning/how-to-know-whats-going-to-be-on-the-test | yes | 543 |  |  |
+| learning/how-to-learn-when-youve-fallen-behind-in-class | yes | 519 |  |  |
+| learning/how-to-politely-tell-someone-theyre-wrong-about-a-fact | yes | 555 |  |  |
+| learning/how-to-read-a-research-paper-without-a-phd | yes | 490 |  |  |
+| learning/how-to-remember-a-word-thats-on-the-tip-of-your-tongue | yes | 532 |  |  |
+| learning/how-to-settle-an-argument-with-facts | yes | 565 |  |  |
+| learning/how-to-spot-when-a-study-is-being-misrepresented | yes | 497 |  |  |
+| learning/how-to-study-when-you-have-hours-of-recorded-content | yes | 514 |  |  |
+| learning/how-to-take-notes-from-a-lecture-you-missed | yes | 474 |  |  |
+| learning/how-to-tell-the-difference-between-not-getting-it-and-almost-getting-it | yes | 483 |  |  |
+| learning/how-to-turn-a-transcript-into-a-study-guide | yes | 454 |  |  |
+| learning/how-to-understand-a-hard-concept-when-explanations-dont-click | yes | 498 |  |  |
+| learning/how-to-win-an-argument-with-facts-not-feelings | yes | 546 |  |  |
 | learning/whats-that-movie-where-something-happens | yes | 468 |  |  |
 | learning/whats-that-song-with-a-specific-vibe | yes | 533 |  |  |
-| learning/why-does-the-word-disappear-when-youre-trying-to-remember-it |  | 495 |  |  |
-| learning/why-is-this-topic-so-hard-to-understand |  | 561 |  |  |
-| meetings/how-to-ask-if-a-meeting-can-be-canceled |  | 486 |  |  |
-| meetings/how-to-bring-a-meeting-back-on-topic |  | 455 |  |  |
-| meetings/how-to-deal-with-a-coworker-who-interrupts-everyone |  | 473 |  |  |
-| meetings/how-to-facilitate-a-meeting-when-youre-not-the-boss |  | 498 |  |  |
+| learning/why-does-the-word-disappear-when-youre-trying-to-remember-it | yes | 495 |  |  |
+| learning/why-is-this-topic-so-hard-to-understand | yes | 561 |  |  |
+| meetings/how-to-ask-if-a-meeting-can-be-canceled | yes | 486 |  |  |
+| meetings/how-to-bring-a-meeting-back-on-topic | yes | 455 |  |  |
+| meetings/how-to-deal-with-a-coworker-who-interrupts-everyone | yes | 473 |  |  |
+| meetings/how-to-facilitate-a-meeting-when-youre-not-the-boss | yes | 498 |  |  |
 | meetings/how-to-handle-pointless-meetings-without-ruining-your-career | yes | 524 |  |  |
-| meetings/how-to-handle-someone-who-dominates-meetings |  | 495 |  |  |
-| meetings/how-to-make-sure-quiet-people-speak-up-in-meetings |  | 502 |  |  |
-| meetings/how-to-run-a-meeting-that-doesnt-go-off-the-rails |  | 489 |  |  |
-| meetings/how-to-set-a-meeting-agenda-that-actually-works |  | 453 |  |  |
+| meetings/how-to-handle-someone-who-dominates-meetings | yes | 495 |  |  |
+| meetings/how-to-make-sure-quiet-people-speak-up-in-meetings | yes | 502 |  |  |
+| meetings/how-to-run-a-meeting-that-doesnt-go-off-the-rails | yes | 489 |  |  |
+| meetings/how-to-set-a-meeting-agenda-that-actually-works | yes | 453 |  |  |
 | meetings/how-to-suggest-making-a-meeting-async | yes | 465 |  |  |
-| meetings/how-to-tell-if-a-meeting-is-going-to-be-useful |  | 504 |  |  |
-| meetings/how-to-track-action-items-so-things-actually-get-done |  | 975 |  |  |
-| meetings/how-to-turn-a-long-meeting-transcript-into-a-clear-summary |  | 866 |  |  |
-| meetings/how-to-write-meeting-notes-that-people-actually-read |  | 799 |  |  |
-| meetings/should-this-be-a-meeting-or-an-email |  | 473 |  |  |
+| meetings/how-to-tell-if-a-meeting-is-going-to-be-useful | yes | 504 |  |  |
+| meetings/how-to-track-action-items-so-things-actually-get-done | yes | 975 |  |  |
+| meetings/how-to-turn-a-long-meeting-transcript-into-a-clear-summary | yes | 866 |  |  |
+| meetings/how-to-write-meeting-notes-that-people-actually-read | yes | 799 |  |  |
+| meetings/should-this-be-a-meeting-or-an-email | yes | 473 |  |  |
 | meetings/the-difference-between-meeting-minutes-and-meeting-notes | yes | 944 |  |  |
-| meetings/what-to-do-when-your-manager-asks-what-did-we-decide |  | 899 |  |  |
-| money/can-you-trust-verifiedpurchase-reviews |  | 513 |  |  |
-| money/how-much-does-coffee-actually-cost-to-make |  | 505 |  |  |
-| money/how-much-to-tip-your-hairstylist |  | 485 |  |  |
+| meetings/what-to-do-when-your-manager-asks-what-did-we-decide | yes | 899 |  |  |
+| money/can-you-trust-verifiedpurchase-reviews | yes | 513 |  |  |
+| money/how-much-does-coffee-actually-cost-to-make | yes | 505 |  |  |
+| money/how-much-to-tip-your-hairstylist | yes | 485 |  |  |
 | money/how-to-ask-a-friend-to-pay-you-back | yes | 519 |  |  |
-| money/how-to-avoid-buyers-remorse |  | 523 |  |  |
-| money/how-to-cancel-a-subscription-that-wont-let-you-cancel |  | 558 |  |  |
-| money/how-to-cancel-cable-without-them-talking-you-out-of-it |  | 596 |  |  |
-| money/how-to-compare-two-similar-products-you-cant-decide-between |  | 475 |  |  |
-| money/how-to-complain-to-a-state-attorney-general |  | 518 |  |  |
-| money/how-to-deal-with-a-retention-specialist |  | 643 |  |  |
+| money/how-to-avoid-buyers-remorse | yes | 523 |  |  |
+| money/how-to-cancel-a-subscription-that-wont-let-you-cancel | yes | 558 |  |  |
+| money/how-to-cancel-cable-without-them-talking-you-out-of-it | yes | 596 |  |  |
+| money/how-to-compare-two-similar-products-you-cant-decide-between | yes | 475 |  |  |
+| money/how-to-complain-to-a-state-attorney-general | yes | 518 |  |  |
+| money/how-to-deal-with-a-retention-specialist | yes | 643 |  |  |
 | money/how-to-dispute-a-bill-you-dont-recognize | yes | 721 |  |  |
-| money/how-to-do-a-credit-card-chargeback |  | 513 |  |  |
+| money/how-to-do-a-credit-card-chargeback | yes | 513 |  |  |
 | money/how-to-escalate-a-customer-service-complaint | yes | 551 |  |  |
 | money/how-to-escalate-when-the-official-answer-is-no | yes | 658 |  |  |
-| money/how-to-file-a-complaint-with-the-bbb |  | 475 |  |  |
-| money/how-to-get-a-hospital-bill-reduced |  | 515 |  |  |
-| money/how-to-get-a-medical-bill-reduced-when-they-say-its-final |  | 612 |  |  |
-| money/how-to-get-out-of-a-non-refundable-fee |  | 605 |  |  |
-| money/how-to-get-past-no-when-its-not-actually-final |  | 569 |  |  |
-| money/how-to-handle-a-venmo-request-thats-wrong |  | 517 |  |  |
-| money/how-to-know-if-youre-getting-a-good-deal |  | 487 |  |  |
-| money/how-to-make-a-company-respond-when-theyre-ignoring-you |  | 529 |  |  |
-| money/how-to-negotiate-a-medical-bill |  | 484 |  |  |
-| money/how-to-negotiate-with-a-car-salesman |  | 510 |  |  |
+| money/how-to-file-a-complaint-with-the-bbb | yes | 475 |  |  |
+| money/how-to-get-a-hospital-bill-reduced | yes | 515 |  |  |
+| money/how-to-get-a-medical-bill-reduced-when-they-say-its-final | yes | 612 |  |  |
+| money/how-to-get-out-of-a-non-refundable-fee | yes | 605 |  |  |
+| money/how-to-get-past-no-when-its-not-actually-final | yes | 569 |  |  |
+| money/how-to-handle-a-venmo-request-thats-wrong | yes | 517 |  |  |
+| money/how-to-know-if-youre-getting-a-good-deal | yes | 487 |  |  |
+| money/how-to-make-a-company-respond-when-theyre-ignoring-you | yes | 529 |  |  |
+| money/how-to-negotiate-a-medical-bill | yes | 484 |  |  |
+| money/how-to-negotiate-with-a-car-salesman | yes | 510 |  |  |
 | money/how-to-push-back-on-bank-fees | yes | 507 |  |  |
 | money/how-to-read-an-itemized-hospital-bill | yes | 897 |  |  |
-| money/how-to-read-product-reviews-critically |  | 479 |  |  |
-| money/how-to-recognize-sales-manipulation-tactics |  | 651 |  |  |
-| money/how-to-research-a-big-purchase-before-buying |  | 485 |  |  |
-| money/how-to-say-no-to-a-timeshare-presentation |  | 545 |  |  |
-| money/how-to-share-a-streaming-subscription-without-getting-kicked-off |  | 521 |  |  |
-| money/how-to-split-a-bill-fairly-when-you-ate-less |  | 524 |  |  |
+| money/how-to-read-product-reviews-critically | yes | 479 |  |  |
+| money/how-to-recognize-sales-manipulation-tactics | yes | 651 |  |  |
+| money/how-to-research-a-big-purchase-before-buying | yes | 485 |  |  |
+| money/how-to-say-no-to-a-timeshare-presentation | yes | 545 |  |  |
+| money/how-to-share-a-streaming-subscription-without-getting-kicked-off | yes | 521 |  |  |
+| money/how-to-split-a-bill-fairly-when-you-ate-less | yes | 524 |  |  |
 | money/how-to-spot-a-bad-deal-that-looks-good | yes | 534 |  |  |
-| money/how-to-spot-billing-errors-on-a-statement |  | 468 |  |  |
+| money/how-to-spot-billing-errors-on-a-statement | yes | 468 |  |  |
 | money/how-to-spot-fake-amazon-reviews | yes | 521 |  |  |
-| money/how-to-talk-to-a-supervisor-and-actually-get-results |  | 693 |  |  |
-| money/how-to-tell-if-a-bill-is-a-mistake-or-just-confusing |  | 526 |  |  |
-| money/how-to-tell-if-something-is-overpriced |  | 566 |  |  |
-| money/how-to-walk-away-from-a-high-pressure-sale |  | 583 |  |  |
+| money/how-to-talk-to-a-supervisor-and-actually-get-results | yes | 693 |  |  |
+| money/how-to-tell-if-a-bill-is-a-mistake-or-just-confusing | yes | 526 |  |  |
+| money/how-to-tell-if-something-is-overpriced | yes | 566 |  |  |
+| money/how-to-walk-away-from-a-high-pressure-sale | yes | 583 |  |  |
 | money/how-to-write-a-formal-complaint-letter-to-a-company | yes | 600 |  |  |
 | money/red-flags-in-product-reviews-that-mean-its-fake | yes | 491 |  |  |
 | money/splitting-rent-with-different-room-sizes | yes | 635 |  |  |
-| money/what-to-do-when-customer-service-says-theres-nothing-they-can-do |  | 645 |  |  |
-| money/what-to-do-with-a-bill-you-cant-afford |  | 596 |  |  |
-| money/what-to-say-when-you-cant-afford-something-your-friends-are-doing |  | 515 |  |  |
+| money/what-to-do-when-customer-service-says-theres-nothing-they-can-do | yes | 645 |  |  |
+| money/what-to-do-with-a-bill-you-cant-afford | yes | 596 |  |  |
+| money/what-to-say-when-you-cant-afford-something-your-friends-are-doing | yes | 515 |  |  |
 | money/what-to-use-now-that-fakespot-is-gone | yes | 791 |  |  |
-| money/why-are-wedding-venues-so-expensive |  | 477 |  |  |
-| money/why-do-products-with-great-reviews-suck |  | 534 |  |  |
+| money/why-are-wedding-venues-so-expensive | yes | 477 |  |  |
+| money/why-do-products-with-great-reviews-suck | yes | 534 |  |  |
 | money/why-does-bottled-water-cost-so-much | yes | 517 |  |  |
-| money/why-does-everything-cost-so-much-more-than-it-used-to |  | 476 |  |  |
-| money/why-is-airport-food-so-expensive |  | 477 |  |  |
+| money/why-does-everything-cost-so-much-more-than-it-used-to | yes | 476 |  |  |
+| money/why-is-airport-food-so-expensive | yes | 477 |  |  |
 | pets/do-dogs-just-vomit-sometimes | yes | 657 |  |  |
 | pets/how-do-i-know-if-my-dog-is-sick | yes | 674 |  |  |
 | pets/is-my-dog-sick-or-just-tired | yes | 655 |  |  |
 | pets/weird-cat-behaviors-explained | yes | 621 |  | pets/weird-dog-behaviors-explained |
 | pets/weird-dog-behaviors-explained | yes | 592 |  | pets/weird-cat-behaviors-explained |
 | pets/why-is-my-cat-throwing-up-undigested-food | yes | 709 |  |  |
-| planning/how-to-find-the-holes-in-your-own-thinking-before-someone-else-does |  | 1010 |  |  |
-| planning/how-to-know-if-your-business-idea-is-actually-going-to-work |  | 1006 |  |  |
-| planning/how-to-plan-a-project-so-it-doesnt-fail-in-the-obvious-ways |  | 966 |  |  |
-| planning/how-to-pressure-test-a-plan-before-you-bet-money-on-it |  | 949 |  |  |
-| planning/the-questions-to-ask-before-starting-anything-that-costs-you-time |  | 1015 |  |  |
-| practical/cheap-date-ideas |  | 549 |  |  |
-| practical/creative-date-ideas-for-couples-in-a-rut |  | 527 |  |  |
-| practical/date-ideas-for-introverts |  | 535 |  | practical/date-night-ideas-at-home |
-| practical/date-night-ideas-at-home |  | 511 |  | practical/date-ideas-for-introverts |
-| practical/first-date-ideas-that-arent-dinner-and-a-movie |  | 553 |  |  |
-| practical/free-things-to-do-near-me |  | 501 |  |  |
-| practical/gift-ideas-for-someone-who-has-everything |  | 566 |  |  |
-| practical/hobbies-for-adults-who-dont-know-what-they-like |  | 552 |  |  |
+| planning/how-to-find-the-holes-in-your-own-thinking-before-someone-else-does | yes | 1010 |  |  |
+| planning/how-to-know-if-your-business-idea-is-actually-going-to-work | yes | 1006 |  |  |
+| planning/how-to-plan-a-project-so-it-doesnt-fail-in-the-obvious-ways | yes | 966 |  |  |
+| planning/how-to-pressure-test-a-plan-before-you-bet-money-on-it | yes | 949 |  |  |
+| planning/the-questions-to-ask-before-starting-anything-that-costs-you-time | yes | 1015 |  |  |
+| practical/cheap-date-ideas | yes | 549 |  |  |
+| practical/creative-date-ideas-for-couples-in-a-rut | yes | 527 |  |  |
+| practical/date-ideas-for-introverts | yes | 535 |  | practical/date-night-ideas-at-home |
+| practical/date-night-ideas-at-home | yes | 511 |  | practical/date-ideas-for-introverts |
+| practical/first-date-ideas-that-arent-dinner-and-a-movie | yes | 553 |  |  |
+| practical/free-things-to-do-near-me | yes | 501 |  |  |
+| practical/gift-ideas-for-someone-who-has-everything | yes | 566 |  |  |
+| practical/hobbies-for-adults-who-dont-know-what-they-like | yes | 552 |  |  |
 | practical/hobbies-for-introverts-that-dont-feel-forced | yes | 562 |  |  |
-| practical/hobbies-that-dont-cost-a-lot-of-money |  | 535 |  |  |
-| practical/hot-vs-cold-water-for-laundry-when-does-it-actually-matter |  | 566 |  |  |
-| practical/how-to-ask-someone-how-to-pronounce-their-name |  | 465 |  |  |
-| practical/how-to-build-outfits-from-what-you-already-own |  | 499 |  |  |
-| practical/how-to-catch-up-on-a-video-game-after-a-long-break-without-spoilers |  | 486 |  |  |
-| practical/how-to-do-laundry-properly-when-youve-been-winging-it |  | 503 |  |  |
-| practical/how-to-dress-for-unpredictable-weather |  | 508 |  |  |
+| practical/hobbies-that-dont-cost-a-lot-of-money | yes | 535 |  |  |
+| practical/hot-vs-cold-water-for-laundry-when-does-it-actually-matter | yes | 566 |  |  |
+| practical/how-to-ask-someone-how-to-pronounce-their-name | yes | 465 |  |  |
+| practical/how-to-build-outfits-from-what-you-already-own | yes | 499 |  |  |
+| practical/how-to-catch-up-on-a-video-game-after-a-long-break-without-spoilers | yes | 486 |  |  |
+| practical/how-to-do-laundry-properly-when-youve-been-winging-it | yes | 503 |  |  |
+| practical/how-to-dress-for-unpredictable-weather | yes | 508 |  |  |
 | practical/how-to-find-a-hobby-youll-actually-stick-with | yes | 501 |  |  |
-| practical/how-to-find-the-right-gift-for-someone-you-barely-know |  | 541 |  |  |
-| practical/how-to-fix-a-flat-tire-on-the-trail |  | 569 |  |  |
+| practical/how-to-find-the-right-gift-for-someone-you-barely-know | yes | 541 |  |  |
+| practical/how-to-fix-a-flat-tire-on-the-trail | yes | 569 |  |  |
 | practical/how-to-get-a-recap-of-a-show-without-spoilers | yes | 466 |  |  |
-| practical/how-to-get-back-into-a-show-you-abandoned |  | 449 |  |  |
-| practical/how-to-get-dressed-when-you-cant-decide |  | 511 |  |  |
-| practical/how-to-get-red-wine-out-of-clothes |  | 572 |  |  |
-| practical/how-to-host-a-party-people-actually-remember |  | 479 |  |  |
-| practical/how-to-host-a-party-when-you-dont-know-everyones-name |  | 478 |  |  |
-| practical/how-to-know-if-a-show-is-worth-picking-back-up |  | 510 |  |  |
-| practical/how-to-make-a-regular-weekend-feel-like-a-small-vacation |  | 454 |  |  |
-| practical/how-to-plan-a-birthday-party-for-an-adult |  | 482 |  |  |
-| practical/how-to-pronounce-designer-brand-names |  | 465 |  |  |
-| practical/how-to-pronounce-difficult-french-food-names |  | 476 |  |  |
+| practical/how-to-get-back-into-a-show-you-abandoned | yes | 449 |  |  |
+| practical/how-to-get-dressed-when-you-cant-decide | yes | 511 |  |  |
+| practical/how-to-get-red-wine-out-of-clothes | yes | 572 |  |  |
+| practical/how-to-host-a-party-people-actually-remember | yes | 479 |  |  |
+| practical/how-to-host-a-party-when-you-dont-know-everyones-name | yes | 478 |  |  |
+| practical/how-to-know-if-a-show-is-worth-picking-back-up | yes | 510 |  |  |
+| practical/how-to-make-a-regular-weekend-feel-like-a-small-vacation | yes | 454 |  |  |
+| practical/how-to-plan-a-birthday-party-for-an-adult | yes | 482 |  |  |
+| practical/how-to-pronounce-designer-brand-names | yes | 465 |  |  |
+| practical/how-to-pronounce-difficult-french-food-names | yes | 476 |  |  |
 | practical/how-to-pronounce-names-from-languages-you-dont-speak | yes | 468 |  |  |
 | practical/how-to-pronounce-wine-names-without-sounding-pretentious | yes | 458 |  |  |
-| practical/how-to-remember-a-book-you-read-years-ago-without-rereading-it |  | 493 |  |  |
-| practical/how-to-tell-if-your-bike-needs-a-tune-up |  | 525 |  |  |
+| practical/how-to-remember-a-book-you-read-years-ago-without-rereading-it | yes | 493 |  |  |
+| practical/how-to-tell-if-your-bike-needs-a-tune-up | yes | 525 |  |  |
 | practical/how-to-wash-clothes-without-shrinking-them | yes | 488 |  |  |
 | practical/icebreakers-that-dont-feel-forced | yes | 478 |  |  |
-| practical/lastminute-gift-ideas-that-dont-look-lastminute |  | 565 |  |  |
-| practical/new-hobbies-to-try |  | 527 |  |  |
-| practical/things-to-do-alone-that-arent-sad |  | 485 |  |  |
-| practical/things-to-do-this-weekend |  | 469 |  |  |
-| practical/things-to-do-when-youve-already-done-all-the-touristy-stuff |  | 467 |  |  |
-| practical/thoughtful-gifts-under-50-dollars-that-dont-feel-cheap |  | 500 |  |  |
-| practical/what-those-laundry-symbols-actually-mean |  | 553 |  |  |
-| practical/what-to-check-before-a-long-ride |  | 501 |  |  |
+| practical/lastminute-gift-ideas-that-dont-look-lastminute | yes | 565 |  |  |
+| practical/new-hobbies-to-try | yes | 527 |  |  |
+| practical/things-to-do-alone-that-arent-sad | yes | 485 |  |  |
+| practical/things-to-do-this-weekend | yes | 469 |  |  |
+| practical/things-to-do-when-youve-already-done-all-the-touristy-stuff | yes | 467 |  |  |
+| practical/thoughtful-gifts-under-50-dollars-that-dont-feel-cheap | yes | 500 |  |  |
+| practical/what-those-laundry-symbols-actually-mean | yes | 553 |  |  |
+| practical/what-to-check-before-a-long-ride | yes | 501 |  |  |
 | practical/what-to-do-when-your-party-is-dying | yes | 474 |  |  |
-| practical/what-to-get-the-person-who-is-impossible-to-shop-for |  | 517 |  |  |
+| practical/what-to-get-the-person-who-is-impossible-to-shop-for | yes | 517 |  |  |
 | practical/why-do-my-bike-brakes-squeak | yes | 500 |  |  |
-| practical/why-does-my-bike-make-a-clicking-noise-when-i-pedal |  | 485 |  |  |
-| practical/why-is-my-bike-chain-skipping |  | 652 |  |  |
-| presentations/how-to-answer-a-question-when-you-dont-know-the-answer |  | 500 |  |  |
-| presentations/how-to-anticipate-questions-before-a-presentation |  | 485 |  |  |
-| presentations/how-to-anticipate-the-hardest-questions-about-your-pitch |  | 517 |  |  |
+| practical/why-does-my-bike-make-a-clicking-noise-when-i-pedal | yes | 485 |  |  |
+| practical/why-is-my-bike-chain-skipping | yes | 652 |  |  |
+| presentations/how-to-answer-a-question-when-you-dont-know-the-answer | yes | 500 |  |  |
+| presentations/how-to-anticipate-questions-before-a-presentation | yes | 485 |  |  |
+| presentations/how-to-anticipate-the-hardest-questions-about-your-pitch | yes | 517 |  |  |
 | presentations/how-to-cut-down-a-presentation-thats-too-long | yes | 497 |  |  |
 | presentations/how-to-handle-hostile-questions-in-a-presentation | yes | 524 |  |  |
 | presentations/how-to-prepare-for-a-presentation-in-a-week | yes | 515 |  |  |
-| presentations/how-to-prepare-for-qa-after-a-thesis-defense-dissertation |  | 553 |  |  |
-| presentations/how-to-prepare-for-tough-interview-questions |  | 550 |  |  |
-| presentations/how-to-recover-when-your-presentation-goes-off-the-rails |  | 554 |  |  |
-| presentations/how-to-start-a-presentation-strong |  | 536 |  |  |
-| speeches/how-to-give-a-toast-when-you-barely-know-the-person |  | 942 |  |  |
-| speeches/how-to-write-a-maid-of-honor-speech-that-doesnt-bomb |  | 938 |  |  |
-| speeches/how-to-write-a-retirement-speech-for-someone-you-actually-like |  | 983 |  |  |
-| speeches/the-best-man-speech-that-lands-without-trying-too-hard |  | 1069 |  |  |
+| presentations/how-to-prepare-for-qa-after-a-thesis-defense-dissertation | yes | 553 |  |  |
+| presentations/how-to-prepare-for-tough-interview-questions | yes | 550 |  |  |
+| presentations/how-to-recover-when-your-presentation-goes-off-the-rails | yes | 554 |  |  |
+| presentations/how-to-start-a-presentation-strong | yes | 536 |  |  |
+| speeches/how-to-give-a-toast-when-you-barely-know-the-person | yes | 942 |  |  |
+| speeches/how-to-write-a-maid-of-honor-speech-that-doesnt-bomb | yes | 938 |  |  |
+| speeches/how-to-write-a-retirement-speech-for-someone-you-actually-like | yes | 983 |  |  |
+| speeches/the-best-man-speech-that-lands-without-trying-too-hard | yes | 1069 |  |  |
 | speeches/wedding-toast-quotes-for-parents | yes | 772 |  |  |
-| speeches/what-to-say-at-a-memorial-service-when-youre-not-a-writer |  | 940 |  |  |
+| speeches/what-to-say-at-a-memorial-service-when-youre-not-a-writer | yes | 940 |  |  |
 | travel/can-you-leave-the-airport-during-a-layover | yes | 630 |  |  |
 | travel/how-to-handle-a-missed-connection-when-its-not-your-fault | yes | 568 |  |  |
 | travel/how-to-know-if-youll-make-your-connection | yes | 538 |  |  |
 | travel/how-to-sleep-in-an-airport-during-a-long-layover | yes | 555 |  |  |
 | travel/is-a-60-minute-layover-enough | yes | 613 |  | travel/is-a-90-minute-layover-long-enough |
 | travel/is-a-90-minute-layover-long-enough | yes | 528 |  | travel/is-a-60-minute-layover-enough |
-| wellness/alternatives-to-coworking-spaces-if-you-work-from-home |  | 587 |  |  |
-| wellness/best-ambient-sounds-for-studying |  | 558 |  |  |
-| wellness/best-music-for-deep-focus |  | 527 |  |  |
+| wellness/alternatives-to-coworking-spaces-if-you-work-from-home | yes | 587 |  |  |
+| wellness/best-ambient-sounds-for-studying | yes | 558 |  |  |
+| wellness/best-music-for-deep-focus | yes | 527 |  |  |
 | wellness/do-binaural-beats-actually-work-for-focus | yes | 593 |  |  |
-| wellness/early-warning-signs-of-burnout-most-people-miss |  | 558 |  |  |
-| wellness/emotions-i-dont-have-a-word-for |  | 542 |  |  |
-| wellness/how-to-batch-similar-tasks-to-save-time |  | 471 |  |  |
-| wellness/how-to-brain-dump-everything-in-your-head |  | 475 |  |  |
-| wellness/how-to-break-down-an-overwhelming-project |  | 578 |  |  |
-| wellness/how-to-calm-your-nerves-before-an-interview |  | 553 |  |  |
-| wellness/how-to-clear-your-head-when-everything-feels-jumbled |  | 483 |  |  |
-| wellness/how-to-describe-your-feelings-when-you-dont-have-the-words |  | 575 |  |  |
-| wellness/how-to-do-anything-when-you-cant-get-started |  | 535 |  |  |
-| wellness/how-to-exercise-when-you-have-zero-motivation |  | 540 |  |  |
-| wellness/how-to-figure-out-what-to-do-first-when-overwhelmed |  | 523 |  |  |
-| wellness/how-to-figure-out-where-your-time-actually-goes |  | 525 |  |  |
-| wellness/how-to-figure-out-which-friends-are-actually-draining-you |  | 537 |  |  |
-| wellness/how-to-focus-when-working-alone |  | 522 |  |  |
-| wellness/how-to-function-on-the-day-of-an-interview-or-exam |  | 501 |  |  |
-| wellness/how-to-get-anything-done-on-the-day-of-a-big-meeting |  | 494 |  |  |
-| wellness/how-to-get-things-done-when-you-have-no-energy |  | 440 |  |  |
-| wellness/how-to-group-your-work-so-you-actually-finish-things |  | 484 |  |  |
-| wellness/how-to-interpret-your-own-dreams |  | 505 |  |  |
-| wellness/how-to-know-if-youre-an-introvert-or-just-low-on-energy |  | 544 |  |  |
-| wellness/how-to-know-if-youre-burned-out-or-just-tired |  | 534 |  |  |
-| wellness/how-to-look-confident-when-youre-terrified |  | 471 |  |  |
-| wellness/how-to-make-a-project-feel-manageable |  | 542 |  |  |
+| wellness/early-warning-signs-of-burnout-most-people-miss | yes | 558 |  |  |
+| wellness/emotions-i-dont-have-a-word-for | yes | 542 |  |  |
+| wellness/how-to-batch-similar-tasks-to-save-time | yes | 471 |  |  |
+| wellness/how-to-brain-dump-everything-in-your-head | yes | 475 |  |  |
+| wellness/how-to-break-down-an-overwhelming-project | yes | 578 |  |  |
+| wellness/how-to-calm-your-nerves-before-an-interview | yes | 553 |  |  |
+| wellness/how-to-clear-your-head-when-everything-feels-jumbled | yes | 483 |  |  |
+| wellness/how-to-describe-your-feelings-when-you-dont-have-the-words | yes | 575 |  |  |
+| wellness/how-to-do-anything-when-you-cant-get-started | yes | 535 |  |  |
+| wellness/how-to-exercise-when-you-have-zero-motivation | yes | 540 |  |  |
+| wellness/how-to-figure-out-what-to-do-first-when-overwhelmed | yes | 523 |  |  |
+| wellness/how-to-figure-out-where-your-time-actually-goes | yes | 525 |  |  |
+| wellness/how-to-figure-out-which-friends-are-actually-draining-you | yes | 537 |  |  |
+| wellness/how-to-focus-when-working-alone | yes | 522 |  |  |
+| wellness/how-to-function-on-the-day-of-an-interview-or-exam | yes | 501 |  |  |
+| wellness/how-to-get-anything-done-on-the-day-of-a-big-meeting | yes | 494 |  |  |
+| wellness/how-to-get-things-done-when-you-have-no-energy | yes | 440 |  |  |
+| wellness/how-to-group-your-work-so-you-actually-finish-things | yes | 484 |  |  |
+| wellness/how-to-interpret-your-own-dreams | yes | 505 |  |  |
+| wellness/how-to-know-if-youre-an-introvert-or-just-low-on-energy | yes | 544 |  |  |
+| wellness/how-to-know-if-youre-burned-out-or-just-tired | yes | 534 |  |  |
+| wellness/how-to-look-confident-when-youre-terrified | yes | 471 |  |  |
+| wellness/how-to-make-a-project-feel-manageable | yes | 542 |  |  |
 | wellness/how-to-make-solo-deep-work-less-lonely | yes | 519 |  |  |
-| wellness/how-to-move-forward-on-a-project-thats-been-stuck-for-months |  | 537 |  |  |
+| wellness/how-to-move-forward-on-a-project-thats-been-stuck-for-months | yes | 537 |  |  |
 | wellness/how-to-move-your-body-when-youre-sick-sore-or-hungover | yes | 569 |  |  |
 | wellness/how-to-organize-a-brain-dump-into-actual-tasks | yes | 491 |  |  |
-| wellness/how-to-plan-around-lowenergy-days |  | 459 |  |  |
-| wellness/how-to-plan-rest-before-you-need-it-not-after |  | 515 |  |  |
-| wellness/how-to-plan-your-week-so-you-dont-crash-by-thursday |  | 489 |  |  |
-| wellness/how-to-power-through-tasks-youve-been-avoiding |  | 555 |  |  |
-| wellness/how-to-prepare-mentally-for-a-hard-conversation |  | 531 |  |  |
+| wellness/how-to-plan-around-lowenergy-days | yes | 459 |  |  |
+| wellness/how-to-plan-rest-before-you-need-it-not-after | yes | 515 |  |  |
+| wellness/how-to-plan-your-week-so-you-dont-crash-by-thursday | yes | 489 |  |  |
+| wellness/how-to-power-through-tasks-youve-been-avoiding | yes | 555 |  |  |
+| wellness/how-to-prepare-mentally-for-a-hard-conversation | yes | 531 |  |  |
 | wellness/how-to-prioritize-when-everything-feels-urgent | yes | 547 |  |  |
-| wellness/how-to-push-through-vs-when-to-stop |  | 552 |  |  |
-| wellness/how-to-recover-from-burnout-when-you-cant-take-time-off |  | 555 |  |  |
+| wellness/how-to-push-through-vs-when-to-stop | yes | 552 |  |  |
+| wellness/how-to-recover-from-burnout-when-you-cant-take-time-off | yes | 555 |  |  |
 | wellness/how-to-remember-everything-you-need-to-do-without-losing-your-mind | yes | 513 |  |  |
-| wellness/how-to-remember-your-dreams-better |  | 493 |  |  |
+| wellness/how-to-remember-your-dreams-better | yes | 493 |  |  |
 | wellness/how-to-schedule-a-week-so-youre-not-constantly-switching-gears | yes | 440 |  |  |
-| wellness/how-to-schedule-downtime-when-you-dont-think-you-need-any |  | 504 |  |  |
-| wellness/how-to-schedule-tasks-based-on-your-energy-levels |  | 464 |  |  |
-| wellness/how-to-start-when-everything-feels-too-big |  | 532 |  |  |
-| wellness/how-to-stay-accountable-when-no-one-is-watching |  | 567 |  |  |
-| wellness/how-to-stay-active-on-a-really-busy-week |  | 497 |  |  |
-| wellness/how-to-stop-context-switching-all-day |  | 512 |  |  |
-| wellness/how-to-stop-wasting-the-morning-before-an-afternoon-appointment |  | 478 |  |  |
+| wellness/how-to-schedule-downtime-when-you-dont-think-you-need-any | yes | 504 |  |  |
+| wellness/how-to-schedule-tasks-based-on-your-energy-levels | yes | 464 |  |  |
+| wellness/how-to-start-when-everything-feels-too-big | yes | 532 |  |  |
+| wellness/how-to-stay-accountable-when-no-one-is-watching | yes | 567 |  |  |
+| wellness/how-to-stay-active-on-a-really-busy-week | yes | 497 |  |  |
+| wellness/how-to-stop-context-switching-all-day | yes | 512 |  |  |
+| wellness/how-to-stop-wasting-the-morning-before-an-afternoon-appointment | yes | 478 |  |  |
 | wellness/how-to-stop-your-hands-from-shaking-before-a-presentation | yes | 544 |  |  |
-| wellness/how-to-tell-when-youre-about-to-burn-out-before-you-do |  | 538 |  |  |
-| wellness/how-to-track-time-without-obsessing-over-it |  | 513 |  |  |
-| wellness/how-to-triage-your-todo-list-when-you-cant-think-straight |  | 502 |  |  |
-| wellness/how-to-use-music-to-switch-between-tasks |  | 462 |  |  |
-| wellness/how-to-use-the-day-before-a-deadline-without-panicking-or-procrastinating |  | 497 |  |  |
+| wellness/how-to-tell-when-youre-about-to-burn-out-before-you-do | yes | 538 |  |  |
+| wellness/how-to-track-time-without-obsessing-over-it | yes | 513 |  |  |
+| wellness/how-to-triage-your-todo-list-when-you-cant-think-straight | yes | 502 |  |  |
+| wellness/how-to-use-music-to-switch-between-tasks | yes | 462 |  |  |
+| wellness/how-to-use-the-day-before-a-deadline-without-panicking-or-procrastinating | yes | 497 |  |  |
 | wellness/how-to-work-alone-without-getting-distracted | yes | 517 |  |  |
-| wellness/is-silence-actually-better-than-ambient-noise-for-focus |  | 490 |  |  |
-| wellness/is-this-actually-urgent-or-am-i-panicking |  | 513 |  |  |
-| wellness/music-that-actually-helps-you-work-vs-distracts-you |  | 451 |  |  |
-| wellness/the-smallest-possible-first-step-for-writing-a-book |  | 501 |  |  |
-| wellness/the-smallest-workout-that-still-counts |  | 511 |  |  |
-| wellness/what-does-it-mean-when-you-dream-about-someone-whos-died |  | 564 |  |  |
+| wellness/is-silence-actually-better-than-ambient-noise-for-focus | yes | 490 |  |  |
+| wellness/is-this-actually-urgent-or-am-i-panicking | yes | 513 |  |  |
+| wellness/music-that-actually-helps-you-work-vs-distracts-you | yes | 451 |  |  |
+| wellness/the-smallest-possible-first-step-for-writing-a-book | yes | 501 |  |  |
+| wellness/the-smallest-workout-that-still-counts | yes | 511 |  |  |
+| wellness/what-does-it-mean-when-you-dream-about-someone-whos-died | yes | 564 |  |  |
 | wellness/what-is-body-doubling-and-does-it-actually-work | yes | 583 |  |  |
 | wellness/what-music-to-listen-to-while-studying | yes | 534 |  |  |
-| wellness/what-to-do-when-you-have-too-much-to-do-and-you-freeze |  | 492 |  |  |
-| wellness/what-to-do-when-your-mind-wont-stop-racing |  | 481 |  |  |
-| wellness/what-to-do-when-your-todo-list-is-too-long-to-even-look-at |  | 525 |  |  |
-| wellness/what-to-do-when-youre-panicking-right-before-an-event |  | 517 |  |  |
-| wellness/what-to-listen-to-when-you-cant-concentrate-in-a-noisy |  | 526 |  |  |
-| wellness/what-to-listen-to-when-youre-tired-but-need-to-keep-working |  | 501 |  |  |
-| wellness/whats-the-best-background-noise-for-working |  | 506 |  |  |
-| wellness/whats-the-difference-between-jealousy-and-envy |  | 536 |  |  |
-| wellness/whats-the-feeling-you-get-when-you-finish-a-tv-series-you-loved |  | 526 |  |  |
+| wellness/what-to-do-when-you-have-too-much-to-do-and-you-freeze | yes | 492 |  |  |
+| wellness/what-to-do-when-your-mind-wont-stop-racing | yes | 481 |  |  |
+| wellness/what-to-do-when-your-todo-list-is-too-long-to-even-look-at | yes | 525 |  |  |
+| wellness/what-to-do-when-youre-panicking-right-before-an-event | yes | 517 |  |  |
+| wellness/what-to-listen-to-when-you-cant-concentrate-in-a-noisy | yes | 526 |  |  |
+| wellness/what-to-listen-to-when-youre-tired-but-need-to-keep-working | yes | 501 |  |  |
+| wellness/whats-the-best-background-noise-for-working | yes | 506 |  |  |
+| wellness/whats-the-difference-between-jealousy-and-envy | yes | 536 |  |  |
+| wellness/whats-the-feeling-you-get-when-you-finish-a-tv-series-you-loved | yes | 526 |  |  |
 | wellness/whats-the-word-for-the-feeling-when-you-secretly-enjoy-someone-elses-failure | yes | 543 |  |  |
-| wellness/white-noise-vs-brown-noise-vs-pink-noise |  | 524 |  |  |
-| wellness/why-am-i-always-behind-even-when-im-working-all-day |  | 574 |  |  |
-| wellness/why-am-i-tired-all-the-time-even-when-i-sleep-enough |  | 510 |  |  |
+| wellness/white-noise-vs-brown-noise-vs-pink-noise | yes | 524 |  |  |
+| wellness/why-am-i-always-behind-even-when-im-working-all-day | yes | 574 |  |  |
+| wellness/why-am-i-tired-all-the-time-even-when-i-sleep-enough | yes | 510 |  |  |
 | wellness/why-do-i-dream-about-people-i-havent-seen-in-years | yes | 541 |  |  |
 | wellness/why-do-i-feel-confusing-emotional-state | yes | 547 |  |  |
-| wellness/why-do-i-feel-confusing-emotional-states |  | 548 |  |  |
-| wellness/why-do-i-keep-having-the-same-dream |  | 533 |  |  |
+| wellness/why-do-i-feel-confusing-emotional-states | yes | 548 |  |  |
+| wellness/why-do-i-keep-having-the-same-dream | yes | 533 |  |  |
 | wellness/why-does-it-feel-like-i-did-nothing-today | yes | 557 |  |  |
-| wellness/why-does-multitasking-make-me-so-tired |  | 524 |  |  |
+| wellness/why-does-multitasking-make-me-so-tired | yes | 524 |  |  |
 | wellness/why-does-my-day-disappear-so-fast | yes | 501 |  |  |
-| wellness/why-is-it-so-hard-to-name-what-im-feeling |  | 566 |  |  |
-| wellness/why-scheduled-rest-never-feels-like-enough |  | 496 |  |  |
-| wellness/why-you-cant-focus-before-something-stressful |  | 490 |  |  |
-| wellness/why-you-feel-drained-after-every-social-event-even-when-you-enjoyed-it |  | 498 |  |  |
-| wellness/why-you-keep-saying-yes-to-things-that-exhaust-you |  | 520 |  |  |
-| wellness/why-your-energy-crashes-always-come-at-the-worst-time |  | 505 |  |  |
-| wellness/workouts-you-can-do-when-youre-exhausted |  | 535 |  |  |
-| workplace/common-naming-mistakes-that-kill-startups |  | 593 |  |  |
-| workplace/how-to-brainstorm-names-that-arent-terrible |  | 479 |  |  |
-| workplace/how-to-break-down-a-complicated-document-section-by-section |  | 529 |  |  |
-| workplace/how-to-choose-between-two-job-offers |  | 611 |  |  |
-| workplace/how-to-come-up-with-a-business-name |  | 493 |  |  |
-| workplace/how-to-decide-between-multiple-side-projects |  | 577 |  |  |
+| wellness/why-is-it-so-hard-to-name-what-im-feeling | yes | 566 |  |  |
+| wellness/why-scheduled-rest-never-feels-like-enough | yes | 496 |  |  |
+| wellness/why-you-cant-focus-before-something-stressful | yes | 490 |  |  |
+| wellness/why-you-feel-drained-after-every-social-event-even-when-you-enjoyed-it | yes | 498 |  |  |
+| wellness/why-you-keep-saying-yes-to-things-that-exhaust-you | yes | 520 |  |  |
+| wellness/why-your-energy-crashes-always-come-at-the-worst-time | yes | 505 |  |  |
+| wellness/workouts-you-can-do-when-youre-exhausted | yes | 535 |  |  |
+| workplace/common-naming-mistakes-that-kill-startups | yes | 593 |  |  |
+| workplace/how-to-brainstorm-names-that-arent-terrible | yes | 479 |  |  |
+| workplace/how-to-break-down-a-complicated-document-section-by-section | yes | 529 |  |  |
+| workplace/how-to-choose-between-two-job-offers | yes | 611 |  |  |
+| workplace/how-to-come-up-with-a-business-name | yes | 493 |  |  |
+| workplace/how-to-decide-between-multiple-side-projects | yes | 577 |  |  |
 | workplace/how-to-figure-out-what-career-to-switch-to | yes | 584 |  |  |
-| workplace/how-to-find-the-action-items-buried-in-a-long-document |  | 530 |  |  |
-| workplace/how-to-handle-a-flood-of-emails-after-vacation |  | 451 |  |  |
-| workplace/how-to-hold-someone-accountable-in-writing |  | 962 |  |  |
-| workplace/how-to-identify-hidden-costs-in-a-service-agreement |  | 523 |  |  |
-| workplace/how-to-identify-your-transferable-skills |  | 507 |  |  |
-| workplace/how-to-know-if-an-email-is-actually-urgent |  | 436 |  |  |
-| workplace/how-to-know-if-an-opportunity-is-worth-the-time |  | 549 |  |  |
-| workplace/how-to-know-if-your-business-name-is-forgettable |  | 539 |  |  |
-| workplace/how-to-know-if-your-job-is-at-risk |  | 622 |  |  |
-| workplace/how-to-know-if-youre-ready-for-the-next-level |  | 609 |  |  |
-| workplace/how-to-know-what-emails-actually-need-a-response |  | 503 |  |  |
+| workplace/how-to-find-the-action-items-buried-in-a-long-document | yes | 530 |  |  |
+| workplace/how-to-handle-a-flood-of-emails-after-vacation | yes | 451 |  |  |
+| workplace/how-to-hold-someone-accountable-in-writing | yes | 962 |  |  |
+| workplace/how-to-identify-hidden-costs-in-a-service-agreement | yes | 523 |  |  |
+| workplace/how-to-identify-your-transferable-skills | yes | 507 |  |  |
+| workplace/how-to-know-if-an-email-is-actually-urgent | yes | 436 |  |  |
+| workplace/how-to-know-if-an-opportunity-is-worth-the-time | yes | 549 |  |  |
+| workplace/how-to-know-if-your-business-name-is-forgettable | yes | 539 |  |  |
+| workplace/how-to-know-if-your-job-is-at-risk | yes | 622 |  |  |
+| workplace/how-to-know-if-youre-ready-for-the-next-level | yes | 609 |  |  |
+| workplace/how-to-know-what-emails-actually-need-a-response | yes | 503 |  |  |
 | workplace/how-to-make-the-case-for-your-promotion-in-writing | yes | 984 |  |  |
-| workplace/how-to-manage-email-overload |  | 539 |  |  |
-| workplace/how-to-name-a-startup-when-all-the-good-names-are-taken |  | 517 |  |  |
+| workplace/how-to-manage-email-overload | yes | 539 |  |  |
+| workplace/how-to-name-a-startup-when-all-the-good-names-are-taken | yes | 517 |  |  |
 | workplace/how-to-politely-decline-a-meeting | yes | 555 |  |  |
-| workplace/how-to-push-back-on-an-unreasonable-email |  | 950 |  |  |
+| workplace/how-to-push-back-on-an-unreasonable-email | yes | 950 |  |  |
 | workplace/how-to-push-back-on-your-boss-professionally | yes | 597 |  |  |
-| workplace/how-to-read-a-financial-report-like-an-expert |  | 586 |  |  |
-| workplace/how-to-read-a-job-offer-letter-employment-contract-before-signing |  | 647 |  |  |
-| workplace/how-to-read-a-long-policy-update-without-losing-your-mind |  | 578 |  |  |
-| workplace/how-to-read-a-school-newsletter-hoa-notice-efficiently |  | 478 |  |  |
-| workplace/how-to-read-a-software-license-agreement-before-clicking-accept |  | 562 |  |  |
-| workplace/how-to-read-an-insurance-policy-you-actually-need |  | 626 |  |  |
-| workplace/how-to-read-between-the-lines-of-a-performance-review |  | 542 |  |  |
-| workplace/how-to-respond-to-a-passive-aggressive-email |  | 920 |  |  |
-| workplace/how-to-say-no-to-your-boss |  | 486 |  |  |
+| workplace/how-to-read-a-financial-report-like-an-expert | yes | 586 |  |  |
+| workplace/how-to-read-a-job-offer-letter-employment-contract-before-signing | yes | 647 |  |  |
+| workplace/how-to-read-a-long-policy-update-without-losing-your-mind | yes | 578 |  |  |
+| workplace/how-to-read-a-school-newsletter-hoa-notice-efficiently | yes | 478 |  |  |
+| workplace/how-to-read-a-software-license-agreement-before-clicking-accept | yes | 562 |  |  |
+| workplace/how-to-read-an-insurance-policy-you-actually-need | yes | 626 |  |  |
+| workplace/how-to-read-between-the-lines-of-a-performance-review | yes | 542 |  |  |
+| workplace/how-to-respond-to-a-passive-aggressive-email | yes | 920 |  |  |
+| workplace/how-to-say-no-to-your-boss | yes | 486 |  |  |
 | workplace/how-to-see-the-real-structure-of-a-complex-document | yes | 538 |  |  |
-| workplace/how-to-skim-a-long-document-without-missing-the-important-parts |  | 528 |  |  |
-| workplace/how-to-skim-a-long-email-and-not-miss-anything-important |  | 533 |  |  |
-| workplace/how-to-spend-your-free-time-when-you-want-a-career-change |  | 565 |  |  |
-| workplace/how-to-spot-manipulative-clauses-in-any-contract |  | 565 |  |  |
-| workplace/how-to-spot-the-highest-leverage-thing-you-could-be-doing |  | 571 |  |  |
-| workplace/how-to-spot-whats-actually-changed-in-a-terms-of-service-update |  | 496 |  |  |
-| workplace/how-to-stop-email-anxiety |  | 536 |  |  |
-| workplace/how-to-switch-careers-to-tech |  | 545 |  |  |
-| workplace/how-to-tell-if-a-name-is-too-similar-to-an-existing-brand |  | 545 |  |  |
-| workplace/how-to-tell-what-a-document-is-actually-saying-vs-what-it |  | 506 |  |  |
+| workplace/how-to-skim-a-long-document-without-missing-the-important-parts | yes | 528 |  |  |
+| workplace/how-to-skim-a-long-email-and-not-miss-anything-important | yes | 533 |  |  |
+| workplace/how-to-spend-your-free-time-when-you-want-a-career-change | yes | 565 |  |  |
+| workplace/how-to-spot-manipulative-clauses-in-any-contract | yes | 565 |  |  |
+| workplace/how-to-spot-the-highest-leverage-thing-you-could-be-doing | yes | 571 |  |  |
+| workplace/how-to-spot-whats-actually-changed-in-a-terms-of-service-update | yes | 496 |  |  |
+| workplace/how-to-stop-email-anxiety | yes | 536 |  |  |
+| workplace/how-to-switch-careers-to-tech | yes | 545 |  |  |
+| workplace/how-to-tell-if-a-name-is-too-similar-to-an-existing-brand | yes | 545 |  |  |
+| workplace/how-to-tell-what-a-document-is-actually-saying-vs-what-it | yes | 506 |  |  |
 | workplace/how-to-tell-your-boss-a-deadline-is-unrealistic | yes | 467 |  |  |
-| workplace/how-to-tell-your-boss-theyre-wrong |  | 459 |  |  |
-| workplace/how-to-tell-your-manager-their-feedback-is-unfair |  | 551 |  |  |
+| workplace/how-to-tell-your-boss-theyre-wrong | yes | 459 |  |  |
+| workplace/how-to-tell-your-manager-their-feedback-is-unfair | yes | 551 |  |  |
 | workplace/how-to-test-a-business-name-before-committing | yes | 560 |  |  |
 | workplace/how-to-test-if-a-name-passes-the-drunk-test | yes | 511 |  |  |
-| workplace/how-to-translate-a-confusing-document-into-plain-language |  | 532 |  |  |
-| workplace/how-to-triage-your-inbox-in-5-minutes |  | 472 |  |  |
-| workplace/how-to-understand-a-document-written-in-academic-jargon |  | 536 |  |  |
-| workplace/how-to-understand-a-document-written-in-jargon |  | 559 |  |  |
-| workplace/how-to-write-a-professional-email-when-youre-furious |  | 921 |  |  |
+| workplace/how-to-translate-a-confusing-document-into-plain-language | yes | 532 |  |  |
+| workplace/how-to-triage-your-inbox-in-5-minutes | yes | 472 |  |  |
+| workplace/how-to-understand-a-document-written-in-academic-jargon | yes | 536 |  |  |
+| workplace/how-to-understand-a-document-written-in-jargon | yes | 559 |  |  |
+| workplace/how-to-write-a-professional-email-when-youre-furious | yes | 921 |  |  |
 | workplace/is-accounting-going-to-be-replaced-by-ai | yes | 538 |  |  |
-| workplace/is-it-too-late-to-learn-coding |  | 616 |  |  |
-| workplace/the-email-you-write-at-11pm-vs-the-email-you-should-send |  | 960 |  |  |
-| workplace/what-does-an-arbitration-clause-actually-mean-for-you |  | 634 |  |  |
-| workplace/what-does-k-period-mean-in-a-text |  | 700 |  |  |
+| workplace/is-it-too-late-to-learn-coding | yes | 616 |  |  |
+| workplace/the-email-you-write-at-11pm-vs-the-email-you-should-send | yes | 960 |  |  |
+| workplace/what-does-an-arbitration-clause-actually-mean-for-you | yes | 634 |  |  |
+| workplace/what-does-k-period-mean-in-a-text | yes | 700 |  |  |
 | workplace/what-does-kindly-mean-in-an-email | yes | 742 |  |  |
-| workplace/what-does-lets-table-this-mean |  | 753 |  |  |
+| workplace/what-does-lets-table-this-mean | yes | 753 |  |  |
 | workplace/what-does-lets-take-this-offline-mean | yes | 723 |  |  |
-| workplace/what-does-noted-mean-in-work-email |  | 681 |  |  |
-| workplace/what-does-per-my-last-email-mean |  | 750 |  |  |
+| workplace/what-does-noted-mean-in-work-email | yes | 681 |  |  |
+| workplace/what-does-per-my-last-email-mean | yes | 750 |  |  |
 | workplace/what-jobs-will-be-in-demand-in-5-years | yes | 535 |  |  |
-| workplace/what-makes-a-name-memorable |  | 485 |  |  |
-| workplace/what-skills-are-actually-futureproof |  | 547 |  |  |
-| workplace/what-skills-do-i-need-to-become-a-product-manager |  | 533 |  |  |
-| workplace/what-to-actually-pay-attention-to-in-a-benefits-packet |  | 622 |  |  |
-| workplace/what-to-do-when-you-have-1000-unread-emails |  | 522 |  |  |
-| workplace/what-to-look-for-in-an-nda-before-signing |  | 519 |  |  |
+| workplace/what-makes-a-name-memorable | yes | 485 |  |  |
+| workplace/what-skills-are-actually-futureproof | yes | 547 |  |  |
+| workplace/what-skills-do-i-need-to-become-a-product-manager | yes | 533 |  |  |
+| workplace/what-to-actually-pay-attention-to-in-a-benefits-packet | yes | 636 |  |  |
+| workplace/what-to-do-when-you-have-1000-unread-emails | yes | 522 |  |  |
+| workplace/what-to-look-for-in-an-nda-before-signing | yes | 519 |  |  |

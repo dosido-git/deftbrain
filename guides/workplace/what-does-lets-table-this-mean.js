@@ -46,6 +46,16 @@ module.exports = {
     "scriptedLine": "Did the deferral come with a date, or just a vibe?",
     "explanation": "The single question that decodes most 'let's table this' moments. A deferral with a specific time attached — next meeting, end of quarter, after the offsite — is almost always sincere. A deferral with no time attached is doing something else: buying time, softening a no, or quietly closing the topic. Notice the difference in the moment, and you'll catch the meaning before the deferral has set in."
   },
+  "sources": [
+    {
+      "label": "Merriam-Webster: table (verb)",
+      "url": "https://www.merriam-webster.com/dictionary/table"
+    },
+    {
+      "label": "Cambridge Dictionary: table",
+      "url": "https://dictionary.cambridge.org/dictionary/english/table"
+    }
+  ],
   "cta": {
     "glyph": "🔍",
     "headline": "Get a read on the specific 'let's table this' moment you're trying to decode",
