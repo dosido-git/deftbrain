@@ -20,7 +20,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 
 | # | Type | Shared fix | Status | Open instances |
 |---|---|---|---|---|
-| T1 | Real-world facts from memory | `lib/worldFacts.js` (cached search + Sonnet contradiction check) | 25 tools; built 2026-10-09 | 2 (PaperworkPath voter line, PlotHoleFinder) |
+| T1 | Real-world facts from memory | `lib/worldFacts.js` (topic search + claim-by-claim search + Sonnet contradiction check) | 8 tools on `worldFacts`, 18 on older grounding | 0 |
 | T2 | Arithmetic, counts, totals | Compute in code; else the number check | 18 tools; 2026-10-09 sweep done | 0 |
 | T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 96 routes | 0 |
 | T4 | Details the visitor never said | Output guard, or `checkConsistency` check 10 (same call) | ~99 tools; 2026-10-09 | 0 |
@@ -55,13 +55,13 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | FanTheory — invented Severance scenes | fixed (SMART canon check) |
 | AnalogyEngine — wrong reason vaccines get updated | fixed (facts-mode check) |
 | SignalVsNoise — figures not in the sources | fixed (`dropUnsourcedFigures`) |
-| PaperworkPath — Texas safety inspection, online voter registration | **fixed with shared fix** (`worldFacts`; live run now says emissions inspection only. Voter line now names Texas.gov, which offers registration only alongside a DPS licence transaction — watch) |
+| PaperworkPath — Texas safety inspection, online voter registration | **fixed with shared fix** (`worldFacts`; live run now says emissions inspection only. voter line fixed by the claim-by-claim search) |
 | TripRecon — Denver airport "train from the garage" | **fixed with shared fix** (live run: train runs terminal → A → B → C) |
 | MicroAdventureMapper — Boston Common "at the north end" of the Freedom Trail | **wired to shared fix** (not reproduced on the live run) |
 | **BuyWise** — "sold largely direct"; no price lookup | **open** |
-| **PlotHoleFinder** — story timing errors; plot summary lacks timing | **open (held from search)** |
+| PlotHoleFinder — story timing errors; plot summary lacks timing | **fixed with shared fix** (claim-by-claim search + YES step-down; live Dark Knight Rises run clean). Still not indexed — owner's call |
 
-**Known limit (2026-10-09).** A topic search only catches claims it happens to cover: Paperwork Path still said Texas voters can register online (they can't, except during a DPS licence transaction; verified by search) because the research never covered voting. Brief widened for that tool; the type-level fix is claim-by-claim verification (search each specific high-stakes claim the answer makes), the same mechanism Plot Hole Finder's timing errors need. Not built yet.
+**Claim-by-claim search (2026-10-09).** A topic search only catches claims it happens to cover: Paperwork Path kept saying Texas voters can register online because the "moving to Austin" research never covered voting. `checkWorldFacts` now picks the answer's 3 most consequential claims the topic research does not settle and searches each on its own (cached per question). Live: Paperwork Path now says the online tool only produces a form to print, sign and mail; Plot Hole Finder runs through the same check with its plot summary as the topic research, and a "YES — REAL HOLE" whose premise gets corrected is stepped down to MAYBE in code. Cost: ~$0.05–0.10 and up to ~45 s more on a first-time claim.
 
 **Deliberately not grounded:** DoctorVisitPrep / DoctorVisitTranslator (claims are per-visit, research would run every time), Giftology, PartyArchitect, HobbyMatch (low-stakes, per-request). BuyWise already says it could not verify a price rather than guessing.
 
