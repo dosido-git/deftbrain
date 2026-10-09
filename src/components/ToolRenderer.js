@@ -66,7 +66,7 @@ const EXAMPLE_OUTPUT_TOOLS = new Set([
   'GetNoticed', 'BeforeHello', 'SmallChangeBigDifference', 'GentlePushGenerator', 'DecisionPrism',
   'HeartOfTheMatter', 'LazyWorkoutAdapter', 'TheFinalWord', 'DreamPatternSpotter', 'EmailUrgencyTriager',
   'FriendshipFadeAlerter', 'TripRecon', 'MicroAdventureMapper', 'ToolFinder',
-  'DateNight', 'NameAudit',
+  'DateNight', 'NameAudit', 'PlotHoleFinder',
 ]);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 

@@ -59,7 +59,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | TripRecon — Denver airport "train from the garage" | **fixed with shared fix** (live run: train runs terminal → A → B → C) |
 | MicroAdventureMapper — Boston Common "at the north end" of the Freedom Trail | **wired to shared fix** (not reproduced on the live run) |
 | **BuyWise** — "sold largely direct"; no price lookup | **open** |
-| PlotHoleFinder — story timing errors; plot summary lacks timing | **fixed with shared fix** (claim-by-claim search + YES step-down; live Dark Knight Rises run clean). Still not indexed — owner's call |
+| PlotHoleFinder — story timing errors; plot summary lacks timing | **fixed with shared fix** (claim-by-claim search + YES step-down; live Dark Knight Rises run clean). Indexed 2026-10-09 (owner) |
 
 **Claim-by-claim search (2026-10-09).** A topic search only catches claims it happens to cover: Paperwork Path kept saying Texas voters can register online because the "moving to Austin" research never covered voting. `checkWorldFacts` now picks the answer's 3 most consequential claims the topic research does not settle and searches each on its own (cached per question). Live: Paperwork Path now says the online tool only produces a form to print, sign and mail; Plot Hole Finder runs through the same check with its plot summary as the topic research, and a "YES — REAL HOLE" whose premise gets corrected is stepped down to MAYBE in code. Cost: ~$0.05–0.10 and up to ~45 s more on a first-time claim.
 

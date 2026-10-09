@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "9d102c44e02f87ae4a8c5e5c21699c6ebbb277b5",
+  "hash": "daa7844ad0dec10895f9f3d268ba21f26a4318b2",
   "lastmod": "2026-10-09"
  },
  "static:about": {
@@ -573,6 +573,10 @@
  },
  "tool:DateNight": {
   "hash": "bda592aa3c2a8e316349cf4b4db9e0917a144d79",
+  "lastmod": "2026-10-09"
+ },
+ "tool:PlotHoleFinder": {
+  "hash": "a183b715f45420663ea4f69082ff143e26c66003",
   "lastmod": "2026-10-09"
  }
 }

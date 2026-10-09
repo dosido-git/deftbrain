@@ -3328,6 +3328,45 @@ export const tools = [
   icon: "🕳️",
   categories: ['Just for Fun'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-09, after claim-by-claim web search made its story facts reliable.
+  exampleOutput: {
+    title: "See what Plot Hole Finder gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the film below. Its story details were checked against a published plot summary and a web search for each claim a verdict rests on. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The film",
+    sampleText: "The Dark Knight Rises (2012). No specific question — scan the whole film.",
+    context: "Real run, 2026-10-09.",
+    sections: [
+      {
+        label: "Overall: a few real gaps",
+        tone: "blue",
+        text: "The film holds together better than its reputation suggests, but several frequently cited complaints turn out to be explainable gaps or debatable decisions rather than true logic breaks. The most persistent problems involve timeline pressure — the film establishes a specific siege duration but leaves key logistics unexplained without contradicting its own rules.",
+      },
+      {
+        label: "Findings",
+        tone: "yellow",
+        items: [
+          "MAYBE: Bane breaks Bruce's vertebra and dumps him in the pit. Bruce heals, trains, and escapes — and arrives back in Gotham apparently just in time, with no indication he had any meaningful head start. — The recovery timeline is compressed enough to strain credibility, and the return journey is entirely unexplained, but the film does not establish specific medical rules it then violates — it simply leaves the logistics as a gap rather than contradicting itself explicitly.",
+          "MAYBE: Several thousand Gotham police officers are trapped in the sewers for an extended period. They emerge clean-shaven, in pressed uniforms, and physically capable of a full street battle within moments of surfacing. — The film leaves the logistics entirely unexplained, which is enough to create a real credibility problem, but it does not contradict an established rule — it omits an explanation that would have been genuinely important to the story's internal plausibility.",
+          "NO: The film opens with Commissioner Gordon nearly reading a prepared speech revealing the truth about Harvey Dent. Bruce Wayne has been in self-imposed retirement partly because of Dent's death. The suggestion is that Bruce has accepted the official story. — Bruce is not unaware of the cover-up — he co-authored it — so his lack of investigation is not a knowledge gap, it is a character choice the film explicitly addresses.",
+        ],
+      },
+      {
+        label: "What the story gets right",
+        tone: "green",
+        text: "Talia's infiltration of Wayne Enterprises as Miranda Tate is genuinely well-constructed as a story device — it retroactively explains how the conspirators knew about the reactor, how the financing moved, and why Bruce trusted her, all without requiring a separate exposition scene. It is one of the few places where the film earns its twist through previously established facts rather than asking for a pass.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What counts as a plot hole?",
+      a: "A real plot hole is a contradiction with the story's own established rules or facts. An unexplained gap, a debatable character choice or a convenient coincidence is a different kind of problem. Plot Hole Finder sorts each suspected hole into one of those and gives it a verdict." },
+    { q: "Does it just list everything people complain about?",
+      a: "No. There is no quota of findings. Each one gets the strongest case against the story, the best defense, and a verdict, and many popular complaints come back as explainable." },
+    { q: "How does it know what happens in the story?",
+      a: "It checks its story details against a published plot summary and runs a web search on each specific claim a verdict depends on. If a premise turns out to be wrong, the detail is corrected and a 'real hole' verdict is downgraded." },
+  ],
   description: "Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up—and separates genuine holes from things the story actually explains.",
   guide: {
     tips: [

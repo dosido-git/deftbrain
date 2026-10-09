@@ -127,6 +127,7 @@
     "MicroAdventureMapper",
     "ToolFinder",
     "DateNight",
-    "NameAudit"
+    "NameAudit",
+    "PlotHoleFinder"
   ]
 }
