@@ -1,0 +1,1498 @@
+{
+ "_meta": {
+  "updated": "2026-10-09",
+  "note": "Per-endpoint outcome against the stand-in API. Regenerate with node scripts/smoke-tools.js --update"
+ },
+ "endpoints": {
+  "/api/alternate-path": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/analogy-engine": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/apology-calibrator": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/apology-calibrator/audit": {
+   "ok": false,
+   "status": 400,
+   "error": "Add at least one situation."
+  },
+  "/api/apology-calibrator/cultural": {
+   "ok": false,
+   "status": 400,
+   "error": "Describe the situation and the cultural context."
+  },
+  "/api/apology-calibrator/decode": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/apology-calibrator/delivery": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/apology-calibrator/detect": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste your apology draft."
+  },
+  "/api/apology-calibrator/fix": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste what you said when you apologized."
+  },
+  "/api/apology-calibrator/forgive": {
+   "ok": false,
+   "status": 400,
+   "error": "Describe what happened."
+  },
+  "/api/apology-calibrator/letter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/apology-calibrator/practice": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/apology-calibrator/roadmap": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-argument-map": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-audience-judge": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-coach": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-fallacy-train": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-highlight-reel": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-open": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-prep": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-quick": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-rematch": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-respond": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-scorecard": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-source-check": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/argue-better-switch": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/awkward-silence-filler": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/batch-flow": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/belief-stress-test": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/bike-medic": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/bill-rescue": {
+   "ok": false,
+   "status": 500,
+   "error": "Could not generate your bill rescue. Please try again."
+  },
+  "/api/bill-rescue/letter": {
+   "ok": false,
+   "status": 400,
+   "error": "Select a letter type."
+  },
+  "/api/bill-rescue/quick-check": {
+   "ok": false,
+   "status": 400,
+   "error": "Describe the charge to check."
+  },
+  "/api/bill-rescue/rehearse": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/bill-rescue/triage": {
+   "ok": false,
+   "status": 400,
+   "error": "Add at least 2 bills for triage."
+  },
+  "/api/bookmark": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brag-sheet-add-single": {
+   "ok": false,
+   "status": 400,
+   "error": "Accomplishment text is required."
+  },
+  "/api/brag-sheet-builder": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brag-sheet-excavate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brag-sheet-interview-matrix": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brag-sheet-radar": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brag-sheet-refine": {
+   "ok": false,
+   "status": 400,
+   "error": "Provide at least one metrics answer."
+  },
+  "/api/brag-sheet-star": {
+   "ok": false,
+   "status": 400,
+   "error": "Accomplishment is required."
+  },
+  "/api/brag-sheet-tailor": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste a job description to tailor against."
+  },
+  "/api/brag-sheet-tweak": {
+   "ok": false,
+   "status": 400,
+   "error": "Current text and instruction are required."
+  },
+  "/api/brag-sheet-voice-match": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste a writing sample."
+  },
+  "/api/brain-dump-buddy": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brain-roulette": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brain-roulette/chain-deeper": {
+   "ok": false,
+   "status": 400,
+   "error": "originalTitle and threadLabel are required"
+  },
+  "/api/brain-roulette/debate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brain-roulette/deeper": {
+   "ok": false,
+   "status": 400,
+   "error": "originalTitle and threadLabel are required"
+  },
+  "/api/brain-roulette/digest": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brain-roulette/extract-concepts": {
+   "ok": false,
+   "status": 400,
+   "error": "title and content are required"
+  },
+  "/api/brain-roulette/journey": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brain-roulette/journey-step": {
+   "ok": false,
+   "status": 400,
+   "error": "journeyTitle and stepTitle are required"
+  },
+  "/api/brain-roulette/verify": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brainstate-deejay": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/brainstate-deejay/adjust": {
+   "ok": false,
+   "status": 400,
+   "error": "Feedback is required for adjustment"
+  },
+  "/api/buy-wise": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/buy-wise/budget": {
+   "ok": false,
+   "status": 400,
+   "error": "Please provide a budget and category"
+  },
+  "/api/buy-wise/calendar": {
+   "ok": false,
+   "status": 400,
+   "error": "Please specify a product category"
+  },
+  "/api/buy-wise/convince": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/buy-wise/fast": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/buy-wise/followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/buy-wise/haul": {
+   "ok": false,
+   "status": 400,
+   "error": "Please add at least one item"
+  },
+  "/api/buy-wise/photo": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/buy-wise/quote": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/caption-magic": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/caption-magic/adapt": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/caption-magic/more": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/caption-magic/revise": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/cold-open-craft": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/comeback-cooker": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/complaint-escalation-writer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/complaint-escalation-writer/analyze-response": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/complaint-escalation-writer/regenerate-stage": {
+   "ok": false,
+   "status": 400,
+   "error": "Company and target stage are required"
+  },
+  "/api/conflict-coach": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/conflict-coach/adjust-tone": {
+   "ok": false,
+   "status": 400,
+   "error": "No response to adjust."
+  },
+  "/api/conflict-coach/followup": {
+   "ok": false,
+   "status": 400,
+   "error": "No analysis context. Run analysis first."
+  },
+  "/api/context-collapse": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/contract-decoder/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/contrast-report": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/contrast-report/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/crash-predictor-analyze": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/crash-predictor-patterns": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/crisis-prioritizer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/culture-briefing": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/date-night": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-coach": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-coach/batch": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-coach/chain": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-coach/devils-advocate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-coach/followup": {
+   "ok": false,
+   "status": 400,
+   "error": "Missing decision or outcome"
+  },
+  "/api/decision-coach/group": {
+   "ok": false,
+   "status": 400,
+   "error": "Need at least 2 people"
+  },
+  "/api/decision-coach/patterns": {
+   "ok": false,
+   "status": 400,
+   "error": "Need at least 3 decisions to look for patterns"
+  },
+  "/api/decision-coach/pros-cons": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-coach/quick": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decision-prism": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/decoder-ring": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/difficult-talk-coach": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/difficult-talk-debrief": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/difficult-talk-practice-summary": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/difficult-talk-simulate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/doctor-visit-prep": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/doctor-visit-translator": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/document-detective": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/dream-pattern-spotter-pattern": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/dream-pattern-spotter-single": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/drive-home": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/email-urgency-triager": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/events": {
+   "ok": true,
+   "status": 204
+  },
+  "/api/fake-review-detective": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/fan-theory": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/fan-theory/grade": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/final-wish": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/focus-pocus": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/focus-pocus/session": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/focus-sound-architect": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/focus-sound-architect/adjust": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/focus-sound-architect/scene": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/batch": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/digest": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/followup-advice": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/frequency-suggest": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/health-insight": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/recommend-rhythm": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/reengage": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/friendship-fade-alerter/say-it-coach": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/future-proof": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/generate-diagram": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/gentle-push-generator": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/get-noticed": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/ghost-writer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/ghost-writer/refine": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/giftology": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/gratitude-debt-clearer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/gravity-well": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/grief-guide/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/heart-of-the-matter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/heart-of-the-matter/connect": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/heart-of-the-matter/extract": {
+   "ok": false,
+   "status": 400,
+   "error": "No file received."
+  },
+  "/api/heart-of-the-matter/study-guide": {
+   "ok": false,
+   "status": 500,
+   "error": "Could not process this. Please try again."
+  },
+  "/api/heart-of-the-matter/test-prep": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/heckler-prep": {
+   "ok": false,
+   "status": 500,
+   "error": "Could not prepare the evidence ledger. Please try again."
+  },
+  "/api/history-today": {
+   "ok": false,
+   "status": 500,
+   "error": "Could not find historical parallels. Please try again."
+  },
+  "/api/history-today-counter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/history-today-deeper": {
+   "ok": false,
+   "status": 400,
+   "error": "Select a parallel to explore."
+  },
+  "/api/hobby-match": {
+   "ok": false,
+   "status": 500,
+   "error": "Could not generate a grounded set of matches. Please try again."
+  },
+  "/api/idea": {
+   "ok": false,
+   "status": 400,
+   "error": "Describe the problem first."
+  },
+  "/api/idea-autopsy/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/justify-my-meeting": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/justify-my-meeting/agenda": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/justify-my-meeting/message": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/justify-my-meeting/rescue": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/justify-my-meeting/week": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/justify-my-meeting/zombie": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/laundro-mat": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer/compare": {
+   "ok": false,
+   "status": 400,
+   "error": "Need at least 2 layover options to compare."
+  },
+  "/api/layover-maximizer/delay": {
+   "ok": false,
+   "status": 400,
+   "error": "Enter how many minutes late the flight is."
+  },
+  "/api/layover-maximizer/gate-to-gate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer/lounge": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer/packing": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer/risk": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer/survival-kit": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/layover-maximizer/timezone": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-body": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-complete": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-micro": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-nudge": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-recovery": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-stack": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lazy-workout-adapter-swap": {
+   "ok": false,
+   "status": 400,
+   "error": "Which exercise?"
+  },
+  "/api/lease-trap-detector": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lease-trap-detector/amendment": {
+   "ok": false,
+   "status": 400,
+   "error": "No clauses selected for amendment"
+  },
+  "/api/lease-trap-detector/checklist": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lease-trap-detector/compare": {
+   "ok": false,
+   "status": 400,
+   "error": "Need two lease analyses to compare"
+  },
+  "/api/lease-trap-detector/draft-email": {
+   "ok": false,
+   "status": 400,
+   "error": "No issues to negotiate"
+  },
+  "/api/lease-trap-detector/followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lease-trap-detector/missing": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/lease-trap-detector/renewal-traps": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/leverage-logic": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/leverage-logic/counter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/leverage-logic/draft-email": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/leverage-logic/prep-check": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/magic-mouth": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/magic-mouth/nuclear": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/magic-mouth/phone-tree": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/markup-detective": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/meeting-hijack-stopper": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/meeting-hijack-stopper/follow-up": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/mental-health-navigator/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/micro-adventure-mapper": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/mise-en-place": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-afford": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-charity": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-cultural": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-date": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-dining": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-family": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-gift": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-group": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-inheritance": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-lend": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-nudge": {
+   "ok": false,
+   "status": 400,
+   "error": "Who owes you and how much?"
+  },
+  "/api/money-diplomat-roommate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-salary": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-simulate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-split": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-subs": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-tip": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-travel": {
+   "ok": false,
+   "status": 400,
+   "error": "Where are you going?"
+  },
+  "/api/money-diplomat-venmo": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/money-diplomat-work": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/name-that-feeling": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nameaudit": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nameaudit/compare": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nameaudit/deepdive": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nameaudit/fix": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nameaudit/second-opinion": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/namestorm": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/namestorm/blend": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/namestorm/check": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/namestorm/more": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/namestorm/quick": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/namestorm/refine": {
+   "ok": false,
+   "status": 400,
+   "error": "Name and refinement instruction are required"
+  },
+  "/api/namestorm/story": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nerve-check": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nerve-check/coach": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nerve-check/debrief": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/nerve-check/live": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/one-percenter": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/paperwork-path": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/party-architect": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/pep": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/pet-weirdness-decoder": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/pet-weirdness-decoder/followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plaintalk": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plaintalk/compare": {
+   "ok": false,
+   "status": 400,
+   "error": "Both documents are required for comparison"
+  },
+  "/api/plaintalk/followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plant-rescue": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plant-rescue/companions": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plant-rescue/followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plot-hole-finder": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/plot-hole-finder/defend": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/pre-mortem": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/procedure-probe": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/pronounce-it-right": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/pronounce-it-right-audio": {
+   "ok": false,
+   "status": 400,
+   "error": "Word is required"
+  },
+  "/api/pronounce-it-right/batch": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/quote-check": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/recipe-chaos-solver": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/recipe-chaos-solver/flavor-fix": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/recipe-chaos-solver/preflight": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/recipe-chaos-solver/scale": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/recipe-chaos-solver/substitute": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/renters-deposit-saver/rights": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/renters-deposit-saver/stream": {
+   "ok": false,
+   "status": 400,
+   "error": "Property address is required"
+  },
+  "/api/research-decoder": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/research-decoder-compare": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/research-decoder-headline": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/research-decoder-relevance": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/research-decoder-term": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/roast-me": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-culture": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-debrief": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-decode": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-depth": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-exit": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-group": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-person": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-person-refresh": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-quick": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-recover": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/room-reader-stalled": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/roommate-court": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/rulebook-breaker": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/safe-walk": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/scam-radar/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper/alternatives": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper/ask-script": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper/comfort-kit": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper/companion-summary": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper/rescan": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sensory-minefield-mapper/route": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/signal-vs-noise": {
+   "ok": false,
+   "status": 503,
+   "error": "I could not complete the source check in time. Please try again — the research may already be warming in the cache."
+  },
+  "/api/signal-vs-noise/research": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/chain-between": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/challenge": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/flip": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/profile-prompt": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/story": {
+   "ok": false,
+   "status": 500,
+   "error": "Couldn't write your story."
+  },
+  "/api/six-degrees/surprise": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/tag-nodes": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/six-degrees/what-if": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-adjacency": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-calibrate": {
+   "ok": false,
+   "status": 400,
+   "error": "Constraints are required."
+  },
+  "/api/skill-gap-celebrate": {
+   "ok": false,
+   "status": 400,
+   "error": "Milestone description required."
+  },
+  "/api/skill-gap-companies": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-daylife": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-decode": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste a job posting."
+  },
+  "/api/skill-gap-deep": {
+   "ok": false,
+   "status": 400,
+   "error": "Select a skill gap to explore."
+  },
+  "/api/skill-gap-economics": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-explore": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-interview": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-map": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-market": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-mentor": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-mock": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-network": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-nudge": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-outreach": {
+   "ok": false,
+   "status": 400,
+   "error": "Describe the person and your target role."
+  },
+  "/api/skill-gap-progress": {
+   "ok": false,
+   "status": 400,
+   "error": "Original gaps and completed skills are required."
+  },
+  "/api/skill-gap-proof": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/skill-gap-reframe": {
+   "ok": false,
+   "status": 400,
+   "error": "Current role, target role, and experience description are required."
+  },
+  "/api/skill-gap-resume": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste your resume and specify the target role."
+  },
+  "/api/skill-gap-timeline": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/sleep-architect/stream": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/social-energy-audit": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/someone-said-it-better": {
+   "ok": false,
+   "status": 503,
+   "error": "The source check did not finish in time. Try again in a moment — the research is usually ready by then."
+  },
+  "/api/someone-said-it-better/research": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/task-avalanche-breaker": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-alibi": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-debrief": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-debrief/followup": {
+   "ok": false,
+   "status": 500,
+   "error": "Could not analyze the meeting. Please try again."
+  },
+  "/api/the-debrief/series": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-final-word": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-final-word/dissect": {
+   "ok": false,
+   "status": 400,
+   "error": "Paste a claim to dissect."
+  },
+  "/api/the-final-word/room/create": {
+   "ok": false,
+   "status": 400,
+   "error": "Host name required"
+  },
+  "/api/the-gap": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-gap/dig": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-runthrough-anticipate": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-runthrough-cut": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/the-runthrough-hook": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/ticket-tackler": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/ticket-tackler/followup": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/time-warp": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/tip-of-tongue": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/tip-of-tongue/refine": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/toast-writer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/tool-finder": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/truth-bomb": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/upsell-shield": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/velvet-hammer": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/virtual-body-double": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/waiting-mode-liberator": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/whats-my-vibe": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/whats-that-mean": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/whats-that-mean/equivalent": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/where-did-the-time-go": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/wrong-answers-only": {
+   "ok": true,
+   "status": 200
+  }
+ }
+}

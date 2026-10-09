@@ -41,6 +41,7 @@
     "check:epistemics": "node scripts/epistemics-audit.js",
     "check:output-standard": "node scripts/output-standard-audit.js",
     "check:golden": "node scripts/check-golden.js",
+    "smoke:tools": "node scripts/smoke-tools.js",
     "check:golden:all": "node scripts/check-golden.js all",
     "prepare": "husky || true",
     "build:guides": "node scripts/build-guides.js",

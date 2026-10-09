@@ -28,7 +28,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T6 | Locale and wording leaks | Reply filter (`voiceFix` + `usSpelling`) | Exists, all tools | 1 |
 | T7 | A visitor's choice ignored | **None** | To build | 1 |
 | T8 | Built-in examples stale or inconsistent | **None** | To build | 2 |
-| T9 | Shared-code change breaks tools | **None** | To build | 0 open (1 outage, fixed) |
+| T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 
 ---
 
@@ -212,7 +212,9 @@ Some have their own checks (several are grounded or number-checked), but none ch
 
 **What goes wrong.** A change in `backend/lib/` breaks tools whose own files didn't change, so their saved test cases never run.
 
-**Shared fix: to build.** A smoke test that calls every endpoint once (JSON, streaming, upload) whenever `backend/lib/` or `server.js` changes, and fails the push on any error.
+**Shared fix: built 2026-10-09.** `scripts/smoke-tools.js` (`npm run smoke:tools`, pre-push Gate 12 when `backend/lib/`, `server.js` or `routes/index.js` changed). It starts the real backend with the real SDK pointed at a stand-in API server, so it costs nothing and sends nothing out. Each endpoint gets a golden input (its own, a sibling's, or a listed one) and a canned answer, and the outcome is compared with `scripts/smoke-tools-baseline.json`. Proven: putting the Oct 5 async-wrapper bug back fails the run with the same error the site had.
+
+Limits: it checks that tools run, not that answers are right. 62 endpoints never reach the model (follow-up steps needing an earlier result, uploads, cold research 503s); each one added to `INPUTS` in the script raises coverage. After a deliberate route change that alters an endpoint's outcome, rerun with `--update`.
 
 | Instance | Status |
 |---|---|
@@ -222,7 +224,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 
 ## Order of work
 
-1. **T9 smoke test.** Cheapest, and prevents outages.
+1. ~~**T9 smoke test.**~~ Done 2026-10-09.
 2. **T3** generic contradiction term in the shared guard, plus **T7** require term. Every v2 tool gains both at once.
 3. **T4** for the 43 frozen tools: wire in the supplied-facts check (the shared fix), rather than converting each to v2 by hand.
 4. **T1 sweep:** grounding for PaperworkPath, TripRecon, MicroAdventureMapper first (place/law facts).

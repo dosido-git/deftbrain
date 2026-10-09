@@ -106,3 +106,14 @@ node scripts/i18n-convention-audit.js --strict
 # a push should not hang on a dev server nobody promised to run. It never reports
 # a pass it did not observe.
 node scripts/golden-for-push.js
+
+# Gate 12 — every tool still runs after a shared-code change (T9 in
+# audit/DEFECT-TYPES.md). A change in backend/lib/ breaks tools whose own files
+# never changed, so Gate 11 never runs their goldens: the surge wrapper broke
+# every streaming tool for three days that way (2026-10-05). This starts the
+# real backend against a stand-in API server — no key, no network, $0, ~15s —
+# calls every endpoint once and compares with scripts/smoke-tools-baseline.json.
+# Runs only when backend/lib, server.js or routes/index.js changed in the push.
+if [ -n "$base" ]; then
+  node scripts/smoke-tools.js --if-changed "$base" || exit 1
+fi
