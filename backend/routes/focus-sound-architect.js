@@ -174,10 +174,24 @@ CRITICAL:
 - Never make medical, therapeutic, neurological, sleep-treatment, or guaranteed performance claims.
 - ${NO_QUOTE_RULE}`, userLanguage);
 
+    // Layers the code will strip anyway are taken off the menu before the
+    // model writes (2026-10-08). A rain + "avoid sudden sounds" run picked
+    // rain, the filter below removed it, and start_here still said "rain at
+    // 35" — instructions for a layer that was not there.
+    const excluded = [
+      ...(hasSuddenSensitivity(sensList) ? SHARP_TRANSIENT_TYPES : []),
+      ...(hasHighFreqSensitivity(sensList) ? BRIGHT_TYPES : []),
+    ];
+    const menuPrompt = excluded.length
+      ? prompt
+        .split('\n').filter(line => !excluded.some(t => line.startsWith(`- "${t}"`))).join('\n')
+        + `\n\nNOT AVAILABLE for this user: ${excluded.join(', ')} — they conflict with the sound needs they selected. Do not use them or mention them as layers. If one of them is among their sound preferences, say in start_here, in one short clause, that it was left out because of the sound need they chose.`
+      : prompt;
+
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: menuPrompt }]
     }, { label: 'focus-sound-architect' });
 
     // Validate layer types. Binaural is deliberately absent — the AI no longer

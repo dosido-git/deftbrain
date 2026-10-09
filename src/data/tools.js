@@ -1291,6 +1291,46 @@ export const tools = [
   icon: "🔬",
   categories: ['Just for Fun', 'Learning', 'Self & Reflection'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Belief Stress Test gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the belief below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The belief",
+    sampleText: "\"Hard work always pays off.\" Context: I say it to my kids about school, and to myself about a job where the promotions keep going to other people.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Verdict: useful simplification",
+        tone: "blue",
+        text: "Hard work is a real input, not a guarantee — the belief is worth keeping as a starting point for kids, but in your job situation it may be protecting you from the more useful question of whether effort is even the variable that needs changing.",
+      },
+      {
+        label: "Where it breaks: Structural Gatekeeping",
+        tone: "yellow",
+        text: "A person works diligently in a role where promotions are distributed based on relationships, visibility to certain decision-makers, demographic similarity to leadership, or informal networks they are not part of — not primarily on output. Their work is hard and high-quality. The promotions go elsewhere, repeatedly.",
+      },
+      {
+        label: "A better version",
+        tone: "green",
+        text: "Sustained, directed effort — aimed at the right things, in an environment where effort is one of the variables that actually influences outcomes — meaningfully improves the probability of reaching a goal, though it does not guarantee it and is never the only variable in play.",
+      },
+      {
+        label: "Why it's still worth keeping",
+        tone: "purple",
+        text: "Effort genuinely is one variable the person controls. For children especially, building the habit of sustained effort before the complexity of structural variables becomes salient has real value — learning to persist through difficulty is itself a durable skill regardless of any single outcome. And in contexts where effort is connected to outcome, the belief is directionally correct even if imprecise. Discarding it entirely leaves nothing in its place except passivity or fatalism, which are not improvements.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Is \"hard work always pays off\" true?",
+      a: "Partly. Effort is a real input, especially for skills with direct feedback, but it isn't a guarantee: where rewards depend on visibility, relationships or starting conditions, effort alone often isn't what decides the outcome." },
+    { q: "What does Belief Stress Test do?",
+      a: "It takes a belief you hold or repeat, finds the situations where it holds and where it breaks, and offers a more accurate version you can still use." },
+    { q: "Will it tell me my belief is wrong?",
+      a: "Only where it is. Most beliefs come back as useful simplifications: true under some conditions, misleading under others." },
+  ],
   description: "Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.",
   guide: {
       tips: [
@@ -2214,6 +2254,61 @@ export const tools = [
   icon: "⏳",
   categories: ['Self & Reflection', 'Tasks'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Where Did the Time Go? gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the day below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The day",
+    sampleText: "Got up at 7:30, spent 30 min on phone in bed. Shower and breakfast ~45 min. Sat down to work at 9am. Had a 10am call that ran to 11:30. Tried to get back into a doc but kept checking Slack. Lunch 30 min at my desk. More Slack, a few emails, a 2pm call for an hour. Meant to deep-work 3-5 but it felt fragmented. Closed laptop at 6. Dinner, TV, scrolling. Bed midnight. How it felt: \"I feel like I worked 8 solid hours but I honestly couldn't tell you what I produced\"",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The day, in order",
+        tone: "blue",
+        items: [
+          "7:30–8:00am — Got up, spent 30 min on phone in bed.",
+          "8:00–8:45am — Shower and breakfast, ~45 min.",
+          "9:00am — Sat down to work.",
+          "10:00–11:30am — Call (ran 1.5 hours).",
+          "11:30am–12:00pm — Tried to get back into a doc but kept checking Slack.",
+          "12:00–12:30pm — Lunch at desk, 30 min.",
+          "12:30–2:00pm — More Slack, a few emails. Time unspecified but before the 2pm call.",
+          "2:00–3:00pm — Call, 1 hour.",
+          "3:00–5:00pm — Meant to deep-work but it felt fragmented.",
+          "6:00pm — Closed laptop.",
+          "After 6:00pm — Dinner, TV, scrolling. Bed at midnight.",
+        ],
+      },
+      {
+        label: "The biggest mismatch",
+        tone: "yellow",
+        text: "You felt like you worked 8 solid hours but couldn't account for what you produced. Your actual work-window time from 9am to 6pm is 9 hours, minus two calls (2.5 hours) and lunch (0.5 hours) — leaving 6 hours in theory. The gap is not between hours worked and hours available; it's between 9 hours at a desk and 6 hours unoccupied by scheduled commitments, and between that 6-hour remainder and your sense of concrete output.",
+      },
+      {
+        label: "What stands out",
+        tone: "green",
+        items: [
+          "You had two calls totaling 2.5 hours scheduled during your 9am–6pm work window — the 10am call alone consumed 1.5 hours, cutting into the morning focus time you had just started.",
+          "Between 11:30am and 2:00pm, you report trying to work but kept checking Slack, then had lunch and more Slack/email — roughly 2.5 hours where the intended activity and the actual activity are unclear.",
+        ],
+      },
+      {
+        label: "Try this next time",
+        tone: "purple",
+        text: "Before you close the laptop, note down one concrete thing you actually finished or moved forward — not everything, just one. This won't solve the fragmentation, but it will let you verify whether the gap is between hours and output or between what you accomplished and what you expected.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Why do I feel busy all day but get nothing done?",
+      a: "Often because the day is split into short stretches between calls and messages, so no block is long enough to finish anything. Laying the day out in order shows where the time actually went." },
+    { q: "Do I need to track my time?",
+      a: "No. Describe the day as you remember it, roughly, and it puts it in order, totals what it can and says what's still unclear." },
+    { q: "Will it tell me I wasted time?",
+      a: "No. It uses your words for what you did and doesn't judge the day as productive or not." },
+  ],
   description: "Ever reach the end of a day wondering where the time went? Walk through it as you remember it. Where Did the Time Go? helps you see what filled the hours, what broke up your day, and why it may have felt so different from the day you expected.",
   guide: {
     tips: [
@@ -2644,6 +2739,48 @@ export const tools = [
   icon: "✨",
   categories: ['Conversations', 'Self & Reflection'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what What's My Vibe? gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the texts below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The texts",
+    sampleText: "lmao okay so I tried the new ramen place and it was... aggressively fine? like nothing bad happened but nothing happened. the broth was doing its best.\n\nanyway running 20 min late to your thing tonight, sorry in advance, I'll bring snacks as tribute\n\nalso did you see that email from Derek. classic Derek behavior. we need to discuss\n\nalso also I found a dog on my walk and his name was apparently Gerald which is extremely correct for him",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The Deadpan Narrator",
+        tone: "purple",
+        text: "Writing that treats mundane and absurd events with the same flat, observational tone — uses exaggeration and understatement to create humor without signaling that humor explicitly.",
+      },
+      {
+        label: "Signature moves",
+        tone: "green",
+        items: [
+          "Treating ordinary things as minor dramas with deadpan sympathy: 'the broth was doing its best'",
+          "Assigning character or correctness to random encounters: 'his name was apparently Gerald which is extremely correct for him'",
+          "Soft apologies embedded in a casual tone: 'sorry in advance, I'll bring snacks as tribute'",
+        ],
+      },
+      {
+        label: "How it can land",
+        tone: "blue",
+        items: [
+          "Can read as warm and playful without being cheesy — the tone invites the reader into the joke rather than announcing the joke.",
+          "May come across as unstressed and unbothered, even when describing inconveniences like running late or disappointing food.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I come across over text?",
+      a: "Paste a few messages you've actually sent. What's My Vibe? names the style, the habits that create it and how it's likely to land, quoting your own words." },
+    { q: "What can I paste?",
+      a: "Texts, emails, posts or anything else you wrote. More samples give a better read." },
+    { q: "Does it judge my writing?",
+      a: "No. It describes your style and how it can come across, including where it's easy to misread." },
+  ],
   description: "How you write leaves impressions you may not notice yourself. Paste some messages you've written and What’s My Vibe points out the patterns in your words—your tone, habits, humor, directness, and the ways your writing might land on someone reading it.",
   guide: {
     tips: [
@@ -2814,6 +2951,49 @@ export const tools = [
   icon: "🍳",
   categories: ['Conversations', 'Just for Fun', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Comeback Cooker gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below. Nothing is reworded.",
+    sampleLabel: "The situation",
+    sampleText: "A peer on another team, in a project channel eight other people could see: \"Well, that's one way to do it. I would have just done it properly the first time.\" Then moved straight on. Mood: dignified.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Comebacks",
+        tone: "green",
+        items: [
+          "Good thing we're iterating instead of guessing, then.",
+          "I'll keep that in mind for next time I'm looking for feedback on something I didn't ask about.",
+          "Appreciate the note. Still moving forward with this approach.",
+          "Yeah, turns out there's more than one way that works.",
+        ],
+      },
+      {
+        label: "The high road",
+        tone: "blue",
+        text: "I'll take that feedback.",
+      },
+      {
+        label: "The nuclear option",
+        tone: "yellow",
+        items: [
+          "Good thing you're here to tell us how [the thing you actually own] should work.",
+          "Genuinely petty. Highlights that they offered unsolicited critique about work that was not theirs to direct. Better as a shower thought than a send.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I respond to a passive-aggressive comment at work?",
+      a: "Keep it short, calm and about the work: acknowledge it and say what you're doing (\"Appreciate the note. Still moving forward with this approach.\"). A clever put-down in front of colleagues usually costs you more than it costs them." },
+    { q: "Can I choose the tone?",
+      a: "Yes — witty, dignified and other moods. Every set also includes a high-road option and a clearly labeled petty one you probably shouldn't send." },
+    { q: "Is it for in-the-moment replies?",
+      a: "Either. Use it before a conversation you expect, or afterward to decide whether to reply at all." },
+  ],
   description: "Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.",
   guide: {
     tips: [
@@ -2974,6 +3154,40 @@ export const tools = [
   icon: "🧵",
   categories: ['Ideas & Imagination'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Fan Theory gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the show below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The show",
+    sampleText: "Severance — a wild theory.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The Waffle Party Protocol: Lumon Isn't Hiding Work—It's Hiding Grief",
+        tone: "purple",
+        text: "Lumon doesn't separate employees from trauma; it separates them from the memory of having caused it, and the innie/outie split is designed to let one version of you live with guilt while the other lives in enforced innocence.",
+      },
+      {
+        label: "The evidence (real details, then the spin)",
+        tone: "yellow",
+        items: [
+          "Mark takes the job in the wake of his wife's death, and the show leaves open the question of whether Lumon's readiness to offer him severance is mere policy or something more calculated about his particular vulnerability. → Lumon recruits from grief, not skill. They're looking for people already desperate to escape their own consciousness. Mark's hiring isn't a coincidence—it's a profile match.",
+          "The innies are kept in a windowless, controlled environment with no windows or outside views, and the show depicts this as the standard operational setup Lumon maintains. → Ignorance is the product they're selling—not to the company, but to the employees themselves. The innie's happiness depends entirely on never knowing what the outie knows.",
+          "Helly arrives with no prior innie memories and displays immediate, persistent distress about being severed and controlled, though her resistance is directed at her situation rather than at an outside life she hasn't yet experienced as an innie. → She's panicking about the knowledge waiting for her outside—suggesting she chose severance to escape from something, not toward something, and her innie is already sensing the weight of what her outie will remember.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What is Fan Theory?",
+      a: "Name a show, film, book or game and it builds a theory from real details in the work, then argues against itself and scores how plausible it is." },
+    { q: "Are the details real?",
+      a: "They're meant to be. Each detail goes through a separate check that cuts anything that doesn't happen in the work; the theory is the invented part, not the evidence." },
+    { q: "Can it grade my own theory?",
+      a: "Yes. Paste your theory and it grades the evidence and the logic." },
+  ],
   description: "Create a wild but defensible fan theory about any movie, show, book, or game—or put your own theory to the test.",
   guide: {
     tips: [
@@ -3089,6 +3303,36 @@ export const tools = [
   icon: "⏰",
   categories: ['Ideas & Imagination', 'Just for Fun'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Time Warp gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the pairing below. Nothing is reworded.",
+    sampleLabel: "The pairing",
+    sampleText: "Zoom meetings, in Victorian England.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The Videoconference Call Box: A Gentleman's Guide to Distant Consultation",
+        tone: "purple",
+        text: "Mr. Pemberton adjusted his cravat before stepping into the mahogany booth—a recent installation at his London club. The apparatus, no larger than a telephone cabinet, had been fitted with a frosted glass panel and a speaking trumpet directed at a tintype camera lens.\n\n'State your business,' he announced, though he addressed only the lens.\n\nFrom the trumpet emerged the muffled voice of his solicitor in Manchester, three hours away by rail. Behind that voice, Pemberton understood, sat the solicitor in an identical booth, also staring into a lens, also waiting for his own frosted panel to illuminate with a tiny moving portrait.\n\nThe footman had warned him: dress as though you were there in person. Speak as though you were there. Do not move suddenly, or the image stutters. Do not mention anything not witnessed by both parties, or there will be confusion about what was agreed.\n\n'I have reviewed the inheritance claim,' the solicitor's voice crackled. 'However, the matter requires your signature. The documents must still travel by post.'\n\nPemberton felt the familiar irritation. He had seen the man's face move in the tiny frame—had watched his lip sync with his words, nearly—and yet the solicitor still required paper, still required his hand, still required proof that Pemberton had been present enough to matter.\n\nHe stepped from the booth and ordered his clerk to prepare the envelope.\n\nThe future, he reflected, had solved nothing. It had only made the old distance visible.",
+      },
+      {
+        label: "The point",
+        tone: "blue",
+        text: "The solicitor's insistence that documents still need physical signatures even after they've nearly seen each other move in real time captures something: Pemberton paid for the illusion of presence precisely so he could avoid the commitment of actually being there. The booth promised everything except accountability.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What is Time Warp?",
+      a: "Pick something modern and a period in history, and it imagines that thing in that time — a short scene, then the point it makes about the modern original." },
+    { q: "Is it historically accurate?",
+      a: "It's fiction on purpose: the period setting is real, the invention isn't." },
+    { q: "What should I try?",
+      a: "Anything ordinary today: dating apps, group chats, performance reviews, food delivery — paired with a period as far from it as possible." },
+  ],
   description: "What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.",
   guide: {
     tips: [
@@ -3203,6 +3447,41 @@ export const tools = [
   icon: "⚡",
   categories: ['Health & Wellness', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Social Battery Advisor gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from reviewing the five logged interactions below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "Five logged interactions (energy before → after, out of 5)",
+    sampleText: "Dinner with friends, 4 → 2, had to be \"on\" a lot — six people, fast conversation. Weekly team meeting, 3 → 3, some — mostly listened. Phone call with my sister, 2 → 4, not much. Extended family gathering, 3 → 1, a lot — tension to smooth over. Coffee with an old friend, 3 → 5, not much — easy conversation.",
+    context: "Real run, 2026-10-08 — the tool's five built-in example interactions, logged together.",
+    sections: [
+      {
+        label: "Summary",
+        tone: "blue",
+        text: "Two interactions ended higher, two ended lower, one stayed the same—with a contrast worth watching between on-ness and outcome. You've logged five different kinds of interaction. The dinner with friends and the extended family gathering both ended 2 points lower, while the phone call with your sister and coffee with your old friend both ended 2 points higher. The weekly team meeting left your rating unchanged.",
+      },
+      {
+        label: "On-ness and outcome went opposite directions in your two highest-energy interactions",
+        tone: "yellow",
+        text: "In these entries, the two interactions where you felt not much on-ness both ended higher, and the two where you felt a lot of on-ness both ended lower. This is only four entries, so it's worth continuing to track rather than treating as an established explanation yet—but it's a real contrast in what you've logged so far.",
+      },
+      {
+        label: "Test next",
+        tone: "green",
+        text: "Keep logging as usual. Pay attention to your on-ness rating specifically. As more interactions accumulate, see whether lower or higher on-ness repeatedly appears alongside different before-and-after outcomes.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Why do some social events drain me and others don't?",
+      a: "It's often about how much you have to perform rather than who you're with: group size, pace and smoothing over tension cost energy; easy one-on-one time can give it back. Logging a few interactions shows your own pattern." },
+    { q: "What do I log?",
+      a: "The interaction, your energy before and after, how much you had to be \"on\", and a short note. It takes under a minute." },
+    { q: "Is this an introvert test?",
+      a: "No. It doesn't label you; it compares your own logged interactions and suggests what to watch for next." },
+  ],
   description: "Notice what leaves you with more energy — and what leaves you with less. Log an interaction before and after; over time, Social Battery Advisor helps you spot patterns in your own experience and decide what might be worth changing.",
   guide: {
     tips: [
@@ -3721,6 +4000,49 @@ export const tools = [
   icon: "🔖",
   categories: ['Just for Fun'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Bookmark gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the book below, with spoilers set to strict. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "Where you stopped",
+    sampleText: "Project Hail Mary — Chapter 15, around page 200. What I remember: he just figured out how to communicate with the alien.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Before you start reading again",
+        tone: "blue",
+        items: [
+          "Ryland Grace is alone on the Hail Mary, a spacecraft sent on a last-resort mission to study Tau Ceti and find out why a microorganism called Astrophage is draining the Sun of energy.",
+          "Grace has been piecing together his own identity and mission through fragmented memories — he woke from a coma with no recollection of who he was or why he was there.",
+          "He has just worked out a way to communicate with the alien aboard a nearby ship — a major breakthrough that ended his complete isolation.",
+        ],
+      },
+      {
+        label: "Who's who",
+        tone: "green",
+        items: [
+          "Ryland Grace — reluctant astronaut, scientist — The sole surviving crew member of the Hail Mary, still recovering his sense of self through returning memories.",
+          "The alien — inhabitant of the nearby ship — A non-human life form whose ship appeared near Tau Ceti — its biology, origins, and intentions were unknown at this point.",
+          "Stratt — Earth-side mission authority — The forceful, pragmatic leader who drove the Hail Mary project on Earth, appearing in Grace's returning memories.",
+        ],
+      },
+      {
+        label: "How sure it is",
+        tone: "purple",
+        text: "Chapter and page boundaries for this title are difficult to verify precisely, so some details of what falls exactly at or before page 200 versus just after are uncertain — I have kept only what I can place with reasonable confidence at or before the reader's stopping point.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I remember what happened in a book I put down?",
+      a: "Tell Bookmark the title and where you stopped. It recaps the story, characters and open threads up to that point and nothing after it." },
+    { q: "Will it spoil what comes next?",
+      a: "Not on strict spoiler settings: it only covers what happened up to where you stopped, and it says when it's unsure where a chapter boundary falls." },
+    { q: "Does it work for TV shows?",
+      a: "Yes — shows, books and other series. Give the season and episode, or the chapter or page." },
+  ],
   description: "Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.",
   guide: {
     tips: [
@@ -4150,6 +4472,48 @@ tagline: "Work with the energy you have.",
   icon: '⚡',
   categories: ['Tasks', 'Work & Meetings'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Batch Flow gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the task list below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The day",
+    sampleText: "Six tasks: reply to client emails (15 min), write Q3 project proposal (45), pick up dry cleaning (20, out), review team pull requests (30), call the dentist to reschedule (5, phone), draft the newsletter (60). Morning person, mixed day, 4 hours, starting at 9:00.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The plan",
+        tone: "blue",
+        text: "Six tasks are grouped into three batches ordered to match a morning-person energy curve: deep creative and analytical desk work first while focus is sharpest, a quick phone errand next as energy begins to ease, then an outdoor physical task last. Context switches drop from five (random order) to two (batched transitions).",
+      },
+      {
+        label: "Batches",
+        tone: "green",
+        items: [
+          "9:00 AM - 11:45 AM — Deep Desk Work: Write Q3 project proposal; Draft the newsletter; Review team pull requests",
+          "11:55 AM - 12:30 PM — Communication Wrap-Up: Reply to client emails; Call the dentist to reschedule",
+          "12:35 PM - 1:10 PM — Out-and-About Errand: Pick up dry cleaning",
+        ],
+      },
+      {
+        label: "Before the first batch",
+        tone: "purple",
+        items: [
+          "Close all unrelated tabs before starting. Open only the proposal doc, newsletter draft, and PR queue — one at a time, in that order. Put the phone on Do Not Disturb.",
+          "Before sitting down, take two minutes to write the single outcome you want from each task on a sticky note and place it in view.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I batch tasks to stop switching all day?",
+      a: "Group tasks that use the same place, tools and kind of thinking, and put the hardest batch where your energy is highest. Errands and calls go together; deep writing goes in one block." },
+    { q: "Does it pad my time estimates?",
+      a: "Yes — it adds a margin to each estimate, because tasks usually run longer than planned, and places breaks between batches." },
+    { q: "Can it handle fixed appointments?",
+      a: "Yes. Add meetings or pickups and it plans the batches around them." },
+  ],
   description: "A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.",
   guide: {
     tips: [
@@ -5341,6 +5705,39 @@ tagline: "Work with the energy you have.",
   icon: " 🎧",
   categories: ['Health & Wellness'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Focus Sound Architect gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the request below. Nothing is reworded.",
+    sampleLabel: "The request",
+    sampleText: "Deep work in an open-plan office. Likes brown noise and rain; wants to avoid sudden sounds.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Deep Work Foundation",
+        tone: "green",
+        items: [
+          "Steady Base (brown noise, volume 70): Brown noise was your stated preference and provides a consistent, low-frequency foundation intended to make open-plan chatter less distinct without sudden events.",
+          "Subtle Texture (wind, volume 35): A gentle, organic layer added to give the mix some subtle movement while staying well clear of sudden sounds—keeps it from feeling static over 25 minutes without introducing jarring breaks.",
+        ],
+      },
+      {
+        label: "Start here",
+        tone: "blue",
+        text: "Start with brown noise at 70, then slowly bring wind up to 35 while you settle in. If the mix feels too busy or if you notice wind sounds startling you, drop wind to 20 or mute it entirely and stick with brown noise alone.",
+      },
+    ],
+  },
+  faq: [
+    { q: "Is brown noise good for focus?",
+      a: "Many people find steady low noise makes chatter less distinct. Nothing guarantees focus — try it at a moderate volume and adjust by what you notice." },
+    { q: "Why did it leave out rain?",
+      a: "Rain has irregular drops, and the request asked to avoid sudden sounds. Needs like that override preferences." },
+    { q: "Does it play the sound?",
+      a: "Yes. The mix plays in your browser, and you can adjust each layer and tell it what isn't working." },
+  ],
   description: "Sometimes the problem isn't your focus. It's what your ears have to deal with. Focus Sound Architect builds an adjustable background that can mask distractions, soften an uncomfortable space, or simply give you something better to work alongside.",
   guide: {
       tips: [
@@ -5371,6 +5768,41 @@ tagline: "Work with the energy you have.",
   icon: "\ud83c\udfa9",
   categories: ['Health & Wellness', 'Tasks'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Focus Pocus gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the task below. Nothing is reworded.",
+    sampleLabel: "The task",
+    sampleText: "Reply to the messages I have been avoiding. Enough for today: answer the three that have been open longest. 15 minutes.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Stopping point",
+        tone: "green",
+        text: "Answer the three messages that have been open longest.",
+      },
+      {
+        label: "First step",
+        tone: "blue",
+        text: "Open your messages and identify which three have been waiting the longest.",
+      },
+      {
+        label: "Done when",
+        tone: "purple",
+        text: "You have written and sent replies to all three of the oldest open messages.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I start a task I keep avoiding?",
+      a: "Shrink it to a session you can finish: decide what \"enough for today\" means, name the very first physical step, and set a short timer. Starting is the hard part; a clear stopping point makes it smaller." },
+    { q: "What happens when the timer ends?",
+      a: "You can stop, extend with a new promise, or say you're stuck and get help with the blocker. A finished session ends with a short review." },
+    { q: "Is it a Pomodoro timer?",
+      a: "It's a timer built around a stopping point you choose, not a fixed 25 minutes." },
+  ],
   description: "Turn an open-ended task into a clear stopping point, work toward one concrete result, and stop without losing your place. Focus Pocus helps define what \u201cenough for now\u201d means, gives you one next move if you get stuck, and saves a restart breadcrumb when time is up.",
   guide: {
     tips: [
@@ -5547,6 +5979,45 @@ tagline: "Work with the energy you have.",
   icon: '🎲',
   categories: ['Just for Fun', 'Learning'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Brain Roulette gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the topic below. Nothing is reworded.",
+    sampleLabel: "The topic",
+    sampleText: "\"That people only use ten percent of their brains\" — quick depth, casual reader.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The Myth That Ate a Real Discovery",
+        tone: "blue",
+        text: "The 10% myth is almost certainly false as stated, but it may have grown from something genuinely weird: neuroimaging research shows that while most neurons are not firing at any given moment, that sparse coding — keeping most cells quiet most of the time — appears to be how brains encode information efficiently, meaning the 'unused' part might actually be doing something by staying silent.",
+      },
+      {
+        label: "How solid is this?",
+        tone: "yellow",
+        text: "The debunking of the 10% claim is broadly accepted among neuroscientists; the link to sparse coding as its possible kernel of truth is a resemblance I am drawing, not a documented historical finding about the myth's origin — treat it as a suggestive connection worth investigating, not a settled account.",
+      },
+      {
+        label: "Go deeper",
+        tone: "green",
+        items: [
+          "Why does silence in the brain carry information?",
+          "Where did the 10% myth actually come from?",
+          "What would it mean to use 'all' of your brain at once?",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "Do we only use 10% of our brains?",
+      a: "No. Imaging shows activity across the whole brain over a day; at any moment many neurons are quiet, which is part of how the brain works, not unused capacity." },
+    { q: "What is Brain Roulette?",
+      a: "A spin for something interesting to learn — from your interests, a surprise topic or one you type in — with a note on how solid the claim is." },
+    { q: "Does it tell me when something is uncertain?",
+      a: "Yes. Every result says how well established it is and marks its own speculation as speculation." },
+  ],
   description: "Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.",
   guide: {
     tips: [
@@ -6135,6 +6606,48 @@ tagline: "Work with the energy you have.",
   icon: "⚡",
   categories: ['Health & Wellness', 'Self & Reflection', 'Work & Meetings'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Before the Crash gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from comparing the five check-ins below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "Five days of check-ins",
+    sampleText: "Oct 3: energy 7, sleep 8, stress 3, mood 7 — \"Slept properly, walked at lunch.\" Oct 4: energy 8, sleep 4, stress 6 — \"Wired. Big launch day, four coffees.\" Oct 5: energy 4, sleep 5, stress 7 — \"Third late night this week.\" Oct 6: energy 5, sleep 6, stress 5 — \"Did the minimum, didn't text anyone back.\" Oct 7: energy 2, sleep 3, stress 9, marked as a crash day — \"Two weeks of saying yes caught up at once.\"",
+    context: "Real run, 2026-10-08 — the tool's five built-in example check-ins, dated as five days in a row.",
+    sections: [
+      {
+        label: "What changed",
+        tone: "blue",
+        text: "A five-day arc from a solid baseline to a marked crash day, with energy and mood both lower on the crash day than on Oct 3, and sleep at its worst on the crash day — though none of the three declined steadily across every intervening day.",
+      },
+      {
+        label: "Patterns worth noticing",
+        tone: "yellow",
+        items: [
+          "In each of the four transitions available, sleep on one day was followed by an energy reading the next day that moved in a similar direction.",
+          "Brain fog and withdrawing were both logged on the same two check-ins.",
+          "The highest-stress days (Oct 5 at 7 and Oct 7 at 9) each included multiple physical signals; Oct 3 (lowest stress at 3) logged none.",
+        ],
+      },
+      {
+        label: "Not enough evidence yet",
+        tone: "purple",
+        items: [
+          "Whether the Oct 4 launch day — high caffeine, high energy, low sleep — played a role in the days that followed. It appeared once in this set and cannot be separated from other things happening that week.",
+          "Whether the pattern of declining signals would have continued without the crash day, or whether the crash day represents a natural stopping point in a longer cycle.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How can I tell burnout is coming before it hits?",
+      a: "Track a few things every day — energy, sleep, stress, mood, a short note — and mark the days you hit a wall. After a week or two, compare the days before those with your usual. Before the Crash does that comparison for you." },
+    { q: "Does it predict when I'll crash?",
+      a: "No. It compares your own check-ins and points out what changed and what showed up together. It doesn't predict, diagnose or give risk scores." },
+    { q: "Where is my data kept?",
+      a: "Your check-ins stay in your browser. They're sent only when you ask for a comparison." },
+  ],
   description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
   guide: {
       tips: [
@@ -7546,6 +8059,50 @@ tagline: "Work with the energy you have.",
   icon: "🎧",
   categories: ['Health & Wellness', 'Self & Reflection'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Brain State Deejay gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the request below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The request",
+    sampleText: "From scattered and unfocused to focused, for deep work. Likes lo-fi and ambient.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "The approach",
+        tone: "blue",
+        text: "Starting close to where the listener already is and then stepping tempo and rhythm upward gradually makes the shift feel earned rather than forced.",
+      },
+      {
+        label: "The playlist, in phases",
+        tone: "green",
+        items: [
+          "Settling In (10-15 min, around 75-88 BPM): warm instrumental lo-fi, soft brushed drums, gentle piano or keys, 75-88 BPM, no vocals, no drops",
+          "Deep Work Flow (30-60 min, around 90-108 BPM): instrumental lo-fi beats, steady kick and snare, mellow chords or pads, 90-108 BPM, no lyrics, no sudden breaks or build-drops",
+          "Sustained Background (ongoing, around 85-100 BPM): minimal ambient instrumental, soft pads or drone texture, faint rhythm or no rhythm, 85-100 BPM, no melody changes, no vocals, no ads",
+        ],
+      },
+      {
+        label: "Avoid",
+        tone: "yellow",
+        items: [
+          "Lyrics in a language you understand",
+          "Sudden tempo changes or dramatic drops",
+          "Large dynamic swings between quiet and loud passages",
+          "Ads or spoken interruptions — consider an ad-free service or downloaded tracks for longer sessions",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What music helps you focus?",
+      a: "For most people: instrumental, steady tempo, no big drops, and lyrics in a language you don't follow, or none. Starting slower and building to a steady groove can help a scattered mind settle." },
+    { q: "Does it play the music?",
+      a: "No. It gives you search phrases, tempos and example artists to build the playlist in the service you already use." },
+    { q: "Does the music change my brain waves?",
+      a: "It doesn't claim to. It matches the music to where you are and where you want to be, and you judge what works." },
+  ],
   description: "Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we’ll lay out a listening plan in phases — what each one should sound like, and search terms you can use in your music service.",
   guide: {
     tips: [

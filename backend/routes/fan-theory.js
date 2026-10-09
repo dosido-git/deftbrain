@@ -31,7 +31,11 @@ Exaggeration counts as wrong. "The office burns down" is not a fix of a small fi
 Write "verdict" as the English word ok, fix or cut whatever language the rest of this is in — code compares it literally. "replacement" is shown to the reader and must be in their language.\n\nReturn ONLY valid JSON: { "verdicts": [ { "n": 0, "verdict": "ok|fix|cut", "replacement": "only when fix" } ] }`;
   try {
     const res = await Promise.race([
-      callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 1500, messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }] },
+      // SMART since 2026-10-08: on FAST the check passed invented Severance
+      // scenes (innies "finishing each other's sentences", Irving painting
+      // Lumon as a god) and one became the Smoking Gun. Knowing the work is the
+      // whole job of this call; it is short, so the better model costs little.
+      callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 1500, messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }] },
         { label: 'fan-theory-canon-check', maxRetries: 0 }),
       new Promise(r => setTimeout(() => r(null), CANON_CHECK_MS)),
     ]);
@@ -207,10 +211,13 @@ If uncertain, remove it.`;
           else parsed.the_smoking_gun = v.replacement.trim();
         }
       }
-      // Never cut the tool down to nothing: a theory with one piece of evidence
-      // is still a theory, none is a blank card.
+      // Cut what did not happen. This used to keep EVERY claim, invented ones
+      // included, whenever cutting would leave fewer than two — so the worst
+      // runs kept their worst evidence. One real detail is still a theory; if
+      // nothing real is left, the run fails and the visitor can try again.
       const keep = (parsed.evidence || []).filter((_, i) => !drop.has(claimIdx.findIndex(c => c.kind === 'evidence' && c.i === i)));
-      if (keep.length >= 2) parsed.evidence = keep;
+      if (!keep.length) return res.status(500).json({ error: 'Could not build this theory from real details. Please try again.' });
+      parsed.evidence = keep;
       // If the Smoking Gun itself was invented, promote the strongest surviving
       // evidence rather than leaving the card blank — and label it honestly.
       const sgIdx = claimIdx.findIndex(c => c.kind === 'smoking_gun');

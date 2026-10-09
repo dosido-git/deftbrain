@@ -174,6 +174,24 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     .map(([path, value]) => `${path}: ${value}`)
     .join('\n');
 
+  // The item a flagged field sits in (2026-10-08). Plot Hole Finder's repair
+  // rewrote two findings' case_against with the focus question's argument —
+  // it saw "findings[2].case_against" and nothing saying that finding was
+  // about the police trapped underground. Sibling text of the same object
+  // anchors the rewrite to its own subject.
+  const ownerOf = (field) => {
+    const cut = field.lastIndexOf('.');
+    if (cut < 0) return '';
+    const parent = getByPath(draft, field.slice(0, cut));
+    if (!parent || typeof parent !== 'object' || Array.isArray(parent)) return '';
+    const own = field.slice(cut + 1);
+    return Object.entries(parent)
+      .filter(([k, v]) => k !== own && typeof v === 'string' && v.trim())
+      .slice(0, 4)
+      .map(([k, v]) => `${k}: ${v.length > 160 ? v.slice(0, 160) + '…' : v}`)
+      .join(' | ');
+  };
+
   const repairPrompt = `Rewrite only these fields of a tool's output. Every other field passed and must not be touched.
 
 WHAT THIS TOOL PROMISES:
@@ -185,7 +203,8 @@ ${supplied}
 THE REST OF THE RESPONSE — these fields PASSED and are staying exactly as they are. Whatever you write must be consistent with them. If one of them states a conclusion, a choice or a recommendation, your rewrite must not contradict it or substitute a different one:
 ${untouched || '(no other fields)'}
 
-${allByField.map(([field, vs], i) => `${i}. [${field}]
+${allByField.map(([field, vs], i) => `${i}. [${field}]${ownerOf(field) ? `
+belongs to: ${ownerOf(field)} — the rewrite must stay about THIS item, not another one` : ''}
 current:
 ${getByPath(draft, field)}
 

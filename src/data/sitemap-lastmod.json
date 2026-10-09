@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "aeea4b3a0b4e626a5fc74472d1ac48c71a2b7cdd",
-  "lastmod": "2026-10-08"
+  "hash": "90d7ff80194b859faf535e52281b6ea923ce8e05",
+  "lastmod": "2026-10-09"
  },
  "static:about": {
   "hash": "7ca0e871218e9659778c96b99198da24a7792246",
@@ -434,5 +434,61 @@
  "tool:JustifyMyMeeting": {
   "hash": "62f451693751a29145a3bf56fc3f035ed129e70c",
   "lastmod": "2026-10-08"
+ },
+ "tool:BeliefStressTest": {
+  "hash": "eda6ed87fd08881751e17fc731164847e5c8dab9",
+  "lastmod": "2026-10-09"
+ },
+ "tool:WhereDidTheTimeGo": {
+  "hash": "45940378bb0348fed4cf5e25e219952c3dc99026",
+  "lastmod": "2026-10-09"
+ },
+ "tool:WhatsMyVibe": {
+  "hash": "de7c084198fb5d62106c6068ace0aba5b8d5674c",
+  "lastmod": "2026-10-09"
+ },
+ "tool:ComebackCooker": {
+  "hash": "6fadb3b0d54c17b28b4356e2a32eb6125feea5e1",
+  "lastmod": "2026-10-09"
+ },
+ "tool:FanTheory": {
+  "hash": "f5914fa49f059d159f1cf805d0ea3349a3fe8a6b",
+  "lastmod": "2026-10-09"
+ },
+ "tool:TimeWarp": {
+  "hash": "05b988787b54ceaf36d4e1c29eacd3e2974c9e16",
+  "lastmod": "2026-10-09"
+ },
+ "tool:SocialBatteryAdvisor": {
+  "hash": "0855bb7a63399e30349c99adc301dc2bb99e9c56",
+  "lastmod": "2026-10-09"
+ },
+ "tool:Bookmark": {
+  "hash": "8a6bd89843a57975dbfc90b43cf57b4301be998c",
+  "lastmod": "2026-10-09"
+ },
+ "tool:BatchFlow": {
+  "hash": "f2746bc15332a37d89e4d6a2072efc35b80b6e4d",
+  "lastmod": "2026-10-09"
+ },
+ "tool:FocusSoundArchitect": {
+  "hash": "3b645cd77e66aac2e496fc4cc0511e0cee1e494b",
+  "lastmod": "2026-10-09"
+ },
+ "tool:FocusPocus": {
+  "hash": "dcce12c2e4af84493c324fb3b21574733885f3cb",
+  "lastmod": "2026-10-09"
+ },
+ "tool:BrainRoulette": {
+  "hash": "2a55acb34570cf7eba108af71be298bbf49062b9",
+  "lastmod": "2026-10-09"
+ },
+ "tool:BeforeTheCrash": {
+  "hash": "ea151092ed9cca97cef11a89bf537fb997111f01",
+  "lastmod": "2026-10-09"
+ },
+ "tool:BrainStateDeejay": {
+  "hash": "42991aaa710519a16bb71b9e8b6337552a9bc0bb",
+  "lastmod": "2026-10-09"
  }
 }

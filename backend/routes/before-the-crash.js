@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
+const { withNumberCheck } = require('../lib/factCheck');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value. Use single quotes or plain text inside JSON string values.';
 
@@ -225,6 +226,25 @@ async function guardResult(result, { logs, label, promise, userLanguage, userLoc
     guard: router.outputGuard,
     userLanguage,
     locale: withLocaleContext(userLocale),
+  });
+  // Counts are recounted against the logs (2026-10-08): a five-day run said
+  // brain fog and withdrawing appeared together in "3 of the 5" check-ins
+  // (it was 2) and called a 4 → 5 → 2 run "trended down continuously". The
+  // guard reads for invention, not arithmetic; the number check recomputes.
+  // Every prose field, not only those with digits: "continuously" has none.
+  const checkable = [];
+  const collect = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) checkable.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => collect(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => collect(v, path ? `${path}.${k}` : k));
+  };
+  collect(result, '');
+  await withNumberCheck(result, {
+    label,
+    fields: checkable,
+    context: suppliedFrom(logs),
+    extraRules: 'The check-ins listed above are the whole data set. Recount every count of check-ins or days ("3 of the 5", "four consecutive", "both appeared on") and every direction word ("continuously", "steadily", "every day") against them, field by field. A fix keeps the observation and states the true count or direction.',
+    userLanguage,
   });
 }
 

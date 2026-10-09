@@ -3,6 +3,8 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { withNumberCheck, visitorContext } = require('../lib/factCheck');
+const { runOutputGuard } = require('../lib/outputGuard');
 
 const PERSONALITY = `You are Where Did the Time Go?, a DeftBrain tool that helps someone understand a day or short period that seems to have disappeared.
 
@@ -218,11 +220,61 @@ At the end, run the two FINAL CHECK questions from the rules above against every
       return res.status(500).json({ error: 'Could not reconstruct your day. Please try again.' });
     }
 
+    // Time arithmetic is this tool's whole job, and it slipped (2026-10-08):
+    // "roughly 4 hours available" over blocks it listed itself that add up to
+    // 5, in a 9-to-6 day that leaves 6 after two calls and lunch. The shared
+    // number check recomputes durations against the visitor's own account.
+    const checkable = [];
+    (parsed.the_day_you_described || []).forEach((e, i) => typeof e?.note === 'string' && checkable.push([`the_day_you_described[${i}].note`, e.note]));
+    (parsed.what_stands_out || []).forEach((x, i) => typeof x === 'string' && checkable.push([`what_stands_out[${i}]`, x]));
+    ['the_biggest_mismatch', 'whats_still_unclear', 'try_this_next_time'].forEach(k => typeof parsed[k] === 'string' && checkable.push([k, parsed[k]]));
+    // v2 guard (reviewed 2026-10-08 against lib/outputStandard.js — the prompt
+    // already owns most of it: the visitor's own words, no productivity
+    // verdicts, no causes they didn't state). Fail-open.
+    try {
+      await runOutputGuard(parsed, {
+        label: 'where-did-the-time-go',
+        fields: checkable,
+        supplied: visitorContext(req.body),
+        promise: 'Put the period the visitor described in order, in their own words, total what can be totalled, point out what stands out and what is still unclear — without judging how they spent it or explaining why.',
+        guard: router.outputGuard,
+        userLanguage,
+      });
+    } catch (guardErr) {
+      console.log('[where-did-the-time-go] v2 guard skipped:', guardErr.message);
+    }
+    await withNumberCheck(parsed, {
+      label: 'where-did-the-time-go',
+      fields: checkable,
+      context: visitorContext(req.body),
+      extraRules: 'Recompute every duration and every sum of hours from the times in the account. A total must equal the blocks it names.',
+      userLanguage,
+    });
+
     res.json(parsed);
   } catch (error) {
     console.error('WhereDidTheTimeGo error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+
+// A reconstruction, not a review. The failures that matter: an activity or a
+// duration the visitor never mentioned, a stronger word than theirs ("wasted",
+// "doomscrolling" for "scrolling"), a verdict on the day, and a cause for the
+// lost time that they did not give.
+router.outputGuard = {
+  prohibit: [
+    'invented_activity_or_duration',
+    'stronger_word_than_the_visitor_used',
+    'productivity_verdict_on_the_day',
+    'cause_the_visitor_did_not_state',
+    'expectation_invented_to_create_a_mismatch',
+  ],
+  require: [
+    'unaccounted_stretches_named_as_unclear_not_filled_in',
+  ],
+};
 
 module.exports = router;
