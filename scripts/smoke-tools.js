@@ -39,9 +39,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const http = require('http');
-const net = require('net');
-const { spawn, execSync } = require('child_process');
+const { execSync } = require('child_process');
+const { startFakeApi, startBackend } = require('./lib/standin');
 
 const ROOT = path.join(__dirname, '..');
 const BACKEND = path.join(ROOT, 'backend');
@@ -119,148 +118,14 @@ const INPUTS = {
   '/api/whats-that-mean/equivalent': { phrase: 'circle back', plainMeaning: 'talk about it again later', contextualMeaning: 'postpone the topic', targetLanguage: 'es' },
 };
 
-// ── The stand-in API ───────────────────────────────────────────────────────
+// ── The stand-in API (scripts/lib/standin.js) ──────────────────────────────
 let current = null; // { output } for the case in flight
 const apiCalls = { total: 0, stream: 0 };
-
-function largestJsonIn(text) {
-  if (typeof text !== 'string') return null;
-  let best = null;
-  const starts = [];
-  for (let i = 0; i < text.length && starts.length < 60; i++) {
-    if (text[i] === '{' && (i === 0 || /[\n:]\s*$/.test(text.slice(Math.max(0, i - 4), i)) || /\n/.test(text[i - 1]))) starts.push(i);
-  }
-  for (const s of starts) {
-    let depth = 0, inStr = false, esc = false;
-    for (let j = s; j < text.length; j++) {
-      const ch = text[j];
-      if (inStr) { if (esc) esc = false; else if (ch === '\\') esc = true; else if (ch === '"') inStr = false; continue; }
-      if (ch === '"') inStr = true;
-      else if (ch === '{') depth++;
-      else if (ch === '}' && --depth === 0) {
-        const cand = text.slice(s, j + 1);
-        try { JSON.parse(cand); if (!best || cand.length > best.length) best = cand; } catch (_) { /* not JSON */ }
-        break;
-      }
-    }
-  }
-  return best;
-}
-
-function promptText(body) {
-  const parts = [];
-  const sys = body.system;
-  if (typeof sys === 'string') parts.push(sys);
-  else if (Array.isArray(sys)) for (const b of sys) if (b && b.text) parts.push(b.text);
-  for (const m of body.messages || []) {
-    if (typeof m.content === 'string') parts.push(m.content);
-    else if (Array.isArray(m.content)) for (const b of m.content) if (b && b.text) parts.push(b.text);
-  }
-  return parts.join('\n\n');
-}
-
-function answerFor(body) {
-  let text = null;
-  if (current && current.output !== undefined) {
-    text = typeof current.output === 'string' ? current.output : JSON.stringify(current.output);
-  }
-  if (!text) text = largestJsonIn(promptText(body)) || '{"result":"ok"}';
-  // Assistant prefill ("{" or similar): the model continues after it.
-  const msgs = body.messages || [];
-  const last = msgs[msgs.length - 1];
-  if (last && last.role === 'assistant') {
-    const pre = typeof last.content === 'string' ? last.content
-      : Array.isArray(last.content) ? last.content.map(b => b.text || '').join('') : '';
-    if (pre && text.startsWith(pre.trim())) text = text.slice(pre.trim().length);
-  }
-  return text;
-}
-
-function startFakeApi() {
-  const server = http.createServer((req, res) => {
-    let raw = '';
-    req.on('data', d => { raw += d; });
-    req.on('end', () => {
-      if (req.method !== 'POST' || !/\/v1\/messages(\?|$)/.test(req.url)) {
-        res.writeHead(404, { 'content-type': 'application/json' });
-        res.end(JSON.stringify({ type: 'error', error: { type: 'not_found_error', message: 'smoke stand-in: ' + req.url } }));
-        return;
-      }
-      let body = {};
-      try { body = JSON.parse(raw); } catch (_) { /* empty */ }
-      apiCalls.total++;
-      const text = answerFor(body);
-      const model = body.model || 'claude-smoke';
-      const usage = { input_tokens: 10, output_tokens: Math.max(1, Math.ceil(text.length / 4)) };
-      if (body.stream) {
-        apiCalls.stream++;
-        res.writeHead(200, { 'content-type': 'text/event-stream', 'request-id': 'req_smoke' });
-        const ev = (type, data) => res.write(`event: ${type}\ndata: ${JSON.stringify({ type, ...data })}\n\n`);
-        ev('message_start', { message: { id: 'msg_smoke', type: 'message', role: 'assistant', model, content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 10, output_tokens: 1 } } });
-        ev('content_block_start', { index: 0, content_block: { type: 'text', text: '' } });
-        for (let i = 0; i < text.length; i += 400) ev('content_block_delta', { index: 0, delta: { type: 'text_delta', text: text.slice(i, i + 400) } });
-        ev('content_block_stop', { index: 0 });
-        ev('message_delta', { delta: { stop_reason: 'end_turn', stop_sequence: null }, usage: { output_tokens: usage.output_tokens } });
-        ev('message_stop', {});
-        res.end();
-        return;
-      }
-      res.writeHead(200, { 'content-type': 'application/json', 'request-id': 'req_smoke' });
-      res.end(JSON.stringify({ id: 'msg_smoke', type: 'message', role: 'assistant', model, content: [{ type: 'text', text }], stop_reason: 'end_turn', stop_sequence: null, usage }));
-    });
-  });
-  return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve(server)));
-}
-
-function freePort() {
-  return new Promise(resolve => {
-    const s = net.createServer();
-    s.listen(0, '127.0.0.1', () => { const { port } = s.address(); s.close(() => resolve(port)); });
-  });
-}
-
-// ── The backend under test ─────────────────────────────────────────────────
-function childEnv(port, apiPort) {
-  const env = { ...process.env };
-  // Blank anything that could reach a paid or outward-facing service. dotenv
-  // never overrides a variable that is already set, even to ''.
-  for (const k of Object.keys(env)) if (/KEY|TOKEN|SECRET|PASSWORD|_URL$/i.test(k)) env[k] = '';
-  try {
-    for (const line of fs.readFileSync(path.join(BACKEND, '.env'), 'utf8').split('\n')) {
-      const k = (line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/) || [])[1];
-      if (k) env[k] = '';
-    }
-  } catch (_) { /* no .env */ }
-  Object.assign(env, {
-    PORT: String(port),
-    NODE_ENV: 'development',
-    ANTHROPIC_API_KEY: 'smoke-test-not-a-key',
-    ANTHROPIC_BASE_URL: `http://127.0.0.1:${apiPort}`,
-    SURGE_MODE: 'off',
-    METRICS_LOG_FILE: '/dev/null',
-    GROUNDED_CACHE_PATH: '',
-    AUDIT_WATCH: 'off',
-    TOOL_ERROR_ALERT_NETWORK: 'off',
-  });
-  return env;
-}
-
-let logBuf = '';
-function startBackend(port, apiPort) {
-  const child = spawn(process.execPath, ['server.js'], { cwd: BACKEND, env: childEnv(port, apiPort), stdio: ['ignore', 'pipe', 'pipe'] });
-  child.stdout.on('data', d => { logBuf += d; });
-  child.stderr.on('data', d => { logBuf += d; });
-  return new Promise((resolve, reject) => {
-    const t0 = Date.now();
-    const poll = setInterval(() => {
-      if (/startup OK/.test(logBuf)) { clearInterval(poll); resolve(child); }
-      else if (child.exitCode !== null || Date.now() - t0 > 60000) {
-        clearInterval(poll);
-        reject(new Error('backend did not start:\n' + logBuf.slice(-2000)));
-      }
-    }, 200);
-  });
-}
+const pick = () => (current && current.output !== undefined
+  ? (typeof current.output === 'string' ? current.output : JSON.stringify(current.output))
+  : null);
+let backend = null;
+const logBuf = () => (backend ? backend.logs() : '');
 
 function parseSse(text) {
   const events = [];
@@ -278,7 +143,7 @@ function parseSse(text) {
 async function runCase(port, endpoint, input) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), CASE_TIMEOUT_MS);
-  const mark = logBuf.length;
+  const mark = logBuf().length;
   let status = 0, error = '';
   try {
     const res = await fetch(`http://127.0.0.1:${port}${endpoint}`, {
@@ -302,7 +167,7 @@ async function runCase(port, endpoint, input) {
   }
   // Let late log lines for this request land before reading them.
   await new Promise(r => setTimeout(r, 30));
-  const logs = logBuf.slice(mark);
+  const logs = logBuf().slice(mark);
   const crashLine = logs.split('\n').find(l => CRASH_RE.test(l)) || '';
   const ok = status >= 200 && status < 300 && !error;
   return { status, ok, error, crash: crashLine ? crashLine.trim().slice(0, 240) : '' };
@@ -314,12 +179,11 @@ async function main() {
   let endpoints = [...new Set([...golden.keys(), ...routes])].filter(e => !SKIP_RE.test(e)).sort();
   if (ONLY.length) endpoints = endpoints.filter(e => ONLY.some(o => e.includes(o)));
 
-  const api = await startFakeApi();
-  const apiPort = api.address().port;
-  const port = await freePort();
-  let child;
+  const api = await startFakeApi(pick, apiCalls);
+  let port, child;
   try {
-    child = await startBackend(port, apiPort);
+    backend = await startBackend(BACKEND, api.address().port);
+    ({ port, child } = backend);
   } catch (e) {
     console.error('smoke-tools: ' + e.message);
     api.close();
@@ -327,7 +191,7 @@ async function main() {
   }
 
   const failures = [];
-  const loadErrors = logBuf.split('\n').filter(l => /Failed to load route/.test(l));
+  const loadErrors = logBuf().split('\n').filter(l => /Failed to load route/.test(l));
   for (const l of loadErrors) failures.push(`route file failed to load: ${l.trim()}`);
 
   // Sibling inputs: every golden input from the same route file, merged.

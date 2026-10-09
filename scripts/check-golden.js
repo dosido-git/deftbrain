@@ -65,7 +65,9 @@ async function post(endpoint, input) {
   try {
     const res = await fetch(`${BASE}${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // GOLDEN_PERF_PROBE=1: a replay run fires ~100 cases at a throwaway
+      // backend in seconds; skip its per-IP rate limit (dev-only bypass).
+      headers: { 'Content-Type': 'application/json', ...(process.env.GOLDEN_PERF_PROBE === '1' ? { 'x-perf-probe': '1' } : {}) },
       body: JSON.stringify(input),
       signal: ctrl.signal,
     });

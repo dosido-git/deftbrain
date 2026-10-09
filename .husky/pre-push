@@ -105,6 +105,10 @@ node scripts/i18n-convention-audit.js --strict
 # many live model calls. Skips loudly, and exits 0, when no backend is answering:
 # a push should not hang on a dev server nobody promised to run. It never reports
 # a pass it did not observe.
+# Since 2026-10-09 it pays only for what a change can affect (owner rule): a
+# change after generation (checks, filters, wiring) replays every saved answer
+# against a stand-in API at the base and at HEAD, free; only a prompt/model
+# change runs live, one case per changed endpoint.
 node scripts/golden-for-push.js
 
 # Gate 12 — every tool still runs after a shared-code change (T9 in
