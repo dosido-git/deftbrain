@@ -1,66 +1,71 @@
 module.exports = {
-  slug:          'why-does-bottled-water-cost-so-much',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "Why Does Bottled Water Cost So Much (When the Stuff in It Is Basically Free)",
-  titleHtml:     "Why Does Bottled Water Cost So Much <em>(When the Stuff in It Is Basically Free)</em>",
-  shortTitle:    "Why Does Bottled Water Cost So Much",
-  navTitle:      "Why does bottled water cost so much when the stuff in it is basically free",
-
-  description:  "Why bottled water costs so much when the water is nearly free: packaging, heavy transport, branding, and the premium charged where you can't shop around.",
-  deck:         "Bottled water costs so much because you are paying almost entirely for things other than the water: the bottle, label and cap, transporting heavy cases and paying for shelf space, the brand, and the seller's margin — which is highest where you have no alternative, such as airports, stadiums and hotel minibars.",
-  answerList: [
+  "slug": "why-does-bottled-water-cost-so-much",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "Why Does Bottled Water Cost So Much (When the Stuff in It Is Basically Free)",
+  "titleHtml": "Why Does Bottled Water Cost So Much <em>(When the Stuff in It Is Basically Free)</em>",
+  "shortTitle": "Why Does Bottled Water Cost So Much",
+  "navTitle": "Why does bottled water cost so much when the stuff in it is basically free",
+  "description": "Why bottled water costs so much when the water is nearly free: packaging, heavy transport, branding, and the premium charged where you can't shop around.",
+  "deck": "Bottled water costs so much because you're paying almost entirely for things other than the water: the bottle, label and cap, transporting heavy cases and shelf space, the brand, and the seller's margin, which is highest where you have no alternative, such as airports, stadiums and hotel minibars.",
+  "answerList": [
     "The water itself is a tiny share of the price.",
     "Packaging — bottle, cap, label — costs more than the water.",
     "Transport and shelf space are the biggest costs; water is heavy.",
     "Brand names add a premium for much the same product.",
-    "The highest prices are where you can't shop around.",
+    "The highest prices are where you can't shop around."
   ],
-
-  ledes: [
-    `You're at the gas station, the airport, the hotel mini-bar, the music festival. The water is $4. You buy it because you're thirsty and also because at this point arguing with the price feels exhausting. Somewhere in the back of your mind, a small voice notes that the substance you're buying — water — was running through the tap in your kitchen this morning for less than a penny per gallon. The voice is correct. The math is upsetting.`,
-    `Bottled water is one of the most marked-up consumer products in regular circulation. The actual liquid is a rounding error in the price; nearly everything you're paying for is something other than the water itself. Once you can see the breakdown, you can also see why the markup works — and where the soft spots are if you'd rather not keep paying it.`,
+  "ledes": [
+    "The water in a bottle is a small part of its price; most of the cost goes to packaging, transport, retail and brand. Bottled water is regulated by the FDA, and federal law requires its standards to be at least as protective as the EPA's standards for public tap water, so price isn't a measure of safety. Prices climb most in captive settings; some airports cap concession prices at local street prices plus a set margin, which shows how much location can matter.",
+    "You're at the gas station, the airport or the stadium, and water costs $4. You buy it because you're thirsty and arguing with the price feels tiring. Somewhere in the back of your mind you know your kitchen tap delivers the same basic substance for almost nothing. That's mostly right, and the breakdown explains where the rest goes."
   ],
-
-  steps: [
+  "steps": [
     {
-      name: "The water itself: a tiny share of the price",
-      body: "Municipal tap water in the US typically costs less than a penny a gallon. Even bottled-water companies that source from springs pay very little for the water itself, so the liquid in a single bottle is worth a fraction of a cent. Whether you're buying $1 store-brand or $4 boutique, the water in your hand cost the company about the same. Everything else in the price tag is something else — and the something-else is where the entire industry lives.",
+      "name": "How much does the water in bottled water actually cost?",
+      "body": "Very little. Public tap water costs most households a tiny amount per gallon, and bottlers pay relatively little for the water itself, whether it comes from a spring or a municipal supply. Whether you buy a store brand or a premium label, the liquid is a minor part of the price. Almost everything else on the tag pays for something other than the water."
     },
     {
-      name: "The bottle, label, and cap",
-      body: "Plastic bottles are cheap individually but not free. The bottle, the label, the cap and the printing add up to far more than the water inside, which makes packaging the largest physical cost in the product. The company makes more from the bottle as a packaging vehicle than it does from the water inside it — which tells you what they're actually selling.",
+      "name": "How much of bottled water's price is the bottle?",
+      "body": "Plastic bottles are cheap individually but not free. The bottle, cap, label and printing cost more than the water inside, which makes packaging the largest physical cost of the product. In a sense, the company is selling the convenience of portable, sealed water more than the water itself."
     },
     {
-      name: "Distribution and shelf placement",
-      body: "Water is heavy. A 24-pack weighs 30 pounds, and trucking it from a bottling plant to a retail shelf is one of the biggest costs in the price — fuel, labor, refrigeration in some cases, plus 'slotting fees' paid to retailers for prime shelf placement. This is the part of the price that scales with where you buy it. A bottle at a grocery store has been moved a few miles efficiently; a bottle at an airport has been moved through three times the logistics chain. That's part of why the same bottle costs a dollar or so at a supermarket and several dollars at the gate.",
+      "name": "Why does it cost so much to ship bottled water?",
+      "body": "Water is heavy: a 24-pack of half-liter bottles weighs around 25 pounds. Moving it from a bottling plant to a store takes fuel, labor and warehouse space, and stores and distributors take their share. This part of the price grows with how far and how many times the bottle has been moved. That's part of why the same bottle costs a dollar or so at a supermarket and several dollars at a gate."
     },
     {
-      name: "Brand premium on the higher-priced bottles",
-      body: "This is the part that varies most. Store-brand water is the cheapest version of the product. Big national brands are largely purified tap water too, sold for more because of the name and the packaging. Fiji, VOSS, and Smartwater layer on additional brand premium that's pure margin — not better water, not better logistics, just the right shape, the right name, and the right shelf adjacency. The minute the bottle is designed to look luxurious, you're paying for the design.",
+      "name": "Is expensive bottled water better than cheap bottled water?",
+      "body": "Not necessarily. Many bottled waters, including well-known brands, are purified municipal water, and all bottled water sold in the US must meet FDA quality standards. Premium brands may differ in source, mineral content or taste, and some people care about that. But much of the higher price pays for the brand, the bottle design and the shelf position rather than for safer water."
     },
     {
-      name: "Why is bottled water so expensive at airports?",
-      body: "Once all those costs are paid, the margin on an ordinary bottle is not unusual for a packaged drink. The unusual part is *where* you're buying it. Airports, stadiums, and hotels know you can't bring water in, can't easily leave to find cheaper, and are physiologically pressured to buy. These are not pricing-the-product venues; they are pricing-your-circumstance venues. The $5 airport water isn't $5 because the water is special. It's $5 because you have nowhere else to go.",
-    },
+      "name": "Why is bottled water so expensive at airports?",
+      "body": "After costs are covered, the margin on an ordinary bottle in a supermarket isn't unusual for a packaged drink. The unusual part is where you buy it. Airports, stadiums and hotels know you can't easily go elsewhere. Some airports limit how far prices can exceed local street prices; the Port Authority of New York and New Jersey, for example, has a street-pricing policy for its airports. Carrying an empty reusable bottle through security and filling it at a fountain avoids the issue."
+    }
   ],
-
-  cta: {
-    glyph:    '🏷️',
-    headline: "See where the money actually goes",
-    body:     "MarkupDetective breaks down the real cost structure of any product or service — raw materials, labor, distribution, brand premium, and the psychological pricing tactics being used on you. See the fair price and the playbook for paying less.",
-    features: [
+  "sources": [
+    {
+      "label": "FDA: Bottled Water Everywhere: Keeping it Safe",
+      "url": "https://www.fda.gov/consumers/consumer-updates/bottled-water-everywhere-keeping-it-safe"
+    },
+    {
+      "label": "Port Authority of New York and New Jersey: New Measures to Bolster Compliance with Street Pricing Policy at Airport Concessions",
+      "url": "https://www.panynj.gov/port-authority/en/press-room/press-release-archives/2022-press-releases/port-authority-announces-comprehensive-new-measures-to-bolster-compliance-with-street-pricing-policy-at-airport-concessions.html"
+    }
+  ],
+  "cta": {
+    "glyph": "🏷️",
+    "headline": "See where the money actually goes",
+    "body": "MarkupDetective breaks down the real cost structure of any product or service — raw materials, labor, distribution, brand premium, and the psychological pricing tactics being used on you. See the fair price and the playbook for paying less.",
+    "features": [
       "Cost-stack breakdown for any product",
       "Markup multiplier analysis",
       "Pricing-tactic identification",
       "Fair-price benchmarking",
-      "Specific ways to pay less",
+      "Specific ways to pay less"
     ],
-    toolId:   'MarkupDetective',
-    toolName: 'MarkupDetective',
+    "toolId": "MarkupDetective",
+    "toolName": "MarkupDetective"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-09',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

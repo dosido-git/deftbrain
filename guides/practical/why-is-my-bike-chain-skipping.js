@@ -1,59 +1,71 @@
 module.exports = {
-  slug:          'why-is-my-bike-chain-skipping',
-  category:      'practical',
-  categoryLabel: 'Practical',
-
-  title:         "Why Is My Bike Chain Skipping (And the Three Things That Almost Always Fix It)",
-  titleHtml:     "Why Is My Bike Chain Skipping <em>(And the Three Things That Almost Always Fix It)</em>",
-  shortTitle:    "Why Is My Bike Chain Skipping",
-  navTitle:      "Why is my bike chain skipping and the three things that almost always fix it",
-
-  description:   "A skipping chain is one of the most common bike problems and one of the easiest to diagnose. The cause is almost always one of three things — and once you know which, the fix is usually quick.",
-  deck:          "A skipping chain is one of the most common bike problems and one of the easiest to diagnose. The cause is almost always one of three things — and once you know which, the fix is usually quick.",
-
-  ledes: [
-    `It happened mid-ride. You were pedaling along, and suddenly the chain jumped — skipped a tooth, or slipped between gears, or made an unsettling clunk before catching again. It happened once. Then twice. Now it's happening regularly, and you can feel it especially when you push hard on the pedals or shift into certain gears. The bike is still ridable, but the skipping is unsettling and there's a real risk it'll leave you stranded if it gets worse.`,
-    `Chain skipping has a small set of causes. About 90% of the time, it's one of three things: cable tension is off, the chain or cassette is worn, or the rear derailleur hanger is bent. Diagnosing which one is yours takes about five minutes of careful observation, and the fix for the first one is usually a quarter-turn of an adjustment screw. The other two are slightly more involved but still well within home-mechanic territory.`,
+  "slug": "why-is-my-bike-chain-skipping",
+  "category": "practical",
+  "categoryLabel": "Practical",
+  "title": "Why Is My Bike Chain Skipping (And the Three Things That Almost Always Fix It)",
+  "titleHtml": "Why Is My Bike Chain Skipping <em>(And the Three Things That Almost Always Fix It)</em>",
+  "shortTitle": "Why Is My Bike Chain Skipping",
+  "navTitle": "Why is my bike chain skipping and the three things that almost always fix it",
+  "description": "A skipping chain is one of the most common bike problems and one of the easiest to diagnose. The cause is almost always one of three things — and once you know which, the fix is usually quick.",
+  "deck": "A bike chain usually skips for one of three reasons: shift-cable tension is off, the chain (and often the cassette) is worn, or the rear derailleur hanger is bent. Check cable tension with the barrel adjuster first, then measure chain wear with a chain checker, then inspect the hanger.",
+  "answerList": [
+    "Cable tension: adjust the barrel adjuster a quarter-turn at a time.",
+    "Chain wear: measure with a chain checker.",
+    "Worn cassette: a new chain skips on hooked teeth.",
+    "Bent hanger: pulleys don't line up with the cogs.",
+    "Persistent skipping can mean the whole drivetrain is worn."
   ],
-
-  steps: [
-    {
-      name: "Test cable tension first — it's the most common cause and the easiest fix",
-      body: "Most chain skipping is caused by the rear derailleur cable being slightly too loose or too tight, which prevents the derailleur from positioning the chain accurately on the cog you've selected. The classic symptom: skipping is worse in some gears than others, and it gets worse over time as cables stretch with use. Test by shifting through every gear in sequence — if skipping is concentrated in 2-3 gears or in one direction (always when shifting up to harder gears, for example), cable tension is almost certainly the issue. The fix is the barrel adjuster at the rear derailleur (or sometimes at the shifter): turn it counterclockwise a quarter-turn at a time if the chain isn't shifting up to easier gears smoothly, clockwise if it's overshifting or skipping in harder gears. Test between adjustments. This single fix resolves a large fraction of chain-skipping problems, takes two minutes, and requires no tools beyond your fingers.",
-    },
-    {
-      name: "Check chain wear — a worn chain skips even when everything else is fine",
-      body: "Bike chains stretch with use (technically the pins wear and the chain elongates). A worn chain meshes poorly with cassette cogs, especially under load, and produces skipping that cable adjustment can't fix. The standard test is a chain wear indicator (Park Tool CC-3.2 is the common one, costs about $12), which slots into the chain and tells you if it's worn beyond serviceable limits. As a rough rule, chains last 2,000-3,000 miles for road bikes, less for mountain bikes in muddy conditions. If the chain is worn, replace it — and if it's been worn for a while, you may also need to replace the cassette, because a worn chain wears the cassette teeth into a matching shape that won't mesh properly with a new chain. This is more involved than cable adjustment but still a 30-minute job with basic tools.",
-    },
-    {
-      name: "Check the derailleur hanger — bent hangers are surprisingly common",
-      body: "The derailleur hanger is a small piece of metal that connects the rear derailleur to the frame, designed to break or bend before the more expensive frame or derailleur in a crash. Hangers can bend slightly from minor incidents — bumping the bike against something, a small fall, even rough handling during transport — without obvious damage. A bent hanger throws derailleur alignment off in ways that produce skipping that won't respond to cable adjustment. Test by looking at the rear derailleur from behind: the two pulleys should be in line with each cassette cog as you shift through them. If they're consistently off-line in one direction, the hanger is bent. The hanger can usually be straightened with a derailleur hanger alignment tool, or replaced with a new hanger (each frame has its specific hanger type — a cycling shop can identify and order yours).",
-    },
-    {
-      name: "Watch for the symptom that suggests something more serious",
-      body: "If you've checked cable tension, replaced the chain, and verified the hanger is straight, but the skipping persists, the issue is probably worn cassette cogs that didn't get replaced when the chain was. When a worn chain has been ridden long enough, the cogs themselves develop a hooked, wave-shaped wear pattern that visibly differs from the symmetric profile of new cogs. Even a brand-new chain will skip on these cogs because the geometry no longer matches. The fix is replacing the cassette — about $40-100 depending on grade, plus the labor or the time to do it yourself. This is the most expensive fix in the chain-skipping diagnostic tree, and it's worth checking the cassette wear visually before going further: if you can see the hook-shaped tooth profile, the cassette needs replacement regardless of what else you do.",
-    },
-    {
-      name: "When the skipping is the first sign of a worn drivetrain",
-      body: "Chain skipping that doesn't respond to any of the above fixes — or that returns within a few weeks of replacing parts — usually means the drivetrain has reached the end of its lifespan and individual-part replacement isn't going to keep up. Bikes ridden regularly for years eventually need their drivetrain replaced as a system: chain, cassette, chainrings, sometimes derailleur pulleys. Trying to extend the life of a tired drivetrain by replacing one component at a time often produces the kind of intermittent issue you're now living with. If your bike has more than 5,000 miles on its current drivetrain and is starting to skip in ways that resist fixing, the right move might be a full drivetrain refresh — typically $150-400 in parts depending on grade. Yes, that's significant. But spread across the next 5,000 miles, it's also some of the cheapest reliability you can buy. Bikes that get this maintenance done end up lasting decades; bikes that don't tend to spend more years parked than ridden.",
-    },
+  "ledes": [
+    "A skipping bike chain is most often caused by incorrect shift-cable tension, a worn chain or cassette, or a bent rear derailleur hanger. Chain wear can be measured with a gauge: Park Tool's chain checkers mark 0.5%, 0.75% and 1.0% elongation, the points where chain makers typically recommend replacement depending on how many speeds the drivetrain has. Replacing a chain before it's badly worn helps protect the cassette and chainrings, which cost more.",
+    "Mid-ride, the chain jumps a tooth or slips, especially when you push hard or shift into certain gears. Once, then twice, now regularly. The causes are few, and checking them in order usually finds the culprit quickly."
   ],
-
-  cta: {
-    glyph:    '🚲',
-    headline: "Diagnose the skip before you spend money on parts",
-    body:     "Bike Medic walks you through the chain-skipping diagnostic in order, identifies the specific cause from your observations, and gives you the step-by-step fix with visual demos and tool requirements.",
-    features: [
+  "steps": [
+    {
+      "name": "How do you fix chain skipping caused by cable tension?",
+      "body": "A common cause of skipping is a rear derailleur cable that's slightly too loose or too tight, so the derailleur doesn't line the chain up exactly with the selected cog. The classic sign: skipping is worse in some gears than others, and it develops gradually as new cables stretch. Shift through every gear in order; if the trouble is concentrated in a few gears or in one direction, tension is a likely cause. Adjust with the barrel adjuster at the derailleur or shifter: turning it counterclockwise adds tension and helps the chain move toward the larger, easier cogs; clockwise reduces tension, for chains that hesitate moving to smaller cogs. Go a quarter-turn at a time and test between adjustments."
+    },
+    {
+      "name": "How do you know if your bike chain is worn?",
+      "body": "Chains elongate with use as their pins and rollers wear. A worn chain meshes poorly with the cogs, especially under load, and skips in a way that cable adjustment can't fix. A chain checker gauge drops into the chain and shows whether wear has passed the replacement point; Park Tool's gauges mark 0.5%, 0.75% and 1.0%, and the right threshold depends on your drivetrain (chains on 11-speed and higher systems are typically replaced sooner). How long a chain lasts varies widely with riding conditions and cleaning. If the chain has been worn for a while, the cassette may have worn to match it and need replacing too."
+    },
+    {
+      "name": "Can a bent derailleur hanger cause chain skipping?",
+      "body": "Yes. The derailleur hanger is a small replaceable part connecting the rear derailleur to the frame, designed to bend before the frame or derailleur does. It can bend from minor knocks, a small fall, or rough handling in transport, without visible damage. A bent hanger throws the derailleur out of line, causing skipping that cable adjustment won't fix. Look at the derailleur from behind: the pulleys should sit directly under each cog as you shift. If they're consistently off in one direction, the hanger may be bent. A shop can straighten it with an alignment tool or order the specific replacement hanger for your frame."
+    },
+    {
+      "name": "Why does a new chain skip?",
+      "body": "If you've adjusted the cable, replaced the chain and confirmed the hanger is straight, but the skipping continues, worn cassette cogs are the likely cause. When a worn chain is ridden long enough, cog teeth develop a hooked, uneven profile, and even a new chain won't mesh with them properly. Replacing the cassette is the fix. It's worth looking at the teeth before buying anything else: a visibly hooked profile means the cassette needs replacing whatever else you do."
+    },
+    {
+      "name": "When does a bike need a new drivetrain?",
+      "body": "Skipping that resists every fix, or returns soon after replacing parts, can mean the drivetrain has reached the end of its life as a system: chain, cassette, chainrings, and sometimes derailleur pulleys all worn together. Replacing one component at a time on a tired drivetrain can produce exactly the intermittent problems you're seeing. A full drivetrain replacement is a bigger expense, and a bike shop can tell you which parts are actually worn. Regular chain checks and replacing chains on time help keep the rest of the drivetrain going longer."
+    }
+  ],
+  "sources": [
+    {
+      "label": "Park Tool: CC-4.2 Chain Checker",
+      "url": "https://www.parktool.com/en-us/product/chain-checker-cc-4-2"
+    },
+    {
+      "label": "Park Tool: CC-3.2 Chain Checker",
+      "url": "https://www.parktool.com/en-int/product/chain-wear-indicator-cc-3-2"
+    }
+  ],
+  "cta": {
+    "glyph": "🚲",
+    "headline": "Diagnose the skip before you spend money on parts",
+    "body": "Bike Medic walks you through the chain-skipping diagnostic in order, identifies the specific cause from your observations, and gives you the step-by-step fix with visual demos and tool requirements.",
+    "features": [
       "Skip-pattern diagnostic",
       "Cable tension adjustment guide",
       "Chain and cassette wear checks",
       "Derailleur hanger alignment",
-      "Drivetrain replacement decision frame",
+      "Drivetrain replacement decision frame"
     ],
-    toolId:   'BikeMedic',
-    toolName: 'Bike Medic',
+    "toolId": "BikeMedic",
+    "toolName": "Bike Medic"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

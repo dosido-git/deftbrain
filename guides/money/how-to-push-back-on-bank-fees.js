@@ -1,72 +1,76 @@
 module.exports = {
-  slug:          'how-to-push-back-on-bank-fees',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Push Back on Bank Fees (And Actually Get Them Refunded)",
-  titleHtml:     "How to Push Back on Bank Fees <em>(And Actually Get Them Refunded)</em>",
-  shortTitle:    "How to Push Back on Bank Fees",
-  navTitle:      "How to push back on bank fees and actually get them refunded",
-
-  description:  "How to push back on bank fees and get them refunded: call, ask directly, use 'as a courtesy', know the fee-specific asks, and escalate calmly.",
-  deck:         "To get a bank fee refunded, call rather than using chat, ask for the refund directly instead of arguing that the fee was unfair, and if they hesitate, ask whether they can refund it 'as a courtesy'. Banks often waive a first overdraft or occasional fee for customers in good standing. If the answer is no, ask politely for a supervisor.",
-  answerList: [
+  "slug": "how-to-push-back-on-bank-fees",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Push Back on Bank Fees (And Actually Get Them Refunded)",
+  "titleHtml": "How to Push Back on Bank Fees <em>(And Actually Get Them Refunded)</em>",
+  "shortTitle": "How to Push Back on Bank Fees",
+  "navTitle": "How to push back on bank fees and actually get them refunded",
+  "description": "How to push back on bank fees and get them refunded: call, ask directly, use 'as a courtesy', know the fee-specific asks, and escalate calmly.",
+  "deck": "To get a bank fee refunded, call rather than using chat, ask for the refund directly instead of arguing the fee was unfair, and if they hesitate, ask for it as a courtesy. Banks often waive an occasional fee for customers in good standing. If not, ask for a supervisor.",
+  "answerList": [
     "Call; don't use chat.",
     "Ask for the refund directly; don't argue the fee.",
     "If they hesitate: 'Could you refund it as a courtesy?'",
     "Ask about first-time overdraft forgiveness.",
-    "If it's no, ask politely for a supervisor.",
+    "If it's no, ask politely for a supervisor."
   ],
-
-  ledes: [
-    `It's $35 for the overdraft. Or $25 for the wire transfer that you didn't realize had a fee. Or $12 for the monthly maintenance charge that's been quietly recurring for two years. The amount feels small enough to ignore but specific enough to be annoying — and you're not sure whether banks actually refund things like this or whether complaining about a thirty-five dollar fee makes you the customer everyone in the call center groans about.`,
-    `Banks refund fees routinely — and they frequently waive the first fee if you simply ask directly, especially with a clean account history. They don't volunteer this. They don't advertise it. But the script is short, the conversation is brief, and the only thing standing between most people and their refund is the assumption that asking won't work.`,
+  "ledes": [
+    "Banks can and often do waive fees such as overdraft, maintenance or wire fees, particularly for customers with a good history, though they aren't required to. A short, polite request by phone is the usual route. The FDIC notes you can reduce overdraft fees by opting out of overdraft coverage for debit card and ATM transactions, and many accounts waive monthly maintenance fees if you meet conditions like a minimum balance or direct deposit. If a fee seems improper, you can complain to the CFPB.",
+    "It's $35 for an overdraft, or $12 a month in maintenance fees you didn't notice for two years. It feels too small to fight and too annoying to ignore. Asking is quick, and the worst outcome is the one you already have."
   ],
-
-  steps: [
+  "steps": [
     {
-      name: "Call the bank, not the chatbot",
-      body: "Most fee refunds happen on the phone. The chat tool, the in-app messaging, and the email contact form are all designed to deflect. They route you through scripted decision trees that conclude 'this fee is valid' more than they conclude 'we'll refund it.' Phone agents have refund authority that chat agents don't. Find the customer service number on the back of your card, get past the menu by saying 'representative' until a person picks up, and have the date and amount of the fee ready before you start.",
+      "name": "Is it better to call or chat to get a bank fee refunded?",
+      "body": "Many people find a phone call works better. Chat and in-app messages often run through scripted flows, while a phone agent may have more room to make a judgment call. Use the number on the back of your card, ask for a representative, and have the date and amount of the fee ready before you start."
     },
     {
-      name: "How do you get a bank to refund a fee?",
-      body: "Resist the urge to explain why the fee is unfair. Banks aren't refunding fees because they agree the fee was unjustified; they're refunding because retaining you costs less than acquiring a new customer. So the right opening isn't 'this fee shouldn't have been charged.' It's 'I'd like to request a refund of the [amount] fee charged on [date].' Direct, polite, no debate. The agent will check, ask a couple of questions, and tell you what they can do. The shorter the request, the higher the success rate.",
+      "name": "How do you get a bank to refund a fee?",
+      "body": "Skip the argument about why the fee is unfair. Banks typically waive fees as a goodwill gesture to keep customers, not because they agree the fee was wrong. So open with: 'I'd like to request a refund of the [amount] fee charged on [date].' Direct, polite, no debate. The agent will look at your account and tell you what they can do."
     },
     {
-      name: "Use 'as a courtesy' if they hesitate",
-      body: "If the agent says they can't refund the fee because it was technically valid, the magic phrase is 'I understand it was assessed correctly — could you refund it as a courtesy, given my account history?' This frames the request as a one-time goodwill gesture rather than a dispute, which is how the system is designed to handle these. Agents have specific authority to issue courtesy refunds, separate from disputes. The phrase 'as a courtesy' triggers that authority cleanly.",
+      "name": "What should you say if the bank says the fee was valid?",
+      "body": "If the agent says the fee was charged correctly, try: 'I understand it was assessed correctly. Could you refund it as a courtesy, given my account history?' This frames it as a one-time goodwill request rather than a dispute. Many banks allow courtesy refunds, especially for customers who rarely incur fees."
     },
     {
-      name: "Know the magic words for specific fee types",
-      body: "Some fees have refund mechanisms that aren't obvious. *Overdraft fees* are often refundable under 'first-time forgiveness' programs that aren't advertised — ask specifically. *Foreign transaction fees* are usually not refundable but are usually waivable on premium cards if you call before the trip. *Wire fees* are sometimes refundable if the wire was domestic and routine. *Monthly maintenance fees* are almost always reversible and the agent can usually waive future ones too if you ask. The fee type tells you which lever to pull.",
+      "name": "Which bank fees can you get waived?",
+      "body": "It varies by bank and by fee. Overdraft fees: ask whether the bank waives a first or occasional overdraft, and consider opting out of overdraft coverage for debit and ATM transactions so they're declined instead. Monthly maintenance fees: ask what conditions waive them, such as direct deposit or a minimum balance, and whether the account can be switched to one without the fee. Foreign transaction fees: some cards don't charge them, so check before you travel. Wire fees: ask, but expect less flexibility."
     },
     {
-      name: "When the answer is no, escalate calmly",
-      body: "If the first agent says no, ask politely whether you can speak with a supervisor. Don't get angry; don't argue. 'I understand you can't help with this — could I speak with someone who has additional authority?' Supervisors have larger refund discretion and a different incentive structure (their job is retention, not call efficiency). If that also fails, your last move is the threat-not-threat: 'If this fee can't be reversed, I'll need to look at whether this is the right account for me.' This isn't a bluff if you mean it. It's also the move that most often produces the refund.",
-    },
+      "name": "What can you do if the bank won't refund a fee?",
+      "body": "Ask politely for a supervisor: 'I understand you can't help with this. Could I speak with someone who has additional authority?' Supervisors may have more discretion. If that fails, it's reasonable to say you'll consider whether the account still suits you, and to mean it; many banks and credit unions offer accounts with fewer fees. If you believe a fee broke your account terms or the law, you can file a complaint with the CFPB."
+    }
   ],
-
-  callout: {
-    afterStep: 1,
-    scriptedLine: "I'd like to request a refund of the $35 overdraft fee from March 14th. Could you take a look at that as a courtesy?",
-    explanation: "Direct ask, specific date and amount, with 'as a courtesy' built in. This is the entire opening line — no preamble about why the fee was unfair, no apology for asking. Brevity is what makes it work.",
+  "callout": {
+    "afterStep": 1,
+    "scriptedLine": "I'd like to request a refund of the $35 overdraft fee from March 14th. Could you take a look at that as a courtesy?",
+    "explanation": "Direct ask, specific date and amount, with 'as a courtesy' built in. This is the entire opening line — no preamble about why the fee was unfair, no apology for asking. Brevity is what makes it work."
   },
-
-  cta: {
-    glyph:    '🗣️',
-    headline: "Get the script that actually works on the phone",
-    body:     "Tell Magic Mouth you want this fee waived and describe the situation. It reads the dynamics, picks your strongest angle, and writes the exact script — the opener, the ask, what to say if the agent hesitates, and a graceful exit — plus delivery coaching and a backup angle in case the first approach stalls.",
-    features: [
+  "sources": [
+    {
+      "label": "FDIC: Overdraft and Account Fees",
+      "url": "https://www.fdic.gov/consumer-resource-center/2021-12/overdraft-and-account-fees"
+    },
+    {
+      "label": "CFPB: Submit a complaint",
+      "url": "https://www.consumerfinance.gov/complaint/"
+    }
+  ],
+  "cta": {
+    "glyph": "🗣️",
+    "headline": "Get the script that actually works on the phone",
+    "body": "Tell Magic Mouth you want this fee waived and describe the situation. It reads the dynamics, picks your strongest angle, and writes the exact script — the opener, the ask, what to say if the agent hesitates, and a graceful exit — plus delivery coaching and a backup angle in case the first approach stalls.",
+    "features": [
       "Finds your strongest angle for this specific fee",
       "Full script: opener, ask, hesitation response, exit",
       "Delivery coaching — tone and the mistakes that kill the ask",
       "Backup angle if the first answer is no",
-      "'Already tried' field sharpens the strategy after a refusal",
+      "'Already tried' field sharpens the strategy after a refusal"
     ],
-    toolId:   'MagicMouth',
-    toolName: 'Magic Mouth',
+    "toolId": "MagicMouth",
+    "toolName": "Magic Mouth"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-08',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

@@ -63,7 +63,7 @@
   <meta property="og:image:width"  content="1200">
   <meta property="og:image:height" content="630">
   <meta property="article:published_time" content="2026-07-29">
-  <meta property="article:modified_time"  content="2026-10-08">
+  <meta property="article:modified_time"  content="2026-10-09">
   <meta property="article:section"        content="Money">
 
   <meta name="twitter:card"        content="summary_large_image">
@@ -78,10 +78,11 @@
     "headline": "What to Use Now That Fakespot Is Gone",
     "description": "What to use now that Fakespot is gone: what actually replaced it, which extensions to be wary of, and a two-minute manual check for fake reviews.",
     "datePublished": "2026-07-29",
-    "dateModified": "2026-10-08",
+    "dateModified": "2026-10-09",
     "author": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
     "publisher": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
-    "mainEntityOfPage": "https://deftbrain.com/guides/money/what-to-use-now-that-fakespot-is-gone"
+    "mainEntityOfPage": "https://deftbrain.com/guides/money/what-to-use-now-that-fakespot-is-gone",
+    "citation": ["https://blog.mozilla.org/en/mozilla/building-whats-next/", "https://www.consumer.ftc.gov/articles/how-evaluate-online-reviews"]
   }
   </script>
 
@@ -92,11 +93,11 @@
     "name": "What to Use Now That Fakespot Is Gone",
     "description": "What to use now that Fakespot is gone: what actually replaced it, which extensions to be wary of, and a two-minute manual check for fake reviews.",
     "step": [
-      {"@type":"HowToStep","name":"Understand what actually died, so you replace the right thing","text":"Fakespot did two separable jobs. The first was pattern analysis: scanning a review corpus for the statistical fingerprints of manipulation — implausible timing clusters, reviewer accounts with no other history, language that repeats across supposedly independent reviews, ratings distributions that don't look like real human opinion. The second was delivery: a browser extension that put a grade on the page you were already looking at, at the moment you were deciding. When people say they miss Fakespot, they almost always mean the second job. The analysis is reproducible — any careful reader or capable tool can do it. The zero-effort, in-page delivery is the part that's genuinely hard to replace, because it depends on someone maintaining an extension against retailers who don't want it there. Knowing which half you're replacing keeps you from being disappointed by a tool that does the analysis well but asks you to paste text into it."},
-      {"@type":"HowToStep","name":"Check whether ReviewMeta still works before you rely on it","text":"ReviewMeta was the other well-known name in this category, with an approach many people preferred: it re-computed an adjusted rating after discarding reviews it judged unnatural, rather than issuing a letter grade. It has had periods of being unmaintained and periods of being partially functional, and its coverage was always narrower than Fakespot's. Treat it as worth ten seconds of checking rather than a dependable habit — load it, try one product you know well, and see whether the result looks sane before you trust it on a purchase that matters. This is good practice for every tool in this category: the failure mode is not a tool that gives wrong answers loudly, it's one that quietly stopped updating two years ago and now returns confident nonsense."},
-      {"@type":"HowToStep","name":"Be skeptical of the replacement extensions that appeared afterwards","text":"A vacuum this visible attracts filler. In the months after the shutdown, a crop of extensions and sites appeared promising Fakespot-style grading. Some are honest efforts; others are affiliate operations where the 'analysis' exists to funnel you toward whatever product pays the referral, or data-collection plays where a browser extension that reads every page you visit is the actual product and the review grade is the excuse. Two questions filter most of it: does the tool tell you how it reaches its verdict, and does it ever say 'these reviews look fine'? A grader that finds something suspicious about everything is either broken or selling something. A grader that won't explain its reasoning can't be checked, which means it can't be trusted on the purchase where it matters most."},
+      {"@type":"HowToStep","name":"What did Fakespot actually do?","text":"Fakespot did two separable jobs. The first was pattern analysis: scanning a review corpus for the statistical fingerprints of manipulation — implausible timing clusters, reviewer accounts with no other history, language that repeats across supposedly independent reviews, ratings distributions that don't look like real human opinion. The second was delivery: a browser extension that put a grade on the page you were already looking at, at the moment you were deciding. When people say they miss Fakespot, they almost always mean the second job. The analysis is reproducible — any careful reader or capable tool can do it. The zero-effort, in-page delivery is the part that's genuinely hard to replace, because it depends on someone maintaining an extension against retailers who don't want it there. Knowing which half you're replacing keeps you from being disappointed by a tool that does the analysis well but asks you to paste text into it."},
+      {"@type":"HowToStep","name":"Does ReviewMeta still work?","text":"ReviewMeta was the other well-known name in this category, with an approach many people preferred: it re-computed an adjusted rating after discarding reviews it judged unnatural, rather than issuing a letter grade. It has had periods of being unmaintained and periods of being partially functional, and its coverage was always narrower than Fakespot's. Treat it as worth ten seconds of checking rather than a dependable habit — load it, try one product you know well, and see whether the result looks sane before you trust it on a purchase that matters. This is good practice for every tool in this category: the failure mode is not a tool that gives wrong answers loudly, it's one that quietly stopped updating two years ago and now returns confident nonsense."},
+      {"@type":"HowToStep","name":"Are Fakespot replacement extensions safe to use?","text":"A vacuum this visible attracts filler. In the months after the shutdown, a crop of extensions and sites appeared promising Fakespot-style grading. Some are honest efforts; others are affiliate operations where the 'analysis' exists to funnel you toward whatever product pays the referral, or data-collection plays where a browser extension that reads every page you visit is the actual product and the review grade is the excuse. Two questions filter most of it: does the tool tell you how it reaches its verdict, and does it ever say 'these reviews look fine'? A grader that finds something suspicious about everything is either broken or selling something. A grader that won't explain its reasoning can't be checked, which means it can't be trusted on the purchase where it matters most."},
       {"@type":"HowToStep","name":"How can you check reviews without Fakespot?","text":"The manual version takes about two minutes and never gets discontinued. First, sort by most recent and read those, not the top-rated ones — manipulation is usually a campaign, and campaigns have dates. Second, look for timing clusters: dozens of five-star reviews inside a few days, especially near the listing's launch or right after a run of bad ones, is the single strongest signal available to a human reader. Third, click through two or three glowing reviewers and check whether they have any other review history, or whether their history is thirty five-star reviews of unrelated cheap products. Fourth, read the three-star reviews — they are the least worth faking in either direction, and they are where the real defects get described in specific, unenthusiastic detail. If those four checks come back clean, the review section is probably honest. If two or more look wrong, treat the rating as decoration."},
-      {"@type":"HowToStep","name":"Watch for the failure the tools never covered: reviews that are real but not about this product","text":"Review merging is now a bigger problem than outright fake reviews on some marketplaces, and no grading extension ever handled it well. A seller attaches a new or different item to an existing listing that already has thousands of positive reviews — a different size, a different model, sometimes a different product category entirely — and inherits the rating. Every review is genuine; none of them are about the thing in your cart. The tell is in the review text: people describing a colour, capacity, or use case that doesn't match what's on sale, or complaining that what arrived isn't what the reviews describe. Automated analysis reads that corpus as healthy, because statistically it is. This one is only catchable by reading, which is a good argument for keeping the manual habit even when a tool is available."}
+      {"@type":"HowToStep","name":"Why don't reviews always match the product you're buying?","text":"Sometimes reviews are genuine but not about the item in your cart. A listing can combine several sizes, models or versions, and some sellers attach a new or different item to an existing listing with many positive reviews. Every review may be real; few may describe what you'd receive. The tell is in the text: reviewers describing a color, capacity or use that doesn't match what's on sale, or complaining that what arrived isn't what the reviews describe. Automated tools were never good at catching this; reading is."}
     ]
   }
   </script>
@@ -171,7 +172,7 @@
 
       <h1>What to Use Now That <em>Fakespot</em> Is Gone</h1>
 
-      <p class="deck">Mozilla shut down Fakespot in 2025, and nothing free now gives the same one-glance grade. Check whether any replacement extension is trustworthy before installing it, and learn the quick manual check that works on any site: read the most recent and lowest-rated reviews, look for bursts of reviews, and check that reviews are about this exact product.</p>
+      <p class="deck">Mozilla shut down Fakespot in 2025, and no free tool now gives the same one-glance grade. Check any replacement extension before installing it, and use a quick manual check on any site: read the most recent and lowest-rated reviews, look for bursts, and confirm reviews are about this exact product.</p>
       <ol class="answer-list">
         <li>Fakespot shut down in 2025; no free tool gives the same quick grade.</li>
         <li>Check any replacement extension before trusting it.</li>
@@ -180,31 +181,31 @@
         <li>Check the reviews are about this exact product, not a merged listing.</li>
       </ol>
 
-      <p class="meta-line">Updated October 8, 2026 · By the DeftBrain team</p>
+      <p class="meta-line">Updated October 9, 2026 · By the DeftBrain team</p>
 
-      <p class="lede">If you got used to glancing at a letter grade before trusting a product&#39;s reviews, you&#39;ve probably noticed that habit stopped working. Mozilla acquired Fakespot in 2023, folded it into Firefox as Review Checker, and then discontinued both: the in-browser Review Checker was retired on June 10, 2025, and the extensions, mobile apps and website went offline on July 1, 2025. Mozilla&#39;s explanation was blunt — the products &quot;didn&#39;t fit a model we could sustain.&quot;</p>
-      <p class="lede">What&#39;s left is a gap with a specific shape. The thing Fakespot did well was fast, low-effort triage: one glance, one grade, decision made. Most of what&#39;s marketed as a replacement either doesn&#39;t do that, doesn&#39;t do it for free, or quietly does something else. Below is an honest map of the options, and — because tool availability keeps changing — the manual version of the same judgment, which nobody can discontinue.</p>
+      <p class="lede">Fakespot, a review-analysis service Mozilla acquired in 2023, was discontinued in 2025: Mozilla retired Firefox&#39;s built-in Review Checker on June 10, 2025, and Fakespot&#39;s website, apps and extensions stopped working on July 1, 2025, saying the product &#39;didn&#39;t fit a model we could sustain.&#39; Without it, the FTC&#39;s advice still applies: read reviews from several sources, check reviewers&#39; histories, watch for bursts of reviews, and don&#39;t rely on star ratings alone.</p>
+      <p class="lede">If you were used to glancing at a letter grade before trusting a product&#39;s reviews, that habit stopped working. Here&#39;s what the service actually did, what to watch for in replacements, and the manual check that doesn&#39;t depend on any tool staying online.</p>
 
       <div class="section-rule"><span>How to do it</span></div>
 
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
-          <h2>Understand what actually died, so you replace the right thing</h2>
+          <h2>What did Fakespot actually do?</h2>
           <p>Fakespot did two separable jobs. The first was pattern analysis: scanning a review corpus for the statistical fingerprints of manipulation — implausible timing clusters, reviewer accounts with no other history, language that repeats across supposedly independent reviews, ratings distributions that don&#39;t look like real human opinion. The second was delivery: a browser extension that put a grade on the page you were already looking at, at the moment you were deciding. When people say they miss Fakespot, they almost always mean the second job. The analysis is reproducible — any careful reader or capable tool can do it. The zero-effort, in-page delivery is the part that&#39;s genuinely hard to replace, because it depends on someone maintaining an extension against retailers who don&#39;t want it there. Knowing which half you&#39;re replacing keeps you from being disappointed by a tool that does the analysis well but asks you to paste text into it.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
-          <h2>Check whether ReviewMeta still works before you rely on it</h2>
+          <h2>Does ReviewMeta still work?</h2>
           <p>ReviewMeta was the other well-known name in this category, with an approach many people preferred: it re-computed an adjusted rating after discarding reviews it judged unnatural, rather than issuing a letter grade. It has had periods of being unmaintained and periods of being partially functional, and its coverage was always narrower than Fakespot&#39;s. Treat it as worth ten seconds of checking rather than a dependable habit — load it, try one product you know well, and see whether the result looks sane before you trust it on a purchase that matters. This is good practice for every tool in this category: the failure mode is not a tool that gives wrong answers loudly, it&#39;s one that quietly stopped updating two years ago and now returns confident nonsense.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h2>Be skeptical of the replacement extensions that appeared afterwards</h2>
+          <h2>Are Fakespot replacement extensions safe to use?</h2>
           <p>A vacuum this visible attracts filler. In the months after the shutdown, a crop of extensions and sites appeared promising Fakespot-style grading. Some are honest efforts; others are affiliate operations where the &#39;analysis&#39; exists to funnel you toward whatever product pays the referral, or data-collection plays where a browser extension that reads every page you visit is the actual product and the review grade is the excuse. Two questions filter most of it: does the tool tell you how it reaches its verdict, and does it ever say &#39;these reviews look fine&#39;? A grader that finds something suspicious about everything is either broken or selling something. A grader that won&#39;t explain its reasoning can&#39;t be checked, which means it can&#39;t be trusted on the purchase where it matters most.</p>
         </div>
       </div>
@@ -223,11 +224,18 @@
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <h2>Watch for the failure the tools never covered: reviews that are real but not about this product</h2>
-          <p>Review merging is now a bigger problem than outright fake reviews on some marketplaces, and no grading extension ever handled it well. A seller attaches a new or different item to an existing listing that already has thousands of positive reviews — a different size, a different model, sometimes a different product category entirely — and inherits the rating. Every review is genuine; none of them are about the thing in your cart. The tell is in the review text: people describing a colour, capacity, or use case that doesn&#39;t match what&#39;s on sale, or complaining that what arrived isn&#39;t what the reviews describe. Automated analysis reads that corpus as healthy, because statistically it is. This one is only catchable by reading, which is a good argument for keeping the manual habit even when a tool is available.</p>
+          <h2>Why don&#39;t reviews always match the product you&#39;re buying?</h2>
+          <p>Sometimes reviews are genuine but not about the item in your cart. A listing can combine several sizes, models or versions, and some sellers attach a new or different item to an existing listing with many positive reviews. Every review may be real; few may describe what you&#39;d receive. The tell is in the text: reviewers describing a color, capacity or use that doesn&#39;t match what&#39;s on sale, or complaining that what arrived isn&#39;t what the reviews describe. Automated tools were never good at catching this; reading is.</p>
         </div>
       </div>
 
+      <div class="guide-sources">
+        <p class="guide-sources-label">Sources</p>
+        <ul>
+          <li><a href="https://blog.mozilla.org/en/mozilla/building-whats-next/" rel="noopener" target="_blank">Mozilla Blog: Investing in what moves the internet forward</a></li>
+          <li><a href="https://www.consumer.ftc.gov/articles/how-evaluate-online-reviews" rel="noopener" target="_blank">FTC Consumer Advice: How To Evaluate Online Reviews</a></li>
+        </ul>
+      </div>
 
       <div class="cta-block" data-glyph="🔍">
         <div class="cta-eyebrow">Try it now — free</div>
@@ -266,7 +274,7 @@
         (function () {
           var URL_ = "https://deftbrain.com/guides/money/what-to-use-now-that-fakespot-is-gone";
           var TITLE = "What to Use Now That Fakespot Is Gone";
-          var MOD = "October 8, 2026";
+          var MOD = "October 9, 2026";
           var payload = {
             url: URL_,
             html: '<a href="' + URL_ + '">' + TITLE + '</a>',
@@ -363,14 +371,6 @@
 
       <div class="section-rule"><span>Related situations</span></div>
       <div class="related-grid">
-        <a href="/guides/money/how-to-spot-fake-amazon-reviews" class="related-card">
-          <div class="rel-cat">Money</div>
-          <div class="rel-title">spot fake amazon reviews</div>
-        </a>
-        <a href="/guides/money/red-flags-in-product-reviews-that-mean-its-fake" class="related-card">
-          <div class="rel-cat">Money</div>
-          <div class="rel-title">red flags that mean fake</div>
-        </a>
         <a href="/guides/money/how-to-read-product-reviews-critically" class="related-card">
           <div class="rel-cat">Money</div>
           <div class="rel-title">read reviews critically</div>
@@ -378,6 +378,14 @@
         <a href="/guides/money/can-you-trust-verifiedpurchase-reviews" class="related-card">
           <div class="rel-cat">Money</div>
           <div class="rel-title">are verified reviews trustworthy?</div>
+        </a>
+        <a href="/guides/money/how-to-spot-fake-amazon-reviews" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">spot fake amazon reviews</div>
+        </a>
+        <a href="/guides/money/red-flags-in-product-reviews-that-mean-its-fake" class="related-card">
+          <div class="rel-cat">Money</div>
+          <div class="rel-title">red flags that mean fake</div>
         </a>
         <a href="/guides/money/why-are-wedding-venues-so-expensive" class="related-card">
           <div class="rel-cat">Money</div>

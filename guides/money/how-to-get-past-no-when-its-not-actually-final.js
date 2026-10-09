@@ -1,59 +1,71 @@
 module.exports = {
-  slug:          'how-to-get-past-no-when-its-not-actually-final',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Get Past 'No' When It's Not Actually Final (And the Tells That Reveal Which Kind You Got)",
-  titleHtml:     "How to Get Past &#39;No&#39; When It&#39;s Not Actually Final <em>(And the Tells That Reveal Which Kind You Got)</em>",
-  shortTitle:    "How to Get Past No When It's Not Actually Final",
-  navTitle:      "How to get past no when it's not actually final and the tells that reveal which kind you got",
-
-  description:   "Most institutional 'no' answers are first-tier no, not real no. Knowing the difference — and the specific moves that bypass first-tier no — is the entire skill of navigating bureaucratic systems.",
-  deck:          "Most institutional 'no' answers are first-tier no, not real no. Knowing the difference — and the specific moves that bypass first-tier no — is the entire skill of navigating bureaucratic systems.",
-
-  ledes: [
-    `You called and asked for the thing. The person on the phone said no. Not a hostile no, not even an unreasonable no — just a calm, professional, slightly apologetic no. You can tell, somewhere in the back of your mind, that this isn't actually the end of the conversation. There's a different kind of no — the one that means 'I am authorized to say no but not yes' — and you suspect this is that kind. But you don't quite know how to verify that, or what to do if it is.`,
-    `Almost every institutional 'no' you'll receive in your life is a first-tier no — issued by someone whose job is to handle most requests by saying no, regardless of whether yes is structurally available. The real decision-makers are usually one or two layers behind that person, and getting to them isn't about being aggressive or finding a magic word. It's about recognizing the tells of first-tier no, knowing the specific moves that bypass it, and being willing to spend the extra fifteen minutes that most people don't.`,
+  "slug": "how-to-get-past-no-when-its-not-actually-final",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Get Past 'No' When It's Not Actually Final (And the Tells That Reveal Which Kind You Got)",
+  "titleHtml": "How to Get Past &#39;No&#39; When It&#39;s Not Actually Final <em>(And the Tells That Reveal Which Kind You Got)</em>",
+  "shortTitle": "How to Get Past No When It's Not Actually Final",
+  "navTitle": "How to get past no when it's not actually final and the tells that reveal which kind you got",
+  "description": "Most institutional 'no' answers are first-tier no, not real no. Knowing the difference — and the specific moves that bypass first-tier no — is the entire skill of navigating bureaucratic systems.",
+  "deck": "To get past a no that may not be final, notice whether the person lacks authority to say yes, ask who in the organization can, ask them to record the refusal and reason, try another agent later, and accept a no that cites a specific rule and survives escalation.",
+  "answerList": [
+    "Listen for vague policy and no alternatives.",
+    "Ask: who in your organization can approve this?",
+    "Ask them to record the request and the reason for refusal.",
+    "Try again later with a different person.",
+    "Respect a no that cites a specific rule and survives escalation."
   ],
-
-  steps: [
-    {
-      name: "Recognize the tells of a first-tier no",
-      body: "First-tier no has signatures. The person uses phrases like 'I'm not able to' or 'our system doesn't allow' or 'unfortunately our policy is' — language that places the refusal somewhere other than themselves. They cite policy without citing the specific source. They don't ask follow-up questions about your situation. They offer no alternatives. They sound like they're reading from a script even if they're not. None of this means they're being unhelpful on purpose; it just means they're working within their authority, which doesn't include the answer you're asking for. Real no — from someone with actual decision-making authority — sounds different: it usually involves explanation, sometimes apology, often acknowledgment that the situation is unusual.",
-    },
-    {
-      name: "Ask the magic question: 'who can?'",
-      body: "When you've gotten a first-tier no, the single most useful follow-up is: 'I understand you can't do that. Who in your organization can?' This is not aggressive. It's a procedural question. It acknowledges that the person you're speaking to is doing their job within their authority, while moving the conversation toward the person whose authority actually matches what you need. Most agents will route you up the chain when asked directly — supervisors, escalation specialists, customer relations, executive office. The few who refuse to escalate are themselves a tell that something is structurally wrong with the company you're dealing with, which is also useful information.",
-    },
-    {
-      name: "Use the 'document the no' technique",
-      body: "Whenever you receive a no you intend to challenge, ask the agent to document it. 'I'd like to make sure this is recorded — could you note in the file that I requested X and was told it couldn't be done because Y?' This does several things at once. It often surfaces qualifications the agent didn't mention initially ('Well, technically there's an exception process, but...'). It creates a written record you can reference later. And it slightly changes the agent's calculus — saying no on the record is harder than saying no in conversation, because the next person who sees the file might second-guess the original decision. Many of the no's that turn into yes's do so because the agent decided the documentation cost wasn't worth the convenience of refusing.",
-    },
-    {
-      name: "Wait — and try again, with a different person",
-      body: "Sometimes the most effective bypass of first-tier no isn't escalation; it's coming back tomorrow. Different agents have different authorities, different moods, different interpretations of policy, and different tolerances for handling unusual cases. The same request that got a flat no from one person can get a 'let me see what I can do' from another. This isn't gaming the system; it's recognizing that institutional decisions are made by individuals, and individual variation is real. If the first conversation didn't produce the answer you needed, hanging up and calling back later — sometimes weeks later — frequently changes the outcome. The patient who treats first-tier no as a permanent answer doesn't get the thing; the patient who treats it as one data point usually does.",
-    },
-    {
-      name: "When the no is actually final — and how to recognize it",
-      body: "Some no answers are real, and recognizing the difference saves you weeks of futile escalation. Real no usually has three properties: (1) it's tied to a specific, citable rule or law rather than vague policy ('this is a state regulation, not company policy'), (2) it survives escalation to people with documented authority to override it, and (3) the people refusing offer concrete alternatives or workarounds rather than just saying no. When you've reached real no — when the supervisor, the supervisor's supervisor, and the regulatory body all give you the same answer with the same citations — you've hit the actual edge of what's possible, and continuing to push wastes your effort. The skill of navigating bureaucracy isn't refusing to ever accept no. It's knowing the difference between the no you should challenge and the no you should respect, and most of the value comes from challenging the first kind without exhausting yourself on the second.",
-    },
+  "ledes": [
+    "Many refusals from customer service come from staff who aren't authorized to grant exceptions, not from a rule that forbids the request. Asking who can approve it, requesting that the refusal be documented, and trying again with another agent are common ways to reach someone with more authority. The FTC suggests keeping records of each contact and asking for a supervisor when the first person can't help. A refusal that cites a specific law and holds up at every level is usually final.",
+    "You asked. The person said no: calm, professional, slightly apologetic. Something tells you this isn't really the end, that it's the kind of no that means 'I can say no but not yes.' Here's how to tell, and what to try next."
   ],
-
-  cta: {
-    glyph:    '🚪',
-    headline: "Find the path past the first-tier no",
-    body:     "Not So Fast! maps the escalation ladder for the institution you are dealing with — the overlooked options, what to say next, and the regulators that carry weight — for when the official answer is 'nothing we can do' and you think that is wrong.",
-    features: [
+  "steps": [
+    {
+      "name": "How can you tell if a no is really final?",
+      "body": "First-tier no has signatures. The person uses phrases like 'I'm not able to' or 'our system doesn't allow' or 'unfortunately our policy is' — language that places the refusal somewhere other than themselves. They cite policy without citing the specific source. They don't ask follow-up questions about your situation. They offer no alternatives. They sound like they're reading from a script even if they're not. None of this means they're being unhelpful on purpose; it just means they're working within their authority, which doesn't include the answer you're asking for. Real no — from someone with actual decision-making authority — sounds different: it usually involves explanation, sometimes apology, often acknowledgment that the situation is unusual."
+    },
+    {
+      "name": "What should you ask when customer service says no?",
+      "body": "When you get a no, a useful follow-up is: 'I understand you can't do that. Who in your organization can?' It isn't aggressive; it's a procedural question that acknowledges their limits and moves toward someone whose authority matches your request. Many agents will transfer you or explain how to reach a supervisor, an escalations team or customer relations when asked directly."
+    },
+    {
+      "name": "Why should you ask customer service to document a refusal?",
+      "body": "When you plan to challenge a no, ask: 'Could you note in my file that I requested X and was told it couldn't be done because Y?' This can surface details the agent didn't mention at first ('Well, there is an exception process...'). It also creates a record you can reference later, and the next person who reads the file may see the request differently."
+    },
+    {
+      "name": "Does calling back and talking to someone else work?",
+      "body": "Sometimes. Different agents have different levels of authority, experience and interpretations of policy. A request that got a flat no from one person may get 'let me see what I can do' from another. That's not gaming the system; decisions are made by individuals. If the first conversation didn't help, calling back on another day can change the outcome, though it won't change a real rule."
+    },
+    {
+      "name": "When should you accept a no?",
+      "body": "Some answers are genuinely final, and recognizing them saves you weeks. A real no usually has three features: it's tied to a specific rule or law rather than vague policy ('this is a state regulation, not company policy'); it holds up when people with authority to override it review it; and the people refusing offer concrete alternatives. When a supervisor, a manager and an outside regulator all give the same answer with the same citation, you've likely reached the actual limit. The skill isn't refusing every no; it's telling the two kinds apart."
+    }
+  ],
+  "sources": [
+    {
+      "label": "FTC Consumer Advice: Solving Customer Problems: Returns, Refunds and Other Resolutions",
+      "url": "https://consumer.ftc.gov/articles/solving-customer-problems-returns-refunds-and-other-resolutions"
+    },
+    {
+      "label": "CFPB: Submit a complaint",
+      "url": "https://www.consumerfinance.gov/complaint/"
+    }
+  ],
+  "cta": {
+    "glyph": "🚪",
+    "headline": "Find the path past the first-tier no",
+    "body": "Not So Fast! maps the escalation ladder for the institution you are dealing with — the overlooked options, what to say next, and the regulators that carry weight — for when the official answer is 'nothing we can do' and you think that is wrong.",
+    "features": [
       "Why the answer was no",
       "An escalation ladder in the order to try it",
       "What to say next, and why it works",
       "The regulator that applies and how to file",
       "Likely odds, and when to stop"
     ],
-    toolId:   'NotSoFast',
-    toolName: "Not So Fast!",
+    "toolId": "NotSoFast",
+    "toolName": "Not So Fast!"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-03',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

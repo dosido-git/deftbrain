@@ -1,59 +1,75 @@
 module.exports = {
-  slug:          'how-to-tell-if-something-is-overpriced',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Tell If Something Is Overpriced (Without Being a Pricing Nerd)",
-  titleHtml:     "How to Tell If Something Is Overpriced <em>(Without Being a Pricing Nerd)</em>",
-  shortTitle:    "How to Tell If Something Is Overpriced",
-  navTitle:      "How to tell if something is overpriced without being a pricing nerd",
-
-  description:   "Most prices are some combination of fair markup and pure extraction. Telling the difference is a learnable skill — five questions that let you read the tag without doing a spreadsheet.",
-  deck:          "Most prices are some combination of fair markup and pure extraction. Telling the difference is a learnable skill — five questions that let you read the tag without doing a spreadsheet.",
-
-  ledes: [
-    `You're holding a thing in a store. It's $89. You don't know if that's a fair price or a ridiculous one. Your brain is doing the calculation it always does, which is to compare the number to vague memories of other prices for vaguely similar things, which is not a calculation so much as a vibe. The vibe says it might be a little high but probably fine. The vibe is also occasionally wrong by 200%.`,
-    `Reading prices well isn't about memorizing what things should cost. It's about asking five questions that surface the structure of the price — what kind of markup it is, where it's coming from, and whether you have any leverage to push back. The questions take about ten seconds each. They will save you, conservatively, thousands of dollars over the next decade.`,
+  "slug": "how-to-tell-if-something-is-overpriced",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Tell If Something Is Overpriced (Without Being a Pricing Nerd)",
+  "titleHtml": "How to Tell If Something Is Overpriced <em>(Without Being a Pricing Nerd)</em>",
+  "shortTitle": "How to Tell If Something Is Overpriced",
+  "navTitle": "How to tell if something is overpriced without being a pricing nerd",
+  "description": "Most prices are some combination of fair markup and pure extraction. Telling the difference is a learnable skill — five questions that let you read the tag without doing a spreadsheet.",
+  "deck": "To tell if something is overpriced, compare it with the same item elsewhere, separate the item from the setting or brand, look for mandatory fees missing from the headline price, and notice whether you have alternatives. Prices run highest where walking away is hard.",
+  "answerList": [
+    "Compare the same item in other places.",
+    "Separate the item from the venue or brand.",
+    "Ask what the price is signaling.",
+    "Add up mandatory fees to get the real total.",
+    "Notice when you have no easy alternative."
   ],
-
-  steps: [
-    {
-      name: "What's the actual physical thing in the price?",
-      body: "Start with the inputs. A pair of jeans contains roughly $7 of denim and labor. A coffee drink contains 50 cents of beans and milk. A hotel room costs the hotel maybe $30 to clean and turn over. Once you've separated the physical cost from the price, you can see what fraction of the number you're paying is the thing itself versus everything else. If the physical thing is 5% of the price, you're not really paying for the thing — you're paying for what's wrapped around it. That's not always wrong, but it's worth knowing it's true.",
-    },
-    {
-      name: "What does the same thing cost in a different context?",
-      body: "The same bottle of water is $1.29 at Target, $4.50 at the airport, and $9 in a hotel mini-bar. None of these is the 'right' price; they're three different markups on the same input. When something feels expensive, the fastest sanity check is to imagine the same product in a different setting and see how the price would change. If the answer is *a lot*, you're not paying for the thing — you're paying for the venue. Which is fine if the venue is what you came for, and worth questioning if it isn't.",
-    },
-    {
-      name: "Is the price doing something other than reflecting cost?",
-      body: "Some prices are signaling rather than measuring. A $400 hoodie isn't four times more expensive to make than a $100 hoodie; it's priced at $400 because the price is part of what you're buying. A $35 entree at a restaurant priced for the experience is doing something different than a $35 entree at a place priced for the food. Whenever the price seems disconnected from the input, ask what else the price is doing — communicating exclusivity, segmenting customers, signaling the brand position. Once you can name the function, you can decide if you want to pay for it.",
-    },
-    {
-      name: "Are there fees, bundles, or 'requirements' that are really markup?",
-      body: "Watch for the line items that aren't really line items. The 'resort fee' that's mandatory but unnamed in the headline price. The 'service charge' that isn't a tip and goes to the venue. The 'preferred vendor' you're required to use. The 'processing fee' on a ticket. Each of these started its life as a way to keep the headline price low while reconstituting the actual price elsewhere — and over time, they've become the place where most consumer-product margin lives. If a price has more than one component and you didn't ask for them to be separated, the separation is the markup.",
-    },
-    {
-      name: "Could you walk away — and what happens to the price if you can't?",
-      body: "The single most reliable signal that something is overpriced is whether the seller has structurally limited your alternatives. The airport food court. The hospital cafeteria. The wedding venue's required caterer. The rental car at the desk after your flight landed. None of these are priced for fairness; they're priced for the fact that you have no exit. The reverse is also true: any market where you have lots of alternatives, can comparison-shop easily, and can leave without consequence is a market where prices stay reasonable. If you can't leave, you're probably being overcharged. The amount of overcharge is whatever the seller thinks they can take. The defense isn't being clever about prices — it's noticing the no-exit moments before you're inside them.",
-    },
+  "ledes": [
+    "Whether a price is too high depends less on what the item costs to make than on what it sells for elsewhere and how easily you can buy it somewhere else. Comparing prices, checking unit prices and adding up mandatory fees give the clearest picture. Since May 2025, an FTC rule has required sellers of live-event tickets and short-term lodging to show the total price, including mandatory fees, up front. In other settings, drip pricing still appears, so check the final total before paying.",
+    "You're holding something that costs $89, and you can't tell whether that's fair or ridiculous. Your brain compares it with vague memories of similar things, which is less a calculation than a feeling. A few questions turn the feeling into something you can check."
   ],
-
-  cta: {
-    glyph:    '🏷️',
-    headline: "Run the price through a quick autopsy",
-    body:     "MarkupDetective breaks down any price into its actual components — physical cost, location premium, brand premium, fees, and pure margin — so you can see what's structural and what's extractive before you decide to pay it.",
-    features: [
+  "steps": [
+    {
+      "name": "How much of a price is the product itself?",
+      "body": "Start with what you're physically getting, then notice everything around it: design, brand, packaging, staff, rent, convenience. In many products and services, the materials are a small share of the price, and that's not necessarily wrong. In food served away from home, for example, the USDA estimates most of each dollar goes to labor and services rather than ingredients. Knowing the split helps you decide whether the extras are worth it to you."
+    },
+    {
+      "name": "Why does the same product cost different amounts in different places?",
+      "body": "The same bottle of water costs far more at an airport or in a hotel minibar than at a supermarket. None of these is the 'right' price; each reflects a different setting, rent and set of alternatives. When something feels expensive, imagine the same product somewhere else. If the price would change a lot, you're mainly paying for the location. That's fine if the location is what you came for, and worth questioning if it isn't."
+    },
+    {
+      "name": "Why are some products priced much higher than they cost to make?",
+      "body": "Some prices are signaling rather than measuring. A $400 hoodie isn't four times more expensive to make than a $100 hoodie; it's priced at $400 because the price is part of what you're buying. A $35 entree at a restaurant priced for the experience is doing something different than a $35 entree at a place priced for the food. Whenever the price seems disconnected from the input, ask what else the price is doing — communicating exclusivity, segmenting customers, signaling the brand position. Once you can name the function, you can decide if you want to pay for it."
+    },
+    {
+      "name": "How do hidden fees make something overpriced?",
+      "body": "Watch for charges that aren't in the headline price: a mandatory resort fee, a service charge that isn't a tip, a ticket processing fee, a required vendor. For live-event tickets and short-term lodging, an FTC rule in effect since May 2025 requires the total price, including mandatory fees, to be shown up front. Elsewhere, add every required charge yourself and compare totals, not headline prices."
+    },
+    {
+      "name": "How do you know if you're being overcharged because you have no choice?",
+      "body": "A strong signal is whether your alternatives are limited: the airport food court, the hospital cafeteria, the wedding venue's required caterer, the rental car counter after a late flight. Prices in those settings can run higher because leaving is hard. Where you can compare and walk away easily, competition tends to keep prices in check. The defense is noticing those no-exit moments before you're in them, and planning around them when you can."
+    }
+  ],
+  "sources": [
+    {
+      "label": "FTC: Trade Regulation Rule on Unfair or Deceptive Fees (16 CFR Part 464)",
+      "url": "https://www.ftc.gov/system/files/ftc_gov/pdf/r207011_udf_rule_2024_final_0.pdf"
+    },
+    {
+      "label": "USDA Economic Research Service: Food Dollar Series, Summary Findings",
+      "url": "https://www.ers.usda.gov/data-products/food-dollar/summary-findings"
+    },
+    {
+      "label": "NIST: The Unit Price is Right",
+      "url": "https://www.nist.gov/blogs/taking-measure/unit-price-right"
+    }
+  ],
+  "cta": {
+    "glyph": "🏷️",
+    "headline": "Run the price through a quick autopsy",
+    "body": "MarkupDetective breaks down any price into its actual components — physical cost, location premium, brand premium, fees, and pure margin — so you can see what's structural and what's extractive before you decide to pay it.",
+    "features": [
       "Five-second price autopsy",
       "Cost-stack breakdown for any item",
       "Markup-vs-extraction analysis",
       "Comparable-price benchmarking",
-      "Negotiation leverage identification",
+      "Negotiation leverage identification"
     ],
-    toolId:   'MarkupDetective',
-    toolName: 'MarkupDetective',
+    "toolId": "MarkupDetective",
+    "toolName": "MarkupDetective"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

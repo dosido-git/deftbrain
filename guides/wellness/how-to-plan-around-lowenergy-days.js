@@ -1,36 +1,65 @@
 module.exports = {
-  slug:          'how-to-plan-around-lowenergy-days',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "How to Plan Around Low-Energy Days",
-  titleHtml:     "How to Plan Around <em>Low-Energy Days</em>",
-  shortTitle:    "Plan Around Low-Energy Days",
-  navTitle:      "plan around low-energy days",
-  description:   "Some days have eight hours of focus. Some have ninety minutes. Here is how to plan when the tank is low.",
-  deck:          "Some days have eight hours of focus. Some have ninety minutes. Here is how to plan when the tank is low.",
-  ledes: [
-    `Tuesday. You woke up tired again. The to-do list is the same one you wrote yesterday because you got through about a third of it. Coffee is not helping. The thought of starting anything feels like trying to push a car uphill.\n\nThe problem is not laziness and it is not a lack of discipline. It is that you keep planning your days as if every day has the same energy budget, and they do not. Some days you have eight hours of focus available. Some days you have ninety minutes. Treating those two days the same is what burns you out.`,
-    `What follows: how to plan around the days when the tank is low, instead of fighting them. Then a tool that runs the budget for you.`,
+  "slug": "how-to-plan-around-lowenergy-days",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Plan Around Low-Energy Days",
+  "titleHtml": "How to Plan Around <em>Low-Energy Days</em>",
+  "shortTitle": "Plan Around Low-Energy Days",
+  "navTitle": "plan around low-energy days",
+  "description": "Some days have eight hours of focus. Some have ninety minutes. Here is how to plan when the tank is low.",
+  "deck": "On a low-energy day, rate your actual energy honestly, cut the list to what must happen today, do the single most important item first, schedule a midday break before you crash, and drop or defer the rest openly. Plan for the day you have, not the one you wanted.",
+  "answerList": [
+    "Rate today's energy honestly.",
+    "Cut the list to what must happen.",
+    "Do the one essential task first.",
+    "Schedule a midday reset.",
+    "Defer the rest and tell people."
   ],
-  steps: [
-    { name: 'Name the energy you actually have, not the energy you wish you had', body: 'Most people overestimate their energy by a factor of two. They look at the calendar and think they will execute everything on it, then feel like a failure when they do not. Rate your current energy on a 1-to-10 scale honestly. A 3 day is real. A 4 day is real. Pretending it is a 7 does not make it one.' },
-    { name: 'Strip the list down to what actually has to happen today', body: 'List every task you had planned, with its energy cost and its priority. The right system will show you what fits inside the budget you actually have, and it will tell you explicitly which items to drop or defer. The permissions piece is the part that matters. Most of us cannot grant ourselves permission to skip something. The system gives you cover.' },
-    { name: 'Front-load the one thing that has to ship', body: 'Pick the single highest-priority item and do it first, before the energy you have leaks out into Slack and email. On a low-energy day, you have one move. Spending it on the inbox instead of the actual deliverable is how nothing gets done. Block the first 60 to 90 minutes for the one thing.' },
-    { name: 'Plan a recharge before you crash, not after', body: 'Queue up a deep reset for midday. A walk, a nap, twenty minutes of nothing. The instinct on a low-energy day is to push through and recover later, but later is when the next low-energy day happens. Treating the recharge as a scheduled appointment, not a reward, is what breaks the cycle.' },
-    { name: 'Accept the day for what it is and stop fighting it', body: 'The fastest way out of a low-energy day is to stop pretending it is not one. Drop the items you decided to drop. Move the meetings you can move. Send the message that says you will follow up tomorrow. The day you actually plan around your real energy is the day you start getting things done again.' }
+  "ledes": [
+    "Energy varies from day to day with sleep, stress, health and workload, so planning every day as if it had the same capacity tends to lead to unfinished lists and burnout. On a low-energy day, a practical plan is to estimate your real capacity, keep only what must happen, do the most important task first, and build in a break. If low energy persists despite rest, the NHS recommends seeing a doctor to rule out medical causes.",
+    "Tuesday. You woke up tired again, the list is yesterday's list because you got through a third of it, and coffee isn't helping. The problem isn't laziness; it's planning a ninety-minute day as if it were an eight-hour one."
   ],
-  cta: {
-    glyph:    '✨',
-    headline: "Not sure what fits the energy you have right now?",
-    body:     "Tell PEP how much you have in you, how much time, and what's going on. Get one suggestion that actually fits, plus a couple of alternatives — never framed as guaranteed to help.",
-    features: [
+  "steps": [
+    {
+      "name": "How do you know how much energy you have today?",
+      "body": "People often plan as if they'll have their best-day energy every day, then feel like failures when they don't. Rate your current energy honestly, say on a 1-to-10 scale. A 3 day is real. A 4 day is real. Pretending it's a 7 doesn't make it one, and planning for a 3 makes it more likely something important gets done."
+    },
+    {
+      "name": "How do you decide what to drop on a low-energy day?",
+      "body": "List everything you had planned, and next to each item note roughly how much energy it takes and how much it matters today. Keep what's both essential and possible within your real budget. Mark the rest explicitly as dropped or moved to a named day. Writing down the decision to skip something is the part that matters, because it turns a vague sense of failing into a choice you made."
+    },
+    {
+      "name": "What should you do first when you're low on energy?",
+      "body": "Pick the single highest-priority item and do it first, before the energy you have leaks out into Slack and email. On a low-energy day, you have one move. Spending it on the inbox instead of the actual deliverable is how nothing gets done. Block the first 60 to 90 minutes for the one thing."
+    },
+    {
+      "name": "When should you take a break on a low-energy day?",
+      "body": "Schedule a reset for midday: a walk, a short nap, twenty minutes of nothing. The instinct on a low day is to push through and recover later, but later is often when the next low day arrives. Treating the break as an appointment rather than a reward helps break that cycle."
+    },
+    {
+      "name": "How do you accept a low-energy day without feeling guilty?",
+      "body": "The fastest way out of a low-energy day is to stop pretending it is not one. Drop the items you decided to drop. Move the meetings you can move. Send the message that says you will follow up tomorrow. The day you actually plan around your real energy is the day you start getting things done again."
+    }
+  ],
+  "sources": [
+    {
+      "label": "NHS: Tiredness and fatigue",
+      "url": "https://www.nhs.uk/symptoms/tiredness-and-fatigue/"
+    }
+  ],
+  "cta": {
+    "glyph": "✨",
+    "headline": "Not sure what fits the energy you have right now?",
+    "body": "Tell PEP how much you have in you, how much time, and what's going on. Get one suggestion that actually fits, plus a couple of alternatives — never framed as guaranteed to help.",
+    "features": [
       "One top pick plus alternatives, matched to your energy, time, mood, and location",
       "Just tell me what to do skips the menu when even choosing feels like too much",
       "Rate what you try — PEP learns from your own reported results, not a formula"
     ],
-    toolId:   'PEP',
-    toolName: 'PEP',
+    "toolId": "PEP",
+    "toolName": "PEP"
   },
-  published: '2026-04-29',
-  modified:  '2026-09-05',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

@@ -1,69 +1,74 @@
 module.exports = {
-  slug:          'how-to-escalate-when-the-official-answer-is-no',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Escalate When the Official Answer Is No (The External Paths Most People Don't Know Exist)",
-  titleHtml:     "How to Escalate When the Official Answer Is No <em>(The External Paths Most People Don&#39;t Know Exist)</em>",
-  shortTitle:    "How to Escalate When the Official Answer Is No",
-  navTitle:      "How to escalate when the official answer is no and the external paths most people don't know exist",
-
-  description:  "How to escalate after a company says no: the right regulator, chargebacks, small claims court, and attorney-general and BBB complaints.",
-  deck:         "When a company's final answer is no, go outside it. In the US, complain to the regulator for that industry (the CFPB for banks and cards, the FCC for telecoms), use a card chargeback for anything you paid by card, consider small claims court for money owed, and file with your state attorney general and the BBB together.",
-  answerList: [
+  "slug": "how-to-escalate-when-the-official-answer-is-no",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Escalate When the Official Answer Is No (The External Paths Most People Don't Know Exist)",
+  "titleHtml": "How to Escalate When the Official Answer Is No <em>(The External Paths Most People Don&#39;t Know Exist)</em>",
+  "shortTitle": "How to Escalate When the Official Answer Is No",
+  "navTitle": "How to escalate when the official answer is no and the external paths most people don't know exist",
+  "description": "How to escalate after a company says no: the right regulator, chargebacks, small claims court, and attorney-general and BBB complaints.",
+  "deck": "When a company's final answer is no, go outside it. In the US, complain to the regulator for that industry (the CFPB for banks and cards, the FCC for telecoms), dispute card payments with your issuer, consider small claims court, and file with your state attorney general.",
+  "answerList": [
     "Complain to the regulator for that industry.",
     "Use a card chargeback for anything you paid by card.",
     "Consider small claims court for money owed.",
     "File with your state attorney general and the BBB together.",
-    "If they then offer a settlement, weigh it before accepting.",
+    "If they then offer a settlement, weigh it before accepting."
   ],
-  sources: [
-    { label: "CFPB — Submit a complaint about a financial product or service", url: "https://www.consumerfinance.gov/complaint/" },
-    { label: "USA.gov — Where to file a consumer complaint", url: "https://www.usa.gov/consumer-complaints" },
+  "ledes": [
+    "When a company's internal escalation ends in no, outside channels remain: industry regulators, state attorneys general, your card issuer's dispute process and small claims court. The CFPB, for example, forwards complaints to financial companies and generally expects a response within 15 days; the FCC does the same for telecom and cable billing. These bodies can't guarantee an outcome, but a complaint creates a record and requires the company to answer someone other than you.",
+    "Frontline support said no. The supervisor said no. Customer relations and the executive office said no, politely and consistently. Most people stop here, assuming a repeated no must be the end. Often it isn't: the company's internal limits aren't the only rules that apply."
   ],
-
-  ledes: [
-    `You've gone all the way through the company's escalation chain. Frontline support said no. The supervisor said no. The supervisor's supervisor said no. Customer relations said no. The executive office, when you reached it, said no. The official answer is, in fact, no, delivered with consistent and increasingly polite firmness. Most people stop here, partly because they've run out of internal options to try and partly because they assume that the company's repeated no must be the actual end of the conversation.`,
-    `It usually isn't. Companies have internal authority limits, but the consumer protection ecosystem outside any individual company has more leverage than the company itself does. Regulators, attorneys general, chargeback systems, and small claims courts can override decisions that no internal escalation could reach — and they're meaningfully more accessible than most consumers realize. The companies that depend on customers giving up at the internal-no stage are also exactly the companies that often suddenly find new options when an external escalation begins.`,
+  "steps": [
+    {
+      "name": "Who can you complain to when a company refuses to help?",
+      "body": "Different industries have different regulators. Banks, credit cards and loans: the Consumer Financial Protection Bureau (CFPB). Phone, internet and cable: the Federal Communications Commission (FCC). Airlines: the Department of Transportation (DOT). Insurance: your state's insurance department. Investment firms: the SEC or FINRA. Utilities: your state's public utility commission. Most have an online complaint form. The CFPB sends complaints to the company and generally expects a response within 15 days, or up to 60 days for a final answer in complex cases. A company that ignored your emails may respond differently when a regulator forwards the complaint."
+    },
+    {
+      "name": "Can a credit card chargeback override a company's refusal?",
+      "body": "If you paid by credit card, the dispute process runs through your card issuer, not the merchant. Choose the reason that fits: goods or services not as described, not received, billing after cancellation, or unauthorized. The issuer investigates and decides. For billing errors, the Fair Credit Billing Act requires a written dispute within 60 days after the statement showing the charge. A dispute is a reasonable early step rather than only a last resort, as long as you've tried the merchant first for quality problems."
+    },
+    {
+      "name": "Is small claims court worth it for a dispute with a company?",
+      "body": "For clear money owed, small claims court is designed to be used without a lawyer. Dollar limits vary widely by state, and filing fees and timelines vary by court, so check your state or county court's self-help pages. Many courts expect you to send a written demand first. Sometimes a company will settle once a case is filed, but don't count on it; go in with organized documentation and expect to present your case."
+    },
+    {
+      "name": "Should you file with the BBB and the attorney general at the same time?",
+      "body": "You can. The Better Business Bureau is a private nonprofit with no enforcement power; it forwards your complaint to the business, asks for a response, and records the outcome on the company's public profile. Your state attorney general's consumer office has enforcement authority and uses complaints to spot patterns, and many offices also forward complaints to businesses. Both are free. Filing both costs little time, though neither guarantees a result."
+    },
+    {
+      "name": "What should you do if a company offers a settlement after you complain?",
+      "body": "Frequently, what happens after you've started external escalation is that the company suddenly contacts you with a settlement offer. The offer might come through the regulator, through the BBB process, through the chargeback dispute, or directly to you with vague language about 'reviewing your case again.' This is the moment most worth handling carefully. The offer is often less than full resolution, and the company is hoping you'll accept it and withdraw the complaints. Decide what you actually want before responding. If the offer matches what you've been asking for, accept it and document the resolution. If it's partial, counter-propose. If it's substantively inadequate, decline and let the regulatory process continue. Don't withdraw an active complaint until the resolution is in writing and the funds are received. Companies sometimes offer a settlement contingent on withdrawal, then delay the actual payment indefinitely. The complaint is your leverage; don't release it until you have what you negotiated for."
+    }
   ],
-
-  steps: [
+  "sources": [
     {
-      name: "Who can you complain to when a company refuses to help?",
-      body: "Different industries have different regulators with different powers. Banks and credit cards: Consumer Financial Protection Bureau (CFPB). Telecom and cable: Federal Communications Commission (FCC). Airlines: Department of Transportation (DOT). Insurance: your state's insurance commissioner. Investment firms: SEC or FINRA. Healthcare billing: state attorney general or state department of health. Utilities: your state's public utility commission. The regulator's website will have a complaint form that takes 10-20 minutes to complete. They forward the complaint to the company with a required response window — usually 30-60 days. The complaint goes into a public record. Companies that ignored your direct contact often respond within days when the regulator is the forwarder, because non-response to a regulator-flagged complaint creates a different kind of problem for them than ignoring a customer email.",
+      "label": "CFPB: Your company's role in the complaint process",
+      "url": "https://www.consumerfinance.gov/compliance/consumer-complaint-program/company-process/"
     },
     {
-      name: "Use the chargeback for anything that involves a payment",
-      body: "If your dispute involves money already paid via credit card, the chargeback is a parallel system that bypasses the company entirely. File under the appropriate reason code: 'goods/services not as described,' 'merchandise not received,' 'services not provided,' 'continued billing after cancellation,' 'unauthorized transaction.' The card company makes the call, not the merchant — and federal law (the Fair Credit Billing Act) gives you specific protections within 60 days of the original charge. Even chargebacks the merchant ultimately wins cost them processing fees, which is why the chargeback notice itself often produces a settlement offer the company refused to make through customer service. Don't think of chargeback as the last resort; think of it as a fast leverage move that companies often want to avoid.",
+      "label": "FCC: How the FCC Handles Your Complaint",
+      "url": "https://consumercomplaints.fcc.gov/hc/en-us/articles/202752940-How-the-FCC-Handles-Your-Complaint"
     },
     {
-      name: "Consider small claims court for monetary harm under your state's limit",
-      body: "For disputes involving clear monetary harm under your state's small claims limit (usually $5,000-$10,000), small claims court is more accessible than people realize. No lawyer required. Filing fees are modest ($30-100). Cases typically resolve within 60-90 days. Companies often don't show up for small claims hearings — the cost of sending someone exceeds what they'd save by winning — and judgments by default are common. Even when companies do appear, judges often side with documented consumer claims. The small claims threat is also a strong negotiation lever: companies that refused to settle often reverse course when a court date is on the calendar, because litigating a small case isn't cost-effective for them.",
-    },
-    {
-      name: "File the BBB and AG complaints together for pressure across channels",
-      body: "Two complaints worth filing in parallel for most cases: Better Business Bureau and your state attorney general. The BBB doesn't have enforcement authority but creates a public record on the company's profile that affects future customers. The state AG does have enforcement authority and can investigate patterns of consumer harm. Filing both simultaneously creates pressure across two channels — the BBB visible publicly, the AG as institutional weight — and the combination often produces movement that either alone might not. Both are free, both take 15-20 minutes, and the worst case is that nothing happens. The best case — common enough to be worth the time — is that the company resolves the issue once the complaints land.",
-    },
-    {
-      name: "When the external escalation produces movement — and what to do with it",
-      body: "Frequently, what happens after you've started external escalation is that the company suddenly contacts you with a settlement offer. The offer might come through the regulator, through the BBB process, through the chargeback dispute, or directly to you with vague language about 'reviewing your case again.' This is the moment most worth handling carefully. The offer is often less than full resolution, and the company is hoping you'll accept it and withdraw the complaints. Decide what you actually want before responding. If the offer matches what you've been asking for, accept it and document the resolution. If it's partial, counter-propose. If it's substantively inadequate, decline and let the regulatory process continue. Don't withdraw an active complaint until the resolution is in writing and the funds are received. Companies sometimes offer a settlement contingent on withdrawal, then delay the actual payment indefinitely. The complaint is your leverage; don't release it until you have what you negotiated for.",
-    },
+      "label": "BBB: How BBB Complaints Are Handled",
+      "url": "https://www.bbb.org/process-of-complaints-and-reviews/complaints"
+    }
   ],
-
-  cta: {
-    glyph:    '🚪',
-    headline: "Find the external path that has actual teeth",
-    body:     "Not So Fast! maps the escalation ladder for your specific dispute — the internal steps, the regulator that applies and how to file with it, and the last resorts — with an honest read on the likely odds and when to stop.",
-    features: [
+  "cta": {
+    "glyph": "🚪",
+    "headline": "Find the external path that has actual teeth",
+    "body": "Not So Fast! maps the escalation ladder for your specific dispute — the internal steps, the regulator that applies and how to file with it, and the last resorts — with an honest read on the likely odds and when to stop.",
+    "features": [
       "An escalation ladder in the order to try it",
       "The regulator that applies and how to file",
       "Last resorts, for when the ladder runs out",
       "Likely odds, and when to stop"
     ],
-    toolId:   'NotSoFast',
-    toolName: "Not So Fast!",
+    "toolId": "NotSoFast",
+    "toolName": "Not So Fast!"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-08',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

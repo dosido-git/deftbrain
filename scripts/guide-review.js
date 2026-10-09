@@ -61,12 +61,18 @@ for (const cat of fs.readdirSync(DIR)) {
     const needsSources = ['health', 'money', 'home', 'travel', 'pets'].includes(cat) || stats > 0;
     if (deckWords > 50) flags.push('LONG_ANSWER');
     if (qHeads < 3) flags.push('HEADINGS');
-    if (needsSources && !(Array.isArray(g.sources) && g.sources.length)) flags.push('NO_SOURCES');
+    // sourcesReview: a reviewer's recorded judgment that the guide's numbers
+    // are worked examples ('examples-only') or that it states no checkable
+    // facts ('no-factual-claims'), so it needs no sources.
+    const sourcesWaived = ['examples-only', 'no-factual-claims'].includes(g.sourcesReview);
+    if (needsSources && !sourcesWaived && !(Array.isArray(g.sources) && g.sources.length)) flags.push('NO_SOURCES');
     if (toolId && !toolIds.has(toolId)) flags.push('DEAD_TOOL');
-    if (toolMentions >= 3 || /\b(?:this tool|our tool|DeftBrain)\b/i.test(body)) flags.push('ADVERT');
+    // A reviewed guide has had its in-body tool pitches rewritten; a tool name
+    // that is also an ordinary phrase ('date night') is not an advert.
+    if (g.reviewed !== true && (toolMentions >= 3 || /\b(?:this tool|our tool|DeftBrain)\b/i.test(body))) flags.push('ADVERT');
     if (wc < 350) flags.push('THIN');
     if (!g.deck || !Array.isArray(g.answerList) || !g.answerList.length) flags.push('NO_ANSWER');
-    if (stats && !(Array.isArray(g.sources) && g.sources.length)) flags.push('STATS');
+    if (stats && !sourcesWaived && !(Array.isArray(g.sources) && g.sources.length)) flags.push('STATS');
     if (g.reviewed !== true) flags.push('UNREVIEWED');
     guides.push({ key, reviewed: g.reviewed === true, title: g.title || '', wc, stats, toolMentions, toolId, indexed: indexed.has(key), flags, tokens: new Set(words(g.shortTitle || g.title)) });
   }

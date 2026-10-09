@@ -1,37 +1,60 @@
 module.exports = {
-  slug:          'how-to-plan-your-week-so-you-dont-crash-by-thursday',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "How to Plan Your Week So You Do Not Crash by Thursday",
-  titleHtml:     "How to Plan Your Week <em>So You Do Not Crash by Thursday</em>",
-  shortTitle:    "No Thursday Crash",
-  navTitle:      "avoid the thursday crash",
-  description:   "Most weeks crash on Thursday because the social load front-loaded into Monday and Tuesday. Here is how to redistribute the week so the energy lasts.",
-  deck:          "Most weeks crash on Thursday because the social load front-loaded into Monday and Tuesday. Here is how to redistribute the week so the energy lasts.",
-  ledes: [
-    `You started the week energized. Two big work meetings Monday, dinner with a friend Tuesday, a happy hour Wednesday. Each one was fine on its own. By Thursday afternoon you are staring at your screen unable to draft a sentence, and Friday is a wash. The weekend was supposed to be social, but you cancel everything and recover.\n\nThe Thursday crash is structural, not accidental. Most weeks pile the social and cognitive load into the first three days, with each day adding to the running deficit. By day four, your battery has been spending faster than recovery sleep can refill it. The fix is not stoicism — it is redistribution. The same week, scheduled differently, does not crash. The events themselves are not the problem; the sequence is.`,
-    `Here is how to redistribute — and how Social Battery Advisor rebuilds your week.`,
+  "slug": "how-to-plan-your-week-so-you-dont-crash-by-thursday",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Plan Your Week So You Do Not Crash by Thursday",
+  "titleHtml": "How to Plan Your Week <em>So You Do Not Crash by Thursday</em>",
+  "shortTitle": "No Thursday Crash",
+  "navTitle": "avoid the thursday crash",
+  "description": "Most weeks crash on Thursday because the social load front-loaded into Monday and Tuesday. Here is how to redistribute the week so the energy lasts.",
+  "deck": "To avoid a midweek crash, plan energy across the whole week rather than day by day: cap demanding social events, spread them out instead of stacking them, put heavy plans before lighter days, and protect at least one unscheduled evening. The same events in a different order cost less.",
+  "answerList": [
+    "Plan the week as one budget.",
+    "Spread demanding events out.",
+    "Place heavy plans before light days.",
+    "Protect one free evening.",
+    "Rearrange before you cancel."
   ],
-  steps: [
-    { name: 'Treat your week like a budget, not a series of isolated days', body: 'Each day does not start fresh. Energy carries over — Tuesday\'s deficit shows up Wednesday afternoon. The right unit of planning is the week, not the day. Set a weekly social budget — say, three to four engaging social events maximum — and treat it like a financial budget. You can spend it however you want, but you cannot exceed it without consequences. The consequences arrive predictably on Thursday.' },
-    { name: 'Spread events out, do not stack them', body: 'Three events on Mon-Tue-Wed is a stack. The same three events Mon-Wed-Fri is a spread. The total is the same; the cost is not. Stacks compound because there is no recovery time between events. Spreads let each event be cheaper because you arrive at it rested. If your week has three social commitments, place them on alternating days, not consecutive ones. This single change prevents most Thursday crashes.' },
-    { name: 'Match the day to the recovery window after', body: 'A high-energy event on a night before an early morning is more expensive than the same event on a Friday night. Match heavy social commitments to days where you have recovery time after — Friday night before a no-plans Saturday is cheap; Tuesday night before a 7am Wednesday is expensive. The energy cost is the event plus the lack of recovery. Build the recovery into the schedule, not the hope.' },
-    { name: 'Protect at least one fully unscheduled evening per week', body: 'Every week needs one evening with no social plan, no event, no work obligation. Not as a backup — as a default. The unscheduled evening is what your battery uses to refill mid-week. Without it, the second half of the week runs on empty. Most people lose this evening because they say yes to a casual invitation; protecting it is the highest-value scheduling habit you can have.' },
-    { name: 'Use Social Battery Advisor to rebuild the week', body: 'Drop your usual week into Social Battery Advisor and it shows where the energy peak is, where the crash will land, and proposes a redistributed schedule with the same events in different positions. Often you can keep every commitment and still avoid the crash by sequencing them right. The audit makes the structural fix visible. Most people are running their week one way out of habit, not because it is the optimal sequence.' }
+  "ledes": [
+    "Energy carries over from one day to the next, so a week that stacks meetings, dinners and events into the first few days often leaves people depleted by Thursday. Planning the week as a single budget, spreading demanding commitments across alternate days, placing late nights before lighter days, and keeping at least one evening free usually reduces that midweek crash without cutting the commitments themselves.",
+    "Two big meetings Monday, dinner Tuesday, drinks Wednesday. Each was fine. By Thursday afternoon you can't draft a sentence, Friday is a write-off, and you cancel the weekend to recover. Often the problem is the order, not the events."
   ],
-  cta: {
-    glyph:    '⚡',
-    headline: "See where your social energy actually goes.",
-    body:     "Drop in a typical week of social interactions and Social Battery Advisor shows you the actual cost of each — which events drain you, which restore you, and which people leave you flat. Then it rebuilds the week around the energy reality.",
-    features: [
+  "steps": [
+    {
+      "name": "Why do you feel exhausted by Thursday?",
+      "body": "Each day doesn't start fresh. Energy carries over, so Tuesday's deficit shows up on Wednesday afternoon. That makes the week, not the day, the useful unit for planning. Set a rough weekly limit on demanding social events, perhaps three or four, and treat it like a budget. You can spend it however you like, but going over it has a cost, and that cost often arrives around Thursday."
+    },
+    {
+      "name": "Is it better to spread out social plans or group them together?",
+      "body": "Three events on Monday, Tuesday and Wednesday is a stack. The same three on Monday, Wednesday and Friday is a spread. The total is the same, but the cost often isn't, because spreading leaves recovery time between them and you arrive at each one more rested. If your week has three social commitments, try alternate days instead of consecutive ones."
+    },
+    {
+      "name": "Which days are best for big social plans?",
+      "body": "A high-energy event on a night before an early morning is more expensive than the same event on a Friday night. Match heavy social commitments to days where you have recovery time after — Friday night before a no-plans Saturday is cheap; Tuesday night before a 7am Wednesday is expensive. The energy cost is the event plus the lack of recovery. Build the recovery into the schedule, not the hope."
+    },
+    {
+      "name": "How many free evenings do you need in a week?",
+      "body": "Many people find they need at least one evening a week with no social plan, event or work obligation, kept as the default rather than a backup. It's when your energy refills midweek. Without it, the second half of the week can run on empty. This evening is easy to lose to a casual invitation, so it's worth protecting deliberately."
+    },
+    {
+      "name": "How do you rearrange your week to avoid burnout?",
+      "body": "Write out a typical week with every commitment on it and mark which ones are draining. Look for stacks of draining events on consecutive days, late nights before early starts, and weeks with no free evening. Then try moving things rather than cutting them: swap a dinner to Friday, push a meeting to the afternoon after a quiet morning, move a call to a lighter day. Often you can keep every commitment and still avoid the crash by changing the order."
+    }
+  ],
+  "cta": {
+    "glyph": "⚡",
+    "headline": "See where your social energy actually goes.",
+    "body": "Drop in a typical week of social interactions and Social Battery Advisor shows you the actual cost of each — which events drain you, which restore you, and which people leave you flat. Then it rebuilds the week around the energy reality.",
+    "features": [
       "Per-event energy cost breakdown",
       "Identifies who drains and who restores",
       "Rebuilt week proposal",
       "Catches energy traps you keep saying yes to"
     ],
-    toolId:   'SocialBatteryAdvisor',
-    toolName: 'Social Battery Advisor',
+    "toolId": "SocialBatteryAdvisor",
+    "toolName": "Social Battery Advisor"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

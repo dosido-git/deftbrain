@@ -1,37 +1,60 @@
 module.exports = {
-  slug:          'how-to-make-a-regular-weekend-feel-like-a-small-vacation',
-  category:      'practical',
-  categoryLabel: 'Practical',
-  title:         "How to Make a Regular Weekend Feel Like a Small Vacation",
-  titleHtml:     "How to Make a Regular Weekend Feel Like <em>a Small Vacation</em>",
-  shortTitle:    "Weekend as a Mini-Vacation",
-  navTitle:      "weekend as small vacation",
-  description:   "You cannot take a real trip every month. You can make a Saturday feel like a real break with a few small reframes.",
-  deck:          "You cannot take a real trip every month. You can make a Saturday feel like a real break with a few small reframes.",
-  ledes: [
-    `You came back from vacation in November and have not really rested since. Real time off is months away, and you are too tired to wait that long. You think about how the right Saturday could feel like a tiny break — different food, different rhythm, different scenery — but Saturday rolls around and you are back to errands and laundry and the usual route to the usual coffee. Monday hits and you cannot remember what the weekend was.\n\nA weekend will not replace a vacation. It can borrow more of vacation's vocabulary than people realize, though, and the borrow is mostly free. Vacation is mostly about a small set of conditions: a different setting, a slower pace, no errands, food you would not normally eat, attention not on a screen. Most weekends miss because they fail on every one of those. A weekend that hits even three feels like a different weekend.`,
-    `What follows: the moves that import vacation into a regular weekend, and the ones that do not work. Then a tool that designs yours.`,
+  "slug": "how-to-make-a-regular-weekend-feel-like-a-small-vacation",
+  "category": "practical",
+  "categoryLabel": "Practical",
+  "title": "How to Make a Regular Weekend Feel Like a Small Vacation",
+  "titleHtml": "How to Make a Regular Weekend Feel Like <em>a Small Vacation</em>",
+  "shortTitle": "Weekend as a Mini-Vacation",
+  "navTitle": "weekend as small vacation",
+  "description": "You cannot take a real trip every month. You can make a Saturday feel like a real break with a few small reframes.",
+  "deck": "To make a regular weekend feel like a small vacation, batch errands into one block, change your setting even briefly, eat one unhurried meal you wouldn't have on a weekday, put your phone away for a stretch, and set a Sunday cutoff for work email.",
+  "answerList": [
+    "Batch chores into one block.",
+    "Go somewhere new nearby.",
+    "Make one special, unhurried meal.",
+    "Put the phone in another room for a few hours.",
+    "Stop checking work by Sunday afternoon."
   ],
-  steps: [
-    { name: 'Move the errands. Do not let them eat the weekend.', body: 'The single biggest reason weekends feel like nothing is that errands and chores spread out across both days, eating the bandwidth that would otherwise feel like time off. Compress them. Do all of it Friday evening or Saturday morning, in one block, hard. Then the rest of the weekend is genuinely free. A vacation does not have a Costco run on Sunday afternoon. Yours should not either.' },
-    { name: 'Change setting. Even a little. Even cheaply.', body: 'Vacation works partly because the room is different. You can borrow that without leaving town. Have breakfast somewhere new. Spend an hour in a part of the city you do not usually visit. Drive thirty minutes to a town you have never been to. The novelty cost of a thirty-minute drive is enormous compared to the actual cost. Same brain refresh, fraction of the trip.' },
-    { name: 'Eat one meal you would never eat on a Tuesday', body: 'Food is half of what makes vacation feel like vacation. You do not need to spend a lot. Make pancakes on Saturday morning. Buy the good cheese. Cook something that takes a while. Try the cuisine you keep meaning to. The signal that travels is unusual and unhurried, which is a different category from regular weeknight dinner. One meal does it. You do not need three.' },
-    { name: 'Put away the screens for one block', body: 'On vacation you are not on Slack. The reason it feels different is partly that. Pick one block of the weekend — Saturday morning until lunch, Sunday afternoon — and put the phone in another room. No email, no scrolling, no checking. That alone shifts the texture of the time more than anything else on this list. The phone is the doorway to Monday. Close it.' },
-    { name: 'Stop the weekend at Sunday afternoon, not Sunday night', body: 'The Sunday-night Slack-check ruins more weekends than any other single behavior. Decide in advance that Sunday at 5 p.m. is the cutoff — no work email, no looking ahead, no review. Make a real dinner. Read. Watch something. The vacation feeling needs the Sunday evening to land. Spend Sunday night already in Monday and the whole weekend retroactively shrinks.' }
+  "ledes": [
+    "A weekend can borrow much of what makes a vacation restful without travel: clearing errands into a single block so the rest of the time is free, a change of scenery such as a new neighborhood or nearby town, food that's different from the weekday routine, a block of time away from the phone, and a firm end to work checking before Sunday evening. Hitting even a few of these can make two days feel noticeably different.",
+    "Real time off is months away and you're tired now. Saturday arrives and it's errands, laundry and the usual coffee route, and by Monday you can't remember what the weekend was."
   ],
-  cta: {
-    glyph:    '🗺️',
-    headline: "Plan it in two minutes. Live it in two hours.",
-    body:     "Tell it your city, your time window, and your budget. It returns a specific itinerary — where to go, when, what to bring, what to look for — built around novelty within your real constraints.",
-    features: [
+  "steps": [
+    {
+      "name": "How do you keep errands from taking over the weekend?",
+      "body": "A big reason weekends feel like nothing is that errands and chores spread across both days and eat the time that would otherwise feel free. Compress them: do them Friday evening or Saturday morning, in one focused block. Then the rest of the weekend is genuinely open. A vacation doesn't have a warehouse-store run on Sunday afternoon; yours doesn't have to either."
+    },
+    {
+      "name": "How can you feel like you're on vacation without traveling?",
+      "body": "Vacation works partly because the room is different. You can borrow that without leaving town. Have breakfast somewhere new. Spend an hour in a part of the city you do not usually visit. Drive thirty minutes to a town you have never been to. The novelty cost of a thirty-minute drive is enormous compared to the actual cost. Same brain refresh, fraction of the trip."
+    },
+    {
+      "name": "What should you eat to make a weekend feel special?",
+      "body": "Food is a big part of what makes a vacation feel different. It doesn't need to be expensive. Make pancakes on Saturday morning, buy the good cheese, cook something slow, try the cuisine you keep meaning to. What carries over is unusual and unhurried, a different category from a weeknight dinner. One such meal is often enough."
+    },
+    {
+      "name": "How do you take a break from your phone on the weekend?",
+      "body": "On vacation you're usually not on work chat, and that's part of why it feels different. Pick one block of the weekend, Saturday morning until lunch or Sunday afternoon, and put the phone in another room. No email, no scrolling, no checking. That alone can change how the time feels."
+    },
+    {
+      "name": "How do you stop the Sunday scaries from ruining the weekend?",
+      "body": "Checking work on Sunday evening can pull the whole weekend back toward Monday. Deciding in advance on a cutoff, say 5pm Sunday, with no work email and no looking ahead, protects the last part of the break. Make a real dinner, read, watch something. Spending Sunday night already in Monday can make the whole weekend feel shorter in hindsight."
+    }
+  ],
+  "cta": {
+    "glyph": "🗺️",
+    "headline": "Plan it in two minutes. Live it in two hours.",
+    "body": "Tell it your city, your time window, and your budget. It returns a specific itinerary — where to go, when, what to bring, what to look for — built around novelty within your real constraints.",
+    "features": [
       "2-4 hour plans, low or no cost",
       "Hidden corners locals miss",
       "Specific timing and pro tips",
       "Solo-friendly and group-friendly options"
     ],
-    toolId:   'MicroAdventureMapper',
-    toolName: 'Micro-Adventure Mapper',
+    "toolId": "MicroAdventureMapper",
+    "toolName": "Micro-Adventure Mapper"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

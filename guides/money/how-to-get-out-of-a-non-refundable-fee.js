@@ -1,58 +1,70 @@
 module.exports = {
-  slug:          'how-to-get-out-of-a-non-refundable-fee',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Get Out of a Non-Refundable Fee (When the Word 'Non-Refundable' Isn't Actually Binding)",
-  titleHtml:     "How to Get Out of a Non-Refundable Fee <em>(When the Word &#39;Non-Refundable&#39; Isn&#39;t Actually Binding)</em>",
-  shortTitle:    "How to Get Out of a Non-Refundable Fee",
-  navTitle:      "How to get out of a non-refundable fee when the word non-refundable isn't actually binding",
-
-  description:   "'Non-refundable' is what companies call fees they hope you'll accept without question. It's not a legal status, and the actual rules about when these fees stick are much narrower than the marketing suggests.",
-  deck:          "'Non-refundable' is what companies call fees they hope you'll accept without question. It's not a legal status, and the actual rules about when these fees stick are much narrower than the marketing suggests.",
-
-  ledes: [
-    `Something has gone wrong with a purchase you made — the trip got canceled, the event isn't happening, the service didn't deliver what was promised. You go to request a refund and the company points to a line item or a clause that calls itself 'non-refundable.' The word sounds final. It's printed in their terms, it appears on the receipt, the customer service agent is treating it as if it ends the conversation. You're now sitting with the assumption that you've lost the money and trying to decide whether it's worth fighting.`,
-    `It usually is, because 'non-refundable' isn't actually a legal status — it's marketing language for fees the company has decided to label that way. Whether such a fee actually has to be honored as non-refundable depends on circumstances much narrower than the label suggests. In most disputes where consumers push back on non-refundable fees, the fee is at least partly recoverable, sometimes fully so. The companies depend on the label producing immediate acceptance; the fee structure isn't engineered to survive actual challenge.`,
+  "slug": "how-to-get-out-of-a-non-refundable-fee",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Get Out of a Non-Refundable Fee (When the Word 'Non-Refundable' Isn't Actually Binding)",
+  "titleHtml": "How to Get Out of a Non-Refundable Fee <em>(When the Word &#39;Non-Refundable&#39; Isn&#39;t Actually Binding)</em>",
+  "shortTitle": "How to Get Out of a Non-Refundable Fee",
+  "navTitle": "How to get out of a non-refundable fee when the word non-refundable isn't actually binding",
+  "description": "'Non-refundable' is what companies call fees they hope you'll accept without question. It's not a legal status, and the actual rules about when these fees stick are much narrower than the marketing suggests.",
+  "deck": "You can sometimes recover a 'non-refundable' fee, especially when the company didn't deliver what it promised. Frame the request around that failure, ask what costs the fee covered, dispute card payments with your issuer, and use the regulator for that industry. Fees for services actually provided usually stand.",
+  "answerList": [
+    "Check whether the company delivered what it promised.",
+    "Ask what specific costs the fee covered.",
+    "Dispute card charges for services not provided.",
+    "Use the industry regulator, such as DOT for airlines.",
+    "Accept fees that cover real costs already incurred."
   ],
-
-  steps: [
-    {
-      name: "Read what was actually delivered against what was promised",
-      body: "The first question isn't whether the fee was labeled non-refundable; it's whether the company actually delivered what they said they'd deliver. If they didn't — if the service was canceled, the product wasn't as described, the timing was different from what was contracted — then the non-refundable label doesn't really apply. You're not asking for a refund of a service you received and changed your mind about; you're asking for a refund of something you didn't actually get. This is a different legal frame entirely, and most consumer protection law sides with you here regardless of what label the company put on the fee. State the failure clearly: 'I'm not asking to cancel — I'm asking for a refund because [specific failure].' That framing alone often produces a different response than a general refund request.",
-    },
-    {
-      name: "Use 'reasonable' as the test the company has to defend",
-      body: "Many states have consumer protection laws that allow non-refundable fees only to the extent they cover the company's actual costs from your transaction — not their hoped-for profit, not their general overhead. A $300 'non-refundable processing fee' for a service that cost the company $20 in actual processing is challengeable on the grounds that it's not reasonable. Ask: 'Can you tell me what specific costs this fee covered?' Most companies can't answer specifically because the fee was set as revenue, not cost recovery. The inability to specify costs is itself useful — it means the fee isn't easily defensible if you escalate to a state attorney general or small claims court, and the company knows this. Naming the test calmly often produces movement.",
-    },
-    {
-      name: "Use the chargeback as the procedural lever",
-      body: "If the company refuses to refund a fee that you believe shouldn't stick, your credit card's chargeback process is a parallel track that bypasses them entirely. File the chargeback under the appropriate reason code — 'services not as described' if the company didn't deliver, 'merchandise not received' if you paid for something you didn't get, or 'cancellation' for prepaid services that won't be provided. The card company makes the call, not the merchant. Most non-refundable fees that go to chargeback either reverse automatically (because the merchant doesn't bother fighting them) or reverse after a brief exchange. The chargeback also costs the merchant fees regardless of who wins, which is why companies that initially refused refunds often suddenly process them when a chargeback notice arrives.",
-    },
-    {
-      name: "Look for the regulator that covers this category of transaction",
-      body: "Non-refundable fees are regulated differently across industries. Travel: DOT for airlines, state attorneys general for general travel. Telecom: FCC and state PUCs. Banking: CFPB. Insurance: state insurance commissioners. Real estate: state real estate boards. Filing a complaint with the appropriate regulator does several things: it forwards your complaint to the company with a required response window, it creates a public record of the company's behavior, and it sometimes triggers regulatory attention to patterns of unfair fees. Companies often refund fees in the early stages of regulator-forwarded complaints to avoid the larger response process, even when they refused to do so during direct contact. The regulator is the institutional weight that makes 'non-refundable' negotiable.",
-    },
-    {
-      name: "When the fee is actually defensible — and how to recognize it",
-      body: "Some non-refundable fees are genuinely owed even after you've made the case for a refund. Hotel deposits booked weeks in advance, where the hotel demonstrably can't resell the room. Custom-made products where the company has incurred actual costs that scale with your order. Services partially delivered before the cancellation. In these cases, the company can document the actual cost basis for the fee, and the regulator-or-chargeback escalation will go against you. Recognizing the difference saves you the wasted effort of fighting fees that are legitimately stuck. The test is whether the company can specifically explain what costs the fee covered. If they can — receipts, time logs, materials costs — the fee probably sticks. If they can't, it usually doesn't, and the patient willing to push past the label tends to recover the money.",
-    },
+  "ledes": [
+    "A 'non-refundable' label is a contract term, and it is usually enforceable when the company delivered what it promised. It carries much less weight when the service was cancelled, not provided or not as described. Some rules override the label entirely: since 2024, the US Department of Transportation requires airlines to give automatic cash refunds for cancelled or significantly changed flights. For credit card purchases, the Fair Credit Billing Act lets you dispute charges for goods or services not delivered as agreed.",
+    "The trip was cancelled, the event didn't happen, or the service didn't deliver. You ask for a refund and the company points to a clause calling the fee 'non-refundable.' The word sounds final. Whether it actually is depends on what happened, and that's worth checking before you give up on the money."
   ],
-
-  cta: {
-    glyph:    '🚪',
-    headline: "Find the path past the 'non-refundable' label",
-    body:     "Not So Fast! looks at your specific fee and maps the paths past the 'non-refundable' label — overlooked options, what to say next, the regulator that applies, and an honest read on the likely odds and when to stop.",
-    features: [
+  "steps": [
+    {
+      "name": "Can you get a refund on a non-refundable fee if the service didn't happen?",
+      "body": "Often, yes. The first question isn't the label; it's whether the company delivered what it said it would. If the service was cancelled, the product wasn't as described, or the timing differed from the contract, you're not asking to change your mind; you're asking for the money back for something you didn't get. Say so plainly: 'I'm not asking to cancel. I'm asking for a refund because [specific failure].' That framing often gets a different answer than a general refund request."
+    },
+    {
+      "name": "Are non-refundable fees always legal?",
+      "body": "Not always. Courts in many states won't enforce a charge that works as a penalty rather than a reasonable estimate of the business's loss, and some states have specific rules for certain fees, such as rental application fees. The details vary by state and by industry. A practical first step is to ask: 'Can you tell me what specific costs this fee covered?' If the company can't explain, that's worth mentioning if you escalate to your state attorney general or small claims court."
+    },
+    {
+      "name": "Can you dispute a non-refundable fee with your credit card company?",
+      "body": "If you paid by credit card and the company didn't provide what you paid for, you can dispute the charge with your issuer, choosing the reason that fits, such as services not provided or not as described. For billing errors, the dispute must be in writing within 60 days of the statement showing the charge. The issuer investigates and decides; there's no guarantee, and a fee for something you did receive is unlikely to be reversed."
+    },
+    {
+      "name": "Which regulator handles complaints about non-refundable fees?",
+      "body": "It depends on the industry. Airlines: the US Department of Transportation, which requires automatic refunds for cancelled or significantly changed flights. Phone, internet and cable: the FCC and your state utility commission. Banking: the CFPB. Insurance: your state insurance department. Other travel and general services: your state attorney general. A complaint forwarded by a regulator often gets a fresh look from the company."
+    },
+    {
+      "name": "When is a non-refundable fee legitimately owed?",
+      "body": "Some non-refundable fees are genuinely owed even after you've made the case for a refund. Hotel deposits booked weeks in advance, where the hotel demonstrably can't resell the room. Custom-made products where the company has incurred actual costs that scale with your order. Services partially delivered before the cancellation. In these cases, the company can document the actual cost basis for the fee, and the regulator-or-chargeback escalation will go against you. Recognizing the difference saves you the wasted effort of fighting fees that are legitimately stuck. The test is whether the company can specifically explain what costs the fee covered. If they can — receipts, time logs, materials costs — the fee probably sticks. If they can't, the fee is much easier to challenge."
+    }
+  ],
+  "sources": [
+    {
+      "label": "US Department of Transportation: Final Rule Requiring Automatic Refunds of Airline Tickets and Ancillary Service Fees",
+      "url": "https://www.transportation.gov/briefing-room/biden-harris-administration-announces-final-rule-requiring-automatic-refunds-airline"
+    },
+    {
+      "label": "CFPB: How can I get a refund on a product or service I purchased with my credit card?",
+      "url": "https://www.consumerfinance.gov/ask-cfpb/how-can-i-get-a-refund-on-a-product-or-service-i-purchased-with-my-credit-card-en-1969/"
+    }
+  ],
+  "cta": {
+    "glyph": "🚪",
+    "headline": "Find the path past the 'non-refundable' label",
+    "body": "Not So Fast! looks at your specific fee and maps the paths past the 'non-refundable' label — overlooked options, what to say next, the regulator that applies, and an honest read on the likely odds and when to stop.",
+    "features": [
       "Overlooked options and how to invoke them",
       "What to say next, and why it works",
       "The regulator that applies and how to file",
       "Likely odds, and when to stop"
     ],
-    toolId:   'NotSoFast',
-    toolName: "Not So Fast!",
+    "toolId": "NotSoFast",
+    "toolName": "Not So Fast!"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-03',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

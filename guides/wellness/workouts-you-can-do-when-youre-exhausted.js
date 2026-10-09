@@ -1,39 +1,70 @@
 module.exports = {
-  slug:          'workouts-you-can-do-when-youre-exhausted',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "Workouts You Can Do When You're Exhausted (And Why They Still Work)",
-  titleHtml:     "Workouts You Can Do When You're Exhausted <em>(And Why They Still Work)</em>",
-  shortTitle:    "Workouts When Exhausted",
-  navTitle:      "workouts when exhausted",
-  description:   "When you are wiped, the standard workout is the wrong workout. Here is what your body actually responds to on low-energy days, and why it counts.",
-  deck:          "When you are wiped, the standard workout is the wrong workout. Here is what your body actually responds to on low-energy days, and why it counts.",
-  ledes: [
-    `It is 7pm. You said you would work out today. You can feel that you should. You can also feel that you cannot — every part of you is heavy, your back hurts from sitting, your eyes are tired, and the idea of a 45-minute strength session is laughable. So you do nothing, again, and tomorrow you will tell yourself you will do better tomorrow, again, and the cycle repeats. The advice you have read all says push through. The pushing through is the part you cannot do.
-
-The push-through advice is wrong for this state. When you are genuinely exhausted, the workout that works is not a smaller version of your normal one. It is a different category — gentle, brief, and designed for the body you actually have right now, not the one you would have after eight hours of sleep. The right exhausted-day workout still counts, and it does not require you to override your nervous system.`,
-    `What follows: what to actually do when you are wiped. Then a tool that builds the routine from your real state.`,
+  "slug": "workouts-you-can-do-when-youre-exhausted",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "Workouts You Can Do When You're Exhausted (And Why They Still Work)",
+  "titleHtml": "Workouts You Can Do When You're Exhausted <em>(And Why They Still Work)</em>",
+  "shortTitle": "Workouts When Exhausted",
+  "navTitle": "workouts when exhausted",
+  "description": "When you are wiped, the standard workout is the wrong workout. Here is what your body actually responds to on low-energy days, and why it counts.",
+  "deck": "When you're exhausted, do two minutes of gentle movement instead of a full workout: easy stretches, a slow walk, or wall pushes. If even that's too much, a few minutes of slow breathing still helps you recover. Skip anything that needs gear or a change of clothes. It still counts.",
+  "answerList": [
+    "Aim for two minutes, not thirty.",
+    "Choose movements that release, not load.",
+    "Slow breathing counts on the worst days.",
+    "No gear, no changing clothes.",
+    "Count it; don't judge it."
   ],
-  steps: [
-    { name: 'Lower the bar to two minutes, not thirty', body: 'When you are exhausted, a 30-minute workout is not on the table. A 2-minute one is. Two minutes of slow stretching, two minutes of light bodyweight movement, two minutes of any kind of movement at all — these still register with your body. They register more than you think. The workout that happens at 2 minutes is infinitely more valuable than the 30-minute one you skipped. Do not negotiate with yourself about whether 2 minutes counts. It does.' },
-    { name: 'Pick movements that decompress, not movements that load', body: 'Exhausted-day movement should feel like relief, not like work. Gentle hip openers. Cat-cow. Slow neck rolls. Standing forward fold. Wall pushes. A walk around the block at a leisurely pace. The goal is to undo what sitting and stress did to your body — not to add more stress to it. If a movement makes you tense, it is the wrong movement. The right ones leave you a little looser than you started.' },
-    { name: 'Use breath as the actual workout if nothing else fits', body: 'On the worst days, even gentle movement is too much. Breath work still counts. Five minutes of slow, deep breathing — four counts in, six counts out — activates your parasympathetic nervous system, lowers cortisol, and is genuinely restorative. It is not a workout in the cardio sense. It is a workout in the nervous-system-recovery sense, which is what your body needs more on exhausted days anyway. Movement is one tool. Breath is another.' },
-    { name: 'Skip anything that requires gear, planning, or a change of clothes', body: 'On low-energy days, friction kills any workout. If the routine requires you to change clothes, find equipment, queue up a video, or move to a different room, you will not do it. Pick something you can do in whatever you are wearing, where you are sitting, with no preparation. The point of the exhausted-day workout is to remove every barrier — including the ones you would normally tolerate without thinking. Friction-free is the whole game.' },
-    { name: 'Honor that this counts as a workout, not a failure', body: 'The hardest part of low-energy movement is psychological. Your inner critic will tell you that two minutes of stretching is not real exercise, that you are slacking, that this would not count to anyone with discipline. None of that is true. The people with the longest fitness streaks are the ones who do something — anything — on their worst days. The all-or-nothing mindset is what burns out fitness routines. The two-minute mindset is what sustains them.' }
+  "ledes": [
+    "On exhausted days, a short session of gentle movement is a reasonable substitute for a full workout. The CDC says any physical activity is better than none and that activity can be built from short sessions. Easy stretches, a slow walk or wall pushes for a few minutes keep the habit alive without adding much strain, and slow breathing, which the NHS recommends for reducing the physical effects of stress, can help on days when even that is too much.",
+    "It's 7 p.m. You said you'd work out, and every part of you is heavy. A 45-minute session is laughable, so you do nothing, again. The answer for this state isn't a smaller version of your normal workout; it's a different kind of movement."
   ],
-  cta: {
-    glyph:    '🧘',
-    headline: "Movement that meets you where you are.",
-    body:     "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
-    features: [
+  "steps": [
+    {
+      "name": "Is a two-minute workout worth it when you're exhausted?",
+      "body": "When you're exhausted, a 30-minute workout isn't realistic. A 2-minute one is. Two minutes of slow stretching, light bodyweight movement or any movement at all still counts, and it keeps the habit going, which matters more on a bad day than the size of the session. The CDC notes that any activity is better than none. Don't negotiate with yourself about whether two minutes counts. It does."
+    },
+    {
+      "name": "What exercises can you do when you're tired?",
+      "body": "Exhausted-day movement should feel like relief, not like work. Gentle hip openers. Cat-cow. Slow neck rolls. Standing forward fold. Wall pushes. A walk around the block at a leisurely pace. The goal is to undo what sitting and stress did to your body — not to add more stress to it. If a movement makes you tense, it is the wrong movement. The right ones leave you a little looser than you started."
+    },
+    {
+      "name": "Can breathing exercises count as a workout?",
+      "body": "On the worst days, even gentle movement may be too much. Slow breathing is still something. Five minutes of breathing in gently and breathing out a little longer, the kind of exercise the NHS recommends for stress, can help you feel calmer and more settled. It isn't exercise in the fitness sense, but it's a way of looking after your body on a day when that's what it needs. Movement is one tool; breathing is another."
+    },
+    {
+      "name": "How do you make it easier to exercise when you're worn out?",
+      "body": "On low-energy days, friction kills any workout. If the routine requires you to change clothes, find equipment, queue up a video, or move to a different room, you will not do it. Pick something you can do in whatever you are wearing, where you are sitting, with no preparation. The point of the exhausted-day workout is to remove every barrier — including the ones you would normally tolerate without thinking. Friction-free is the whole game."
+    },
+    {
+      "name": "Does a short workout still count?",
+      "body": "The hardest part of low-energy movement is often the inner critic saying two minutes of stretching isn't real exercise. It is. Many people who keep exercising for years do so by doing something, even very little, on their worst days, rather than skipping until they feel ready. The all-or-nothing mindset is one of the ways exercise habits fall apart; the small-but-something mindset is how they last. If you're exhausted most days, though, talk to a doctor about why."
+    }
+  ],
+  "sources": [
+    {
+      "label": "CDC: Adding Physical Activity as an Adult",
+      "url": "https://www.cdc.gov/physical-activity-basics/adding-adults/index.html"
+    },
+    {
+      "label": "NHS: Breathing exercises for stress",
+      "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
+    }
+  ],
+  "cta": {
+    "glyph": "🧘",
+    "headline": "Movement that meets you where you are.",
+    "body": "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
+    "features": [
       "Adapts to your actual energy",
       "Two-minute floor mode",
       "Recovery for after rough days",
       "Tracks whether it actually helps"
     ],
-    toolId:   'LazyWorkoutAdapter',
-    toolName: 'Lazy Workout Adapter',
+    "toolId": "LazyWorkoutAdapter",
+    "toolName": "Lazy Workout Adapter"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

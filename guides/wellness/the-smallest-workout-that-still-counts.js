@@ -1,39 +1,74 @@
 module.exports = {
-  slug:          'the-smallest-workout-that-still-counts',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "The Smallest Workout That Still Counts",
-  titleHtml:     "The Smallest Workout <em>That Still Counts</em>",
-  shortTitle:    "Smallest Workout That Counts",
-  navTitle:      "smallest workout that counts",
-  description:   "Two minutes of movement is not nothing. Here is what the research says about minimum effective doses, and how to make a tiny workout actually deliver.",
-  deck:          "Two minutes of movement is not nothing. Here is what the research says about minimum effective doses, and how to make a tiny workout actually deliver.",
-  ledes: [
-    `You skipped the workout again. Not because you wanted to — because you were not going to do 45 minutes today. You were exhausted, your kid was up at 5am, you have a meeting in twenty minutes, and the choice was between a real workout and nothing, so you chose nothing. You feel guilty. You also feel like you did not have a choice. The all-or-nothing framing is the problem.
-
-There is a smaller version that still counts. Real research backs the idea of minimum effective doses for fitness — short, intense, or focused movement that produces meaningful adaptations even when the duration is tiny. The smallest workout is not a participation trophy. It is a legitimate dose. Knowing what the floor actually looks like changes the math on whether to do anything at all.`,
-    `What follows: what the smallest counted workout actually looks like, with research backing. Then a tool that prescribes one for your specific state.`,
+  "slug": "the-smallest-workout-that-still-counts",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "The Smallest Workout That Still Counts",
+  "titleHtml": "The Smallest Workout <em>That Still Counts</em>",
+  "shortTitle": "Smallest Workout That Counts",
+  "navTitle": "smallest workout that counts",
+  "description": "Two minutes of movement is not nothing. Here is what the research says about minimum effective doses, and how to make a tiny workout actually deliver.",
+  "deck": "Very short workouts do count. Studies show brief stair-climbing bursts improved fitness, a single hard set builds strength in beginners, and two to five minutes of light walking after eating lowers blood sugar. The CDC says any activity beats none, and short sessions add up.",
+  "answerList": [
+    "Short vigorous bursts improve fitness.",
+    "One hard set builds strength, especially at first.",
+    "A few minutes' walk after meals helps blood sugar.",
+    "Brief daily mobility work keeps you moving well.",
+    "Several short sessions can add up to a full one."
   ],
-  steps: [
-    { name: 'Two minutes of vigorous movement actually does something', body: 'Research on exercise snacks — short, intense bursts of activity — shows that as little as two minutes of vigorous movement, repeated through the day, produces measurable cardiovascular benefits. A study from McMaster University showed that short stair-climbing sessions (about 20 seconds each, three times a day) improved fitness measurably over six weeks. Two minutes is not a placebo. It is a real, if small, training stimulus. Stop dismissing it as nothing.' },
-    { name: 'One set, taken close to failure, is a real strength stimulus', body: 'For strength, the minimum effective dose is smaller than most fitness culture admits. One set per exercise, taken within a few reps of failure, produces measurable strength gains over time. Multiple sets are better, but the diminishing returns are real. If all you can do today is one set of pushups close to your maximum, that single set is genuinely contributing to strength. The ideal-versus-skipping framing is the trap. Single-set workouts work.' },
-    { name: 'Five minutes of walking after meals improves blood sugar', body: 'If your goal is metabolic health, even a five-minute walk after a meal blunts the post-meal blood sugar spike. The research is consistent and the effect size is meaningful. Three five-minute post-meal walks add up to 15 minutes a day of activity, plus genuine metabolic benefit, with no need for a workout in the formal sense. This is the smallest possible health-meaningful version of exercise — and it counts even if you do not call it a workout.' },
-    { name: 'Mobility and stretching for five minutes prevents real problems', body: 'Most people\'s bodies are deteriorating from sitting, not from undertraining. Five minutes a day of targeted mobility — hip openers, thoracic spine work, ankle dorsiflexion, neck and shoulder rotations — measurably improves range of motion and reduces pain. This is not glamorous. It is also one of the highest-return forms of small movement, especially if you have a desk job. Five minutes a day for a year does more for most people\'s bodies than three intense workouts a week with no mobility work.' },
-    { name: 'Stack tiny workouts into the day instead of one big one', body: 'If you cannot do a single 30-minute session, do six 5-minute sessions across the day. The total exercise minutes are equivalent. The cardiovascular benefit is roughly equivalent. The strength benefit is roughly equivalent. The adherence is much higher because the friction at any given moment is lower. Distributed exercise also tends to keep your energy steadier through the day. The big-block model is one valid pattern. The micro-stack model is another, and it is often more sustainable.' }
+  "ledes": [
+    "Short bouts of exercise produce real benefits. A McMaster University study found that sedentary adults who climbed stairs briskly for about 20 seconds, three times a day, three days a week, improved aerobic fitness over six weeks. A 2022 review in Sports Medicine found that light walking for two to five minutes after eating lowered blood sugar compared with sitting. The CDC says any physical activity is better than none and that weekly totals can be built from short sessions.",
+    "You skipped the workout again, not because you wanted to but because 45 minutes wasn't happening. The choice felt like a real workout or nothing, so you chose nothing. There's a smaller version that still counts."
   ],
-  cta: {
-    glyph:    '🧘',
-    headline: "Movement that meets you where you are.",
-    body:     "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
-    features: [
+  "steps": [
+    {
+      "name": "Does two minutes of exercise do anything?",
+      "body": "Research on 'exercise snacks', very short bursts of vigorous activity spread through the day, suggests they do. In a McMaster University study, sedentary adults who climbed a three-flight staircase briskly (about 20 seconds) three times a day, three days a week, improved their aerobic fitness after six weeks compared with a group that didn't. A couple of minutes of hard effort is a small but real training stimulus, not nothing."
+    },
+    {
+      "name": "Is one set of exercises enough to build strength?",
+      "body": "For beginners, one set per exercise taken close to your limit can produce meaningful strength gains, especially in the first months; meta-analyses find that multiple sets produce larger gains over time, particularly for trained people. So more is better, but one set is far from useless. If all you can manage today is one hard set of pushups or squats, that set contributes. The choice isn't between an ideal workout and nothing."
+    },
+    {
+      "name": "Does walking after eating help blood sugar?",
+      "body": "Yes, even briefly. A 2022 systematic review in Sports Medicine, led by researchers at the University of Limerick, found that light walking for two to five minutes, as a break from sitting after a meal, lowered blood sugar compared with staying seated, and worked better than standing. Short walks after meals also add up to meaningful daily activity without a formal workout."
+    },
+    {
+      "name": "Is five minutes of stretching a day worth it?",
+      "body": "Many people with desk jobs feel stiff from long hours of sitting. A few minutes a day of mobility work, such as hip openers, upper-back rotations, ankle and shoulder circles, can help you feel looser and move more comfortably. It isn't glamorous, but it's easy to fit in and easy to keep up, which is what makes it useful. Persistent or worsening pain is worth getting checked rather than stretched through."
+    },
+    {
+      "name": "Is it better to do one long workout or several short ones?",
+      "body": "If you can't fit a 30-minute session, several shorter ones across the day add up. CDC guidance notes that the weekly activity total can be split into shorter sessions. Short sessions also have less friction at any given moment, which makes them easier to actually do, and some people find spreading activity through the day keeps their energy steadier. One long block is one valid pattern; several short ones is another, and often easier to sustain."
+    }
+  ],
+  "sources": [
+    {
+      "label": "McMaster University: Exercise 'snacks' make fitness easier",
+      "url": "https://news.mcmaster.ca/exercise-snacks-make-fitness-easier-researchers-find-short-bouts-of-stairclimbing-throughout-the-day-can-boost-health/"
+    },
+    {
+      "label": "Buffey et al. (2022), Sports Medicine: Interrupting prolonged sitting with standing and light-intensity walking (PMC)",
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9325803/"
+    },
+    {
+      "label": "CDC: What You Can Do to Meet Physical Activity Recommendations",
+      "url": "https://www.cdc.gov/physical-activity-basics/guidelines/index.html"
+    }
+  ],
+  "cta": {
+    "glyph": "🧘",
+    "headline": "Movement that meets you where you are.",
+    "body": "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
+    "features": [
       "Adapts to your actual energy",
       "Two-minute floor mode",
       "Recovery for after rough days",
       "Tracks whether it actually helps"
     ],
-    toolId:   'LazyWorkoutAdapter',
-    toolName: 'Lazy Workout Adapter',
+    "toolId": "LazyWorkoutAdapter",
+    "toolName": "Lazy Workout Adapter"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

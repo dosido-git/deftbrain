@@ -1,37 +1,60 @@
 module.exports = {
-  slug:          'how-to-look-confident-when-youre-terrified',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "How to Look Confident When You Are Terrified",
-  titleHtml:     "How to Look Confident <em>When You Are Terrified</em>",
-  shortTitle:    "Look Confident When Terrified",
-  navTitle:      "look confident when terrified",
-  description:   "There are real, specific physical signals of confidence. Here are the ones audiences actually read — and the ones they do not.",
-  deck:          "There are real, specific physical signals of confidence. Here are the ones audiences actually read — and the ones they do not.",
-  ledes: [
-    `You walk into the room scared, and within a minute or two you are convinced everyone there can see it. They probably can. The internal experience of fear and the external presentation of it are connected through specific small signals — eye contact patterns, posture, voice pitch, hand position — and most people who are nervous unintentionally telegraph all of them at once. The good news is that those signals are also the ones you can override deliberately.\n\nPerformed confidence is not the same as feeling confident. You can do the second through the first, and audiences cannot tell the difference. Theater actors and politicians do this for a living. The cues that audiences read as confident are narrower and more controllable than people realize. Once you know what they are, you can install them with practice. Within a few weeks of attention, your nervous self can present as your composed self with a high enough fidelity that no one in the room knows.`,
-    `What follows: the specific physical signals that audiences read as confidence, and the ones that are myths. Then a tool that builds a custom prep on yours.`,
+  "slug": "how-to-look-confident-when-youre-terrified",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Look Confident When You Are Terrified",
+  "titleHtml": "How to Look Confident <em>When You Are Terrified</em>",
+  "shortTitle": "Look Confident When Terrified",
+  "navTitle": "look confident when terrified",
+  "description": "There are real, specific physical signals of confidence. Here are the ones audiences actually read — and the ones they do not.",
+  "deck": "To look confident when you're scared, slow down, especially at the start; stand still with your weight on both feet; speak at your natural lower pitch rather than louder; hold eye contact with one person for a full sentence; and let your hands move naturally instead of choreographing them.",
+  "answerList": [
+    "Slow the start and pause before speaking.",
+    "Plant your feet, weight even.",
+    "Lower your pitch slightly instead of getting louder.",
+    "Give each person a full sentence of eye contact.",
+    "Keep hands open and natural."
   ],
-  steps: [
-    { name: 'Slow everything down. Especially the start.', body: 'Nervous people rush — they rush to the lectern, they rush the opening sentence, they rush through the first slide. Audiences read rush as nerves directly. The single biggest confidence move is to slow the start: walk to the spot deliberately, stop, take one beat of silence, then begin. The pause before speaking, which feels endless to you, reads to the audience as composure. Practice the slow start. It is the most undervalued move in performance.' },
-    { name: 'Land your weight on both feet', body: 'Nervous bodies stand on one foot, lean on lecterns, shift weight side to side. Confident bodies stand square, weight evenly distributed, feet about hip-width apart. The audience reads the difference unconsciously and immediately. You will not feel different from your usual posture; the audience will read it differently. Plant your feet when you reach the spot. Do not move them for the first thirty seconds. The stillness is what reads as command.' },
-    { name: 'Use a lower voice register, not a louder one', body: 'When nervous, your voice rises in pitch. Audiences read high pitch as anxious and low pitch as calm. The fix is not to speak louder — that often makes the pitch rise more — but to speak slightly lower than your habit. Practice in advance. Drop your speaking pitch by ten or fifteen percent. Combined with slow pace, this is the single biggest vocal change between performed-confident and nervous.' },
-    { name: 'Look at one person at a time, for full sentences', body: 'Nervous eyes dart around the room. Confident eyes pick a person, deliver one full sentence to them, then move to a new person and deliver the next sentence. The duration is the cue. Five seconds on one face reads as composed; one second on each face reads as scanning. The practice is to make eye contact long enough that you finish a thought before your eyes move. Hold for the sentence.' },
-    { name: 'Ignore the myth about hand gestures', body: 'There is a lot of confused advice about hand gestures conveying confidence. Forced gestures look forced; absent gestures look stiff; the audience can tell. The actually useful advice is much simpler: keep your hands above the waist and below the shoulders, keep them open (not fists, not pointed), and let them move when you want to emphasize something. Stop trying to choreograph. Most speakers\' natural gestures are fine. The trap is trying to perform them.' }
+  "ledes": [
+    "Nervousness shows mostly through a few physical signals: rushing, shifting weight, a rising voice, darting eyes and fidgeting hands. These are also the signals you can control deliberately. Speaking more slowly, pausing before you begin, standing evenly on both feet, keeping your voice in its natural lower range and holding eye contact for a full sentence are standard public-speaking techniques for appearing composed, even when you don't feel it.",
+    "You walk in scared and within a minute you're sure everyone can see it. Feeling confident and looking composed are different things, and the second is a set of habits you can practice whether or not the first ever arrives."
   ],
-  cta: {
-    glyph:    '💪',
-    headline: "A pre-event toolkit calibrated to your specific high-stakes moment.",
-    body:     "Tell it what you are facing. Get a grounded plan built from what you actually said — what you know, what you can prepare, and words if you need them — plus a Help Me Now mode for when the moment is close.",
-    features: [
+  "steps": [
+    {
+      "name": "How do you look confident when you're nervous?",
+      "body": "Nervous speakers rush: to the front of the room, through the opening sentence, past the first slide. Audiences tend to read rushing as nerves. One of the most useful changes is to slow the start: walk to your spot deliberately, stop, take one beat of silence, then begin. The pause feels endless to you but usually reads as composure to everyone else. Practice the slow start until it feels normal."
+    },
+    {
+      "name": "What is confident body posture when speaking?",
+      "body": "Nervous bodies tend to stand on one foot, lean on the lectern, or shift weight side to side. A steadier stance is square, with weight evenly spread and feet about hip-width apart. It may not feel different to you, but it looks more settled. Plant your feet when you reach your spot and keep them still for the first stretch of talking; stillness reads as calm."
+    },
+    {
+      "name": "How do you stop your voice from sounding nervous?",
+      "body": "Nerves tend to push your voice higher and faster. Speaking louder often makes that worse. Instead, aim for the lower, relaxed end of your natural range and slow down. Practice beforehand by reading your opening aloud at that pitch and pace. Slow breathing before you start also helps keep your voice steady."
+    },
+    {
+      "name": "How long should you hold eye contact when presenting?",
+      "body": "Nervous eyes dart around the room. A calmer pattern is to pick one person, deliver a full sentence or thought to them, then move to someone else for the next. Finishing a thought before your eyes move reads as composed; a quick glance at every face reads as scanning. Hold for the sentence, then move on."
+    },
+    {
+      "name": "What should you do with your hands during a presentation?",
+      "body": "There is a lot of confused advice about hand gestures conveying confidence. Forced gestures look forced; absent gestures look stiff; the audience can tell. The actually useful advice is much simpler: keep your hands above the waist and below the shoulders, keep them open (not fists, not pointed), and let them move when you want to emphasize something. Stop trying to choreograph. Most speakers' natural gestures are fine. The trap is trying to perform them."
+    }
+  ],
+  "cta": {
+    "glyph": "💪",
+    "headline": "A pre-event toolkit calibrated to your specific high-stakes moment.",
+    "body": "Tell it what you are facing. Get a grounded plan built from what you actually said — what you know, what you can prepare, and words if you need them — plus a Help Me Now mode for when the moment is close.",
+    "features": [
       "A plan built from what you told it, not invented psychology",
       "Help Me Now for when you are minutes away",
       "Words ready for if you blank or it gets awkward",
       "A debrief that extracts evidence, not a verdict on your character"
     ],
-    toolId:   'NerveCheck',
-    toolName: 'Nerve Check',
+    "toolId": "NerveCheck",
+    "toolName": "Nerve Check"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

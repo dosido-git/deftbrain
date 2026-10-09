@@ -51,7 +51,7 @@
 
   <title>Find the Source Paper | DeftBrain</title>
   <meta name="description" content="News articles rarely link directly to the studies they cite. Here is how to find the actual paper in under five minutes — and what to do when the article does not name the study.">
-  <meta name="googlebot" content="noindex">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://deftbrain.com/guides/learning/how-to-find-the-original-study-a-news-article-is-talking-about">
 
   <meta property="og:type"        content="article">
@@ -63,7 +63,7 @@
   <meta property="og:image:width"  content="1200">
   <meta property="og:image:height" content="630">
   <meta property="article:published_time" content="2026-04-29">
-  <meta property="article:modified_time"  content="2026-04-29">
+  <meta property="article:modified_time"  content="2026-10-09">
   <meta property="article:section"        content="Learning">
 
   <meta name="twitter:card"        content="summary_large_image">
@@ -78,10 +78,11 @@
     "headline": "How to Find the Original Study a News Article Is Talking About",
     "description": "News articles rarely link directly to the studies they cite. Here is how to find the actual paper in under five minutes — and what to do when the article does not name the study.",
     "datePublished": "2026-04-29",
-    "dateModified": "2026-04-29",
+    "dateModified": "2026-10-09",
     "author": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
     "publisher": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
-    "mainEntityOfPage": "https://deftbrain.com/guides/learning/how-to-find-the-original-study-a-news-article-is-talking-about"
+    "mainEntityOfPage": "https://deftbrain.com/guides/learning/how-to-find-the-original-study-a-news-article-is-talking-about",
+    "citation": ["https://support.nlm.nih.gov/knowledgebase/article/KA-04318/en-us", "https://pubmed.ncbi.nlm.nih.gov/help/"]
   }
   </script>
 
@@ -92,11 +93,11 @@
     "name": "How to Find the Original Study a News Article Is Talking About",
     "description": "News articles rarely link directly to the studies they cite. Here is how to find the actual paper in under five minutes — and what to do when the article does not name the study.",
     "step": [
-      {"@type":"HowToStep","name":"Search for the lead author plus a key term from the article","text":"Most articles name at least one author. Combine that name with the most specific keyword from the article — the disease, the variable, the place. Run that search on Google Scholar or PubMed. If the article said \"Dr. Patel found that vitamin D supplementation reduced X,\" search \"Patel vitamin D X\" on Scholar. The right paper is usually on the first page of results."},
-      {"@type":"HowToStep","name":"Check the journal name in the article","text":"Many articles mention the journal — \"published this week in The Lancet\" or \"in JAMA Pediatrics.\" Search the journal's site directly for the topic in their recent issues. The \"current issue\" or \"latest articles\" section usually surfaces papers within hours of news coverage. A journal name plus a topic almost always finds the paper."},
-      {"@type":"HowToStep","name":"Try searching the press release the article is based on","text":"Many news articles are barely-reworded versions of press releases from the university or the journal. Search for the exact distinctive phrase from the article — like a quoted statistic — in quotation marks. Often you find the press release, which usually links to the paper directly. EurekAlert and the university's news page are good places to check."},
-      {"@type":"HowToStep","name":"When the article is too vague, use the date and topic to search recent papers","text":"Sometimes the article gives you nothing but a date and a topic. Run a Google Scholar search restricted to the past month with the topic. Sort by relevance. Even if the article was deliberately unspecific, a paper matching its claims usually shows up. If multiple papers could match, the one with the larger sample size or the more prominent journal is usually the one being covered."},
-      {"@type":"HowToStep","name":"Use Research Decoder to find and decode the paper in one step","text":"Paste the news article URL into Research Decoder. It identifies the underlying paper, retrieves the abstract, and runs Media Check against the article. You go from \"vague news article\" to \"actual paper plus an analysis of how the article reported it\" in one move. The skill it replaces is the half hour you would have spent searching and comparing manually."}
+      {"@type":"HowToStep","name":"How do you find a study using the author's name?","text":"Many articles name at least one author. Combine that name with the most specific keyword from the article — the disease, the variable, the place. Run that search on Google Scholar or PubMed. If the article said \"Dr. Patel found that vitamin D supplementation reduced X,\" search \"Patel vitamin D X\" on Scholar. The right paper is often on the first page of results."},
+      {"@type":"HowToStep","name":"How do you find a study if you know the journal?","text":"Many articles mention the journal — \"published this week in The Lancet\" or \"in JAMA Pediatrics.\" Search the journal's site directly for the topic in their recent issues. The \"current issue\" or \"latest articles\" section usually surfaces papers within hours of news coverage. A journal name plus a topic usually narrows it down quickly."},
+      {"@type":"HowToStep","name":"Can you find a study through its press release?","text":"Many news articles are barely-reworded versions of press releases from the university or the journal. Search for the exact distinctive phrase from the article — like a quoted statistic — in quotation marks. Often you find the press release, which usually links to the paper directly. EurekAlert and the university's news page are good places to check."},
+      {"@type":"HowToStep","name":"What if the article doesn't name the study?","text":"Sometimes the article gives you nothing but a date and a topic. Run a Google Scholar search restricted to the past month with the topic. Sort by relevance. Even if the article was deliberately unspecific, a paper matching its claims usually shows up. If multiple papers could match, compare each abstract with the specific numbers and claims in the article."},
+      {"@type":"HowToStep","name":"What should you check once you find the study?","text":"Read the abstract first and compare it with the article: what was tested, on whom (people, animals or cells), how many participants, and whether the result is described as an association or a cause. Then look at the size of the effect, not just whether it was 'significant', and check the limitations the authors list near the end. If the article's language is stronger than the abstract's, trust the abstract. If you can't reach the full text, the abstract is usually free on PubMed or the journal's site, and an author's university page sometimes links a copy."}
     ]
   }
   </script>
@@ -171,53 +172,65 @@
 
       <h1>How to Find <em>the Original Study</em> a News Article Is Talking About</h1>
 
-      <p class="deck">News articles rarely link directly to the studies they cite. Here is how to find the actual paper in under five minutes — and what to do when the article does not name the study.</p>
+      <p class="deck">To find the study a news article describes, search the lead author&#39;s name with a specific term on Google Scholar or PubMed, check the named journal&#39;s recent issues, search a quoted phrase to find the press release, or search recent papers by topic and date.</p>
+      <ol class="answer-list">
+        <li>Search the author&#39;s name plus a specific keyword.</li>
+        <li>Check the named journal&#39;s latest issues.</li>
+        <li>Find the press release, which often links the paper.</li>
+        <li>Search recent papers by topic and date.</li>
+        <li>Read the abstract before trusting the article.</li>
+      </ol>
 
-      <p class="meta-line">Updated April 29, 2026 · By the DeftBrain team</p>
+      <p class="meta-line">Updated October 9, 2026 · By the DeftBrain team</p>
 
-      <p class="lede">You read an article that confidently summarizes a study. You want to look at the study yourself. There is no link. No DOI. The article quotes &quot;researchers at a university&quot; and names one author in passing. You search for ten minutes and either find nothing or find a different paper that turns out not to be the one cited.
-
-This is on purpose, sometimes — many publications do not link out — and accidental other times. Either way, you can usually find the original paper in three to five minutes once you know where to look. The skill is not research; it is just three good search moves and one fallback.</p>
-      <p class="lede">Here are the moves — and how Research Decoder runs the search for you.</p>
+      <p class="lede">Finding the original study behind a news article usually takes a few targeted searches. Combine the lead author&#39;s surname with the most specific term from the article on Google Scholar or, for health research, PubMed, where the National Library of Medicine recommends searching by last name and initials. If the article names a journal, check its recent issues; if it quotes a press release, searching the exact phrase often finds a release that links to the paper.</p>
+      <p class="lede">The article confidently summarizes a study but gives no link, just &#39;researchers at a university&#39; and one name in passing. Here&#39;s where to look.</p>
 
       <div class="section-rule"><span>How to do it</span></div>
 
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
-          <h2>Search for the lead author plus a key term from the article</h2>
-          <p>Most articles name at least one author. Combine that name with the most specific keyword from the article — the disease, the variable, the place. Run that search on Google Scholar or PubMed. If the article said &quot;Dr. Patel found that vitamin D supplementation reduced X,&quot; search &quot;Patel vitamin D X&quot; on Scholar. The right paper is usually on the first page of results.</p>
+          <h2>How do you find a study using the author&#39;s name?</h2>
+          <p>Many articles name at least one author. Combine that name with the most specific keyword from the article — the disease, the variable, the place. Run that search on Google Scholar or PubMed. If the article said &quot;Dr. Patel found that vitamin D supplementation reduced X,&quot; search &quot;Patel vitamin D X&quot; on Scholar. The right paper is often on the first page of results.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
-          <h2>Check the journal name in the article</h2>
-          <p>Many articles mention the journal — &quot;published this week in The Lancet&quot; or &quot;in JAMA Pediatrics.&quot; Search the journal&#39;s site directly for the topic in their recent issues. The &quot;current issue&quot; or &quot;latest articles&quot; section usually surfaces papers within hours of news coverage. A journal name plus a topic almost always finds the paper.</p>
+          <h2>How do you find a study if you know the journal?</h2>
+          <p>Many articles mention the journal — &quot;published this week in The Lancet&quot; or &quot;in JAMA Pediatrics.&quot; Search the journal&#39;s site directly for the topic in their recent issues. The &quot;current issue&quot; or &quot;latest articles&quot; section usually surfaces papers within hours of news coverage. A journal name plus a topic usually narrows it down quickly.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h2>Try searching the press release the article is based on</h2>
+          <h2>Can you find a study through its press release?</h2>
           <p>Many news articles are barely-reworded versions of press releases from the university or the journal. Search for the exact distinctive phrase from the article — like a quoted statistic — in quotation marks. Often you find the press release, which usually links to the paper directly. EurekAlert and the university&#39;s news page are good places to check.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-body">
-          <h2>When the article is too vague, use the date and topic to search recent papers</h2>
-          <p>Sometimes the article gives you nothing but a date and a topic. Run a Google Scholar search restricted to the past month with the topic. Sort by relevance. Even if the article was deliberately unspecific, a paper matching its claims usually shows up. If multiple papers could match, the one with the larger sample size or the more prominent journal is usually the one being covered.</p>
+          <h2>What if the article doesn&#39;t name the study?</h2>
+          <p>Sometimes the article gives you nothing but a date and a topic. Run a Google Scholar search restricted to the past month with the topic. Sort by relevance. Even if the article was deliberately unspecific, a paper matching its claims usually shows up. If multiple papers could match, compare each abstract with the specific numbers and claims in the article.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <h2>Use Research Decoder to find and decode the paper in one step</h2>
-          <p>Paste the news article URL into Research Decoder. It identifies the underlying paper, retrieves the abstract, and runs Media Check against the article. You go from &quot;vague news article&quot; to &quot;actual paper plus an analysis of how the article reported it&quot; in one move. The skill it replaces is the half hour you would have spent searching and comparing manually.</p>
+          <h2>What should you check once you find the study?</h2>
+          <p>Read the abstract first and compare it with the article: what was tested, on whom (people, animals or cells), how many participants, and whether the result is described as an association or a cause. Then look at the size of the effect, not just whether it was &#39;significant&#39;, and check the limitations the authors list near the end. If the article&#39;s language is stronger than the abstract&#39;s, trust the abstract. If you can&#39;t reach the full text, the abstract is usually free on PubMed or the journal&#39;s site, and an author&#39;s university page sometimes links a copy.</p>
         </div>
       </div>
 
+      <div class="guide-sources">
+        <p class="guide-sources-label">Sources</p>
+        <ul>
+          <li><a href="https://support.nlm.nih.gov/knowledgebase/article/KA-04318/en-us" rel="noopener" target="_blank">NLM Support Center: How can I search PubMed by author?</a></li>
+          <li><a href="https://pubmed.ncbi.nlm.nih.gov/help/" rel="noopener" target="_blank">PubMed User Guide</a></li>
+        </ul>
+      </div>
 
       <div class="cta-block" data-glyph="📄">
         <div class="cta-eyebrow">Try it now — free</div>
@@ -255,7 +268,7 @@ This is on purpose, sometimes — many publications do not link out — and acci
         (function () {
           var URL_ = "https://deftbrain.com/guides/learning/how-to-find-the-original-study-a-news-article-is-talking-about";
           var TITLE = "How to Find the Original Study a News Article Is Talking About";
-          var MOD = "April 29, 2026";
+          var MOD = "October 9, 2026";
           var payload = {
             url: URL_,
             html: '<a href="' + URL_ + '">' + TITLE + '</a>',

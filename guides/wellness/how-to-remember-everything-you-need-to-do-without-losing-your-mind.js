@@ -1,66 +1,61 @@
 module.exports = {
-  slug:          'how-to-remember-everything-you-need-to-do-without-losing-your-mind',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-
-  title:         "How to Remember Everything You Need to Do (Without Losing Your Mind in the Process)",
-  titleHtml:     "How to Remember Everything You Need to Do <em>(Without Losing Your Mind in the Process)</em>",
-  shortTitle:    "How to Remember Everything Without Losing Your Mind",
-  navTitle:      "How to remember everything you need to do without losing your mind in the process",
-
-  description:  "How to remember everything you need to do: one capture spot, quick notes, a five-minute daily review, dated reminders, and forgiving the gaps.",
-  deck:         "To keep track of everything you need to do, use one capture place only, jot things down in seconds when they occur to you and tidy them later, and review that list once a day for five minutes. Put things that aren't due yet in a dated reminder, and when the system lapses, pick it back up rather than starting over.",
-  answerList: [
+  "slug": "how-to-remember-everything-you-need-to-do-without-losing-your-mind",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Remember Everything You Need to Do (Without Losing Your Mind in the Process)",
+  "titleHtml": "How to Remember Everything You Need to Do <em>(Without Losing Your Mind in the Process)</em>",
+  "shortTitle": "How to Remember Everything Without Losing Your Mind",
+  "navTitle": "How to remember everything you need to do without losing your mind in the process",
+  "description": "How to remember everything you need to do: one capture spot, quick notes, a five-minute daily review, dated reminders, and forgiving the gaps.",
+  "deck": "To keep track of everything you need to do, use one capture place only, jot things down in seconds and tidy them later, review the list for five minutes once a day, put not-yet-due items in a dated reminder, and when the system lapses, pick it back up.",
+  "answerList": [
     "Use one capture spot, not three.",
     "Capture in seconds; organize later.",
     "Review it once a day for five minutes.",
     "Put not-yet-due items in a dated reminder.",
-    "When it lapses, just pick it back up.",
+    "When it lapses, just pick it back up."
   ],
-
-  ledes: [
-    `You keep forgetting things. Not big things — small things. The form you meant to file, the friend you meant to text, the dentist appointment you knew about a month ago and somehow let lapse. Each one separately is fine. The pattern is making you feel slightly out of control, which is making you mentally hold more things, which is making the forgetting worse. The advice you've heard ('use a productivity system') feels like adding another layer of work to a person who's already overloaded.`,
-    `Remembering everything isn't actually the goal — most things you 'need to remember' would survive being forgotten. The goal is freeing your brain from the work of holding them, so you can focus when you need to focus and rest when you need to rest. The system that works isn't perfect — it's reliable, low-effort, and forgiving when you skip a day. Here's how to build one.`,
+  "ledes": [
+    "A reliable way to remember tasks is to stop relying on memory: write everything in one trusted place as soon as it occurs to you, review that place briefly every day, and use dated reminders for things that are not due yet. This is the core of most task-management methods, including David Allen's Getting Things Done. The system only needs to be consistent, not perfect, to take the load off your head.",
+    "You keep forgetting small things: the form, the text you meant to send, the dentist appointment. Each slip is minor, but the pattern makes you hold more in your head, which makes the forgetting worse. Most systems sound like more work for someone already overloaded."
   ],
-
-  steps: [
+  "steps": [
     {
-      name: "What is the best way to keep track of tasks?",
-      body: "Most failed systems fail because they're spread across too many places — sticky notes, two apps, the back of an envelope, a notebook. Pick one. Notes app, paper notebook, single document, whatever. The location matters less than the consistency. The first rule is: when something occurs to you that you might forget, it goes in the one spot. Not 'I'll remember to put it there later.' Right then, if at all possible.",
+      "name": "What is the best way to keep track of tasks?",
+      "body": "Most failed systems fail because they're spread across too many places — sticky notes, two apps, the back of an envelope, a notebook. Pick one. Notes app, paper notebook, single document, whatever. The location matters less than the consistency. The first rule is: when something occurs to you that you might forget, it goes in the one spot. Not 'I'll remember to put it there later.' Right then, if at all possible."
     },
     {
-      name: "Capture in seconds, organize later",
-      body: "When something occurs to you mid-day — at the gym, in a meeting, walking the dog — you have about ten seconds before it slips. Trying to write a clean task ('email Sara about the Q4 plan, due Tuesday') will lose to friction. Just write 'sara q4' in the spot. The shortcut is the only version that survives in real life. You can clean it up later. You can't recover it later if you didn't write it down.",
+      "name": "How do you write down tasks quickly so you don't forget?",
+      "body": "When something occurs to you mid-day, at the gym, in a meeting, walking the dog, it can slip away fast. Trying to write a clean task ('email Sara about the Q4 plan, due Tuesday') loses to friction. Just write 'sara q4' in your one spot. The shorthand version is the one that survives real life. You can clean it up later; you can't recover it if you never wrote it down."
     },
     {
-      name: "Process the spot once a day, not all day",
-      body: "Don't try to keep the capture spot organized in real time. Instead, set a daily 5-minute window — morning coffee, end of workday — to read through what's in there and turn the cryptic fragments into actual tasks where they belong. Daily processing is the difference between a system and a graveyard. Without it, the spot fills up and you stop trusting it; with it, the spot stays clear and reliable.",
+      "name": "How often should you review your to-do list?",
+      "body": "Don't try to keep the capture spot organized in real time. Instead, set a daily 5-minute window — morning coffee, end of workday — to read through what's in there and turn the cryptic fragments into actual tasks where they belong. Daily processing is the difference between a system and a graveyard. Without it, the spot fills up and you stop trusting it; with it, the spot stays clear and reliable."
     },
     {
-      name: "Use a 'tickler' for things that aren't due yet",
-      body: "Some things you don't need now but will need next week — a renewal date, a follow-up reminder, a thing you'll need to bring up at a meeting Friday. These don't belong in your daily list because they'd just sit there bothering you. They belong in a future-dated note (a 'tickler') that surfaces them on the day they matter. A simple calendar reminder works perfectly. Future-you doesn't need to remember; future-you needs to be reminded.",
+      "name": "How do you remember things that aren't due yet?",
+      "body": "Some things you don't need now but will need next week — a renewal date, a follow-up reminder, a thing you'll need to bring up at a meeting Friday. These don't belong in your daily list because they'd just sit there bothering you. They belong in a future-dated note (a 'tickler') that surfaces them on the day they matter. A simple calendar reminder works perfectly. Future-you doesn't need to remember; future-you needs to be reminded."
     },
     {
-      name: "Forgive the gaps",
-      body: "You'll skip days. You'll miss things. The whole system will lapse for a week sometimes. Don't restart from scratch — just pick it back up. People who maintain a memory system imperfectly forever have much better outcomes than people who maintain it perfectly for two months and then quit because they 'broke the streak.' The point isn't perfect; it's that on average, more is captured than was before.",
-    },
+      "name": "What should you do when your to-do system falls apart?",
+      "body": "You'll skip days. You'll miss things. Sometimes the whole system will lapse for a week. Don't restart from scratch; just pick it back up. A system kept imperfectly for years does more for you than a perfect one kept for two months and abandoned because the streak broke. The point isn't perfection; it's capturing more than you did before."
+    }
   ],
-
-  cta: {
-    glyph:    '🧠',
-    headline: "Stop holding everything in your head",
-    body:     "Dump everything swirling in your head — typed or spoken, no structure required — and Brain Dump Buddy sorts the chaos into real tasks, decisions, worries, and things you can drop, then hands you the one thing to do first.",
-    features: [
+  "cta": {
+    "glyph": "🧠",
+    "headline": "Stop holding everything in your head",
+    "body": "Dump everything swirling in your head — typed or spoken, no structure required — and Brain Dump Buddy sorts the chaos into real tasks, decisions, worries, and things you can drop, then hands you the one thing to do first.",
+    "features": [
       "Type, rapid-fire, or voice capture — raw stream of consciousness",
       "Sorts the dump into buckets: actions, decisions, worries, droppables",
       "Overwhelm meter shows how few real tasks were hiding in the noise",
       "Worry Excavator digs into an anxiety to find the hidden task",
-      "Emergency mode strips it to just 3 things when you can barely function",
+      "Emergency mode strips it to just 3 things when you can barely function"
     ],
-    toolId:   'BrainDumpBuddy',
-    toolName: 'Brain Dump Buddy',
+    "toolId": "BrainDumpBuddy",
+    "toolName": "Brain Dump Buddy"
   },
-
-  published: '2026-04-29',
-  modified:  '2026-10-08',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

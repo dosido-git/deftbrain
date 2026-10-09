@@ -1,66 +1,71 @@
 module.exports = {
-  slug:          'apartment-move-in-checklist',
-  category:      'home',
-  categoryLabel: 'Home',
-
-  title:         "Apartment Move-In Checklist (The Five Things That Actually Matter)",
-  titleHtml:     "Apartment Move-In Checklist <em>(The Five Things That Actually Matter)</em>",
-  shortTitle:    "Apartment Move-In Checklist",
-  navTitle:      "Apartment move-in checklist and the five things that actually matter",
-
-  description:  "Apartment move-in checklist: the five things that matter on move-in day — damage photos, the inspection form, testing systems, day-one setup — and what can wait.",
-  deck:         "An apartment move-in checklist only needs five things: photograph existing damage before your furniture arrives, return the move-in inspection form within 48 hours, test every appliance and fixture and report faults in writing, set up utilities, renter's insurance and contact details on day one, and leave everything else for later. The first two protect your deposit.",
-  answerList: [
+  "slug": "apartment-move-in-checklist",
+  "category": "home",
+  "categoryLabel": "Home",
+  "title": "Apartment Move-In Checklist (The Five Things That Actually Matter)",
+  "titleHtml": "Apartment Move-In Checklist <em>(The Five Things That Actually Matter)</em>",
+  "shortTitle": "Apartment Move-In Checklist",
+  "navTitle": "Apartment move-in checklist and the five things that actually matter",
+  "description": "Apartment move-in checklist: the five things that matter on move-in day — damage photos, the inspection form, testing systems, day-one setup — and what can wait.",
+  "deck": "An apartment move-in checklist needs five things: photograph existing damage before furniture arrives, complete and return the move-in condition form promptly, test every appliance and fixture and report faults in writing, set up utilities, renter's insurance and contacts on day one, and leave the rest for later.",
+  "answerList": [
     "Photograph every room's existing damage before furniture arrives.",
-    "Return the move-in inspection form within 48 hours, and keep a copy.",
+    "Complete and return the condition form promptly; keep a copy.",
     "Test every appliance and fixture; report faults in writing.",
-    "Day one: utilities in your name, renter's insurance active, contact details swapped.",
-    "Everything else can wait weeks.",
+    "Day one: utilities, renter's insurance, contact details.",
+    "Everything else can wait weeks."
   ],
-
-  ledes: [
-    `You searched for a move-in checklist and got back something with forty-seven bullet points, including 'find a doctor in your new neighborhood' and 'unpack one box per day.' The list is exhausting in a way that doesn't match the urgency of move-in day, and the fundamental problem is that everything on the list looks equally weighted. Some of these items will affect the next year of your life. Others can be done whenever you get to them, or never. The list doesn't tell you which is which.`,
-    `Move-in day has a small number of high-stakes tasks and a large number of low-stakes ones. The high-stakes tasks have time-sensitive consequences if skipped — they're hard or impossible to do later, and getting them wrong creates problems that can cost you hundreds or thousands of dollars. The low-stakes ones can be done over the next few weeks at your own pace. Knowing which is which is the entire value of a checklist; the rest is just busywork dressed up as productivity.`,
+  "ledes": [
+    "The move-in tasks that matter most are the ones that protect your security deposit and are hard to redo later: dated photos of the empty unit and a written record of its condition. Some states require it; Washington, for example, bars landlords from collecting a deposit without giving tenants a written condition checklist at the start of the tenancy. Deposit rules, deadlines and allowed deductions vary by state, so check your state's tenant guide, often published by the attorney general or courts.",
+    "You searched for a move-in checklist and got forty-seven bullet points, from 'find a doctor' to 'unpack one box per day,' all weighted the same. A few of those tasks affect the next year of your life; most can happen whenever you get to them. Here are the few that can't wait."
   ],
-
-  steps: [
+  "steps": [
     {
-      name: "Document pre-existing damage with timestamped photos — before furniture arrives",
-      body: "This is item one because it's the only item on the list that becomes impossible to do later. Walk through the empty apartment with your phone and photograph everything: every wall, every appliance inside and out, every closet, every fixture, every existing scuff or stain or scratch. Photos must be timestamped (most phones do this automatically). The window for doing this well is the hour between getting the keys and unloading the car. Once your stuff is in the apartment, the documentation is compromised — you can't prove which marks were there before. Most security deposit disputes a year from now are decided by these photos. Skip this step and you've forfeited most of your move-out leverage. Don't skip it.",
+      "name": "What should you photograph when you move into an apartment?",
+      "body": "Walk through the empty apartment before unloading and photograph everything: every wall, every appliance inside and out, closets, fixtures, and every existing scuff, stain or scratch. Most phones record the date automatically. This is first because it's the one task that becomes impossible later: once your belongings are in, it's harder to show which marks were already there. If there's a deposit dispute at move-out, these photos are often the most useful evidence you have."
     },
     {
-      name: "Fill out and return the move-in inspection form within 48 hours",
-      body: "The lease usually came with a move-in inspection form, or one was given to you with the keys. Note every imperfection. Sign and date it. Email or hand-deliver it to the landlord within 48 hours, keeping a copy for yourself. If no form was provided, create one — a typed list of pre-existing conditions, your signature, the date. In most states and under most leases, a condition not noted within the inspection window can be charged to you later, while a documented one is far harder to pin on you — the exact rules vary, so check your lease and your state's landlord-tenant law. This is a 30-minute task that protects 200-2000 dollars depending on your deposit. The math is favorable.",
+      "name": "When should you return the move-in inspection form?",
+      "body": "Your lease may include a move-in condition form, or the landlord may hand you one with the keys. Note every imperfection, sign and date it, and return it by the deadline in your lease, or within a few days if none is given; keep a copy. If you didn't get a form, make one: a typed list of existing conditions, signed and dated, sent by email. Rules vary by state, but a documented condition is much harder to charge you for later than an undocumented one. Check your lease and your state's landlord-tenant guide."
     },
     {
-      name: "Test the systems and report what doesn't work, in writing",
-      body: "Run every faucet, flush every toilet, test the shower temperature, turn on every burner, test the oven, run the dishwasher empty, test every electrical outlet, turn on every light, test the heat and AC, test the smoke alarms. Anything that doesn't work needs to be reported in writing within the first week — before you can plausibly be blamed for breaking it. 'Hi [Landlord], during move-in I noticed the dishwasher leaks at the door seal and burner #3 doesn't ignite. Could you have these addressed?' This single email both gets the items repaired and creates a written record that they were broken on arrival.",
+      "name": "What should you test when you move into an apartment?",
+      "body": "Run every faucet, flush every toilet, test the shower temperature, turn on every burner, test the oven, run the dishwasher empty, test every electrical outlet, turn on every light, test the heat and AC, test the smoke alarms. Anything that doesn't work needs to be reported in writing within the first week — before you can plausibly be blamed for breaking it. 'Hi [Landlord], during move-in I noticed the dishwasher leaks at the door seal and burner #3 doesn't ignite. Could you have these addressed?' This single email both gets the items repaired and creates a written record that they were broken on arrival."
     },
     {
-      name: "Set up the basics that block other things from happening",
-      body: "Three setup tasks have downstream consequences if delayed: (1) Get the utilities into your name on day one — gaps in service can result in deposits, reconnection fees, or disrupted service. (2) Confirm your renter's insurance is active starting from the move-in date — most leases require it, and you have no coverage if the policy hasn't started yet. (3) Make sure the landlord has working contact information for you (your phone, your email) and you have multiple ways to reach them — for the emergency that will eventually happen. Everything else (mail forwarding, doctor appointments, finding a coffee shop) can wait. These three can't.",
+      "name": "What should you set up on move-in day?",
+      "body": "Three things have knock-on effects if delayed: (1) Put utilities in your name from the move-in date to avoid gaps, deposits or reconnection fees. (2) Make sure renter's insurance starts on move-in day; many leases require it, and a policy that hasn't started doesn't cover you. (3) Swap working contact details with the landlord, including an emergency maintenance number. Mail forwarding, doctors and finding a coffee shop can wait."
     },
     {
-      name: "Everything else is optional and most of it can wait weeks",
-      body: "The rest of the typical move-in checklist — unpacking schedules, neighborhood orientation, decorating plans, grocery runs, address changes — is real work, but it's work you can do at your own pace. Most of it doesn't have time-sensitive consequences. You don't have to unpack every box in a week. You don't need to know your favorite local restaurant by Friday. You can change your address with the bank next month if you forget this week. The cost of doing these slowly is small. The cost of skipping the four steps above is large. Spending move-in day on the high-stakes tasks and letting everything else wait is not a productivity failure; it's the right priority order. Most people get this backwards because the long checklists make every item look equally urgent. They're not.",
-    },
+      "name": "What can wait after you move into an apartment?",
+      "body": "The rest of the typical move-in checklist — unpacking schedules, neighborhood orientation, decorating plans, grocery runs, address changes — is real work, but it's work you can do at your own pace. Most of it doesn't have time-sensitive consequences. You don't have to unpack every box in a week. You don't need to know your favorite local restaurant by Friday. You can change your address with the bank next month if you forget this week. The cost of doing these slowly is small. The cost of skipping the four steps above is large. Spending move-in day on the high-stakes tasks and letting everything else wait is not a productivity failure; it's the right priority order. Most people get this backwards because the long checklists make every item look equally urgent. They're not."
+    }
   ],
-
-  cta: {
-    glyph:    '🏦',
-    headline: "Walk in with the high-stakes list, not the busywork list",
-    body:     "Renter's Deposit Saver walks you through the move-in tasks that actually matter — pre-existing damage documentation, condition reports, system testing — and generates the records you'll need a year from now when the deposit dispute starts.",
-    features: [
+  "sources": [
+    {
+      "label": "Washington State Office of the Attorney General: Deposits and Fees",
+      "url": "https://www.atg.wa.gov/deposits-and-fees"
+    },
+    {
+      "label": "California Courts Self-Help: Guide to security deposits in California",
+      "url": "https://selfhelp.courts.ca.gov/guide-security-deposits-california"
+    }
+  ],
+  "cta": {
+    "glyph": "🏦",
+    "headline": "Walk in with the high-stakes list, not the busywork list",
+    "body": "Renter's Deposit Saver walks you through the move-in tasks that actually matter — pre-existing damage documentation, condition reports, system testing — and generates the records you'll need a year from now when the deposit dispute starts.",
+    "features": [
       "Room-by-room walkthrough",
       "Photo shot list",
       "Move-in inspection form",
       "System-test checklist",
-      "First-week landlord communications",
+      "First-week landlord communications"
     ],
-    toolId:   'RentersDepositSaver',
-    toolName: "Renter's Deposit Saver",
+    "toolId": "RentersDepositSaver",
+    "toolName": "Renter's Deposit Saver"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-08',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

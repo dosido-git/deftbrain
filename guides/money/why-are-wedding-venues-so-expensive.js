@@ -1,59 +1,67 @@
 module.exports = {
-  slug:          'why-are-wedding-venues-so-expensive',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "Why Are Wedding Venues So Expensive (And Why the Word 'Wedding' Doubles the Price)",
-  titleHtml:     "Why Are Wedding Venues So Expensive <em>(And Why the Word &#39;Wedding&#39; Doubles the Price)</em>",
-  shortTitle:    "Why Are Wedding Venues So Expensive",
-  navTitle:      "Why are wedding venues so expensive and why the word wedding doubles the price",
-
-  description:   "The same venue, same date, same guest count costs roughly twice as much when you say the word 'wedding.' Here's what's actually happening to the price.",
-  deck:          "The same venue, same date, same guest count costs roughly twice as much when you say the word 'wedding.' Here's what's actually happening to the price.",
-
-  ledes: [
-    `You started looking at venues. The first one came back at $18,000 for a Saturday in October — just the space, before catering, before flowers, before anything else. You called the same venue back asking about a corporate event for the same date. They quoted $9,000. Same room. Same hours. Same staff. Half the price. You're now sitting with a quiet, specific kind of fury that comes from realizing the entire wedding industry might be doing this on purpose.`,
-    `It is. The "wedding tax" is real, measurable, and surprisingly consistent across the industry. But understanding *why* it works the way it does — what the venue is actually charging for, and what part of the markup is structural versus extractive — turns the fury into something more useful: leverage. There are five forces stacking the price, and at least two of them are negotiable if you know how.`,
+  "slug": "why-are-wedding-venues-so-expensive",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "Why Are Wedding Venues So Expensive (And Why the Word 'Wedding' Doubles the Price)",
+  "titleHtml": "Why Are Wedding Venues So Expensive <em>(And Why the Word &#39;Wedding&#39; Doubles the Price)</em>",
+  "shortTitle": "Why Are Wedding Venues So Expensive",
+  "navTitle": "Why are wedding venues so expensive and why the word wedding doubles the price",
+  "description": "Why wedding venues cost so much: longer event days, peak-date demand, required catering packages and event-type pricing, and which parts of the price are usually negotiable.",
+  "deck": "Wedding venues are expensive because weddings use more staff time, setup and liability than many events, demand concentrates on popular Saturdays and seasons, venues often require their own caterers and bar, and some price weddings higher. The date and the package are usually most negotiable.",
+  "answerList": [
+    "Weddings take more hours, staff and coordination.",
+    "Peak Saturdays and seasons cost the most.",
+    "Required in-house catering and bar drive the total.",
+    "Some venues price by event type.",
+    "Off-peak dates and the bundle are most negotiable."
   ],
-
-  steps: [
-    {
-      name: "Higher operational cost: real, but smaller than you'd think",
-      body: "Weddings are genuinely more expensive to host than corporate events. They run longer, involve more vendors moving in and out, generate more cleanup, and require more flexible staffing. There's also higher liability — alcohol, dancing, late hours, hundreds of guests in formal wear. All of this is real. But honest analysis suggests it accounts for maybe 15–25% of the price difference, not 100%. The structural cost increase is genuine; it just doesn't come close to explaining the full markup.",
-    },
-    {
-      name: "The booking-window premium",
-      body: "Wedding venues are typically booked 12–18 months in advance, which is a long time for capital to sit committed. Saturdays in May, June, September, and October are the most-demanded dates of the year, and any venue that holds them open for one client is forgoing other potential bookings. The premium for these dates is real and somewhat unavoidable — but it doesn't apply to off-season weekends or Friday/Sunday slots, where you can often get the same venue for 30–50% less. This is one of the largest negotiable levers most couples don't pull.",
-    },
-    {
-      name: "Bundling: the part where 'inclusion' means 'forced purchase'",
-      body: "Many wedding venues require you to use their preferred caterer, their preferred bartender, their in-house event coordinator, sometimes even their preferred florist. These aren't optional add-ons; they're conditions of booking the space. The bundling itself is what allows the markup. The venue itself might have reasonable margin; the food they require you to buy at $130 per plate is where the real money lives. When you compare wedding venue prices, you're rarely comparing rooms — you're comparing forced bundles.",
-    },
-    {
-      name: "Price segmentation: the same room, sold to different buyers",
-      body: "The pure 'wedding tax' — same venue, same hours, more expensive because it's a wedding — exists because the venue knows wedding budgets are larger and emotionally less elastic than corporate budgets. A company booking a holiday party will walk away from a $15,000 quote on principle. A couple six months from their wedding date won't. The venue knows this, has done the analysis, and prices accordingly. This isn't a markup on cost; it's a markup on willingness-to-pay. Which is also where the negotiation lives.",
-    },
-    {
-      name: "What's actually negotiable, and what isn't",
-      body: "The base venue rental is rarely negotiable. The bundle is. Ask if you can bring your own caterer (often surprisingly possible if you're willing to pay a 'kitchen fee'). Ask if the in-house bartender requirement can be reduced. Ask about Friday or Sunday rates. Ask about off-peak months. Ask what the same date costs for a corporate event — and watch how the conversation goes when you mention you've inquired. None of this is rude; it's the venue having priced you and you pricing back. The couples who get 20–30% off their wedding venue almost always do it by separating what's structurally required from what's bundled by choice. The bundle is where you have the most room.",
-    },
+  "ledes": [
+    "Wedding venue prices reflect long event days, extra staffing and liability, heavy demand for a limited number of peak dates, and packages that bundle required catering, bar service and coordination. The Knot's Real Weddings Study lists location, what the package includes and seasonality as the main factors in venue cost. Some venues also charge more for weddings than for other events of similar size. Off-peak dates and the contents of the package are typically where couples have the most room to negotiate.",
+    "You started looking at venues, and the first quote was for the space alone, before catering or flowers, and higher than you expected. It's natural to wonder whether the word 'wedding' changed the price. Sometimes it does. Knowing what goes into the number shows where there's room to move."
   ],
-
-  cta: {
-    glyph:    '🏷️',
-    headline: "Find the markup before you sign the contract",
-    body:     "MarkupDetective breaks down the cost structure of any venue, vendor, or service — base cost, bundle premiums, segmentation pricing, and where the room to negotiate actually is.",
-    features: [
+  "steps": [
+    {
+      "name": "Why do weddings cost more than other events at the same venue?",
+      "body": "Weddings are often more work to host than a corporate dinner. They tend to run longer, involve more vendors moving in and out, need more setup and cleanup, and carry more liability from alcohol, dancing and late hours. Those costs are real. They explain some of the difference, though not always all of it."
+    },
+    {
+      "name": "When is the cheapest time to book a wedding venue?",
+      "body": "Peak dates cost the most: Saturdays, especially in popular months in your region. A venue that holds one of those dates for you gives up other bookings. Fridays, Sundays, weekdays and off-season months are often priced lower, sometimes substantially. If your date is flexible, ask each venue for its off-peak rates; it's one of the most useful levers available."
+    },
+    {
+      "name": "Why do wedding venues require their own caterer?",
+      "body": "Many venues require you to use their in-house or preferred caterer, bar service or coordinator as a condition of booking. The room rate may look reasonable while the required per-guest food and drink costs make up much of the total. When comparing venues, compare the full required package for your guest count, not just the room fee."
+    },
+    {
+      "name": "Do venues charge more just because it's a wedding?",
+      "body": "Some do. Venues know wedding budgets tend to be larger and less flexible than many corporate budgets, and some price accordingly, so the same space on the same night may be quoted differently by event type. That isn't universal, and venues may point to the extra work weddings involve. Asking how they price different event types is a fair question."
+    },
+    {
+      "name": "What can you negotiate with a wedding venue?",
+      "body": "The base rental may be firm, but the package often has room. Ask whether you can bring an outside caterer, sometimes for a kitchen or vendor fee. Ask whether minimums or required services can be reduced. Ask about Friday, Sunday and off-season rates. Ask what's included and what's optional. None of this is rude; it's how you find out which costs are required and which are bundled by choice."
+    }
+  ],
+  "sources": [
+    {
+      "label": "The Knot: The Average Wedding Venue Cost, According to Real Data",
+      "url": "https://www.theknot.com/content/average-cost-reception-venue"
+    }
+  ],
+  "cta": {
+    "glyph": "🏷️",
+    "headline": "Find the markup before you sign the contract",
+    "body": "MarkupDetective breaks down the cost structure of any venue, vendor, or service — base cost, bundle premiums, segmentation pricing, and where the room to negotiate actually is.",
+    "features": [
       "Bundle-vs-base price analysis",
       "Segmentation pricing detection",
       "Negotiable-component identification",
       "Industry-comparison benchmarks",
-      "Specific scripts for vendor pushback",
+      "Specific scripts for vendor pushback"
     ],
-    toolId:   'MarkupDetective',
-    toolName: 'MarkupDetective',
+    "toolId": "MarkupDetective",
+    "toolName": "MarkupDetective"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

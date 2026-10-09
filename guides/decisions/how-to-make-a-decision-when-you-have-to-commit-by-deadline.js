@@ -1,70 +1,61 @@
-// ============================================================
-// guides/decisions/how-to-make-a-decision-when-you-have-to-commit-by-deadline.js
-// ============================================================
-
 module.exports = {
-  slug:          'how-to-make-a-decision-when-you-have-to-commit-by-deadline',
-  category:      'decisions',
-  categoryLabel: 'Decisions',
-
-  title:         "How to Make a Decision When You Have to Commit by a Deadline",
-  titleHtml:     "How to Make a Decision <em>When You Have to Commit by a Deadline</em>",
-  shortTitle:    "Decide Before the Deadline",
-  navTitle:      "How to make a decision when you have to commit by a deadline",
-
-  description:  "How to make a good decision under a deadline: stop researching, decide on paper, test the worst case, ask one experienced person, and commit.",
-  deck:         "When you must decide by a deadline, stop gathering new information, make a fast first call on paper with three reasons, and test it against the realistic worst case. Ask one person who has made this kind of decision, then commit when the deadline arrives and stop reopening the choice.",
-  answerList: [
+  "slug": "how-to-make-a-decision-when-you-have-to-commit-by-deadline",
+  "category": "decisions",
+  "categoryLabel": "Decisions",
+  "title": "How to Make a Decision When You Have to Commit by a Deadline",
+  "titleHtml": "How to Make a Decision <em>When You Have to Commit by a Deadline</em>",
+  "shortTitle": "Decide Before the Deadline",
+  "navTitle": "How to make a decision when you have to commit by a deadline",
+  "description": "How to make a good decision under a deadline: stop researching, decide on paper, test the worst case, ask one experienced person, and commit.",
+  "deck": "When you must decide by a deadline, stop gathering new information, make a fast first call on paper with three reasons, and test it against the realistic worst case. Ask one person who has made this kind of decision, then commit when the deadline arrives and stop reopening the choice.",
+  "answerList": [
     "Stop gathering new information now.",
     "Decide on paper in twenty minutes, with three reasons.",
     "Test it against the realistic worst case.",
     "Ask one person who knows this territory.",
-    "Commit by the deadline, then stop reopening it.",
+    "Commit by the deadline, then stop reopening it."
   ],
-
-  published:     '2026-04-28',
-  modified:      '2026-10-08',
-
-  ledes: [
-    `The deadline is Friday at 5pm. It's currently Wednesday afternoon. The decision is meaningful — accepting a job offer, signing a lease, committing to a contract — and the version of yourself that wishes you'd had three more weeks to decide is going to have to sit down. The deadline is fixed; the decision is not. The work between now and Friday is making the best decision you can in the time available, which is a different skill than making the best possible decision in unbounded time.`,
-    `Time-constrained decisions follow a different protocol than open-ended ones. The trick is to compress the right parts of the analysis and skip the parts that don't add information at this resolution. Five steps designed to fit in 48 hours. They produce decisions that are usually as good as the unbounded-time version would have been.`,
+  "ledes": [
+    "Making a decision under a deadline is a different task from deciding with unlimited time: the goal is the best choice possible with the information already in hand. A workable sequence is to stop collecting new inputs, write a quick first answer with reasons, test it against the realistic worst case, consult one person with direct experience, and commit when the deadline arrives without reopening the question.",
+    "The deadline is Friday at 5pm. It's Wednesday afternoon. The decision matters (a job offer, a lease, a contract) and you wish you had three more weeks. You don't, so the job is to use the time you have well."
   ],
-
-  steps: [
+  "steps": [
     {
-      name: "How do you decide quickly under a deadline?",
-      body: "With a deadline approaching, the instinct is to gather more — read more reviews, ask more people, get more data. This almost always backfires. New information arriving close to a deadline doesn't get integrated well; it just adds noise to a decision you're already making. Cut off new inputs at least 12 hours before the deadline. Use the remaining time to think with what you have, not to scramble for what you don't.",
+      "name": "How do you decide quickly under a deadline?",
+      "body": "With a deadline approaching, the instinct is to gather more — read more reviews, ask more people, get more data. This can backfire. New information arriving at the last minute is hard to weigh properly and often just adds noise. Consider cutting off new inputs well before the deadline, such as the night before. Use the remaining time to think with what you have, not to scramble for what you don't."
     },
     {
-      name: "Make the call once, on paper, fast",
-      body: "Sit down and make the decision in twenty minutes. Write down the choice and three reasons. Don't second-guess; don't refine; don't optimize. This is your fast first answer. It often turns out to be the right one — the brain knows more than it lets on, and forced quick decisions surface that knowledge. Even if it's wrong, you now have a baseline to compare further analysis against. Without the baseline, all subsequent thinking is unmoored.",
+      "name": "How do you make a fast first decision?",
+      "body": "Sit down and make the decision in twenty minutes. Write down the choice and three reasons. Don't second-guess; don't refine; don't optimize. This is your fast first answer. It may or may not hold up, but it captures what you already think. Even if it's wrong, you now have a baseline to compare further analysis against. Without the baseline, all subsequent thinking is unmoored."
     },
     {
-      name: "Run the worst-case test",
-      body: "For your fast first answer, articulate the worst plausible outcome. Not the catastrophe; the realistic bad version. If the bad version is something you could absorb and recover from, the decision is probably fine. If the bad version is something that would meaningfully damage your life, you need more rigor on the analysis — but only on the parts that actually drive that worst case. The worst-case test focuses your remaining time on what matters.",
+      "name": "How do you check a quick decision for risk?",
+      "body": "For your fast first answer, articulate the worst plausible outcome. Not the catastrophe; the realistic bad version. If the bad version is something you could absorb and recover from, the decision is probably fine. If the bad version is something that would meaningfully damage your life, you need more rigor on the analysis — but only on the parts that actually drive that worst case. The worst-case test focuses your remaining time on what matters."
     },
     {
-      name: "Ask the one person who knows the territory",
-      body: "Before the deadline, find one person — exactly one — who has actual experience with the kind of decision you're making, and ask them what they'd do. Not for permission, not for general advice. For their actual call. One expert opinion under deadline pressure is much more valuable than five generalist opinions over weeks. Pick someone who's been there. Ask directly. Listen.",
+      "name": "Who should you ask for advice on a deadline decision?",
+      "body": "Before the deadline, find one person — exactly one — who has actual experience with the kind of decision you're making, and ask them what they'd do. Not for permission, not for general advice. For their actual call. Under deadline pressure, one informed opinion is often more useful than five general ones. Pick someone who's been there. Ask directly. Listen."
     },
     {
-      name: "Commit by the deadline, then stop",
-      body: "When the deadline arrives, commit. Put the decision in writing — accept the offer, sign the lease, send the email. Then stop thinking about whether it was the right call. Once a decision is committed, additional rumination provides no benefit and substantial cost; you can't change it now, and the energy you spend second-guessing is energy not spent executing well on the choice you made. The decision was made under time pressure; let it be made. Move forward.",
-    },
+      "name": "How do you stop second-guessing after you commit?",
+      "body": "When the deadline arrives, commit. Put the decision in writing — accept the offer, sign the lease, send the email. Then stop thinking about whether it was the right call. Once a decision is committed, more rumination rarely helps; you can't change it now, and the energy you spend second-guessing is energy not spent executing well on the choice you made. The decision was made under time pressure; let it be made. Move forward."
+    }
   ],
-
-  cta: {
-    glyph:    '🎯',
-    headline: "Compress the decision into the time you have",
-    body:     "Decision Coach takes your situation, your constraints, and your deadline, then produces a single answer — fast — with execution steps to act on immediately. Designed for the decisions you can't afford to drag out.",
-    features: [
+  "cta": {
+    "glyph": "🎯",
+    "headline": "Compress the decision into the time you have",
+    "body": "Decision Coach takes your situation, your constraints, and your deadline, then produces a single answer — fast — with execution steps to act on immediately. Designed for the decisions you can't afford to drag out.",
+    "features": [
       "Time-constrained reasoning",
       "Worst-case scenario testing",
       "Single-answer output",
       "Execution-step plan",
-      "Deadline-forced resolution",
+      "Deadline-forced resolution"
     ],
-    toolId:   'DecisionCoach',
-    toolName: 'Decision Coach',
+    "toolId": "DecisionCoach",
+    "toolName": "Decision Coach"
   },
+  "published": "2026-04-28",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

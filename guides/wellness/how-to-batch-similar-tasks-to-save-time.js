@@ -1,59 +1,67 @@
 module.exports = {
-  slug:          'how-to-batch-similar-tasks-to-save-time',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-
-  title:         "How to Batch Similar Tasks to Save Time (Without Becoming a Spreadsheet)",
-  titleHtml:     "How to Batch Similar Tasks to Save Time <em>(Without Becoming a Spreadsheet)</em>",
-  shortTitle:    "How to Batch Similar Tasks to Save Time",
-  navTitle:      "How to batch similar tasks to save time without becoming a spreadsheet",
-
-  description:   "You've heard 'batch your tasks' a hundred times. The actual mechanism is more specific, and most attempts fail in the same predictable way. Here's the version that holds.",
-  deck:          "You've heard 'batch your tasks' a hundred times. The actual mechanism is more specific, and most attempts fail in the same predictable way. Here's the version that holds.",
-
-  ledes: [
-    `You've heard the advice. Batch your tasks. Do all your emails at once. Group your errands. Stop context-switching. You tried it. It worked for a week. Then you went back to bouncing between things, because real life doesn't wait neatly in queues, and the people emailing you don't know you're trying to batch. The advice was real but the implementation was missing.`,
-    `Batching isn't a productivity hack — it's a cost-recognition strategy. Every switch between unlike tasks costs more than you think; every grouped run of like tasks pays you back more than you think. Once you know what's actually being saved, the rules of when to batch and when not to get a lot clearer. Here's the version that holds up after the first week.`,
+  "slug": "how-to-batch-similar-tasks-to-save-time",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Batch Similar Tasks to Save Time (Without Becoming a Spreadsheet)",
+  "titleHtml": "How to Batch Similar Tasks to Save Time <em>(Without Becoming a Spreadsheet)</em>",
+  "shortTitle": "How to Batch Similar Tasks to Save Time",
+  "navTitle": "How to batch similar tasks to save time without becoming a spreadsheet",
+  "description": "You've heard 'batch your tasks' a hundred times. The actual mechanism is more specific, and most attempts fail in the same predictable way. Here's the version that holds.",
+  "deck": "To batch tasks well, group work by the kind of thinking it needs (writing, deciding, admin) rather than by topic, protect your costliest transitions, size batches to the time you really have, and guard the first few minutes. Leave urgent work and anything blocking others out.",
+  "answerList": [
+    "Group by mode (writing, decisions, admin), not topic.",
+    "Protect your most expensive switches first.",
+    "Fit batches to the gaps you really have.",
+    "Guard the start of each batch.",
+    "Don't batch urgent or blocking work."
   ],
-
-  steps: [
-    {
-      name: "Group by mode, not by topic",
-      body: "Most people try to batch by topic — 'all my marketing tasks together.' That fails because two marketing tasks can require different brain modes (writing vs reviewing vs planning). Group by mode instead: all writing in one block, all decisions in another, all admin in a third. The savings come from staying in one mental gear, not from staying on one subject.",
-    },
-    {
-      name: "Pick the modes that actually have a switching cost for you",
-      body: "Not every kind of task has a high switching cost. Some people switch effortlessly between calls and email. Some can't write for an hour after a difficult meeting. Identify your two or three highest-cost transitions — the ones that genuinely take fifteen minutes to recover from — and protect those. Batching low-cost transitions is wasted effort.",
-    },
-    {
-      name: "Build batches that fit your real day, not an idealized one",
-      body: "A two-hour writing block sounds great until you realize your morning actually has three meetings stacked into it. The batch that holds is the one that fits the day you actually have, not the day you wish you had. If your only protected stretch is forty minutes between calls, design a forty-minute batch. Realistic small batches beat ambitious blocks that get blown up by reality.",
-    },
-    {
-      name: "Defend the start of the batch, not the whole thing",
-      body: "Most batches die in the first three minutes. The transition into focused work is the most expensive part — once you're in, momentum carries you. Defend the entry point ruthlessly: don't open Slack, don't check email, don't 'just look at one thing.' Fifteen minutes in, you're stable. The discipline is at the on-ramp, not throughout.",
-    },
-    {
-      name: "Know when not to batch",
-      body: "Batching has limits. Time-sensitive work shouldn't be batched. Tasks that depend on someone else's response are bad batch candidates because the response interrupts the batch anyway. Anything where being slow costs more than being unfocused — escalations, urgent feedback, things blocking other people — should be handled in line. The skill is knowing which 30% of your work can't be batched, and not feeling guilty about that.",
-    },
+  "ledes": [
+    "Task batching means grouping similar work so you switch between kinds of thinking less often. It works because switching has a cost: the American Psychological Association summarizes research showing that each switch between tasks takes extra time, and that repeated switching can add up to a substantial share of productive time. Batching by mental mode, rather than by project or topic, is what cuts the number of switches.",
+    "You've heard the advice and tried it. It worked for a week, then real life and other people's emails broke the queues. The idea was sound; what was missing was knowing which switches actually cost you, and which work should never be batched."
   ],
-
-  cta: {
-    glyph:    '⚡',
-    headline: "Build a real batching plan for your actual week",
-    body:     "Batch Flow looks at your real schedule and tasks, identifies your highest-cost transitions, and builds a batch plan that fits the day you actually have.",
-    features: [
+  "steps": [
+    {
+      "name": "What is the best way to group tasks for batching?",
+      "body": "Most people try to batch by topic — 'all my marketing tasks together.' That fails because two marketing tasks can require different brain modes (writing vs reviewing vs planning). Group by mode instead: all writing in one block, all decisions in another, all admin in a third. The savings come from staying in one mental gear, not from staying on one subject."
+    },
+    {
+      "name": "Which tasks are worth batching?",
+      "body": "Not every kind of task has a high switching cost for you. Some people move easily between calls and email; others can't write for an hour after a difficult meeting. Identify your two or three most expensive transitions, the ones that take you a long time to recover from, and protect those first. Batching transitions that cost you little is effort with little return."
+    },
+    {
+      "name": "How long should a batch of tasks be?",
+      "body": "A two-hour writing block sounds great until you realize your morning actually has three meetings stacked into it. The batch that holds is the one that fits the day you actually have, not the day you wish you had. If your only protected stretch is forty minutes between calls, design a forty-minute batch. Realistic small batches beat ambitious blocks that get blown up by reality."
+    },
+    {
+      "name": "How do you stop getting distracted at the start of a work block?",
+      "body": "Many batches fall apart in the first few minutes. Getting into focused work is the hardest part; once you're in, momentum tends to carry you. Protect the start: don't open chat, don't check email, don't 'just look at one thing'. After the first stretch you're usually settled. The discipline matters most at the beginning, not throughout."
+    },
+    {
+      "name": "When should you not batch tasks?",
+      "body": "Batching has limits. Time-sensitive work shouldn't wait for a batch. Tasks that depend on someone else's reply make poor batch candidates, because the reply interrupts anyway. Anything where being slow costs more than being unfocused, such as escalations, urgent feedback or work blocking other people, is often better handled as it comes. Part of the skill is accepting that some of your work can't be batched, without feeling guilty about it."
+    }
+  ],
+  "sources": [
+    {
+      "label": "American Psychological Association: Multitasking: Switching costs",
+      "url": "https://www.apa.org/topics/research/multitasking"
+    }
+  ],
+  "cta": {
+    "glyph": "⚡",
+    "headline": "Build a real batching plan for your actual week",
+    "body": "Batch Flow looks at your real schedule and tasks, identifies your highest-cost transitions, and builds a batch plan that fits the day you actually have.",
+    "features": [
       "Real-schedule input",
       "Mode-based grouping",
       "Switching-cost analysis",
       "Realistic time blocks",
-      "Adjusts as you go",
+      "Adjusts as you go"
     ],
-    toolId:   'BatchFlow',
-    toolName: 'Batch Flow',
+    "toolId": "BatchFlow",
+    "toolName": "Batch Flow"
   },
-
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

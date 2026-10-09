@@ -1,37 +1,74 @@
 module.exports = {
-  slug:          'how-to-remember-a-word-thats-on-the-tip-of-your-tongue',
-  category:      'learning',
-  categoryLabel: 'Learning',
-  title:         "How to Remember a Word That Is on the Tip of Your Tongue",
-  titleHtml:     "How to Remember a Word <em>That Is on the Tip of Your Tongue</em>",
-  shortTitle:    "Find the Word",
-  navTitle:      "find a forgotten word",
-  description:   "A word you know is right there in your head — you can almost feel its shape — and you cannot retrieve it. Here is how to actually get to it instead of giving up.",
-  deck:          "A word you know is right there in your head — you can almost feel its shape — and you cannot retrieve it. Here is how to actually get to it instead of giving up.",
-  ledes: [
-    `You know the word. You can almost feel its shape — how many syllables it has, what letter it might start with, the cluster of meanings around it. You can describe what it means perfectly. You just cannot pull up the word itself. The harder you try, the more it recedes. You give up and ten minutes later, while doing something else, the word arrives unprompted.\n\nThe tip-of-the-tongue state is its own well-studied phenomenon, and there are real techniques for retrieval that work better than just trying harder. The trick is that direct retrieval often fails, but indirect routes succeed. Asking yourself the right kinds of questions can surface a word that pure effort cannot. The brain stores words in networks, and you can navigate the networks even when the direct lookup fails.`,
-    `Here are the techniques — and how Tip of Tongue runs them in seconds.`,
+  "slug": "how-to-remember-a-word-thats-on-the-tip-of-your-tongue",
+  "category": "learning",
+  "categoryLabel": "Learning",
+  "title": "How to Remember a Word That Is on the Tip of Your Tongue",
+  "titleHtml": "How to Remember a Word <em>That Is on the Tip of Your Tongue</em>",
+  "shortTitle": "Find the Word",
+  "navTitle": "find a forgotten word",
+  "description": "A word you know is right there in your head — you can almost feel its shape — and you cannot retrieve it. Here is how to actually get to it instead of giving up.",
+  "deck": "To retrieve a word on the tip of your tongue, write down whatever partial clues you have (first letter, number of syllables, sound), list similar words, describe the meaning in several ways, try words that start with similar sounds, and if it still won't come, switch tasks briefly.",
+  "answerList": [
+    "Note the first letter, length or sound you sense.",
+    "List near-misses and similar words.",
+    "Describe the meaning several ways.",
+    "Try words with similar sounds.",
+    "Step away briefly and come back."
   ],
-  steps: [
-    { name: 'Try to recall the first letter or sound, even if uncertain', body: 'Even when you cannot retrieve the word, you often have partial access. Ask yourself: does it start with a vowel or consonant? How many syllables? Is the first sound hard or soft? Sometimes you know "it starts with a B" without knowing the word. That partial information narrows the search dramatically. Write down whatever you have — letter, length, sound — and the rest often follows.' },
-    { name: 'List synonyms and near-misses', body: 'Generate words near the one you want. The word you want is in a network with these. \'I want to say something like enthusiasm but stronger and more specific.\' List five candidates. Often, listing the wrong words activates the right one — the brain works by activation spreading through related words. Trying to retrieve directly is one path; activating the neighborhood is another, and it works when direct retrieval fails.' },
-    { name: 'Describe the meaning in as many ways as you can', body: 'Describe what the word means in every framing you can think of — the definition, an example, what it sounds like, what it feels like, what the opposite is. Each framing activates different parts of the network where the word lives. The word often surfaces while you are describing rather than while you are searching, because describing routes around the failed direct lookup.' },
-    { name: 'Stop trying and let it arrive', body: 'Active searching can actually inhibit retrieval — your brain locks onto the wrong candidates and they block the right one. If two minutes of searching has not worked, give up and switch tasks. The word usually surfaces within an hour while you are doing something else. This is not a metaphor — there is a real cognitive mechanism at work. Trying harder past the two-minute mark often makes it worse.' },
-    { name: 'Use Tip of Tongue to find it from the description', body: 'Describe the word to Tip of Tongue in any way you can. The output suggests candidate words ranked by likelihood. Even partial information — \'a word that means something like X but stronger\' or \'starts with B and means stubborn\' — usually narrows it to one or two candidates. Far faster than trying to retrieve it yourself, and especially good for words you may have heard once and not encoded strongly enough to retrieve from cold.' }
+  "ledes": [
+    "A tip-of-the-tongue state is the feeling of knowing a word without being able to say it. In a classic 1966 study, Roger Brown and David McNeill found people could often report the missing word's first letter and number of syllables. Later research by Lori James and Deborah Burke found that hearing words sharing sounds with the target helped people retrieve it. Partial clues, related words and similar sounds are the most practical routes back.",
+    "You can describe what the word means perfectly. You can almost feel its shape. The harder you try, the further away it seems. There are better moves than just trying harder."
   ],
-  cta: {
-    glyph:    '💭',
-    headline: "Describe what you almost remember. We will name it.",
-    body:     "Describe the word, song, movie, book, or thing in any words you can — vague vibes, partial memories, \"it was like...\" — and Tip of Tongue identifies what you are reaching for.",
-    features: [
+  "steps": [
+    {
+      "name": "Can you remember the first letter of a word you've forgotten?",
+      "body": "Even when you cannot retrieve the word, you often have partial access. Ask yourself: does it start with a vowel or consonant? How many syllables? Is the first sound hard or soft? Sometimes you know \"it starts with a B\" without knowing the word. That partial information narrows the search. Write down whatever you have — letter, length, sound — and the rest often follows."
+    },
+    {
+      "name": "Does listing similar words help you remember a word?",
+      "body": "Generate words near the one you want. The word you want is in a network with these. 'I want to say something like enthusiasm but stronger and more specific.' List five candidates. Sometimes listing the wrong words brings up the right one, because related words are linked in memory. Trying to retrieve directly is one path; activating the neighborhood is another, and it works when direct retrieval fails."
+    },
+    {
+      "name": "How does describing a word help you recall it?",
+      "body": "Describe what the word means in every framing you can think of — the definition, an example, what it sounds like, what it feels like, what the opposite is. Each framing activates different parts of the network where the word lives. The word often surfaces while you are describing rather than while you are searching, because describing routes around the failed direct lookup."
+    },
+    {
+      "name": "Should you stop trying to remember a word?",
+      "body": "Sometimes. If a couple of minutes of searching hasn't worked and the same wrong word keeps coming back, it can help to switch to something else and return later; the word often turns up on its own. Researchers disagree about why. One view is that the wrong word is blocking the right one; another, supported by a study from Nate Kornell and Janet Metcalfe, is that the wrong words are a symptom of weak activation, not the cause. Either way, a short break costs little. If you're mid-conversation, a placeholder like 'whatever the word is' lets you keep going."
+    },
+    {
+      "name": "Can sounding out letters help you find a word?",
+      "body": "Yes, it can. Research by Lori James and Deborah Burke found that when people in a tip-of-the-tongue state heard or read words that shared sounds with the missing word, they were more likely to retrieve it. So go through the alphabet slowly, saying possible first sounds, or read a list of words beginning with the letter you suspect. A dictionary or thesaurus helps too: look up a near-synonym and scan the related entries, since seeing the right word usually triggers instant recognition even when recall failed."
+    }
+  ],
+  "sources": [
+    {
+      "label": "PMC: The Tip-of-the-Tongue Phenomenon: Cognitive, Neural, and Neurochemical Perspectives (review)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938793/"
+    },
+    {
+      "label": "James and Burke (2000), Journal of Experimental Psychology: Phonological Priming Effects on Word Retrieval and Tip-of-the-Tongue Experiences in Young and Older Adults (APA, PDF)",
+      "url": "https://www.apa.org/pubs/journals/releases/xlm2661378.pdf"
+    },
+    {
+      "label": "Kornell and Metcalfe (2006): 'Blockers' do not block recall during tip-of-the-tongue states (PDF, Williams College)",
+      "url": "https://sites.williams.edu/nk2/files/2011/08/Kornell.Metcalfe.2006b.pdf"
+    }
+  ],
+  "cta": {
+    "glyph": "💭",
+    "headline": "Describe what you almost remember. We will name it.",
+    "body": "Describe the word, song, movie, book, or thing in any words you can — vague vibes, partial memories, \"it was like...\" — and Tip of Tongue identifies what you are reaching for.",
+    "features": [
       "Words, songs, movies, books, objects",
       "Works from vague descriptions",
       "Surfaces near-misses to confirm or rule out",
       "Builds your personal \"found\" list"
     ],
-    toolId:   'TipOfTongue',
-    toolName: 'Tip of Tongue',
+    "toolId": "TipOfTongue",
+    "toolName": "Tip of Tongue"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

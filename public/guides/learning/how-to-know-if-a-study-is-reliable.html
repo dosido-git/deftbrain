@@ -51,7 +51,7 @@
 
   <title>How to Know If a Study Is Reliable | DeftBrain</title>
   <meta name="description" content="Most studies that get headlines should not. Here is how to tell a solid study from a weak one in about three minutes — without needing to be a statistician.">
-  <meta name="googlebot" content="noindex">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://deftbrain.com/guides/learning/how-to-know-if-a-study-is-reliable">
 
   <meta property="og:type"        content="article">
@@ -63,7 +63,7 @@
   <meta property="og:image:width"  content="1200">
   <meta property="og:image:height" content="630">
   <meta property="article:published_time" content="2026-04-29">
-  <meta property="article:modified_time"  content="2026-04-29">
+  <meta property="article:modified_time"  content="2026-10-09">
   <meta property="article:section"        content="Learning">
 
   <meta name="twitter:card"        content="summary_large_image">
@@ -78,10 +78,11 @@
     "headline": "How to Know If a Study Is Reliable",
     "description": "Most studies that get headlines should not. Here is how to tell a solid study from a weak one in about three minutes — without needing to be a statistician.",
     "datePublished": "2026-04-29",
-    "dateModified": "2026-04-29",
+    "dateModified": "2026-10-09",
     "author": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
     "publisher": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
-    "mainEntityOfPage": "https://deftbrain.com/guides/learning/how-to-know-if-a-study-is-reliable"
+    "mainEntityOfPage": "https://deftbrain.com/guides/learning/how-to-know-if-a-study-is-reliable",
+    "citation": ["https://www.nccih.nih.gov/health/tips/10-things-to-know-about-the-science-of-health", "https://www.cochranelibrary.com/cdsr/doi/10.1002/14651858.MR000033.pub3/full"]
   }
   </script>
 
@@ -92,11 +93,11 @@
     "name": "How to Know If a Study Is Reliable",
     "description": "Most studies that get headlines should not. Here is how to tell a solid study from a weak one in about three minutes — without needing to be a statistician.",
     "step": [
-      {"@type":"HowToStep","name":"Check the sample size and study type first","text":"A study of 23 college students is not the same as a study of 200,000 adults followed for ten years. Small studies can be useful as preliminary evidence, but they should not drive headlines or behavior change. Look for sample size in the abstract or methods. Anything under a few hundred participants for human research deserves skepticism. Lab studies on cells or animals are interesting but rarely apply directly to humans without further work."},
-      {"@type":"HowToStep","name":"Check whether the result has been replicated","text":"A single study showing a striking result is a hypothesis, not a finding. Real findings replicate across multiple studies by different teams using different populations. If the only evidence for a claim is one paper, the claim is provisional even if the paper is high quality. Search for \"replication\" or \"meta-analysis\" of the finding before treating it as established. The most-quoted single studies often turn out not to replicate."},
-      {"@type":"HowToStep","name":"Look at how big the effect is, not just whether it was statistically significant","text":"A study can find a \"statistically significant\" effect that is too small to matter in real life. The headline says coffee reduces risk; the study says it reduces risk by 2 percent. Small effects are real but often not actionable. Look for effect size — the actual percentage difference, the actual hazard ratio, the actual change in score. If the result is statistically significant but the effect is tiny, do not change behavior on it."},
-      {"@type":"HowToStep","name":"Check who funded it and whether the framing matches the data","text":"Industry-funded studies are not automatically wrong but are more likely to overstate effects favoring the industry. Check the funding disclosure — usually at the end. More importantly, check whether the conclusion in the abstract matches what the data actually showed. Many papers have findings that are technically true but framed in misleading ways. The abstract conclusion is marketing; the actual numbers are the evidence."},
-      {"@type":"HowToStep","name":"Use Research Decoder for the full reliability check in one pass","text":"Drop the paper into Research Decoder. The output flags sample size, replication status, effect size, funding sources, and how the framing compares to the data. It will tell you whether this is a solid study you can rely on, a preliminary study to watch, or a weak study you should not change behavior on. The same checks researchers do, faster than you can do them yourself."}
+      {"@type":"HowToStep","name":"Does sample size matter in a study?","text":"A study of 23 college students is not the same as a study of 200,000 adults followed for ten years. Small studies can be useful as preliminary evidence, but they should not drive headlines or behavior change. Look for sample size in the abstract or methods. Very small human studies deserve extra caution, especially when the result is surprising. Lab studies on cells or animals are interesting but rarely apply directly to humans without further work."},
+      {"@type":"HowToStep","name":"Why does replication matter for a study?","text":"A single study showing a striking result is a hypothesis, not a finding. Real findings replicate across multiple studies by different teams using different populations. If the only evidence for a claim is one paper, the claim is provisional even if the paper is high quality. Search for \"replication\" or \"meta-analysis\" of the finding before treating it as established. Striking single studies sometimes fail to replicate."},
+      {"@type":"HowToStep","name":"What is the difference between statistical significance and effect size?","text":"A study can find a \"statistically significant\" effect that is too small to matter in real life. The headline says coffee reduces risk; the study says it reduces risk by 2 percent. Small effects are real but often not actionable. Look for effect size — the actual percentage difference, the actual hazard ratio, the actual change in score. If the result is statistically significant but the effect is tiny, do not change behavior on it."},
+      {"@type":"HowToStep","name":"Does funding affect a study's results?","text":"Industry-funded studies are not automatically wrong, but a Cochrane review found that drug studies sponsored by manufacturers more often report favorable results. Check the funding disclosure — usually at the end. More importantly, check whether the conclusion in the abstract matches what the data actually showed. Many papers have findings that are technically true but framed in misleading ways. The abstract conclusion is a summary; the actual numbers are the evidence."},
+      {"@type":"HowToStep","name":"How do you check if a study's conclusions match its data?","text":"Read the abstract's conclusion, then find the actual results: the numbers in the results section or the main table. Ask whether the conclusion says more than the numbers support, such as describing an association as a cause, generalizing from a narrow group to everyone, or calling a small effect important. Read the limitations paragraph, usually in the discussion; it tells you where the authors themselves think the study falls short. A study whose conclusion, numbers and limitations line up is more trustworthy than one whose summary runs ahead of its data."}
     ]
   }
   </script>
@@ -171,53 +172,65 @@
 
       <h1>How to Know If a Study <em>Is Reliable</em></h1>
 
-      <p class="deck">Most studies that get headlines should not. Here is how to tell a solid study from a weak one in about three minutes — without needing to be a statistician.</p>
+      <p class="deck">A study is more reliable when it involved many people, used a strong design such as a randomized trial, found an effect large enough to matter, has been replicated by other teams, and states conclusions that match its data. Small, single, animal-only or sponsor-funded studies deserve more caution.</p>
+      <ol class="answer-list">
+        <li>Check sample size and study type.</li>
+        <li>Look for replication by independent teams.</li>
+        <li>Look at effect size, not just significance.</li>
+        <li>Check the funding and conflicts of interest.</li>
+        <li>Compare the conclusion with the actual numbers.</li>
+      </ol>
 
-      <p class="meta-line">Updated April 29, 2026 · By the DeftBrain team</p>
+      <p class="meta-line">Updated October 9, 2026 · By the DeftBrain team</p>
 
-      <p class="lede">A new study makes the news every day. Coffee is good for you. Coffee is bad for you. Multivitamins do not work. Multivitamins prevent dementia. Each study comes with a confident headline, and you cannot tell from the headline alone whether the study is solid science or a tiny preliminary result that will not replicate.
-
-Reliability has tells. Sample size, study type, who funded it, whether the result is huge or modest, whether it has been replicated, who the authors are. None of these requires a statistics background to evaluate at a basic level. Five quick checks will let you separate the solid studies from the noise about 80% of the time.</p>
-      <p class="lede">Here are the checks — and how Research Decoder runs them automatically.</p>
+      <p class="lede">A reliable study generally has an adequate number of participants, a design suited to its question (randomized trials can show cause; observational studies show association), an effect large enough to matter, and results other teams have reproduced. The US National Center for Complementary and Integrative Health notes that larger studies reduce the chance a result is a fluke, and a Cochrane review found that industry-sponsored drug studies more often report results favorable to the sponsor.</p>
+      <p class="lede">Coffee is good for you; coffee is bad for you. Each study comes with a confident headline, and you can&#39;t tell from the headline whether it&#39;s solid or a small preliminary result. A few checks help, without needing a statistics background.</p>
 
       <div class="section-rule"><span>How to do it</span></div>
 
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
-          <h2>Check the sample size and study type first</h2>
-          <p>A study of 23 college students is not the same as a study of 200,000 adults followed for ten years. Small studies can be useful as preliminary evidence, but they should not drive headlines or behavior change. Look for sample size in the abstract or methods. Anything under a few hundred participants for human research deserves skepticism. Lab studies on cells or animals are interesting but rarely apply directly to humans without further work.</p>
+          <h2>Does sample size matter in a study?</h2>
+          <p>A study of 23 college students is not the same as a study of 200,000 adults followed for ten years. Small studies can be useful as preliminary evidence, but they should not drive headlines or behavior change. Look for sample size in the abstract or methods. Very small human studies deserve extra caution, especially when the result is surprising. Lab studies on cells or animals are interesting but rarely apply directly to humans without further work.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
-          <h2>Check whether the result has been replicated</h2>
-          <p>A single study showing a striking result is a hypothesis, not a finding. Real findings replicate across multiple studies by different teams using different populations. If the only evidence for a claim is one paper, the claim is provisional even if the paper is high quality. Search for &quot;replication&quot; or &quot;meta-analysis&quot; of the finding before treating it as established. The most-quoted single studies often turn out not to replicate.</p>
+          <h2>Why does replication matter for a study?</h2>
+          <p>A single study showing a striking result is a hypothesis, not a finding. Real findings replicate across multiple studies by different teams using different populations. If the only evidence for a claim is one paper, the claim is provisional even if the paper is high quality. Search for &quot;replication&quot; or &quot;meta-analysis&quot; of the finding before treating it as established. Striking single studies sometimes fail to replicate.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h2>Look at how big the effect is, not just whether it was statistically significant</h2>
+          <h2>What is the difference between statistical significance and effect size?</h2>
           <p>A study can find a &quot;statistically significant&quot; effect that is too small to matter in real life. The headline says coffee reduces risk; the study says it reduces risk by 2 percent. Small effects are real but often not actionable. Look for effect size — the actual percentage difference, the actual hazard ratio, the actual change in score. If the result is statistically significant but the effect is tiny, do not change behavior on it.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-body">
-          <h2>Check who funded it and whether the framing matches the data</h2>
-          <p>Industry-funded studies are not automatically wrong but are more likely to overstate effects favoring the industry. Check the funding disclosure — usually at the end. More importantly, check whether the conclusion in the abstract matches what the data actually showed. Many papers have findings that are technically true but framed in misleading ways. The abstract conclusion is marketing; the actual numbers are the evidence.</p>
+          <h2>Does funding affect a study&#39;s results?</h2>
+          <p>Industry-funded studies are not automatically wrong, but a Cochrane review found that drug studies sponsored by manufacturers more often report favorable results. Check the funding disclosure — usually at the end. More importantly, check whether the conclusion in the abstract matches what the data actually showed. Many papers have findings that are technically true but framed in misleading ways. The abstract conclusion is a summary; the actual numbers are the evidence.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <h2>Use Research Decoder for the full reliability check in one pass</h2>
-          <p>Drop the paper into Research Decoder. The output flags sample size, replication status, effect size, funding sources, and how the framing compares to the data. It will tell you whether this is a solid study you can rely on, a preliminary study to watch, or a weak study you should not change behavior on. The same checks researchers do, faster than you can do them yourself.</p>
+          <h2>How do you check if a study&#39;s conclusions match its data?</h2>
+          <p>Read the abstract&#39;s conclusion, then find the actual results: the numbers in the results section or the main table. Ask whether the conclusion says more than the numbers support, such as describing an association as a cause, generalizing from a narrow group to everyone, or calling a small effect important. Read the limitations paragraph, usually in the discussion; it tells you where the authors themselves think the study falls short. A study whose conclusion, numbers and limitations line up is more trustworthy than one whose summary runs ahead of its data.</p>
         </div>
       </div>
 
+      <div class="guide-sources">
+        <p class="guide-sources-label">Sources</p>
+        <ul>
+          <li><a href="https://www.nccih.nih.gov/health/tips/10-things-to-know-about-the-science-of-health" rel="noopener" target="_blank">NCCIH (NIH): 10 Things To Know About the Science of Health</a></li>
+          <li><a href="https://www.cochranelibrary.com/cdsr/doi/10.1002/14651858.MR000033.pub3/full" rel="noopener" target="_blank">Cochrane: Industry sponsorship and research outcome (Lundh et al., 2017)</a></li>
+        </ul>
+      </div>
 
       <div class="cta-block" data-glyph="📄">
         <div class="cta-eyebrow">Try it now — free</div>
@@ -255,7 +268,7 @@ Reliability has tells. Sample size, study type, who funded it, whether the resul
         (function () {
           var URL_ = "https://deftbrain.com/guides/learning/how-to-know-if-a-study-is-reliable";
           var TITLE = "How to Know If a Study Is Reliable";
-          var MOD = "April 29, 2026";
+          var MOD = "October 9, 2026";
           var payload = {
             url: URL_,
             html: '<a href="' + URL_ + '">' + TITLE + '</a>',

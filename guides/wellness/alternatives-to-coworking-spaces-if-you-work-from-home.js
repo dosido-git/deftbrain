@@ -1,63 +1,67 @@
-// ============================================================
-// guides/wellness/alternatives-to-coworking-spaces-if-you-work-from-home.js
-// ============================================================
-
 module.exports = {
-  slug:          'alternatives-to-coworking-spaces-if-you-work-from-home',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-
-  title:         "Alternatives to Coworking Spaces If You Work From Home",
-  titleHtml:     "Alternatives to Coworking Spaces <em>If You Work From Home</em>",
-  shortTitle:    "Alternatives to Coworking",
-  navTitle:      "Alternatives to coworking spaces if you work from home",
-
-  description:   "Coworking spaces are expensive. Coffee shops are unreliable. Here are five working alternatives that produce similar focus benefits — without the membership fee.",
-  deck:          "Coworking spaces are expensive. Coffee shops are unreliable. Here are five working alternatives that produce similar focus benefits — without the membership fee.",
-
-  published:     '2026-04-28',
-  modified:      '2026-04-28',
-
-  ledes: [
-    `You'd love a coworking space. The math doesn't work. The cheapest local one is $300 a month, the good one is $500, the one with windows is $750. You've calculated that a year of membership is worth more than the focus boost, and you've ended up back at home — at the same desk, with the same distractions, getting the same fragmented day you started with. The coworking option exists; it's just not the one you'll actually use.`,
-    `Most of what makes a coworking space work isn't the space — it's the structural side effects: ambient social presence, an out-of-house commute, a clear separation between work and home, and a defined start and end. Each of those can be replicated cheaper. Five alternatives that produce most of the benefit without the membership.`,
+  "slug": "alternatives-to-coworking-spaces-if-you-work-from-home",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "Alternatives to Coworking Spaces If You Work From Home",
+  "titleHtml": "Alternatives to Coworking Spaces <em>If You Work From Home</em>",
+  "shortTitle": "Alternatives to Coworking",
+  "navTitle": "Alternatives to coworking spaces if you work from home",
+  "description": "Coworking spaces are expensive. Coffee shops are unreliable. Here are five working alternatives that produce similar focus benefits — without the membership fee.",
+  "deck": "Good alternatives to a coworking space are the public library, a regular coffee shop that suits laptop work, a recurring video work session with a friend, a work-only spot at home, and online focus sessions with a partner. Each copies part of what coworking provides, for little or nothing.",
+  "answerList": [
+    "Public library: free, quiet, other people working.",
+    "One well-chosen coffee shop you return to.",
+    "A recurring video work call with a friend.",
+    "A work-only corner at home.",
+    "Online focus sessions with a partner, such as Focusmate."
   ],
-
-  steps: [
-    {
-      name: "Use the public library, deliberately",
-      body: "Public libraries are free coworking spaces — quiet, full of other people working on their own things, with desks and outlets. They have no espresso machine but also no $7 latte, and they're closer to most homes than the nearest coworking space. The catch is that they require you to actually go; people who've replaced coffee shops with libraries report higher focus and lower spending almost immediately. It's the same trick coworking spaces sell, free.",
-    },
-    {
-      name: "Pick the right coffee shop, not just any",
-      body: "Coffee shops vary enormously in coworking quality. The right one has: small enough that the music isn't loud; few enough customers that the line doesn't form behind your laptop; a regular enough crowd that you're not the lone laptop user; outlets at the actual tables; and a menu where you can sit for three hours on a $4 order without feeling guilty. These exist; they're not the chain near your house. Find one and become a regular.",
-    },
-    {
-      name: "Schedule a recurring video call with a friend",
-      body: "Two friends, two laptops, video on, mics off. Both of you work on your own thing. The call lasts 90 minutes and ends. This costs zero dollars, requires no commute, and produces most of the focus benefit a coworking space sells. The catch is scheduling — you have to commit to a recurring time and actually show up. Once it becomes a habit, the focus is reliable in a way solo desk-time isn't.",
-    },
-    {
-      name: "Designate a single 'work cafe' table at home",
-      body: "Most home distractions are spatial. The desk where you also pay bills, store mail, fix things, and read in the evening doesn't feel like a workplace because it isn't one. Designate a specific place — a corner, a small table, even a different chair facing a different direction — that you only use for focused work. The brain learns the association quickly; sitting at that spot becomes its own start ritual. The space doesn't have to be elaborate. It has to be exclusive.",
-    },
-    {
-      name: "Use a structured online focus session",
-      body: "Apps like Focusmate pair you with a stranger for a 50-minute session over video. Both of you state what you're working on at the start; both of you check in at the end. Stranger-pairing produces strong accountability — you don't want to flake on someone you've never met but committed to a session with. AI-driven body-double tools provide a similar structure without the human matching. Both work. Cost: usually free or nominal.",
-    },
+  "ledes": [
+    "A coworking space mostly provides four things: other people working nearby, a reason to leave the house, a separation between work and home, and a set start and end time. Each can be reproduced for little or no money. Public libraries offer free seating and outlets; online services such as Focusmate pair you with a partner for 25-, 50- or 75-minute video sessions; and a recurring call with a friend or a work-only spot at home covers the rest.",
+    "You'd like a coworking space, but the monthly fee is hard to justify, so you're back at the same desk with the same distractions and the same fragmented day. The useful question is which part of coworking you actually miss, because that tells you which substitute will work."
   ],
-
-  cta: {
-    glyph:    '👥',
-    headline: "Get coworking-style structure on your own schedule",
-    body:     "Virtual Body Double provides the structured-session benefits of coworking — co-presence, check-ins, defined start and end — without the membership fee, the commute, or the need to find a session partner.",
-    features: [
+  "steps": [
+    {
+      "name": "Is the public library a good place to work remotely?",
+      "body": "Public libraries work as free coworking spaces: quiet, full of people doing their own work, with tables and usually outlets and Wi-Fi. There's no espresso machine, but there's also no pressure to keep buying something to justify your seat. The catch is that you have to actually go. Check opening hours and whether your branch has quiet rooms or bookable study spaces, since many do. It is the same trick coworking spaces sell, without the fee."
+    },
+    {
+      "name": "What makes a coffee shop good for working?",
+      "body": "Coffee shops vary a lot as workplaces. A good one is small enough that the music isn't loud, quiet enough that no line forms behind your laptop, regular enough that you're not the only person working, and has outlets at the tables. It also has a menu that lets you sit for a few hours on a modest order without feeling guilty, or a clear norm about how long laptop users stay. Find one that fits, and become a regular rather than rotating."
+    },
+    {
+      "name": "Can a video call with a friend help you focus?",
+      "body": "Two friends, two laptops, video on, mics off. Both of you work on your own thing. The call lasts 90 minutes and ends. This costs zero dollars, requires no commute, and produces most of the focus benefit a coworking space sells. The catch is scheduling — you have to commit to a recurring time and actually show up. Once it becomes a habit, the focus is reliable in a way solo desk-time isn't."
+    },
+    {
+      "name": "How do you make a work space at home that feels separate?",
+      "body": "Most home distractions are spatial. The desk where you also pay bills, store mail, fix things, and read in the evening doesn't feel like a workplace because it isn't one. Designate a specific place — a corner, a small table, even a different chair facing a different direction — that you only use for focused work. The brain learns the association quickly; sitting at that spot becomes its own start ritual. The space doesn't have to be elaborate. It has to be exclusive."
+    },
+    {
+      "name": "What are online focus sessions and do they cost money?",
+      "body": "Services such as Focusmate pair you with another person for a 25-, 50- or 75-minute session over video. You each say what you're working on at the start, work quietly on camera, and check in at the end. Being expected by a real person, even a stranger, makes it harder to skip the session or drift during it. Focusmate has a free tier with a limited number of sessions a week and a paid plan for more; other virtual coworking services work in similar ways. Try a few sessions before deciding whether it suits you."
+    }
+  ],
+  "sources": [
+    {
+      "label": "Focusmate: How it works",
+      "url": "https://www.focusmate.com/how-it-works/"
+    }
+  ],
+  "cta": {
+    "glyph": "👥",
+    "headline": "Get coworking-style structure on your own schedule",
+    "body": "Virtual Body Double provides the structured-session benefits of coworking — co-presence, check-ins, defined start and end — without the membership fee, the commute, or the need to find a session partner.",
+    "features": [
       "Structured focus sessions",
       "Six focus modes",
       "No scheduling required",
       "Defined start and end",
-      "Quiet companionship",
+      "Quiet companionship"
     ],
-    toolId:   'VirtualBodyDouble',
-    toolName: 'Virtual Body Double',
+    "toolId": "VirtualBodyDouble",
+    "toolName": "Virtual Body Double"
   },
+  "published": "2026-04-28",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

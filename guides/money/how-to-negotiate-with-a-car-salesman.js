@@ -1,59 +1,71 @@
 module.exports = {
-  slug:          'how-to-negotiate-with-a-car-salesman',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Negotiate With a Car Salesman (Without Getting Played)",
-  titleHtml:     "How to Negotiate With a Car Salesman <em>(Without Getting Played)</em>",
-  shortTitle:    "How to Negotiate With a Car Salesman",
-  navTitle:      "How to negotiate with a car salesman without getting played",
-
-  description:   "Car negotiation isn't really negotiation — it's a structured game with predictable moves on their side and a small set of correct responses on yours.",
-  deck:          "Car negotiation isn't really negotiation — it's a structured game with predictable moves on their side and a small set of correct responses on yours.",
-
-  ledes: [
-    `You walk onto the lot, the salesperson approaches before you've finished closing the car door, and the choreography begins. They ask what brought you in. They ask what monthly payment you're comfortable with. They ask if you're trading in. By the time you're inside, you've already given them the three pieces of information they need to control the next two hours. The conversation will feel like negotiation. Most of it won't be.`,
-    `Car dealerships run a structured process designed to maximize their profit on three different fronts at once: the price of the car, the financing, and the trade-in. Each one is moved separately to obscure the total. The good news is that the process is the same at every dealership, which means once you know the moves, you can disrupt them with surprisingly little effort.`,
+  "slug": "how-to-negotiate-with-a-car-salesman",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Negotiate With a Car Salesman (Without Getting Played)",
+  "titleHtml": "How to Negotiate With a Car Salesman <em>(Without Getting Played)</em>",
+  "shortTitle": "How to Negotiate With a Car Salesman",
+  "navTitle": "How to negotiate with a car salesman without getting played",
+  "description": "Car negotiation isn't really negotiation — it's a structured game with predictable moves on their side and a small set of correct responses on yours.",
+  "deck": "To negotiate with a car salesperson, settle the out-the-door price before discussing monthly payments, keep your trade-in separate with an outside offer in hand, arrange financing in advance, question every add-on, and be ready to leave. The FTC advises focusing on total cost, not the monthly payment.",
+  "answerList": [
+    "Negotiate the out-the-door price, not the monthly payment.",
+    "Get an outside trade-in offer and negotiate it separately.",
+    "Get preapproved for a loan before you visit.",
+    "Ask what each add-on costs and covers; decline the rest.",
+    "Leaving is a real option."
   ],
-
-  steps: [
-    {
-      name: "Negotiate the out-the-door price, not the monthly payment",
-      body: "The single most important thing the salesperson wants to know is your target monthly payment, because that's the lever they can stretch. Same monthly number, longer loan term, higher interest rate, more dealer add-ons baked in — and the total you've agreed to has gone up by thousands without any of the individual numbers changing. The countermove is to refuse to discuss monthly payments at all until the final sale price of the car is settled. 'I'm only interested in the out-the-door price' is a complete sentence and it changes the whole conversation.",
-    },
-    {
-      name: "Separate the trade-in from the new-car negotiation",
-      body: "If you have a trade-in, the salesperson will ask about it early and want to roll it into the deal. Don't. The trade-in is its own negotiation and bundling it lets the dealer give you a 'great deal' on one side while quietly recovering it on the other. Get a written offer from CarMax or Carvana before you walk into the dealership. Negotiate the new-car price first, with no trade-in mentioned. Only after that's settled do you bring up the trade — at which point you have a real outside number to compare to.",
-    },
-    {
-      name: "Refuse to talk about financing until the price is locked",
-      body: "Dealer financing is where most of the dealer's profit lives. They'll often offer you a great car price knowing they'll make it back through the loan. The countermove: get pre-approved through your own credit union or bank before you visit the dealership. Tell the salesperson you're paying cash or financing externally. They may still offer to beat your bank's rate — that's fine, but only after the car price is final. Mixing the two negotiations is what costs people thousands.",
-    },
-    {
-      name: "Decline every dealer add-on, then decide which to keep",
-      body: "When the deal hits the finance manager's office, you'll be offered a long list: extended warranty, paint protection, fabric protection, gap insurance, anti-theft etching, dealer maintenance package, tire-and-wheel coverage. Some of these are worth considering; most are pure margin. The right move is to decline all of them by default, then ask one question per item: 'What does this cost, and what does it cover that I don't already have?' Most won't survive the question. The few that do can be bought elsewhere for a fraction of the dealer price.",
-    },
-    {
-      name: "When walking out is the actual move",
-      body: "Most car negotiations have a moment, usually about ninety minutes in, where the deal stalls. The salesperson will go 'talk to the manager.' You'll be left alone for fifteen minutes. They'll come back with a slightly better number that's still not what you want. This is the moment to walk — not as a tactic, but as a real exit. Stand up, thank them for their time, and leave. About half the time the better deal will be in your inbox within 24 hours. The other half, you'll find a similar car somewhere with less friction. There is no version of car-buying where staying when you want to leave produces a better outcome.",
-    },
+  "ledes": [
+    "Car buying involves three negotiations that dealers often blend: the vehicle price, the trade-in and the financing. Keeping them separate, and settling the total out-the-door price first, makes each one easier to judge. The FTC advises knowing the total cost rather than only the monthly payment, checking that the contract lists only the add-ons you agreed to, and remembering that add-ons are optional and their prices negotiable. Getting loan preapproval beforehand gives you a rate to compare.",
+    "You walk onto the lot and the questions start: what brought you in, what monthly payment works, are you trading in? Within minutes you've shared the three numbers that shape the next two hours. Knowing the structure ahead of time lets you set the order instead."
   ],
-
-  cta: {
-    glyph:    '🛡️',
-    headline: "Walk into the dealership with the script already written",
-    body:     "UpsellShield preps you for the exact tactics car dealerships use — the trade-in trap, the monthly-payment pivot, the finance manager's add-on list — with the phrases that deflect each one and the walk-away line you'll actually use.",
-    features: [
+  "steps": [
+    {
+      "name": "Should you negotiate the car price or the monthly payment?",
+      "body": "Negotiate the price. A target monthly payment can be met many ways: a longer loan term, a higher interest rate, add-ons folded in. The payment stays the same while the total climbs. The FTC recommends knowing your total cost, not just the monthly payment. Decline to discuss payments until the out-the-door price, including taxes and fees, is settled: 'I'm only interested in the out-the-door price.'"
+    },
+    {
+      "name": "Should you tell the dealer about your trade-in?",
+      "body": "Not at first. If you combine the trade-in with the purchase, a generous number on one side can be offset on the other. Get written offers from one or two outside buyers before you visit. Negotiate the new car's price with no trade-in mentioned; once it's settled, bring up the trade-in with an outside number to compare against."
+    },
+    {
+      "name": "Should you get car financing before going to the dealer?",
+      "body": "It helps. Dealers often earn money on financing, so a low price can be balanced by a higher rate. Getting preapproved through a bank or credit union gives you a rate to compare. Tell the salesperson you're financing externally or paying cash. If they offer to beat your rate after the price is final, that can be a good deal; just compare the full terms side by side."
+    },
+    {
+      "name": "Which car dealer add-ons are worth it?",
+      "body": "In the finance office you may be offered extended warranties, paint and fabric protection, gap insurance, anti-theft etching, maintenance plans and tire coverage. Some can be useful; many cost more at the dealer than elsewhere. The FTC notes that add-ons are optional and their prices can be negotiated. A simple approach: decline by default, then ask of each item, 'What does this cost, and what does it cover that I don't already have?' Before signing, check that the contract lists only what you agreed to."
+    },
+    {
+      "name": "When should you walk away from a car deal?",
+      "body": "Negotiations often stall at some point, with the salesperson stepping away to 'talk to the manager' and coming back with a slightly better number that still isn't what you want. If the deal isn't right, you can thank them and leave. Sometimes a better offer follows; sometimes you'll find a similar car elsewhere. Leaving when you want to leave is a legitimate outcome, not just a tactic."
+    }
+  ],
+  "sources": [
+    {
+      "label": "FTC Consumer Advice: Financing or Leasing a Car",
+      "url": "https://consumer.ftc.gov/articles/financing-or-leasing-car"
+    },
+    {
+      "label": "FTC Consumer Alert: Car dealerships can't charge you for add-ons you don't want",
+      "url": "https://consumer.ftc.gov/consumer-alerts/2024/08/car-dealerships-cant-charge-you-add-ons-you-dont-want"
+    }
+  ],
+  "cta": {
+    "glyph": "🛡️",
+    "headline": "Walk into the dealership with the script already written",
+    "body": "UpsellShield preps you for the exact tactics car dealerships use — the trade-in trap, the monthly-payment pivot, the finance manager's add-on list — with the phrases that deflect each one and the walk-away line you'll actually use.",
+    "features": [
       "Dealership-specific tactic map",
       "Out-the-door price scripts",
       "Trade-in separation strategy",
       "Add-on response phrases",
-      "Walk-away line and timing",
+      "Walk-away line and timing"
     ],
-    toolId:   'UpsellShield',
-    toolName: 'UpsellShield',
+    "toolId": "UpsellShield",
+    "toolName": "UpsellShield"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-04-27',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

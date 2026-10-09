@@ -1,46 +1,70 @@
 module.exports = {
-  slug:          'how-to-move-your-body-when-youre-sick-sore-or-hungover',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "How to Move Your Body When You're Sick, Sore, or Hungover",
-  titleHtml:     "How to Move Your Body <em>When You're Sick, Sore, or Hungover</em>",
-  shortTitle:    "Movement When Sick or Sore",
-  navTitle:      "movement when sick or sore",
-  description:  "How to move your body when you're sick, sore or hungover: when gentle movement helps, when to rest, and the above-the-neck rule for colds.",
-  deck:         "When you're sore, gentle movement such as a 15-minute walk helps recovery. With a mild cold that is only above the neck, light activity is usually fine. With a fever, body aches, chest symptoms or stomach illness, don't exercise. With a hangover, hydrate and walk rather than train, and let how your body responds, not the plan, decide.",
-  answerList: [
+  "slug": "how-to-move-your-body-when-youre-sick-sore-or-hungover",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Move Your Body When You're Sick, Sore, or Hungover",
+  "titleHtml": "How to Move Your Body <em>When You're Sick, Sore, or Hungover</em>",
+  "shortTitle": "Movement When Sick or Sore",
+  "navTitle": "movement when sick or sore",
+  "description": "How to move your body when you're sick, sore or hungover: when gentle movement helps, when to rest, and the above-the-neck rule for colds.",
+  "deck": "When you're sore, gentle movement such as walking usually helps. With a mild cold above the neck only, light activity is generally fine. With fever, body aches, chest symptoms or stomach illness, rest. When hungover, rehydrate and walk rather than train. Stop if you feel worse.",
+  "answerList": [
     "Sore: gentle movement helps; skip intense training.",
     "Cold above the neck only: light movement is usually fine.",
     "Fever, aches or chest symptoms: don't exercise.",
     "Hungover: hydrate and walk; don't train.",
-    "Let your body's response decide, not your plan.",
+    "Let your body's response decide, not your plan."
   ],
-  ledes: [
-    `You are not at your best. You did not sleep well. Your back is locked up from yesterday's workout. You are coming down with something. You drank too much last night. You are not sure whether to skip movement entirely or whether some kind of light activity would actually help you feel better. The internet has split opinions. Hardcore people say push through. Cautious people say take a full rest day. Your body is sending mixed signals you cannot quite interpret.
-
-There is a real difference between movement that aids recovery and movement that delays it. The variables are specific: what kind of off you are, what kind of movement you are considering, and what your body is actually doing while you do it. Knowing the line lets you do the gentle versions that help and skip the ones that hurt.`,
-    `What follows: the framework for moving on off days. Then a tool that adapts to whatever you are dealing with.`,
+  "ledes": [
+    "Whether to move on an off day depends on what kind of off it is. Mayo Clinic's general guidance is that symptoms above the neck, such as a runny nose or mild sore throat, may allow light, shorter exercise, while symptoms below the neck, fever, or widespread aches call for rest. Muscle soreness usually tolerates gentle movement. A hangover involves dehydration and poor sleep, according to the NIAAA, so rehydrating and walking makes more sense than training.",
+    "You slept badly, your back is locked up from yesterday's workout, you might be coming down with something, or you drank too much last night. Some say push through, some say rest. The useful line runs between movement that helps recovery and movement that delays it."
   ],
-  steps: [
-    { name: 'For sore muscles, gentle movement helps; intense movement hurts', body: 'Mild post-workout soreness responds well to gentle movement — a 15-minute walk, easy stretching, light cycling. Blood flow accelerates recovery, and movement reduces the inflammatory cascade that makes you feel stiff. Intense training of the same sore muscles is a different story — that delays recovery and increases injury risk. The rule: move sore body parts gently; do not load them. Cardio is fine when only your muscles are sore. Sprint intervals are not.' },
-    { name: "Should you exercise with a cold?", body: 'The general guideline from sports medicine: if your symptoms are above the neck (runny nose, mild sore throat, sinus congestion) and you do not have a fever, light movement is usually safe and sometimes helps you feel better. Twenty minutes of easy walking or gentle yoga, not a real workout. If you feel worse during it, stop. The threshold for stopping should be lower than usual, and the intensity should be much lower than usual.' },
-    { name: 'For chest symptoms or fever, do not exercise — full stop', body: 'If you have a fever, body aches, deep cough, or any symptoms below the neck (lung congestion, gastrointestinal distress), exercise is contraindicated. The risk includes prolonging the illness, complications like myocarditis (especially with viral infections), and depleting an immune system already working hard. Total rest until the fever and chest symptoms are gone for at least 24 hours. The workout you skip during a fever is a workout that protects the next month of training.' },
-    { name: 'For hangovers, hydrate and walk; do not train', body: 'Hangover-day movement is mostly a question of judgment. A 20-minute walk in fresh air helps with the headache and lifts mood. Light stretching helps too. Strength training while dehydrated and depleted is a bad idea — your form will be off, your strength will be down, and your recovery from the workout will be poor. Save real training for the day you have rehydrated and slept normally. Move gently in the meantime if you want, or rest entirely if walking does not appeal.' },
-    { name: 'Use the body\'s response as the metric, not the plan you wrote', body: 'On any off day, your body\'s signal during movement matters more than your training plan. If a gentle warmup feels worse than the rest you would have had, stop and rest. If it feels better, you can continue at low intensity. The body\'s response is a real-time signal you cannot get from any plan written in advance. Override the plan when the signal disagrees. The athletes who get hurt are usually the ones who follow the plan despite warning signs. The ones who stay healthy listen.' }
+  "steps": [
+    {
+      "name": "Should you exercise when your muscles are sore?",
+      "body": "Ordinary soreness after a workout usually responds well to gentle movement: a 15-minute walk, easy stretching, light cycling or a short swim. Many people find it eases stiffness. Hard training of the same sore muscles is a different matter, since it can slow recovery and make strain more likely. A simple rule: move sore areas gently, but don't load them heavily until the soreness fades. Sharp pain, swelling or soreness that doesn't improve after several days is worth having checked."
+    },
+    {
+      "name": "Should you exercise with a cold?",
+      "body": "A common rule of thumb, which Mayo Clinic also uses, is the 'neck check': if your symptoms are above the neck, such as a runny nose, mild sore throat or congestion, and you don't have a fever, light movement is usually fine and may help you feel better. Think twenty minutes of easy walking or gentle yoga, not a real workout. If you feel worse during it, stop. Keep the intensity and duration well below normal."
+    },
+    {
+      "name": "Can you exercise with a fever?",
+      "body": "If you have a fever, body aches, a deep or chesty cough, or symptoms below the neck such as chest congestion or an upset stomach, the general advice is to rest rather than exercise. Exercising while feverish can make you feel worse and may prolong the illness; with viral infections there is also a rare but serious risk of heart inflammation (myocarditis). Wait until the fever and chest symptoms have cleared before easing back in, and start lighter than usual. Skipping a few workouts now protects the weeks that follow."
+    },
+    {
+      "name": "Is it good to exercise with a hangover?",
+      "body": "Hangover symptoms come partly from dehydration and disrupted sleep, according to the NIAAA, so rehydrating comes first. A gentle walk in fresh air may help you feel more human. Hard training while dehydrated and short on sleep is a poor idea: your strength and coordination will be down, and you'll recover from the session more slowly. Save real training for when you've rehydrated and slept normally, and rest entirely if a walk doesn't appeal."
+    },
+    {
+      "name": "How do you know when to stop exercising on an off day?",
+      "body": "On any off day, your body's signal during movement matters more than your training plan. If a gentle warmup feels worse than the rest you would have had, stop and rest. If it feels better, you can continue at low intensity. The body's response is a real-time signal you cannot get from any plan written in advance. Override the plan when the signal disagrees. The athletes who get hurt are usually the ones who follow the plan despite warning signs. The ones who stay healthy listen."
+    }
   ],
-  cta: {
-    glyph:    '🧘',
-    headline: "Movement that meets you where you are.",
-    body:     "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
-    features: [
+  "sources": [
+    {
+      "label": "Mayo Clinic News Network: Exercise when ill, what's okay and what's not",
+      "url": "https://newsnetwork.mayoclinic.org/discussion/covid-19-exercise-when-ill-whats-okay-and-whats-not/"
+    },
+    {
+      "label": "National Institute on Alcohol Abuse and Alcoholism: Hangovers",
+      "url": "https://www.niaaa.nih.gov/publications/brochures-and-fact-sheets/hangovers"
+    }
+  ],
+  "cta": {
+    "glyph": "🧘",
+    "headline": "Movement that meets you where you are.",
+    "body": "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
+    "features": [
       "Adapts to your actual energy",
       "Two-minute floor mode",
       "Recovery for after rough days",
       "Tracks whether it actually helps"
     ],
-    toolId:   'LazyWorkoutAdapter',
-    toolName: 'Lazy Workout Adapter',
+    "toolId": "LazyWorkoutAdapter",
+    "toolName": "Lazy Workout Adapter"
   },
-  published: '2026-04-29',
-  modified:  '2026-10-08',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

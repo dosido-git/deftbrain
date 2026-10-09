@@ -1,39 +1,70 @@
 module.exports = {
-  slug:          'how-to-stay-active-on-a-really-busy-week',
-  category:      'wellness',
-  categoryLabel: 'Wellness',
-  title:         "How to Stay Active on a Really Busy Week",
-  titleHtml:     "How to Stay Active <em>on a Really Busy Week</em>",
-  shortTitle:    "Stay Active on a Busy Week",
-  navTitle:      "stay active on a busy week",
-  description:   "When the calendar is jammed, the right answer is not a heroic workout. Here is how to keep movement in a week where nothing else fits.",
-  deck:          "When the calendar is jammed, the right answer is not a heroic workout. Here is how to keep movement in a week where nothing else fits.",
-  ledes: [
-    `It is one of those weeks. Three back-to-back days of meetings. A deadline you are pretending you have under control. Family obligations on the weekend. The gym is not happening. The hour-long workout you usually do is not happening. You are starting to feel the slump that comes from not moving, layered on top of the slump that comes from too much sitting and too much stress. By Friday you will be physically wrecked and the week will not be over.
-
-Busy weeks do not require you to abandon movement. They require you to redefine what movement looks like during them. The mistake most people make is treating a busy week as binary — either I do my normal workouts or I do nothing. The middle path is much smaller, much more frequent, and much more compatible with a calendar that is full.`,
-    `What follows: how to keep movement in a week that has no time for it. Then a tool that adapts to whatever this week actually is.`,
+  "slug": "how-to-stay-active-on-a-really-busy-week",
+  "category": "wellness",
+  "categoryLabel": "Wellness",
+  "title": "How to Stay Active on a Really Busy Week",
+  "titleHtml": "How to Stay Active <em>on a Really Busy Week</em>",
+  "shortTitle": "Stay Active on a Busy Week",
+  "navTitle": "stay active on a busy week",
+  "description": "When the calendar is jammed, the right answer is not a heroic workout. Here is how to keep movement in a week where nothing else fits.",
+  "deck": "On a busy week, swap the workout goal for short bursts of movement through the day, keep one five-minute slot you won't cancel, walk during calls, choose easy mobility over hard training when sleep is short, and aim to maintain fitness rather than build it. Short bouts count.",
+  "answerList": [
+    "Aim for movement throughout the day.",
+    "Keep one five-minute slot.",
+    "Walk or stand during calls.",
+    "Choose mobility over strength when short on sleep.",
+    "Aim to maintain, not to progress."
   ],
-  steps: [
-    { name: 'Drop the workout target; raise the movement target', body: 'Workouts assume a discrete chunk of time. Movement does not. On a busy week, replace the workout-per-day goal with a movement-throughout-the-day goal. Three 5-minute movement breaks distributed across the day. Walking meetings instead of seated ones. Standing during phone calls. Stairs instead of elevators. None of these is a workout, but together they keep your body active in a week where finding 45 minutes is not realistic.' },
-    { name: 'Schedule one 5-minute slot you can absolutely keep', body: 'Pick one daily time slot that is essentially uncancellable — first thing after coffee, last thing before bed, mid-morning between calls. Five minutes of movement at that time. Not a workout, a movement break. The slot itself is the commitment. Whatever happens in the slot is bonus. Once the slot is established, your body will start to expect movement at that time, and the routine becomes self-reinforcing even on weeks when nothing else is.' },
-    { name: 'Pair movement with calls and meetings', body: 'Most calls and many meetings can be done while walking. Most podcasts and audiobooks can be paired with exercise instead of with sitting. If you have an hour of phone calls in your day, that hour can be standing, walking around the block, or pacing the room. The total movement minutes you accumulate this way during a busy week often exceed what a single dedicated workout would have provided. The work happens. The movement happens. Neither one displaces the other.' },
-    { name: 'Do mobility, not strength, when sleep is short', body: 'Strength training requires recovery, and recovery requires sleep. On weeks when you are sleep-deprived, intense strength work is more depleting than restorative. Switch to mobility, gentle stretching, and easy walks. Your body needs decompression more than challenge during these stretches. The strength work will come back when the week ends. Trying to maintain it during a chaotic, sleep-deprived week often pushes you into injury or burnout.' },
-    { name: 'Accept that maintenance is the goal, not progress', body: 'On a hard week, the goal of movement is not to make gains. It is to not lose ground. Two or three short, easy sessions across the week will hold most of your fitness in place. The mindset shift matters: a maintenance week is not a failed training week. It is a deliberate choice that protects the longer arc. Treating every week like a build week is how people burn out and abandon fitness routines entirely. Maintenance weeks are part of the system, not a deviation from it.' }
+  "ledes": [
+    "A busy week does not have to mean no exercise. The CDC recommends that adults get 150 minutes of moderate activity a week, says the total can be broken into shorter sessions, and notes that any activity is better than none. Short movement breaks, walking calls, a fixed five-minute slot each day and lighter mobility work on short-sleep days can keep you moving when a full workout won't fit.",
+    "Three days of back-to-back meetings, a deadline, family plans on the weekend. The gym isn't happening, and the slump from too much sitting is stacking on top of the stress. The choice isn't between your usual workout and nothing."
   ],
-  cta: {
-    glyph:    '🧘',
-    headline: "Movement that meets you where you are.",
-    body:     "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
-    features: [
+  "steps": [
+    {
+      "name": "How can you stay active when you don't have time to work out?",
+      "body": "Workouts assume a discrete chunk of time. Movement does not. On a busy week, replace the workout-per-day goal with a movement-throughout-the-day goal. Three 5-minute movement breaks distributed across the day. Walking meetings instead of seated ones. Standing during phone calls. Stairs instead of elevators. None of these is a workout, but together they keep your body active in a week where finding 45 minutes is not realistic."
+    },
+    {
+      "name": "Is five minutes of exercise worth it?",
+      "body": "Pick one daily time slot that is essentially uncancellable — first thing after coffee, last thing before bed, mid-morning between calls. Five minutes of movement at that time. Not a workout, a movement break. The slot itself is the commitment. Whatever happens in the slot is bonus. Once the slot is established, your body will start to expect movement at that time, and the routine becomes self-reinforcing even on weeks when nothing else is."
+    },
+    {
+      "name": "Can you exercise during calls and meetings?",
+      "body": "Many calls and some meetings can be done while walking. Podcasts and audiobooks can go with a walk instead of with sitting. If your day includes an hour of phone calls, that hour can be spent standing, pacing or walking around the block. On a busy week, the movement you collect this way can add up to a meaningful amount, and neither the work nor the movement displaces the other."
+    },
+    {
+      "name": "Should you lift weights when you're short on sleep?",
+      "body": "Recovery from hard strength training depends partly on sleep. On short-sleep weeks, many people find intense sessions leave them more drained than restored, and fatigue makes poor form more likely. Switching to mobility work, gentle stretching and easy walks is a reasonable choice. The strength work will still be there when the week settles down."
+    },
+    {
+      "name": "Will you lose fitness if you skip workouts for a week?",
+      "body": "A single busy week with lighter activity is unlikely to undo much; the goal is to hold your ground rather than make gains. Two or three short, easy sessions plus everyday movement help keep the habit and some of the fitness in place. A maintenance week isn't a failed training week; it's a deliberate choice that protects the longer arc. Treating every week as a build week is one way people end up abandoning exercise altogether."
+    }
+  ],
+  "sources": [
+    {
+      "label": "CDC: Adding Physical Activity as an Adult",
+      "url": "https://www.cdc.gov/physical-activity-basics/adding-adults/index.html"
+    },
+    {
+      "label": "CDC: What Counts as Physical Activity for Adults",
+      "url": "https://www.cdc.gov/physical-activity-basics/adding-adults/what-counts.html"
+    }
+  ],
+  "cta": {
+    "glyph": "🧘",
+    "headline": "Movement that meets you where you are.",
+    "body": "Tell it your energy, what happened today, and where your body is complaining. Get something you can realistically do right now — even if it is two minutes on the floor.",
+    "features": [
       "Adapts to your actual energy",
       "Two-minute floor mode",
       "Recovery for after rough days",
       "Tracks whether it actually helps"
     ],
-    toolId:   'LazyWorkoutAdapter',
-    toolName: 'Lazy Workout Adapter',
+    "toolId": "LazyWorkoutAdapter",
+    "toolName": "Lazy Workout Adapter"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

@@ -1,37 +1,74 @@
 module.exports = {
-  slug:          'why-does-the-word-disappear-when-youre-trying-to-remember-it',
-  category:      'learning',
-  categoryLabel: 'Learning',
-  title:         "Why Does the Word Disappear When You Are Trying to Remember It?",
-  titleHtml:     "Why Does the Word Disappear <em>When You Are Trying to Remember It?</em>",
-  shortTitle:    "Why Words Disappear",
-  navTitle:      "why words disappear when searching",
-  description:   "Trying harder to remember a word often makes it worse. Here is what is happening cognitively, and how to actually retrieve words you almost have.",
-  deck:          "Trying harder to remember a word often makes it worse. Here is what is happening cognitively, and how to actually retrieve words you almost have.",
-  ledes: [
-    `You are mid-sentence and the word you want disappears. You can describe what it means. You can almost feel its first letter. You stop talking, focus harder, mentally search — and the harder you focus, the further away the word feels. Eventually you give up, switch topics, and ten minutes later the word surfaces while you are looking at your phone or making coffee.\n\nThis is not laziness or aging — it is a real cognitive phenomenon called retrieval inhibition. When you try to recall a word, your brain activates candidates near it. If the wrong candidates activate strongly, they block the right one. The harder you push, the more the wrong candidates lock in, and the word you actually want gets crowded out. Knowing what is happening helps you work around it instead of fighting it.`,
-    `Here is what to do about it — and how Tip of Tongue routes around the block.`,
+  "slug": "why-does-the-word-disappear-when-youre-trying-to-remember-it",
+  "category": "learning",
+  "categoryLabel": "Learning",
+  "title": "Why Does the Word Disappear When You Are Trying to Remember It?",
+  "titleHtml": "Why Does the Word Disappear <em>When You Are Trying to Remember It?</em>",
+  "shortTitle": "Why Words Disappear",
+  "navTitle": "why words disappear when searching",
+  "description": "Trying harder to remember a word often makes it worse. Here is what is happening cognitively, and how to actually retrieve words you almost have.",
+  "deck": "A word disappears when you're trying to remember it because you can access its meaning but not its sound. This tip-of-the-tongue state is normal, becomes more common with age, and often resolves if you try similar sounds, approach from a different angle, or briefly switch tasks.",
+  "answerList": [
+    "You have the meaning but not the sound.",
+    "A wrong word may keep coming back.",
+    "Similar-sounding words can help.",
+    "A short break often lets it surface.",
+    "It gets more common with age; it's normal."
   ],
-  steps: [
-    { name: 'Recognize when you are stuck on a wrong candidate', body: 'When you keep returning to the same wrong word — "no, it is not energetic, but something like that" — your brain has locked on a near-miss. The near-miss is actively blocking the right word. Notice when this is happening. The longer you stay on the wrong candidate, the more it cements its priority and the harder retrieval gets. Recognizing it is the first step to getting out.' },
-    { name: 'Stop trying directly and switch tasks', body: 'Direct retrieval is failing — that is information. Stop. Move on. The word you want surfaces best when you are not actively searching, because the wrong-candidate inhibition releases. Think of something else for two to ten minutes. The word almost always returns on its own. People discover this accidentally — "oh, it just came to me" — but it is reproducible. The trick is being willing to stop searching even though it feels like you should keep trying.' },
-    { name: 'Approach from a different angle', body: 'Instead of trying to retrieve the word, retrieve something near it. Think of the opposite. Think of where you last heard it. Think of who would use this word. Think of what the word sounds like. Each of these activates a different region of the network where the word lives, and one of them often surfaces it. Direct retrieval failed; oblique retrieval often succeeds.' },
-    { name: 'Accept that aging affects retrieval speed but not vocabulary', body: 'Tip-of-the-tongue events become more common with age, but this is mostly a retrieval-speed effect, not a vocabulary loss. The words are still in your head. They just take longer to come up. Accepting this and slowing down — using \'whatever the word is\' as a placeholder and continuing — works better than letting the search disrupt the conversation. Most listeners do not notice the placeholder; they notice the long pause.' },
-    { name: 'Use Tip of Tongue to bypass the block', body: 'When a word is stuck, describe what you remember to Tip of Tongue and let it suggest candidates. Reading the candidates often triggers retrieval — even if the right word is not in the list, seeing related words activates the network and the right one surfaces. It is the cognitive equivalent of giving up and letting the brain do what it does best when not under pressure.' }
+  "ledes": [
+    "The tip-of-the-tongue state happens when you can retrieve a word's meaning but not its sounds. The best-known explanation, the transmission deficit model developed by Deborah Burke and Donald MacKay, says the links between meaning and sound are temporarily too weak. These lapses become more frequent with normal aging, which researchers attribute to slower sound retrieval rather than lost vocabulary. Hearing words with similar sounds can help resolve them.",
+    "Mid-sentence, the word vanishes. You can describe what it means and almost feel its first letter. The harder you focus, the further away it seems. Ten minutes later it surfaces while you're making coffee."
   ],
-  cta: {
-    glyph:    '💭',
-    headline: "Describe what you almost remember. We will name it.",
-    body:     "Describe the word, song, movie, book, or thing in any words you can — vague vibes, partial memories, \"it was like...\" — and Tip of Tongue identifies what you are reaching for.",
-    features: [
+  "steps": [
+    {
+      "name": "Why does the wrong word keep coming to mind?",
+      "body": "Sometimes the same wrong word keeps returning ('no, it's not energetic, but something like that'). Researchers have long debated whether that word is blocking the right one or is simply a side effect of the right word being weakly activated; a study by Nate Kornell and Janet Metcalfe found evidence for the second view. Either way, circling the same near-miss rarely helps. Noticing that you're stuck on it is the cue to try a different route."
+    },
+    {
+      "name": "Does taking a break help you remember a word?",
+      "body": "Often, yes. When direct retrieval keeps failing, stepping away for a few minutes and coming back costs little, and the word frequently turns up on its own. It can feel wrong to stop searching, but repeating the same failed attempt rarely works. If you're mid-conversation, a placeholder like 'whatever the word is' keeps things moving, and the word may arrive a moment later."
+    },
+    {
+      "name": "How do you find a word from a different angle?",
+      "body": "Instead of trying to retrieve the word, retrieve something near it. Think of the opposite. Think of where you last heard it. Think of who would use this word. Think of what the word sounds like. Each of these activates a different region of the network where the word lives, and one of them often surfaces it. Direct retrieval failed; oblique retrieval often succeeds."
+    },
+    {
+      "name": "Is forgetting words a normal part of aging?",
+      "body": "Tip-of-the-tongue moments become more common with normal aging. Research suggests this mainly reflects slower access to a word's sounds rather than a loss of vocabulary or general memory: the words are still there and take longer to come up. Using a placeholder and carrying on usually works better than letting the search stall the conversation. If word-finding problems are sudden, getting worse quickly, or come with other changes in memory or speech, that's worth raising with a doctor."
+    },
+    {
+      "name": "Can hearing similar words help you remember?",
+      "body": "Yes. Research by Lori James and Deborah Burke found that when people in a tip-of-the-tongue state encountered words sharing sounds with the missing word, they were more likely to retrieve it. Try saying possible first sounds out loud, reading a list of words starting with the letter you suspect, or scanning a thesaurus entry for a near-synonym. Seeing the right word usually brings instant recognition even when recall failed."
+    }
+  ],
+  "sources": [
+    {
+      "label": "PMC: The Tip-of-the-Tongue Phenomenon: Cognitive, Neural, and Neurochemical Perspectives (review)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938793/"
+    },
+    {
+      "label": "James and Burke (2000), Journal of Experimental Psychology: Phonological Priming Effects on Word Retrieval and Tip-of-the-Tongue Experiences in Young and Older Adults (APA, PDF)",
+      "url": "https://www.apa.org/pubs/journals/releases/xlm2661378.pdf"
+    },
+    {
+      "label": "Kornell and Metcalfe (2006): 'Blockers' do not block recall during tip-of-the-tongue states (PDF, Williams College)",
+      "url": "https://sites.williams.edu/nk2/files/2011/08/Kornell.Metcalfe.2006b.pdf"
+    }
+  ],
+  "cta": {
+    "glyph": "💭",
+    "headline": "Describe what you almost remember. We will name it.",
+    "body": "Describe the word, song, movie, book, or thing in any words you can — vague vibes, partial memories, \"it was like...\" — and Tip of Tongue identifies what you are reaching for.",
+    "features": [
       "Words, songs, movies, books, objects",
       "Works from vague descriptions",
       "Surfaces near-misses to confirm or rule out",
       "Builds your personal \"found\" list"
     ],
-    toolId:   'TipOfTongue',
-    toolName: 'Tip of Tongue',
+    "toolId": "TipOfTongue",
+    "toolName": "Tip of Tongue"
   },
-  published: '2026-04-29',
-  modified:  '2026-04-29',
+  "published": "2026-04-29",
+  "modified": "2026-10-09",
+  "reviewed": true
 };

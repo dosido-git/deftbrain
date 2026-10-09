@@ -501,6 +501,25 @@ const LEGACY_REDIRECTS = {
 // meeting". The workplace one kept its URL (keep-list, indexed); the
 // meetings one's material (the scripted line, "decline early") merged in.
 const MERGED_GUIDE_REDIRECTS = {
+  // Guide review 2026-10-09 (parallel rewrite): same question asked twice; one kept.
+  '/guides/meetings/signs-your-meeting-could-be-an-email': '/guides/meetings/should-this-be-a-meeting-or-an-email',
+  '/guides/meetings/signs-your-meeting-could-be-an-email.html': '/guides/meetings/should-this-be-a-meeting-or-an-email',
+  '/guides/practical/how-to-stop-standing-in-front-of-your-closet': '/guides/practical/how-to-get-dressed-when-you-cant-decide',
+  '/guides/practical/how-to-stop-standing-in-front-of-your-closet.html': '/guides/practical/how-to-get-dressed-when-you-cant-decide',
+  '/guides/practical/what-to-wear-today': '/guides/practical/how-to-get-dressed-when-you-cant-decide',
+  '/guides/practical/what-to-wear-today.html': '/guides/practical/how-to-get-dressed-when-you-cant-decide',
+  '/guides/money/how-to-escape-a-high-pressure-sales-pitch-politely': '/guides/money/how-to-walk-away-from-a-high-pressure-sale',
+  '/guides/money/how-to-escape-a-high-pressure-sales-pitch-politely.html': '/guides/money/how-to-walk-away-from-a-high-pressure-sale',
+  '/guides/workplace/how-to-name-your-company-when-you-have-no-creative-ideas': '/guides/workplace/how-to-come-up-with-a-business-name',
+  '/guides/workplace/how-to-name-your-company-when-you-have-no-creative-ideas.html': '/guides/workplace/how-to-come-up-with-a-business-name',
+  '/guides/wellness/signs-youre-heading-for-burnout': '/guides/wellness/early-warning-signs-of-burnout-most-people-miss',
+  '/guides/wellness/signs-youre-heading-for-burnout.html': '/guides/wellness/early-warning-signs-of-burnout-most-people-miss',
+  '/guides/wellness/how-to-know-if-you-should-push-through-or-rest': '/guides/wellness/how-to-push-through-vs-when-to-stop',
+  '/guides/wellness/how-to-know-if-you-should-push-through-or-rest.html': '/guides/wellness/how-to-push-through-vs-when-to-stop',
+  '/guides/conversations/how-to-reconnect-with-an-old-friend-without-it-being-weird': '/guides/conversations/how-to-reach-out-to-a-friend-youve-lost-touch-with',
+  '/guides/conversations/how-to-reconnect-with-an-old-friend-without-it-being-weird.html': '/guides/conversations/how-to-reach-out-to-a-friend-youve-lost-touch-with',
+  '/guides/cooking/how-to-fix-a-cooking-disaster': '/guides/cooking/how-to-rescue-a-meal-thats-going-wrong',
+  '/guides/cooking/how-to-fix-a-cooking-disaster.html': '/guides/cooking/how-to-rescue-a-meal-thats-going-wrong',
   // Guide review 2026-10-09: same question asked twice; the longer guide stays.
   '/guides/conversations/how-to-de-escalate-a-text-fight-with-your-partner': '/guides/conversations/how-to-de-escalate-a-fight-over-text',
   '/guides/conversations/how-to-de-escalate-a-text-fight-with-your-partner.html': '/guides/conversations/how-to-de-escalate-a-fight-over-text',
@@ -522,8 +541,8 @@ const MERGED_GUIDE_REDIRECTS = {
   '/guides/workplace/how-to-bring-a-meeting-back-on-topic.html': '/guides/meetings/how-to-bring-a-meeting-back-on-topic',
   '/guides/workplace/how-to-handle-someone-who-dominates-meetings': '/guides/meetings/how-to-handle-someone-who-dominates-meetings',
   '/guides/workplace/how-to-handle-someone-who-dominates-meetings.html': '/guides/meetings/how-to-handle-someone-who-dominates-meetings',
-  '/guides/workplace/signs-your-meeting-could-be-an-email': '/guides/meetings/signs-your-meeting-could-be-an-email',
-  '/guides/workplace/signs-your-meeting-could-be-an-email.html': '/guides/meetings/signs-your-meeting-could-be-an-email',
+  '/guides/workplace/signs-your-meeting-could-be-an-email': '/guides/meetings/should-this-be-a-meeting-or-an-email',
+  '/guides/workplace/signs-your-meeting-could-be-an-email.html': '/guides/meetings/should-this-be-a-meeting-or-an-email',
   '/guides/workplace/how-to-suggest-making-a-meeting-async': '/guides/meetings/how-to-suggest-making-a-meeting-async',
   '/guides/workplace/how-to-suggest-making-a-meeting-async.html': '/guides/meetings/how-to-suggest-making-a-meeting-async',
   '/guides/workplace/should-this-be-a-meeting-or-an-email': '/guides/meetings/should-this-be-a-meeting-or-an-email',

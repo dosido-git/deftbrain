@@ -1,58 +1,74 @@
 module.exports = {
-  slug:          'how-to-get-a-medical-bill-reduced-when-they-say-its-final',
-  category:      'money',
-  categoryLabel: 'Money',
-
-  title:         "How to Get a Medical Bill Reduced When They Say It's Final (It Almost Never Actually Is)",
-  titleHtml:     "How to Get a Medical Bill Reduced When They Say It&#39;s Final <em>(It Almost Never Actually Is)</em>",
-  shortTitle:    "How to Get a Medical Bill Reduced When They Say It's Final",
-  navTitle:      "How to get a medical bill reduced when they say it's final and it almost never actually is",
-
-  description:   "The hospital said the bill is final. The collections agency said the same. Both are wrong, and the moves that get medical debt reduced after 'final' are some of the most underused in consumer life.",
-  deck:          "The hospital said the bill is final. The collections agency said the same. Both are wrong, and the moves that get medical debt reduced after 'final' are some of the most underused in consumer life.",
-
-  ledes: [
-    `You called the hospital billing office. You asked about reducing the bill. They said the amount was final. You asked about financial assistance, and they said you didn't qualify. You asked about a payment plan, and they offered one but at terms you can't actually meet. The bill, they said, is what it is. The 'final' was delivered with a confidence that suggests this is, indeed, the end of the conversation. You're now sitting with the bill and the implicit invitation to either pay it or let it go to collections, with no apparent third option.`,
-    `Medical debt is one of the most negotiable categories of consumer debt that exists, including after a hospital has called it 'final.' The reason: medical billing operates on layered margin assumptions, charity-care obligations that are legally binding, and a debt-collection ecosystem where the bill changes hands at increasingly steep discounts. Knowing what the bill is actually worth at each stage — and what moves apply at each stage — frequently produces reductions of 50-90% even after the hospital has said no.`,
+  "slug": "how-to-get-a-medical-bill-reduced-when-they-say-its-final",
+  "category": "money",
+  "categoryLabel": "Money",
+  "title": "How to Get a Medical Bill Reduced When They Say It's Final (It Almost Never Actually Is)",
+  "titleHtml": "How to Get a Medical Bill Reduced When They Say It&#39;s Final <em>(It Almost Never Actually Is)</em>",
+  "shortTitle": "How to Get a Medical Bill Reduced When They Say It's Final",
+  "navTitle": "How to get a medical bill reduced when they say it's final and it almost never actually is",
+  "description": "A medical bill called final can often still be reduced: reapplying for financial assistance, benchmarked settlement offers, billing advocates, the trade-offs of collections, and when bankruptcy is worth discussing.",
+  "deck": "A 'final' medical bill can often still be reduced. Reapply for financial assistance with fuller documentation, offer a lump sum benchmarked to what insurers or Medicare pay, ask a billing advocate for help on large bills, and, if the debt is unmanageable, talk to a bankruptcy attorney.",
+  "answerList": [
+    "Reapply for financial assistance with complete documents.",
+    "Offer a lump sum based on a published benchmark.",
+    "Know the trade-offs before letting a bill go to collections.",
+    "Consider a billing advocate for large or complex bills.",
+    "For unmanageable debt, a bankruptcy consultation is an option."
   ],
-
-  steps: [
-    {
-      name: "Re-apply for financial assistance — even if you were told you didn't qualify",
-      body: "The first move when a hospital has called a bill final is to re-apply for financial assistance with documentation you might not have provided the first time. Federal law requires nonprofit hospitals to maintain financial assistance policies, and the eligibility thresholds are higher than people realize — often up to 400% of the federal poverty line for partial assistance. Many initial denials happen because patients didn't provide complete income documentation, didn't apply for the right program tier, or weren't told about specific hardship categories that apply (job loss, medical hardship, unexpected family expenses). Re-applying with fuller documentation, or asking specifically about hardship categories beyond standard income-based programs, often produces a different result than the first application. The hospital didn't necessarily lie when they said you didn't qualify; they often just answered the narrow question without surfacing all the available paths.",
-    },
-    {
-      name: "Negotiate from the Medicare reimbursement rate",
-      body: "If financial assistance doesn't apply or doesn't fully resolve the bill, the negotiation framework that often works is: 'I'd like to settle this account at the Medicare reimbursement rate for these services.' The Medicare rate is what the federal government pays the same hospital for the same procedures — typically 30-40% of the billed amount. It's a defensible benchmark because the hospital accepts that rate from Medicare patients every day. Hospitals frequently agree to settlement offers in this range, especially if you can pay the negotiated amount in full immediately. The 'final' bill at $12,000 might settle at $4,200 with this approach. You're not begging for a discount; you're pricing the bill at an established federal benchmark.",
-    },
-    {
-      name: "Wait for the bill to age into collections — then negotiate at the new lower base",
-      body: "Counterintuitively, letting a medical bill go to collections sometimes produces a better outcome than paying it directly to the hospital, *if you negotiate at the right stage*. When a hospital sells a bill to collections, they typically receive 5-20 cents on the dollar from the collection agency. The agency now owns the debt at a steep discount, which means they have room to settle for amounts the hospital wouldn't accept. A $12,000 bill bought by collections for $1,200 can often be settled at $3,000-4,000 — substantially less than the hospital would accept, but profitable for the collector. The catch: this approach affects your credit if the collection account is reported. The decision to use this path requires weighing the credit impact against the potential savings, and it's not the right move for everyone — but it's a real option that hospitals don't mention.",
-    },
-    {
-      name: "Use third-party billing advocates for cases worth their fee",
-      body: "Medical billing advocates are independent professionals who negotiate medical bills on behalf of patients, usually for a percentage of the savings (typically 20-30%) or a flat fee. They have ongoing relationships with hospital billing departments, knowledge of specific hospitals' programs, and time to spend on cases consumers don't have. For larger bills (typically over $5,000), the math often works in the patient's favor — paying 25% of $4,000 in savings ($1,000) to net $3,000 in reductions is a clear win. The Patient Advocate Foundation, the National Association of Healthcare Advocacy, and similar groups maintain advocate directories. This isn't a path for every bill, but for larger or more complex ones, it's a force multiplier most patients don't know about.",
-    },
-    {
-      name: "When the bill is large enough that bankruptcy becomes a real option",
-      body: "Medical debt is one of the most common drivers of consumer bankruptcy in the US, and for cases where the bill is genuinely impossible to pay — meaning paying it would require giving up housing, food, or essential medications — bankruptcy is a legitimate option that wipes medical debt cleanly. This isn't a moral failing; it's a tool that exists in the legal system specifically because the alternative (people destroyed financially by medical events they didn't choose) is recognized as a worse outcome than discharging the debt. Chapter 7 bankruptcy can eliminate medical debt entirely; Chapter 13 restructures it on terms you can actually meet. Both have consequences for credit, but the consequences are usually less severe than the alternative — a decade of harassed wages, frozen accounts, and ongoing financial damage. If the medical bill is large enough that it has fundamentally altered your financial life, talking to a bankruptcy attorney isn't a sign of failure. It's the move that matches the situation, and the patients who reach for it earlier tend to recover financially faster than the ones who try to outlast the debt and end up bankrupt anyway, just later and more damaged. The conversation costs nothing — most bankruptcy attorneys offer free consultations specifically because they know the question of whether to file is itself something that benefits from professional input.",
-    },
+  "ledes": [
+    "A hospital calling a bill 'final' rarely ends your options. Nonprofit hospitals must accept financial assistance applications for at least 240 days after the first post-discharge bill and generally can't take extraordinary collection actions for 120 days, under IRS Section 501(r) rules. The CFPB recommends checking the bill for errors and asking about assistance and reductions, even after a debt goes to collections. Since 2023, the three national credit bureaus have removed paid medical collections and those under $500 from credit reports.",
+    "You called the billing office. The amount was final. You didn't qualify for assistance. The payment plan they offered isn't one you can meet. It was said with enough confidence to sound like the end. Often there are still several paths left, each with its own trade-offs."
   ],
-
-  cta: {
-    glyph:    '🚪',
-    headline: "Find the path past the 'final' bill",
-    body:     "Not So Fast! looks at your specific bill and maps the paths past 'final' — the overlooked options that apply to it, who can actually approve a reduction, what to say on the call, and the regulator to involve if they will not move.",
-    features: [
+  "steps": [
+    {
+      "name": "Can you reapply for hospital financial assistance after being denied?",
+      "body": "Often, yes. Nonprofit hospitals must have financial assistance policies, and many set eligibility well above the poverty line for partial discounts; the exact thresholds are in each hospital's published policy. Denials sometimes happen because income documents were incomplete or a hardship wasn't mentioned. Read the policy, then reapply with full documentation, and ask whether there are hardship categories beyond income, such as job loss or large medical expenses relative to income. Under IRS rules, a nonprofit hospital must accept applications for at least 240 days from the first post-discharge bill."
+    },
+    {
+      "name": "What is a reasonable amount to offer to settle a medical bill?",
+      "body": "One approach is to anchor your offer to a published benchmark rather than the billed charge: what Medicare pays for the same services, or the hospital's own discounted cash price, which hospitals must publish for many shoppable services. Medicare rates are usually well below list prices. You might say: 'I'd like to settle this account at a rate close to what Medicare pays for these services, paid in full now.' Hospitals don't have to accept, but a specific, reasoned number is easier to say yes to than a general request for a discount."
+    },
+    {
+      "name": "Should you let a medical bill go to collections?",
+      "body": "It's a real option with real costs, so it's worth understanding rather than drifting into. Collectors sometimes settle for less than the original bill. But collections can mean persistent contact, possible lawsuits and credit damage. Since 2023, the three national credit bureaus have left off medical collections under $500, removed paid ones, and waited a year before reporting unpaid ones, but larger unpaid debts can still appear. If a collector contacts you, you can ask it to validate the debt and negotiate. Weigh the trade-offs before choosing this path on purpose."
+    },
+    {
+      "name": "Is a medical billing advocate worth it?",
+      "body": "Medical billing advocates are independent professionals who review and negotiate bills for patients, usually for an hourly fee, a flat fee or a percentage of the savings. For large or complicated bills, their knowledge of coding and hospital programs can pay for itself; for small bills, the fee may not be worth it. Ask how they charge before agreeing. Nonprofits such as the Patient Advocate Foundation offer free case management to people with certain serious or chronic illnesses."
+    },
+    {
+      "name": "When should you consider bankruptcy for medical debt?",
+      "body": "If a medical bill is so large that paying it would mean giving up housing, food or essential medication, bankruptcy is a legal option worth discussing with a professional. Chapter 7 can discharge medical debt; Chapter 13 restructures debts into a payment plan. Both affect your credit and have eligibility rules, and the right choice depends on your income, assets and state. Many bankruptcy attorneys offer free consultations, and nonprofit credit counselors can help you compare options. Asking the question isn't a commitment to file."
+    }
+  ],
+  "sources": [
+    {
+      "label": "CFPB: What should I do if I can't pay a medical bill?",
+      "url": "https://www.consumerfinance.gov/ask-cfpb/what-should-i-do-if-i-cant-pay-a-medical-bill-en-2125/"
+    },
+    {
+      "label": "IRS: Billing and collections, Section 501(r)(6)",
+      "url": "https://www.irs.gov/charities-non-profits/billing-and-collections-section-501r6"
+    },
+    {
+      "label": "CFPB: Have medical debt? Anything already paid or under $500 should no longer be on your credit report",
+      "url": "https://www.consumerfinance.gov/archive/blog/medical-debt-anything-already-paid-or-under-500-should-no-longer-be-on-your-credit-report/"
+    }
+  ],
+  "cta": {
+    "glyph": "🚪",
+    "headline": "Find the path past the 'final' bill",
+    "body": "Not So Fast! looks at your specific bill and maps the paths past 'final' — the overlooked options that apply to it, who can actually approve a reduction, what to say on the call, and the regulator to involve if they will not move.",
+    "features": [
       "Who can actually decide",
       "Overlooked options and how to invoke them",
       "What to say next, and why it works",
       "The regulator that applies and how to file"
     ],
-    toolId:   'NotSoFast',
-    toolName: "Not So Fast!",
+    "toolId": "NotSoFast",
+    "toolName": "Not So Fast!"
   },
-
-  published: '2026-04-27',
-  modified:  '2026-10-03',
+  "published": "2026-04-27",
+  "modified": "2026-10-09",
+  "reviewed": true
 };
