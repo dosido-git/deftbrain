@@ -893,6 +893,47 @@ export const tools = [
   icon: "🧰",
   categories: ['Tasks'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Tool Finder gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the problem below. Nothing is reworded.",
+    sampleLabel: "The problem",
+    sampleText: "I need to have a really uncomfortable conversation with my landlord about a mold problem they've been ignoring for months, and I don't want to damage the relationship but I also need this fixed.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What it understood",
+        tone: "blue",
+        text: "You need to raise a serious maintenance problem with your landlord that they've already ignored, and you want to do it in a way that gets the mold fixed without making the relationship harder to work with going forward.",
+      },
+      {
+        label: "Difficult Talk Coach",
+        tone: "green",
+        items: [
+          "This helps you plan what to say about the mold problem, practice it, and prepare for possible responses from your landlord—so you're not figuring out how to handle pushback or tone in the moment, and you can keep the conversation focused on fixing the problem.",
+          "What to tell it: Tell it you need to talk to your landlord about a mold problem they've been ignoring for months, that you want it fixed, and what you're worried might happen when you bring it up (whether that's defensiveness, delay, or dismissal).",
+        ],
+      },
+      {
+        label: "Not So Fast!",
+        tone: "green",
+        items: [
+          "If your landlord continues to ignore the problem after you raise it, this helps you understand what legitimate escalation paths exist—appeals, regulatory complaints, or tenant-rights processes—so you know what leverage you actually have before the conversation.",
+          "What to tell it: Tell it you're a tenant with a mold problem your landlord has ignored for months, and ask what appeal, exception, or escalation routes might be available to you in your area if they don't respond to a direct request.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "Which DeftBrain tool should I use?",
+      a: "Describe what's going on in a sentence or two. Tool Finder suggests the one or two that fit and what to tell each." },
+    { q: "What if nothing fits?",
+      a: "It says so rather than forcing a match." },
+    { q: "Can I tell it a suggestion is wrong?",
+      a: "Yes. Reject a suggestion or add detail and it looks again." },
+  ],
   description: "Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.",
   guide: {
     tips: [
@@ -1260,6 +1301,56 @@ export const tools = [
   icon: "⚡",
   categories: ['Decisions', 'Self & Reflection'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Small Change, Big Difference gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the routine below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The routine",
+    sampleText: "6:30am alarm, snooze twice, check phone in bed for 20 mins, shower, coffee, commute 30 mins (podcast), desk by 9. Meetings 9–12, lunch at desk, more meetings 1–4, try to do deep work 4–6 but usually interrupted. Home by 7, dinner, TV or doom-scroll until midnight. Want: better focus, less exhausted, creative work in the evenings. The 2pm slump is brutal; I feel behind before I even start.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What it notices",
+        tone: "blue",
+        text: "Your day begins with two snoozes and about 20 minutes on your phone before you get out of bed. You also said you already feel behind before the day starts. That makes the first 20 minutes a specific, repeatable behavior worth testing.",
+      },
+      {
+        label: "One change to try",
+        tone: "green",
+        items: [
+          "Before you go to sleep, put your phone somewhere you cannot reach from bed.",
+          "Tonight, place your phone far enough from your bed that you have to get up to reach it. If you use it as your alarm, put it somewhere that still lets you hear the alarm but requires you to stand up. Try this for several mornings — enough to see whether the pattern actually changes.",
+        ],
+      },
+      {
+        label: "Why not start elsewhere",
+        tone: "yellow",
+        items: [
+          "Protect the 4-6pm deep work block from meeting interruptions. — Changing when meetings can be scheduled involves other people and your calendar, which makes it a harder first experiment to run cleanly. The phone change depends only on you.",
+          "Set a screen cutoff in the evening to create time for creative work. — That is a reasonable place to intervene, and worth trying at some point. I'd start with the morning because the behavior there is more contained — one location, one trigger, one action — and you already named the 'feeling behind before I start' as something you notice.",
+        ],
+      },
+      {
+        label: "Signs it may be helping",
+        tone: "purple",
+        items: [
+          "You get out of bed sooner after the alarm instead of scrolling.",
+          "You recover some of the 20 minutes and use them in a way you prefer.",
+          "The 'already behind' feeling at the start of your day is less present on mornings when you didn't scroll in bed.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What is one small habit change that actually helps?",
+      a: "One you can make without willpower in the moment — like charging your phone out of reach of the bed — tied to a specific pattern in your own day, and tried for several days before judging it." },
+    { q: "Why only one change?",
+      a: "One change is easier to keep and to judge. If it works, you'll know why; if it doesn't, you'll know that too." },
+    { q: "Does it remember what I tried?",
+      a: "Yes. Earlier experiments are taken into account, so it won't suggest the same thing twice." },
+  ],
   description: "Walk through a typical day and tell us what you want to improve. Small Change, Big Difference looks for one small adjustment that could make the rest of your routine easier — and gives you a practical way to try it.",
   guide: {
       tips: [
@@ -1360,6 +1451,40 @@ export const tools = [
   icon: "🧲",
   categories: ['Career', 'Relationships'],
   headerColor: "#e8d5b7",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Get Noticed gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the description below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The description",
+    sampleText: "Software engineer, WFH, same team for 3 years. Live in Denver. Go to the gym, cook, watch TV. Small tight friend group. Work is fine but I feel invisible professionally. Want: better job opportunities, interesting collaborators, maybe a co-founder someday.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "How new people reach you now",
+        tone: "blue",
+        text: "The professional exposure you described runs through one team you have been on for three years. You mentioned the gym, cooking, and watching TV, but did not describe those as contexts where you meet new people or share what you do professionally.",
+      },
+      {
+        label: "Ways to widen it",
+        tone: "green",
+        items: [
+          "Put Work Where It Can Travel — first step: Write one paragraph about a problem you solved recently — not polished, just accurate — and decide where you would put it if you were going to publish it.",
+          "Enter One In-Person Technical Space — first step: Search Meetup or a local tech Slack for one Denver group in your stack or a domain adjacent to where you want to go, and check when it next meets.",
+          "Make Your GitHub Readable — first step: Open your GitHub profile today and read it as a stranger would — if it does not communicate what you do and what you are interested in, edit the bio first.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I get noticed at work when I work remotely?",
+      a: "Make your work findable by people who don't already know you: write up one problem you solved, show up at one recurring event in your field, and make introductions for others. Visibility grows from the paths that put your work in front of new people." },
+    { q: "Is this about self-promotion?",
+      a: "No. It looks at how new people and opportunities currently reach you and suggests small ways to widen that." },
+    { q: "How is it different from Before Hello?",
+      a: "Get Noticed widens how opportunities find you in general; Before Hello prepares you to approach one specific person." },
+  ],
   description: "Want more opportunities to be seen? Describe how your work, interests, and relationships put you in contact with new people and ideas. Get Noticed suggests practical ways to become more visible and create more opportunities for meaningful connections.",
   guide: {
       tips: [
@@ -1395,6 +1520,41 @@ export const tools = [
   icon: "🌀",
   categories: ['Career', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Before Hello gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The person and why",
+    sampleText: "A seed-stage VC partner who writes about applied AI on Substack and posts thoughtful takes on enterprise tooling. I'm raising a seed round for a developer tool that fits her thesis — she doesn't know me, no warm intros. Me: ex-Google engineer, shipped two internal tools used by 5K+ engineers, second-time founder.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Where you start",
+        tone: "blue",
+        text: "You are a technical second-time founder raising a seed round for a developer tool that you say fits her thesis. She writes publicly about enterprise tooling and applied AI, which is the domain your product sits in. There is a real, substantive reason to have this conversation — not a manufactured one.",
+      },
+      {
+        label: "What's missing",
+        tone: "yellow",
+        text: "No warm introduction and no prior signal to her that you exist. You have not mentioned a public artifact — a write-up, demo, repo, or post — that would let your work speak before you do. That is a gap worth closing, though not a precondition for reaching out.",
+      },
+      {
+        label: "A first message",
+        tone: "green",
+        text: "Subject: Seed round — developer tooling for [specific problem your tool solves]\n\nHi [Name],\n\nI am raising a seed round for [company name], a developer tool that [one sentence: what it does and for whom].\n\nI spent [X years] at Google shipping internal tools used by 5K+ engineers, which is where I ran into this problem firsthand. This is my second company.\n\nYour work on enterprise tooling suggests this might be relevant to your investment focus, and I would value your perspective on what we are building.\n\n[If you have something to show: I have attached a brief overview / you can see an early version at [link].]\n\nIf you have time for a 20-minute call or even a short reply, I would appreciate your thoughts. If not, no worries.\n\n[Your name]",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I cold email an investor without a warm intro?",
+      a: "Lead with what you're building and why it fits their stated focus, give one line of credibility, and ask for something small — a short reply or a 20-minute call. Skip the flattery; a link to something concrete does more." },
+    { q: "Should I reach out now or wait?",
+      a: "It says whether there's already a good reason to say hello, and what to strengthen first if there isn't." },
+    { q: "Who is it for?",
+      a: "Anyone you'd like to know professionally: an investor, mentor, potential collaborator or hiring manager." },
+  ],
   description: "Want to connect with someone in your professional world, but don't want to show up as a stranger with an ask? Build a practical plan to become more visible, relevant, and useful first—then recognize when there's a genuine reason to reach out.",
   guide: {
       tips: [
@@ -1553,6 +1713,48 @@ export const tools = [
   icon: "💣",
   categories: ['Conversations', 'Relationships', 'Self & Reflection'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Truth Bomb gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The unsaid thing",
+    sampleText: "About: My closest friend from college. What I haven't said: I think their drinking has gotten worse over the last year, and the people around them are just... going along with it. Why not: Worried they'll get defensive and shut me out. Also worried I'm wrong, or it's not my place. Last time I said something even mildly critical, they didn't speak to me for weeks. Context: 15+ year friendship, we live in different cities now but talk weekly. Their other close friends are all in their drinking circle.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What you know, and what you don't",
+        tone: "blue",
+        items: [
+          "You have observed, over weekly contact across the past year, what seems to you like a change in your friend's drinking. That is a real, sustained impression from someone who has known them for 15+ years.",
+          "You cannot know from a distance — especially with the social context you describe — whether what you are seeing reflects a change in your friend's situation, your own vantage point, or something else. The silence after the last critical comment is a real data point, but it does not tell you how your friend would respond to this specific concern, in this specific framing, at this specific moment.",
+        ],
+      },
+      {
+        label: "Three ways to say it",
+        tone: "green",
+        items: [
+          "The Gentle Opening: “Hey, I have just been thinking about you lately and wanted to ask — how are you actually doing? Like, not the surface version.”",
+          "The Clear Statement: “I want to say something and I am genuinely not sure I am right about it. Over the past year, I have noticed what seems like a change in how much you are drinking, and it has been sitting with me. I am not saying I have the full picture from here.”",
+          "The Full Truth: “I have been sitting on something for a while and I care about you enough to say it even though I am worried about getting this wrong. Over the past year, it has seemed to me like your drinking has gotten heavier. I do not know if that is accurate and I know I am not there day to day — but I would rather say something and be wrong than say nothing.”",
+        ],
+      },
+      {
+        label: "What saying it can't do",
+        tone: "purple",
+        text: "It cannot guarantee they will receive it well, confirm whether your read is accurate, change their behavior, or prevent them from shutting down contact again.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I tell a friend I'm worried about their drinking?",
+      a: "Say what you've noticed and that you care, without diagnosing or demanding a change: \"Over the past year it's seemed like your drinking has gotten heavier, and I'm not sure I'm right.\" Pick a private, sober moment, and accept that one conversation may only open the door." },
+    { q: "Will it tell me whether to say it?",
+      a: "No. It lays out what saying it can and can't do, gives you versions from gentle to direct, and includes permission not to say it." },
+    { q: "What if the situation is unsafe?",
+      a: "If someone is in danger, contact emergency services or a crisis line first. Truth Bomb is for conversations, not emergencies." },
+  ],
   description: "Some things get harder the longer they go unsaid. Truth Bomb helps you separate what you know from what you're assuming, understand what speaking — or staying silent — would actually change, and decide what you want to do next.",
   guide: {
       tips: [
@@ -3693,6 +3895,42 @@ export const tools = [
   icon: "🎯",
   categories: ['Conversations', 'Learning'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Heart of the Matter gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the lecture notes below. The first five of its ranked points are shown; nothing is reworded.",
+    sampleLabel: "The lecture — Cognitive Psychology: Memory Systems Overview",
+    sampleText: "Today we covered the three-stage model of memory: sensory memory, short-term memory, and long-term memory. Sensory memory holds incoming sensory information for fractions of a second — iconic memory for visual stimuli lasts about 250 milliseconds, and echoic memory for auditory stimuli lasts about 3-4 seconds. Information that is attended to passes into short-term memory, also called working memory, which has a capacity of about 7 plus or minus 2 chunks and a duration of around 18-30 seconds without rehearsal. To move information into long-term memory, it must be encoded — typically through elaborative rehearsal, which links new information to existing knowledge. Long-term memory itself splits into declarative (explicit) memory, which includes semantic memory for facts and episodic memory for events, and non-declarative (implicit) memory, which includes procedural memory for skills and conditioned responses. The hippocampus plays a central role in consolidating new declarative memories, but does not store them long-term — that happens in the cortex. Damage to the hippocampus, as in patient H.M., produces anterograde amnesia: the inability to form new long-term memories, while leaving older memories and procedural learning intact. Forgetting is explained by several mechanisms: decay over time, retrieval failure (memory is there but inaccessible), and interference from similar information. The forgetting curve, first described by Ebbinghaus in 1885, shows that we forget about half of new information within an hour, but spaced repetition dramatically slows this curve.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "In one line",
+        tone: "blue",
+        text: "This lecture introduced the three-stage model of memory — sensory, short-term, and long-term — covering their properties, subtypes, neural basis, and mechanisms of forgetting.",
+      },
+      {
+        label: "What matters most, in order",
+        tone: "green",
+        items: [
+          "Memory is organized into three stages: sensory memory, short-term memory, and long-term memory, each with distinct capacity, duration, and function.",
+          "Short-term memory has a capacity of approximately 7 plus or minus 2 chunks and a duration of about 18-30 seconds without rehearsal.",
+          "Long-term memory divides into declarative (explicit) memory — semantic and episodic — and non-declarative (implicit) memory — procedural and conditioned responses.",
+          "The hippocampus consolidates new declarative memories but does not store them long-term; long-term storage occurs in the cortex.",
+          "Damage to the hippocampus, as seen in patient H.M., causes anterograde amnesia: the inability to form new long-term declarative memories, while older memories and procedural learning remain intact.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I find the key points in a long lecture?",
+      a: "Paste the transcript or notes and Heart of the Matter ranks the points by importance, says why each matters, and marks what's likely to be tested." },
+    { q: "Can it connect several lectures?",
+      a: "Yes. Connect mode reads two or more lectures together and shows how they relate." },
+    { q: "Does it add outside information?",
+      a: "No. It works from what you give it, so check that the transcript itself is accurate." },
+  ],
   description: "Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes — text, a PDF, or an audio recording. Heart of the Matter finds the ideas doing the most work, breaks down what to understand, or connects themes across multiple pieces.",
     guide: {
     tips: [
@@ -4150,6 +4388,49 @@ export const tools = [
   icon: "🔀",
   categories: ['Decisions', 'Ideas & Imagination'],
   headerColor: "#f5e0c0",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Decision Prism gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the decision below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The decision",
+    sampleText: "A job offer that pays 40% more but requires relocating. My current job is comfortable with a great team, but I've felt stagnant for over a year. My partner is open to moving but not enthusiastic. Options: take the job and relocate, or stay. Values: career growth, financial security, family/relationships. Stuck because: fear of regret.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Current read",
+        tone: "blue",
+        items: [
+          "On the information supplied, the new job has the clearer case on two of your three stated priorities — career growth and financial security. The third, relationships, introduces real uncertainty.",
+          "Your partner's position is established as open but not enthusiastic — that is not a refusal, but it is not enough information to know whether the move would work well for both of you. Until that is understood more clearly, the relationship priority remains unresolved, and that is too important to treat as settled.",
+        ],
+      },
+      {
+        label: "The question underneath",
+        tone: "yellow",
+        text: "How much career and financial gain would make the disruption worth it to both of you — and have you actually established that number together?",
+      },
+      {
+        label: "Relocating — reversibility: partly reversible",
+        tone: "green",
+        text: "You can leave a job and return to a field or even a city, but the specific team, relationships, and position you are leaving may not be available again, and the relocation itself carries real practical costs in either direction.",
+      },
+      {
+        label: "One question to answer",
+        tone: "purple",
+        text: "If you stayed and nothing about the stagnation changed in another year, would you regret not taking this offer? If you took it and found the new role unfulfilling, would you regret the move itself or regret not understanding your needs better before you left?",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I decide whether to relocate for a job?",
+      a: "Look at each option over ten minutes, ten months and ten years, ask how reversible it is, and be specific about what your partner needs for the move to work. \"Open but not enthusiastic\" is a conversation to have before deciding." },
+    { q: "How is Decision Prism different from Decision Coach?",
+      a: "Decision Prism lays out one choice through several lenses so you can see what you've been ignoring. Decision Coach is for when you're too depleted to weigh it and need a single answer." },
+    { q: "Will it decide for me?",
+      a: "It gives a current read — what the information favors and what prevents a clean call — and leaves the choice with you." },
+  ],
   description: "Stuck between choices? Describe the decision, your options, and what matters to you. Decision Prism looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.",
   guide: {
     tips: [
@@ -4546,6 +4827,47 @@ tagline: "Work with the energy you have.",
   icon: "🧘",
   categories: ['Health & Wellness'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Lazy Workout Adapter gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the request below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The request",
+    sampleText: "Energy 3 out of 10, 10 minutes, at home. Stiff neck, lower back tightness. Slept badly; long day at a screen.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Slow Morning, No Rush — 10 minutes",
+        tone: "green",
+        items: [
+          "Supported Child's Pose (90 seconds): Kneel and sit back toward your heels, then fold forward and rest your forehead on your hands or a pillow — just stay here and breathe.",
+          "Slow Neck Side Tilts (90 seconds): Sitting or lying down, let your ear drop toward one shoulder until you feel a mild pull, hold a few seconds, then switch — keep it small and unhurried.",
+          "Shoulder Rolls (60 seconds): Seated or lying slightly propped up, roll both shoulders in slow circles — forward a few times, then backward.",
+          "Supine Knee Hugs (2 minutes): Lie on your back, pull both knees in toward your chest, and hold — rock side to side gently if that feels okay.",
+          "Supine Spinal Twist (2 minutes): Lying on your back, draw one knee across your body toward the floor on the opposite side, extend that arm out, and rest — switch sides halfway.",
+          "Slow Arm Reach and Lower (90 seconds): Lying on your back, raise both arms slowly overhead toward the floor behind you, then bring them back down — repeat at whatever pace feels easy.",
+        ],
+      },
+      {
+        label: "If a move is too much",
+        tone: "yellow",
+        items: [
+          "Supported Child's Pose: Sit upright in a chair and just let your head drop gently forward instead.",
+          "Slow Neck Side Tilts: Make the tilt even smaller — just a slight lean is enough.",
+          "Shoulder Rolls: Just shrug your shoulders up toward your ears and let them drop — repeat slowly.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What exercise can I do when I have no energy?",
+      a: "Gentle, floor- or chair-based movement for a few minutes: child's pose, neck tilts, knee hugs, a lying twist. Doing a small session counts." },
+    { q: "Can it work around pain or limits?",
+      a: "Tell it what hurts or what you can't do and it picks around it, with an easier swap for every move. For pain that's new, severe or getting worse, see a doctor or physical therapist first." },
+    { q: "What else does it do?",
+      a: "Two-minute micro-moves, a week's plan, and recovery, sleep and breathing sets." },
+  ],
   description: "Don't feel like working out? Tell us how much energy and time you have, what's bothering you, and what kind of day you've had. Lazy Workout Adapter turns that into movement you can actually manage right now.",
   guide: {
       tips: [
@@ -4745,6 +5067,45 @@ tagline: "Work with the energy you have.",
   icon: "🎭",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Read the Room gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the event below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The event",
+    sampleText: "Team offsite next Thursday — new on the team, haven't met half the people yet. Who's there: my new manager (Priya), her boss, three senior engineers, two product folks I've only emailed. Worry: coming across as too quiet or too eager; I freeze on small talk.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What to aim for",
+        tone: "blue",
+        text: "Leave having had a few real exchanges with people you only knew by email — you don't need to work the room, just make a handful of moments feel like actual contact rather than formality.",
+      },
+      {
+        label: "Lines to use",
+        tone: "green",
+        items: [
+          "Open: “Hey — I think we've been in each other's inboxes but haven't actually met yet. I'm [your name].”",
+          "Continue: “What's keeping you busiest right now — is it still [the project or topic from your emails], or has something else taken over?”",
+          "Exit: “Good to finally put a face to the name — I'm sure we'll be back and forth again soon.”",
+        ],
+      },
+      {
+        label: "If it stalls",
+        tone: "yellow",
+        text: "Steer toward something about the offsite itself or what's coming up for the team — it's common ground everyone in the room shares. “Is this the first time the team has done one of these, or is it a regular thing?”",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I make small talk with a new team?",
+      a: "Open with something you already share — \"I think we've been in each other's inboxes but haven't met\" — then ask an open question about their work and let them talk. Short conversations that end well beat long ones you grind through." },
+    { q: "What can Read the Room prepare me for?",
+      a: "Work events, family gatherings, first dates, networking, a new job, one person you're dreading, a group dynamic, or a culture you don't know." },
+    { q: "What if I freeze?",
+      a: "Keep one question in your back pocket — a question is easier to produce than a statement. It gives you that question, plus a line to leave a conversation." },
+  ],
   description: "Not sure what to say, how to join in, or what an interaction might have meant? Read the Room helps you prepare for social situations, find words in the moment, recover from awkward moments, and make sense of what happened afterward — without pretending it can read anyone's mind.",
   guide: {
       tips: [
@@ -5221,6 +5582,55 @@ tagline: "Work with the energy you have.",
   icon: "⚖️",
   categories: ['Conversations', 'Learning'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what The Final Word gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the disagreement below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The disagreement",
+    sampleText: "Priya: \"We agreed I would handle the booking and he would sort the car. He never sorted the car.\" Tom: \"We never split it like that. She said she'd look at options and I assumed that meant all of it.\" The trip is in nine days and there is still no car.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Verdict: it's complicated",
+        tone: "blue",
+        text: "The conversation happened but what was agreed is genuinely unclear from both accounts. There is no verifiable record of what was agreed, so neither account can be confirmed over the other — but the practical fact is that a car is needed in nine days and neither person has arranged one.",
+      },
+      {
+        label: "Priya",
+        tone: "green",
+        items: [
+          "Got right: She did take on the booking, and an explicit split of responsibilities is a reasonable thing to remember if it happened that way.",
+          "Got wrong: Her account requires that a specific car assignment was made out loud. Tom's version — that she offered to look at options and he read that as covering everything — is a plausible alternative reading of the same conversation, not obviously wrong.",
+        ],
+      },
+      {
+        label: "Tom",
+        tone: "green",
+        items: [
+          "Got right: His reading that 'I'll look at options' could mean 'I'll handle it all' is a coherent interpretation of ambiguous language. He may genuinely not have understood he had a task.",
+          "Got wrong: Assuming is not the same as confirming. If he was uncertain what the split was, the responsibility to clarify sat with him too. Nine days from the trip with no car arranged is a concrete gap that his assumption did not close.",
+        ],
+      },
+      {
+        label: "How to verify, and settle it",
+        tone: "purple",
+        items: [
+          "Check any text messages, emails, or chat logs from the original conversation — even a fragment mentioning the car or the split would resolve the factual dispute quickly.",
+          "Set the blame question aside for now: one of them books the car today, they confirm in writing how costs will split, and they revisit the disagreement only if it matters for future planning. Nine days is enough time to sort a car but not enough to waste on relitigating a conversation with no record.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do you settle an argument about who said what?",
+      a: "Look for a record — texts, emails, a calendar note. If there isn't one, neither memory can be confirmed, so fix the practical problem first and agree in writing next time." },
+    { q: "Can it settle factual arguments too?",
+      a: "Yes — trivia, history, \"is it true that…\" It gives an answer with how confident it is, and says when something can't be settled." },
+    { q: "Will it always pick a winner?",
+      a: "No. When both sides are partly right, or the facts can't be checked, it says so." },
+  ],
   description: "Some questions have an answer. Some arguments have two. The Final Word sorts out what’s true, what’s uncertain, and what’s just opinion — clearly, fairly, and without pretending to know more than it does.",
   guide: {
       tips: [
@@ -5367,6 +5777,41 @@ tagline: "Work with the energy you have.",
   icon: "💝",
   categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Gratitude Debt Clearer gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the thank-you below. Nothing is reworded.",
+    sampleLabel: "What they did",
+    sampleText: "Marcus, a friend: drove 4 hours to help me move with a truck he'd never driven before. Didn't complain once and bought me dinner after.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Direct and Specific",
+        tone: "green",
+        text: "Marcus, I'm not going to forget that you drove four hours to help me move with a truck you'd never driven before. You didn't complain, and then you bought me dinner on top of it all. Thank you.",
+      },
+      {
+        label: "Light and Grounded",
+        tone: "green",
+        text: "You drove four hours, got behind the wheel of a truck you'd never driven before, didn't complain about any of it, and then bought me dinner. That's serious help. Thank you.",
+      },
+      {
+        label: "Reflective but Grounded",
+        tone: "green",
+        text: "What you did for me during the move—the four-hour drive, taking on a truck you'd never driven, not complaining, and then buying dinner—was real help. I'm grateful you showed up the way you did.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I write a thank-you message for a big favor?",
+      a: "Name exactly what they did, including the parts that cost them something, and say thank you plainly. Specific details carry the warmth; extra adjectives don't." },
+    { q: "Is it too late to say thank you?",
+      a: "Almost never. A late, specific thank-you still lands; you can acknowledge the delay in one line and move on." },
+    { q: "Can I choose the tone and length?",
+      a: "Yes — or let it choose. You get a few versions to pick from." },
+  ],
   description: "Tell us who you want to thank and what they did. Get a few natural ways to say it—so your message feels specific, sincere, and like something you would actually send.",
   guide: {
       tips: [
@@ -6368,6 +6813,52 @@ tagline: "Work with the energy you have.",
   icon: "⛏️",
   categories: ['Health & Wellness', 'Tasks'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Task Avalanche Breaker gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the project below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The project",
+    sampleText: "Write a 6-month marketing plan for our product launch: competitive analysis, channel strategy, a budget, a content calendar, success metrics. Due in two weeks; no idea where to start. Stuck because: too many steps, don't know where to start, unfamiliar.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "First move",
+        tone: "green",
+        items: [
+          "Write a one-page outline that names each of the five required sections and, under each, lists the specific questions that section must answer for your product — not what a generic plan would cover, but what your plan actually needs to decide.",
+          "Done when: Every one of the five sections has at least two specific questions written beneath it — questions specific enough that you could hand each one to someone and they would know exactly what to find out.",
+        ],
+      },
+      {
+        label: "If that's too much",
+        tone: "yellow",
+        text: "Pick one section — whichever feels most familiar — and write its questions only. That partial version still breaks the first section out of the undifferentiated mass and gives you one concrete entry point.",
+      },
+      {
+        label: "After that",
+        tone: "blue",
+        items: [
+          "Once the questions are written, scan them and mark any that must be answered before other sections can be drafted — for example, a budget ceiling that constrains channel choices, or a launch date that sets the content calendar boundaries. These are your blockers; everything else can be drafted in parallel or in any order.",
+          "Once blockers are identified, resolve the highest-priority one — gather the specific piece of information or make the specific decision it represents — so that the sections depending on it can actually be written.",
+        ],
+      },
+      {
+        label: "Permission to stop",
+        tone: "purple",
+        text: "Getting the questions written for all five sections is a complete and meaningful session — everything after that is a different kind of work.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I start a big project when I don't know where to begin?",
+      a: "Turn each required section into the specific questions it has to answer. That shows which parts you can draft now and which need a decision or research first." },
+    { q: "Why only one step at a time?",
+      a: "A full plan is often what makes a project feel impossible. One clear first move, with a \"done when\", is easier to begin." },
+    { q: "What if the first step is still too hard?",
+      a: "It always offers a smaller version of the same step." },
+  ],
   description: "Stuck on a project that feels too big to start? Task Avalanche Breaker finds one useful place to begin — not another giant to-do list.",
   guide: {
     tips: [
@@ -6681,6 +7172,44 @@ tagline: "Work with the energy you have.",
   icon: "🌙",
   categories: ['Health & Wellness', 'Self & Reflection'],
   headerColor: "#b8dcd8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Dream Pattern Spotter gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the dream below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The dream",
+    sampleText: "I was running late to a flight but the airport kept rearranging itself. Every time I found my gate it had moved. My old college roommate was there, but she didn't recognize me. Eventually I realized I'd forgotten my passport — and also forgotten where I was supposed to be flying to. Felt: anxious, confused.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What stands out",
+        tone: "blue",
+        items: [
+          "The airport rearranging itself — The environment itself is the obstacle, not any person or rule — the ground rules of the space cannot be relied on.",
+          "The gate that keeps moving — The destination is always just out of reach despite the dreamer actively searching, which creates a loop with no resolution.",
+          "The roommate who does not recognize them — Someone from the dreamer's past is present but the expected connection — being known — is absent, which adds a layer of isolation to the disorientation.",
+        ],
+      },
+      {
+        label: "Possible readings: the roommate who does not recognize the dreamer",
+        tone: "purple",
+        items: [
+          "One reading is that this figure represents a past version of connection or belonging that is no longer available in the same way.",
+          "A different reading focuses on being unseen: the dreamer is present, but not registered — which could be sitting with a question about visibility or being known.",
+          "It could also be read the other way around — perhaps the dreamer has changed, and the roommate's non-recognition reflects that the dreamer is no longer quite who that relationship knew.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "What does it mean to dream your gate keeps moving?",
+      a: "There's no fixed meaning. People often connect it with feeling that the rules keep changing while they're trying to get somewhere — but only you can say whether that fits." },
+    { q: "Does Dream Pattern Spotter interpret my dreams?",
+      a: "It offers several possible readings, never a single meaning, and asks questions only you can answer." },
+    { q: "Can it find patterns across dreams?",
+      a: "Yes. Log several dreams and pattern mode looks for recurring places, people and feelings over time." },
+  ],
   description: "Spots notable elements, possible associations, and recurring patterns in your dreams — then gives you thoughtful questions to explore what, if anything, they mean to you. Includes optional Jungian, Freudian, and dream-science perspectives for additional ways of looking at them.",
   guide: {
     tips: [
@@ -6901,6 +7430,41 @@ tagline: "Work with the energy you have.",
   icon: "📬",
   categories: ['Conversations', 'Tasks', 'Work & Meetings'],
   headerColor: "#d4dde8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Email Urgency Triager gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the four emails below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The emails",
+    sampleText: "Four messages: a client asking whether your side can accommodate an earlier hard deadline and needing an answer by Friday; a LinkedIn \"you appeared in 3 searches\" notice; a Stripe invoice that says no action is needed; and a teammate asking you to check the auth middleware so they can push their branch by end of day.",
+    context: "Real run, 2026-10-08 (a Thursday) — one of the tool's own built-in examples, abridged above.",
+    sections: [
+      {
+        label: "Sorted by urgency",
+        tone: "blue",
+        items: [
+          "Now — quick question about the staging deploy: Jordan explicitly wants to push their branch by EOD today, which requires your input first; this is a direct same-day request.",
+          "This week — Re: Q3 deliverables — timeline shift?: Amanda states she needs an answer by Friday; today is Thursday evening, so the deadline is tomorrow but not today.",
+          "Optional — You appeared in 3 searches this week: Automated LinkedIn notification; no action or reply is expected.",
+          "Optional — Your invoice for August is available: Stripe explicitly states no action is needed and that payment was already processed automatically.",
+        ],
+      },
+      {
+        label: "A draft reply to the client",
+        tone: "green",
+        text: "Hi Amanda, thanks for the heads-up. I'm checking internally on the Sept 12 date and will get back to you by end of day Friday. [Confirm yes/no or propose an alternative before sending.]",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I decide which emails to answer first?",
+      a: "Sort by what someone is waiting on and by when: a same-day request that blocks a colleague comes before a client question due tomorrow, and automated notices can wait or be skipped." },
+    { q: "Is it safe to paste my emails?",
+      a: "Only paste what you're comfortable sharing. Remove anything sensitive first — names, account numbers, health or financial details." },
+    { q: "Does it read my inbox?",
+      a: "No. It only sees the emails you paste in." },
+  ],
   description: "Analyze email urgency and cut through inbox anxiety. Find out what actually needs a response today vs what can wait.",
   guide: {
     tips: [
@@ -7113,6 +7677,49 @@ tagline: "Work with the energy you have.",
   icon: "💛",
   categories: ['Decisions', 'Relationships'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Friendship Fade Alerter gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the friendship below. Nothing is reworded.",
+    sampleLabel: "The friendship",
+    sampleText: "Danny R. — best man at my wedding. We stopped talking after a falling out about a flat deposit six years ago; neither of us has mentioned it since. Last real contact over a year ago. I have no idea if he'd want to hear from me.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Pick up the thread",
+        tone: "green",
+        items: [
+          "“Hey Danny — I've been meaning to reach out. I genuinely don't know where things stand between us, but I'd rather find out than keep wondering. Hope you're well.”",
+          "Opens directly without requiring either person to settle what happened first. Leaves the door open for Danny to respond however he wants to.",
+        ],
+      },
+      {
+        label: "A simple hello",
+        tone: "blue",
+        text: "“Hey Danny, you crossed my mind today — hope life's treating you well.”",
+      },
+      {
+        label: "Make a plan",
+        tone: "purple",
+        text: "“Hey Danny — I've been meaning to reach out. Any chance you'd want to grab a drink or a coffee sometime soon?”",
+      },
+      {
+        label: "Remember",
+        tone: "yellow",
+        text: "One short message is enough — Danny gets to decide what to do with it, and sending it is the whole job.",
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I reach out to a friend after years of silence?",
+      a: "Keep the first message short and easy to answer, and don't make them settle what went wrong before they can reply: \"I don't know where things stand between us, but I'd rather find out than keep wondering.\"" },
+    { q: "What does Friendship Fade Alerter track?",
+      a: "The people you want to stay close to, how often you'd like to be in touch, and when you last really connected — so you notice a friendship fading before it's gone." },
+    { q: "Where is the list kept?",
+      a: "In your browser. Names and notes are only sent when you ask for help writing a message." },
+  ],
   description: "Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.",
   guide: {
     tips: [
@@ -7151,6 +7758,52 @@ tagline: "Work with the energy you have.",
   icon: "🗺️",
   categories: ['Health & Wellness', 'Self & Reflection', 'Travel & Events'],
   headerColor: "#2a3820",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Trip Recon gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the trip below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The trip",
+    sampleText: "Denver International Airport, departures. International flight at 6am; we want to be there for a 3-hour security window before it gets loud with morning departures. Concerned about: crowds, waiting, parking.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "What you know",
+        tone: "blue",
+        items: [
+          "Flight departs at 6am — international",
+          "You plan to arrive roughly 3 hours before departure, putting arrival around 3am",
+          "You expect the terminal gets louder as the morning progresses, and you are aiming to be through security before that shift",
+        ],
+      },
+      {
+        label: "Before you go",
+        tone: "green",
+        items: [
+          "Confirm your airline's international check-in opens at least 3 hours before a 6am departure — if the counter does not open until, say, 4am, you may be waiting landside longer than planned",
+          "Look up which concourse your gate is likely to be (your boarding pass or airline app will confirm this closer to departure) so you know the walk or train leg after security",
+          "Verify your passport and any required travel documentation is packed and accessible without digging through luggage at the counter",
+        ],
+      },
+      {
+        label: "For the long wait",
+        tone: "yellow",
+        items: [
+          "Pack a waiting kit before you leave home — whatever helps you settle in for a long sit: headphones, a book, snacks, a neck pillow, charging cable",
+          "Charge your devices fully before you leave so you are not dependent on finding an outlet",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I prepare for a crowded or noisy place?",
+      a: "Plan around what you can control: arrive at a quieter time, know your route and where to wait, and pack what helps you settle — headphones, snacks, a charger. Trip Recon builds that plan from what you tell it about the place." },
+    { q: "Does it know the place?",
+      a: "It works from what you tell it and general knowledge of that kind of place, and it says what to confirm with the venue or airline before relying on it." },
+    { q: "Who is it for?",
+      a: "Anyone who finds noise, crowds, lighting or waiting hard — including sensory sensitivities — before a store, hospital, airport, theater or event." },
+  ],
   description: "Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise hard to handle? Tell Trip Recon what matters to you and what you already know. It helps you prepare for possibilities, ask for what you need, and make a backup plan without inventing conditions at the place.",
   guide: {
     tips: [
@@ -7650,6 +8303,44 @@ tagline: "Work with the energy you have.",
   icon: "🗺️",
   categories: ['Just for Fun', 'Travel & Events'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Micro-Adventure Mapper gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the request below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The request",
+    sampleText: "Boston, 3 hours, right now, on foot, solo, low budget. Interests: history, food and drink.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Freedom Trail Bites — Walk a slice of the Revolution with stops for food and history.",
+        tone: "blue",
+        text: "The Freedom Trail is a stable, free public walking route that connects major historical sites across central Boston. Three hours gives you time to walk a meaningful section, pause at 2–3 stops to eat or drink inexpensively, and absorb the history without rushing. Solo walking lets you set your own pace and linger where something catches your attention.",
+      },
+      {
+        label: "Two of the stops",
+        tone: "green",
+        items: [
+          "Food stop along or near the trail: Walk 10–15 minutes along the trail into the downtown area. Stop at a casual cafe, sandwich shop, deli, or food cart for a drink and something light to eat. Keep it budget-conscious: coffee and a pastry, or a sandwich to go. This is not a sit-down meal, just fuel and a moment to rest.",
+          "Paul Revere House or Old State House area: Continue following the trail to one of its major stops—either the Paul Revere House (one of the oldest buildings in Boston) or the Old State House, both accessible from the trail. You do not need to pay admission; you can see the exteriors, read the historical markers, and spend time understanding what these places were. The surrounding streets also have historical plaques and older architecture worth noticing.",
+        ],
+      },
+      {
+        label: "Backup plan",
+        tone: "yellow",
+        text: "Use your maps app to find a museum, historic library, or public market in downtown Boston near your current point on the trail. Spend the remaining time indoors, exploring a focused collection or wandering the market. This keeps the historical and food themes while moving inside.",
+      },
+    ],
+  },
+  faq: [
+    { q: "What can I do in Boston in 3 hours on a budget?",
+      a: "Walk part of the Freedom Trail — it's free and marked by a red line — with a cheap food stop downtown, then continue into the North End if you have time. Check opening hours before going inside anything." },
+    { q: "Does it work anywhere?",
+      a: "Yes. Give a place, how long you have, how you're getting around and what you like, and it plans a short outing with a backup." },
+    { q: "Will it check if places are open?",
+      a: "It tells you what to verify — hours, admission — before you rely on it." },
+  ],
   description: "Got an hour or two and want to do something different? Tell us where you are, how much time you have, what sounds good, and how you're getting around. Micro-Adventure Mapper builds a small local outing that fits the time, budget, and constraints you actually have.",
   guide: {
     tips: [
@@ -7983,6 +8674,59 @@ tagline: "Work with the energy you have.",
   icon: "🧠",
   categories: ['Health & Wellness', 'Self & Reflection', 'Tasks'],
   headerColor: "#e0b8b8",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Brain Dump Buddy gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the brain dump below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The brain dump",
+    sampleText: "Need to call mom back. Q3 review on Friday — haven't started slides. Pick up dry cleaning. The bathroom faucet is leaking again. Sarah wants to schedule a coffee. Need to renew driver's license before October. Hate that I keep putting off the dentist. Pull request is still open from last week. Probably should book the flight before prices go up. The fridge is making that noise again.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "Sorted",
+        tone: "blue",
+        text: "Your brain held 10 distinct thoughts. After sorting: 6 need action, 1 is a decision, and 3 do not need action right now. More than a quarter of what was in your head requires nothing from you today.",
+      },
+      {
+        label: "Do first",
+        tone: "green",
+        items: [
+          "Open your slides tool right now and write just the three main points you need to cover in Friday's Q3 review.",
+          "Friday is the only fixed point on your list, and starting with just three bullet points breaks the biggest source of pressure without requiring you to finish anything today.",
+        ],
+      },
+      {
+        label: "Actions",
+        tone: "yellow",
+        items: [
+          "Build out and practice the Q3 review slides. — by Friday",
+          "Call mom back. — today",
+          "Pick up the dry cleaning. — this week",
+          "Renew your driver's license. — by before October",
+          "Review and merge (or close) the open pull request from last week. — today",
+          "Book a dentist appointment. — this week",
+        ],
+      },
+      {
+        label: "Not yours to carry in your head",
+        tone: "purple",
+        items: [
+          "The bathroom faucet is leaking again. → A plumber, building maintenance, or a handy partner or housemate if one is available.",
+          "The fridge is making that noise again. → Appliance repair service or landlord if renting.",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I organize everything in my head?",
+      a: "Write it all down unsorted, then separate tasks, decisions, worries and things someone else should handle. Pick the one item with a fixed deadline and do a small piece of it first." },
+    { q: "Can I type it messy?",
+      a: "Yes — a paragraph, a list, or voice. It sorts it for you." },
+    { q: "What happens to unfinished items?",
+      a: "Unchecked items can carry forward into your next dump." },
+  ],
   description: "When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.",
   guide: {
     tips: [
@@ -8027,6 +8771,50 @@ tagline: "Work with the energy you have.",
   icon: "🫸",
   categories: ['Health & Wellness', 'Self & Reflection'],
   headerColor: "#ccdfc4",
+  // Real output, shown on the page (PublicProductDemo + prerender). Added
+  // 2026-10-08 (all tools indexable once they show real output).
+  exampleOutput: {
+    title: "See what Gentle Push Generator gives you",
+    expandLabel: "See a real example ↓",
+    intro: "Real output from an actual run on the situation below. Part of the result is shown; nothing is reworded.",
+    sampleLabel: "The comfort zone",
+    sampleText: "I avoid events where I won't know many people; I've turned down 3 invitations this month. Growth area: being more comfortable meeting strangers without it draining me. Capacity today: medium.",
+    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
+    sections: [
+      {
+        label: "One Real Exchange",
+        tone: "green",
+        items: [
+          "At your next routine errand or commute today, make one small unprompted remark to a stranger near you -- a comment about the wait, the weather, whatever is genuinely in front of you. One remark is the whole task.",
+          "If that's too much: Make eye contact and nod rather than speaking -- that still counts as crossing the boundary a small amount",
+        ],
+      },
+      {
+        label: "Timed Attendance",
+        tone: "green",
+        items: [
+          "Accept one of the kinds of invitations you have been declining, but set a firm private exit time of 30 minutes before you arrive. You are not staying longer; you are just showing up for 30 minutes.",
+          "If that's too much: Set the window to 15 minutes, or simply RSVP yes and then decide on the day -- sending the reply is its own small step",
+        ],
+      },
+      {
+        label: "Practice the Opening",
+        tone: "green",
+        items: [
+          "Write out two or three short openers you could realistically use with a stranger at a social event -- things that feel natural to you, not scripted-sounding. Read them back once and pick the one you would actually say.",
+          "If that's too much: Write just one opener that feels genuinely usable to you",
+        ],
+      },
+    ],
+  },
+  faq: [
+    { q: "How do I push myself out of my comfort zone without burning out?",
+      a: "Size the step to how much you have today: one small exchange, a short visit with a fixed exit time, or private practice. Doing a small version counts." },
+    { q: "What if I don't do it?",
+      a: "That's information too — noticing which option felt doable shows where your edge actually is." },
+    { q: "Does it adapt over time?",
+      a: "Yes. Log what you tried and it sizes the next push from your history." },
+  ],
   description: "Turn something you'd like to get better at into a small, doable challenge just beyond what's comfortable today. No pep talks, no pressure—the attempt counts.",
   guide: {
     tips: [

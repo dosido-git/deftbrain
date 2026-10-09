@@ -62,6 +62,10 @@ const EXAMPLE_OUTPUT_TOOLS = new Set([
   'AnalogyEngine', 'PartyArchitect', 'HobbyMatch', 'JustifyMyMeeting', 'MeetingHijackStopper',
   'BeliefStressTest', 'Bookmark', 'BrainRoulette', 'ComebackCooker', 'FanTheory', 'BatchFlow', 'BeforeTheCrash',
   'BrainStateDeejay', 'FocusPocus', 'FocusSoundArchitect', 'WhereDidTheTimeGo', 'WhatsMyVibe', 'TimeWarp', 'SocialBatteryAdvisor',
+  'TruthBomb', 'ReadTheRoom', 'GratitudeDebtClearer', 'TaskAvalancheBreaker', 'BrainDumpBuddy',
+  'GetNoticed', 'BeforeHello', 'SmallChangeBigDifference', 'GentlePushGenerator', 'DecisionPrism',
+  'HeartOfTheMatter', 'LazyWorkoutAdapter', 'TheFinalWord', 'DreamPatternSpotter', 'EmailUrgencyTriager',
+  'FriendshipFadeAlerter', 'TripRecon', 'MicroAdventureMapper', 'ToolFinder',
 ]);
 const STATIC_CONTENT_COHORT_2 = new Set(['MentalHealthNavigator','ProcedureProbe','WhichLife','TheDebrief','DecoderRing','MiseEnPlace','GhostWriter','PlainTalk','SixDegreesOfMe','FinalWish']);
 

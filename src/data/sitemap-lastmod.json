@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "90d7ff80194b859faf535e52281b6ea923ce8e05",
+  "hash": "0f3fe59035367f52c4dc0052c44bf40821481827",
   "lastmod": "2026-10-09"
  },
  "static:about": {
@@ -489,6 +489,82 @@
  },
  "tool:BrainStateDeejay": {
   "hash": "42991aaa710519a16bb71b9e8b6337552a9bc0bb",
+  "lastmod": "2026-10-09"
+ },
+ "tool:ToolFinder": {
+  "hash": "8151fa075bd9464f733de3073b7c03b77d234ae7",
+  "lastmod": "2026-10-09"
+ },
+ "tool:SmallChangeBigDifference": {
+  "hash": "ced4a6c341005d81060ab0175f54e59224f290ba",
+  "lastmod": "2026-10-09"
+ },
+ "tool:GetNoticed": {
+  "hash": "1e8b3a03740fd9fb5c760c0e04878411b7bd63b9",
+  "lastmod": "2026-10-09"
+ },
+ "tool:BeforeHello": {
+  "hash": "1c3634cd22739ed0d27a368b60123cc22ac0c33c",
+  "lastmod": "2026-10-09"
+ },
+ "tool:TruthBomb": {
+  "hash": "acba06801c3df8a4958de6c27e995792dcaff8fc",
+  "lastmod": "2026-10-09"
+ },
+ "tool:HeartOfTheMatter": {
+  "hash": "d49de1402f72f549d21bc8b5cb986d1c9934070b",
+  "lastmod": "2026-10-09"
+ },
+ "tool:DecisionPrism": {
+  "hash": "074c8fc098d82bcf4f2243f01b36621d91951d07",
+  "lastmod": "2026-10-09"
+ },
+ "tool:LazyWorkoutAdapter": {
+  "hash": "7232c1a264f654cf122f000a0b8fdafd3efd56a9",
+  "lastmod": "2026-10-09"
+ },
+ "tool:ReadTheRoom": {
+  "hash": "5ccdb65894a115980d591e900b87b31a984b8812",
+  "lastmod": "2026-10-09"
+ },
+ "tool:TheFinalWord": {
+  "hash": "14ad41be82f004009cb65d308e66ea60d4f0d96f",
+  "lastmod": "2026-10-09"
+ },
+ "tool:GratitudeDebtClearer": {
+  "hash": "9243a69b6feebbb453def993bafc303e02de165f",
+  "lastmod": "2026-10-09"
+ },
+ "tool:TaskAvalancheBreaker": {
+  "hash": "ac2b568cdc1037e94deda517de6361bbc7ee935b",
+  "lastmod": "2026-10-09"
+ },
+ "tool:DreamPatternSpotter": {
+  "hash": "9f0ee923c4d0019d75a72353c53cc747fa4f91aa",
+  "lastmod": "2026-10-09"
+ },
+ "tool:EmailUrgencyTriager": {
+  "hash": "71559c21418c5540581b9c8204f202877635424d",
+  "lastmod": "2026-10-09"
+ },
+ "tool:FriendshipFadeAlerter": {
+  "hash": "6fb79f99c55104a18b29bd8d776c26ff161d32a8",
+  "lastmod": "2026-10-09"
+ },
+ "tool:TripRecon": {
+  "hash": "a5b262e75816b378c8f9ac597d8e05764098fb6a",
+  "lastmod": "2026-10-09"
+ },
+ "tool:MicroAdventureMapper": {
+  "hash": "d0b50197ce36f5cc849354125606dd13d5961410",
+  "lastmod": "2026-10-09"
+ },
+ "tool:BrainDumpBuddy": {
+  "hash": "a43d9dea19278ac351292808c8b41281c0852c6f",
+  "lastmod": "2026-10-09"
+ },
+ "tool:GentlePushGenerator": {
+  "hash": "f0cee20bd247ea7248da17dc286c0f7943d992b3",
   "lastmod": "2026-10-09"
  }
 }

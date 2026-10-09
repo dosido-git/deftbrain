@@ -75,3 +75,13 @@ line "at a wedding" — fixed in 6b7bbc3b (origin rule + supplied-facts check).
 - **Guard repair (all v2 tools) — FIXED.** Plot Hole Finder's repair rewrote two findings' case_against with the focus question's argument (it saw only the field path). `runOutputGuard` repair now shows each flagged field's sibling text ("belongs to: …"). Re-run: every argument matched its finding.
 - **PlotHoleFinder — HELD, not indexed.** Dark Knight Rises run: says Gordon chose not to deliver his speech (Bane reads it aloud), "five months unaccounted for" after the pit climb, Bane as Ra's "lieutenant" (he was excommunicated). Tried the shared facts-mode check: it missed Gordon and "corrected" the reactor detail INTO an error (core detonates as it decays; it said becomes inert). Reverted. Needs grounded story facts (e.g. a plot-summary source), not a second model's memory.
 - **SocialBatteryAdvisor** — a contrast titled "differed sharply" whose own text says the two "align rather than contrast". Left out.
+
+## All-tools indexing, batches 4–7 (2026-10-08)
+
+- **SmallChangeBigDifference + Which Life? — FIXED, were DOWN in production since 2026-10-05.** `withSurge` (lib/surge.js) was an `async` wrapper, so `messages.stream()` got a plain Promise with no `.withResponse()` and every streaming call threw. Wrapper now returns the SDK's APIPromise untouched for stream calls (6d4030c5).
+- **LazyWorkoutAdapter** — a "why" says "you mentioned stiff shoulders" (input: stiff neck, lower back) and one "why" is blank. Left out.
+- **TripRecon** — says DIA has "a train connection from the garage to the terminal" (garages adjoin the terminal; the train runs to the concourses). Left out. Same risk class as Date Night: place facts from model memory.
+- **MicroAdventureMapper** — calls Boston Common "at the north end of the Freedom Trail" (it is the start, at the south). Left out.
+- **SmallChangeBigDifference** — "20 min x 5 weekdays = 100 min/week" then "x 365 days = ~122 hours/year" (mixes weekday and daily rates). Left out.
+- **EmailUrgencyTriager** — built-in example 1 asks to move a deadline to "Sept 12 instead of Oct 1": both dates are now past. Example text should be date-free.
+- **ReadTheRoom** — built-in example 1 is typed "Work Happy Hour" but describes a team offsite.
