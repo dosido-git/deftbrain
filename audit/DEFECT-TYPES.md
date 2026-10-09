@@ -106,7 +106,8 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 - Any other route wires it in one line: `await checkConsistency(parsed, { label, promise, userLanguage })`. It reads every string field itself.
 - It runs on **Sonnet**: on the logged cases Haiku caught an ignored choice one run in two, Sonnet every time.
 - **Both sides of a contradiction are repaired together**, settled against what the visitor typed. With one side flagged, the checker kept the wrong side 2 times in 3. If the input doesn't settle it, the disputed claim comes out of both.
-- Short label fields (enums, chips, numbers) are shown to the check but never rewritten.
+- Short label fields (enums, chips, numbers, all-caps verdicts) are shown to the check but never rewritten.
+- It reads the WHOLE answer, not only the fields the route guards (2026-10-09): Plot Hole Finder's summary said "two confirmed problems" while every verdict enum said MAYBE. A contradiction flagged on a label is repaired on its prose side.
 
 **Coverage (2026-10-09 sweep):** 43 guarded routes + 53 wired with `checkConsistency` on their main endpoint (every mode for money-diplomat) = 96.
 

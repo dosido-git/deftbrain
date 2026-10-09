@@ -121,6 +121,16 @@ async function runOutputGuard(draft, opts) {
   const consistencyModel = opts.consistencyModel || process.env.CONSISTENCY_CHECK_MODEL || MODELS.SMART;
   // Shown to the check as context, never rewritten (labels, enums, numbers).
   const readOnly = new Set(Array.isArray(opts.readOnly) ? opts.readOnly : []);
+  // The contradiction check reads the WHOLE answer, not just the fields the
+  // route chose to guard: Plot Hole Finder's summary claimed "two confirmed
+  // problems" while every finding's verdict — an enum the route never passes
+  // — said MAYBE (2026-10-09). Labels outside the route's list (verdicts,
+  // enums, numbers) are shown for comparison and never rewritten, so the
+  // repair lands on the prose side; prose outside it can be repaired.
+  const own = new Set(fields.map(([p]) => p));
+  const extra = stringFields(draft, 120).filter(([p]) => !own.has(p));
+  const consFields = [...fields, ...extra];
+  const consOnlyReadOnly = new Set(extra.filter(([, v]) => isLabel(v)).map(([p]) => p));
   const choices = visitorChoices(opts.body || currentRequestBody());
   if (!Array.isArray(fields) || !fields.length) return [];
 
@@ -153,7 +163,7 @@ ${choices}
 ${cons ? '' : guardBlock}
 
 PROPOSED OUTPUT:
-${fields.map(([path, value]) => `${path}:\n${value}`).join('\n\n')}
+${(cons ? consFields : fields).map(([path, value]) => `${path}:\n${value}`).join('\n\n')}
 
 Look for:
 ${cons ? CONSISTENCY_CHECKS + (consistencyOnly ? `\n${INVENTED_CHECK}` : '') : V2_CHECKS}
@@ -212,10 +222,19 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // Repairs only ever rewrite string leaves, so requiring one here removes the
   // failure without narrowing what the guard can legitimately fix.
   const containerHits = [];
+  const canWrite = (f) => typeof f === 'string' && typeof getByPath(draft, f) === 'string' && !readOnly.has(f) && !consOnlyReadOnly.has(f) && !isLabel(getByPath(draft, f));
   (Array.isArray(check?.violations) ? check.violations : [])
+    // A contradiction flagged on a read-only side (a verdict enum) is repaired
+    // on its other, writable side.
+    .map(v => (v && v.violation_type === 'contradicts_another_field' && !canWrite(v.field) && canWrite(String(v.conflicts_with || '').trim())
+      ? { ...v, field: String(v.conflicts_with).trim(), conflicts_with: v.field } : v))
     .filter(v => {
       if (!v || typeof v.field !== 'string') return false;
-      if (typeof getByPath(draft, v.field) !== 'string' || readOnly.has(v.field)) {
+      // Labels are protected from the consistency checks' repairs only; the v2
+      // check's own repairs keep their earlier reach (a short title can still
+      // be a mind-reading violation).
+      const consType = ['contradicts_another_field', 'ignored_visitor_choice', 'invented_visitor_detail'].includes(v.violation_type);
+      if (consType ? !canWrite(v.field) : (typeof getByPath(draft, v.field) !== 'string' || readOnly.has(v.field))) {
         if (getByPath(draft, v.field) !== undefined) containerHits.push(v.field);
         return false;
       }
@@ -242,7 +261,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     for (const v of vs) {
       if (v.violation_type !== 'contradicts_another_field' || typeof v.conflicts_with !== 'string') continue;
       const other = v.conflicts_with.trim();
-      if (other === v.field || typeof getByPath(draft, other) !== 'string' || readOnly.has(other)) continue;
+      if (other === v.field || !canWrite(other)) continue;
       if (!byField.has(other)) byField.set(other, []);
       if (!byField.get(other).some(x => x.violation_type === 'contradicts_another_field')) {
         byField.get(other).push({ field: other, violation_type: 'contradicts_another_field', offending_text: '', reason: v.reason, conflicts_with: v.field });
@@ -257,7 +276,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // fail-open, so nothing else would ever say so.
   console.log(`[${label}] v2 guard: ${String(check?.verdict).toUpperCase() === 'FAIL' ? 'FAIL' : 'PASS'} (${violations.length} field(s)${violations.length ? ': ' + violations.map(v => `${v.field}=${v.violation_type}`).join(', ') : ''})`);
   if (containerHits.length) {
-    console.log(`[${label}] v2 guard: dropped ${containerHits.length} violation(s) naming a non-string field, not repaired: ${containerHits.join(', ')}`);
+    console.log(`[${label}] v2 guard: dropped ${containerHits.length} violation(s) naming a non-string or read-only field, not repaired: ${containerHits.join(', ')}`);
   }
 
   if (String(check?.verdict).toUpperCase() !== 'FAIL' || !violations.length) return [];
@@ -416,7 +435,10 @@ function stringFields(obj, max = 60) {
 // these. Prose is four words or more.
 function isLabel(v) {
   const t = String(v).trim();
-  return /^-?\d/.test(t) || /^[A-Za-z0-9_-]+$/.test(t) || t.split(/\s+/).length < 4;
+  const letters = t.replace(/[^A-Za-z]/g, '');
+  // An all-caps value is an enum however long it is ("MAYBE — THE STORY LEAVES A GAP").
+  const shouting = letters.length >= 4 && letters.replace(/[^A-Z]/g, '').length / letters.length > 0.8;
+  return /^-?\d/.test(t) || /^[A-Za-z0-9_-]+$/.test(t) || t.split(/\s+/).length < 4 || shouting;
 }
 
 // What the visitor sent, as text, for checks that compare against it.

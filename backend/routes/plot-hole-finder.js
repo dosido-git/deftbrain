@@ -5,7 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
-const { checkAgainstSupplied } = require('../lib/factCheck');
+const { checkWorldFacts } = require('../lib/worldFacts');
 
 // Story facts from a source, not from memory (2026-10-08). A Dark Knight Rises
 // run said Gordon chose not to deliver his speech (Bane reads it out) and that
@@ -48,26 +48,28 @@ Return ONLY valid JSON:
   return groundedData(key);
 }
 
+// T1 (audit/DEFECT-TYPES.md) via the shared check: the plot summary is the
+// topic research, and the claims a verdict rests on — mostly WHEN things
+// happen, which no summary carries — are each searched on their own
+// (lib/worldFacts.js). A "YES — REAL HOLE" whose finding had a premise
+// corrected is no longer established, so code steps it down to MAYBE.
 async function checkStoryClaims(parsed, synopsis, { title, userLanguage }) {
-  if (!synopsis?.summary) return;
   const fields = [];
   if (parsed.focus_answer?.show && typeof parsed.focus_answer.explanation === 'string') fields.push(['focus_answer.explanation', parsed.focus_answer.explanation]);
   (parsed.findings || []).forEach((f, i) => ['what_happens', 'case_against', 'best_defense'].forEach(k => typeof f?.[k] === 'string' && fields.push([`findings[${i}].${k}`, f[k]])));
   if (typeof parsed.overall_verdict?.summary === 'string') fields.push(['overall_verdict.summary', parsed.overall_verdict.summary]);
   if (!fields.length) return;
-  try {
-    await checkAgainstSupplied(parsed, {
-      label: 'plot-hole-story-check',
-      fields,
-      supplied: `PLOT SUMMARY OF ${synopsis.work} (from ${synopsis.source}):\n${synopsis.summary}`,
-      lookFor: `- a statement about what happens in ${title} — who does what, what is said, in what order, how much time passes — that CONTRADICTS the plot summary above.
-Do NOT flag a detail merely because the summary does not mention it: a summary leaves most details out. Flag only a clash with what the summary says. Arguments, interpretations and verdicts are not story facts.`,
-      repairNote: 'Correct the story detail to match the summary and keep the argument if it still stands; if the argument rested entirely on the wrong detail, say plainly that the point does not hold. Do not mention the summary or any source in the text.',
-      userLanguage,
-      model: MODELS.SMART,
-    });
-  } catch (err) {
-    console.log(`[plot-hole-find] story check skipped: ${err.message}`);
+  const research = synopsis?.summary
+    ? { facts: [{ fact: `Plot summary of ${synopsis.work}: ${synopsis.summary}`, source: synopsis.source }], searched_at: new Date().toISOString().slice(0, 10) }
+    : null;
+  const fixed = await checkWorldFacts(parsed, research, { label: 'plot-hole-find', fields, subject: `the story of ${title}`, userLanguage });
+  const touched = new Set((fixed || []).map(v => (String(v.field).match(/^findings\[(\d+)\]/) || [])[1]).filter(Boolean).map(Number));
+  for (const i of touched) {
+    const f = parsed.findings?.[i];
+    if (f && /^YES/.test(String(f.verdict || ''))) {
+      f.verdict = 'MAYBE — THE STORY LEAVES A GAP';
+      console.log(`[plot-hole-find] finding ${i}: a premise was corrected against research — YES stepped down to MAYBE`);
+    }
   }
 }
 
