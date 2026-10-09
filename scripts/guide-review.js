@@ -14,6 +14,12 @@
 //   NO_ANSWER    no answer-first deck/answerList (the indexed guides all have one)
 //   STATS        percentages, dollar figures or "studies show" with no sources
 //   OVERLAP      another guide's title asks nearly the same question
+//   LONG_ANSWER  the deck (the direct answer) runs past 50 words
+//   HEADINGS     fewer than 3 step headings phrased as a search question
+//   NO_SOURCES   health/money/home/travel/pets, or any numbers, with no sources
+//   UNREVIEWED   not yet through the 2026-10 rewrite (spec field reviewed: true)
+//
+// A guide with no flags is index-ready: add it to guides/keep-list.json.
 //
 // Output: a table to audit/GUIDE-REVIEW.md (with --write) and a tally.
 // Usage: node scripts/guide-review.js [--write] [--all]   (--all includes indexed guides)
@@ -47,11 +53,21 @@ for (const cat of fs.readdirSync(DIR)) {
     const toolMentions = toolName ? (body.match(new RegExp(toolName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')) || []).length : 0;
     const stats = (body.match(/\b\d{1,3}(?:\.\d+)?\s?%|\$\s?\d[\d,.]*|\b(?:studies|research|surveys?) (?:show|find|suggest)s?\b/gi) || []).length;
     const flags = [];
+    // Index-ready standard (owner, 2026-10-09): a direct answer in the first
+    // 50 words, headings that are the questions people actually search, and
+    // sources wherever the guide states checkable facts.
+    const deckWords = String(g.deck || '').split(/\s+/).filter(Boolean).length;
+    const qHeads = (g.steps || []).filter(st => /\?\s*$/.test(st.name || '') || /^(how|what|why|when|where|which|who|can|should|is|are|do|does|will)\b/i.test(st.name || '')).length;
+    const needsSources = ['health', 'money', 'home', 'travel', 'pets'].includes(cat) || stats > 0;
+    if (deckWords > 50) flags.push('LONG_ANSWER');
+    if (qHeads < 3) flags.push('HEADINGS');
+    if (needsSources && !(Array.isArray(g.sources) && g.sources.length)) flags.push('NO_SOURCES');
     if (toolId && !toolIds.has(toolId)) flags.push('DEAD_TOOL');
     if (toolMentions >= 3 || /\b(?:this tool|our tool|DeftBrain)\b/i.test(body)) flags.push('ADVERT');
     if (wc < 350) flags.push('THIN');
     if (!g.deck || !Array.isArray(g.answerList) || !g.answerList.length) flags.push('NO_ANSWER');
     if (stats && !(Array.isArray(g.sources) && g.sources.length)) flags.push('STATS');
+    if (g.reviewed !== true) flags.push('UNREVIEWED');
     guides.push({ key, title: g.title || '', wc, stats, toolMentions, toolId, indexed: indexed.has(key), flags, tokens: new Set(words(g.shortTitle || g.title)) });
   }
 }
