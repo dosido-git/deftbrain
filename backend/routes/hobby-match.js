@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const COSTS = ['free', 'low', 'moderate', 'higher'];
 const FITS = ['short_sessions', 'longer_block', 'either'];
 const ENERGY = ['solo', 'social', 'either'];
@@ -916,6 +917,10 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!Array.isArray(result.matching_for) || !result.matching_for.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
+
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+
+    await checkConsistency(result, { label: 'hobby-match', userLanguage: req.body?.userLanguage });
 
     return res.json(result);
 

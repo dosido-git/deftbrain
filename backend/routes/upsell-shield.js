@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // POST /upsell-shield — Walk In Prepared
 // ════════════════════════════════════════════════════════════
@@ -110,6 +111,8 @@ RULES:
     if (!Array.isArray(parsed.your_plan) || !parsed.your_plan.length || !Array.isArray(parsed.watch_for)) {
       return res.status(500).json({ error: 'Could not build your plan. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'upsell-shield', userLanguage: req.body?.userLanguage });
     return res.json(parsed);
 
   } catch (error) {

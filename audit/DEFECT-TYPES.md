@@ -22,11 +22,11 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 |---|---|---|---|---|
 | T1 | Real-world facts from memory | Web search + compare against what it found | Exists; 18 of ~120 tools use it | 4 |
 | T2 | Arithmetic, counts, totals | Compute in code; else the number check | Exists; 15 tools use the number check | 4 |
-| T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 47 routes | 0 (sweep: ~73 routes) |
+| T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 96 routes | 0 |
 | T4 | Details the visitor never said | Output guard / supplied-facts check | Exists, but 43 frozen tools have neither | 5 |
 | T5 | Overreach (absolutes, legal/medical conclusions, false framing) | Facts-mode number check, guard terms | Partial | 2 |
 | T6 | Locale and wording leaks | Reply filter (`voiceFix` + `usSpelling`) | Exists, all tools | 1 |
-| T7 | A visitor's choice ignored | Same check, reads the form choices itself | **Built 2026-10-09**; 47 routes | 0 (sweep: ~73 routes) |
+| T7 | A visitor's choice ignored | Same check, reads the form choices itself | **Built 2026-10-09**; 96 routes | 0 |
 | T8 | Built-in examples stale or inconsistent | **None** | To build | 2 |
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 
@@ -104,7 +104,9 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 - **Both sides of a contradiction are repaired together**, settled against what the visitor typed. With one side flagged, the checker kept the wrong side 2 times in 3. If the input doesn't settle it, the disputed claim comes out of both.
 - Short label fields (enums, chips, numbers) are shown to the check but never rewritten.
 
-**Coverage:** 43 guarded routes + date-night, social-battery-advisor, leverage-logic, meeting-hijack-stopper = 47. **Sweep left:** the ~24 v2 routes with their own checks (validateResult and similar) and the frozen routes.
+**Coverage (2026-10-09 sweep):** 43 guarded routes + 53 wired with `checkConsistency` on their main endpoint (every mode for money-diplomat) = 96.
+
+**Deliberately not covered (25)** — one short output, nothing to contradict, few form choices; the check would cost ~$0.03 and ~12s per visit for nothing: awkward-silence-filler, brain-roulette, brainstate-deejay, caption-magic, cold-open-craft, comeback-cooker, context-collapse, ghost-writer, heart-of-the-matter, magic-mouth, mend, missing-link, name-storm, pronounce-it-right, roast-me, six-degrees-of-me, someone-said-it-better, the-whole-story, time-warp, tip-of-tongue, tool-finder, toast-writer, truth-bomb, whats-my-vibe, wrong-answers-only. Also skipped: final-wish (translation), small-change-big-difference and the-runthrough (stream, no JSON reply to check). Follow-up endpoints (refine, regenerate, deeper…) are not covered.
 
 | Instance | Status |
 |---|---|
@@ -230,7 +232,7 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 ## Order of work
 
 1. ~~**T9 smoke test.**~~ Done 2026-10-09.
-2. ~~**T3 + T7**~~ Done 2026-10-09 for 47 routes. Sweep the rest with `checkConsistency` (one line each).
+2. ~~**T3 + T7**~~ Done 2026-10-09: 96 routes, 25 short-output tools skipped on purpose.
 3. **T4** for the 43 frozen tools: wire in the supplied-facts check (the shared fix), rather than converting each to v2 by hand.
 4. **T1 sweep:** grounding for PaperworkPath, TripRecon, MicroAdventureMapper first (place/law facts).
 5. **T2 sweep:** number check or code math for MoneyDiplomat, LaundroMat, SmallChange, BatchFlow, ToastWriter.

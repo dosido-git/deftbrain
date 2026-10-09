@@ -4,6 +4,7 @@ const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ═══════════════════════════════════════════════════
 // PERSONALITY — grounding rewrite, 2026-09-05
 // ═══════════════════════════════════════════════════
@@ -618,6 +619,8 @@ Never place a double-quote character inside any JSON string value.`;
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
     const suppliedText = `${description} ${context || ''}`;
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'name-that-feeling', userLanguage: req.body?.userLanguage });
     res.json(validateResult(checkInventedEmotionWords(cleanNoMatchWord(pinMatch(parsed)), suppliedText)));
 
   } catch (error) {

@@ -7,6 +7,7 @@ const { checkStatement } = require('../lib/statementMath');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // SHARED: Bill-type-specific knowledge injections
 // ════════════════════════════════════════════════════════════
@@ -450,6 +451,8 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     await withNumberCheck(parsed, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage });
     if (hasAmount) fixPlanMonths(parsed, amount);
     const verifiedSources = groundedData(billFactsCacheKey)?.sources;
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
     res.json({
       ...stripCites(parsed),
       ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),

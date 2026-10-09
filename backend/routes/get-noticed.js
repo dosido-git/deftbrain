@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 const CONTRACT = `
@@ -534,6 +535,8 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     if (!parsed.current_surface) {
       return res.status(500).json({ error: 'Could not read your situation. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'get-noticed', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {

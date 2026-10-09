@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites, matchVerifiedSources } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted statute names or checklist notes must be written plainly or with single quotes, or it breaks the JSON.';
 
 // Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern + cache):
@@ -119,6 +120,8 @@ Return ONLY valid JSON with exactly these keys:
     if (!parsed.key_rights) {
       return res.status(500).json({ error: 'Failed to look up deposit rights. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'renters-deposit-saver', userLanguage: req.body?.userLanguage });
     res.json(parsed);
   } catch (err) {
     console.error('[RentersDepositSaver/rights] Error:', err);

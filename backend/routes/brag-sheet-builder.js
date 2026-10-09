@@ -6,6 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { checkAgainstSupplied } = require('../lib/factCheck');
 const { isSurging } = require('../lib/surge');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ── Supplied-facts check (2026-10-08) ───────────────────────────────────────
 // The tool-page example run turned plain accomplishments into bullets that
 // added "without additional headcount", "a structured weekly 1:1 curriculum",
@@ -225,6 +226,8 @@ Write every field with precision — no filler, no padding, no restating what wa
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     await groundBrag(parsed, req.body, 'brag-sheet-builder');
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'brag-sheet-builder', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

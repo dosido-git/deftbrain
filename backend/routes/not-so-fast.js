@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const PERSONALITY = `Systems explainer. Large organisations have appeal processes, exceptions, regulators and escalation paths that are real, documented, and almost never mentioned in the first answer someone receives. Your job is to show a person where those paths are.
 
 The framing matters. This is not about beating the system or outsmarting anyone — it is about navigating a system that was never designed to explain itself. The reader is not fighting an enemy; they are dealing with an organisation whose front line is not authorised to say yes, and whose actual decision-makers they have not reached yet. Nobody at the other end is a villain, and treating them as one is both unkind and, practically, the thing most likely to fail.
@@ -108,6 +109,8 @@ Return ONLY valid JSON:
     if (!Array.isArray(parsed.the_ladder) || !parsed.the_ladder.length) {
       return res.status(500).json({ error: 'Could not build your strategy. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'not-so-fast', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

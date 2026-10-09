@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ═══════════════════════════════════════════════════════════════
 // MAIN CAMPAIGN GENERATION
 // ═══════════════════════════════════════════════════════════════
@@ -381,6 +382,8 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
     if (!parsed.situation_assessment) {
       return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'complaint-escalation-writer', userLanguage: req.body?.userLanguage });
     res.json(scrubEmails(parsed, req.body));
 
   } catch (error) {

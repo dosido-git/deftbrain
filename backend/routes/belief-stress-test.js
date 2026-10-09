@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const PERSONALITY = `Rigorous belief stress-tester. Find the breaking points, exceptions, and hidden assumptions in any belief — then upgrade it into something more defensible.
 
 METHOD: Steelman first. Attack with the most damaging counterexamples and edge cases you can find. Look for cultural variations, historical failures, and internal contradictions. Then rebuild a more precise version that survives the attack. Always honest about what genuinely survives and what doesn't.`;
@@ -106,6 +107,8 @@ verdict.rating must be one of the exact English values listed — the interface 
     if (!parsed.belief_as_understood) {
       return res.status(500).json({ error: 'Could not stress-test this belief. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'belief-stress-test', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

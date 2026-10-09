@@ -6,6 +6,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, attachSourceUrls, stripCites } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted names or phrases must be written plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -671,6 +672,8 @@ ${NO_QUOTE_RULE}`;
     if (!result.verdict) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(result, { label: 'name-audit', userLanguage: req.body?.userLanguage });
     res.json(result);
 
   } catch (error) {

@@ -5,6 +5,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // Reviewed/reworked for DEFTBRAIN_OUTPUT_STANDARD_V2 — replaces a v1 that
 // diagnosed insomnia, scored sleep 1-10, and computed melatonin/circadian
 // timing as if it were a clinician. validateResult() below IS the check this
@@ -365,6 +366,8 @@ OUTPUT LOGIC
 
     const result = validateResult(parsed);
     if (!result) return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(result, { label: 'sleep-architect', userLanguage: req.body?.userLanguage });
     res.json(result);
   } catch (err) {
     console.error('❌ SleepArchitect v2 error:', err.message);

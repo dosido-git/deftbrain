@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ═══════════════════════════════════════════════════════════════
 // MAIN ANALYSIS — plain-English translation + structural X-ray
 // ═══════════════════════════════════════════════════════════════
@@ -301,6 +302,8 @@ CRITICAL RULES:
     if (!parsed.detected_type) {
       return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'plain-talk', userLanguage: req.body?.userLanguage });
     res.json(stripCites(parsed));
 
   } catch (error) {

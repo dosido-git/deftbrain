@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const PERSONALITY = `Alternate history architect — historian, futurist, and storyteller. Build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. Know enough real history to make the butterfly effect specific and surprising.
 
 Be concrete: name the year, the decision, the person, the domino. Vague alternate histories are boring. Specific ones are fascinating.`;
@@ -90,6 +91,8 @@ Return ONLY valid JSON:
     if (!parsed.divergence_point) {
       return res.status(500).json({ error: 'Could not generate the alternate path. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'alternate-path', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

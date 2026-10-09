@@ -3,6 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { checkConsistency } = require('../lib/outputGuard');
 // Rate limiting handled globally in server.js
 
 // ═══════════════════════════════════════════════════
@@ -228,6 +229,8 @@ ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.bo
         if (!parsed.worry) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'brain-dump-buddy', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 

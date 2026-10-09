@@ -6,6 +6,7 @@ const { checkAgainstSupplied, withNumberCheck } = require('../lib/factCheck');
 const { isSurging } = require('../lib/surge');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // Defense-in-depth strip of the model-generated diagram markup. The frontend
 // also runs DOMPurify; this ensures the API itself never emits <script>,
 // event-handler attributes, <foreignObject>, or js:/external resource URLs.
@@ -320,6 +321,8 @@ General medical explanation — what a test measures, what a drug class does, ty
       } catch (e) { console.error('doctor-visit-translator supplied-facts check:', e.message); }
     }
     await withNumberCheck(results, { label: 'doctor-visit-translator', context: notes.slice(0, 4000), userLanguage });
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(results, { label: 'doctor-visit-translator', userLanguage: req.body?.userLanguage });
     res.json(results);
 
   } catch (error) {

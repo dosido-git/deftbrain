@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // BIKE MEDIC V2 — Backend Route
 // Three call types: freeform diagnosis, post-fix follow-up, symptom routing
@@ -443,6 +444,8 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     }
     // Only what this answer actually saw, stripped where it leaves the server.
     parsed.verified_specs = specs ? (stripCites(groundedData(specsKey)) || null) : null;
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'bike-medic', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

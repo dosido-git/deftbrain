@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // Ground-up rebuild (2026-09-12), installed from an owner-supplied rewrite
 // per audit/REWRITE-INSTALL-KIT.md. Replaces a nine-plus-field micro-task
 // generator (quick modes, an energy-level slider driving task count/
@@ -412,6 +413,10 @@ Never use double-quote characters inside JSON string values.`;
 
     const result = validateResult(parsed);
     if (!result) return res.status(500).json({ error: 'Could not find a useful first foothold. Please try again.' });
+
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+
+    await checkConsistency(result, { label: 'task-avalanche-breaker', userLanguage: req.body?.userLanguage });
 
     return res.json(result);
   } catch (error) {

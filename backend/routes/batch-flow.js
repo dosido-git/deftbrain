@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write task names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.`;
@@ -441,6 +442,8 @@ Return ONLY valid JSON:
       if (!parsed.location_batches) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
     return res.json(parsed);
     }
 

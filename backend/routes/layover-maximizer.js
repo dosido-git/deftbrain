@@ -6,6 +6,7 @@ const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { airportPlacesBlock } = require('../lib/airportPlaces');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_INVENTED_AUTHORITY = `NEVER USE CONFIDENT SPECIFICITY YOU CANNOT SUPPORT. Not "consistently fresh", not "nearly always empty at 9 AM", not "signal is stronger there", not "consistently rated the top lounge". Those read as observed fact and none of them is checkable. Say what a place reliably IS, not what it is reliably like on a Tuesday.
 
 LOUNGE ACCESS IS SAFETY-CRITICAL, because a traveller will walk across a terminal on your word. Name the lounge and its terminal, and describe access only in terms you are sure of. Do not summarise a card or airline's access rules into a short list — they change and they are full of exceptions. Point them at the operator to confirm eligibility instead.`;
@@ -323,6 +324,8 @@ AT MOST 4 steps in best_plan, 4 food, 3 lounges, 5 pro_tips.`;
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'layover-maximizer', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

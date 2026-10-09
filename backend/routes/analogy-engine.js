@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { withNumberCheck } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // Fact-check pass (2026-10-02): a teaching tool can't ship a wrong number or
 // a false "misconception". Shared checker in lib/factCheck.js; here it also
 // checks facts (not only numbers) and may drop a myth that is actually true.
@@ -100,6 +101,8 @@ Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5
       extraRules: 'A myth field states a misconception ON PURPOSE. Never rewrite it into a true statement. If the myth is actually true, remove it; otherwise leave it and check its reality field.',
       userLanguage,
     });
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'analogy-engine', userLanguage: req.body?.userLanguage });
     return res.json(parsed);
 
   } catch (error) {

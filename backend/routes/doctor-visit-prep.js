@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ─────────────────────────────────────────────────────────────────────────────
 // Doctor Visit Prep — pre-visit complement to DoctorVisitTranslator.
 // DVT decodes what the doctor said. This shapes what YOU say.
@@ -222,6 +223,8 @@ Return ONLY the JSON object.${lang}`;
     if (!results.opener || !Array.isArray(results.prioritized_questions)) {
       return res.status(500).json({ error: 'Could not prepare your visit. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(results, { label: 'doctor-visit-prep', userLanguage: req.body?.userLanguage });
     res.json(results);
 
   } catch (error) {

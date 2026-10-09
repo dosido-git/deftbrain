@@ -8,6 +8,7 @@ const BUYWISE_NUMBER_RULE = 'BuyWise prices, discounts and ranges are estimates 
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites, attachSourceUrls } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // GROUNDING — the only part of this tool that knows anything current
 // ════════════════════════════════════════════════════════════
@@ -311,6 +312,8 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     // Same rule as the fan-out path: show only what this answer actually used.
     await withNumberCheck(parsed, { label: 'buy-wise', context: visitorContext(req.body), extraRules: BUYWISE_NUMBER_RULE, userLanguage });
     parsed.verified_facts = grounded ? (stripCites(groundedData(buyWiseFactsKey(fallbackFactsArgs))) || null) : null;
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'buy-wise', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

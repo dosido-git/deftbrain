@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Build a meal prep plan
 // ════════════════════════════════════════════
@@ -170,6 +171,8 @@ Never place a double-quote (") character inside any JSON string value — write 
     if (!parsed.detected_ingredients) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'mise-en-place', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

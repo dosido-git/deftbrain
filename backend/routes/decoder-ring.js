@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Decode a message
 // ════════════════════════════════════════════
@@ -154,6 +155,8 @@ model: MODELS.SMART,
     if (!parsed.surface_reading) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'decoder-ring', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

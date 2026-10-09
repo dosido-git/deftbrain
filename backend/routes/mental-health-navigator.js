@@ -5,6 +5,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const AREA_LABELS = {
   anxiety:      'anxiety / excessive worry',
   mood:         'low mood / depression',
@@ -127,6 +128,10 @@ Guidelines:
     if (!parsed?.what_you_described || !Array.isArray(parsed?.recommended_support)) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
     }
+
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+
+    await checkConsistency(parsed, { label: 'mental-health-navigator', userLanguage: req.body?.userLanguage });
 
     res.json({
       what_you_described:  parsed.what_you_described,

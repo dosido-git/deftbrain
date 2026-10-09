@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or dialogue plainly or with single quotes, or it breaks the JSON.';
 
 const LEVEL_GUIDE = {
@@ -71,6 +72,8 @@ Write every field with precision — no filler, no padding, no restating what wa
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'argue-smarter', userLanguage: req.body?.userLanguage });
     res.json(parsed);
   } catch (error) {
     console.error('[ArgueSmarterOpen]', error);

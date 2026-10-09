@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // Helper: parse base64 data URL
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
@@ -543,6 +544,8 @@ Return ONLY valid JSON:
       if (!('rescue_steps' in data) && !('recoverable' in data)) {
         return res.status(500).json({ error: 'Could not assess recovery options. Please try again.' });
       }
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 

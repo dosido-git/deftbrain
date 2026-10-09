@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or cues plainly or with single quotes, or it breaks the JSON.';
 
 // Same rule as CONTEXTS: the area they picked, not a cause we made up for it.
@@ -434,6 +435,8 @@ Return ONLY valid JSON:
     if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'lazy-workout-adapter', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
   } catch (error) {
     console.error('[LazyWorkout]', error);

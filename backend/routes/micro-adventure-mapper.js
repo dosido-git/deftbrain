@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write place names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper.
@@ -699,6 +700,8 @@ Return ONLY valid JSON matching this shape:
       if (!data.stop) {
         return res.status(500).json({ error: 'Could not generate a replacement stop. Please try again.' });
       }
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      await checkConsistency(data, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(data));
     }
 

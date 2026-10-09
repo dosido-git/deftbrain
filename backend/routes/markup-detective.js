@@ -8,6 +8,7 @@ const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // POST /markup-detective — Price forensics for any product
 // ════════════════════════════════════════════════════════════
@@ -98,6 +99,8 @@ Rules:
       extraRules: 'cost_breakdown percents must sum to 100 and amounts to price_paid; markup_multiplier = price_paid / true_cost to 1 decimal.',
       userLanguage,
     });
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(data, { label: 'markup-detective', userLanguage: req.body?.userLanguage });
     return res.json(data);
 
   } catch (err) {

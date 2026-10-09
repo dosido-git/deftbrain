@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ═══════════════════════════════════════════════════════════════
 // Grounding rewrite, 2026-09-04. The tool used to invent a "real fear
 // underneath" the visitor's stated fear ("BUT REALLY IT'S..."), estimate
@@ -391,6 +392,8 @@ ${NO_QUOTE_RULE}`;
     if (!parsed.opening) {
       return res.status(500).json({ error: 'Could not put together your plan. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'nerve-check', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {

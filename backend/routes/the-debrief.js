@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
@@ -151,6 +152,8 @@ LIMITS (keep the response compact so it never gets cut off): at_risk AT MOST 5, 
     if (!parsed.meeting_summary && !parsed.answer) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'the-debrief', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

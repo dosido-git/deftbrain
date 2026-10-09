@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════
 // GROUNDING — where the stopping point actually falls
 // ════════════════════════════════════════════
@@ -352,6 +353,8 @@ model: MODELS.SMART,
         delete data[k];
       });
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(data, { label: 'bookmark', userLanguage: req.body?.userLanguage });
     res.json(data);
 
   } catch (error) {

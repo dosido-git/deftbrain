@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources, stripCites } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern; see
 // lease-trap-detector.js for the rationale). The tool's core claim —
 // `is_this_standard.verdict` — was, until now, pure training-knowledge
@@ -138,6 +139,8 @@ Generate AT MOST 6 questions to ask (6 is plenty). Keep every field to one conci
       return res.status(500).json({ error: 'Could not analyze this procedure. Please try again.' });
     }
     const verifiedSources = groundedData(procedureFactsCacheKey)?.sources;
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'procedure-probe', userLanguage: req.body?.userLanguage });
     return res.json(stripCites({
       ...parsed,
       ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),

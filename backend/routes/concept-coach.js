@@ -5,6 +5,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const STAGE_LABELS = {
   idea:      'just an idea',
   exploring: 'early exploration',
@@ -596,6 +597,10 @@ Important:
       console.error('[concept-coach] invalid model output:', problems);
       return res.status(500).json({ error: 'Concept Coach could not produce a reliable assessment. Please try again.' });
     }
+
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+
+    await checkConsistency(result, { label: 'concept-coach', userLanguage: req.body?.userLanguage });
 
     res.json(result);
   } catch (err) {

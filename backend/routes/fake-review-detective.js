@@ -31,6 +31,7 @@ const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = requ
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted review phrases plainly or with single quotes, or it breaks the JSON.';
 
 router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -106,6 +107,8 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 
@@ -210,6 +213,7 @@ EXACTLY TWO tactics in playbook.tactics_detected — the two that show up most c
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
+        await checkConsistency(parsed, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 
@@ -280,6 +284,7 @@ Return ONLY valid JSON:
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
+        await checkConsistency(parsed, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 

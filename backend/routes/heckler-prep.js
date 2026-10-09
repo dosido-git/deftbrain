@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // The two-pass grounding editor that lived here until 2026-08-31 — the
 // deterministic objectionLeaks() and inventedStakeholders() checkers and the
 // colder editor they fed — is gone with the v3 rewrite, which enforces the
@@ -601,6 +602,8 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // arrive by accident — then stripped recursively, then checked.
     const publicResult = dropSentencesWithIds(stripProvenance(final));
     assertNoInternalKeys(publicResult);
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(publicResult, { label: 'heckler-prep', userLanguage: req.body?.userLanguage });
     return res.json(publicResult);
   } catch (error) {
     console.error('HecklerPrep error:', error);

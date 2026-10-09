@@ -6,6 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { checkAgainstSupplied } = require('../lib/factCheck');
 const { isSurging } = require('../lib/surge');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted dialogue, scripts, and phrases plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -477,6 +478,8 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
         });
       } catch (e) { console.error('difficult-talk-coach check:', e.message); }
     }
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'difficult-talk-coach', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {

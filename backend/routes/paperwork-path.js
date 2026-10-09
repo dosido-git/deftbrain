@@ -4,6 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // POST /paperwork-path — document checklist + the order to handle it
 // for a life event (move, baby, job change, marriage, death, …)
@@ -80,6 +81,10 @@ Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, use
     if (!parsed.document_checklist || !parsed.ordered_steps) {
       return res.status(500).json({ error: 'Could not build your checklist. Please try again.' });
     }
+
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+
+    await checkConsistency(parsed, { label: 'paperwork-path', userLanguage: req.body?.userLanguage });
 
     res.json(parsed);
   } catch (error) {

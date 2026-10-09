@@ -6,6 +6,7 @@ const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { computeSplit, apportion } = require('../lib/splitMath');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts, exact words to say, and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -463,6 +464,8 @@ Return ONLY valid JSON.`, userLanguage);
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-tip', context: visitorContext(req.body), userLanguage });
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -597,6 +600,7 @@ Write "rule" as the exact English word equal, itemised or custom whatever langua
       ].filter(([, v]) => typeof v === 'string' && /\d/.test(v)) : undefined,
       userLanguage,
     });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -652,6 +656,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(pinEnums(parsed, ['verdict'])));
 
   } catch (error) {
@@ -712,6 +717,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.range) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -774,6 +780,7 @@ Return ONLY valid JSON:
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-roommate', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -884,6 +891,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.practical_issue) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -946,6 +954,7 @@ Return ONLY valid JSON:
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-dining', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1007,6 +1016,7 @@ Return ONLY valid JSON:
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-group', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1133,6 +1143,7 @@ Return ONLY valid JSON.`, userLanguage);
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-lend', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(pinEnums(parsed, ['recommendation'])));
 
   } catch (error) {
@@ -1194,6 +1205,7 @@ Return ONLY valid JSON:
     if (!parsed.assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1294,6 +1306,7 @@ Return ONLY valid JSON.`, userLanguage);
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-travel', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1365,6 +1378,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1424,6 +1438,7 @@ Return ONLY valid JSON:
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-subs', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1485,6 +1500,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.message) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1629,6 +1645,7 @@ Return ONLY valid JSON.`, userLanguage);
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-salary', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1688,6 +1705,7 @@ Return ONLY valid JSON.`, userLanguage);
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-afford', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(pinEnums(parsed, ['gut_check'])));
 
   } catch (error) {
@@ -1750,6 +1768,7 @@ Return ONLY valid JSON.`, userLanguage);
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     await withNumberCheck(parsed, { label: 'money-diplomat-inheritance', context: visitorContext(req.body), userLanguage });
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1818,6 +1837,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.bridge) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1874,6 +1894,7 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1937,6 +1958,7 @@ Return ONLY valid JSON.`, userLanguage);
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou play ONE plausible version of the other person so the user can rehearse. A simulation, never a prediction of what the real person would say, feel or do. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSimStart' });
+      await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
       return res.json({ type: 'prompt', ...parsed });
     }
 
@@ -1989,6 +2011,7 @@ Return ONLY valid JSON.`, userLanguage);
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSimEval' });
 
+    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
     res.json({ type: 'evaluation', ...parsed });
 
   } catch (error) {

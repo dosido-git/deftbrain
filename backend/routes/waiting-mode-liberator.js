@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = '\n\nNever place a double-quote (") character inside any JSON string value — quoted phrases, task names, and example lines must be written plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -351,6 +352,8 @@ Return ONLY valid JSON:
         if (!parsed.trigger_patterns) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'waiting-mode-liberator', userLanguage: req.body?.userLanguage });
         return res.json(parsed);
       }
 

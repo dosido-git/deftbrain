@@ -6,6 +6,7 @@ const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted clause text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 // Truncation is a real reliability bug (schema/budget mismatch); anything
@@ -466,6 +467,8 @@ ${criticalRules}`;
     }
     checkCitations(parsed, verifiedLawBlock, userLanguage);
     const verifiedSources = authoritativeOnly(groundedData(tenantLawCacheKey)?.sources);
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'lease-trap-detector', userLanguage: req.body?.userLanguage });
     res.json({
       ...stripCites(parsed),
       ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),

@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted phrases or example wording must be written plainly or with single quotes, or it breaks the JSON.';
 
 // ════════════════════════════════════════════════════════════
@@ -346,6 +347,8 @@ Return ONLY valid JSON:
       }, { label: 'PEP-Reflect' });
 
       if (!parsed?.reflection) return res.status(500).json({ error: 'Could not reflect on that activity. Please try again.' });
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      await checkConsistency(parsed, { label: 'pep', userLanguage: req.body?.userLanguage });
       return res.json(validateResult(parsed));
     }
 

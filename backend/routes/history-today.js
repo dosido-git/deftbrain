@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 
+const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write historical quotes or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -275,6 +276,8 @@ Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, u
       extraRules: `This is history. Check every date, year, reign, office, law, battle, number and attribution against the historical record: a real event placed in the wrong year, assigned to the wrong person, or given the wrong purpose is an error even when the sentence reads well. Fix the fact and keep the sentence. Do not judge the analogy itself, only the facts it rests on.`,
       userLanguage,
     });
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    await checkConsistency(parsed, { label: 'history-today', userLanguage: req.body?.userLanguage });
     res.json(parsed);
 
   } catch (error) {
