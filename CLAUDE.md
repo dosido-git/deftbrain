@@ -110,6 +110,14 @@ keys render as their own names until the dev server restarts.
 
 **Verification (browser):** Gate 5 + the smoke test already cover key-existence, correct-script, and `{{var}}` integrity for all 13 languages, so the per-tool browser spot-check only needs **Spanish** (confirms the render pipeline — representative of every LTR language). Periodically (every few tools) also spot-check **Arabic** and **Mandarin** — the things no gate and no Spanish check can catch: RTL layout, font/glyph (tofu) rendering, and text expansion/clipping. The app-chrome tool title/description (`src/data/tools.js`) is English by design and is NOT in scope. **RTL (complete):** `src/hooks/useLocale.js` sets `<html dir/lang>` from the active language (`RTL_LANGUAGES` set → `ar` is the only catalog one today), and commit `1678250` (2026-07-21) codemodded all physical Tailwind direction classes to logical properties (`ms-`/`me-`/`ps-`/`pe-`/`start-`/`end-`/`text-start`, 131 files, 1,247 substitutions), so Arabic fully mirrors. Inline-style stragglers (`borderLeft`/`left` in SixDegreesOfMe + ToolFinderWizard) were converted to `borderInlineStart`/`insetInlineStart` on 2026-07-23. Deliberately physical: Recharts `margin` props (charts render LTR internally) and `src/components/DashBoard.js` (internal, English-only). Write new tool layouts with logical utilities only.
 
+## Output defects: fix the type, not the instance
+
+Before fixing any wrong answer a tool gives, file it under its type in
+`audit/DEFECT-TYPES.md`. If that type has a shared fix in `backend/lib/`, wire
+the tool to it; if not, build the shared fix there, not in the route. Then
+check every tool exposed to that type. A prompt edit alone is not a fix for
+any listed type.
+
 ## Known gotchas (do not relearn these the hard way)
 
 - **`audit/audit_v2-3-2.py` is name-keyed.** Deleting `handleReset`, `loadExample`, or an *active* `sessionHistory` triggers regressions. To remove such members, **array-elide** rather than delete the named symbol.
