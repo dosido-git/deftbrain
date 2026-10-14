@@ -50,6 +50,27 @@ function stripMarkers(s) {
   return s.replace(MARKER_RE, (m, pre, first) => pre + first.toUpperCase());
 }
 
+// A nullable field the model filled with the WORD null (T6): Name Storm
+// printed "⚠️ null" under every name because the schema said "null if none"
+// and the model wrote the string. A string that is only null/undefined is
+// never content in any language, so it becomes a real null (renderers already
+// hide null), and inside an array it is dropped. "None" is NOT included — it
+// is a real enum value in several routes (severity, impact).
+const NULL_WORD_RE = /^\s*(?:null|undefined)\s*$/i;
+function dropNullWords(v, hit) {
+  if (Array.isArray(v)) {
+    const out = [];
+    for (const x of v) { if (typeof x === 'string' && NULL_WORD_RE.test(x)) { hit.n++; continue; } out.push(dropNullWords(x, hit)); }
+    return out;
+  }
+  if (v && typeof v === 'object') {
+    for (const k of Object.keys(v)) {
+      if (typeof v[k] === 'string' && NULL_WORD_RE.test(v[k])) { v[k] = null; hit.n++; } else v[k] = dropNullWords(v[k], hit);
+    }
+  }
+  return v;
+}
+
 // Express middleware for /api: wraps res.json. Strips prompt markers from
 // every reply; for English replies also fixes "the visitor" and applies US
 // spelling (lib/usSpelling.js) for US visitors.
@@ -75,7 +96,10 @@ function voiceFixMiddleware(req, res, next) {
         if (fixSpelling) { const f = spelling.fixText(out, keep); if (f !== out) spelt.n++; out = f; }
         return out;
       };
+      const nulls = { n: 0 };
+      try { body = dropNullWords(body, nulls); } catch (_) { /* never break a reply */ }
       try { body = mapStrings(body, fix); } catch (_) { /* never break a reply */ }
+      if (nulls.n) console.log(`[voiceFix] ${req.path}: ${nulls.n} field(s) said "null" as text — made empty`);
       if (visitor.n) console.log(`[voiceFix] ${req.path}: ${visitor.n} field(s) said "visitor" — rewritten to "you"`);
       if (spelt.n) console.log(`[voiceFix] ${req.path}: ${spelt.n} field(s) had British spelling — made US`);
       if (marked.n) console.log(`[voiceFix] ${req.path}: ${marked.n} field(s) carried a prompt marker (INFERRED: …) — removed`);
@@ -85,4 +109,4 @@ function voiceFixMiddleware(req, res, next) {
   next();
 }
 
-module.exports = { voiceFixMiddleware, fixText, stripMarkers };
+module.exports = { voiceFixMiddleware, fixText, stripMarkers, dropNullWords };

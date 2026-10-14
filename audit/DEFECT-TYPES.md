@@ -175,7 +175,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 
 **What goes wrong.**
 - British spelling for US visitors.
-- Internal words reaching the page: "the visitor", "INFERRED:", "the confirmed notes".
+- Internal words reaching the page: "the visitor", "INFERRED:", "the confirmed notes", a bare "null".
 - Typos.
 
 **Shared fix.** The reply filter on every English `/api` reply (`lib/voiceFix.js` + `lib/usSpelling.js`). Add new leak patterns there, not in prompts.
@@ -186,6 +186,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | Giftology / BreakMyPlan / FutureProof British spellings | **fixed with shared fix** |
 | DateNight repair wrote "the confirmed notes describe…" | fixed per tool (repair wording) |
 | FutureProof — "INFERRED:" marker in prose | **fixed with shared fix** (reply filter strips prompt markers in every language; a bare enum value is kept) |
+| NameStorm Quick — "⚠️ null" under every name (nullable field filled with the word null) | **fixed with shared fix** (reply filter turns a null/undefined-only string into a real null in every language; drops it from arrays) |
 | UpsellShield — "out-of-door price" | open, minor |
 
 ---
