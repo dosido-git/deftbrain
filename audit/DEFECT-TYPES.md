@@ -82,6 +82,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | Instance | Status |
 |---|---|
 | NameStorm — syllable counts | fixed |
+| NameStorm Quick — "Six syllables" flag on Penumbra (3); the flag never names the name, so the check skipped it | fixed (check now reads the card's own name; removes only claims 2+ off its estimate) |
 | WaitingModeLiberator — minutes counted against its own note | fixed |
 | DecisionCoach — pay gap direction | fixed (`payMath`) |
 | JustifyMyMeeting — no yearly cost for a weekly meeting | fixed (computed in code) |

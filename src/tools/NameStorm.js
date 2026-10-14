@@ -451,7 +451,9 @@ const NameStorm = ({ tool }) => {
     setCheckingName(null);
   };
 
-  const handleMoreLike = async (nameObj, categoryName) => {
+  // overrides: the quick flow keeps its own inputs (quickWhatIsIt/quickVibe),
+  // not the full flow's category/vibe/domain settings.
+  const handleMoreLike = async (nameObj, categoryName, overrides = null) => {
     const key = nameObj.name;
     if (moreLikeLoading) return;
     setMoreLikeLoading(key);
@@ -466,6 +468,7 @@ const NameStorm = ({ tool }) => {
         preferredTLDs: isDomainMode && preferredTLDs.length > 0 ? preferredTLDs : null,
         primaryLanguage: primaryLanguage !== 'English' ? primaryLanguage : null,
         userLocale, userCurrency, userRegion,
+        ...(overrides || {}),
       });
       setMoreLikeResults(prev => ({ ...prev, [key]: data }));
     } catch (err) {
@@ -1812,12 +1815,33 @@ const NameStorm = ({ tool }) => {
                     {nameObj.vibe && <p className={`text-xs font-semibold mb-1 ${c.textSecondary}`}>{nameObj.vibe}</p>}
                     {nameObj.note && <p className={`text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{nameObj.note}</p>}
                     {nameObj.flag && <p className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-600'}`}>⚠️ {nameObj.flag}</p>}
-                    <div className="mt-2 flex gap-2">
+                    <div data-print-hide className="mt-2 flex gap-2 flex-wrap">
                       <button onClick={() => { if (!favorites.includes(nameObj.name)) setFavorites(prev => [nameObj.name, ...prev].slice(0, 6)); }}
                         className={`text-xs px-2.5 py-1 rounded-lg ${isDark ? 'bg-zinc-600 hover:bg-zinc-500 text-zinc-200' : 'bg-zinc-200 hover:bg-zinc-300 text-zinc-700'}`}>
                         {favorites.includes(nameObj.name) ? t('ns_saved') : t('ns_save')}
                       </button>
+                      <button onClick={() => handleMoreLike({ name: nameObj.name, why_it_works: nameObj.note }, dir.direction, { category: quickWhatIsIt, vibe: quickVibe, isDomainMode: false, preferredTLDs: null })}
+                        disabled={moreLikeLoading === nameObj.name || !!moreLikeResults[nameObj.name]}
+                        className={`text-xs px-2.5 py-1 rounded-lg ${isDark ? 'bg-zinc-600 hover:bg-zinc-500 text-zinc-200' : 'bg-zinc-200 hover:bg-zinc-300 text-zinc-700'} disabled:opacity-40`}>
+                        ✨ {moreLikeResults[nameObj.name] ? t('ns_see_below') : moreLikeLoading === nameObj.name ? t('ns_generating') : t('ns_more_like_this')}
+                      </button>
                     </div>
+                    {moreLikeResults[nameObj.name]?.variations?.length > 0 && (
+                      <div className={`mt-3 p-3 rounded-lg ${c.cardAlt} space-y-2`}>
+                        <p className={`text-xs font-bold ${c.textMuted}`}>{t('ns_more_like_name', { name: nameObj.name.toUpperCase() })}</p>
+                        {moreLikeResults[nameObj.name].variations.map((v, vi) => (
+                          <div key={vi} className={`flex items-start justify-between gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
+                            <div className="flex-1 min-w-0">
+                              <span className={`font-bold text-sm ${c.text}`}>{v.name}</span>
+                              {v.why_it_works && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{v.why_it_works}</p>}
+                            </div>
+                            <button onClick={() => { if (!favorites.includes(v.name)) setFavorites(prev => [v.name, ...prev].slice(0, 6)); }} className="p-1 rounded flex-shrink-0" title={t('ns_save')}>
+                              <span className="text-sm">{favorites.includes(v.name) ? '⭐' : '☆'}</span>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

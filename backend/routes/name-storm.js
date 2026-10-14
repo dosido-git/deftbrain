@@ -263,8 +263,9 @@ function syllables(word) {
   n -= (w.match(/[^aeiouy]e(?=(?:ful|ly|less|ment|ness|s)\b|(?:ful|less|ment|ness))/g) || []).length; // plate|ful
   return Math.max(1, n);
 }
-const NUM_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
-const COUNT_CLAIM = /\b(one|two|three|four|five|six|\d)[- ]syllables?\b/i;
+const NUM_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+const COUNT_CLAIM = /\b(one|two|three|four|five|six|seven|eight|nine|ten|\d+)[- ]syllables?\b/i;
+const nameSyllables = n => n.split('.')[0].split(/[\s-]+/).reduce((t, w) => t + syllables(w), 0);
 const DOMAIN_CLAIM = /\.(?:com|co|io|app|net|org)\b[^.]*\b(?:available|free|unclaimed|open|without (?:argument|a fight)|is yours|yours to (?:take|register)|clean|unregistered)\b|\b(?:available|free|unclaimed|unregistered)\b[^.]*\.(?:com|co|io|app|net|org)\b/i;
 function fixNameClaims(parsed, userLanguage) {
   if (userLanguage && !String(userLanguage).toLowerCase().startsWith('en')) return parsed;
@@ -272,20 +273,28 @@ function fixNameClaims(parsed, userLanguage) {
   const names = new Set();
   const collect = v => { if (Array.isArray(v)) v.forEach(collect); else if (v && typeof v === 'object') { if (typeof v.name === 'string') names.add(v.name); Object.values(v).forEach(collect); } };
   collect(parsed);
-  const fixSentence = sent => {
+  // owner = the name of the card a field sits on. A flag like "Six syllables —
+  // long for a brand name" never repeats the name it is about (Penumbra, 3).
+  const fixSentence = (sent, owner) => {
     if (DOMAIN_CLAIM.test(sent)) { fixed++; return 'Check the domain before you get attached; whether it is free is not known yet.'; }
     const m = sent.match(COUNT_CLAIM);
     if (m) {
       const claimed = NUM_WORDS[m[1].toLowerCase()] || Number(m[1]);
-      const named = [...names].filter(n => sent.includes(n.split('.')[0]));
-      if (named.length && named.some(n => syllables(n.split('.')[0]) !== claimed)) { fixed++; return ''; }
+      let named = [...names].filter(n => sent.includes(n.split('.')[0]));
+      if (!named.length && owner) named = [owner];
+      // The counter is a spelling heuristic (Bio reads as 1, not 2), so only a
+      // claim two or more off is certainly wrong; within one it stands.
+      if (named.length && named.some(n => Math.abs(nameSyllables(n) - claimed) >= 2)) { fixed++; return ''; }
     }
     return sent;
   };
-  const fixStr = str => str.split(/(?<=[.!?])\s+/).map(fixSentence).filter(Boolean).join(' ');
-  const walk = node => {
-    if (Array.isArray(node)) node.forEach((v, i) => { if (typeof v === 'string') node[i] = fixStr(v); else walk(v); });
-    else if (node && typeof node === 'object') for (const [k, v] of Object.entries(node)) { if (k === 'name') continue; if (typeof v === 'string') node[k] = fixStr(v); else walk(v); }
+  const fixStr = (str, owner) => str.split(/(?<=[.!?])\s+/).map(x => fixSentence(x, owner)).filter(Boolean).join(' ');
+  const walk = (node, owner) => {
+    if (Array.isArray(node)) node.forEach((v, i) => { if (typeof v === 'string') node[i] = fixStr(v, owner); else walk(v, owner); });
+    else if (node && typeof node === 'object') {
+      const own = typeof node.name === 'string' ? node.name : owner;
+      for (const [k, v] of Object.entries(node)) { if (k === 'name') continue; if (typeof v === 'string') node[k] = fixStr(v, own); else walk(v, own); }
+    }
   };
   walk(parsed);
   if (fixed) console.log(`[NameStorm] ${fixed} unchecked syllable or domain claim(s) rewritten`);
