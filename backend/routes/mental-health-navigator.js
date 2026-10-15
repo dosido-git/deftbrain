@@ -7,6 +7,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency, stringFields } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
+const { allChecks } = require('../lib/bothChecks');
 const AREA_LABELS = {
   anxiety:      'anxiety / excessive worry',
   mood:         'low mood / depression',
@@ -135,8 +136,11 @@ Guidelines:
 
     // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
 
-    if (research) await checkWorldFacts(parsed, research, { label: 'mental-health-navigator', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: `mental health support in ${country}`, userLanguage });
-    await checkConsistency(parsed, { label: 'mental-health-navigator', userLanguage: req.body?.userLanguage });
+    // World-facts and consistency checks run side by side (lib/bothChecks.js allChecks).
+    await allChecks(parsed, [
+      ...(research ? [d => checkWorldFacts(d, research, { label: 'mental-health-navigator', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: `mental health support in ${country}`, userLanguage })] : []),
+      d => checkConsistency(d, { label: 'mental-health-navigator', userLanguage: req.body?.userLanguage }),
+    ], { label: 'mental-health-navigator' });
 
     res.json({
       what_you_described:  parsed.what_you_described,

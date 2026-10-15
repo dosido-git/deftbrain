@@ -5,7 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency, stringFields } = require('../lib/outputGuard');
-const { bothChecks } = require('../lib/bothChecks');
+const { bothChecks, allChecks } = require('../lib/bothChecks');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 // Helper: parse base64 data URL
@@ -410,12 +410,12 @@ Return ONLY valid JSON. Format:
       if (!data.urgency && !data.steps) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
-      await checkWorldFacts(data, research, { label: 'laundro-mat-stain', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: `removing ${stainType || stainCustom} from ${fabric || 'fabric'}`, userLanguage: req.body?.userLanguage });
-      // Number and consistency checks run side by side (lib/bothChecks.js).
-      await bothChecks(data,
+      // World-facts, number and consistency checks run side by side (lib/bothChecks.js allChecks).
+      await allChecks(data, [
+        d => checkWorldFacts(d, research, { label: 'laundro-mat-stain', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: `removing ${stainType || stainCustom} from ${fabric || 'fabric'}`, userLanguage: req.body?.userLanguage }),
         d => withNumberCheck(d, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
         d => checkConsistency(d, { label: 'laundro-mat', userLanguage: req.body?.userLanguage }),
-        { label: 'laundro-mat' });
+      ], { label: 'laundro-mat' });
       return res.json(validateResult(data));
     }
 

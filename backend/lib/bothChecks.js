@@ -39,31 +39,39 @@ function setAt(root, path, value) {
 
 const clone = v => JSON.parse(JSON.stringify(v));
 
-async function bothChecks(draft, numberCheck, consistencyCheck, { label = 'bothChecks' } = {}) {
-  if (!draft || typeof draft !== 'object') return draft;
+// allChecks — the general form: any number of independent checks, listed in
+// priority order. The first check's changes are kept wholesale; each later
+// check's change applies only where every earlier check left the value as it
+// was. Put the sourced or recomputed check first (world facts, then numbers),
+// the consistency check last.
+async function allChecks(draft, checks, { label = 'allChecks' } = {}) {
+  if (!draft || typeof draft !== 'object' || !checks.length) return draft;
   const before = leaves(draft);
-  const a = clone(draft);
-  const b = clone(draft);
-  // Both are already fail-open; allSettled keeps one failure from losing the other.
-  await Promise.allSettled([numberCheck(a), consistencyCheck(b)]);
+  const copies = checks.map(() => clone(draft));
+  // Each is already fail-open; allSettled keeps one failure from losing the rest.
+  await Promise.allSettled(checks.map((fn, i) => fn(copies[i])));
 
-  // 1. Number check wins wholesale.
-  for (const k of Object.keys(draft)) if (!(k in a)) delete draft[k];
-  Object.assign(draft, a);
+  // 1. The first check wins wholesale.
+  for (const k of Object.keys(draft)) if (!(k in copies[0])) delete draft[k];
+  Object.assign(draft, copies[0]);
 
-  // 2. Consistency repairs where the number check did not touch the value.
-  const afterA = leaves(draft);
+  // 2. Later checks fill in where nothing earlier touched the value.
   let applied = 0, dropped = 0;
-  for (const [key, val] of leaves(b)) {
-    const orig = before.get(key);
-    if (before.has(key) && JSON.stringify(orig) === JSON.stringify(val)) continue; // unchanged by consistency
-    const path = JSON.parse(key);
-    const untouched = before.has(key) && afterA.has(key) && JSON.stringify(afterA.get(key)) === JSON.stringify(orig);
-    if (untouched && setAt(draft, path, val)) applied++;
-    else dropped++;
+  for (const copy of copies.slice(1)) {
+    const now = leaves(draft);
+    for (const [key, val] of leaves(copy)) {
+      const orig = before.get(key);
+      if (before.has(key) && JSON.stringify(orig) === JSON.stringify(val)) continue; // this check left it alone
+      const untouched = before.has(key) && now.has(key) && JSON.stringify(now.get(key)) === JSON.stringify(orig);
+      if (untouched && setAt(draft, JSON.parse(key), val)) applied++;
+      else dropped++;
+    }
   }
-  if (dropped) console.log(`[${label}] consistency repair(s) dropped where the number check changed the same field: ${dropped} (applied ${applied})`);
+  if (dropped) console.log(`[${label}] ${dropped} later-check change(s) dropped where an earlier check changed the same field (applied ${applied})`);
   return draft;
 }
 
-module.exports = { bothChecks };
+// Two-check form kept for the routes already using it (number, then consistency).
+const bothChecks = (draft, numberCheck, consistencyCheck, opts) => allChecks(draft, [numberCheck, consistencyCheck], opts);
+
+module.exports = { allChecks, bothChecks };

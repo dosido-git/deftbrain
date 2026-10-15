@@ -231,11 +231,15 @@ function numericFields(obj, { max = 80 } = {}) {
  * @param opts.userLanguage
  * @returns number of changes applied
  */
-// Parallel passes for long lists (see checkNumbers): up to 8 items run as one
-// pass; longer lists split into passes of about CHUNK_SIZE, at most MAX_CHUNKS.
-const CHUNK_MIN = 8;
-const CHUNK_SIZE = 7;
-const MAX_CHUNKS = 4;
+// Parallel passes for long lists (see checkNumbers): up to CHUNK_MIN items run
+// as one pass; longer lists split into passes of about CHUNK_SIZE, at most
+// MAX_CHUNKS. 2026-10-14: 7/4 → 5/6. Once the other checks ran alongside it
+// (lib/bothChecks.js), this was the slowest step — History Today's slowest
+// pass wrote ~1.4k tokens in 30s. Smaller passes finish sooner; each re-reads
+// the whole answer, so a run costs a little more input.
+const CHUNK_MIN = 6;
+const CHUNK_SIZE = 5;
+const MAX_CHUNKS = 6;
 
 async function checkNumbers(draft, opts) {
   if (process.env.FACT_CHECK === 'off') return 0;

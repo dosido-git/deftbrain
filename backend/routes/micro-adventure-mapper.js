@@ -6,6 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency, stringFields } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
+const { allChecks } = require('../lib/bothChecks');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write place names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper.
@@ -577,8 +578,11 @@ ${RESPONSE_SCHEMA}`;
       if (!data.adventure) {
         return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
       }
-      await checkWorldFacts(data, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage });
-      await checkConsistency(data, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage });
+      // World-facts and consistency checks run side by side (lib/bothChecks.js allChecks).
+      await allChecks(data, [
+        d => checkWorldFacts(d, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage }),
+        d => checkConsistency(d, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage }),
+      ], { label: 'micro-adventure-mapper' });
       return res.json(validateResult(data));
     }
 
@@ -636,8 +640,11 @@ ${RESPONSE_SCHEMA}`;
       if (!data.adventure) {
         return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
       }
-      await checkWorldFacts(data, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage });
-      await checkConsistency(data, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage });
+      // World-facts and consistency checks run side by side (lib/bothChecks.js allChecks).
+      await allChecks(data, [
+        d => checkWorldFacts(d, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage }),
+        d => checkConsistency(d, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage }),
+      ], { label: 'micro-adventure-mapper' });
       return res.json(validateResult(data));
     }
 
