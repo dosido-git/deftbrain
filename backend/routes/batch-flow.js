@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { bothChecks } = require('../lib/bothChecks');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write task names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -95,8 +96,11 @@ Return ONLY valid JSON:
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -135,8 +139,11 @@ Return ONLY valid JSON:
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -157,8 +164,11 @@ Return ONLY valid JSON:
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -178,8 +188,11 @@ Return ONLY valid JSON:
       if (!parsed.execution_plan) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -200,8 +213,11 @@ Return ONLY valid JSON:
       if (!parsed.acknowledgment) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -221,8 +237,11 @@ Return ONLY valid JSON:
       if (!parsed.message) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -242,8 +261,11 @@ Return ONLY valid JSON:
       if (!parsed.template_batches) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -263,8 +285,11 @@ Return ONLY valid JSON:
       if (!parsed.pattern_summary) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -318,8 +343,11 @@ Return ONLY valid JSON:
       if (!parsed.sprint) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -360,8 +388,11 @@ Return ONLY valid JSON:
       if (!parsed.days) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -394,8 +425,11 @@ Return ONLY valid JSON:
       if (!parsed.tasks) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 
@@ -427,8 +461,11 @@ Return ONLY valid JSON:
       if (!parsed.mode_breakdown) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-    await checkConsistency(parsed, { label: 'batch-flow', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+      { label: 'batch-flow' });
     return res.json(parsed);
     }
 

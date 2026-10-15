@@ -7,6 +7,7 @@ const { computeSplit, apportion } = require('../lib/splitMath');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { bothChecks } = require('../lib/bothChecks');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts, exact words to say, and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -463,9 +464,12 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.practical_answer) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-tip', context: visitorContext(req.body), userLanguage });
     // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-tip', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -589,7 +593,9 @@ Write "rule" as the exact English word equal, itemised or custom whatever langua
         parsed.tip_recommendation.total_tip = money(fig.tip);
       }
     }
-    await withNumberCheck(parsed, {
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, {
       label: 'money-diplomat-split',
       context: visitorContext(req.body) + (fig ? `\n\nCOMPUTED IN CODE (correct — take as given): grand total ${money(fig.grand_total)} = subtotal ${money(fig.subtotal)} + tax ${money(fig.tax)} + tip ${money(fig.tip)} (${fig.tip_pct}%); items listed ${money(fig.item_total)}; unaccounted ${money(fig.unassigned)}; equal share ${money(Object.values(fig.equal)[0])}; itemised: ${Object.entries(fig.itemised).map(([n, v]) => `${n} ${money(v)}`).join(', ')}.\n\nFINAL AMOUNTS SHOWN TO THE VISITOR (code set these, after rescaling any custom split to the real total — every explanation must match them): ${parsed.options.map(o => `${o.method || 'option'}: ${(o.breakdown || []).map(b => `${b.person} ${b.amount}`).join(', ')}`).join(' | ')}.` : ''),
       // Amounts are code-owned when the ledger worked; check only the prose around them.
@@ -601,8 +607,9 @@ Write "rule" as the exact English word equal, itemised or custom whatever langua
       // words while code had rescaled the amounts underneath it (T2).
       ].filter(([, v]) => typeof v === 'string' && v.trim()) : undefined,
       userLanguage,
-    });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -781,8 +788,11 @@ Return ONLY valid JSON:
     if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-roommate', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-roommate', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -955,8 +965,11 @@ Return ONLY valid JSON:
     if (!parsed.pre_game) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-dining', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-dining', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1017,8 +1030,11 @@ Return ONLY valid JSON:
     if (!parsed.settlement) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-group', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-group', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1144,8 +1160,11 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-lend', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-lend', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(pinEnums(parsed, ['recommendation'])));
 
   } catch (error) {
@@ -1307,8 +1326,11 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.bridge) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-travel', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-travel', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1439,8 +1461,11 @@ Return ONLY valid JSON:
     if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-subs', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-subs', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1646,8 +1671,11 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.ask) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-salary', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-salary', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {
@@ -1706,8 +1734,11 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.gut_check) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-afford', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-afford', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(pinEnums(parsed, ['gut_check'])));
 
   } catch (error) {
@@ -1769,8 +1800,11 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.arrangement_considered) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    await withNumberCheck(parsed, { label: 'money-diplomat-inheritance', context: visitorContext(req.body), userLanguage });
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, { label: 'money-diplomat-inheritance', context: visitorContext(req.body), userLanguage }),
+      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+      { label: 'money-diplomat' });
     res.json(validateResult(parsed));
 
   } catch (error) {

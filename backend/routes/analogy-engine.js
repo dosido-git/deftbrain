@@ -6,6 +6,7 @@ const { withNumberCheck } = require('../lib/factCheck');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { bothChecks } = require('../lib/bothChecks');
 // Fact-check pass (2026-10-02): a teaching tool can't ship a wrong number or
 // a false "misconception". Shared checker in lib/factCheck.js; here it also
 // checks facts (not only numbers) and may drop a myth that is actually true.
@@ -92,7 +93,10 @@ Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
 
-    await withNumberCheck(parsed, {
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(parsed,
+      d => withNumberCheck(d, {
       label: 'analogy-engine',
       context: `Explain ${concept} to ${audience || 'a general adult'}.`,
       fields: checkableFields(parsed),
@@ -100,9 +104,9 @@ Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5
       removable: ['common_misconceptions'],
       extraRules: 'A myth field states a misconception ON PURPOSE. Never rewrite it into a true statement. If the myth is actually true, remove it; otherwise leave it and check its reality field.',
       userLanguage,
-    });
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'analogy-engine', userLanguage: req.body?.userLanguage });
+    }),
+      d => checkConsistency(d, { label: 'analogy-engine', userLanguage: req.body?.userLanguage }),
+      { label: 'analogy-engine' });
     return res.json(parsed);
 
   } catch (error) {

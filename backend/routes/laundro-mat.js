@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency, stringFields } = require('../lib/outputGuard');
+const { bothChecks } = require('../lib/bothChecks');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 // Helper: parse base64 data URL
@@ -203,8 +204,11 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       if (!data.load_assessment && !data.advice) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
-      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+      await bothChecks(data,
+        d => withNumberCheck(d, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+        d => checkConsistency(d, { label: 'laundro-mat', userLanguage: req.body?.userLanguage }),
+        { label: 'laundro-mat' });
       return res.json(validateResult(data));
     }
 
@@ -255,8 +259,11 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       if (!data.load_assessment && !data.advice) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
-      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+      await bothChecks(data,
+        d => withNumberCheck(d, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+        d => checkConsistency(d, { label: 'laundro-mat', userLanguage: req.body?.userLanguage }),
+        { label: 'laundro-mat' });
       return res.json(validateResult(data));
     }
 
@@ -404,8 +411,11 @@ Return ONLY valid JSON. Format:
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
       await checkWorldFacts(data, research, { label: 'laundro-mat-stain', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: `removing ${stainType || stainCustom} from ${fabric || 'fabric'}`, userLanguage: req.body?.userLanguage });
-      await withNumberCheck(data, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage });
-      await checkConsistency(data, { label: 'laundro-mat', userLanguage: req.body?.userLanguage });
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+      await bothChecks(data,
+        d => withNumberCheck(d, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+        d => checkConsistency(d, { label: 'laundro-mat', userLanguage: req.body?.userLanguage }),
+        { label: 'laundro-mat' });
       return res.json(validateResult(data));
     }
 

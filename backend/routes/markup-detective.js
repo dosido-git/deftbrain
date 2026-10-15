@@ -9,6 +9,7 @@ const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { bothChecks } = require('../lib/bothChecks');
 // ════════════════════════════════════════════════════════════
 // POST /markup-detective — Price forensics for any product
 // ════════════════════════════════════════════════════════════
@@ -93,14 +94,17 @@ Rules:
 
     // Its own rules (breakdown sums to 100% and to the price; multiplier =
     // price / true cost) are exactly what a model gets wrong — recompute them.
-    await withNumberCheck(data, {
+    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+    // Number and consistency checks run side by side (lib/bothChecks.js).
+    await bothChecks(data,
+      d => withNumberCheck(d, {
       label: 'markup-detective',
       context: visitorContext(req.body),
       extraRules: 'cost_breakdown percents must sum to 100 and amounts to price_paid; markup_multiplier = price_paid / true_cost to 1 decimal.',
       userLanguage,
-    });
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(data, { label: 'markup-detective', userLanguage: req.body?.userLanguage });
+    }),
+      d => checkConsistency(d, { label: 'markup-detective', userLanguage: req.body?.userLanguage }),
+      { label: 'markup-detective' });
     return res.json(data);
 
   } catch (err) {
