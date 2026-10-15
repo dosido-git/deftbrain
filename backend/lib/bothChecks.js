@@ -45,7 +45,7 @@ const clone = v => JSON.parse(JSON.stringify(v));
 // check's change applies only where every earlier check left the value as it
 // was. Put the sourced or recomputed check first (world facts, then numbers),
 // the consistency check last.
-async function allChecks(draft, checks, { label = 'allChecks' } = {}) {
+async function allChecks(draft, checks, { label = 'allChecks', recheck = null } = {}) {
   if (!draft || typeof draft !== 'object' || !checks.length) return draft;
   const before = leaves(draft);
   const copies = checks.map(() => clone(draft));
@@ -83,9 +83,11 @@ async function allChecks(draft, checks, { label = 'allChecks' } = {}) {
     for (const [k, v] of l) if (JSON.stringify(before.get(k)) !== JSON.stringify(v)) return true;
     return false;
   });
+  // `recheck` overrides it when the last check does more than consistency
+  // (a full v2 guard): re-run only the consistency part.
   if (checks.length > 1 && changedEarly) {
-    console.log(`[${label}] an earlier check corrected the answer — re-running the last check on the merged result`);
-    try { await checks[checks.length - 1](draft); } catch (_) { /* fail-open like the checks themselves */ }
+    console.log(`[${label}] an earlier check corrected the answer — re-checking consistency on the merged result`);
+    try { await (recheck || checks[checks.length - 1])(draft); } catch (_) { /* fail-open like the checks themselves */ }
   }
   return draft;
 }

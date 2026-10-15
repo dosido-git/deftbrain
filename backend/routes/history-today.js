@@ -140,38 +140,39 @@ Your response MUST contain ALL 3 keys: event_summary, premise_check, picks. Prov
       "surprise_insight": "The one thing most people would NOT expect from this parallel — one sentence"
     }`;
 
-    // ── Stage 2: two parallel expansion calls (disjoint keys, merged into original shape) ──
-    const promptA = withLanguage(`CURRENT EVENT:
+    // ── Stage 2: parallel expansion calls (disjoint keys, merged into original shape) ──
+    // Speed (2026-10-14): each parallel used to be one call writing ~1.3k
+    // tokens (~30s) while the synthesis call wrote ~550 (~14s), so the two
+    // parallel calls set the pace. Each parallel is now two calls with
+    // disjoint keys — the history (what happened, who, how it was understood)
+    // and the mapping (how it matches today and where it breaks) — so all
+    // five calls write about the same amount. Both halves see the same picks
+    // summary; the consistency check reads the merged answer.
+    const HISTORY_KEYS = ['title', 'period', 'region', 'what_happened', 'contemporary_understanding', 'what_happened_next', 'key_figures'];
+    const MAPPING_KEYS = ['structural_match_score', 'structural_similarities', 'where_it_breaks_down', 'surprise_insight'];
+    const subSchema = (keys) => {
+      const body = PARALLEL_SCHEMA.trim().replace(/^\{|\}$/g, '');
+      const lines = body.split(/\n(?= {6}"[a-z_]+":)/);
+      return '{\n' + lines.filter(l => keys.some(k => l.trimStart().startsWith(`"${k}"`))).map(l => l.replace(/,\s*$/, '')).join(',\n') + '\n    }';
+    };
+    const halfPrompt = (n, half) => withLanguage(`CURRENT EVENT:
 "${event.trim()}"${contextNote}${motivationNote}
 
 ${picksBlock}
 
-${taskBlock(1)}
+${taskBlock(n)}
+
+${half === 'history'
+    ? `THIS PASS writes ONLY the history of parallel #${n}: what happened, when and where, how people at the time understood it, what happened next, and the key figures (steps 1, 3 and 4). Another pass maps it onto the current event; do not write the comparison here.`
+    : `THIS PASS writes ONLY the mapping of parallel #${n} onto the current event: the structural similarities, where the analogy breaks down, the match score and the surprise insight (steps 2 and 5). Another pass tells the history; do not retell it here, but every historical detail you use must agree with the summary above.`}
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
-- Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
+- ${half === 'history' ? 'At most 2 key_figures.' : 'At most 2 structural_similarities, at most 2 where_it_breaks_down.'}
 - Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
 
 Return ONLY valid JSON:
 {
-  "parallel": ${PARALLEL_SCHEMA}
-}
-Your response MUST contain the key: parallel.`, userLanguage);
-
-    const promptB = withLanguage(`CURRENT EVENT:
-"${event.trim()}"${contextNote}${motivationNote}
-
-${picksBlock}
-
-${taskBlock(2)}
-
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
-- Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
-- Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
-
-Return ONLY valid JSON:
-{
-  "parallel": ${PARALLEL_SCHEMA}
+  "parallel": ${subSchema(half === 'history' ? HISTORY_KEYS : MAPPING_KEYS)}
 }
 Your response MUST contain the key: parallel.`, userLanguage);
 
@@ -221,19 +222,14 @@ Return ONLY valid JSON:
 }
 Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, userLanguage);
 
-    const [a, b, c] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3600,
-        system: withLanguage(SYSTEM_CORE, userLanguage),
-        messages: [{ role: 'user', content: promptA }],
-      }, { label: 'history-today-p1' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3600,
-        system: withLanguage(SYSTEM_CORE, userLanguage),
-        messages: [{ role: 'user', content: promptB }],
-      }, { label: 'history-today-p2' }),
+    const half = (n, h) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2400,
+      system: withLanguage(SYSTEM_CORE, userLanguage),
+      messages: [{ role: 'user', content: halfPrompt(n, h) }],
+    }, { label: `history-today-p${n}-${h}` });
+    const [a1, a2, b1, b2, c] = await Promise.all([
+      half(1, 'history'), half(1, 'mapping'), half(2, 'history'), half(2, 'mapping'),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 2400,
@@ -241,6 +237,17 @@ Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, u
         messages: [{ role: 'user', content: promptC }],
       }, { label: 'history-today-p3' }),
     ]);
+    // Key order as the original single-call schema, so the page renders the same.
+    const ORDER = ['title', 'period', 'region', 'structural_match_score', 'what_happened', 'structural_similarities', 'contemporary_understanding', 'what_happened_next', 'where_it_breaks_down', 'key_figures', 'surprise_insight'];
+    const join = (h, m) => {
+      if (!h?.parallel && !m?.parallel) return null;
+      const both = { ...(h?.parallel || {}), ...(m?.parallel || {}) };
+      const out = {};
+      for (const k of ORDER) if (k in both) out[k] = both[k];
+      return out;
+    };
+    const a = { parallel: join(a1, a2) };
+    const b = { parallel: join(b1, b2) };
 
     // Merge back into the ORIGINAL response shape — frontend unchanged.
     const parsed = {
