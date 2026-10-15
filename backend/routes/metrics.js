@@ -749,7 +749,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     let usageTotals = { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0, testCalls: 0, testUsd: 0 };
     for (const r of usageRows) {
       const k = r.route || r.label || '?';
-      const u = usage[k] = usage[k] || { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0, ms: 0, models: {}, testCalls: 0, testUsd: 0 };
+      const u = usage[k] = usage[k] || { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0, ms: 0, timed: 0, maxMs: 0, models: {}, testCalls: 0, testUsd: 0 };
+      if (r.ms) { u.timed++; u.maxMs = Math.max(u.maxMs, r.ms); }
       u.calls++; u.input += r.input || 0; u.output += r.output || 0; u.cache_read += r.cache_read || 0; u.cache_write += r.cache_write || 0; u.ms += r.ms || 0;
       if (typeof r.usd === 'number') u.usd += r.usd; else u.unpriced++;
       u.models[r.model || '?'] = (u.models[r.model || '?'] || 0) + 1;
@@ -781,14 +782,18 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         const reqs = runsByNorm[norm(route)] || 0;
         const perReq = reqs && !u.unpriced ? `$${(u.usd / reqs).toFixed(3)}` : '—';
         const models = Object.entries(u.models).sort((a, b) => b[1] - a[1]).map(([m, n]) => `${escH(m.replace(/^claude-/, ''))}×${n}`).join(', ');
-        return `<tr><td>${escH(route)}</td><td>${u.calls}${testNote(u.testCalls, u.testUsd)}</td><td>${reqs || '—'}</td><td>${fmtK(u.input)}</td><td>${fmtK(u.cache_read)}</td><td>${fmtK(u.cache_write)}</td><td>${fmtK(u.output)}</td><td>${fmtUsd(u.usd, u.unpriced)}</td><td>${perReq}</td><td style="font-size:11px;color:#666">${models}</td></tr>`;
+        // Seconds per model call (the server's own timing; a tool run can make
+        // several calls, some in parallel, so this is not the visitor's wait).
+        const avgS = u.timed ? `${(u.ms / u.timed / 1000).toFixed(1)}s` : '—';
+        const maxS = u.timed ? `${(u.maxMs / 1000).toFixed(0)}s` : '—';
+        return `<tr><td>${escH(route)}</td><td>${u.calls}${testNote(u.testCalls, u.testUsd)}</td><td>${reqs || '—'}</td><td>${avgS}</td><td>${maxS}</td><td>${fmtK(u.input)}</td><td>${fmtK(u.cache_read)}</td><td>${fmtK(u.cache_write)}</td><td>${fmtK(u.output)}</td><td>${fmtUsd(u.usd, u.unpriced)}</td><td>${perReq}</td><td style="font-size:11px;color:#666">${models}</td></tr>`;
       }).join('');
     // Total requests = only the runs matched to routes that have usage
     // records. Dividing by every tool_run in the range would spread this
     // deploy's cost over requests made before usage was recorded.
     const usageMatchedRuns = Object.keys(usage).reduce((n, route) => n + (runsByNorm[norm(route)] || 0), 0);
     const usageTotalHtml = usageTotals.calls
-      ? `<tr style="font-weight:600;border-top:2px solid #ccc"><td>total</td><td>${usageTotals.calls}${testNote(usageTotals.testCalls, usageTotals.testUsd)}</td><td>${usageMatchedRuns || '—'}</td><td>${fmtK(usageTotals.input)}</td><td>${fmtK(usageTotals.cache_read)}</td><td>${fmtK(usageTotals.cache_write)}</td><td>${fmtK(usageTotals.output)}</td><td>${fmtUsd(usageTotals.usd, usageTotals.unpriced)}</td><td>${usageMatchedRuns && !usageTotals.unpriced ? `$${(usageTotals.usd / usageMatchedRuns).toFixed(3)}` : '—'}</td><td></td></tr>`
+      ? `<tr style="font-weight:600;border-top:2px solid #ccc"><td>total</td><td>${usageTotals.calls}${testNote(usageTotals.testCalls, usageTotals.testUsd)}</td><td>${usageMatchedRuns || '—'}</td><td></td><td></td><td>${fmtK(usageTotals.input)}</td><td>${fmtK(usageTotals.cache_read)}</td><td>${fmtK(usageTotals.cache_write)}</td><td>${fmtK(usageTotals.output)}</td><td>${fmtUsd(usageTotals.usd, usageTotals.unpriced)}</td><td>${usageMatchedRuns && !usageTotals.unpriced ? `$${(usageTotals.usd / usageMatchedRuns).toFixed(3)}` : '—'}</td><td></td></tr>`
       : '';
 
     // ── sources (session-scoped ref context) ──
@@ -1439,7 +1444,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2 class="sec">6 · What it costs</h2>
     <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
-    <table><tr><th>route</th><th>calls</th><th>requests</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=10 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
+    <table><tr><th>route</th><th>calls</th><th>requests</th><th title="average seconds per model call (server timing)">avg call</th><th title="slowest single model call">longest</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=12 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
     <details class="fold"><summary>Prompt-cache viability — would caching save money?</summary>
     <h2>Prompt-cache viability — 5-minute vs. 1-hour TTL</h2>
     <p style="font-size:12px;margin:0 0 6px">Caching is <b>off unless a route is listed in <code>PROMPT_CACHE_ROUTES</code></b> (Railway variable; comma-separated route slugs, <code>*</code> = all). Currently on for: <b>${escH(process.env.PROMPT_CACHE_ROUTES || 'none')}</b>. Add a tool only if it stays above the ~22% break-even below.</p>
