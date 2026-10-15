@@ -252,7 +252,12 @@ router.post('/roommate-court', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
       if (!dispute) return res.status(400).json({ error: "Describe what's going on." });
 
-      const prompt = `CASE FILE:
+      // Speed (2026-10-15): one call wrote ~1.9k tokens (39s of a 56s run in
+      // German). Two calls now write disjoint keys at once: the read (what is
+      // going on and what to try) and the conversation (what to say, and what
+      // next if it fails). Both see the whole case file; the guard's
+      // consistency check reads the merged answer.
+      const caseFile = `CASE FILE:
 Living situation: ${livingSituation || 'not specified'}
 Duration of issue: ${duration || 'not specified'}
 Prior communication attempts: ${priorCommunication || 'not specified'}
@@ -264,7 +269,10 @@ WHAT'S THEIR SIDE (the visitor's own account of the situation, if given beyond t
 ${yourSide || 'not separately provided'}
 
 WHAT WOULD THEY SAY (the visitor's understanding of the other person's perspective — may be absent; do not treat absence as evidence of anything):
-${theirSide || 'not provided — the visitor does not know or did not guess'}
+${theirSide || 'not provided — the visitor does not know or did not guess'}`;
+      const readPrompt = `${caseFile}
+
+THIS PASS writes the read of the situation and what to try. A second pass, reading the same case file at the same time, writes the conversation and what to do if it does not work — do not write those.
 
 Return ONLY valid JSON matching this schema:
 {
@@ -281,6 +289,16 @@ Return ONLY valid JSON matching this schema:
   "what_to_try": [
     { "action": "", "why_it_may_help": "" }
   ],
+  "one_thing_not_to_lose_sight_of": ""
+}
+
+the_read.label MUST be exactly one of the English options above even in another language — it is a code value the UI switches on, not display text. Omit unsupported or unnecessary fields — do not force three actions when fewer genuinely fit. unknowns_that_matter at most 3, what_to_try at most 4.`;
+      const talkPrompt = `${caseFile}
+
+THIS PASS writes the conversation the visitor could have and what to do if it does not work. A second pass, reading the same case file at the same time, writes the read of the situation and the actions to try — do not write those.
+
+Return ONLY valid JSON matching this schema:
+{
   "conversation": {
     "start_with_this": "a short opening the visitor can actually say",
     "ask_this": "one useful question that invites information the visitor doesn't have",
@@ -291,18 +309,36 @@ Return ONLY valid JSON matching this schema:
   },
   "if_that_doesnt_work": [
     { "next_step": "", "when_it_makes_sense": "" }
-  ],
-  "one_thing_not_to_lose_sight_of": ""
+  ]
 }
 
-the_read.label MUST be exactly one of the English options above even in another language — it is a code value the UI switches on, not display text. Omit unsupported or unnecessary fields — do not force three actions, three escalation steps, or multiple pushback scenarios when fewer genuinely fit. unknowns_that_matter at most 3, what_to_try at most 4, if_they_push_back at most 2, if_that_doesnt_work at most 3.`;
+Omit unsupported or unnecessary fields — do not force three escalation steps or multiple pushback scenarios when fewer genuinely fit. if_they_push_back at most 2, if_that_doesnt_work at most 3.`;
 
-      const parsed = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLanguage(MEDIATOR_SYSTEM, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: prompt }],
-      }, { label: 'roommate-court-v2' });
+      const system = withLanguage(MEDIATOR_SYSTEM, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+      const [readPart, talkPart] = await Promise.all([
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 2500,
+          system,
+          messages: [{ role: 'user', content: withLanguage(readPrompt, userLanguage) }],
+        }, { label: 'roommate-court-v2-read' }),
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 2500,
+          system,
+          messages: [{ role: 'user', content: withLanguage(talkPrompt, userLanguage) }],
+        }, { label: 'roommate-court-v2-talk' }),
+      ]);
+      // Original key order, so the page renders as before.
+      const parsed = {
+        the_read: readPart?.the_read,
+        where_the_disagreement_is: readPart?.where_the_disagreement_is,
+        what_to_try: readPart?.what_to_try,
+        conversation: talkPart?.conversation,
+        if_that_doesnt_work: talkPart?.if_that_doesnt_work,
+        one_thing_not_to_lose_sight_of: readPart?.one_thing_not_to_lose_sight_of,
+      };
+      for (const k of Object.keys(parsed)) if (parsed[k] === undefined) delete parsed[k];
 
       if (!parsed?.the_read?.label) {
         return res.status(500).json({ error: 'Could not work through this. Please try again.' });

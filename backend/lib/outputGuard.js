@@ -115,6 +115,9 @@ function withDeadline(promise, ms, fallback, label, stage) {
   return Promise.race([promise, bail]).finally(() => clearTimeout(timer));
 }
 
+// Flagged fields per parallel repair call (see the repair step).
+const REPAIR_GROUP = 3;
+
 async function runOutputGuard(draft, opts) {
   const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '', model = MODELS.FAST, only = '' } = opts;
   const consistencyOnly = only === 'consistency';
@@ -316,7 +319,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     return `\n  contradicts [${v.conflicts_with.trim()}], which is also being rewritten here. Decide from what the visitor typed which side is right and make BOTH fields agree with it. If what they typed does not settle it, take the disputed claim out of both rather than picking a side.`;
   };
 
-  const repairPrompt = `Rewrite only these fields of a tool's output. Every other field passed and must not be touched.
+  const repairPrompt = (chunk) => `Rewrite only these fields of a tool's output. Every other field passed and must not be touched.
 
 WHAT THIS TOOL PROMISES:
 ${promise}
@@ -330,7 +333,7 @@ ${choices}
 THE REST OF THE RESPONSE — these fields PASSED and are staying exactly as they are. Whatever you write must be consistent with them. If one of them states a conclusion, a choice or a recommendation, your rewrite must not contradict it or substitute a different one:
 ${untouched || '(no other fields)'}
 
-${allByField.map(([field, vs], i) => `${i}. [${field}]${ownerOf(field) ? `
+${chunk.map(([field, vs], i) => `${i}. [${field}]${ownerOf(field) ? `
 belongs to: ${ownerOf(field)} — the rewrite must stay about THIS item, not another one` : ''}
 current:
 ${getByPath(draft, field)}
@@ -350,17 +353,42 @@ OUTPUT (JSON only). Copy "field" exactly as it appears in the brackets above —
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-  const repair = await withDeadline(
+  // Speed (2026-10-15): one repair call rewrote every flagged field, and its
+  // time is its output (7-11s for ~5 fields on Roommate Court). Fields are
+  // now repaired in parallel groups of up to REPAIR_GROUP. Both sides of a
+  // contradiction stay in one group — the pairing note above only works if
+  // one call rewrites both. Each group still sees every passed field.
+  const groups = [];
+  const groupOf = new Map();
+  for (const entry of allByField) {
+    const [field, vs] = entry;
+    const partners = vs.filter(v => v.violation_type === 'contradicts_another_field' && typeof v.conflicts_with === 'string').map(v => v.conflicts_with.trim());
+    let g = [field, ...partners].map(f => groupOf.get(f)).find(x => x !== undefined);
+    if (g === undefined) {
+      g = groups.findIndex(gr => gr.length < REPAIR_GROUP && !gr.some(([, gvs]) => gvs.some(v => v.violation_type === 'contradicts_another_field')));
+      if (g < 0 || partners.length) { groups.push([]); g = groups.length - 1; }
+    }
+    groups[g].push(entry);
+    groupOf.set(field, g);
+    for (const f of partners) if (!groupOf.has(f)) groupOf.set(f, g);
+  }
+  const repairs = await Promise.all(groups.map((chunk, gi) => withDeadline(
     callClaudeWithRetry({
       model,
       max_tokens: 3000,
-      messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
+      messages: [{ role: 'user', content: withLanguage(repairPrompt(chunk), userLanguage) + locale }],
     }, { label: `${label}-guard-repair`, maxRetries: 0 }).catch(err => {
-      console.log(`[${label}] v2 guard: repair failed (${err.message}) — flagged fields left as written`);
+      console.log(`[${label}] v2 guard: repair group ${gi} failed (${err.message}) — its fields left as written`);
       return null;
     }),
-    REPAIR_BUDGET_MS, null, label, 'repair');
-  if (!repair) return violations;
+    REPAIR_BUDGET_MS, null, label, 'repair')));
+  if (repairs.every(r => !r)) return violations;
+  // Fixes come back numbered within their group; translate to the global list.
+  const globalIndex = new Map(allByField.map(([f], i) => [f, i]));
+  const repair = { fixes: repairs.flatMap((r, gi) => (Array.isArray(r?.fixes) ? r.fixes : []).map(fix => {
+    const local = groups[gi][Number(fix?.n)];
+    return { ...fix, n: local ? globalIndex.get(local[0]) : -1 };
+  })) };
 
   // Snapshot before writing: a repair that empties a promised deliverable is
   // worse than the violation it removed, and the visitor is left with a blank
