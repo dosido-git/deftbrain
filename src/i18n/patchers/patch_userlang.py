@@ -40,7 +40,7 @@ BROKEN = [
     'meeting-hijack-preventer.js',
     'nerve-check.js',
     'renters-deposit-saver.js',
-    'sensory-minefield-mapper.js',
+    'trip-recon.js',
     'subscription-guilt-trip.js',
 ]
 

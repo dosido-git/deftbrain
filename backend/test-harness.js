@@ -398,7 +398,7 @@ const ENDPOINTS = {
     schema: [],
     skipAI: true,
   },
-  'sensory-minefield-mapper': {
+  'trip-recon': {
     valid: { location: 'Target store', visitDateTime: '2025-03-01T14:00', placeType: 'retail', sensitivities: ['noise', 'fluorescent lights', 'crowds'] },
     missing: [{}],
     schema: [],

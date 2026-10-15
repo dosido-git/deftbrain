@@ -1,4 +1,4 @@
-// sensory-minefield-mapper.js
+// trip-recon.js
 //
 // V3 rewrite (2026-09-09, full owner-supplied spec) — display renamed to
 // Sensory Scout, then renamed again the same day to Trip Recon
@@ -457,7 +457,7 @@ looking fabricated one.`);
 router.outputStandard = 'v2';
 router.outputGuard = OUTPUT_GUARD;
 
-router.post('/sensory-minefield-mapper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
     const location = cleanString(req.body.location, 200);
@@ -482,21 +482,21 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
     // T1 (audit/DEFECT-TYPES.md): facts about the place from a cached web
     // search, run alongside the plan. Without it the model put a train
     // between Denver airport's garage and terminal.
-    const research = researchFacts({ topic: ['place', location], label: 'sensory-minefield-mapper', brief: `Facts about the physical place "${location}"${placeType ? ` (${placeType})` : ''}: its layout, entrances, how people get in and between its parts (garages, trains, shuttles, walkways), opening hours, and busy times or crowd and noise information the place or reliable guides publish.` });
+    const research = researchFacts({ topic: ['place', location], label: 'trip-recon', brief: `Facts about the physical place "${location}"${placeType ? ` (${placeType})` : ''}: its layout, entrances, how people get in and between its parts (garages, trains, shuttles, walkways), opening hours, and busy times or crowd and noise information the place or reliable guides publish.` });
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4500,
       system: withLanguage(MAIN_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'sensory-minefield-mapper' });
+    }, { label: 'trip-recon' });
 
     if (!parsed?.summary) {
       return res.status(500).json({ error: 'Could not build a plan. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'sensory-minefield-mapper',
+      label: 'trip-recon',
       fields: collectProseFields(parsed),
       supplied,
       promise: 'Help the visitor prepare for the sensory demands of a specific place using only what they supplied, plus general, clearly-labeled possibilities for that type of setting — never inventing crowd, noise, lighting, or layout facts about this specific place.',
@@ -510,7 +510,7 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
     // catches blanks already in the raw model output, not ones the repair
     // step introduces afterward. (Caught live during v2.1/v3.1 verification —
     // don't move this back above runOutputGuard.)
-    await checkWorldFacts(parsed, research, { label: 'sensory-minefield-mapper', fields: collectProseFields(parsed), subject: location, userLanguage });
+    await checkWorldFacts(parsed, research, { label: 'trip-recon', fields: collectProseFields(parsed), subject: location, userLanguage });
     const cleaned = stripEmptyItems(parsed);
 
     res.json(cleaned);
@@ -579,7 +579,7 @@ Return ONLY valid JSON:
 Only include a stop's "worth_preparing_for" entries for factors the visitor
 selected or clearly implied. Omit empty sections.`);
 
-router.post('/sensory-minefield-mapper/route', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon/route', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
     const stops = Array.isArray(req.body.stops) ? req.body.stops.slice(0, 5) : [];
@@ -605,14 +605,14 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE ROUTE: ${knownInfo}\n` : ''}${sp
       max_tokens: 4500,
       system: withLanguage(ROUTE_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'sensory-minefield-mapper-route' });
+    }, { label: 'trip-recon-route' });
 
     if (!parsed?.route_summary) {
       return res.status(500).json({ error: 'Could not build a route plan. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'sensory-minefield-mapper-route',
+      label: 'trip-recon-route',
       fields: collectProseFields(parsed),
       supplied,
       promise: 'Help the visitor prepare for a route using only what they supplied and the stated mode of travel — never inventing traffic, crowd, transit, or layout conditions along the way.',
@@ -651,7 +651,7 @@ Return ONLY valid JSON:
 
 Omit "still_applies_from_before" if nothing from before is still relevant.`);
 
-router.post('/sensory-minefield-mapper/rescan', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon/rescan', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
     const location = cleanString(req.body.location, 200);
@@ -672,14 +672,14 @@ ${originalPlanSummary ? `ORIGINAL PLAN SUMMARY: ${originalPlanSummary}` : ''}`;
       max_tokens: 2000,
       system: withLanguage(RESCAN_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'sensory-minefield-mapper-rescan' });
+    }, { label: 'trip-recon-rescan' });
 
     if (!parsed?.acknowledgment) {
       return res.status(500).json({ error: 'Could not adjust the plan. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'sensory-minefield-mapper-rescan',
+      label: 'trip-recon-rescan',
       fields: collectProseFields(parsed),
       supplied,
       promise: 'Adjust the visitor’s plan based only on what they just reported has changed, respecting any constraint they already gave.',
@@ -718,7 +718,7 @@ Return ONLY valid JSON:
 
 Omit any section with nothing genuine to include.`);
 
-router.post('/sensory-minefield-mapper/comfort-kit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon/comfort-kit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
     const concerns = Array.isArray(req.body.concerns) ? req.body.concerns.slice(0, 10) : [];
@@ -736,14 +736,14 @@ ${specificNotes ? `NOTES: ${specificNotes}` : ''}`;
       max_tokens: 2000,
       system: withLanguage(COMFORT_KIT_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'sensory-minefield-mapper-comfort-kit' });
+    }, { label: 'trip-recon-comfort-kit' });
 
     if (!parsed?.essentials && !parsed?.comfort_items) {
       return res.status(500).json({ error: 'Could not build a packing list. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'sensory-minefield-mapper-comfort-kit',
+      label: 'trip-recon-comfort-kit',
       fields: collectProseFields(parsed),
       supplied,
       promise: 'Suggest a packing checklist personalized to what the visitor selected, without claiming any item has a therapeutic or regulatory effect they did not describe themselves.',
@@ -790,7 +790,7 @@ Output exactly this shape, nothing before the opening { and nothing after
 the closing }:
 {"look_for":["a concrete, portable quality — e.g. quieter seating, outdoor space, shorter expected wait"],"other_options":["a generic category not tied to this visit — e.g. delivery, an online equivalent, rescheduling"],"note":"one practical sentence"}`);
 
-router.post('/sensory-minefield-mapper/alternatives', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon/alternatives', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
     const location = cleanString(req.body.location, 200);
@@ -809,14 +809,14 @@ ${analysisContext?.summary?.one_liner ? `PREVIOUS PLAN SUMMARY: ${analysisContex
       max_tokens: 2000,
       system: withLanguage(ALTERNATIVES_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'sensory-minefield-mapper-alternatives' });
+    }, { label: 'trip-recon-alternatives' });
 
     if (!parsed?.look_for) {
       return res.status(500).json({ error: 'Could not put this together. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'sensory-minefield-mapper-alternatives',
+      label: 'trip-recon-alternatives',
       fields: collectProseFields(parsed),
       supplied,
       promise: 'Help the visitor define what to look for in an alternative without inventing a specific nearby venue the tool has no way to know exists.',
@@ -849,7 +849,7 @@ Return ONLY valid JSON:
   "script": "words the visitor could actually say, asking rather than assuming an answer"
 }`);
 
-router.post('/sensory-minefield-mapper/ask-script', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon/ask-script', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const userLanguage = cleanString(req.body.userLanguage, 20) || 'en';
     const need = cleanString(req.body.need, 500);
@@ -865,14 +865,14 @@ ${location ? `LOCATION: ${location}` : ''}`;
       max_tokens: 800,
       system: withLanguage(ASK_SCRIPT_SYSTEM, userLanguage),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'sensory-minefield-mapper-ask-script' });
+    }, { label: 'trip-recon-ask-script' });
 
     if (!parsed?.script) {
       return res.status(500).json({ error: 'Could not write that. Please try again.' });
     }
 
     await runOutputGuard(parsed, {
-      label: 'sensory-minefield-mapper-ask-script',
+      label: 'trip-recon-ask-script',
       fields: collectProseFields(parsed),
       supplied,
       promise: 'Write one script for the specific thing the visitor needs to ask about, without promising the venue will agree to it.',
@@ -896,7 +896,7 @@ ${location ? `LOCATION: ${location}` : ''}`;
 // so this endpoint is no longer called from the UI. Left intact rather than
 // deleted — see audit/tool-notes/SENSORYMINEFIELDMAPPER-NOTES.md for why.
 // ═══════════════════════════════════════════════════════════════
-router.post('/sensory-minefield-mapper/companion-summary', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/trip-recon/companion-summary', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, location, concerns, gamePlan, companionName, userLanguage } = req.body;
 
@@ -933,7 +933,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    }, { label: 'sensory-minefield-mapper-companion-summary' });
+    }, { label: 'trip-recon-companion-summary' });
     if (!parsed.message_casual) {
       return res.status(500).json({ error: 'Something went wrong. Please try again.' });
     }

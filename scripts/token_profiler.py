@@ -1023,7 +1023,7 @@ TOOL_PAYLOADS = {
         'action': 'mediate',
         'userLanguage': 'en',
     },
-    'sensory-minefield-mapper': {
+    'trip-recon': {
         'place': 'IKEA on a Saturday afternoon',
         'concerns': 'crowds, fluorescent lighting, loud PA announcements',
         'goal': 'buy specific items without getting overwhelmed',

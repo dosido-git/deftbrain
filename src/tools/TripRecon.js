@@ -287,7 +287,7 @@ function TripRecon({ tool }) {
     setError(''); setResults(null); setShowPanel(null);
     setRescanResult(null); setComfortKit(null); setKitChecked({}); setAskResult(null);
     try {
-      const data = await callToolEndpoint('sensory-minefield-mapper', {
+      const data = await callToolEndpoint('trip-recon', {
         location: location.trim(),
         placeType: placeType || undefined,
         visitDateTime: (visitDate || visitTime) ? `${visitDate || ''} ${visitTime || ''}`.trim() : undefined,
@@ -310,7 +310,7 @@ function TripRecon({ tool }) {
     if (!travelMode) { setError(t('smm_err_route_travel_mode')); return; }
     setRouteLoading(true); setRouteResults(null); setError('');
     try {
-      const data = await callToolEndpoint('sensory-minefield-mapper/route', {
+      const data = await callToolEndpoint('trip-recon/route', {
         stops: [{ location: routeStart.trim() }, { location: routeDestination.trim() }],
         travelMode,
         when: routeWhen || undefined,
@@ -328,7 +328,7 @@ function TripRecon({ tool }) {
     if (!changed.length && !rescanOtherText.trim()) return;
     setRescanLoading(true); setRescanResult(null);
     try {
-      const data = await callToolEndpoint('sensory-minefield-mapper/rescan', {
+      const data = await callToolEndpoint('trip-recon/rescan', {
         location: results?.location || location,
         whatChanged: changed,
         otherText: rescanOtherText.trim() || undefined,
@@ -343,7 +343,7 @@ function TripRecon({ tool }) {
   const fetchComfortKit = async () => {
     setKitLoading(true); setComfortKit(null); setKitChecked({});
     try {
-      const data = await callToolEndpoint('sensory-minefield-mapper/comfort-kit', {
+      const data = await callToolEndpoint('trip-recon/comfort-kit', {
         concerns: selectedConcerns, placeType: results?.placeType || placeType,
         specificNotes: specificNotes.trim() || undefined,
       });
@@ -356,7 +356,7 @@ function TripRecon({ tool }) {
     if (!askNeed.trim()) return;
     setAskLoading(true); setAskResult(null);
     try {
-      const data = await callToolEndpoint('sensory-minefield-mapper/ask-script', {
+      const data = await callToolEndpoint('trip-recon/ask-script', {
         need: askNeed.trim(), location: results?.location || location,
       });
       setAskResult(data);

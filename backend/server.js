@@ -194,6 +194,14 @@ if (IS_PRODUCTION) {
 // and the request never reaches the route. Matched by path so both layers
 // use the SAME key/limit for these; keep this in sync with the rateLimit()
 // calls in the-final-word.js if either changes.
+// Renamed endpoint (2026-10-14): Trip Recon's route was still called
+// sensory-minefield-mapper. A tab opened before the deploy still calls the old
+// path; send it to the new one. Safe to remove after a few weeks.
+app.use('/api', (req, res, next) => {
+  if (req.url.startsWith('/sensory-minefield-mapper')) req.url = '/trip-recon' + req.url.slice('/sensory-minefield-mapper'.length);
+  next();
+});
+
 const TFW_GAME_PATHS = /^\/the-final-word(\/room\/[^/]+\/next)?$/;
 const TFW_POLL_PATHS = /^\/the-final-word\/room\/[^/]+\/(answer|reveal)$/;
 const TFW_ROOM_PATHS = /^\/the-final-word\/room\/(create|[^/]+\/join)$/;

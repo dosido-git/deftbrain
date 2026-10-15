@@ -4,12 +4,12 @@
     "generated": "2026-09-09",
     "model": "claude-sonnet-4-6 (MODELS.SMART), MODELS.FAST for ask-script; 7 endpoints",
     "baseline_commit": "sensoryminefieldmapper-v3.1",
-    "how_to_regression_diff": "Re-run (npm run check:golden sensory-minefield-mapper). v3.1 (2026-09-09) added 10 output-correction rules on top of the v3 rewrite (no compounded place-type possibilities, no place-type-as-fact framing, no unsupported mechanism claims, past-visit duration never restated as a forecast, supplied constraints preserved exactly rather than strengthened, no invented clock times, no generic reassurance, only-selected-or-necessary sensory factors, a 5-way KNOWN/PAST EXPERIENCE/POSSIBILITY/UNKNOWN/PREPARATION evidence model, and \"THE VISITOR IS THE SENSOR\" as the closing north star) plus a required, fixed-set travel-mode field for Route mode (was free text) with its own ROUTE MODE RULES section forbidding invented route/transit/traffic conditions. DO NOT reverse any of those, or the 7 new outputGuard.prohibit entries that back them. Real bug found and fixed during this pass, same failure class as ScamRadar v2.1 the same day: runOutputGuard mutates its `draft` argument IN PLACE, and its repair pass can blank out a flagged field instead of substituting it — despite the repair prompt explicitly saying not to. A stripEmptyItems() call made BEFORE runOutputGuard only catches blanks already in the raw model output, not ones the repair step introduces afterward; caught live via a route-mode call that came back with a populated `factor` and `prepare` array sitting next to a blank `what_might_matter`. Fix: run stripEmptyItems() AFTER runOutputGuard, not before, and drop an array-of-objects item if ANY of its own string fields is blank (not just when ALL of them are) — a half-populated object is exactly as useless as a fully-blank one. Do not move the stripEmptyItems() call back above runOutputGuard, and do not loosen the \"every string field\" check back to \"some field\" — both regressions were caught live in this exact session."
+    "how_to_regression_diff": "Re-run (npm run check:golden trip-recon). v3.1 (2026-09-09) added 10 output-correction rules on top of the v3 rewrite (no compounded place-type possibilities, no place-type-as-fact framing, no unsupported mechanism claims, past-visit duration never restated as a forecast, supplied constraints preserved exactly rather than strengthened, no invented clock times, no generic reassurance, only-selected-or-necessary sensory factors, a 5-way KNOWN/PAST EXPERIENCE/POSSIBILITY/UNKNOWN/PREPARATION evidence model, and \"THE VISITOR IS THE SENSOR\" as the closing north star) plus a required, fixed-set travel-mode field for Route mode (was free text) with its own ROUTE MODE RULES section forbidding invented route/transit/traffic conditions. DO NOT reverse any of those, or the 7 new outputGuard.prohibit entries that back them. Real bug found and fixed during this pass, same failure class as ScamRadar v2.1 the same day: runOutputGuard mutates its `draft` argument IN PLACE, and its repair pass can blank out a flagged field instead of substituting it — despite the repair prompt explicitly saying not to. A stripEmptyItems() call made BEFORE runOutputGuard only catches blanks already in the raw model output, not ones the repair step introduces afterward; caught live via a route-mode call that came back with a populated `factor` and `prepare` array sitting next to a blank `what_might_matter`. Fix: run stripEmptyItems() AFTER runOutputGuard, not before, and drop an array-of-objects item if ANY of its own string fields is blank (not just when ALL of them are) — a half-populated object is exactly as useless as a fully-blank one. Do not move the stripEmptyItems() call back above runOutputGuard, and do not loosen the \"every string field\" check back to \"some field\" — both regressions were caught live in this exact session."
   },
   "cases": [
     {
       "name": "en-hospital-outpatient-cannot-leave",
-      "endpoint": "/api/sensory-minefield-mapper",
+      "endpoint": "/api/trip-recon",
       "input": {
         "userLanguage": "en",
         "location": "Regional hospital, outpatient wing",
@@ -115,7 +115,7 @@
     },
     {
       "name": "de-supermarket-noise-quoted-phrase",
-      "endpoint": "/api/sensory-minefield-mapper",
+      "endpoint": "/api/trip-recon",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
@@ -180,7 +180,7 @@
     },
     {
       "name": "en-route-farmers-market",
-      "endpoint": "/api/sensory-minefield-mapper/route",
+      "endpoint": "/api/trip-recon/route",
       "input": {
         "userLanguage": "en",
         "stops": [
@@ -249,7 +249,7 @@
     },
     {
       "name": "en-rescan-longer-wait-more-crowded",
-      "endpoint": "/api/sensory-minefield-mapper/rescan",
+      "endpoint": "/api/trip-recon/rescan",
       "input": {
         "userLanguage": "en",
         "location": "Regional hospital, outpatient wing",
@@ -281,7 +281,7 @@
     },
     {
       "name": "en-comfort-kit-hospital",
-      "endpoint": "/api/sensory-minefield-mapper/comfort-kit",
+      "endpoint": "/api/trip-recon/comfort-kit",
       "input": {
         "userLanguage": "en",
         "concerns": [
@@ -338,7 +338,7 @@
     },
     {
       "name": "en-alternatives-hospital",
-      "endpoint": "/api/sensory-minefield-mapper/alternatives",
+      "endpoint": "/api/trip-recon/alternatives",
       "input": {
         "userLanguage": "en",
         "location": "Regional hospital, outpatient wing",
@@ -365,7 +365,7 @@
     },
     {
       "name": "en-ask-script-quieter-wait",
-      "endpoint": "/api/sensory-minefield-mapper/ask-script",
+      "endpoint": "/api/trip-recon/ask-script",
       "input": {
         "userLanguage": "en",
         "need": "I want to ask if I can wait somewhere quieter without missing my name",
