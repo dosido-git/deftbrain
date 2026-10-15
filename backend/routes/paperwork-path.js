@@ -4,8 +4,11 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
-const { checkConsistency, stringFields } = require('../lib/outputGuard');
+const { runOutputGuard, stringFields, suppliedText } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
+const { allChecks } = require('../lib/bothChecks');
+
+const LABEL_RE = /^(critical|important|optional)$/i;
 // ════════════════════════════════════════════════════════════
 // POST /paperwork-path — document checklist + the order to handle it
 // for a life event (move, baby, job change, marriage, death, …)
@@ -88,10 +91,23 @@ Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, use
       return res.status(500).json({ error: 'Could not build your checklist. Please try again.' });
     }
 
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-
-    if (research) await checkWorldFacts(parsed, research, { label: 'paperwork-path', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: `${lifeEvent} in ${locationText}`, userLanguage });
-    await checkConsistency(parsed, { label: 'paperwork-path', userLanguage: req.body?.userLanguage });
+    // World facts (T1) and the v2 guard — which includes the T3/T7
+    // consistency checks — run side by side (lib/bothChecks.js). Sourced
+    // corrections win where both touch the same field.
+    const fields = stringFields(parsed);
+    await allChecks(parsed, [
+      ...(research ? [d => checkWorldFacts(d, research, { label: 'paperwork-path', fields: fields.filter(([, v]) => v.length > 15), subject: `${lifeEvent} in ${locationText}`, userLanguage })] : []),
+      d => runOutputGuard(d, {
+        label: 'paperwork-path',
+        fields,
+        readOnly: fields.filter(([, v]) => LABEL_RE.test(v)).map(([p]) => p),
+        supplied: suppliedText(req.body),
+        promise: 'A document checklist and the order to handle it for this life event, sequenced by what each step depends on, with the specific figures it can stand behind and where to confirm the rest.',
+        guard: router.outputGuard,
+        userLanguage,
+        locale: withLocaleContext(userLocale, userCurrency, userRegion),
+      }),
+    ], { label: 'paperwork-path' });
 
     res.json(parsed);
   } catch (error) {
@@ -100,4 +116,23 @@ Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, use
   }
 });
 
+router.outputStandard = 'v2';
+// paperwork-path-v2. Reviewed 2026-10-14 against the output standard: the
+// schema asks for nothing the guard forbids (deadlines are stated only when
+// well-established, and verify_note carries the jurisdiction caveat).
+router.outputGuard = {
+  prohibit: [
+    'invented_deadline_or_fee',             // a window or fee stated as fact with no basis
+    'one_items_deadline_reused_for_another', // a license grace period given to registration
+    'requirement_from_a_different_jurisdiction',
+    'legal_or_tax_outcome_stated_as_certain',
+    'generic_checklist_not_specific_to_the_event',
+  ],
+  require: [
+    'fulfills_tool_promise',
+    'actionable_output',
+    'steps_ordered_by_dependency',
+    'figures_it_cannot_stand_behind_point_to_where_to_confirm',
+  ],
+};
 module.exports = router;

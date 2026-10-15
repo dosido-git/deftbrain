@@ -10,7 +10,8 @@
 //      value exactly as it was. If both changed the same field, or the number
 //      check removed a list item (so the path now points somewhere else), the
 //      consistency repair is dropped and logged — never half-applied.
-// The checks themselves are unchanged; only their order is.
+// The checks themselves are unchanged; only their order is. If an earlier
+// check corrected anything, the last one re-reads the merged answer (step 3).
 //
 // Usage (in place of the two awaits):
 //   await bothChecks(parsed,
@@ -68,6 +69,24 @@ async function allChecks(draft, checks, { label = 'allChecks' } = {}) {
     }
   }
   if (dropped) console.log(`[${label}] ${dropped} later-check change(s) dropped where an earlier check changed the same field (applied ${applied})`);
+
+  // 3. A correction can create a contradiction the last check never saw — it
+  // read the draft before the correction (2026-10-14: Paperwork Path's fact
+  // check rewrote an item to an emissions-only inspection while its title and
+  // step still said safety inspection). So when an earlier check changed
+  // anything, the last check (the consistency check, by convention) reads the
+  // merged answer once more. No correction, no second pass: the common case
+  // keeps the full saving.
+  const changedEarly = copies.slice(0, -1).some(c => {
+    const l = leaves(c);
+    if (l.size !== before.size) return true;
+    for (const [k, v] of l) if (JSON.stringify(before.get(k)) !== JSON.stringify(v)) return true;
+    return false;
+  });
+  if (checks.length > 1 && changedEarly) {
+    console.log(`[${label}] an earlier check corrected the answer — re-running the last check on the merged result`);
+    try { await checks[checks.length - 1](draft); } catch (_) { /* fail-open like the checks themselves */ }
+  }
   return draft;
 }
 
