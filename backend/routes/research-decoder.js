@@ -249,13 +249,31 @@ router.post('/research-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => 
     if (interest === 'OTHER' && interestOther) interestLine = `The visitor said what they're most interested in, in their own words: "${interestOther}"`;
     else if (INTEREST_HINTS[interest]) interestLine = INTEREST_HINTS[interest];
 
-    const userPrompt = `ACTIVE MODE: DECODE — apply ROLE, SOURCE BOUNDARY, ABSTRACT/EXCERPT DISCIPLINE, ANSWER FIRST, WHAT THEY DID, WORD-LEVEL SOURCE FIDELITY, WHAT THE NUMBERS MEAN, CAUSATION, WHAT THIS STUDY SUPPORTS / WHAT IT DOESN'T ESTABLISH, LIMITATIONS, JARGON, NO UNSOURCED BIGGER PICTURE, NO FAKE EVIDENCE CONFIDENCE, WHY IT MATTERS, BOTTOM LINE, and SOURCE TRANSPARENCY.
+    // Speed (2026-10-15): one call wrote ~1.8k tokens (~35s). Three calls now
+    // write disjoint keys at once — what the study SAYS, what it MEANS, and the
+    // jargon list (~800 tokens on its own) — each reading the full text. The guard's consistency check reads the
+    // merged answer, so a bottom line that drifts from the finding is caught.
+    const userPrompt = (part) => `ACTIVE MODE: DECODE — apply ROLE, SOURCE BOUNDARY, ABSTRACT/EXCERPT DISCIPLINE, ANSWER FIRST, WHAT THEY DID, WORD-LEVEL SOURCE FIDELITY, WHAT THE NUMBERS MEAN, CAUSATION, WHAT THIS STUDY SUPPORTS / WHAT IT DOESN'T ESTABLISH, LIMITATIONS, JARGON, NO UNSOURCED BIGGER PICTURE, NO FAKE EVIDENCE CONFIDENCE, WHY IT MATTERS, BOTTOM LINE, and SOURCE TRANSPARENCY.
 
 ${title ? `PAPER TITLE: "${title}"` : 'PAPER TITLE: not supplied'}
 
 ${interestLine}
 
 ${hasPdf ? 'RESEARCH TEXT: attached as a PDF above this message — it is the sole source of truth for what it says.' : `RESEARCH TEXT (the sole source of truth for what it says):\n"${text}"`}
+
+${part === 'jargon'
+    ? `THIS PASS writes only the JARGON list: the terms in this text that would block an ordinary reader's understanding, each explained plainly and in this study's context. Other passes, reading the same text at the same time, write everything else — do not write it.
+
+Return ONLY valid JSON matching this schema:
+{
+  "jargon": [
+    { "term": "", "plain_meaning": "", "why_it_matters_here": "" }
+  ]
+}
+
+LIMITS: jargon at most 5. Return an empty array if nothing materially blocks understanding.`
+    : part === 'said'
+    ? `THIS PASS writes only what the study SAYS: source_scope, finding, what_they_did and key_numbers. Other passes, reading the same text at the same time, write the jargon, what it supports, what it does not establish, the limitations, the bottom line and the unknowns — do not write those.
 
 Return ONLY valid JSON matching this schema:
 {
@@ -270,7 +288,14 @@ Return ONLY valid JSON matching this schema:
   },
   "key_numbers": [
     { "reported": "", "plain_meaning": "", "important_caveat": "" }
-  ],
+  ]
+}
+
+Omit empty optional fields inside what_they_did (leave the string empty when the source does not support it — never invent a value to fill the field). LIMITS: key_numbers at most 5.`
+    : `THIS PASS writes only what the study MEANS: what it supports, what it does not establish, the limitations, the bottom line and the important unknowns. Other passes, reading the same text at the same time, write the finding, what they did, the key numbers and the jargon — do not write those, but your bottom line must agree with what the text reports.
+
+Return ONLY valid JSON matching this schema:
+{
   "what_this_study_supports": [""],
   "what_it_doesnt_establish": [""],
   "limitations": {
@@ -278,21 +303,46 @@ Return ONLY valid JSON matching this schema:
     "design_limits": [""],
     "may_be_missing_from_excerpt": true
   },
-  "jargon": [
-    { "term": "", "plain_meaning": "", "why_it_matters_here": "" }
-  ],
   "bottom_line": "",
   "important_unknowns": [""]
 }
 
-Omit empty optional fields inside what_they_did (leave the string empty when the source does not support it — never invent a value to fill the field). LIMITS: key_numbers at most 5, what_this_study_supports at most 4, what_it_doesnt_establish at most 4, limitations.reported_in_source at most 5, limitations.design_limits at most 4, jargon at most 5 (omit the array entirely if nothing materially blocks understanding), important_unknowns at most 4.`;
+LIMITS: what_this_study_supports at most 4, what_it_doesnt_establish at most 4, limitations.reported_in_source at most 5, limitations.design_limits at most 4, important_unknowns at most 4.`}`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt) }],
-    }, { label: 'research-decoder-v2' });
+    const [saidPart, meansPart, jargonPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt('said')) }],
+      }, { label: 'research-decoder-v2-said' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt('means')) }],
+      }, { label: 'research-decoder-v2-means' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt('jargon')) }],
+      }, { label: 'research-decoder-v2-jargon' }),
+    ]);
+    // Original key order, so the page renders as before.
+    const parsed = {
+      source_scope: saidPart?.source_scope,
+      finding: saidPart?.finding,
+      what_they_did: saidPart?.what_they_did,
+      key_numbers: saidPart?.key_numbers,
+      what_this_study_supports: meansPart?.what_this_study_supports,
+      what_it_doesnt_establish: meansPart?.what_it_doesnt_establish,
+      limitations: meansPart?.limitations,
+      jargon: Array.isArray(jargonPart?.jargon) && jargonPart.jargon.length ? jargonPart.jargon : undefined,
+      bottom_line: meansPart?.bottom_line,
+      important_unknowns: meansPart?.important_unknowns,
+    };
+    for (const k of Object.keys(parsed)) if (parsed[k] === undefined) delete parsed[k];
 
     if (!parsed?.finding) {
       return res.status(500).json({ error: 'Could not decode this research. Please try again.' });

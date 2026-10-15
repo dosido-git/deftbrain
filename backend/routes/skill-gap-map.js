@@ -190,6 +190,25 @@ const OUTPUT_GUARD = {
   require: ['fulfills_tool_promise'],
 };
 
+// The gaps call cannot see which capability the lead call picked as
+// start_here. Drop the gap that names the same capability (most of its
+// words in common), at most one.
+function dropStartHereDuplicate(gaps, startHere) {
+  if (!Array.isArray(gaps)) return gaps;
+  const words = t => new Set(String(t || '').toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) || []);
+  const sh = words(startHere?.capability);
+  if (!sh.size) return gaps.slice(0, 7);
+  let dropped = false;
+  return gaps.filter(g => {
+    if (dropped) return true;
+    const w = words(g?.capability);
+    let common = 0; for (const x of w) if (sh.has(x)) common++;
+    const same = common && common / Math.min(w.size || 1, sh.size) >= 0.6;
+    if (same) dropped = true;
+    return !same;
+  }).slice(0, 7);
+}
+
 function section(body, userLanguage) {
   return withLanguage(`${CORE_SYSTEM}\n\n${body}`, userLanguage) + `\n\n${NO_QUOTE_RULE}`;
 }
@@ -229,11 +248,17 @@ the other part — return only your own keys.`;
     // item 16 of the rewrite spec) — a real UI boundary, unlike v2's
     // technical/soft-skill category split, which existed only to avoid
     // duplicate generation and had no meaning past that.
-    const primaryPrompt = section(`${brief}
+    // Speed (2026-10-15): the primary call wrote ~2.4k tokens (~50s) while
+    // the secondary wrote ~900 (~22s). It is now two calls — the lead
+    // (starting point, strengths, start_here, next_move) and the skill_gaps
+    // list — so all three calls write about the same amount. The rule 'do not
+    // repeat start_here inside skill_gaps' crossed that line, so code removes
+    // the duplicate after the merge (dropStartHereDuplicate).
+    const leadPrompt = section(`${brief}
 
-YOUR PART: the primary result — what carries over, the one gap worth
-starting with, the next concrete move, and the fuller list of gaps worth
-checking.
+YOUR PART: the lead of the result — what carries over, the one gap worth
+starting with, and the next concrete move. A third analyst writes the
+fuller list of skill gaps at the same time; do not write skill_gaps.
 
 SKILL GAP MAP IS NOT A MODEL OF A PROFESSION. It is a comparison between
 what the visitor told you they have done and capabilities that MAY matter
@@ -315,8 +340,8 @@ ADDRESS THE VISITOR AS "YOU" IN EVERY FIELD. Never write "the visitor,"
 "the user," "the candidate," or any other third-person reference — this is
 an individual-facing tool advising one person about their own transition.
 
-Return ONLY valid JSON. Your response MUST contain ALL 5 top-level keys:
-starting_point, transferable_strengths, start_here, next_move, skill_gaps.
+Return ONLY valid JSON. Your response MUST contain ALL 4 top-level keys:
+starting_point, transferable_strengths, start_here, next_move.
 
 {
   "starting_point": {
@@ -344,7 +369,107 @@ starting_point, transferable_strengths, start_here, next_move, skill_gaps.
     "why": "Why this move specifically, tied to start_here — one sentence",
     "proof": "What you'd have afterward — a concrete artifact you can review, improve, and potentially use to demonstrate your thinking where appropriate — one sentence, consistent with whichever case (plan or documentation) actually applies. Do not assume the target role expects this specifically in a portfolio",
     "alternatives": ["Up to 2 alternatives, each explicitly conditional — e.g. 'If you have access to X, ...' — never assumed. Never suggest accessing an employer's confidential systems, internal user recordings, or anything requiring special permission or raising consent/privacy questions the visitor didn't ask about — prefer a self-contained exercise or something the visitor has clear, legitimate access to"]
-  },
+  }
+}
+
+RULES:
+- Do not put networking, credentials, resume positioning, or job-search tactics in skill_gaps — those belong to the other analyst's transition_tasks.
+- Do not put generic tool/software familiarity in skill_gaps — that belongs in the other analyst's role_expectations_to_check.
+- Maximum 5 transferable_strengths, maximum 2 next_move.alternatives, maximum 3 starting_point.important_unknowns.
+- Do not name a specific commercial product, tool, or brand anywhere in this response — describe the category instead ("research-specific software," not "Dovetail, Lookback, UserTesting").
+- Do not invent a taxonomy of employer types ("agency, startup, mid-size product company, enterprise") — one phrase acknowledging general variability is enough.
+- No numeric scores, and no effort/size estimate for a skill gap — priority (start_here/important/useful/role_dependent) is the only prioritization signal; do not add a build-size label.`, userLanguage);
+
+    const gapsPrompt = section(`${brief}
+
+YOUR PART: the fuller list of skill gaps worth checking. Another analyst
+writes what carries over, the one gap to start with and the next move at
+the same time; write only skill_gaps.
+
+SKILL GAP MAP IS NOT A MODEL OF A PROFESSION. It is a comparison between
+what the visitor told you they have done and capabilities that MAY matter
+for the kind of role they named. Without a supplied or verified job
+posting, every role-capability claim describes a possibility, not a
+specification.
+
+FINAL CALIBRATION — read this as the governing rule, not one more item in
+a list: you may confidently describe the VISITOR'S supplied experience.
+You may suggest POSSIBLE CONNECTIONS between that experience and a target
+role. You may NOT confidently describe THE ROLE itself — its requirements,
+its typical practice, what it commonly involves — until role-specific
+evidence (a supplied job posting, a verified source) has actually been
+examined. Treat every proposed role requirement as an EXPLORATION
+HYPOTHESIS for the visitor to check, not a finding you are reporting.
+
+Say: may be relevant to [role] roles, worth checking, possible gap, related
+evidence, not established yet, depends on the role, compare this with the
+expectations in roles you are considering, gives you something concrete to
+compare with actual role requirements.
+
+Avoid — these state a role fact you have not verified, however softly
+hedged the surrounding sentence is: "[role]s regularly...", "[role]
+requires...", "standard [role] deliverables are...", "the role
+expects...", "interviewers look for...", "employers want...", "this is
+foundational...", "this is the most important gap...", "commonly appears
+in [role]...", "how [role] is typically conducted", "resembles [role]
+practice", "this is a core part of [role]", "this is a standard [role]
+expectation", "a typical [role] would...". Rephrasing one of these into a
+softer synonym is still this failure — the tell is whether the sentence's
+grammatical subject is the ROLE ("[role]s do X") rather than the
+possibility ("X may be relevant to [role]s") or the comparison the visitor
+should make themselves.
+
+Do not classify a skill_gap's relevance or priority using a bare label
+that reads as an established fact about the role — "Important," "Core,"
+"Required," "Typical," or "Standard" all claim more certainty than an
+unverified role comparison earns. Use the qualified labels this schema
+already defines (relevance_basis, priority) and let the frontend render
+them as what they are: things worth checking, not verified requirements.
+
+Never turn:
+GENERAL OCCUPATIONAL KNOWLEDGE → THIS JOB'S REQUIREMENT
+MISSING EVIDENCE → MISSING SKILL
+RELATED EXPERIENCE → PROFICIENCY
+A PLAUSIBLE GAP → THE MOST IMPORTANT GAP
+A PRACTICE EXERCISE → REAL EXPERIENCE
+A TOOL CATEGORY → CORE PROFESSIONAL SKILL
+GENERAL FIELD KNOWLEDGE → A CHECKLIST OF PROFESSIONAL CONVENTIONS
+
+Do not name specific techniques, named methodologies, or named frameworks
+as though the field has one settled set of conventions — "structured
+interview facilitation," "published UX interview frameworks," "think-aloud
+prompting," "probing for behavior," "neutrality practices" and similar
+technique lists assert a canon of professional practice nothing supplied
+establishes. Where naming the general skill area is useful, name it at
+that level ("interviewing technique," "research facilitation") and point
+at investigating real practice instead: "compare your approach with
+several credible resources and with what roles you're considering
+actually ask for" — never assert what the practice is, only that it's
+worth comparing against.
+
+Do not invent what the visitor's past experience was FOR, ABOUT, or
+DIRECTED AT beyond what they actually said — if they supplied "survey
+design," do not describe its purpose as "understanding marketing
+preferences" or any other objective they didn't state. Do not invent the
+visitor's stakeholder types, the target employer's stakeholder types, or
+how often something happens ("regularly present to product, design, and
+business stakeholders") — describe the general possibility only.
+
+Do not upgrade one supplied skill into a specific technical scope it
+doesn't establish. "Data analysis in Excel" does not establish
+research-data analysis, survey-result analysis, or behavioral-metrics
+analysis — state exactly what was supplied, note that the input doesn't
+establish what KIND of data or analysis, and describe the transfer as
+depending on the target role, not asserted.
+
+ADDRESS THE VISITOR AS "YOU" IN EVERY FIELD. Never write "the visitor,"
+"the user," "the candidate," or any other third-person reference — this is
+an individual-facing tool advising one person about their own transition.
+
+Return ONLY valid JSON. Your response MUST contain the top-level key:
+skill_gaps.
+
+{
   "skill_gaps": [
     {
       "capability": "Specific capability — 3-6 words, not 'learn leadership'. Generic familiarity with a category of tool or software (not a technique or judgment capability) does not belong here — that goes in the other analyst's role_expectations_to_check instead, since specific tool requirements vary by employer",
@@ -361,8 +486,7 @@ starting_point, transferable_strengths, start_here, next_move, skill_gaps.
 }
 
 RULES:
-- 4-7 skill_gaps after semantic deduplication — not padded to fill a count.
-- Do not repeat the capability chosen for start_here inside skill_gaps.
+- 5-8 skill_gaps after semantic deduplication — not padded to fill a count. (One of them may also be chosen as the starting point by the other analyst; code removes that duplicate.)
 - Do not put networking, credentials, resume positioning, or job-search tactics in skill_gaps — those belong to the other analyst's transition_tasks.
 - Do not put generic tool/software familiarity in skill_gaps — that belongs in the other analyst's role_expectations_to_check.
 - Maximum 5 transferable_strengths, maximum 2 next_move.alternatives, maximum 3 starting_point.important_unknowns.
@@ -420,13 +544,19 @@ RULES:
     // stop_reason==='max_tokens' rather than returning partial JSON, so a
     // truncation here is a guaranteed 500 ("Could not map your skill
     // gaps."), not a degraded-but-usable answer.
-    const [primaryPart, secondaryPart] = await Promise.all([
+    const [leadPart, gapsPart, secondaryPart] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 5000,
+        max_tokens: 3500,
         system: withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: primaryPrompt }],
-      }, { label: 'SkillGapMap:primary' }),
+        messages: [{ role: 'user', content: leadPrompt }],
+      }, { label: 'SkillGapMap:lead' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: gapsPrompt }],
+      }, { label: 'SkillGapMap:gaps' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 2500,
@@ -434,6 +564,7 @@ RULES:
         messages: [{ role: 'user', content: secondaryPrompt }],
       }, { label: 'SkillGapMap:secondary' }),
     ]);
+    const primaryPart = { ...leadPart, skill_gaps: dropStartHereDuplicate(gapsPart?.skill_gaps, leadPart?.start_here) };
 
     const parsed = {
       transition: { current: currentRole.trim(), target: targetRole.trim() },
