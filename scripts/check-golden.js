@@ -29,6 +29,7 @@ const path = require('path');
 
 const AUDIT_DIR = path.join(__dirname, '..', 'audit');
 const BASE = process.env.GOLDEN_BASE_URL || 'http://localhost:3001';
+const SLOW_WARN_S = Number(process.env.GOLDEN_SLOW_WARN_S || 45);
 const CASE_TIMEOUT_MS = 300000; // LLM calls can run long (large schemas / SVGs; lease-trap-detector legitimately runs ~2-3 min/case)
 
 function findGoldenFile(tool) {
@@ -154,11 +155,13 @@ async function runTool(tool) {
   // GOLDEN_REPORT_FILE: where to write the names of the cases that passed.
   const skip = new Set(String(process.env.GOLDEN_SKIP_CASES || '').split(',').map(x => x.trim()).filter(Boolean));
   const passedNames = [];
+  const slowCases = [];
   let passed = 0;
   for (const c of cases) {
     if (skip.has(c.name)) { console.log(`  • ${c.name}  ${c.endpoint}  … passed earlier on this code, skipped`); passed++; passedNames.push(c.name); continue; }
     process.stdout.write(`  • ${c.name}  ${c.endpoint}  … `);
     let fresh;
+    const t0 = Date.now();
     try {
       fresh = await post(c.endpoint, c.input);
     } catch (e) {
@@ -168,9 +171,19 @@ async function runTool(tool) {
       continue;
     }
     const fails = diffCase(c.output, fresh, c.optionalSections);
+    // Time (2026-10-14): a live case is a real request, so its time is a free
+    // early warning. Not on a replay (GOLDEN_PERF_PROBE, stand-in API) — those
+    // times mean nothing. Warns, never fails: one sample is noisy, and the
+    // metrics report's 'slowest 10%' column watches real visitors.
+    const sec = Math.round((Date.now() - t0) / 1000);
+    if (!process.env.GOLDEN_PERF_PROBE) {
+      if (sec > SLOW_WARN_S) slowCases.push(`${c.name} ${sec}s`);
+      process.stdout.write(`${sec}s `);
+    }
     if (fails.length === 0) { console.log('PASS'); passed++; passedNames.push(c.name); }
     else { console.log('FAIL'); fails.forEach(f => console.log(`     ✖ ${f}`)); }
   }
+  if (slowCases.length) console.log(`  ⏱ ${tool}: ${slowCases.length} case(s) over ${SLOW_WARN_S}s — Safari gives up near 60s and real inputs run longer than these: ${slowCases.join(', ')}`);
   if (process.env.GOLDEN_REPORT_FILE) {
     try { fs.writeFileSync(process.env.GOLDEN_REPORT_FILE, JSON.stringify({ tool, passed: passedNames, total: cases.length })); } catch (_) { /* report is best-effort */ }
   }

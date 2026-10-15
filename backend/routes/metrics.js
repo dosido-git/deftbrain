@@ -713,19 +713,34 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const msg = (e.props && (e.props.message || e.props.where)) || '—';
       return `<tr><td>${escH(when)}</td><td>${escH(toolOf(e))}</td><td>${kind}</td><td>${escH(String(msg))}</td></tr>`;
     }).join('');
+    // Slow runs (2026-10-14). The average hid the problem: Safari gives up at
+    // about 60s, so what matters is how slow the slow runs are. "Slowest 10%"
+    // is the 90th percentile of visitor-measured times (with under 10 runs,
+    // the slowest one). Red above SLOW_WARN_S; the tools over it are also
+    // listed above the table, whatever caused it — a code change, longer real
+    // inputs or a slower model.
+    const SLOW_WARN_S = 45;
+    const slowOf = (ms) => {
+      if (!ms.length) return null;
+      const sorted = [...ms].sort((a, b) => a - b);
+      return Math.round(sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.9) - 1)] / 1000);
+    };
     const toolRow = ([t, v]) => {
         const avgMs = v.ms.length ? Math.round(v.ms.reduce((a, b) => a + b, 0) / v.ms.length / 100) / 10 : null;
+        const slowS = slowOf(v.ms);
+        const slowTd = slowS == null ? '<td>—</td>' : slowS > SLOW_WARN_S ? `<td style="color:#b91c1c;font-weight:700">${slowS}s</td>` : `<td>${slowS}s</td>`;
         // A render error is louder than a server error: the request looked
         // fine and the user still got nothing, so it stays red at any count.
         const rx = v.renderErrors
           ? `<td style="color:#b91c1c;font-weight:700">${v.renderErrors}</td>`
           : '<td>0</td>';
         const tx = v.thin ? `<td style="color:#b45309;font-weight:700">${v.thin}</td>` : '<td>0</td>';
-        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
+        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td>${slowTd}<td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
       };
     // Tools somebody ran first; tools only viewed fold below (2026-10-04).
     const sortedTools = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs || b[1].views - a[1].views);
     const toolRows = sortedTools.filter(([, v]) => v.runs > 0).map(toolRow).join('');
+    const slowTools = sortedTools.map(([t, v]) => [t, slowOf(v.ms), v.ms.length]).filter(([, sec]) => sec != null && sec > SLOW_WARN_S).sort((a, b) => b[1] - a[1]);
     const viewedOnly = sortedTools.filter(([, v]) => v.runs === 0);
     const viewedOnlyRows = viewedOnly.map(toolRow).join('');
 
@@ -1403,8 +1418,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${currentLayout ? ` for the current layout (<code>${escH(currentLayout)}</code>)` : ''}${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate it and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools <span style="font-weight:400;font-size:12px;color:#888">— tools somebody ran</span></h2>
-    <table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
-    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>left early</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
+    ${slowTools.length ? `<p style="color:#b91c1c;font-size:13px;margin:4px 0 8px">⏱ Slow for visitors (slowest 10% over ${SLOW_WARN_S}s; Safari gives up near 60s): ${slowTools.map(([t, sec, n]) => `<b>${escH(t)}</b> ${sec}s (${n} run${n === 1 ? '' : 's'})`).join(' · ')}</p>` : ''}
+    <table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th>render err</th><th>thin</th><th>avg time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=12 style="color:#888">No data yet.</td></tr>'}</table>
+    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>left early</th><th>render err</th><th>thin</th><th>avg time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
