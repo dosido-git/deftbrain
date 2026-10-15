@@ -24,7 +24,12 @@ router.post('/paperwork-path', rateLimit(), async (req, res) => {
     const situationText = (situation || '').toString().slice(0, 4000);
     const locationText = (location || '').toString().slice(0, 200);
 
-    const prompt = withLanguage(`You are a calm, organized life-admin expert who helps people handle the paperwork around a major life event without missing anything or doing it in the wrong order.
+    // Speed (2026-10-14): one call wrote the whole answer (~2.7k tokens, ~57s).
+    // It is now two calls at once with disjoint keys — the checklist (what)
+    // and the plan (in what order) — each about half the length. The plan
+    // pass is told the checklist is written alongside it so it covers the
+    // same essentials; the consistency check reads the merged answer.
+    const intro = `You are a calm, organized life-admin expert who helps people handle the paperwork around a major life event without missing anything or doing it in the wrong order.
 
 LIFE EVENT: ${lifeEvent}
 ${locationText ? `LOCATION: ${locationText}` : 'LOCATION: not specified'}
@@ -34,7 +39,11 @@ Produce a document checklist AND the order to handle it. Requirements vary by co
 
 BE SPECIFIC, then hedge — do not be vague. When a deadline or figure is well-established for the stated location (e.g. a region's new-resident vehicle-registration or driver-license grace period, a benefits enrollment window), state the actual number (e.g. "within 30 days", "90-day window") and note it should be confirmed as current. Only avoid inventing a precise figure you are not confident is commonly correct — in that case say the rule exists and point the person to where to confirm it, rather than stating a made-up number. The verify_note covers the blanket "confirm for your jurisdiction" caveat, so individual fields can carry the specific figure.
 
-FIGURE DISCIPLINE: each deadline belongs to ITS OWN item — never reuse one item's window for a different one (e.g. a region's driver-license grace period and its vehicle-registration grace period are usually DIFFERENT numbers; don't apply one to both). If unsure whether two items share a window, hedge that specific figure rather than guessing.
+FIGURE DISCIPLINE: each deadline belongs to ITS OWN item — never reuse one item's window for a different one (e.g. a region's driver-license grace period and its vehicle-registration grace period are usually DIFFERENT numbers; don't apply one to both). If unsure whether two items share a window, hedge that specific figure rather than guessing.`;
+    const tail = `Return ONLY the JSON object.`;
+    const checklistPrompt = withLanguage(`${intro}
+
+THIS PASS writes the summary, the event label, the document checklist and the verify note. A second pass is writing the ordered steps and watch-outs at the same time from the same inputs.
 
 Return ONLY valid JSON:
 
@@ -49,6 +58,24 @@ Return ONLY valid JSON:
       "priority": "critical | important | optional"
     }
   ],
+  "verify_note": "A one-sentence reminder that requirements vary by location/employer and where to confirm the specifics"
+}
+
+RULES:
+- document_checklist: 5-12 items, most impactful first, priority set honestly.
+- TIMELINE ANCHOR (relative weeks): the life event ITSELF is WEEK 0. "event_label" is a 1-3 word name for it (e.g. "Move day", "Baby arrives", "First day", "Date of passing"). Every step's week_start/week_end are integers RELATIVE to that: NEGATIVE = weeks BEFORE the event (preparation), 0 = the event week, POSITIVE = weeks AFTER (follow-up). Examples: "2 to 4 weeks before the move" → week_start -4, week_end -2; "the week before" → -1, -1; "the week of / on the day" → 0, 0; "within the 2nd–3rd week after" → +2, +3. A single-week step has week_start == week_end; a windowed step spans it with week_start ≤ week_end. If the event has already occurred when someone uses this (e.g. a death, where handling begins after), keep event at 0 and put every step at 0 or positive.
+- Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
+- Be specific to the life event; generic "make a checklist" advice is a failure.
+- ALL four keys above must be present.
+
+${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const planPrompt = withLanguage(`${intro}
+
+THIS PASS writes the ordered steps and the watch-outs. A second pass is writing the document checklist at the same time from the same inputs: make the steps cover the essential documents and tasks for this event (the same ones a complete checklist would list), and name each task plainly so it matches the checklist's wording.
+
+Return ONLY valid JSON:
+
+{
   "ordered_steps": [
     {
       "order": 1,
@@ -61,31 +88,38 @@ Return ONLY valid JSON:
   ],
   "watch_outs": [
     "A common mistake or thing people forget for THIS event — one sentence"
-  ],
-  "verify_note": "A one-sentence reminder that requirements vary by location/employer and where to confirm the specifics"
+  ]
 }
 
 RULES:
-- ALL five top-level keys must be present.
-- document_checklist: 5-12 items, most impactful first, priority set honestly.
 - TIMELINE ANCHOR (relative weeks): the life event ITSELF is WEEK 0. "event_label" is a 1-3 word name for it (e.g. "Move day", "Baby arrives", "First day", "Date of passing"). Every step's week_start/week_end are integers RELATIVE to that: NEGATIVE = weeks BEFORE the event (preparation), 0 = the event week, POSITIVE = weeks AFTER (follow-up). Examples: "2 to 4 weeks before the move" → week_start -4, week_end -2; "the week before" → -1, -1; "the week of / on the day" → 0, 0; "within the 2nd–3rd week after" → +2, +3. A single-week step has week_start == week_end; a windowed step spans it with week_start ≤ week_end. If the event has already occurred when someone uses this (e.g. a death, where handling begins after), keep event at 0 and put every step at 0 or positive.
 - ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically. week_start/week_end are RELATIVE to week 0 (the event) per the anchor rule above — they are the recommended window, not a legal deadline. Keep the whole plan realistic (typically about -4 to +8 weeks).
 - watch_outs: 2-4 items.
 - Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
 - Be specific to the life event; generic "make a checklist" advice is a failure.
+- Both keys above must be present.
 
-Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
     // T1 (audit/DEFECT-TYPES.md): official requirements from a cached web
     // search, run alongside the checklist. Without it the model said a Texas
     // move needs a safety inspection and online voter registration.
     const research = locationText ? researchFacts({ topic: ['paperwork', lifeEvent, locationText], label: 'paperwork-path', brief: `Official requirements for someone handling this life event: "${lifeEvent}" in ${locationText}. What must be registered, transferred, inspected, renewed or filed, with which office, by when, whether it can be done online or only in person or by mail, and fees. Include requirements people commonly assume that do NOT apply there (abolished inspections, registrations that cannot be done online).` }) : null;
 
-    const parsed = await callClaudeWithRetry({
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'paperwork-path' });
+      max_tokens: 2500,
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const [list, plan] = await Promise.all([ask(checklistPrompt, 'paperwork-path-checklist'), ask(planPrompt, 'paperwork-path-plan')]);
+    const parsed = {
+      situation_summary: list.situation_summary,
+      event_label: list.event_label,
+      document_checklist: list.document_checklist,
+      ordered_steps: plan.ordered_steps,
+      watch_outs: plan.watch_outs,
+      verify_note: list.verify_note,
+    };
 
     if (!parsed.document_checklist || !parsed.ordered_steps) {
       return res.status(500).json({ error: 'Could not build your checklist. Please try again.' });

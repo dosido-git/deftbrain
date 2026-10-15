@@ -158,6 +158,7 @@ Do NOT flag something merely because the research does not mention it: research 
       repairNote: 'Correct the statement so it agrees with the researched facts, keeping the rest of the line. If the correction would need detail the research does not give, state the corrected fact plainly or tell them where to confirm it. Do not mention research, searches or sources in the text.',
       userLanguage,
       model: MODELS.SMART,
+      related: true,
     }) || [];
   } catch (err) {
     console.log(`[${label}] world-facts check skipped: ${err.message}`);

@@ -39,17 +39,13 @@ NUMBERS AND FACTS MUST BE RIGHT: a wrong number in a teaching example teaches th
 DIRECTION WORDS: comparisons flip meaning when one word is wrong. Before finishing, re-read every sentence that compares (more/less, longer/shorter, higher/lower, earlier/later, bigger/smaller) and confirm each word points the way the claim needs — in whatever language you are writing. Each myth must be genuinely false and each correction must actually contradict it — if the correction would have to concede the myth, or only holds under conditions it does not state, choose a different misconception.
 When the concept is itself numeric or mathematical, the analogy must come from outside it (sharing a pizza, splitting a bill) — a recipe that uses fractions is an example of fractions, not an analogy for them.`;
 
-    const userPrompt = `CONCEPT TO EXPLAIN: ${concept}
+    const header = `CONCEPT TO EXPLAIN: ${concept}
 AUDIENCE: ${audience || 'general adult'}
 ${audienceInterests ? `AUDIENCE INTERESTS/WORLD: ${audienceInterests}` : ''}
-DEPTH: ${depth || 'solid_understanding'}
-
-Generate tailored analogies. Return ONLY valid JSON:
-{
-  "concept_name": "Clean name of the concept — 3-6 words",
-  "one_liner": "The concept explained in one sentence a 10-year-old could understand. No jargon.",
-
-  "analogies": [
+DEPTH: ${depth || 'solid_understanding'}`;
+    const HEAD = `  "concept_name": "Clean name of the concept — 3-6 words",
+  "one_liner": "The concept explained in one sentence a 10-year-old could understand. No jargon.",`;
+    const ANALOGIES = `  "analogies": [
     {
       "title": "Short catchy name for this analogy (e.g., 'The Library Card System') — 3-6 words",
       "type": "Visual | Experiential | Narrative | Structural | Emotional | Mechanical",
@@ -59,36 +55,94 @@ Generate tailored analogies. Return ONLY valid JSON:
       "accuracy": "high | medium",
       "memorability": "high | medium"
     }
-  ],
-
-  "the_key_insight": "The single most important thing to understand about this concept, stated plainly. The sentence that makes everything click. — one sentence",
-
-  "common_misconceptions": [
+  ]`;
+    const KEY = `  "the_key_insight": "The single most important thing to understand about this concept, stated plainly. The sentence that makes everything click. — one sentence",`;
+    const MISCONCEPTIONS = `  "common_misconceptions": [
     {
       "myth": "2-3 of these — only the strongest, most clearly false ones; 2 is fine. Do not pad to reach a number, and do not split one misconception into two. What people wrongly believe, as ONE claim: a single sentence, no parenthetical, no second clause explaining it. If it needs an explanation it is not a misconception, it is a lesson — cut it or move the substance into the correction.",
       "reality": "The correction, as ONE sentence — aim for about 15 words. That is a target, not a cliff: go over when the correction genuinely needs it, but a 30-word answer means you are explaining rather than correcting. No parenthetical — not one, anywhere; if you reach for brackets, the thing inside them is either the real point or cuttable. These render as a two-line pair, so length is what breaks the format."
     }
-  ],
+  ],`;
+    const DEEPER = `  "go_deeper": "If they want to learn more, what's the next concept to understand? One sentence pointing them forward.",
+  "go_deeper_concept": "Just the clean name of that next concept — 2-5 words, no punctuation, ready to drop into a fresh explanation. e.g. 'mRNA vaccine technology'",`;
+    const TIP = `  "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively. — one sentence"`;
+    const userPrompt = `${header}
 
-  "go_deeper": "If they want to learn more, what's the next concept to understand? One sentence pointing them forward.",
-  "go_deeper_concept": "Just the clean name of that next concept — 2-5 words, no punctuation, ready to drop into a fresh explanation. e.g. 'mRNA vaccine technology'",
+Generate tailored analogies. Return ONLY valid JSON:
+{
+${HEAD}
 
-  "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively. — one sentence"
+${ANALOGIES},
+
+${KEY}
+
+${MISCONCEPTIONS}
+
+${DEEPER}
+
+${TIP}
 }
 
 Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5-6' : '3-5'} analogies.`;
 
-    const parsed = await callClaudeWithRetry({
-      // SMART, not FAST (2026-10-02): Haiku slipped arithmetic into worked
-      // examples ("double 3/4 = 6/8, the same amount") — a teaching tool can't.
-      model: MODELS.SMART,
-      // 4000 (not 2500) for i18n headroom: deep mode (6 analogies × 3-5
-      // sentences) fills ~78% of 2500 in English but truncates → 500 in verbose
-      // languages like German. The schema is already bounded; this is headroom.
-      max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or examples plainly or with single quotes, or it breaks the JSON.',
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'analogy-engine' });
+    // Speed (2026-10-14): Deep asks for 5-6 analogies, the longest answer the
+    // tool writes (~55s in one call). It is written as two calls at once.
+    // Partitioned by analogy type AND domain, never by index — two calls told
+    // "analogies 1-3" and "4-6" can both write the same library analogy. Each
+    // half also carries part of the rest, so both write about the same amount.
+    const halfPrompt = (half) => `${header}
+
+${half === 'A'
+    ? 'Two passes write this explanation at the same time. THIS PASS writes exactly 3 analogies, one each of type Visual, Experiential and Narrative, drawn from EVERYDAY LIFE and HISTORY only. The other pass covers Structural, Emotional and Mechanical analogies from technical and natural domains, so do not use those types or domains.'
+    : 'Two passes write this explanation at the same time. THIS PASS writes exactly 3 analogies, one each of type Structural, Emotional and Mechanical, drawn from TECHNICAL and NATURAL or BIOLOGICAL domains only. The other pass covers Visual, Experiential and Narrative analogies from everyday life and history, so do not use those types or domains.'}
+
+Return ONLY valid JSON:
+{
+${half === 'A' ? `${HEAD}
+
+${ANALOGIES},
+
+${KEY}
+
+${DEEPER}
+
+${TIP}` : `${ANALOGIES},
+
+${MISCONCEPTIONS.replace(/,\s*$/, '')}`}
+}`;
+
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or examples plainly or with single quotes, or it breaks the JSON.';
+    // SMART, not FAST (2026-10-02): Haiku slipped arithmetic into worked
+    // examples ("double 3/4 = 6/8, the same amount") — a teaching tool can't.
+    // 4000 (not 2500) for i18n headroom: deep mode (6 analogies × 3-5
+    // sentences) fills ~78% of 2500 in English but truncates → 500 in verbose
+    // languages like German. A Deep half wrote ~1.6k tokens in English (2026-10-14), so 3500 leaves German headroom.
+    let parsed;
+    if (depth === 'deep_understanding') {
+      const [a, b] = await Promise.all([
+        callClaudeWithRetry({
+          model: MODELS.SMART, max_tokens: 3500, system,
+          messages: [{ role: 'user', content: withLanguage(halfPrompt('A'), userLanguage) + '\nReturn ONLY valid JSON.' }],
+        }, { label: 'analogy-engine-deep-a' }),
+        callClaudeWithRetry({
+          model: MODELS.SMART, max_tokens: 3500, system,
+          messages: [{ role: 'user', content: withLanguage(halfPrompt('B'), userLanguage) + '\nReturn ONLY valid JSON.' }],
+        }, { label: 'analogy-engine-deep-b' }),
+      ]);
+      parsed = {
+        concept_name: a.concept_name, one_liner: a.one_liner,
+        analogies: [...(Array.isArray(a.analogies) ? a.analogies : []), ...(Array.isArray(b.analogies) ? b.analogies : [])],
+        the_key_insight: a.the_key_insight,
+        common_misconceptions: b.common_misconceptions,
+        go_deeper: a.go_deeper, go_deeper_concept: a.go_deeper_concept,
+        teaching_tip: a.teaching_tip,
+      };
+    } else {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART, max_tokens: 4000, system,
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'analogy-engine' });
+    }
     if (!parsed.concept_name) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }

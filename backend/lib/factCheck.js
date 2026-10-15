@@ -95,7 +95,7 @@ function setByPath(obj, path, value) {
  * @param opts.model       check + repair model (default MODELS.FAST)
  */
 async function checkAgainstSupplied(draft, opts) {
-  const { label, supplied, fields, lookFor, repairNote, userLanguage, locale = '', model = MODELS.FAST } = opts;
+  const { label, supplied, fields, lookFor, repairNote, userLanguage, locale = '', model = MODELS.FAST, related = false } = opts;
   if (!Array.isArray(fields) || !fields.length) return;
 
   const drafts = fields.map(([path, value]) => `${path}:\n${value}`).join('\n\n');
@@ -147,6 +147,49 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   if (String(check?.verdict).toUpperCase() !== 'FAIL' || !violations.length) return violations;
 
+  // `related` (world-facts corrections): a corrected fact usually appears in
+  // more than one line. Paperwork Path corrected an item's explanation to an
+  // emissions-only inspection while the same item's title and a later step
+  // still said safety inspection (2026-10-14). So each correction also shows
+  // the repair (a) the other text fields of the same list item and (b) any
+  // line elsewhere repeating the flagged claim's key words, and asks it to
+  // bring those into line only where they now contradict the correction.
+  const STOP = new Set(['that', 'this', 'with', 'from', 'your', 'have', 'will', 'must', 'they', 'their', 'there', 'when', 'what', 'which', 'before', 'after', 'about', 'into', 'than', 'then', 'only', 'also', 'more', 'most', 'some', 'each', 'other', 'them', 'were', 'been', 'being', 'does', 'should', 'would', 'could']);
+  const words = t => new Set(String(t || '').toLowerCase().match(/[\p{L}]{4,}/gu)?.filter(w => !STOP.has(w)) || []);
+  const isEnumish = t => typeof t !== 'string' || !t.trim() || /^[a-z_]+$/.test(t.trim());
+  const relatedOf = new Map();
+  if (related) {
+    const taken = new Set(violations.map(v => v.field));
+    const allStr = (fields || []).map(([p]) => p);
+    violations.forEach((v, i) => {
+      const out = [];
+      const parent = v.field.replace(/\.[^.[\]]+$/, '');
+      const item = parent !== v.field ? getByPath(draft, parent) : null;
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        for (const [k, val] of Object.entries(item)) {
+          const p = `${parent}.${k}`;
+          if (!taken.has(p) && !isEnumish(val)) { out.push(p); taken.add(p); }
+        }
+      }
+      const key = words(v.claim);
+      if (key.size >= 2) {
+        for (const p of allStr) {
+          if (out.length >= 6 || taken.has(p)) continue;
+          const val = getByPath(draft, p);
+          if (isEnumish(val)) continue;
+          const w = words(val);
+          let hits = 0; for (const k of key) if (w.has(k)) hits++;
+          if (hits >= 2) { out.push(p); taken.add(p); }
+        }
+      }
+      relatedOf.set(i, out.slice(0, 6));
+    });
+  }
+  const relatedText = (i) => {
+    const r = relatedOf.get(i) || [];
+    return r.length ? `\nRELATED LINES — change one ONLY if it now contradicts the corrected line; otherwise leave it out of "fixes":\n${r.map((p, j) => `${i}.${j + 1}. [${p}]\n${getByPath(draft, p)}`).join('\n')}` : '';
+  };
+
   const repairPrompt = `Repair specific lines that claim things the visitor never said. Everything else has been accepted.
 
 WHAT THE VISITOR ACTUALLY TYPED:
@@ -156,14 +199,14 @@ ${violations.map((v, i) => `${i}. [${v.field}]
 current:
 ${getByPath(draft, v.field)}
 
-unsupported: ${v.claim}${v.why ? ` — ${v.why}` : ''}`).join('\n\n')}
+unsupported: ${v.claim}${v.why ? ` — ${v.why}` : ''}${relatedText(i)}`).join('\n\n')}
 
 ${repairNote}
 
 Cut the unsupported claim. Do not replace it with a different unsupported claim — the usual repair failure is swapping one invention for a safer-sounding one. If removing it leaves the line plainer, that is correct.
 
 OUTPUT (JSON only):
-{ "fixes": [ { "n": 0, "value": "the full repaired text" } ] }
+{ "fixes": [ { "n": 0, "value": "the full repaired text" } ] }${relatedOf.size ? '\nA related line is fixed with its own number as a string, e.g. { "n": "0.2", "value": "..." }.' : ''}
 
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
@@ -177,6 +220,12 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // Keyed by NUMBER, not by path: withLanguage translates JSON string values,
   // and a translated field path addresses nothing.
   (Array.isArray(repair?.fixes) ? repair.fixes : []).forEach(fix => {
+    const rel = String(fix?.n ?? '').match(/^(\d+)\.(\d+)$/);
+    if (rel) {
+      const p = (relatedOf.get(Number(rel[1])) || [])[Number(rel[2]) - 1];
+      if (p && typeof fix.value === 'string' && fix.value.trim()) setByPath(draft, p, fix.value.trim());
+      return;
+    }
     const v = violations[Number(fix?.n)];
     if (!v || typeof fix.value !== 'string' || !fix.value.trim()) return;
     setByPath(draft, v.field, fix.value.trim());
