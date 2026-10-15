@@ -3,7 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext, cleanJsonResponse } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { quoteResearch, quoteResearchState } = require('../lib/quoteResearch');
+const { quoteResearch, quoteResearchState, quoteResearchEmpty } = require('../lib/quoteResearch');
 const { NO_QUOTE_RULE, checkAgainstSupplied } = require('../lib/factCheck');
 const { isSurging } = require('../lib/surge');
 
@@ -82,7 +82,7 @@ router.post('/someone-said-it-better/research', rateLimit(RESEARCH_POLL_LIMITS, 
       // there was nothing coming. 200, not an error status — the poll itself
       // succeeded; it is the research that did not.
       const state = quoteResearchState({ situation, voice });
-      if (state === 'failed') return res.json({ status: 'failed', code: 'quote_research_unavailable' });
+      if (state === 'failed') return res.json({ status: 'failed', code: quoteResearchEmpty({ situation, voice }) ? 'quote_research_empty' : 'quote_research_unavailable' });
       return res.status(202).json({ status: 'pending' });
     }
     res.json({ status: 'ready', researched_at: research.packet.researched_at, quote_count: research.packet.quotes.length });
@@ -106,6 +106,10 @@ router.post('/someone-said-it-better', rateLimit(DEFAULT_LIMITS), async (req, re
     const force = req.body.force === true;
 
     const research = await quoteResearch({ situation, voice, force });
+    if (!research.packet && quoteResearchEmpty({ situation, voice })) return res.status(503).json({
+      error: 'None of the quotes found for this could be traced to a reliable source. Try describing the situation in different words.',
+      code: 'quote_research_empty',
+    });
     if (!research.packet) return res.status(503).json({
       error: 'The source check did not finish in time. Try again in a moment — the research is usually ready by then.',
       code: 'quote_research_unavailable',

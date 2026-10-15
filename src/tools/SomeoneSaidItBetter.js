@@ -287,7 +287,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
       setCurrentFindId(id);
     } catch (e) {
       setPhase('idle'); setPreview(null);
-      setError(e?.code === 'quote_research_unavailable' ? t('ssib_research_unavailable') : (e.message || t('ssib_error_generic')));
+      setError(e?.code === 'quote_research_empty' ? t('ssib_research_empty') : e?.code === 'quote_research_unavailable' ? t('ssib_research_unavailable') : (e.message || t('ssib_error_generic')));
     }
   }, [busy, callToolEndpoint, pollToolEndpoint, rememberFind, setResults, userLocale, userCurrency, userRegion, t]);
 

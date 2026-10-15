@@ -34,12 +34,13 @@ function hostOf(url) {
 
 function cleanPacket(raw, { log = false } = {}) {
   if (!raw || typeof raw !== 'object') return null;
-  const dropped = { aggregator: 0, not_exact: 0 };
+  const dropped = { aggregator: 0, not_exact: 0, too_long: 0, no_url: 0 };
   const quotes = (Array.isArray(raw.quotes) ? raw.quotes : []).slice(0, 10).map(q => {
     const text = compact(q?.text, 360);
     const words = text.split(/\s+/).filter(Boolean);
     const url = compact(q?.url, 700);
-    if (!text || words.length > 25 || !url) return null;
+    if (!text || !url) { dropped.no_url++; return null; }
+    if (words.length > 25) { dropped.too_long++; return null; }
     const host = hostOf(url);
     if (!host || AGGREGATOR.test(host)) { dropped.aggregator++; return null; }
     const context_note = compact(q?.context_note, 500) || null;
@@ -57,7 +58,7 @@ function cleanPacket(raw, { log = false } = {}) {
       themes: (Array.isArray(q?.themes) ? q.themes : []).map(x => compact(x, 60)).filter(Boolean).slice(0, 6),
     };
   }).filter(Boolean).map((q, i) => ({ id: `Q${i + 1}`, ...q }));
-  if (log) console.log(`[quoteResearch] ${quotes.length} of ${Array.isArray(raw.quotes) ? raw.quotes.length : 0} kept; dropped ${dropped.aggregator} aggregator, ${dropped.not_exact} not-exact`);
+  if (log) console.log(`[quoteResearch] ${quotes.length} of ${Array.isArray(raw.quotes) ? raw.quotes.length : 0} kept; dropped ${dropped.aggregator} aggregator, ${dropped.not_exact} not-exact, ${dropped.too_long} over 25 words, ${dropped.no_url} no text/URL`);
   return quotes.length >= 2 ? { researched_at: compact(raw.researched_at, 60) || new Date().toISOString(), quotes } : null;
 }
 
@@ -70,6 +71,13 @@ function render(packet) {
 // /research readiness endpoint passes 0 so a poll returns immediately —
 // cached packet or "pending" — while the fetch it just started runs on in
 // the background. Same split as claimResearch.js.
+// Searches that finished but left fewer than two verifiable quotes, by cache
+// key. groundedStatus calls both this and a crashed fetch 'failed'; the visitor
+// needs to hear which one happened (2026-10-13: a 56s search found 8 quotes,
+// all from aggregators or too long, and the page said it 'did not finish in
+// time' — and a retry inside the 5-minute negative cache would fail again).
+const emptyAt = new Map();
+
 async function quoteResearch({ situation, voice = 'any', force = false, coldWaitMs = COLD_WAIT_MS }) {
   const cacheKey = keyFor({ situation, voice });
   const block = await groundedFacts({
@@ -103,6 +111,7 @@ ${NO_QUOTE_RULE}`,
       // the model's "researched_at" was whatever date it chose to type.
       if (raw && typeof raw === 'object') raw.researched_at = new Date().toISOString();
       const packet = cleanPacket(raw, { log: true });
+      if (packet) emptyAt.delete(cacheKey); else emptyAt.set(cacheKey, Date.now());
       return packet ? { block: render(packet), data: packet } : { block: '', data: null };
     },
   });
@@ -117,4 +126,14 @@ function quoteResearchState({ situation, voice = 'any' }) {
   return groundedStatus(keyFor({ situation, voice }));
 }
 
-module.exports = { quoteResearch, quoteResearchState, cleanPacket };
+// True when the last search for this situation finished and found nothing
+// verifiable (as opposed to failing or still running).
+function quoteResearchEmpty({ situation, voice = 'any' }) {
+  const key = keyFor({ situation, voice });
+  const at = emptyAt.get(key);
+  if (!at) return false;
+  if (Date.now() - at > 10 * 60 * 1000) { emptyAt.delete(key); return false; }
+  return groundedStatus(key) === 'failed';
+}
+
+module.exports = { quoteResearch, quoteResearchState, quoteResearchEmpty, cleanPacket };
