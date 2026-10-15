@@ -23,7 +23,7 @@
 function leaves(v, path = [], out = new Map()) {
   if (Array.isArray(v)) { v.forEach((x, i) => leaves(x, [...path, i], out)); if (!v.length) out.set(JSON.stringify(path), v); }
   else if (v && typeof v === 'object') { const ks = Object.keys(v); ks.forEach(k => leaves(v[k], [...path, k], out)); if (!ks.length) out.set(JSON.stringify(path), v); }
-  else out.set(JSON.stringify(path), v);
+  else if (v !== undefined) out.set(JSON.stringify(path), v); // a key left undefined is not content (and a JSON copy drops it)
   return out;
 }
 
@@ -79,15 +79,24 @@ async function allChecks(draft, checks, { label = 'allChecks', recheck = null } 
   // keeps the full saving.
   const changedEarly = copies.slice(0, -1).some(c => {
     const l = leaves(c);
-    if (l.size !== before.size) return true;
     for (const [k, v] of l) if (JSON.stringify(before.get(k)) !== JSON.stringify(v)) return true;
+    for (const k of before.keys()) if (!l.has(k)) return true;
     return false;
   });
-  // `recheck` overrides it when the last check does more than consistency
-  // (a full v2 guard): re-run only the consistency part.
+  // `recheck(draft, changedPaths)` overrides the default focused
+  // consistency re-check.
   if (checks.length > 1 && changedEarly) {
-    console.log(`[${label}] an earlier check corrected the answer — re-checking consistency on the merged result`);
-    try { await (recheck || checks[checks.length - 1])(draft); } catch (_) { /* fail-open like the checks themselves */ }
+    // Focused on what changed: the rest was already checked, and a full
+    // re-check (~13s on Analogy Engine) cost more than the parallel run saved.
+    const now = leaves(draft);
+    const toPath = (k) => JSON.parse(k).reduce((p, x) => typeof x === 'number' ? `${p}[${x}]` : (p ? `${p}.${x}` : String(x)), '');
+    const changed = [];
+    for (const [k, v] of now) if (JSON.stringify(before.get(k)) !== JSON.stringify(v)) changed.push(toPath(k));
+    console.log(`[${label}] an earlier check corrected ${changed.length} field(s) — re-checking consistency around them`);
+    const { checkConsistency } = require('./outputGuard');
+    const { currentRequestBody } = require('./outputStandard');
+    const fallback = (d, focus) => checkConsistency(d, { label, userLanguage: currentRequestBody()?.userLanguage, focus });
+    try { await (recheck || fallback)(draft, changed); } catch (_) { /* fail-open like the checks themselves */ }
   }
   return draft;
 }

@@ -147,6 +147,35 @@ const AnalogyEngine = ({ tool }) => {
     }
   };
 
+  // "Show more" (2026-10-15): the first answer carries 2-4 analogies so it
+  // arrives quickly; two more, of types not yet shown, come on request.
+  const [moreLoading, setMoreLoading] = useState(false);
+  const showMore = async () => {
+    if (!results?.analogies?.length || moreLoading) return;
+    setMoreLoading(true);
+    setError('');
+    try {
+      const data = await callToolEndpoint('analogy-engine', {
+        concept: concept.trim() || results.concept_name,
+        audience: audience.trim() || 'general adult',
+        audienceInterests: audienceInterests.trim() || null,
+        depth,
+        more: true,
+        existingAnalogies: results.analogies.map(a => ({ title: a.title, type: a.type })),
+        oneLiner: results.one_liner,
+        keyInsight: results.the_key_insight,
+        userLocale, userCurrency, userRegion,
+      });
+      if (Array.isArray(data?.analogies) && data.analogies.length) {
+        setResults(prev => (prev ? { ...prev, analogies: [...(prev.analogies || []), ...data.analogies] } : prev));
+      }
+    } catch (err) {
+      setError(err.message || t('ae_error'));
+    } finally {
+      setMoreLoading(false);
+    }
+  };
+
   const handleSubmit = () => generate();
 
   const loadExample = useCallback(() => {
@@ -456,6 +485,14 @@ const AnalogyEngine = ({ tool }) => {
                   </div>
                 </div>
               ))}
+              {results.analogies.length < 8 && (
+                <button data-print-hide onClick={showMore} disabled={moreLoading}
+                  className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary} disabled:opacity-60`}>
+                  {moreLoading
+                    ? <><span className="inline-block animate-spin">{tool?.icon ?? '💡'}</span> {t('ae_more_loading')}</>
+                    : <>＋ {t('ae_show_more')}</>}
+                </button>
+              )}
             </div>
           )}
 

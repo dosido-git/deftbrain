@@ -120,6 +120,9 @@ const REPAIR_GROUP = 3;
 
 async function runOutputGuard(draft, opts) {
   const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '', model = MODELS.FAST, only = '' } = opts;
+  // focus: a re-check after another check corrected these fields (lib/bothChecks.js).
+  // Only violations touching them are reported, so the check writes far less.
+  const focus = Array.isArray(opts.focus) ? opts.focus.filter(f => typeof f === 'string').slice(0, 20) : [];
   const consistencyOnly = only === 'consistency';
   const consistencyModel = opts.consistencyModel || process.env.CONSISTENCY_CHECK_MODEL || MODELS.SMART;
   // Shown to the check as context, never rewritten (labels, enums, numbers).
@@ -171,22 +174,24 @@ ${(cons ? consFields : fields).map(([path, value]) => `${path}:\n${value}`).join
 Look for:
 ${cons ? CONSISTENCY_CHECKS + (consistencyOnly ? `\n${INVENTED_CHECK}` : '') : V2_CHECKS}
 
-${cons ? 'Look ONLY for those. Anything else, however imperfect, is out of scope here.' : 'Judge only against the standard and the guard.'} Say nothing about style, wording or how good the writing is.
+${cons && focus.length ? `RE-CHECK AFTER A CORRECTION: the rest of this output was already checked. Report a violation ONLY if it involves one of these just-corrected fields — a contradiction between one of them and any other field counts: ${focus.join(', ')}.\n\n` : ''}${cons ? 'Look ONLY for those. Anything else, however imperfect, is out of scope here.' : 'Judge only against the standard and the guard.'} Say nothing about style, wording or how good the writing is.
 
 NEVER flag a bracketed placeholder. [Name], [the evidence], [duration], [the timeline], [what we can defer] — any of them, anywhere, however many. A placeholder is how this product marks a fact the visitor has to supply, so a sentence built around one is the CORRECT handling of a missing fact, not an invented one: "each visit lasts [duration]" asserts nothing. Rewriting placeholders away is a regression, and a field is not a violation for containing them.
 
-${cons && choices ? `ACCOUNT FOR EVERY CHOICE FIRST. A choice is easy to miss when the output reads well, so do not judge it at a glance: for each line under THE VISITOR'S CHOICES that should shape the output (a mode, style, method, framework, tone, length, frequency, something to include or avoid — not a plain fact like a name or a count), write it in "choice_check" with the field that clearly carries it out, or "NONE". A field that merely mentions the choice without doing it does not count. Every "NONE" is also an ignored_visitor_choice violation, on the field where the choice should have shown.
+${cons && choices && !focus.length ? `ACCOUNT FOR EVERY CHOICE FIRST. A choice is easy to miss when the output reads well, so do not judge it at a glance: for each line under THE VISITOR'S CHOICES that should shape the output (a mode, style, method, framework, tone, length, frequency, something to include or avoid — not a plain fact like a name or a count), write it in "choice_check" with the field that clearly carries it out, or "NONE". A field that merely mentions the choice without doing it does not count. Every "NONE" is also an ignored_visitor_choice violation, on the field where the choice should have shown.
 
 ` : ''}Return PASS, or FAIL with one entry per violation. Do not rewrite the output.
 
 OUTPUT (JSON only):
-{${cons && choices ? `
-  "choice_check": [ { "choice": "the line, as listed", "honored_in": "exact field identifier, or NONE" } ],` : ''}
+{${cons && choices && !focus.length ? `
+  "choice_check": [ { "choice": "the first few words of the line", "honored_in": "exact field identifier, or NONE" } ],` : ''}
   "verdict": "PASS or FAIL",
   "violations": [
-    { "field": "exact identifier from the proposed output", "violation_type": "one of: ${VIOLATION_TYPES.join(', ')}, or a guard term above", "offending_text": "the exact phrase, quoted", "reason": "a few words", "conflicts_with": "for contradicts_another_field only: the other field's exact identifier" }
+    { "field": "exact identifier from the proposed output", "violation_type": "one of: ${VIOLATION_TYPES.join(', ')}, or a guard term above", "offending_text": "the offending phrase, copied exactly, at most 8 words", "conflicts_with": "contradicts_another_field only: the other field's exact identifier" }
   ]
 }
+
+This report is read by code, not by a person (2026-10-15: its length was the check's time). No explanations and no keys beyond these. Omit conflicts_with on any other violation type. Quote at most 8 words of the offending phrase — enough to find it.
 
 verdict and field are machine identifiers, not prose. Write verdict as the English word PASS or FAIL whatever language the rest of this is in, and copy field character-for-character. Code compares both literally; a translated one matches nothing and the check is silently lost.
 
@@ -493,7 +498,7 @@ function suppliedText(body, cap = 8000) {
  *
  *   await checkConsistency(parsed, { label: 'date-night', promise: '…', userLanguage });
  */
-async function checkConsistency(draft, { label, promise, userLanguage, locale = '', model, body } = {}) {
+async function checkConsistency(draft, { label, promise, userLanguage, locale = '', model, body, focus } = {}) {
   try {
     if (!draft || typeof draft !== 'object') return [];
     const reqBody = body || currentRequestBody() || {};
@@ -501,7 +506,7 @@ async function checkConsistency(draft, { label, promise, userLanguage, locale = 
     return await runOutputGuard(draft, {
       readOnly: fields.filter(([, v]) => isLabel(v)).map(([p]) => p),
       label, promise: promise || 'Answers the visitor\'s request.', userLanguage, locale, model: model || MODELS.SMART, body: reqBody,
-      fields, supplied: suppliedText(reqBody), only: 'consistency',
+      fields, supplied: suppliedText(reqBody), only: 'consistency', focus,
     });
   } catch (err) {
     console.log(`[${label}] consistency check skipped: ${err.message}`);

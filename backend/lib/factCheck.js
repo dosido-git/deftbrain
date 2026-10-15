@@ -286,9 +286,12 @@ function numericFields(obj, { max = 80 } = {}) {
 // (lib/bothChecks.js), this was the slowest step — History Today's slowest
 // pass wrote ~1.4k tokens in 30s. Smaller passes finish sooner; each re-reads
 // the whole answer, so a run costs a little more input.
-const CHUNK_MIN = 6;
-const CHUNK_SIZE = 5;
-const MAX_CHUNKS = 6;
+// 2026-10-15: 5/6 → 2/12. Analogy Engine's passes still wrote 500-880 tokens
+// (14-17s); the check writes worked reasoning per item, so fewer items per
+// pass is the lever.
+const CHUNK_MIN = 3;
+const CHUNK_SIZE = 2;
+const MAX_CHUNKS = 12;
 
 async function checkNumbers(draft, opts) {
   if (process.env.FACT_CHECK === 'off') return 0;

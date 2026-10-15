@@ -4,7 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
-const { runOutputGuard, checkConsistency, stringFields, suppliedText } = require('../lib/outputGuard');
+const { runOutputGuard, stringFields, suppliedText } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 const { allChecks } = require('../lib/bothChecks');
 
@@ -141,7 +141,7 @@ ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion
         userLanguage,
         locale: withLocaleContext(userLocale, userCurrency, userRegion),
       }),
-    ], { label: 'paperwork-path', recheck: d => checkConsistency(d, { label: 'paperwork-path', userLanguage }) });
+    ], { label: 'paperwork-path' });
 
     res.json(parsed);
   } catch (error) {

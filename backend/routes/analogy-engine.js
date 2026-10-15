@@ -45,17 +45,6 @@ ${audienceInterests ? `AUDIENCE INTERESTS/WORLD: ${audienceInterests}` : ''}
 DEPTH: ${depth || 'solid_understanding'}`;
     const HEAD = `  "concept_name": "Clean name of the concept — 3-6 words",
   "one_liner": "The concept explained in one sentence a 10-year-old could understand. No jargon.",`;
-    const ANALOGIES = `  "analogies": [
-    {
-      "title": "Short catchy name for this analogy (e.g., 'The Library Card System') — 3-6 words",
-      "type": "Visual | Experiential | Narrative | Structural | Emotional | Mechanical",
-      "analogy": "The full analogy — 3-5 sentences. Written conversationally, as if explaining to the specific audience. Use their world.",
-      "why_it_works": "One sentence on what makes this analogy effective for this audience.",
-      "where_it_breaks": "One sentence on the limit of this analogy — what it doesn't capture.",
-      "accuracy": "high | medium",
-      "memorability": "high | medium"
-    }
-  ]`;
     const KEY = `  "the_key_insight": "The single most important thing to understand about this concept, stated plainly. The sentence that makes everything click. — one sentence",`;
     const MISCONCEPTIONS = `  "common_misconceptions": [
     {
@@ -66,13 +55,70 @@ DEPTH: ${depth || 'solid_understanding'}`;
     const DEEPER = `  "go_deeper": "If they want to learn more, what's the next concept to understand? One sentence pointing them forward.",
   "go_deeper_concept": "Just the clean name of that next concept — 2-5 words, no punctuation, ready to drop into a fresh explanation. e.g. 'mRNA vaccine technology'",`;
     const TIP = `  "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively. — one sentence"`;
-    const userPrompt = `${header}
+    // Speed (2026-10-15): one call wrote the whole explanation (1-1.7k tokens,
+    // 23-35s) and Deep asked for 5-6 analogies. Now: fewer analogies (Quick 2,
+    // Solid 3, Deep 4 — "Show more" asks for two more, see `more` below), and
+    // two calls at once: the analogies, and everything else. Analogies stay
+    // in ONE call: written one per call they contradicted each other, and
+    // each contradiction cost a repair and a re-check — slower overall.
+    const ANALOGY_PLAN = {
+      // Domains are deliberately far apart: with looser ones ('pictures they
+      // can see', 'a short story') two calls both wrote a wanted-poster
+      // analogy (2026-10-15).
+      Experiential: 'an activity the audience does themselves — a game, sport, hobby or routine',
+      Visual: 'an object or scene at home, at school or in a kitchen',
+      Narrative: 'a real event from history, told as a short story',
+      Structural: 'how a building, a city or a team is organised',
+      Emotional: 'friendships, family and feelings between people',
+      Mechanical: 'machines, tools, plants, animals or weather',
+    };
+    const ORDER = Object.keys(ANALOGY_PLAN);
+    const COUNT = { quick_grasp: 2, solid_understanding: 3, deep_understanding: 4 };
+    // "Show more": two analogies of types not yet used, anchored on the
+    // explanation the visitor already has.
+    const more = req.body.more === true;
+    const shown = Array.isArray(req.body.existingAnalogies) ? req.body.existingAnalogies.slice(0, 12) : [];
+    const usedTypes = new Set(shown.map(a => String(a?.type || '')));
+    const TYPES = more
+      ? [...ORDER.filter(t => !usedTypes.has(t)), ...ORDER].slice(0, 2)
+      : ORDER.slice(0, COUNT[depth] || 3);
+    const ANALOG_LIST = `  "analogies": [
+    {
+      "title": "Short catchy name for this analogy (e.g., 'The Library Card System') — 3-6 words",
+      "type": "one of the types listed above, exactly",
+      "analogy": "The full analogy — 3-5 sentences. Written conversationally, as if explaining to the specific audience. Use their world.",
+      "why_it_works": "One sentence on what makes this analogy effective for this audience.",
+      "where_it_breaks": "One sentence on the limit of this analogy — what it doesn't capture.",
+      "accuracy": "high | medium",
+      "memorability": "high | medium"
+    }
+  ]`;
+    const anchor = more ? `THE EXPLANATION THE VISITOR ALREADY HAS (build on it, never contradict it):
+One-liner: ${String(req.body.oneLiner || '').slice(0, 400)}
+Key insight: ${String(req.body.keyInsight || '').slice(0, 400)}
+Analogies already shown (do not repeat their idea or domain): ${shown.map(a => String(a?.title || '').slice(0, 80)).join('; ')}
 
-Generate tailored analogies. Return ONLY valid JSON:
+` : '';
+    // Three or more analogies are written by two calls at once, split by type
+    // (each knows the other's types and domains, so they do not overlap).
+    const halves = TYPES.length >= 3 ? [TYPES.slice(0, Math.ceil(TYPES.length / 2)), TYPES.slice(Math.ceil(TYPES.length / 2))] : [TYPES];
+    const analogyPrompt = (mine) => `${anchor}${header}
+
+${more ? '' : 'Other passes write the rest of the explanation at the same time. '}THIS PASS writes exactly ${mine.length} ${mine.length === 1 ? 'analogy' : 'analogies'}, one of each type, each from its own domain:
+${mine.map(t => `- ${t}: drawn from ${ANALOGY_PLAN[t]}`).join('\n')}
+Use the audience's world where it fits each domain.${TYPES.length > mine.length ? ` Another pass writes ${TYPES.filter(t => !mine.includes(t)).map(t => `${t} (${ANALOGY_PLAN[t]})`).join(', ')} — do not use those types or domains.` : ''}
+
+Return ONLY valid JSON:
+{
+${ANALOG_LIST}
+}`;
+    const restPrompt = `${header}
+
+Another pass writes the analogies at the same time. THIS PASS writes everything else.
+
+Return ONLY valid JSON:
 {
 ${HEAD}
-
-${ANALOGIES},
 
 ${KEY}
 
@@ -81,69 +127,35 @@ ${MISCONCEPTIONS}
 ${DEEPER}
 
 ${TIP}
-}
-
-Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5-6' : '3-5'} analogies.`;
-
-    // Speed (2026-10-14): Deep asks for 5-6 analogies, the longest answer the
-    // tool writes (~55s in one call). It is written as two calls at once.
-    // Partitioned by analogy type AND domain, never by index — two calls told
-    // "analogies 1-3" and "4-6" can both write the same library analogy. Each
-    // half also carries part of the rest, so both write about the same amount.
-    const halfPrompt = (half) => `${header}
-
-${half === 'A'
-    ? 'Two passes write this explanation at the same time. THIS PASS writes exactly 3 analogies, one each of type Visual, Experiential and Narrative, drawn from EVERYDAY LIFE and HISTORY only. The other pass covers Structural, Emotional and Mechanical analogies from technical and natural domains, so do not use those types or domains.'
-    : 'Two passes write this explanation at the same time. THIS PASS writes exactly 3 analogies, one each of type Structural, Emotional and Mechanical, drawn from TECHNICAL and NATURAL or BIOLOGICAL domains only. The other pass covers Visual, Experiential and Narrative analogies from everyday life and history, so do not use those types or domains.'}
-
-Return ONLY valid JSON:
-{
-${half === 'A' ? `${HEAD}
-
-${ANALOGIES},
-
-${KEY}
-
-${DEEPER}
-
-${TIP}` : `${ANALOGIES},
-
-${MISCONCEPTIONS.replace(/,\s*$/, '')}`}
 }`;
 
     const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or examples plainly or with single quotes, or it breaks the JSON.';
     // SMART, not FAST (2026-10-02): Haiku slipped arithmetic into worked
     // examples ("double 3/4 = 6/8, the same amount") — a teaching tool can't.
-    // 4000 (not 2500) for i18n headroom: deep mode (6 analogies × 3-5
-    // sentences) fills ~78% of 2500 in English but truncates → 500 in verbose
-    // languages like German. A Deep half wrote ~1.6k tokens in English (2026-10-14), so 3500 leaves German headroom.
-    let parsed;
-    if (depth === 'deep_understanding') {
-      const [a, b] = await Promise.all([
-        callClaudeWithRetry({
-          model: MODELS.SMART, max_tokens: 3500, system,
-          messages: [{ role: 'user', content: withLanguage(halfPrompt('A'), userLanguage) + '\nReturn ONLY valid JSON.' }],
-        }, { label: 'analogy-engine-deep-a' }),
-        callClaudeWithRetry({
-          model: MODELS.SMART, max_tokens: 3500, system,
-          messages: [{ role: 'user', content: withLanguage(halfPrompt('B'), userLanguage) + '\nReturn ONLY valid JSON.' }],
-        }, { label: 'analogy-engine-deep-b' }),
-      ]);
-      parsed = {
-        concept_name: a.concept_name, one_liner: a.one_liner,
-        analogies: [...(Array.isArray(a.analogies) ? a.analogies : []), ...(Array.isArray(b.analogies) ? b.analogies : [])],
-        the_key_insight: a.the_key_insight,
-        common_misconceptions: b.common_misconceptions,
-        go_deeper: a.go_deeper, go_deeper_concept: a.go_deeper_concept,
-        teaching_tip: a.teaching_tip,
-      };
-    } else {
-      parsed = await callClaudeWithRetry({
-        model: MODELS.SMART, max_tokens: 4000, system,
-        messages: [{ role: 'user', content: userPrompt }],
-      }, { label: 'analogy-engine' });
-    }
-    if (!parsed.concept_name) {
+    // 2500 per half leaves German headroom (two analogies ~500 tokens in English).
+    const [rest, ...analogyParts] = await Promise.all([
+      more ? Promise.resolve({}) : callClaudeWithRetry({
+        model: MODELS.SMART, max_tokens: 2500, system,
+        messages: [{ role: 'user', content: withLanguage(restPrompt, userLanguage) }],
+      }, { label: 'analogy-engine-rest' }),
+      ...halves.map(mine => callClaudeWithRetry({
+        model: MODELS.SMART, max_tokens: 2500, system,
+        messages: [{ role: 'user', content: withLanguage(analogyPrompt(mine), userLanguage) }],
+      }, { label: more ? 'analogy-engine-more' : 'analogy-engine-analogies' })),
+    ]);
+    const analogies = analogyParts.flatMap(p => (Array.isArray(p?.analogies) ? p.analogies : []))
+      .filter(a => a && typeof a.analogy === 'string' && a.analogy.trim()).slice(0, TYPES.length);
+    const parsed = more ? { analogies } : {
+      concept_name: rest?.concept_name,
+      one_liner: rest?.one_liner,
+      analogies,
+      the_key_insight: rest?.the_key_insight,
+      common_misconceptions: rest?.common_misconceptions,
+      go_deeper: rest?.go_deeper,
+      go_deeper_concept: rest?.go_deeper_concept,
+      teaching_tip: rest?.teaching_tip,
+    };
+    if (more ? !analogies.length : !parsed.concept_name || !analogies.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
 
