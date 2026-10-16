@@ -170,6 +170,8 @@ async function runCase(port, endpoint, input) {
   const logs = logBuf().slice(mark);
   const crashLine = logs.split('\n').find(l => CRASH_RE.test(l)) || '';
   const ok = status >= 200 && status < 300 && !error;
+  // SMOKE_LOGS=1 prints the backend's log lines for a failing case (debugging).
+  if (!ok && process.env.SMOKE_LOGS === '1') console.log(`--- ${endpoint} backend log ---\n${logs.slice(-3000)}\n---`);
   return { status, ok, error, crash: crashLine ? crashLine.trim().slice(0, 240) : '' };
 }
 

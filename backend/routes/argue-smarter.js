@@ -82,7 +82,8 @@ Write every field with precision — no filler, no padding, no restating what wa
         messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
       }, { label: `ArgueSmarterOpen-${i + 1}` })),
       finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
-      ready: d => Boolean(d.strongest_criticism),
+      // Either may lead: an answer with an opening but no headline is still an answer.
+      ready: d => Boolean(d.strongest_criticism || d.opening),
       complete: d => Boolean(d.opening || d.strongest_criticism),
       // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
       check: d => checkConsistency(d, { label: 'argue-smarter', userLanguage: req.body?.userLanguage }),
