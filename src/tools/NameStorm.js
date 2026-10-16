@@ -281,7 +281,6 @@ const NameStorm = ({ tool }) => {
   // ─── Mode Helpers ───
   const isBlendMode = mode === 'blend';
   const isDomainMode = category === 'Domain Name' || (isBlendMode && pairWithDomains);
-  const showIndustry = ['Business', 'Product', 'Domain Name'].includes(category) || isBlendMode;
   const showDomainFeatures = ['Business', 'Product', 'Band / Music Project', 'Creative Project', 'Event', 'Domain Name'].includes(category) || (isBlendMode && pairWithDomains);
   const filledSeeds = seedWords.filter(w => w.trim());
 
@@ -331,6 +330,8 @@ const NameStorm = ({ tool }) => {
       if (filledSeeds.length < 2) { setError(t('ns_err_seeds')); return; }
     } else {
       if (!category) { setError(t('ns_err_category')); return; }
+      // "Other" says nothing by itself; the label doubles as the prompt.
+      if (category === 'Other' && !industryContext.trim()) { setError(t('ns_what_is_it')); return; }
     }
     if (!isBlendMode && !vibe.trim() && vibeChips.length === 0) { setError(t('ns_err_vibe')); return; }
     setError('');
@@ -402,6 +403,17 @@ const NameStorm = ({ tool }) => {
   };
 
   const handleRegenerate = () => handleGenerate(true);
+
+  // Switching how to explore starts that mode fresh (2026-10-15). The input
+  // form is hidden while results are on screen, so a switch that kept the
+  // previous mode's results (Blend did) left the old answer up under the new
+  // tab, relabelled, with no form — the switch looked like it failed.
+  const switchMode = (next) => {
+    if (next === mode) return;
+    cancelProgressive();
+    setMode(next); setCategory('');
+    setResults(null); setQuickResults(null); setError('');
+  };
 
   const handleQuick = async () => {
     if (!quickWhatIsIt.trim()) return;
@@ -1143,15 +1155,15 @@ const NameStorm = ({ tool }) => {
           <p className={`text-[13px] font-semibold ${c.textMuted}`}>{t('ns_how_explore')}</p>
         </div>
         <div className="flex gap-2">
-          <button aria-pressed={mode === 'generate'} onClick={() => { setMode('generate'); setCategory(''); }}
+          <button aria-pressed={mode === 'generate'} onClick={() => switchMode('generate')}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'generate')}`}>
             <span>⚡</span> {t('ns_tab_generate')}
           </button>
-          <button aria-pressed={mode === 'blend'} onClick={() => { setMode('blend'); setCategory(''); }}
+          <button aria-pressed={mode === 'blend'} onClick={() => switchMode('blend')}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'blend')}`}>
             <span>✨</span> {t('ns_tab_blend')}
           </button>
-          <button aria-pressed={mode === 'quick'} onClick={() => { cancelProgressive(); setMode('quick'); setCategory(''); setResults(null); }}
+          <button aria-pressed={mode === 'quick'} onClick={() => switchMode('quick')}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'quick')}`}>
             <span>🏷️</span> {t('ns_tab_quick')}
           </button>
@@ -1240,6 +1252,16 @@ const NameStorm = ({ tool }) => {
                   </div>
                 ))}
               </div>
+              {/* What it is, in their words (owner, 2026-10-15): moved up from
+                  "Optional refinements", where most visitors never saw it and
+                  the pills went in alone. Required for Other, which says
+                  nothing by itself. Same field the route reads as context. */}
+              <label className={`block text-sm font-semibold ${c.text} mt-4 mb-1`}>
+                {t('ns_what_is_it')} {category === 'Other' && <span className={c.required}>*</span>}
+              </label>
+              <input type="text" value={industryContext} onChange={(e) => setIndustryContext(e.target.value)}
+                placeholder={t('ns_what_is_it_ph')}
+                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
             </div>
           )}
 
@@ -1302,7 +1324,7 @@ const NameStorm = ({ tool }) => {
                 placeholder={isDomainMode ? t('ns_constraints_ph_domain') : t('ns_constraints_ph_default')}
                 className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
             </div>
-            {showIndustry && (
+            {isBlendMode && (
               <div>
                 <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_industry')}</label>
                 <input type="text" value={industryContext} onChange={(e) => setIndustryContext(e.target.value)}
@@ -1448,8 +1470,8 @@ const NameStorm = ({ tool }) => {
 
           {/* Submit */}
           <div className="flex gap-2">
-            <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
-              className={`relative w-full ${((isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0) || (category === 'Other' && !industryContext.trim())))}
+              className={`relative w-full ${((isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0) || (category === 'Other' && !industryContext.trim())))) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
                 : <><span className="me-1 text-xl">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
