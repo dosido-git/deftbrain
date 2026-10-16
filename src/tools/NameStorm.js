@@ -354,9 +354,13 @@ const NameStorm = ({ tool }) => {
           competitors: competitors.trim() || null,
           userLocale, userCurrency, userRegion,
         };
-        const data = await callToolEndpoint('namestorm/blend', payload);
+        // Progressive (2026-10-15): top picks first, the rest fills in.
+        let firstBlend = true;
+        const data = await callToolEndpointProgressive('namestorm/blend', payload, {
+          onDraft: d => { setResults(d); if (firstBlend) { setActiveCategory(0); firstBlend = false; } },
+        });
+        if (!data) return; // replaced by a newer run
         setResults(data);
-        setActiveCategory(0);
         // Save to sessionHistory
         // PF-25 exception: 40-char label truncation for the history entry label, not a history-length cap.
         saveToHistory(data, `Blend: ${filledSeeds.join(' + ')}`);
@@ -403,14 +407,15 @@ const NameStorm = ({ tool }) => {
     if (!quickWhatIsIt.trim()) return;
     setError(''); setQuickResults(null);
     try {
-      const data = await callToolEndpoint('namestorm/quick', {
+      // Progressive (2026-10-15): each direction shows as it lands.
+      const data = await callToolEndpointProgressive('namestorm/quick', {
         whatIsIt: quickWhatIsIt.trim(),
         vibe: quickVibe.trim() || undefined,
         constraints: quickConstraints.trim() || undefined,
         avoid: quickAvoid.trim() || undefined,
         userLocale, userCurrency, userRegion,
-      });
-      setQuickResults(data);
+      }, { onDraft: setQuickResults });
+      if (data) setQuickResults(data);
     } catch (e) { setError(e.message || t('ns_err_quick')); }
   };
 

@@ -302,6 +302,65 @@ function fixNameClaims(parsed, userLanguage) {
   return parsed;
 }
 
+// Progressive name lists (2026-10-15, lib/progressive.js), shared by the main
+// and blend routes. The visible answer is the five top picks, which used to
+// wait for every name and then a ranking pass. Now each group (a style, or a
+// blend strategy) has a LEAD call that writes its single strongest name and a
+// second call that writes the rest of the group, all at once. The leads are
+// the top picks: shown once every lead call has settled (they land within
+// about a second of each other), ranked cleanest first — so "best overall
+// fit" never goes to a name carrying a warning, and the order never shifts
+// under the reader. The summary, which reads every name, comes last.
+//   groups: [{ category, lead: () => Promise, more: () => Promise }]
+//   summary: (nameList) => Promise<{ brief_summary, naming_notes }>
+//   extra: fields copied into the answer as-is (blend's seed_expansion)
+const PICK_SEVERITY = { warning: 3, caution: 2, info: 1 };
+const pickWeight = (n) => (Array.isArray(n?.problems) ? n.problems : []).reduce((t, pb) => t + (PICK_SEVERITY[pb?.severity] || 1), 0);
+function streamNameGroups(req, res, { label, groups, summary, extra = {} }) {
+  const leads = new Array(groups.length).fill(null);
+  const others = new Array(groups.length).fill(null);
+  let leadsSettled = 0;
+  const namesOf = (out) => (Array.isArray(out?.names_by_category) ? out.names_by_category : [])
+    .flatMap(c => (Array.isArray(c?.names) ? c.names : [])).filter(n => n && n.name);
+  const build = () => groups.map((g, i) => {
+    const seen = new Set(leads[i] ? [String(leads[i].name).toLowerCase()] : []);
+    const more = (others[i] || []).filter(n => { const k = String(n.name).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+    return { category: g.category, names: [...(leads[i] ? [leads[i]] : []), ...more] };
+  }).filter(c => c.names.length);
+  const parts = groups.flatMap((g, i) => [
+    { run: () => g.lead().finally(() => { leadsSettled++; }), apply: (d, out) => { leads[i] = namesOf(out)[0] || null; } },
+    { run: () => g.more(), apply: (d, out) => { others[i] = namesOf(out); } },
+  ]);
+  const finish = (d) => {
+    const namesByCategory = build();
+    namesByCategory.forEach(cat => cat.names.forEach(n => { if (!Array.isArray(n.problems)) n.problems = []; }));
+    const topPicks = groups.map((g, i) => leads[i] && ({ lead: leads[i], name: leads[i].name, from_category: g.category, why_top_pick: leads[i].why_top_pick || leads[i].why_it_works || '' }))
+      .filter(Boolean).sort((a, b) => pickWeight(a.lead) - pickWeight(b.lead)) // stable: group order breaks ties
+      // Two groups can arrive at the same name (blend: 'Floven' twice).
+      .filter((p, i, all) => all.findIndex(q => String(q.name).toLowerCase() === String(p.name).toLowerCase()) === i)
+      .slice(0, 5).map(({ lead, ...p }, i) => ({ ...p, rank: i + 1 }));
+    return fixNameClaims({
+      brief_summary: d.brief_summary || '',
+      ...extra,
+      names_by_category: namesByCategory,
+      top_picks: topPicks,
+      say_it_out_loud: sayItOutLoudFrom(namesByCategory),
+      naming_notes: d.naming_notes || '',
+    }, req.body.userLanguage);
+  };
+  return progressive(req, res, {
+    label, parts, finish,
+    ready: () => leadsSettled === groups.length && leads.some(Boolean),
+    complete: () => build().length > 0,
+    after: async (d) => {
+      const list = build().flatMap(c => c.names.map(n => `- ${n.name} [${c.category}]`)).join('\n');
+      const out = await summary(list);
+      d.brief_summary = out?.brief_summary || '';
+      d.naming_notes = out?.naming_notes || '';
+    },
+  });
+}
+
 // "Say it out loud": the names whose own flags are about speaking or
 // spelling them (see the main route for why this is a filter, not a pass).
 function sayItOutLoudFrom(namesByCategory) {
@@ -508,57 +567,21 @@ CRITICAL RULES:
     // notes, which read every name, come last.
     if (req.body.progressive === true) {
       const leadExtra = `This is the single STRONGEST name for the category: memorable, a clear match for the vibe, and free of serious problems. Also include "why_top_pick": one plain sentence on why it is the strongest.`;
-      const restExtra = `Another pass is writing the single strongest name for this category at the same time; write 3 OTHER good names, varied in sound and approach.`;
-      const leads = new Array(cats.length).fill(null);
-      const others = new Array(cats.length).fill(null);
+      const restExtra = 'Another pass is writing the single strongest name for this category at the same time; write 3 OTHER good names, varied in sound and approach.';
       const genCall = (cat, count, extra, label) => callClaudeWithRetry({
         model: MODELS.SMART, max_tokens: count === 1 ? 1200 : 2600,
         messages: [{ role: 'user', content: genPrompt([cat], count, extra) }],
       }, { label });
-      const namesOf = (out) => (Array.isArray(out?.names_by_category) ? out.names_by_category : []).flatMap(c => (Array.isArray(c?.names) ? c.names : [])).filter(n => n && n.name);
-      const build = () => {
-        const byCat = cats.map((cat, i) => {
-          const lead = leads[i];
-          const seen = new Set(lead ? [String(lead.name).toLowerCase()] : []);
-          const more = (others[i] || []).filter(n => !seen.has(String(n.name).toLowerCase()) && seen.add(String(n.name).toLowerCase()));
-          return { category: cat, names: [...(lead ? [lead] : []), ...more] };
-        });
-        return byCat.filter(c => c.names.length);
-      };
-      // The picks show once every lead call has settled (they land within
-      // about a second of each other), ranked cleanest first — so "best
-      // overall fit" never goes to a name carrying a trademark warning, and
-      // the order never shifts under the reader.
-      let leadsSettled = 0;
-      const SEVERITY = { warning: 3, caution: 2, info: 1 };
-      const weight = (n) => (Array.isArray(n?.problems) ? n.problems : []).reduce((t, pb) => t + (SEVERITY[pb?.severity] || 1), 0);
-      const parts = cats.flatMap((cat, i) => [
-        { run: () => genCall(cat, 1, leadExtra, `NameStorm-lead${i + 1}`).finally(() => { leadsSettled++; }), apply: (d, out) => { leads[i] = namesOf(out)[0] || null; } },
-        { run: () => genCall(cat, 3, restExtra, `NameStorm-more${i + 1}`), apply: (d, out) => { others[i] = namesOf(out); } },
-      ]);
-      const finish = (d) => {
-        const namesByCategory = build();
-        const topPicks = cats.map((cat, i) => leads[i] && ({ lead: leads[i], name: leads[i].name, from_category: cat, why_top_pick: leads[i].why_top_pick || leads[i].why_it_works || '' }))
-          .filter(Boolean).sort((a, b) => weight(a.lead) - weight(b.lead)) // stable: style order breaks ties
-          .map(({ lead, ...p }, i) => ({ ...p, rank: i + 1 }));
-        return fixNameClaims(normalizeProblems({
-          brief_summary: d.brief_summary || '',
-          names_by_category: namesByCategory,
-          top_picks: topPicks,
-          say_it_out_loud: sayItOutLoudFrom(namesByCategory),
-          naming_notes: d.naming_notes || '',
-        }), userLanguage);
-      };
-      return await progressive(req, res, {
-        label: 'namestorm', parts, finish,
-        ready: () => leadsSettled === cats.length && leads.some(Boolean),
-        complete: () => build().length > 0,
-        // The summary and notes read every name, so they come after the rest.
-        after: async (d) => {
-          const list = build().flatMap(c => c.names.map(n => `- ${n.name} [${c.category}]`)).join('\n');
-          const out = await callClaudeWithRetry({
-            model: MODELS.FAST, max_tokens: 800,
-            messages: [{ role: 'user', content: withLanguage(`You are an elite naming strategist. Brief:
+      return await streamNameGroups(req, res, {
+        label: 'namestorm',
+        groups: cats.map((cat, i) => ({
+          category: cat,
+          lead: () => genCall(cat, 1, leadExtra, `NameStorm-lead${i + 1}`),
+          more: () => genCall(cat, 3, restExtra, `NameStorm-more${i + 1}`),
+        })),
+        summary: (list) => callClaudeWithRetry({
+          model: MODELS.FAST, max_tokens: 800,
+          messages: [{ role: 'user', content: withLanguage(`You are an elite naming strategist. Brief:
 
 ${briefBlock}
 
@@ -571,10 +594,7 @@ Return ONLY valid JSON:
   "naming_notes": "What is worth knowing before choosing — one or two sentences, plainly put"
 }
 ${PLAIN_LANGUAGE_RULE} ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-          }, { label: 'NameStorm-summary' });
-          d.brief_summary = out?.brief_summary || '';
-          d.naming_notes = out?.naming_notes || '';
-        },
+        }, { label: 'NameStorm-summary' }),
       });
     }
 
@@ -870,7 +890,7 @@ INDUSTRY: ${industryContext || 'Not specified'}${blendCompetitorBlock}${langDire
         max_tokens: 2200,
         messages: [{ role: 'user', content: withLanguage(`${briefHeader}
 
-For each seed word, generate 8-12 synonyms, related words, and conceptually adjacent words. Think broadly:
+For each seed word, generate 6-8 synonyms, related words, and conceptually adjacent words. Think broadly:
 - Direct synonyms and near-synonyms
 - Words that capture the same FEELING but from different registers (formal, informal, poetic, technical)
 - Shorter/punchier alternatives (especially 3-5 letter words — these blend best)
@@ -889,14 +909,14 @@ Return ONLY valid JSON: {"seed_expansion": [{"original": "clever", "expanded": [
       : seedWords.join(', ');
 
     // ─── Stage 2: blend, two strategies per call ───
-    const blendPrompt = (group) => withLanguage(`You are an expert linguistic blender and portmanteau creator. You take word clouds and blend them into original, brandable names that could NOT have been found by simply combining two whole words.
+    const blendPrompt = (group, count = 3, extra = '') => withLanguage(`You are an expert linguistic blender and portmanteau creator. You take word clouds and blend them into original, brandable names that could NOT have been found by simply combining two whole words.
 
 ${briefHeader}${tldDirective}
 
 EXPANDED WORD CLOUDS — blend from these, not just the raw seeds:
 ${cloudText}
 
-Use EXACTLY these ${group.length} strategies, 3 names each (${group.length * 3} total):
+Use EXACTLY these ${group.length} strategies, ${count} name${count === 1 ? '' : 's'} each (${group.length * count} total):${extra ? ` ${extra}` : ''}
 ${group.map((st, i) => `${i + 1}. ${st.def}\n   Output this group with "category" set to EXACTLY: ${st.label}`).join('\n')}
 
 BREVITY IS CRITICAL: keep every string field to ONE tight sentence. The response must be complete JSON that closes; never pad. For EVERY name:
@@ -949,6 +969,44 @@ RULES:
 8. BE CONCISE: every string field a phrase or single sentence — no length annotations.
 9. ${PLAIN_LANGUAGE_RULE}
 10. Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    // Progressive (2026-10-15): per strategy, a lead call for its strongest
+    // blend (the top picks) and a call for 2 more — see streamNameGroups.
+    if (req.body.progressive === true) {
+      const blendCall = (st, count, extra, label) => callClaudeWithRetry({
+        model: MODELS.SMART, max_tokens: count === 1 ? 1200 : 2200,
+        messages: [{ role: 'user', content: blendPrompt([st], count, extra) }],
+      }, { label });
+      return await streamNameGroups(req, res, {
+        label: 'namestorm-blend',
+        extra: { seed_expansion: seedExpansion },
+        groups: STRATEGIES.map((st, i) => ({
+          category: st.label,
+          lead: () => blendCall(st, 1, 'Write the single STRONGEST blend for this strategy. Also include "why_top_pick": one plain sentence on why it is the strongest.', `NameStorm/Blend-lead${i + 1}`),
+          more: () => blendCall(st, 2, 'Another pass is writing the strongest blend for this strategy at the same time; write 2 OTHER good blends.', `NameStorm/Blend-more${i + 1}`),
+        })),
+        summary: (list) => callClaudeWithRetry({
+          model: MODELS.FAST, max_tokens: 800,
+          messages: [{ role: 'user', content: withLanguage(`You are an expert namer. The brief:
+
+${briefHeader}
+
+The seed words were expanded into these clouds, and the names below were blended from them:
+${cloudText}
+
+BLENDS:
+${list}
+
+Return ONLY valid JSON:
+{
+  "brief_summary": "1 plain sentence on where these names came from — no pitch-deck words",
+  "naming_notes": "What is worth knowing, in plain words — two or three sentences"
+}
+naming_notes: name the surprising thing you noticed — which words the good names actually came from — not the method that produced them.
+${PLAIN_LANGUAGE_RULE} ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+        }, { label: 'NameStorm/Blend-summary' }),
+      });
+    }
 
     // One strategy per call. Two-per-call landed at ~50s, which clears the
     // browser's patience but leaves nothing for a retry; one-per-call makes the
@@ -1255,10 +1313,83 @@ Return ONLY valid JSON:
   "top_pick": "The single name you'd put money on — and the 10-word pitch for it"
 }`;
 
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    // Progressive (2026-10-15, lib/progressive.js). One call wrote all 12-16
+    // names (~36s — the slowest mode, despite its name). Now a short pass
+    // names the 4 directions, then one call per direction writes its 4 names,
+    // each shown as it lands; the top pick, which needs every name, is last.
+    if (req.body.progressive === true) {
+      const brief = userPrompt.split('\n\nGenerate 12')[0];
+      const plan = await callClaudeWithRetry({
+        model: MODELS.FAST, max_tokens: 300, system,
+        messages: [{ role: 'user', content: withLanguage(`${brief}
+
+Choose 4 creative directions for names — the worlds these names could come from. Each direction is 2-4 WORDS MAXIMUM, title case, a heading not a sentence, named the way someone would recognize it: 'Trail Culture', 'Photo and Memory', 'Garage Nights'. Name the identity, never the technique (never 'Wordplay' or 'Portmanteau'). Make the four clearly different from each other.
+
+Return ONLY valid JSON: {"directions": ["...", "...", "...", "..."]}`, userLanguage) }],
+      }, { label: 'NameStorm/Quick-plan' });
+      const dirs = (Array.isArray(plan?.directions) ? plan.directions : []).map(d => String(d || '').trim()).filter(Boolean).slice(0, 4);
+      if (!dirs.length) throw new Error('no directions planned');
+      // The names array of the one-call schema, reused verbatim (its field rules are the tool's voice).
+      const schemaFrom = userPrompt.indexOf('      "names": [');
+      const NAME_SCHEMA = userPrompt.slice(schemaFrom, userPrompt.indexOf('\n    }\n  ]', schemaFrom));
+      // Two calls per direction, 2 names each: one name with its note runs
+      // ~100 tokens, so 4 per call kept the first direction ~9s away.
+      const halves = dirs.map(() => [null, null]);
+      const directionsNow = () => dirs.map((dir, i) => {
+        const seen = new Set();
+        const names = halves[i].flatMap(h => h || []).filter(n => { const k = String(n.name).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+        return names.length ? { direction: dir, names } : null;
+      }).filter(Boolean);
+      const draftOf = (d) => fixNameClaims({ directions: directionsNow(), top_pick: d.top_pick || '' }, userLanguage);
+      return await progressive(req, res, {
+        label: 'namestorm-quick',
+        parts: dirs.flatMap((dir, i) => [0, 1].map(h => ({
+          run: () => callClaudeWithRetry({
+            model: MODELS.SMART, max_tokens: 1000, system,
+            messages: [{ role: 'user', content: withLanguage(`${brief}
+
+Write exactly 2 names for ONE creative direction: ${dir}. Other passes are writing the other directions at the same time (${dirs.filter(x => x !== dir).join('; ')}) — stay inside yours.${h ? ' Another pass is also writing 2 names for this same direction: make yours its less obvious corner.' : ' Another pass is also writing 2 names for this same direction: take its most recognizable corner.'} Go clever. Go specific. Keep every field (vibe, note, flag) to a single concise sentence.
+
+Return ONLY valid JSON:
+{
+  "directions": [
+    {
+      "direction": "${dir}",
+${NAME_SCHEMA}
+    }
+  ]
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+          }, { label: `NameStorm/Quick-dir${i + 1}${h ? 'b' : 'a'}` }),
+          apply: (d, out) => {
+            const got = (Array.isArray(out?.directions) ? out.directions : [])[0];
+            halves[i][h] = (Array.isArray(got?.names) ? got.names : []).filter(n => n && n.name).slice(0, 2);
+          },
+        }))),
+        finish: draftOf,
+        ready: () => directionsNow().length > 0,
+        complete: () => directionsNow().length > 0,
+        after: async (d) => {
+          const list = directionsNow().flatMap(x => x.names.map(n => `- ${n.name} [${x.direction}] — ${n.note || ''}`)).join('\n');
+          const out = await callClaudeWithRetry({
+            model: MODELS.FAST, max_tokens: 300, system,
+            messages: [{ role: 'user', content: withLanguage(`${brief}
+
+NAMES:
+${list}
+
+Pick the single name you would put money on, spelled exactly as listed. Return ONLY valid JSON: {"top_pick": "The name — and the 10-word pitch for it"}`, userLanguage) }],
+          }, { label: 'NameStorm/Quick-pick' });
+          d.top_pick = out?.top_pick || '';
+        },
+      });
+    }
+
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system,
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Quick' });
     res.json(fixNameClaims(parsed, req.body.userLanguage));
