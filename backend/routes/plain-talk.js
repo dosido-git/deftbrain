@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { answer } = require('../lib/progressive');
+const { answer, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -266,6 +266,22 @@ CRITICAL RULES:
         ]
       : [{ prompt: sectionsPrompt(trimmed, ''), tokens: 7500, label: 'plain-talk' }];
 
+    const ALL_SIX = 'Your response MUST contain ALL 6 keys: detected_type, detected_type_label, confidence, reading_level, overview, specialist_suggestion.';
+    const SUMMARY_FIRST = 'THIS PASS writes ONLY detected_type, detected_type_label, confidence, reading_level, and overview containing ONLY one_sentence and key_takeaways. Another pass writes the rest of overview and specialist_suggestion at the same time — leave them out.';
+    const SUMMARY_REST = 'THIS PASS writes ONLY overview containing ONLY what_matters_to_you, red_flags, action_items and deadlines, plus specialist_suggestion. Another pass writes the type, reading level, one_sentence and key_takeaways at the same time — leave them out.';
+    // The template itself is cut to the pass's fields: told "only" while
+    // seeing the whole overview, the first pass wrote all of it and ran out
+    // of tokens (2026-10-16). onlyKeys trims the top level; the overview's
+    // own fields are dropped by line.
+    const dropFields = (prompt, fields) => prompt
+      .split('\n')
+      .filter(l => !fields.some(f => l.startsWith(`    "${f}":`)))
+      .join('\n')
+      .replace(/,(\s*\n\s*\})/g, '$1');
+    const summaryFor = (note) => (note === SUMMARY_FIRST
+      ? dropFields(onlyKeys(promptSummary, ['detected_type', 'detected_type_label', 'confidence', 'reading_level', 'overview']), ['what_matters_to_you', 'red_flags', 'action_items', 'deadlines'])
+      : dropFields(onlyKeys(promptSummary, ['overview', 'specialist_suggestion']), ['one_sentence', 'key_takeaways'])
+    ).replace(ALL_SIX, note);
     // Progressive (2026-10-16, lib/progressive.js): the same concurrent
     // calls, but each is shown as it lands — the summary (with the detected
     // type) usually first. The consistency check runs after the answer shows.
@@ -294,7 +310,21 @@ CRITICAL RULES:
     return await answer(req, res, {
       label: 'plain-talk',
       parts: [
-        { required: true, run: () => call(promptSummary, 3000, 'plain-talk-summary'), apply: (d, out) => Object.assign(d, out) },
+        // The summary is split once more: what the document is and its key
+        // points first (small, shown in seconds), the rest of the overview
+        // beside it. Both write into overview, so the two halves are merged.
+        ...[
+          [SUMMARY_FIRST, 1200, 'plain-talk-summary'],
+          [SUMMARY_REST, 2200, 'plain-talk-summary-2'],
+        ].map(([note, maxTokens, label], i) => ({
+          required: i === 0,
+          run: () => call(summaryFor(note), maxTokens, label),
+          apply: (d, out) => {
+            const { overview, ...rest } = out || {};
+            Object.assign(d, rest);
+            if (overview && typeof overview === 'object') d.overview = { ...d.overview, ...overview };
+          },
+        })),
         { required: true, run: () => call(promptStructure, 4000, 'plain-talk-structure'), apply: (d, out) => Object.assign(d, out) },
         ...sectionCalls.map((c, i) => ({
           required: true,
@@ -303,7 +333,7 @@ CRITICAL RULES:
         })),
       ],
       finish: assemble,
-      ready: d => Boolean(d.detected_type),
+      ready: d => Boolean(d.detected_type && d.overview?.one_sentence),
       complete: d => Boolean(d.detected_type),
       check: async (draft) => {
         const parsed = assemble(draft);
