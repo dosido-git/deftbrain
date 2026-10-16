@@ -7,6 +7,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
 const { bothChecks } = require('../lib/bothChecks');
+const { progressive } = require('../lib/progressive');
 // Fact-check pass (2026-10-02): a teaching tool can't ship a wrong number or
 // a false "misconception". Shared checker in lib/factCheck.js; here it also
 // checks facts (not only numbers) and may drop a myth that is actually true.
@@ -130,6 +131,75 @@ ${TIP}
 }`;
 
     const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or examples plainly or with single quotes, or it breaks the JSON.';
+    const ask = (prompt, label) => callClaudeWithRetry({
+      model: MODELS.SMART, max_tokens: 2500, system,
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+    }, { label });
+    const runChecks = (draft) => bothChecks(draft,
+      d => withNumberCheck(d, {
+        label: 'analogy-engine',
+        context: `Explain ${concept} to ${audience || 'a general adult'}.`,
+        fields: checkableFields(draft),
+        facts: true,
+        removable: ['common_misconceptions'],
+        extraRules: 'A myth field states a misconception ON PURPOSE. Never rewrite it into a true statement. If the myth is actually true, remove it; otherwise leave it and check its reality field.',
+        userLanguage,
+      }),
+      d => checkConsistency(d, { label: 'analogy-engine', userLanguage }),
+      { label: 'analogy-engine' });
+
+    // Progressive (2026-10-15, lib/progressive.js): the browser asks for it.
+    // Small parts at once — the one-liner and key insight (~100 tokens, shown
+    // in a few seconds), one call per analogy, and the rest — each sent as it
+    // lands; the checks run after the answer is on screen.
+    if (req.body.progressive === true && !more) {
+      const corePrompt = `${header}
+
+Other passes write the analogies and the rest of the explanation at the same time. THIS PASS writes only the name, the one-liner and the key insight.
+
+Return ONLY valid JSON:
+{
+${HEAD}
+${KEY.replace(/,$/, '')}
+}`;
+      const extrasPrompt = `${header}
+
+Other passes write the one-liner, the key insight and the analogies at the same time. THIS PASS writes the misconceptions, where to go deeper, and the teaching tip.
+
+Return ONLY valid JSON:
+{
+${MISCONCEPTIONS}
+
+${DEEPER}
+
+${TIP}
+}`;
+      const slots = new Array(TYPES.length).fill(null);
+      const parts = [
+        { required: true, run: () => ask(corePrompt, 'analogy-engine-core'),
+          apply: (d, o) => { d.concept_name = o?.concept_name; d.one_liner = o?.one_liner; d.the_key_insight = o?.the_key_insight; } },
+        ...TYPES.map((type, i) => ({
+          run: () => ask(analogyPrompt([type]), 'analogy-engine-analogy'),
+          apply: (d, o) => {
+            const a = (Array.isArray(o?.analogies) ? o.analogies : []).find(x => x && typeof x.analogy === 'string' && x.analogy.trim());
+            if (a) slots[i] = a;
+            d.analogies = slots.filter(Boolean);
+          },
+        })),
+        { run: () => ask(extrasPrompt, 'analogy-engine-extras'),
+          apply: (d, o) => { ['common_misconceptions', 'go_deeper', 'go_deeper_concept', 'teaching_tip'].forEach(k => { d[k] = o?.[k]; }); } },
+      ];
+      // Key order matches the one-call answer, so a saved result reads the same.
+      const finish = d => ({ concept_name: d.concept_name, one_liner: d.one_liner, analogies: d.analogies || [], the_key_insight: d.the_key_insight,
+        common_misconceptions: d.common_misconceptions, go_deeper: d.go_deeper, go_deeper_concept: d.go_deeper_concept, teaching_tip: d.teaching_tip });
+      return await progressive(req, res, {
+        label: 'analogy-engine', parts, finish,
+        ready: d => Boolean(d.one_liner),
+        complete: d => Boolean(d.concept_name) && (d.analogies || []).length > 0,
+        check: runChecks,
+      });
+    }
+
     // SMART, not FAST (2026-10-02): Haiku slipped arithmetic into worked
     // examples ("double 3/4 = 6/8, the same amount") — a teaching tool can't.
     // 2500 per half leaves German headroom (two analogies ~500 tokens in English).
@@ -161,18 +231,7 @@ ${TIP}
 
     // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
     // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
-      d => withNumberCheck(d, {
-      label: 'analogy-engine',
-      context: `Explain ${concept} to ${audience || 'a general adult'}.`,
-      fields: checkableFields(parsed),
-      facts: true,
-      removable: ['common_misconceptions'],
-      extraRules: 'A myth field states a misconception ON PURPOSE. Never rewrite it into a true statement. If the myth is actually true, remove it; otherwise leave it and check its reality field.',
-      userLanguage,
-    }),
-      d => checkConsistency(d, { label: 'analogy-engine', userLanguage: req.body?.userLanguage }),
-      { label: 'analogy-engine' });
+    await runChecks(parsed);
     return res.json(parsed);
 
   } catch (error) {

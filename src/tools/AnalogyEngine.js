@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -58,7 +59,7 @@ const EXAMPLE_PAIRS = [
 ];
 
 const AnalogyEngine = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -105,6 +106,7 @@ const AnalogyEngine = ({ tool }) => {
   const [concept, setConcept] = usePersistentState('analogyengine-concept', '');
 
   const [results, setResults] = usePersistentState('analogyengine-last', null);
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   const [sessionHistory, setSessionHistory] = usePersistentState('analogyengine-history', []);
 
   // ─── Refs ───
@@ -126,14 +128,21 @@ const AnalogyEngine = ({ tool }) => {
       setAudienceInterests('');
     }
 
+    setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('analogy-engine', {
+      // Progressive (2026-10-15): the one-liner shows in a few seconds and
+      // the rest fills in; the details are double-checked after it shows.
+      const data = await callToolEndpointProgressive('analogy-engine', {
         concept: conceptText,
         audience: audienceText || 'general adult',
         audienceInterests: audienceInterests.trim() || null,
         depth,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -185,6 +194,7 @@ const AnalogyEngine = ({ tool }) => {
     setAudienceInterests(ex.audienceInterests);
     setDepth(ex.depth);
     setResults(null);
+    cancelProgressive(); setCheckStatus(null);
   }, [setConcept, setResults]);
 
   const handleReset = () => {
@@ -193,6 +203,7 @@ const AnalogyEngine = ({ tool }) => {
     setAudienceInterests('');
     setDepth('solid_understanding');
     setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     setError('');
   };
 
@@ -404,7 +415,7 @@ const AnalogyEngine = ({ tool }) => {
             <div className="space-y-1.5 mt-3">
               {sessionHistory.map(entry => (
                 <button key={entry.id}
-                  onClick={() => setResults(entry.result)}
+                  onClick={() => { setResults(entry.result); setCheckStatus(null); }}
                   className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                   <span className={c.textMuteded}>
                     {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
@@ -437,6 +448,8 @@ const AnalogyEngine = ({ tool }) => {
       {/* ── Results ── */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+
+          <CheckNote status={checkStatus} className={c.textMuteded} />
 
           {/* One-liner */}
           {results?.one_liner && (
@@ -485,7 +498,7 @@ const AnalogyEngine = ({ tool }) => {
                   </div>
                 </div>
               ))}
-              {results.analogies.length < 8 && (
+              {results.analogies.length < 8 && checkStatus !== 'checking' && (
                 <button data-print-hide onClick={showMore} disabled={moreLoading}
                   className={`w-full py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary} disabled:opacity-60`}>
                   {moreLoading

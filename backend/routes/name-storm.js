@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { progressive } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
@@ -301,6 +302,22 @@ function fixNameClaims(parsed, userLanguage) {
   return parsed;
 }
 
+// "Say it out loud": the names whose own flags are about speaking or
+// spelling them (see the main route for why this is a filter, not a pass).
+function sayItOutLoudFrom(namesByCategory) {
+  const SPOKEN_TYPES = new Set(['phonetic_issue', 'spelling_difficulty']);
+  const SEVERITY_RANK = { warning: 0, caution: 1, info: 2 };
+  return namesByCategory
+    .flatMap(cat => (cat.names || []).map(n => ({
+      name: n.name,
+      flag: (Array.isArray(n.problems) ? n.problems : []).find(pb => SPOKEN_TYPES.has(pb.type)),
+    })))
+    .filter(x => x.name && x.flag?.detail)
+    .sort((a, b) => (SEVERITY_RANK[a.flag.severity] ?? 3) - (SEVERITY_RANK[b.flag.severity] ?? 3))
+    .slice(0, 6)
+    .map(x => ({ name: x.name, issue: x.flag.detail }));
+}
+
 router.post('/namestorm', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const {
@@ -434,7 +451,7 @@ Pick the 5 MOST RELEVANT categories for this brief. Do not force categories that
     cats = [...new Set(cats)].slice(0, 5);
 
     // Stage 2 — two parallel generation calls over disjoint category sets.
-    const genPrompt = (catNames) => withLanguage(`You are an elite naming strategist who combines creative linguistics, brand psychology, cultural awareness, and market intelligence.${isNonEnglish ? ` You are generating names for a ${primaryLanguage}-speaking audience. Think in ${primaryLanguage} first.` : ''}
+    const genPrompt = (catNames, count = 4, extra = '') => withLanguage(`You are an elite naming strategist who combines creative linguistics, brand psychology, cultural awareness, and market intelligence.${isNonEnglish ? ` You are generating names for a ${primaryLanguage}-speaking audience. Think in ${primaryLanguage} first.` : ''}
 
 ${briefBlock}
 
@@ -442,7 +459,7 @@ Generate names for EXACTLY these style categories (ALL of them MUST appear in th
 Category meanings:
 ${CATEGORY_LIST_TEXT}
 
-For each listed category generate exactly 4 name options. For EVERY name:
+For each listed category generate exactly ${count} name option${count === 1 ? '' : 's'}.${extra ? ` ${extra}` : ''} For EVERY name:
 1. THE NAME itself
 2. PRONUNCIATION — phonetic guide if not obvious (null if obvious)
 3. WHY IT WORKS — in plain words, what makes this name land: the sounds, the length, what it brings to mind.${isNonEnglish ? ` Explain the meaning and cultural resonance in ${primaryLanguage}.` : ''}
@@ -481,6 +498,85 @@ CRITICAL RULES:
 8. ${PLAIN_LANGUAGE_RULE}
 9. Return ONLY the JSON. No markdown, no preamble.
 10. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    // Progressive (2026-10-15, lib/progressive.js): the browser asks for it.
+    // The visible answer is the five top picks, which used to wait for all
+    // 20 names and then a ranking pass (~20s). Now each chosen style has a
+    // LEAD call that writes its single strongest name (~4s) — those five are
+    // the top picks, one per style, in the pick stage's order — while a second
+    // call per style writes 3 more names for the full list. The summary and
+    // notes, which read every name, come last.
+    if (req.body.progressive === true) {
+      const leadExtra = `This is the single STRONGEST name for the category: memorable, a clear match for the vibe, and free of serious problems. Also include "why_top_pick": one plain sentence on why it is the strongest.`;
+      const restExtra = `Another pass is writing the single strongest name for this category at the same time; write 3 OTHER good names, varied in sound and approach.`;
+      const leads = new Array(cats.length).fill(null);
+      const others = new Array(cats.length).fill(null);
+      const genCall = (cat, count, extra, label) => callClaudeWithRetry({
+        model: MODELS.SMART, max_tokens: count === 1 ? 1200 : 2600,
+        messages: [{ role: 'user', content: genPrompt([cat], count, extra) }],
+      }, { label });
+      const namesOf = (out) => (Array.isArray(out?.names_by_category) ? out.names_by_category : []).flatMap(c => (Array.isArray(c?.names) ? c.names : [])).filter(n => n && n.name);
+      const build = () => {
+        const byCat = cats.map((cat, i) => {
+          const lead = leads[i];
+          const seen = new Set(lead ? [String(lead.name).toLowerCase()] : []);
+          const more = (others[i] || []).filter(n => !seen.has(String(n.name).toLowerCase()) && seen.add(String(n.name).toLowerCase()));
+          return { category: cat, names: [...(lead ? [lead] : []), ...more] };
+        });
+        return byCat.filter(c => c.names.length);
+      };
+      // The picks show once every lead call has settled (they land within
+      // about a second of each other), ranked cleanest first — so "best
+      // overall fit" never goes to a name carrying a trademark warning, and
+      // the order never shifts under the reader.
+      let leadsSettled = 0;
+      const SEVERITY = { warning: 3, caution: 2, info: 1 };
+      const weight = (n) => (Array.isArray(n?.problems) ? n.problems : []).reduce((t, pb) => t + (SEVERITY[pb?.severity] || 1), 0);
+      const parts = cats.flatMap((cat, i) => [
+        { run: () => genCall(cat, 1, leadExtra, `NameStorm-lead${i + 1}`).finally(() => { leadsSettled++; }), apply: (d, out) => { leads[i] = namesOf(out)[0] || null; } },
+        { run: () => genCall(cat, 3, restExtra, `NameStorm-more${i + 1}`), apply: (d, out) => { others[i] = namesOf(out); } },
+      ]);
+      const finish = (d) => {
+        const namesByCategory = build();
+        const topPicks = cats.map((cat, i) => leads[i] && ({ lead: leads[i], name: leads[i].name, from_category: cat, why_top_pick: leads[i].why_top_pick || leads[i].why_it_works || '' }))
+          .filter(Boolean).sort((a, b) => weight(a.lead) - weight(b.lead)) // stable: style order breaks ties
+          .map(({ lead, ...p }, i) => ({ ...p, rank: i + 1 }));
+        return fixNameClaims(normalizeProblems({
+          brief_summary: d.brief_summary || '',
+          names_by_category: namesByCategory,
+          top_picks: topPicks,
+          say_it_out_loud: sayItOutLoudFrom(namesByCategory),
+          naming_notes: d.naming_notes || '',
+        }), userLanguage);
+      };
+      return await progressive(req, res, {
+        label: 'namestorm', parts, finish,
+        ready: () => leadsSettled === cats.length && leads.some(Boolean),
+        complete: () => build().length > 0,
+        // The summary and notes read every name, so they come after the rest.
+        after: async (d) => {
+          const list = build().flatMap(c => c.names.map(n => `- ${n.name} [${c.category}]`)).join('\n');
+          const out = await callClaudeWithRetry({
+            model: MODELS.FAST, max_tokens: 800,
+            messages: [{ role: 'user', content: withLanguage(`You are an elite naming strategist. Brief:
+
+${briefBlock}
+
+NAMES ALREADY GENERATED:
+${list}
+
+Return ONLY valid JSON:
+{
+  "brief_summary": "1 plain sentence on the direction these names take — no pitch-deck words",
+  "naming_notes": "What is worth knowing before choosing — one or two sentences, plainly put"
+}
+${PLAIN_LANGUAGE_RULE} ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+          }, { label: 'NameStorm-summary' });
+          d.brief_summary = out?.brief_summary || '';
+          d.naming_notes = out?.naming_notes || '';
+        },
+      });
+    }
 
     // Generation is the long pole of the three stages (pick → generate →
     // curate, and curate cannot start until every name exists). Two calls split
@@ -581,17 +677,7 @@ RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe
     // keeps them consistent by construction. Depends on the pinned English
     // enums above; without that pin these values arrive translated and the
     // section silently empties in all 12 non-English languages.
-    const SPOKEN_TYPES = new Set(['phonetic_issue', 'spelling_difficulty']);
-    const SEVERITY_RANK = { warning: 0, caution: 1, info: 2 };
-    const sayItOutLoud = namesByCategory
-      .flatMap(cat => (cat.names || []).map(n => ({
-        name: n.name,
-        flag: (Array.isArray(n.problems) ? n.problems : []).find(pb => SPOKEN_TYPES.has(pb.type)),
-      })))
-      .filter(x => x.name && x.flag?.detail)
-      .sort((a, b) => (SEVERITY_RANK[a.flag.severity] ?? 3) - (SEVERITY_RANK[b.flag.severity] ?? 3))
-      .slice(0, 6)
-      .map(x => ({ name: x.name, issue: x.flag.detail }));
+    const sayItOutLoud = sayItOutLoudFrom(namesByCategory);
 
     const parsed = normalizeProblems({
       brief_summary: curated.brief_summary || '',

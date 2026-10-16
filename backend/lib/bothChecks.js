@@ -104,4 +104,15 @@ async function allChecks(draft, checks, { label = 'allChecks', recheck = null } 
 // Two-check form kept for the routes already using it (number, then consistency).
 const bothChecks = (draft, numberCheck, consistencyCheck, opts) => allChecks(draft, [numberCheck, consistencyCheck], opts);
 
-module.exports = { allChecks, bothChecks };
+// The paths whose value differs between two versions of an answer, in the
+// "analogies[1].analogy" form the checks use. A removed list item reports the
+// list itself. Used by lib/progressive.js to say what a late check corrected.
+function changedPaths(before, after) {
+  const toPath = (k) => JSON.parse(k).reduce((p, x) => typeof x === 'number' ? `${p}[${x}]` : (p ? `${p}.${x}` : String(x)), '');
+  const a = leaves(before), b = leaves(after), out = new Set();
+  for (const [k, v] of b) if (!a.has(k) || JSON.stringify(a.get(k)) !== JSON.stringify(v)) out.add(toPath(k));
+  for (const k of a.keys()) if (!b.has(k)) out.add(toPath(JSON.stringify(JSON.parse(k).slice(0, -1))) || toPath(k));
+  return [...out];
+}
+
+module.exports = { allChecks, bothChecks, changedPaths };

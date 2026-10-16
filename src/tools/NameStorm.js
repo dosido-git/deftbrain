@@ -92,7 +92,7 @@ const EXAMPLES = {
 };
 
 const NameStorm = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -376,9 +376,18 @@ const NameStorm = ({ tool }) => {
           payload.targetLanguages = targetLanguages.length > 0 ? targetLanguages : null;
           payload.maxChars = maxChars ? parseInt(maxChars) : null;
         }
-        const data = await callToolEndpoint('namestorm', payload);
+        // Progressive (2026-10-15): the top picks show in a few seconds, one
+        // per style, and the full list and summary fill in behind them.
+        // Domain mode stays one answer.
+        let first = true;
+        const data = isDomainMode
+          ? await callToolEndpoint('namestorm', payload)
+          : await callToolEndpointProgressive('namestorm', payload, {
+            onDraft: d => { setResults(d); if (first) { setActiveCategory(0); first = false; } },
+          });
+        if (!data) return; // replaced by a newer run
         setResults(data);
-        setActiveCategory(0);
+        if (first) setActiveCategory(0); // a progressive run already did, on its first draft
         // Save to sessionHistory
         // PF-25 exception: 40-char label truncation for the history entry, not a history-length cap.
         saveToHistory(data, `${category}${vibe ? ' — ' + vibe.slice(0, 40) : ''}`);
@@ -479,6 +488,7 @@ const NameStorm = ({ tool }) => {
 
   const handleReset = () => {
     setCategory(''); setVibe(''); setVibeChips([]); setConstraints(''); setIndustryContext('');
+    cancelProgressive();
     setResults(null); setQuickResults(null); setError(''); setCompetitors('');
     setAvailabilityResults({}); setMoreLikeResults({});
     setPreferredTLDs([]); setTargetLanguages([]); setMaxChars(''); setPrimaryLanguage('English'); setTldInput('');
@@ -1136,7 +1146,7 @@ const NameStorm = ({ tool }) => {
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'blend')}`}>
             <span>✨</span> {t('ns_tab_blend')}
           </button>
-          <button aria-pressed={mode === 'quick'} onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
+          <button aria-pressed={mode === 'quick'} onClick={() => { cancelProgressive(); setMode('quick'); setCategory(''); setResults(null); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'quick')}`}>
             <span>🏷️</span> {t('ns_tab_quick')}
           </button>

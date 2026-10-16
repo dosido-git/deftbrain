@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
 import { beginWait, summarizeRequest, toolFromPath } from '../utils/waitSignal';
@@ -186,6 +186,95 @@ export const useClaudeAPI = () => {
     }
   };
 
+  // Progressive call (2026-10-15, backend/lib/progressive.js): the answer
+  // arrives in parts and is shown as it grows; the details are double-checked
+  // after it is on screen. Sends `progressive: true`.
+  //   onDraft(answerSoFar)        — each time a part lands
+  //   onChecked(answer, changed)  — the checked answer; `changed` lists the
+  //                                 corrected paths (empty when nothing changed)
+  // Resolves with the final answer. `loading` ends with the first draft — the
+  // visitor is reading by then. A newer progressive call cancels an older one,
+  // so a late check can never overwrite a newer answer.
+  const progressiveAbort = useRef(null);
+  const callToolEndpointProgressive = async (endpoint, data, { onDraft, onChecked } = {}) => {
+    progressiveAbort.current?.abort();
+    const ctrl = new AbortController();
+    progressiveAbort.current = ctrl;
+    setLoading(true);
+    setError(null);
+    const _t0 = Date.now();
+    track('tool_run', { tool: endpoint });
+    const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data) });
+    let latest = null;
+    try {
+      let response;
+      for (let attempt = 0; ; attempt++) {
+        response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...data, progressive: true, userLanguage, userLocale, userRegion, userCurrency }),
+          signal: ctrl.signal,
+        });
+        if (response.status !== 503 || attempt >= BUSY_RETRIES) break;
+        const peek = await response.clone().json().catch(() => ({}));
+        if (peek.code !== 'busy') break;
+        signalBusy('waiting');
+        track('tool_busy_retry', { tool: endpoint, attempt: attempt + 1 });
+        await sleep(Math.min(60, Number(response.headers.get('Retry-After')) || 20) * 1000);
+      }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const err = new Error(errorData.error || `Server error: ${response.status}`);
+        err.status = response.status;
+        if (typeof errorData.code === 'string') err.code = errorData.code;
+        if (err.code === 'busy') signalBusy('failed');
+        throw err;
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop();
+        for (const frame of frames) {
+          if (!frame.startsWith('data: ')) continue;
+          let f;
+          try { f = JSON.parse(frame.slice(6)); } catch { continue; }
+          if (f.error) throw new Error(f.error);
+          if (f.draft) {
+            if (!latest) { endWait('ok'); signalBusy('clear'); setLoading(false); }
+            latest = f.draft;
+            onDraft?.(f.draft);
+          }
+          if (f.checked) {
+            latest = f.checked;
+            onChecked?.(f.checked, Array.isArray(f.changed) ? f.changed : []);
+          }
+        }
+      }
+      if (!latest) throw new Error('No answer came back. Please try again.');
+      track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
+      return latest;
+    } catch (err) {
+      if (err.name === 'AbortError') return null; // replaced by a newer run
+      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
+      setError(err.message);
+      // A failure after the answer showed (the check stream broke) keeps it.
+      if (latest) return latest;
+      throw err;
+    } finally {
+      endWait(latest ? 'ok' : 'error');
+      if (progressiveAbort.current === ctrl) setLoading(false);
+    }
+  };
+
+  // Stop a progressive answer that is still arriving or being checked (the
+  // visitor reset the form or loaded an example), so it cannot reappear.
+  const cancelProgressive = () => { progressiveAbort.current?.abort(); progressiveAbort.current = null; setLoading(false); };
+
   // Status poll — same request shape and locale plumbing as callToolEndpoint,
   // but it does NOT track tool_run / tool_complete and does not toggle
   // `loading`. A tool that polls a readiness endpoint every few seconds
@@ -208,5 +297,5 @@ export const useClaudeAPI = () => {
     return json;
   };
 
-  return { callToolEndpoint, callToolEndpointStreaming, pollToolEndpoint, loading, error, userLanguage, userLocale, userRegion, userCurrency };
+  return { callToolEndpoint, callToolEndpointStreaming, callToolEndpointProgressive, cancelProgressive, pollToolEndpoint, loading, error, userLanguage, userLocale, userRegion, userCurrency };
 };
