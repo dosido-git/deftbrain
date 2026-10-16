@@ -129,7 +129,7 @@ const HowSolid = ({ data, verified, c, t }) => {
 };
 
 const BrainRoulette = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -420,13 +420,15 @@ const BrainRoulette = ({ tool }) => {
     setError(''); setResult(null); setDeeperResults(null); setChainResults([]); setExtractedConcepts(null);
     setIsSpinning(true); startCooldown();
     try {
-      const parsed = await callToolEndpoint('brain-roulette', {
+      // Progressive (2026-10-16): the rabbit hole shows first; threads follow.
+      const parsed = await callToolEndpointProgressive('brain-roulette', {
         interests: isSurprise ? [] : activeInterestLabels,
         depth, seenTopics: seenTopics.slice(0, 30),
         isSurprise: isSurprise && !customTopic.trim(),
         customTopic: customTopic.trim() || null,
         audienceLevel,
-      });
+      }, { onDraft: setResult });
+      if (!parsed) return; // replaced by a newer run
       setResult(parsed);
       verifyClaim(parsed.title, parsed.hook);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
@@ -455,11 +457,12 @@ const BrainRoulette = ({ tool }) => {
       setCustomTopic('');
       setError(''); setResult(null); setDeeperResults(null); setChainResults([]); setExtractedConcepts(null);
       setIsSpinning(true); startCooldown();
-      callToolEndpoint('brain-roulette', {
+      callToolEndpointProgressive('brain-roulette', {
         interests: activeInterestLabels, depth, seenTopics: seenTopics.slice(0, 30),
         isSurprise: false, customTopic: concept.spin_prompt || concept.label,
         audienceLevel,
-      }).then(parsed => {
+      }, { onDraft: setResult }).then(parsed => {
+        if (!parsed) return; // replaced by a newer run
         setResult(parsed);
       verifyClaim(parsed.title, parsed.hook);
         setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
@@ -1180,6 +1183,7 @@ const BrainRoulette = ({ tool }) => {
   // custom interests, the flashback schedule, the streak. Those are the
   // visitor's record of what they have explored, not this session's setup.
   const handleReset = () => {
+    cancelProgressive();
     setError('');
     setResult(null);
     setDeeperResults(null);

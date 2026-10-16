@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -98,22 +99,31 @@ RULES:
 3. Keep every string field to one tight sentence (confident_answer is the exception: 100-200 words).
 4. Never place a double-quote (") character inside any JSON string value — write quoted phrases and fake citations with no inner quote marks, or it breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
-      max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'wrong-answers-only' });
+    // Progressive (2026-10-16, lib/progressive.js), plan first: the answer
+    // (or a decline) shows first; the fake evidence and the rest are written
+    // next, handed the answer so the lore matches it. A decline skips them.
+    // Real-body renaming runs after the answer is on screen.
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: `wrong-answers-only:${tag}` });
+    const PLAN = ['question_rephrased', 'confident_answer', 'decline_reason'];
     // A decline is a valid answer, not a failure — it arrives with every other
     // field null on purpose.
-    if (parsed.decline_reason) {
-      return res.json({ decline_reason: parsed.decline_reason });
-    }
-    if (!parsed.confident_answer) {
-      return res.status(500).json({ error: 'Could not generate a wrong answer. Please try again.' });
-    }
-    await renameRealBodies(parsed, userLanguage);
-    res.json(parsed);
+    const shape = d => (d.decline_reason ? { decline_reason: d.decline_reason } : structuredClone(d));
+    return await answer(req, res, {
+      label: 'wrong-answers-only',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1500, 'answer'), [
+        ['supporting_evidence', 'common_misconception', 'expert_tip', 'wrongness_level', 'real_answer_hint'],
+      ], (keys, i, plan) => (plan?.decline_reason ? {} : call(onlyKeys(userPrompt, keys) + planNote(plan, ['question_rephrased', 'confident_answer']), 1500, 'lore'))),
+      finish: shape,
+      ready: d => Boolean(d.confident_answer || d.decline_reason),
+      complete: d => Boolean(d.confident_answer || d.decline_reason),
+      check: async (parsed) => { if (!parsed.decline_reason) await renameRealBodies(parsed, userLanguage); },
+    });
 
   } catch (error) {
     console.error('WrongAnswersOnly error:', error);

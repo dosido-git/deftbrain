@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 // Brain Roulette's whole appeal is the astonishing claim, and astonishing
 // claims are disproportionately the preliminary ones. This keeps the delight
 // without spending certainty the evidence does not support.
@@ -39,7 +40,7 @@ router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     deep: 'Respond with a multi-section exploration (3-4 short sections with bold headers). Start with the hook, go deeper into the "why", then land on a surprising connection or implication. About 200-300 words total.',
   }[depth] || 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection.';
 
-  const prompt = withLanguage(`You are Brain Roulette — a brilliant, endlessly curious friend who always has the most fascinating thing to say at a dinner party. Your job is to generate a single captivating rabbit hole that the user can't stop thinking about.
+  const rawPrompt = `You are Brain Roulette — a brilliant, endlessly curious friend who always has the most fascinating thing to say at a dinner party. Your job is to generate a single captivating rabbit hole that the user can't stop thinking about.
 
 TODAY'S DATE: ${dateStr}
 CURRENT MONTH: ${month}
@@ -82,18 +83,26 @@ HONESTY: Never invent precise statistics, percentages, study citations, or named
 
 ${NO_QUOTE_RULE}
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON.`;
 
   try {
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first: the rabbit
+    // hole itself shows first; the threads, the how-solid note and the share
+    // line are written next, handed the hook so they describe the same one.
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'BrainRoulette1' });
-    if (!parsed.title || !parsed.hook) {
-      return res.status(500).json({ error: 'Could not generate a topic. Please try again.' });
-    }
-    res.json(parsed);
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) }],
+    }, { label: `BrainRoulette1:${tag}` });
+    const PLAN = ['title', 'hook', 'topic_tag', 'interest_connections'];
+    return await answer(req, res, {
+      label: 'brain-roulette',
+      parts: planFirst(PLAN, () => call(onlyKeys(rawPrompt, PLAN), 2500, 'hook'), [
+        ['deeper_threads', 'how_solid', 'share_snippet'],
+      ], (keys, i, plan) => call(onlyKeys(rawPrompt, keys) + planNote(plan, ['title', 'hook']), 1500, 'more')),
+      ready: d => Boolean(d.title && d.hook),
+      complete: d => Boolean(d.title && d.hook),
+    });
   } catch (error) {
     console.error('Brain Roulette spin error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.'});

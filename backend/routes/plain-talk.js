@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -265,46 +266,58 @@ CRITICAL RULES:
         ]
       : [{ prompt: sectionsPrompt(trimmed, ''), tokens: 7500, label: 'plain-talk' }];
 
-    const results = await Promise.all([
-      ...sectionCalls.map(c => callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: c.tokens,
-        messages: messagesFor(c.prompt)
-      }, { label: c.label })),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        messages: messagesFor(promptSummary)
-      }, { label: 'plain-talk-summary' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        messages: messagesFor(promptStructure)
-      }, { label: 'plain-talk-structure' }),
-    ]);
-    const sectionParts = results.slice(0, sectionCalls.length);
-    const analysisParts = results.slice(sectionCalls.length);
-
-    // Disjoint top-level keys — merge back into the original response shape.
+    // Progressive (2026-10-16, lib/progressive.js): the same concurrent
+    // calls, but each is shown as it lands — the summary (with the detected
+    // type) usually first. The consistency check runs after the answer shows.
+    const call = (prompt, maxTokens, label) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      messages: messagesFor(prompt),
+    }, { label });
+    // Disjoint top-level keys — merged back into the original response shape.
     // sections is the one key more than one call can emit, so it is
     // concatenated in document order and the ids renumbered across the join.
-    const parsed = Object.assign({}, ...analysisParts);
-    parsed.sections = sectionParts
-      .flatMap(part => (Array.isArray(part.sections) ? part.sections : []))
-      .map((sec, i) => ({ ...sec, id: `sec_${i + 1}` }));
-    // full_translation is no longer model-generated (it fully duplicated the
-    // per-section translations, ~tripling output size and hanging real-sized
-    // documents — audit 2026-07-19). Sections must cover the entire text, so
-    // their translations concatenated ARE the complete translation.
-    if (!parsed.full_translation && Array.isArray(parsed.sections)) {
-      parsed.full_translation = parsed.sections.map(sec => sec.translation).filter(Boolean).join('\n\n');
-    }
-    if (!parsed.detected_type) {
-      return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'plain-talk', userLanguage: req.body?.userLanguage });
-    res.json(stripCites(parsed));
+    const assemble = (d) => {
+      const { _sections, ...parsed } = structuredClone(d);
+      parsed.sections = sectionCalls
+        .flatMap((_, i) => (Array.isArray(_sections?.[i]) ? _sections[i] : []))
+        .map((sec, i) => ({ ...sec, id: `sec_${i + 1}` }));
+      // full_translation is no longer model-generated (it fully duplicated the
+      // per-section translations, ~tripling output size and hanging real-sized
+      // documents — audit 2026-07-19). Sections must cover the entire text, so
+      // their translations concatenated ARE the complete translation.
+      if (!parsed.full_translation && Array.isArray(parsed.sections)) {
+        parsed.full_translation = parsed.sections.map(sec => sec.translation).filter(Boolean).join('\n\n');
+      }
+      return stripCites(parsed);
+    };
+    return await answer(req, res, {
+      label: 'plain-talk',
+      parts: [
+        { required: true, run: () => call(promptSummary, 3000, 'plain-talk-summary'), apply: (d, out) => Object.assign(d, out) },
+        { required: true, run: () => call(promptStructure, 4000, 'plain-talk-structure'), apply: (d, out) => Object.assign(d, out) },
+        ...sectionCalls.map((c, i) => ({
+          required: true,
+          run: () => call(c.prompt, c.tokens, c.label),
+          apply: (d, out) => { d._sections = { ...d._sections, [i]: out?.sections }; },
+        })),
+      ],
+      finish: assemble,
+      ready: d => Boolean(d.detected_type),
+      complete: d => Boolean(d.detected_type),
+      check: async (draft) => {
+        const parsed = assemble(draft);
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'plain-talk', userLanguage: req.body?.userLanguage });
+        // Back into the draft's shape; the check reads and writes the whole answer.
+        const { sections, full_translation, ...rest } = parsed;
+        let at = 0;
+        const per = {};
+        sectionCalls.forEach((_, i) => { const n = (draft._sections?.[i] || []).length; per[i] = sections.slice(at, at + n); at += n; });
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, rest, { _sections: per });
+      },
+    });
 
   } catch (error) {
     console.error('[PlainTalk] Error:', error);

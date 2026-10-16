@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -72,7 +73,7 @@ const RATING_KEY = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const DecisionPrism = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const c = {
@@ -125,6 +126,7 @@ const DecisionPrism = ({ tool }) => {
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [showHistory, setShowHistory] = useState(false);
@@ -186,7 +188,7 @@ const DecisionPrism = ({ tool }) => {
 
   const analyze = useCallback(async () => {
     if (!decision.trim()) { setError(t('ptw_err_describe')); return; }
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     const filteredOptions = options.filter(o => o.trim());
     const inputs = {
       decision: decision.trim(),
@@ -197,7 +199,9 @@ const DecisionPrism = ({ tool }) => {
       stuckReason,
     };
     try {
-      const data = await callToolEndpoint('decision-prism', {
+      // Progressive (2026-10-16): the reframe shows first; checked after.
+      let opened = false;
+      const data = await callToolEndpointProgressive('decision-prism', {
         decision: inputs.decision,
         options: inputs.options.length > 0 ? inputs.options : null,
         context: inputs.context || null,
@@ -205,20 +209,25 @@ const DecisionPrism = ({ tool }) => {
         deadline: inputs.deadline || null,
         stuckReason: inputs.stuckReason || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); if (!opened) { opened = true; setExpandedOption(0); } },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
-      setExpandedOption(0);
+      if (!opened) setExpandedOption(0);
       saveToHistory(data, inputs);
     } catch (err) {
       setError(err.message || t('ptw_err_failed'));
     }
-  }, [decision, options, context, values, deadline, stuckReason, callToolEndpoint, userLocale, userCurrency, userRegion, t, saveToHistory, setResults]);
+  }, [decision, options, context, values, deadline, stuckReason, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t, saveToHistory, setResults]);
 
   const handleReset = useCallback(() => {
     setDecision(''); setOptions(['', '']); setContext('');
     setValues([]); setDeadline(''); setStuckReason('');
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setError('');
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
     // Five, rotated across the harder stuck-reasons too: fear of regret,
@@ -450,6 +459,7 @@ const DecisionPrism = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {/* A Question Underneath This Decision */}
         {results?.underlying_question && (
           <div className={`p-5 rounded-2xl border-2 ${c.insightBg}`}>

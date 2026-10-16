@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -90,7 +91,7 @@ const SAMPLE_TEXTS = [
 // ════════════════════════════════════════════════════════════
 
 const PlainTalk = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -125,6 +126,7 @@ const PlainTalk = ({ tool }) => {
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── useState ──
   const [inputText, setInputText] = useState('');
@@ -228,22 +230,28 @@ const PlainTalk = ({ tool }) => {
       if (!inputText.trim()) { setError(t('plt_err_empty')); return; }
       if (inputText.trim().length < 30) { setError(t('plt_err_short')); return; }
     }
-    setError(''); setResult(null); setFollowUpAnswers([]);
+    setError(''); setResult(null); setCheckStatus(null); setFollowUpAnswers([]);
     try {
-      const data = await callToolEndpoint('plaintalk', {
+      // Progressive (2026-10-16): the overview shows first; sections follow.
+      let opened = false;
+      const data = await callToolEndpointProgressive('plaintalk', {
         text: inputText.trim(),
         pdfBase64,
         textType,
         focusQuestion: focusQuestion.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResult(d); setCheckStatus('checking'); if (!opened) { opened = true; setActiveTab('overview'); setExpandedSections({}); } },
+        onChecked: (d, changed) => { setResult(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResult(data);
       // PF-25 exception: 40 is a preview-text length; history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (inputText || fileName || '').slice(0, 40) }, ...prev].slice(0, 6));
-      setActiveTab('overview');
+      if (!opened) setActiveTab('overview');
       const autoExpand = {};
       (data.sections || []).forEach(s => { if (s.importance === 'high') autoExpand[s.id] = true; });
-      setExpandedSections(autoExpand);
+      setExpandedSections(prev => (opened ? { ...autoExpand, ...prev } : autoExpand));
     } catch (err) {
       setError(err.message || t('plt_err_analyze'));
     }
@@ -269,6 +277,7 @@ const PlainTalk = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setInputText(''); setTextType('auto'); setFocusQuestion('');
     setFileName(''); setPdfBase64(null); setResult(null); setError(''); setCompareOnly(false);
     setActiveTab('overview'); setExpandedSections({});
@@ -842,6 +851,7 @@ const PlainTalk = ({ tool }) => {
         {/* ─── RESULTS PHASE ─── */}
         {(result || compareOnly) && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuted} />
 
             {/* Reading Level Bar */}
             <ReadingLevelBar level={result?.reading_level} />

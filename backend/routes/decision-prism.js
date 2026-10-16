@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -222,72 +223,79 @@ LIMITS: unknowns_that_matter AT MOST 4. Keep every field to one or two concise s
 
 ${NO_QUOTE_RULE}`;
 
-    const [optionsPart, framingPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage(optionsPrompt, userLanguage) + locale,
-        messages: [{ role: 'user', content: 'Analyze the options.' }],
-      }, { label: 'decision-prism-options' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2500,
-        system: withLanguage(framingPrompt, userLanguage) + locale,
-        messages: [{ role: 'user', content: 'Build the reframe.' }],
-      }, { label: 'decision-prism-framing' }),
-    ]);
-
-    const parsed = { ...optionsPart, ...framingPart };
-    if (!Array.isArray(parsed.options_analysis)) parsed.options_analysis = [];
-    if (!parsed.decision_summary) {
-      return res.status(500).json({ error: 'Could not analyze this decision. Please try again.' });
-    }
-
-    // Safety net: the model occasionally leaks a value from the
-    // reversibility/values-fit vocabulary into a matrix rating (e.g. a
-    // dimension literally named "Reversibility" gets "PARTLY REVERSIBLE"
-    // instead of one of the six rating values). Coerce anything outside the
-    // enum to UNKNOWN so the frontend never renders a raw, untranslated
-    // string in a locale that isn't English.
-    const VALID_RATINGS = new Set(['STRONG ADVANTAGE', 'SOME ADVANTAGE', 'MIXED', 'SOME DISADVANTAGE', 'STRONG DISADVANTAGE', 'UNKNOWN']);
-    if (parsed.comparison_matrix && Array.isArray(parsed.comparison_matrix.options)) {
-      parsed.comparison_matrix.options.forEach(o => {
-        if (Array.isArray(o.ratings)) {
-          o.ratings = o.ratings.map(r => VALID_RATINGS.has(r) ? r : 'UNKNOWN');
-        }
-      });
-    }
-
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [];
-      (parsed.options_analysis || []).forEach((o, i) => {
-        fields.push([`options_analysis[${i}].pre_mortem.failure_scenario`, o.pre_mortem?.failure_scenario]);
-        fields.push([`options_analysis[${i}].opportunity_cost`, o.opportunity_cost]);
-        fields.push([`options_analysis[${i}].upside_worth_considering`, o.upside_worth_considering]);
-        fields.push([`options_analysis[${i}].risk_worth_considering`, o.risk_worth_considering]);
-      });
-      fields.push(['underlying_question', parsed.underlying_question]);
-      fields.push(['what_your_description_points_to', parsed.what_your_description_points_to]);
-      fields.push(['one_question', parsed.one_question]);
-      if (parsed.current_read) {
-        fields.push(['current_read.what_currently_favors', parsed.current_read.what_currently_favors]);
-        fields.push(['current_read.what_prevents_a_clean_call', parsed.current_read.what_prevents_a_clean_call]);
+    // Progressive (2026-10-16, lib/progressive.js): the reframe is split
+    // into three passes and runs beside the options pass; the summary and the
+    // underlying question show first. The guard runs after the answer is on
+    // screen. Matrix ratings are coerced on every draft.
+    const call = (system, maxTokens, content, tag) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system: withLanguage(system, userLanguage) + locale,
+      messages: [{ role: 'user', content }],
+    }, { label: `decision-prism-${tag}` });
+    const clean = (parsed) => {
+      if (!Array.isArray(parsed.options_analysis)) parsed.options_analysis = [];
+      // Safety net: the model occasionally leaks a value from the
+      // reversibility/values-fit vocabulary into a matrix rating (e.g. a
+      // dimension literally named "Reversibility" gets "PARTLY REVERSIBLE"
+      // instead of one of the six rating values). Coerce anything outside the
+      // enum to UNKNOWN so the frontend never renders a raw, untranslated
+      // string in a locale that isn't English.
+      const VALID_RATINGS = new Set(['STRONG ADVANTAGE', 'SOME ADVANTAGE', 'MIXED', 'SOME DISADVANTAGE', 'STRONG DISADVANTAGE', 'UNKNOWN']);
+      if (parsed.comparison_matrix && Array.isArray(parsed.comparison_matrix.options)) {
+        parsed.comparison_matrix.options.forEach(o => {
+          if (Array.isArray(o.ratings)) {
+            o.ratings = o.ratings.map(r => VALID_RATINGS.has(r) ? r : 'UNKNOWN');
+          }
+        });
       }
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'decision-prism',
+      parts: [
+        ...keyGroups([
+          ['decision_summary', 'underlying_question', 'what_may_be_making_this_hard'],
+          ['what_your_description_points_to', 'unknowns_that_matter', 'one_question', 'current_read'],
+          ['if_still_stuck'],
+        ], (keys, i) => call(onlyKeys(framingPrompt, keys), 1500, 'Build the reframe.', `framing${i + 1}`)),
+        { required: true, run: () => call(optionsPrompt, 4000, 'Analyze the options.', 'options'), apply: (d, out) => { ['options_analysis', 'comparison_matrix'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+      ],
+      finish: d => clean(structuredClone(d)),
+      ready: d => Boolean(d.decision_summary),
+      complete: d => Boolean(d.decision_summary),
+      check: async (parsed) => {
+        clean(parsed);
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+          const fields = [];
+          (parsed.options_analysis || []).forEach((o, i) => {
+            fields.push([`options_analysis[${i}].pre_mortem.failure_scenario`, o.pre_mortem?.failure_scenario]);
+            fields.push([`options_analysis[${i}].opportunity_cost`, o.opportunity_cost]);
+            fields.push([`options_analysis[${i}].upside_worth_considering`, o.upside_worth_considering]);
+            fields.push([`options_analysis[${i}].risk_worth_considering`, o.risk_worth_considering]);
+          });
+          fields.push(['underlying_question', parsed.underlying_question]);
+          fields.push(['what_your_description_points_to', parsed.what_your_description_points_to]);
+          fields.push(['one_question', parsed.one_question]);
+          if (parsed.current_read) {
+            fields.push(['current_read.what_currently_favors', parsed.current_read.what_currently_favors]);
+            fields.push(['current_read.what_prevents_a_clean_call', parsed.current_read.what_prevents_a_clean_call]);
+          }
 
-      await runOutputGuard(parsed, {
-        label: 'decision-prism',
-        fields,
-        supplied,
-        promise: 'Examine a difficult decision from several useful angles — pre-mortem, time horizons, opportunity cost, reversibility, values fit, and a comparison matrix — using only options and facts the visitor actually supplied. Never predict the visitor\'s future feelings, another person\'s reaction, or a hidden motive; never invent an option like "do nothing" the visitor never named; never assign an arbitrary numeric score.',
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log('[decision-prism] v2 guard skipped:', guardErr.message);
-    }
-
-    res.json(parsed);
+          await runOutputGuard(parsed, {
+            label: 'decision-prism',
+            fields,
+            supplied,
+            promise: 'Examine a difficult decision from several useful angles — pre-mortem, time horizons, opportunity cost, reversibility, values fit, and a comparison matrix — using only options and facts the visitor actually supplied. Never predict the visitor\'s future feelings, another person\'s reaction, or a hidden motive; never invent an option like "do nothing" the visitor never named; never assign an arbitrary numeric score.',
+            guard: router.outputGuard,
+            userLanguage,
+          });
+        } catch (guardErr) {
+          console.log('[decision-prism] v2 guard skipped:', guardErr.message);
+        }
+      },
+    });
   } catch (error) {
     console.error('❌ Plot Twist error:', error.message);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

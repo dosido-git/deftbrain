@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -503,35 +504,54 @@ Do not include a time footprint, person-hours, or any arithmetic in any field â€
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first: the verdict
+    // and one-liner show first; the reasoning and the better format then run
+    // at once, each handed the verdict so neither argues for another one. The
+    // number check and the guard run after the answer is on screen.
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'justify-my-meeting' });
-    if (!parsed.verdict) return res.status(500).json({ error: 'Could not judge this one. Please try again.' });
-
-    pinVerdict(parsed, VERDICTS, 'NOT ENOUGH TO TELL');
-    if (parsed.better_format) parsed.better_format.recommendation = pinTo(parsed.better_format.recommendation, FORMATS, 'Other');
-    parsed.time_footprint = timeFootprint(duration, attendees, perYearFromText(`${meetingText} ${context || ''}`));
-    await withNumberCheck(parsed, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage });
-    const fields = [];
-    const walk = (v, path) => {
-      if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]);
-      else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
-      else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
+    }, { label: `justify-my-meeting:${tag}` });
+    const PLAN = ['verdict', 'one_liner', 'what_we_know'];
+    const shape = (d) => {
+      pinVerdict(d, VERDICTS, 'NOT ENOUGH TO TELL');
+      if (d.better_format) d.better_format.recommendation = pinTo(d.better_format.recommendation, FORMATS, 'Other');
+      d.time_footprint = timeFootprint(duration, attendees, perYearFromText(`${meetingText} ${context || ''}`));
+      return d;
     };
-    for (const k of ['one_liner', 'what_we_know', 'why_this_verdict', 'what_earns_the_meeting', 'what_weakens_the_case', 'better_format', 'next_move', 'if_it_has_to_happen']) walk(parsed[k], k);
-    await runOutputGuard(parsed, {
+    return await answer(req, res, {
       label: 'justify-my-meeting',
-      fields,
-      supplied: `THE INVITE OR DESCRIPTION:\n${meetingText.trim()}\nDuration: ${duration ? `${duration} hour(s)` : 'not given'}. Attendees: ${attendees || 'not given'}.\nAnything else: ${context?.trim() || 'nothing'}`,
-      promise: 'A verdict on whether this meeting earns its synchronous time, grounded only in what was typed, with a concrete better format and next move.',
-      guard: router.outputGuard,
-      requiredNonEmpty: ['one_liner', 'next_move'],
-      userLanguage,
-      locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1200, 'verdict'), [
+        ['why_this_verdict', 'what_earns_the_meeting', 'what_weakens_the_case', 'unknowns_that_matter'],
+        ['better_format', 'next_move', 'if_it_has_to_happen'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 2000, `part${i + 2}`)),
+      finish: d => validateResult(shape(structuredClone(d))),
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+      check: async (parsed) => {
+        shape(parsed);
+        await withNumberCheck(parsed, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage });
+        const fields = [];
+        const walk = (v, path) => {
+          if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]);
+          else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+          else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+        };
+        for (const k of ['one_liner', 'what_we_know', 'why_this_verdict', 'what_earns_the_meeting', 'what_weakens_the_case', 'better_format', 'next_move', 'if_it_has_to_happen']) walk(parsed[k], k);
+        await runOutputGuard(parsed, {
+          label: 'justify-my-meeting',
+          fields,
+          supplied: `THE INVITE OR DESCRIPTION:\n${meetingText.trim()}\nDuration: ${duration ? `${duration} hour(s)` : 'not given'}. Attendees: ${attendees || 'not given'}.\nAnything else: ${context?.trim() || 'nothing'}`,
+          promise: 'A verdict on whether this meeting earns its synchronous time, grounded only in what was typed, with a concrete better format and next move.',
+          guard: router.outputGuard,
+          requiredNonEmpty: ['one_liner', ...(parsed.next_move !== undefined ? ['next_move'] : [])],
+          userLanguage,
+          locale,
+        });
+      },
     });
-    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('[JustifyMyMeeting]', error);

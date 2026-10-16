@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
@@ -87,7 +88,7 @@ const MAX_WEEK_MEETINGS = 12;
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const JustifyMyMeeting = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -128,6 +129,7 @@ const JustifyMyMeeting = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [view, setView] = useState('judge');
@@ -170,21 +172,26 @@ const JustifyMyMeeting = ({ tool }) => {
   const runJudge = useCallback(async () => {
     if (!meetingText.trim()) return;
     setError('');
-    setJudgeResults(null);
+    setJudgeResults(null); setCheckStatus(null);
     setAgendaResults(null);
     setMessageResults(null);
     try {
-      const data = await callToolEndpoint('justify-my-meeting', {
+      // Progressive (2026-10-16): the verdict shows first; checked after.
+      const data = await callToolEndpointProgressive('justify-my-meeting', {
         meetingText: meetingText.trim(),
         duration: duration ? parseFloat(duration) : null,
         attendees: attendees ? parseInt(attendees, 10) : null,
         context: context.trim() || null,
+      }, {
+        onDraft: d => { setJudgeResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setJudgeResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setJudgeResults(data);
     } catch (err) {
       setError(err.message || t('mbd_err_judge_failed'));
     }
-  }, [meetingText, duration, attendees, context, callToolEndpoint, t]);
+  }, [meetingText, duration, attendees, context, callToolEndpointProgressive, t]);
 
   // ── API: the agenda a FIX IT verdict earns ──
   const runAgenda = useCallback(async () => {
@@ -649,6 +656,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
       {judgeResults && (
         <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+          <CheckNote status={checkStatus} className={c.textMuted} />
           <div className={`${verdictColor(judgeResults.verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{VERDICT_EMOJI[judgeResults.verdict] || '📊'}</span>
             <p className={`text-xl font-black ${c.text}`}>{verdictLabel(judgeResults.verdict)}</p>
@@ -1166,6 +1174,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // and leaving the form full is the version that looks like it worked and
   // isn't: the next submit re-sends whatever was already typed.
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setMeetingText(''); setDuration(''); setAttendees(''); setContext('');
     setRelationship('');
     setZName(''); setZPurpose(''); setZActual(''); setZFreq('Weekly');

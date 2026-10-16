@@ -172,4 +172,22 @@ function keyGroups(groups, run) {
   }));
 }
 
-module.exports = { progressive, answer, keyGroups, onlyKeys };
+// planFirst — parts that must agree with one choice (2026-10-16). The plan
+// pass writes the choice (a verdict, the change to try) and is shown first;
+// the other groups start the moment it lands, all at once, and each is handed
+// the plan so it builds on it instead of making its own. runFollow(keys, i,
+// plan) builds one pass, normally with onlyKeys and the plan quoted after it.
+function planFirst(planKeys, runPlan, groups, runFollow) {
+  const plan = runPlan();
+  plan.catch(() => {}); // the plan part reports its own failure
+  const take = (keys) => (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); };
+  return [
+    { required: true, run: () => plan, apply: take(planKeys) },
+    ...groups.map((keys, i) => ({ run: async () => runFollow(keys, i, await plan), apply: take(keys) })),
+  ];
+}
+
+// The plan, quoted for a follow-up pass.
+const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass (build on it; never contradict or replace it):\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
+
+module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote };
