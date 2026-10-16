@@ -773,7 +773,7 @@ const HistoryToday = ({ tool }) => {
       <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('ht_related')}</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>{t('ht_jargon_assassin')}</a>
+          <a href="/PlainTalk" className={`text-xs ${linkStyle}`}>{t('ht_jargon_assassin')}</a>
           <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>{t('ht_decision_coach')}</a>
           <a href="/FutureProof" className={`text-xs ${linkStyle}`}>{t('ht_futureproof')}</a>
         </div>

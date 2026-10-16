@@ -643,7 +643,7 @@ const DocumentDetective = ({ tool }) => {
         <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('nc_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ {t('nc_jargon_assassin')}</a>
+            <a href="/PlainTalk" className={`text-xs ${linkStyle}`}>🔍 {t('nc_jargon_assassin')}</a>
             <a href="/LeaseTrapDetector" className={`text-xs ${linkStyle}`}>📄 {t('nc_lease_trap')}</a>
           </div>
         </div>

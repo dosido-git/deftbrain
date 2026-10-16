@@ -1249,7 +1249,7 @@ const JustifyMyMeeting = ({ tool }) => {
           <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mbd_xref_before')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/MeetingHijackStopper" className={`text-xs ${linkStyle}`}>{t('mbd_xref_hijack')}</a>
-            <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>{t('mbd_xref_jargon')}</a>
+            <a href="/PlainTalk" className={`text-xs ${linkStyle}`}>{t('mbd_xref_jargon')}</a>
           </div>
         </div>
       )}
@@ -1269,7 +1269,7 @@ const JustifyMyMeeting = ({ tool }) => {
           <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('mbd_xref_next_step')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/MeetingHijackStopper" className={`text-xs ${linkStyle}`}>{t('mbd_xref_hijack')}</a>
-            <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>{t('mbd_xref_jargon')}</a>
+            <a href="/PlainTalk" className={`text-xs ${linkStyle}`}>{t('mbd_xref_jargon')}</a>
             <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>{t('mbd_xref_heckler')}</a>
           </div>
         </div>

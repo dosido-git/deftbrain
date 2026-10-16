@@ -368,16 +368,6 @@ const EXAMPLE_BUCKETS = {
         'Direct and specific lands harder than effusive: \u201cHey [name] \u2014 I should have written this six months ago, but the recommendation you wrote landed me at [company], and I\u2019m three weeks in and loving it. I credit you specifically with the line about [thing] \u2014 it\u2019s exactly what they hired me to do. Thank you.\u201d Send today.',
     },
     {
-      id: 'JargonAssassin',
-      title: 'Jargon Assassin',
-      icon: '🗡️',
-      tagline: 'Strip the jargon, keep the meaning',
-      input:
-        '"We\u2019re leveraging synergistic cross-functional alignment to optimize stakeholder outcomes at scale."',
-      output:
-        '\u201cWe\u2019re getting teams to work together so we can help more customers.\u201d That\u2019s it. The original used 14 words to say less than the 12-word version. Every jargon word you keep is a reader you\u2019re losing.',
-    },
-    {
       id: 'NameAudit',
       title: 'NameAudit',
       icon: '🔬',

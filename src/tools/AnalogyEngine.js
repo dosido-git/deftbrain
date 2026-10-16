@@ -589,7 +589,7 @@ const AnalogyEngine = ({ tool }) => {
               {t('ae_keep_explaining')}
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
-              <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ {t('ae_jargon')}</a>
+              <a href="/PlainTalk" className={`text-xs ${linkStyle}`}>🔍 {t('ae_jargon')}</a>
               <a href="/BrainRoulette" className={`text-xs ${linkStyle}`}>🎲 {t('ae_brainroulette')}</a>
             </div>
           </div>

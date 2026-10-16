@@ -1437,7 +1437,7 @@ const TheFinalWord = ({ tool }) => {
               {t('tfw_xref_drafting').split('{{link}}').map((part, i, arr) => (
                 <React.Fragment key={i}>
                   {part}
-                  {i < arr.length - 1 && <a href="/JargonAssassin" className={linkStyle}>{t('tfw_xref_jargon')}</a>}
+                  {i < arr.length - 1 && <a href="/PlainTalk" className={linkStyle}>{t('tfw_xref_jargon')}</a>}
                 </React.Fragment>
               ))}
             </p>

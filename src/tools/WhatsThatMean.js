@@ -344,7 +344,7 @@ const WhatsThatMean = ({ tool }) => {
 
       {!results && (
         <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
-          {tr('syw_xref_pre', 'Need a whole document explained, not just one phrase?')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {tr('syw_xref_jargon', 'Jargon Assassin')}</a>
+          {tr('syw_xref_pre', 'Need a whole document explained, not just one phrase?')} <a href="/PlainTalk" className={linkStyle}>🔍 {tr('syw_xref_jargon', 'Plain Talk')}</a>
         </p>
       )}
 
@@ -496,7 +496,7 @@ const WhatsThatMean = ({ tool }) => {
           </div>
 
           <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
-            {tr('syw_xref_post', 'Got a whole document full of unfamiliar language instead of one phrase?')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {tr('syw_xref_jargon', 'Jargon Assassin')}</a>
+            {tr('syw_xref_post', 'Got a whole document full of unfamiliar language instead of one phrase?')} <a href="/PlainTalk" className={linkStyle}>🔍 {tr('syw_xref_jargon', 'Plain Talk')}</a>
           </p>
         </div>
       )}

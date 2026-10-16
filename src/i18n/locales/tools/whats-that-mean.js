@@ -57,7 +57,7 @@ export const sayWhat = {
     syw_class_literal: "Literal",
     syw_xref_pre: "Need a whole document explained, not just one phrase?",
     syw_xref_post: "Got a whole document full of unfamiliar language instead of one phrase?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   es: {
     syw_title: "What's That Mean?",
@@ -114,7 +114,7 @@ export const sayWhat = {
     syw_class_literal: "Literal",
     syw_xref_pre: "¿Necesitas que te expliquen todo un documento, no solo una frase?",
     syw_xref_post: "¿Tienes un documento entero lleno de lenguaje que no entiendes, en lugar de una sola frase?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   zh: {
     syw_title: "What's That Mean?",
@@ -171,7 +171,7 @@ export const sayWhat = {
     syw_class_literal: "字面意思",
     syw_xref_pre: "需要解读整份文件而不只是一句话？",
     syw_xref_post: "有一整份文件都是看不懂的内容，而不只是一句话？",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   hi: {
     syw_title: "What's That Mean?",
@@ -228,7 +228,7 @@ export const sayWhat = {
     syw_class_literal: "शाब्दिक",
     syw_xref_pre: "क्या पूरे दस्तावेज़ को समझना है, सिर्फ़ एक वाक्यांश को नहीं?",
     syw_xref_post: "क्या एक वाक्यांश के बजाय पूरा दस्तावेज़ ही समझ से बाहर है?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   ar: {
     syw_title: "What's That Mean?",
@@ -285,7 +285,7 @@ export const sayWhat = {
     syw_class_literal: "حرفي",
     syw_xref_pre: "هل تحتاج إلى شرح مستند كامل، وليس عبارة واحدة فقط؟",
     syw_xref_post: "هل لديك مستند كامل مليء بلغة غير مفهومة بدلاً من عبارة واحدة؟",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   pt: {
     syw_title: "What's That Mean?",
@@ -342,7 +342,7 @@ export const sayWhat = {
     syw_class_literal: "Literal",
     syw_xref_pre: "Precisa que um documento inteiro seja explicado, não só uma frase?",
     syw_xref_post: "Tem um documento inteiro cheio de linguagem desconhecida em vez de uma única frase?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   fr: {
     syw_title: "What's That Mean?",
@@ -399,7 +399,7 @@ export const sayWhat = {
     syw_class_literal: "Littéral",
     syw_xref_pre: "Besoin d'expliquer tout un document, pas juste une expression ?",
     syw_xref_post: "Vous avez tout un document plein de langage inconnu plutôt qu'une seule expression ?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   de: {
     syw_title: "What's That Mean?",
@@ -456,7 +456,7 @@ export const sayWhat = {
     syw_class_literal: "Wörtlich",
     syw_xref_pre: "Muss ein ganzes Dokument erklärt werden, nicht nur ein Ausdruck?",
     syw_xref_post: "Hast du ein ganzes Dokument voller unbekannter Sprache statt nur eines Ausdrucks?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   ja: {
     syw_title: "What's That Mean?",
@@ -513,7 +513,7 @@ export const sayWhat = {
     syw_class_literal: "文字通りの意味",
     syw_xref_pre: "一つのフレーズだけでなく、文書全体の説明が必要ですか？",
     syw_xref_post: "一つのフレーズではなく、わからない表現だらけの文書全体がありますか？",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   ko: {
     syw_title: "What's That Mean?",
@@ -570,7 +570,7 @@ export const sayWhat = {
     syw_class_literal: "문자 그대로",
     syw_xref_pre: "한 문장이 아니라 문서 전체 설명이 필요하신가요?",
     syw_xref_post: "한 문장이 아니라 이해할 수 없는 표현으로 가득한 문서 전체가 있으신가요?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   ru: {
     syw_title: "What's That Mean?",
@@ -627,7 +627,7 @@ export const sayWhat = {
     syw_class_literal: "Буквальное значение",
     syw_xref_pre: "Нужно объяснить целый документ, а не одну фразу?",
     syw_xref_post: "У вас целый документ с непонятными формулировками, а не одна фраза?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   th: {
     syw_title: "What's That Mean?",
@@ -684,7 +684,7 @@ export const sayWhat = {
     syw_class_literal: "ความหมายตรงตัว",
     syw_xref_pre: "ต้องการคำอธิบายทั้งเอกสาร ไม่ใช่แค่วลีเดียวใช่ไหม?",
     syw_xref_post: "มีเอกสารทั้งฉบับที่เต็มไปด้วยภาษาที่ไม่เข้าใจ แทนที่จะเป็นแค่วลีเดียวใช่ไหม?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
   vi: {
     syw_title: "What's That Mean?",
@@ -741,6 +741,6 @@ export const sayWhat = {
     syw_class_literal: "Nghĩa đen",
     syw_xref_pre: "Cần giải thích cả một tài liệu, chứ không chỉ một cụm từ?",
     syw_xref_post: "Bạn có cả một tài liệu đầy ngôn ngữ khó hiểu thay vì chỉ một cụm từ?",
-    syw_xref_jargon: "Jargon Assassin",
+    syw_xref_jargon: "Plain Talk",
   },
 };

@@ -66,7 +66,6 @@ const SPECIALIST_TOOLS = {
   DoctorVisitTranslator: { labelKey: 'plt_spec_doctor', emoji: '🏥' },
   BillRescue: { labelKey: 'plt_spec_bill', emoji: '💳' },
   ComplaintEscalationWriter: { labelKey: 'plt_spec_complaint', emoji: '📨' },
-  JargonAssassin: { labelKey: 'plt_spec_jargon', emoji: '🗡️' },
   FakeReviewDetective: { labelKey: 'plt_spec_fakereview', emoji: '🔎' },
 };
 
@@ -698,7 +697,7 @@ const PlainTalk = ({ tool }) => {
               </span>
             </div>
             <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
-              {t('plt_jargon_hint')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {t('plt_xref_jargonassassin')}</a> {t('plt_jargon_hint_after')}
+              {t('plt_jargon_hint')} <a href="/ContractDecoder" className={linkStyle}>📋 {t('plt_xref_jargonassassin')}</a> {t('plt_jargon_hint_after')}
             </p>
           </div>
         )}
@@ -809,7 +808,7 @@ const PlainTalk = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('plt_which_tool')}</p>
               <ul className={`space-y-1.5 text-xs ${c.textSecondary}`}>
                 <li>{t('plt_which_whole')} → <span className="font-bold">{tool?.title ?? 'Plain Talk'}</span> <span className={c.textMuteded}>{t('plt_which_here')}</span></li>
-                <li>{t('plt_which_para')} → <a href="/JargonAssassin" className={linkStyle}>🗡️ {t('plt_xref_jargonassassin')}</a></li>
+                <li>{t('plt_which_para')} → <a href="/ContractDecoder" className={linkStyle}>📋 {t('plt_xref_jargonassassin')}</a></li>
                 <li>{t('plt_which_medical')} → <a href="/DoctorVisitTranslator" className={linkStyle}>🏥 {t('plt_xref_doctorvisit')}</a></li>
               </ul>
             </div>
@@ -1635,7 +1634,7 @@ const PlainTalk = ({ tool }) => {
             <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
               <p className={`text-[13px] font-bold ${c.textMuted} mb-3`}>🔗 {t('plt_related')}</p>
               <div className="flex flex-wrap gap-3">
-                <a href="/JargonAssassin" className={`text-xs ${linkStyle}`}>🗡️ {t('plt_xref_jargonassassin')}</a>
+                <a href="/ContractDecoder" className={`text-xs ${linkStyle}`}>📋 {t('plt_xref_jargonassassin')}</a>
                 <a href="/ComplaintEscalationWriter" className={`text-xs ${linkStyle}`}>📨 {t('plt_xref_complaint')}</a>
                 <a href="/DoctorVisitTranslator" className={`text-xs ${linkStyle}`}>🏥 {t('plt_xref_doctorvisit')}</a>
               </div>
