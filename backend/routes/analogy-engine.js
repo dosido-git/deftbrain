@@ -57,7 +57,7 @@ DEPTH: ${depth || 'solid_understanding'}`;
     const TIP = `  "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively. — one sentence"`;
     // Speed (2026-10-15): one call wrote the whole explanation (1-1.7k tokens,
     // 23-35s) and Deep asked for 5-6 analogies. Now: fewer analogies (Quick 2,
-    // Solid 3, Deep 4 — "Show more" asks for two more, see `more` below), and
+    // Solid 3, Deep 3 (owner 2026-10-15) — "Show more" asks for two more, see `more` below), and
     // two calls at once: the analogies, and everything else. Analogies stay
     // in ONE call: written one per call they contradicted each other, and
     // each contradiction cost a repair and a re-check — slower overall.
@@ -73,7 +73,7 @@ DEPTH: ${depth || 'solid_understanding'}`;
       Mechanical: 'machines, tools, plants, animals or weather',
     };
     const ORDER = Object.keys(ANALOGY_PLAN);
-    const COUNT = { quick_grasp: 2, solid_understanding: 3, deep_understanding: 4 };
+    const COUNT = { quick_grasp: 2, solid_understanding: 3, deep_understanding: 3 };
     // "Show more": two analogies of types not yet used, anchored on the
     // explanation the visitor already has.
     const more = req.body.more === true;
