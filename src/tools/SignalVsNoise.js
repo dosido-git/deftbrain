@@ -3,6 +3,7 @@ import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
@@ -26,7 +27,7 @@ const NOISE_TYPE_CONFIG = {
 
 const SignalVsNoise = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, pollToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, pollToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t, tPlural } = useTranslation();
 
 
@@ -70,6 +71,7 @@ const SignalVsNoise = ({ tool }) => {
   };
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
 
 
@@ -236,7 +238,7 @@ const SignalVsNoise = ({ tool }) => {
   // cached research and searches afresh. Everything else is the normal run.
   const handleSubmit = async ({ refresh = false } = {}) => {
     if (!topic.trim()) return;
-    setError(''); setResults(null); setPreview(null); setRestoredCheck(null);
+    setError(''); setResults(null); setPreview(null); setRestoredCheck(null); setCheckStatus(null);
     const payload = {
       topic: topic.trim(),
       conflictingAdvice: conflictingAdvice.trim() || undefined,
@@ -280,7 +282,13 @@ const SignalVsNoise = ({ tool }) => {
       const retries = ready ? WARM_RETRIES : 0;
       for (let attempt = 0; attempt <= retries; attempt++) {
         try {
-          data = await callToolEndpoint('signal-vs-noise', payload);
+          // Progressive (2026-10-16): the framing shows first, the rest as
+          // it lands; checked after (CheckNote says so).
+          data = await callToolEndpointProgressive('signal-vs-noise', payload, {
+            onDraft: d => { setPhase('idle'); setPreview(null); setResults(d); setCheckStatus('checking'); },
+            onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+          });
+          if (!data) return; // replaced by a newer run
           break;
         } catch (e) {
           if (e?.code !== 'research_unavailable' || attempt === retries) throw e;
@@ -301,7 +309,7 @@ const SignalVsNoise = ({ tool }) => {
     const ex = pickExample('SignalVsNoise', EXAMPLE_TOPICS);
     setTopic(ex.topic);
     setConflictingAdvice(ex.conflict);
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
   };
 
   const buildText = useCallback(() => {
@@ -397,7 +405,7 @@ const SignalVsNoise = ({ tool }) => {
                 </div>
                 {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
                 {(results || conflictingAdvice.trim() || topic.trim() || userContext.trim()) ? (
-                  <button onClick={() => { setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  <button onClick={() => { cancelProgressive(); setCheckStatus(null); setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                     {t('svn_new_topic')}
                   </button>
                 ) : null}
@@ -464,6 +472,7 @@ const SignalVsNoise = ({ tool }) => {
         {/* Results */}
         {results && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
             {/* Topic + framing */}
             <div className={`rounded-xl border ${c.border} p-5 ${c.card}`}>
@@ -498,7 +507,7 @@ const SignalVsNoise = ({ tool }) => {
                     </>
                   )}
                 </div>
-                <button onClick={() => { setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                <button onClick={() => { cancelProgressive(); setCheckStatus(null); setResults(null); setTopic(''); setConflictingAdvice(''); setUserContext(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   {t('svn_new_topic')}
                 </button>
               </div>

@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -61,20 +62,31 @@ Return ONLY valid JSON:
   "debate_context": { "user_side": "Brief label. Nothing else.", "ai_side": "Brief label. Nothing else.", "core_tension": "Fundamental disagreement in one sentence" }
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2000,
-      system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.
+    const system = withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueSmarterOpen' });
-    if (!parsed.opening && !parsed.response) {
-      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'argue-smarter', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE;
+    // Progressive (2026-10-16, lib/progressive.js): the 3-5 paragraph opening
+    // was most of one ~2,000-token call. Three passes at once now — the
+    // biggest vulnerability first — and the consistency check after.
+    const ORDER = ['strongest_criticism', 'opening', 'key_challenges', 'acknowledged_strengths', 'closing_question', 'debate_context'];
+    return await answer(req, res, {
+      label: 'argue-smarter',
+      parts: keyGroups([
+        ['strongest_criticism', 'debate_context'],
+        ['opening'],
+        ['key_challenges', 'acknowledged_strengths', 'closing_question'],
+      ], (keys, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2000,
+        system,
+        messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
+      }, { label: `ArgueSmarterOpen-${i + 1}` })),
+      finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
+      ready: d => Boolean(d.strongest_criticism),
+      complete: d => Boolean(d.opening || d.strongest_criticism),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'argue-smarter', userLanguage: req.body?.userLanguage }),
+    });
   } catch (error) {
     console.error('[ArgueSmarterOpen]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

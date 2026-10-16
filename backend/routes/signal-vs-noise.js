@@ -11,6 +11,7 @@
 // supplied research packet, with source IDs that are validated before render.
 
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -499,42 +500,44 @@ RULES
 - sources_of_noise describes general mechanisms only — never a named actor's motive.
 ${SHARED_RULES}`;
 
-    const [signalPart, restPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`,
-        messages: [{ role: 'user', content: signalPrompt }],
-      }, { label: 'signal-vs-noise:synthesis-signal' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2200,
-        system: withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`,
-        messages: [{ role: 'user', content: restPrompt }],
-      }, { label: 'signal-vs-noise:synthesis-rest' }),
-    ]);
-
-    let parsed = sanitizeResult({ ...(restPart || {}), ...(signalPart || {}) }, research.packet);
-    if (!parsed?.framing || (!parsed.the_signal.items.length && !parsed.the_noise.length && !parsed.still_worth_verifying.length)) {
-      return res.status(500).json({ error: 'Could not synthesize the researched claims. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
+    // Progressive (2026-10-16, lib/progressive.js): the two synthesis calls
+    // are five section passes at once — the framing first. Source cleanup
+    // runs on every draft (finish), so an unsourced figure never shows even
+    // briefly; the guard runs after the answer is on screen.
+    const system = withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`;
+    const pass = (prompt, tag) => (keys, i) => callClaudeWithRetry({
+      model: MODELS.SMART, max_tokens: 2000, system,
+      messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
+    }, { label: `signal-vs-noise:synthesis-${tag}${i + 1}` });
+    const clean = (d) => {
+      let parsed = sanitizeResult(structuredClone(d), research.packet);
+      dropUnsourcedFigures(parsed, research.packet, supplied);
+      parsed = sanitizeResult(parsed, research.packet);
+      softenCompletenessClaims(parsed);
+      return parsed;
+    };
+    const restParts = keyGroups([
+      ['still_worth_verifying', 'what_general_claims_cant_decide', 'claim_labels'],
+      ['the_bottom_line', 'sources_of_noise'],
+    ], pass(restPrompt, 'rest')).map(p => ({ ...p, required: false }));
+    return await answer(req, res, {
       label: 'signal-vs-noise',
-      fields: collectProseFields(parsed),
-      supplied: `${supplied}\nRESEARCH PACKET:\n${JSON.stringify(research.packet)}`,
-      promise: 'Research the visitor\'s competing claims, show what the retrieved evidence supports, distinguish overstatement from genuine uncertainty, and preserve source provenance.',
-      guard: router.outputGuard,
-      userLanguage,
+      parts: [...keyGroups([['topic_as_understood', 'framing'], ['the_signal'], ['the_noise']], pass(signalPrompt, 'signal')), ...restParts],
+      finish: clean,
+      ready: d => Boolean(d.framing),
+      complete: (d) => {
+        const p = clean(d);
+        return Boolean(p?.framing && (p.the_signal?.items?.length || p.the_noise?.length || p.still_worth_verifying?.length));
+      },
+      check: d => runOutputGuard(d, {
+        label: 'signal-vs-noise',
+        fields: collectProseFields(d),
+        supplied: `${supplied}\nRESEARCH PACKET:\n${JSON.stringify(research.packet)}`,
+        promise: 'Research the visitor\'s competing claims, show what the retrieved evidence supports, distinguish overstatement from genuine uncertainty, and preserve source provenance.',
+        guard: router.outputGuard,
+        userLanguage,
+      }),
     });
-
-    dropUnsourcedFigures(parsed, research.packet, supplied);
-    // Guard repair can touch prose, but source IDs are code-owned. Re-run the
-    // structural/source validation before anything reaches the visitor.
-    parsed = sanitizeResult(parsed, research.packet);
-    const softened = softenCompletenessClaims(parsed);
-    if (softened) console.log(`[signal-vs-noise] softened ${softened} search-completeness superlative(s)`);
-    res.json(parsed);
   } catch (error) {
     console.error('[SignalVsNoise]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

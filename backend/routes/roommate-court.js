@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -315,45 +316,32 @@ Return ONLY valid JSON matching this schema:
 Omit unsupported or unnecessary fields — do not force three escalation steps or multiple pushback scenarios when fewer genuinely fit. if_they_push_back at most 2, if_that_doesnt_work at most 3.`;
 
       const system = withLanguage(MEDIATOR_SYSTEM, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-      const [readPart, talkPart] = await Promise.all([
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 2500,
-          system,
-          messages: [{ role: 'user', content: withLanguage(readPrompt, userLanguage) }],
-        }, { label: 'roommate-court-v2-read' }),
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 2500,
-          system,
-          messages: [{ role: 'user', content: withLanguage(talkPrompt, userLanguage) }],
-        }, { label: 'roommate-court-v2-talk' }),
-      ]);
-      // Original key order, so the page renders as before.
-      const parsed = {
-        the_read: readPart?.the_read,
-        where_the_disagreement_is: readPart?.where_the_disagreement_is,
-        what_to_try: readPart?.what_to_try,
-        conversation: talkPart?.conversation,
-        if_that_doesnt_work: talkPart?.if_that_doesnt_work,
-        one_thing_not_to_lose_sight_of: readPart?.one_thing_not_to_lose_sight_of,
-      };
-      for (const k of Object.keys(parsed)) if (parsed[k] === undefined) delete parsed[k];
-
-      if (!parsed?.the_read?.label) {
-        return res.status(500).json({ error: 'Could not work through this. Please try again.' });
-      }
-
-      await runOutputGuard(parsed, {
+      // Progressive (2026-10-16, lib/progressive.js): four section passes at
+      // once — the read first — and the guard after the answer is on screen.
+      const ORDER = ['the_read', 'where_the_disagreement_is', 'what_to_try', 'conversation', 'if_that_doesnt_work', 'one_thing_not_to_lose_sight_of'];
+      const pass = (prompt, tag) => (keys, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2000,
+        system,
+        messages: [{ role: 'user', content: withLanguage(onlyKeys(prompt, keys), userLanguage) }],
+      }, { label: `roommate-court-v2-${tag}${i + 1}` });
+      const talkParts = keyGroups([['conversation'], ['if_that_doesnt_work']], pass(talkPrompt, 'talk')).map(p => ({ ...p, required: false }));
+      return await answer(req, res, {
         label: 'roommate-court-v2',
-        fields: collectProseFields(parsed),
-        supplied: `SITUATION: ${dispute}\nYOUR SIDE: ${yourSide || 'none'}\nWHAT WOULD THEY SAY: ${theirSide || 'none supplied'}\nDURATION: ${duration || 'none'}\nTRIED SO FAR: ${priorCommunication || 'none'}\nLIVING SITUATION: ${livingSituation || 'none'}`,
-        promise: 'Help the visitor separate fact from disagreement in a household conflict, using only their account — never adjudicate fault, invent a hidden root conflict, or script a fictional agreement.',
-        guard: router.outputGuard,
-        userLanguage,
+        parts: [...keyGroups([['the_read'], ['where_the_disagreement_is', 'what_to_try', 'one_thing_not_to_lose_sight_of']], pass(readPrompt, 'read')), ...talkParts],
+        // Original key order, so the page renders as before.
+        finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
+        ready: d => Boolean(d.the_read?.label),
+        complete: d => Boolean(d.the_read?.label),
+        check: d => runOutputGuard(d, {
+          label: 'roommate-court-v2',
+          fields: collectProseFields(d),
+          supplied: `SITUATION: ${dispute}\nYOUR SIDE: ${yourSide || 'none'}\nWHAT WOULD THEY SAY: ${theirSide || 'none supplied'}\nDURATION: ${duration || 'none'}\nTRIED SO FAR: ${priorCommunication || 'none'}\nLIVING SITUATION: ${livingSituation || 'none'}`,
+          promise: 'Help the visitor separate fact from disagreement in a household conflict, using only their account — never adjudicate fault, invent a hidden root conflict, or script a fictional agreement.',
+          guard: router.outputGuard,
+          userLanguage,
+        }),
       });
-
-      return res.json(parsed);
     }
 
     // ── CHORE ROULETTE: ASSIGN ──

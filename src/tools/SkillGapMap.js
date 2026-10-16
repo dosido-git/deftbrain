@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -85,7 +86,7 @@ const EXPLORE_EXAMPLES = [
   },
 ];
 const SkillGapMap = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -145,6 +146,7 @@ const SkillGapMap = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State: Inputs ───
   const [currentRole, setCurrentRole] = useState('');
@@ -271,10 +273,15 @@ const SkillGapMap = ({ tool }) => {
     if (!currentRole.trim() || !targetRole.trim()) { setError(t('sgm_err_both_roles')); return; }
     setError(''); clearResults();
     try {
-      const data = await callToolEndpoint('skill-gap-map', {
+      // Progressive (2026-10-16): where they stand shows first; checked after.
+      const data = await callToolEndpointProgressive('skill-gap-map', {
         currentRole: currentRole.trim(), targetRole: targetRole.trim(),
         currentSkills: currentSkills.trim() || null, hoursPerWeek, userLanguage: lang,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (targetRole || currentRole || '').substring(0, 40) }, ...prev].slice(0, 6)); // outer history cap is 6
       // Collapse a repeated from/to attempt into one entry (refreshed to the
@@ -433,6 +440,7 @@ const SkillGapMap = ({ tool }) => {
   };
 
   const clearResults = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setExploreData(null); setTimelineData(null);
     setProofData(null); setNetworkData(null); setDeepData({});
     setReframeData(null); setShowReframe(false); setEconomicsData(null);
@@ -747,6 +755,7 @@ const SkillGapMap = ({ tool }) => {
           the answer. */}
       {results && (
         <div ref={resultsRef} className="scroll-mt-24 space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
           <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-sm font-semibold ${c.text}`}>🗺️ {results.transition?.current} → {results.transition?.target}</p>
             {completedCount > 0 && <Badge c={c} type="success">{t('sgm_completed_badge', { count: completedCount })}</Badge>}

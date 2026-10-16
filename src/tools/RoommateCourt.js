@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -119,7 +120,7 @@ const READ_LABEL_KEY = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const RoommateCourt = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const tr = useCallback((key, fallback) => {
@@ -164,6 +165,7 @@ const RoommateCourt = ({ tool }) => {
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [activeTab, setActiveTab] = useState('dispute');
@@ -221,12 +223,13 @@ const RoommateCourt = ({ tool }) => {
   // ── Work It Out handlers ──
   const submitDispute = useCallback(async () => {
     if (!dispute.trim()) return;
-    setError(''); setDisputeResult(null);
+    setError(''); setDisputeResult(null); setCheckStatus(null);
     try {
       const durKey = DURATION_OPTIONS.find(d => d.id === duration)?.labelKey;
       const commKey = COMM_OPTIONS.find(d => d.id === priorComm)?.labelKey;
       const liveKey = LIVING_OPTIONS.find(d => d.id === livingSituation)?.labelKey;
-      const res = await callToolEndpoint('roommate-court', {
+      // Progressive (2026-10-16): the read shows first; checked after.
+      const res = await callToolEndpointProgressive('roommate-court', {
         action: 'mediate',
         dispute: dispute.trim(),
         yourSide: yourSide.trim(),
@@ -235,16 +238,20 @@ const RoommateCourt = ({ tool }) => {
         priorCommunication: commKey ? t(commKey) : priorComm,
         livingSituation: liveKey ? t(liveKey) : livingSituation,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setDisputeResult(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setDisputeResult(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!res) return; // replaced by a newer run
       setDisputeResult(res);
       setShowEscalation(false);
     } catch (err) { setError(err.message || tr('rc_err_mediate', "Couldn't work through this. Please try again.")); }
-  }, [dispute, yourSide, theirSide, duration, priorComm, livingSituation, callToolEndpoint, userLocale, userCurrency, userRegion, t, tr]);
+  }, [dispute, yourSide, theirSide, duration, priorComm, livingSituation, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t, tr]);
 
   const resetDispute = useCallback(() => {
     setDispute(''); setYourSide(''); setTheirSide('');
     setDuration(''); setPriorComm(''); setLivingSituation('');
-    setDisputeResult(null); setError(''); setShowEscalation(false);
+    cancelProgressive(); setCheckStatus(null); setDisputeResult(null); setError(''); setShowEscalation(false);
   }, []);
   const handleReset = resetDispute;
 
@@ -349,7 +356,7 @@ const RoommateCourt = ({ tool }) => {
     setDuration(ex.duration);
     setPriorComm(ex.priorComm);
     setLivingSituation(ex.livingSituation);
-    setDisputeResult(null);
+    cancelProgressive(); setCheckStatus(null); setDisputeResult(null);
   }, []);
 
   const buildFullText = useCallback(() => {
@@ -428,6 +435,7 @@ const RoommateCourt = ({ tool }) => {
     const r = disputeResult;
     return (
       <div className="scroll-mt-24 space-y-4 mt-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
         <div className={`p-4 rounded-xl border-2 ${c.verdictBg}`}>
           <div className="flex items-center gap-2 mb-2">

@@ -1,5 +1,6 @@
 // sleep-architect.js
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -357,18 +358,28 @@ OUTPUT LOGIC
 18. Return ONLY the JSON object.`;
 
   try {
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 3500,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'sleep-architect-v2' });
-
-    const result = validateResult(parsed);
-    if (!result) return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(result, { label: 'sleep-architect', userLanguage: req.body?.userLanguage });
-    res.json(result);
+    // Progressive (2026-10-16, lib/progressive.js): three section passes at
+    // once — the sleep picture first — and the consistency check after the
+    // answer is on screen. quick_wins stays in the protocol's pass: it must
+    // support that same experiment.
+    return await answer(req, res, {
+      label: 'sleep-architect',
+      parts: keyGroups([
+        ['sleep_score', 'diagnosis', 'key_issues'],
+        ['quick_wins', 'protocol'],
+        ['try_next', 'schedule'],
+      ], (keys, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2000,
+        system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
+      }, { label: `sleep-architect-v2-${i + 1}` })),
+      finish: d => validateResult({ ...d, protocol: d.protocol || [] }) || {},
+      ready: d => Boolean(d.diagnosis),
+      complete: d => Boolean(d.diagnosis),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'sleep-architect', userLanguage: req.body?.userLanguage }),
+    });
   } catch (err) {
     console.error('❌ SleepArchitect v2 error:', err.message);
     if (!res.headersSent) {

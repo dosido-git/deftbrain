@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -106,7 +107,7 @@ const STARTERS = [
 ];
 
 const ArgueSmarter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
 
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -157,6 +158,7 @@ const ArgueSmarter = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Core State ───
   const [mode, setMode] = useState('setup');
@@ -257,19 +259,25 @@ const ArgueSmarter = ({ tool }) => {
 
   const handleOpen = async () => {
     if (!position.trim()) { setError(t('dm_err_position')); return; }
-    setError(''); setCoachData(null); setShowCoach(false); setAudienceData(null); setArgMapData(null);
+    setError(''); setCoachData(null); setShowCoach(false); setAudienceData(null); setArgMapData(null); setCheckStatus(null);
+    // Progressive (2026-10-16): the opening turn fills in as its parts land
+    // and is double-checked after (CheckNote says so).
+    const show = (data) => {
+      setUserSide(data.debate_context?.user_side || position.substring(0, 60));
+      setAiSide(data.debate_context?.ai_side || 'opposing');
+      setCoreTension(data.debate_context?.core_tension || '');
+      setDebateHistory([
+        { speaker: 'user', text: position, side: data.debate_context?.user_side, timestamp: now() },
+        { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { headline: data.strongest_criticism, challenges: data.key_challenges, concessions: data.acknowledged_strengths, question: data.closing_question } },
+      ]);
+      setTurnCount(1); setMode('debate');
+    };
     try {
-      const data = await callToolEndpoint('argue-better-open', { position, challengeLevel: level, format, userLocale, userCurrency, userRegion });
-      if (data) {
-        setUserSide(data.debate_context?.user_side || position.substring(0, 60));
-        setAiSide(data.debate_context?.ai_side || 'opposing');
-        setCoreTension(data.debate_context?.core_tension || '');
-        setDebateHistory([
-          { speaker: 'user', text: position, side: data.debate_context?.user_side, timestamp: now() },
-          { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { headline: data.strongest_criticism, challenges: data.key_challenges, concessions: data.acknowledged_strengths, question: data.closing_question } },
-        ]);
-        setTurnCount(1); setMode('debate');
-      }
+      const data = await callToolEndpointProgressive('argue-better-open', { position, challengeLevel: level, format, userLocale, userCurrency, userRegion }, {
+        onDraft: d => { show(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { show(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (data) show(data);
     } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
@@ -418,7 +426,7 @@ const ArgueSmarter = ({ tool }) => {
 
   const startNew = () => {
     setMode('setup'); setPosition(''); setFormat('freeform');
-    setDebateHistory([]); setScorecardData(null); setAudienceData(null); setArgMapData(null);
+    cancelProgressive(); setCheckStatus(null); setDebateHistory([]); setScorecardData(null); setAudienceData(null); setArgMapData(null);
     setCoachData(null); setShowCoach(false); setSourceData(null); setShowSource(false);
     setUserInput(''); setTurnCount(0); setHasSwitched(false); setError(''); setReplayIndex(null);
   };
@@ -672,6 +680,7 @@ const ArgueSmarter = ({ tool }) => {
 
         {/* ═══ DEBATE ═══ */}
       {mode === 'debate' && <div className="space-y-4">
+        {turnCount === 1 && <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />}
         <div className={`${c.accentCard} border rounded-xl p-4`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>

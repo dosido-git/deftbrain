@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -544,75 +545,67 @@ RULES:
     // stop_reason==='max_tokens' rather than returning partial JSON, so a
     // truncation here is a guaranteed 500 ("Could not map your skill
     // gaps."), not a degraded-but-usable answer.
-    const [leadPart, gapsPart, secondaryPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: leadPrompt }],
-      }, { label: 'SkillGapMap:lead' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: gapsPrompt }],
-      }, { label: 'SkillGapMap:gaps' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2500,
-        system: withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: secondaryPrompt }],
-      }, { label: 'SkillGapMap:secondary' }),
-    ]);
-    const primaryPart = { ...leadPart, skill_gaps: dropStartHereDuplicate(gapsPart?.skill_gaps, leadPart?.start_here) };
-
-    const parsed = {
-      transition: { current: currentRole.trim(), target: targetRole.trim() },
-      ...primaryPart,
-      ...secondaryPart,
-    };
-
-    if (!parsed.starting_point || !parsed.skill_gaps) {
-      return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
-      label: 'skill-gap-map',
-      fields: collectProseFields(parsed),
-      supplied: brief,
-      promise: 'Show what supplied experience carries over to the target role, what is not yet established, and one good place to start — without inventing proficiency, the employer, the market, or precision.',
-      guard: router.outputGuard,
-      userLanguage,
-    });
-
+    // Progressive (2026-10-16, lib/progressive.js): the lead pass is now
+    // three section passes (where they stand first), alongside the gaps and
+    // the secondary pass; the guard runs after the answer is on screen.
+    const system = withLocaleContext(userLocale, userCurrency, userRegion);
+    const ask = (content, label, maxTokens) => callClaudeWithRetry({
+      model: MODELS.SMART, max_tokens: maxTokens, system,
+      messages: [{ role: 'user', content }],
+    }, { label });
     // Structural cleanup after the guard (guard mutates in place; a repair
     // pass can leave a field incomplete despite being told not to — same
-    // lesson as ScamRadar/Sensory Scout/Signal vs Noise this session).
+    // lesson as ScamRadar/Sensory Scout/Signal vs Noise this session). Runs
+    // on every draft, on a copy.
     const nonBlank = (v) => typeof v === 'string' && v.trim().length > 0;
-    parsed.transferable_strengths = Array.isArray(parsed.transferable_strengths)
-      ? parsed.transferable_strengths.filter(x => nonBlank(x?.strength) && nonBlank(x?.evidence)).slice(0, 5)
-      : [];
-    parsed.skill_gaps = Array.isArray(parsed.skill_gaps)
-      ? parsed.skill_gaps.filter(x => nonBlank(x?.capability) && nonBlank(x?.gap)).slice(0, 7)
-      : [];
-    parsed.role_expectations_to_check = Array.isArray(parsed.role_expectations_to_check)
-      ? parsed.role_expectations_to_check.filter(x => nonBlank(x?.question)).slice(0, 4)
-      : [];
-    parsed.transition_tasks = Array.isArray(parsed.transition_tasks)
-      ? parsed.transition_tasks.filter(x => nonBlank(x?.task)).slice(0, 3)
-      : [];
-    if (parsed.starting_point) {
-      parsed.starting_point.important_unknowns = Array.isArray(parsed.starting_point.important_unknowns)
-        ? parsed.starting_point.important_unknowns.filter(nonBlank).slice(0, 3)
+    const tidy = (src) => {
+      const parsed = structuredClone(src);
+      parsed.skill_gaps = dropStartHereDuplicate(parsed.skill_gaps, parsed.start_here);
+      parsed.transferable_strengths = Array.isArray(parsed.transferable_strengths)
+        ? parsed.transferable_strengths.filter(x => nonBlank(x?.strength) && nonBlank(x?.evidence)).slice(0, 5)
         : [];
-    }
-    if (parsed.next_move) {
-      parsed.next_move.alternatives = Array.isArray(parsed.next_move.alternatives)
-        ? parsed.next_move.alternatives.filter(nonBlank).slice(0, 2)
+      parsed.skill_gaps = Array.isArray(parsed.skill_gaps)
+        ? parsed.skill_gaps.filter(x => nonBlank(x?.capability) && nonBlank(x?.gap)).slice(0, 7)
         : [];
-    }
+      parsed.role_expectations_to_check = Array.isArray(parsed.role_expectations_to_check)
+        ? parsed.role_expectations_to_check.filter(x => nonBlank(x?.question)).slice(0, 4)
+        : [];
+      parsed.transition_tasks = Array.isArray(parsed.transition_tasks)
+        ? parsed.transition_tasks.filter(x => nonBlank(x?.task)).slice(0, 3)
+        : [];
+      if (parsed.starting_point) {
+        parsed.starting_point.important_unknowns = Array.isArray(parsed.starting_point.important_unknowns)
+          ? parsed.starting_point.important_unknowns.filter(nonBlank).slice(0, 3)
+          : [];
+      }
+      if (parsed.next_move) {
+        parsed.next_move.alternatives = Array.isArray(parsed.next_move.alternatives)
+          ? parsed.next_move.alternatives.filter(nonBlank).slice(0, 2)
+          : [];
+      }
+      return parsed;
+    };
 
-    res.json(parsed);
+    return await answer(req, res, {
+      label: 'skill-gap-map',
+      parts: [
+        ...keyGroups([['starting_point'], ['transferable_strengths'], ['start_here', 'next_move']],
+          (keys, i) => ask(onlyKeys(leadPrompt, keys), `SkillGapMap:lead${i + 1}`, 2500)),
+        { run: () => ask(gapsPrompt, 'SkillGapMap:gaps', 3500), apply: (d, o) => { d.skill_gaps = o?.skill_gaps; } },
+        { run: () => ask(secondaryPrompt, 'SkillGapMap:secondary', 2500), apply: (d, o) => { Object.assign(d, o || {}); } },
+      ],
+      finish: d => tidy({ transition: { current: currentRole.trim(), target: targetRole.trim() }, ...d }),
+      ready: d => Boolean(d.starting_point),
+      complete: d => Boolean(d.starting_point && d.skill_gaps),
+      check: d => runOutputGuard(d, {
+        label: 'skill-gap-map',
+        fields: collectProseFields(d),
+        supplied: brief,
+        promise: 'Show what supplied experience carries over to the target role, what is not yet established, and one good place to start — without inventing proficiency, the employer, the market, or precision.',
+        guard: router.outputGuard,
+        userLanguage,
+      }),
+    });
 
   } catch (error) {
     console.error('[SkillGapMap] Error:', error);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -35,7 +36,7 @@ const SLEEP_DISRUPTORS = [
 ];
 
 function SleepArchitect({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -85,6 +86,7 @@ function SleepArchitect({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [goals, setGoals]             = useState([]);
   const [bedtime, setBedtime]         = useState('');
@@ -103,7 +105,7 @@ function SleepArchitect({ tool }) {
   const canSubmit = goals.length > 0 || freeform.trim().length >= 20;
 
   const handleReset = useCallback(() => {
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
     setError('');
     setGoals([]);
     setBedtime('');
@@ -121,7 +123,7 @@ function SleepArchitect({ tool }) {
     setHoursActual(ex.hoursActual);
     setDisruptors(ex.disruptors);
     setFreeform(ex.freeform);
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
     setError('');
   }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -134,10 +136,12 @@ function SleepArchitect({ tool }) {
   const handleBuild = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
+    const withInputs = d => ({ ...d, _input: { goals, bedtime, wakeTime, hoursActual, disruptors, freeform: freeform.trim() } });
 
     try {
-      const parsed = await callToolEndpoint('sleep-architect/stream', {
+      // Progressive (2026-10-16): the sleep picture shows first; checked after.
+      const parsed = await callToolEndpointProgressive('sleep-architect/stream', {
         goals,
         bedtime: bedtime || null,
         wakeTime: wakeTime || null,
@@ -145,8 +149,12 @@ function SleepArchitect({ tool }) {
         disruptors,
         freeform: freeform.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(withInputs(d)); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(withInputs(d)); setCheckStatus(checkStatusFor(changed)); },
       });
-      setResults({ ...parsed, _input: { goals, bedtime, wakeTime, hoursActual, disruptors, freeform: freeform.trim() } });
+      if (!parsed) return; // replaced by a newer run
+      setResults(withInputs(parsed));
       setSessionHistory(prev => [{
         preview: goals.map(g => { const sg = SLEEP_GOALS.find(x => x.id === g); return sg ? t(sg.labelKey) : null; }).filter(Boolean).join(', ') || freeform.slice(0, 60),
         score: parsed.sleep_score ?? null,
@@ -155,7 +163,7 @@ function SleepArchitect({ tool }) {
     } catch (err) {
       setError(err.message || t('sa_error'));
     }
-  }, [canSubmit, loading, goals, bedtime, wakeTime, hoursActual, disruptors, freeform, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, goals, bedtime, wakeTime, hoursActual, disruptors, freeform, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleBuildRef.current = handleBuild;
   canSubmitRef.current   = canSubmit;
@@ -330,6 +338,7 @@ function SleepArchitect({ tool }) {
     if (!results) return null;
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {results?._input && (
