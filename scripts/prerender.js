@@ -377,12 +377,37 @@ function getRelatedGuidesHTML(guides, n = 4) {
 const HOME_H1 = '<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">Life doesn’t come with instructions.</h1>'
   + '<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">Interactive guidance for life’s awkward, confusing, and curious moments.</p>';
 
-function getHomeStaticHTML(categories) {
+function getHomeStaticHTML(categories, tools) {
   const e = escapeHtml;
   const cats = categories.map(c =>
     `<li style="margin:.3rem 0"><a href="/tools/${e(c.slug)}">${e(c.name)}</a></li>`).join('');
+  const links = getHomeToolLinksHTML(tools); // same order as the page: cards, categories, Scramble
   return `<nav aria-label="Primary" style="margin:0 0 1.5rem"><a href="/tools">Tools</a> · <a href="/guides">Guides</a> · <a href="/about">About</a> · <a href="/organizations">Organizations</a></nav>`
-    + `<h2 style="font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a">Explore by category</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`;
+    + links.cards
+    + `<h2 style="font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a">Explore by category</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`
+    + links.scramble;
+}
+
+// The home page's tool links, as the React page shows them on first load
+// (HomeIntro.js): the four default situation cards, then Tool Scramble's
+// first set — the focus tools not already on a card. Both read
+// src/data/homeSituations.json and tools-keep-list.json (2026-10-15), so a
+// crawler's first read links the tools a person sees.
+function getHomeToolLinksHTML(tools) {
+  const e = escapeHtml;
+  const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
+  const byId = new Map(tools.map(t => [t.id, t]));
+  const cards = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'data', 'homeSituations.json'), 'utf8'))
+    .filter(c => byId.has(c.toolId)).slice(0, 4);
+  const onCards = new Set(cards.map(c => c.toolId));
+  const scramble = (TOOLS_KEEP_LIST.focus || []).filter(id => !onCards.has(id) && byId.get(id)?.tagline).slice(0, 12).map(id => byId.get(id));
+  const li = (href, text) => `<li style="margin:.3rem 0"><a href="${e(href)}">${text}</a></li>`;
+  return {
+    cards: `<h2 style="${H2}">What’s on your mind?</h2><ul style="padding-left:1.25rem;margin:0">`
+      + cards.map(c => li(`/${c.toolId}`, `<strong>${e(c.problem)}</strong> ${e(c.body)}`)).join('') + '</ul>',
+    scramble: `<h2 style="${H2}">Tool Scramble</h2><ul style="padding-left:1.25rem;margin:0">`
+      + scramble.map(t => li(`/${t.id}`, `<strong>${e(t.tagline)}</strong> ${e(t.title)}`)).join('') + '</ul>',
+  };
 }
 
 // ─── HTML injection ───────────────────────────────────────────────────────────
@@ -725,7 +750,7 @@ async function main() {
   // every tool is one more link away (2026-10-04).
   try {
     const homepageHtml = stripToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1}${getHomeStaticHTML(loadCategoryMeta())}</div>`));
+      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1}${getHomeStaticHTML(loadCategoryMeta(), tools)}</div>`));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage)');
     succeeded++;

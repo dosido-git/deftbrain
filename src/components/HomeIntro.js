@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Caret from './Caret';
 import { CATEGORY_META } from '../data/categoryMeta';
+import homeSituations from '../data/homeSituations.json';
+import keepList from '../data/tools-keep-list.json';
 import './HomeIntro.css';
 
 // Theme variables from HomeTheme.css (light values unchanged; dark set added).
@@ -16,66 +18,12 @@ const SERIF = "'Playfair Display', Georgia, serif";
 // flipping on their own. The first four are the default set; the rest are
 // the earlier rotation's situations (each has a card photo in
 // public/home-scenes/flip-cards/), in that list's order.
-const SITUATIONS = [
-  { toolId: 'LeaseTrapDetector', problem: 'Something in my lease looks wrong.', body: 'Understand the risk and what to ask.' },
-  { toolId: 'DoctorVisitPrep', problem: 'I have a doctor appointment coming up.', body: 'Walk in knowing what matters.' },
-  { toolId: 'DifficultTalkCoach', problem: 'I need to have a difficult conversation.', body: 'Think it through before you say it.' },
-  // Fourth card is deliberately light (2026-09-27, owner): DeftBrain isn't
-  // only for problems — charter 4.11, curiosity and fun.
-  { toolId: 'WrongAnswersOnly', problem: 'I could use a laugh.', body: 'Get a confidently, beautifully wrong answer.' },
-  // Which Life? moves to lead the second set (first "Show other situations").
-  { toolId: 'WhichLife', problem: 'I want to explore a different path.', body: 'See possibilities you haven’t considered.' },
-  { toolId: 'BillRescue', problem: 'This bill doesn’t look right.', body: 'Figure out what to question and what to do next.' },
-  { toolId: 'FakeReviewDetective', problem: 'Can I trust these reviews?', body: 'Look for the patterns that don’t add up.' },
-  { toolId: 'TipOfTongue', problem: 'I know it. I just can’t remember it.', body: 'Work backward from the clues you still have.' },
-  { toolId: 'ComplaintEscalationWriter', problem: 'They’re not listening to my complaint.', body: 'Make the next message harder to ignore.' },
-  { toolId: 'PlainTalk', problem: 'I don’t understand this document.', body: 'Turn dense language into something usable.' },
-  { toolId: 'LayoverMaximizer', problem: 'I have hours between flights.', body: 'Find out what you can realistically do.' },
-  { toolId: 'RentersDepositSaver', problem: 'I want my security deposit back.', body: 'Prepare before move-out, not after the dispute.' },
-  { toolId: 'ProcedureProbe', problem: 'A procedure was recommended. What should I ask?', body: 'Understand the decision before you say yes.' },
-  { toolId: 'MarkupDetective', problem: 'Is this price actually reasonable?', body: 'Look past the sticker and inspect the markup.' },
-  { toolId: 'GhostWriter', problem: 'I know what I mean. I can’t get the words right.', body: 'Turn the thought into something you can send.' },
-  { toolId: 'WaitingModeLiberator', problem: 'I’m stuck waiting and can’t start anything.', body: 'Get some of your day back.' },
-  { toolId: 'NameStorm', problem: 'I need a name that doesn’t sound generic.', body: 'Generate directions worth reacting to.' },
-  { toolId: 'ChaosPilot', problem: 'Everything feels urgent at once.', body: 'Sort the pile and find the next move.' },
-  { toolId: 'FinalWish', problem: 'I need to say something that matters.', body: 'Find the words without making them sound borrowed.' },
-  { toolId: 'FocusSoundArchitect', problem: 'My surroundings are making it hard to work.', body: 'Build a background your attention can live with.' },
-  { toolId: 'AlternatePath', problem: 'What if I’d made a different choice?', body: 'See where the other path would have led.' },
-  { toolId: 'AnalogyEngine', problem: 'I need to explain something complicated.', body: 'Get an analogy built for exactly who’s listening.' },
-  { toolId: 'ArgueSmarter', problem: 'I think I’m right, but I want to be sure.', body: 'Pressure-test your case against the strongest pushback.' },
-  { toolId: 'AwkwardSilenceFiller', problem: 'The conversation just stalled.', body: 'Get something to say that actually fits the moment.' },
-  { toolId: 'BatchFlow', problem: 'My to-do list is a mess of unrelated tasks.', body: 'Group them so your day stops fighting you.' },
-  { toolId: 'BeforeHello', problem: 'There’s someone in my field I’d like to know.', body: 'Get ready before you say hello.' },
-  { toolId: 'BeforeTheCrash', problem: 'I keep running myself into the ground.', body: 'Learn the pattern before it happens again.' },
-  { toolId: 'BeliefStressTest', problem: 'I’ve held this belief for years.', body: 'See where it holds — and where it breaks.' },
-  { toolId: 'BikeMedic', problem: 'Something’s wrong with my bike.', body: 'Figure out what it is and what to do next.' },
-  { toolId: 'Bookmark', problem: 'I stopped reading and can’t remember where I was.', body: 'Pick up again — without the spoilers.' },
-  { toolId: 'BragSheetBuilder', problem: 'I need to talk about my own work.', body: 'Remember it clearly and say it with confidence.' },
-  { toolId: 'BrainDumpBuddy', problem: 'Everything is stuck in my head at once.', body: 'Get it out and find the one next step.' },
-  { toolId: 'BrainRoulette', problem: 'I want to think about something new.', body: 'Follow your curiosity somewhere unexpected.' },
-  { toolId: 'BrainStateDeejay', problem: 'I need to feel different than I do right now.', body: 'Get music that moves you there.' },
-  { toolId: 'BreakMyPlan', problem: 'I think my plan is solid, but I’m not sure.', body: 'Find its weak spots before they find you.' },
-  { toolId: 'BuyWise', problem: 'I’m about to buy something big.', body: 'Go in with your eyes open.' },
-  { toolId: 'CaptionMagic', problem: 'I have the photo. I don’t have the words.', body: 'Find the caption that actually fits.' },
-  { toolId: 'ColdOpenCraft', problem: 'I don’t know how to start the message.', body: 'Make the first line easier to send — and answer.' },
-  { toolId: 'ContextCollapse', problem: 'The same message reads differently to my boss, my partner, and my friend.', body: 'See how each of them will actually read it — before you send it.' },
-  { toolId: 'DecoderRing', problem: 'I can’t tell what they actually meant by that.', body: 'Explore what might really be going on beneath the words.' },
-  { toolId: 'DoctorVisitTranslator', problem: 'My diagnosis is full of words I don’t understand.', body: 'Turn the medical jargon into plain English.' },
-  { toolId: 'HistoryToday', problem: 'This feels unprecedented, but does it?', body: 'Find the real historical parallel — not the obvious one.' },
-  { toolId: 'Mend', problem: 'I need to apologize, but not over- or under-do it.', body: 'Match the apology to the actual harm.' },
-  { toolId: 'MentalHealthNavigator', problem: 'I don’t know what kind of help I actually need.', body: 'Find the right support for what you’re going through.' },
-  { toolId: 'MiseEnPlace', problem: 'I can cook. I just can’t decide what to cook.', body: 'Get the plan, not just the recipe.' },
-  { toolId: 'MissingLink', problem: 'I’m stuck on a concept and don’t know why.', body: 'Find exactly where your understanding broke.' },
-  { toolId: 'NotSoFast', problem: 'I got a flat no, and I don’t think it’s final.', body: 'Find the appeal, the escalation path, or the conversation nobody explained.' },
-  { toolId: 'PlantRescue', problem: 'My plant looks off and I don’t know why.', body: 'Get a few plausible explanations and what to check first.' },
-  { toolId: 'RoastMe', problem: 'I’ve read this so many times I can’t see what’s wrong anymore.', body: 'Find the clichés and buzzwords you stopped noticing.' },
-  { toolId: 'SixDegreesOfMe', problem: 'My interests feel scattered and unrelated.', body: 'Discover the surprising threads that connect them.' },
-  { toolId: 'SomeoneSaidItBetter', problem: 'I know the feeling. I just can’t find the words.', body: 'Get the words you needed, already said.' },
-  { toolId: 'TheDebrief', problem: 'The meeting ended and I’m still not sure what was decided.', body: 'Figure out what actually happened.' },
-  { toolId: 'TheWholeStory', problem: 'I need to explain a messy chapter of my life.', body: 'Frame the real story — honest, but strategic.' },
-  { toolId: 'VirtualBodyDouble', problem: 'I focus better with someone else in the room.', body: 'Work alongside a presence that keeps you on task.' },
-  { toolId: 'WhatsThatMean', problem: 'I don’t know what that phrase actually means.', body: 'Get the plain explanation, not just the dictionary entry.' },
-];
+// The list lives in src/data/homeSituations.json (2026-10-15) so the
+// prerendered home page (scripts/prerender.js) can link the same lines. Its
+// first four are the default set; the fourth is deliberately light (owner,
+// 2026-09-27: DeftBrain isn't only for problems — charter 4.11); Which Life?
+// leads the second set.
+const SITUATIONS = homeSituations;
 const SITUATIONS_PER_SET = 4;
 
 const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
@@ -100,11 +48,28 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
+const SCRAMBLE_SIZE = 12;
+// Focus tools not already on a default situation card, in keep-list order.
+function scrambleFirstSet(eligible) {
+  const byId = new Map(eligible.map(t => [t.id, t]));
+  const onCards = new Set(SITUATIONS.slice(0, SITUATIONS_PER_SET).map(s => s.toolId));
+  return (keepList.focus || []).filter(id => !onCards.has(id) && byId.has(id)).slice(0, SCRAMBLE_SIZE).map(id => byId.get(id));
+}
+
 function ToolScramble({ allTools, onBrowse }) {
   const eligible = useMemo(() => allTools.filter(t => t?.id && t?.title && t?.tagline), [allTools]);
   const [seed, setSeed] = useState(0);
   // A small optional sampler; visitors can request another set explicitly.
-  const shown = useMemo(() => seededShuffle(eligible, seed).slice(0, 12), [eligible, seed]);
+  // The first set is the focus tools (2026-10-15) — the ones the site is
+  // asking search engines to notice; "Scramble more" mixes in the rest.
+  // scripts/prerender.js puts this same first set in the static HTML.
+  const shown = useMemo(() => {
+    if (seed === 0) {
+      const first = scrambleFirstSet(eligible);
+      if (first.length) return first;
+    }
+    return seededShuffle(eligible, seed).slice(0, SCRAMBLE_SIZE);
+  }, [eligible, seed]);
 
   if (eligible.length === 0) return null;
 
@@ -313,6 +278,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </nav>
       <p className="db-home-guide-intro">Just want some quick info? Check out our helpful collection of <a href="/guides">Guides →</a></p>
     </section>
+
 
     {byId.has('DoctorVisitPrep') && <section className="db-home-demo db-home-section" aria-labelledby="home-demo-title" data-db-section="demo">
       <h2 id="home-demo-title">See how it works</h2>
