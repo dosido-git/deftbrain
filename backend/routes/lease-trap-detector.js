@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -404,8 +405,19 @@ Your response MUST contain ALL ${keyList.length} top-level keys: ${keyList.join(
 
 ${criticalRules}`;
 
+    // Speed (2026-10-15): the risk group (~2,600 tokens, ~46s) is three parts
+    // now — the summary (shown first, a few seconds), the red flags, and the
+    // negotiation strategy — cut from the same schema text.
+    const iRed = schemaRisk.indexOf('  "red_flags": [');
+    const iNeg = schemaRisk.indexOf('  "negotiation_strategy": {');
+    const closeAt = (txt) => `${txt.trimEnd().replace(/,$/, '')}\n}`;
+    const schemaHead = closeAt(schemaRisk.slice(0, iRed));
+    const schemaRed = closeAt(`{\n${schemaRisk.slice(iRed, iNeg)}`);
+    const schemaNeg = `{\n${schemaRisk.slice(iNeg)}`;
     const GROUPS = [
-      { label: 'risk',      schema: schemaRisk,  keys: ['overall_assessment', 'red_flags', 'negotiation_strategy'] },
+      { label: 'risk',      schema: schemaHead,  keys: ['jurisdiction_check', 'top_fixes', 'overall_assessment'] },
+      { label: 'red',       schema: schemaRed,   keys: ['red_flags'] },
+      { label: 'strategy',  schema: schemaNeg,   keys: ['negotiation_strategy'] },
       { label: 'flags',     schema: schemaFlags, keys: ['yellow_flags', 'green_flags'] },
       { label: 'money',     schema: schemaMoney, keys: ['financial_summary', 'security_deposit_analysis', 'unusual_fees'] },
       { label: 'gaps',      schema: schemaGaps,  keys: ['noticed', 'unenforceable_clauses', 'missing_protections', 'resources'] },
@@ -426,53 +438,63 @@ ${criticalRules}`;
       content: [...contentBlocks, { type: 'text', text: promptText + verifiedLawBlock }],
     }];
 
-    let parsed;
-    try {
-      const groups = await Promise.all(GROUPS.map(g => callClaudeWithRetry({
-        model: MODELS.SMART,
-        // Single-call budget was 10000, then 5000 per half — which truncated on
-        // real Spanish leases. Four groups at 4000 is more headroom per key than
-        // either, and no group has to carry another group's output.
-        max_tokens: 4000,
-        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: messagesFor(promptFor(g.schema, g.keys)),
-      }, { label: `lease-trap-detector-${g.label}` })));
-      // Top-level keys are disjoint across the four schemas — merging
-      // reconstructs the original response shape exactly.
-      parsed = Object.assign({}, ...groups);
-    } catch (err) {
-      return handleAiError(res, err, 'The analysis came out too detailed to complete in one pass. Try again — or paste just the sections you care about most.');
-    }
-
-    if (!parsed.overall_assessment) {
-      return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
-    }
     // The header stat sits directly above the red-flag cards, and the copy
     // export prints both numbers in the same block — a model-counted total that
     // disagrees with the list under it reads as a missing card. red_flags is
     // capped at 4 in the same schema, so the model's own count drifts past it.
-    if (Array.isArray(parsed.red_flags)) {
-      parsed.overall_assessment.major_concerns_count = parsed.red_flags.length;
-    }
+    const pinCount = (d) => {
+      if (Array.isArray(d.red_flags) && d.overall_assessment) d.overall_assessment.major_concerns_count = d.red_flags.length;
+    };
     // Real sources (API-verified, not model-recalled) for the tenant-law facts
     // folded into the prompt above — present only when the pre-pass actually
     // ran and cited something for this jurisdiction; absent (not an empty
     // array) when there's nothing to show, so the frontend's `?.length > 0`
     // check has one thing to test instead of two.
-    await withNumberCheck(parsed, { label: 'lease-trap-detector', context: visitorContext(req.body), userLanguage });
-    // Re-pin after the number check: it rewrites numeric fields and must not
-    // be able to move the count off the list it counts.
-    if (Array.isArray(parsed.red_flags) && parsed.overall_assessment) {
-      parsed.overall_assessment.major_concerns_count = parsed.red_flags.length;
-    }
-    checkCitations(parsed, verifiedLawBlock, userLanguage);
     const verifiedSources = authoritativeOnly(groundedData(tenantLawCacheKey)?.sources);
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'lease-trap-detector', userLanguage: req.body?.userLanguage });
-    res.json({
-      ...stripCites(parsed),
-      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
-    });
+
+    // Progressive (2026-10-15, lib/progressive.js): the four groups show as
+    // they land (the risk group carries the overall assessment); the number
+    // and consistency checks run after the answer is on screen. Top-level keys
+    // are disjoint across the four schemas — merging reconstructs the
+    // original response shape exactly.
+    try {
+      return await answer(req, res, {
+        label: 'lease-trap-detector',
+        parts: GROUPS.map(g => ({
+          required: g.label === 'risk',
+          run: () => callClaudeWithRetry({
+            model: MODELS.SMART,
+            // Single-call budget was 10000, then 5000 per half — which truncated on
+            // real Spanish leases. Four groups at 4000 is more headroom per key than
+            // either, and no group has to carry another group's output.
+            max_tokens: 4000,
+            system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+            messages: messagesFor(promptFor(g.schema, g.keys)),
+          }, { label: `lease-trap-detector-${g.label}` }),
+          apply: (d, out) => { Object.assign(d, out || {}); pinCount(d); },
+        })),
+        // Citations are checked in code against the verified law block on
+        // every draft, so an unverified section number never shows even briefly.
+        finish: d => ({
+          ...stripCites((() => { const x = structuredClone(d); checkCitations(x, verifiedLawBlock, userLanguage); return x; })()),
+          ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+        }),
+        ready: d => Boolean(d.overall_assessment),
+        complete: d => Boolean(d.overall_assessment),
+        check: async (d) => {
+          // The number check and the consistency check run one after the
+          // other, as before; both are off the visitor's wait now.
+          await withNumberCheck(d, { label: 'lease-trap-detector', context: visitorContext(req.body), userLanguage });
+          // Re-pin after the number check: it rewrites numeric fields and must not
+          // be able to move the count off the list it counts.
+          pinCount(d);
+          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+          await checkConsistency(d, { label: 'lease-trap-detector', userLanguage: req.body?.userLanguage });
+        },
+      });
+    } catch (err) {
+      return handleAiError(res, err, 'The analysis came out too detailed to complete in one pass. Try again — or paste just the sections you care about most.');
+    }
 
   } catch (error) {
     console.error('[LeaseTrapDetector] Error:', error);

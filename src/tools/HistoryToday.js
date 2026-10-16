@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -52,7 +53,7 @@ const EXAMPLES = [
 const EXAMPLE_KEYS = ['ht_ex1', 'ht_ex2', 'ht_ex3', 'ht_ex4', 'ht_ex5'];
 
 const HistoryToday = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -90,6 +91,7 @@ const HistoryToday = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
 
   // ─── State ───
@@ -111,13 +113,19 @@ const HistoryToday = ({ tool }) => {
   // ─── Handlers ───
   const handleSearch = async () => {
     if (!event.trim()) { setError(t('ht_err_describe')); return; }
-    setError(''); setResults(null); setDeeperData({}); setCounterData(null);
+    setError(''); setResults(null); setDeeperData({}); setCounterData(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('history-today', {
+      // Progressive (2026-10-15): the summary shows first, each parallel
+      // fills in as it lands, and dates and facts are double-checked after.
+      const data = await callToolEndpointProgressive('history-today', {
         event: event.trim(), context: context.trim() || null,
         motivation: motivation || null,
         userLanguage: navigator.language || 'en',
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSavedSearches(prev => [{ event: event.trim(), date: new Date().toISOString(), parallels: data.parallels?.length || 0, preview: event.trim().slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('ht_err_parallels')); }
@@ -149,6 +157,7 @@ const HistoryToday = ({ tool }) => {
   };
 
   const reset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setEvent(''); setContext(''); setResults(null); setError('');
     setDeeperData({}); setCounterData(null); setExpandedSections({});
   };
@@ -157,8 +166,9 @@ const HistoryToday = ({ tool }) => {
     const ex = pickExample('HistoryToday', EXAMPLES);
     setEvent(ex.event);
     setContext(ex.context);
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -350,6 +360,7 @@ const HistoryToday = ({ tool }) => {
       {/* ═══ RESULTS ═══ */}
       {results && (
         <div ref={resultsRef} className="scroll-mt-24 space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
           {/* Premise / accuracy check — leads the results when the input is false/unverifiable/not-current */}
           {results.premise_check && results.premise_check.status !== 'sound' && results.premise_check.assessment && (
             <div className={`p-4 rounded-xl border flex items-start gap-3 ${results.premise_check.status === 'false_premise' ? c.danger : results.premise_check.status === 'unverifiable' ? c.warning : c.highlight}`}>

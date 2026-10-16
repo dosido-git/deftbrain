@@ -6,6 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 const { checkWorldFacts } = require('../lib/worldFacts');
+const { answer } = require('../lib/progressive');
 
 // Story facts from a source, not from memory (2026-10-08). A Dark Knight Rises
 // run said Gordon chose not to deliver his speech (Bane reads it out) and that
@@ -359,47 +360,95 @@ ${NO_QUOTE_RULE}`;
     const systemPrompt = withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const synopsisPromise = plotSynopsis(title.trim(), mediaType).catch(() => null);
-    const parsed = await callClaudeWithRetry({
+    const userTurn = `Find the plot holes in ${title.trim()}.`;
+    const ask = (extra, label, maxTokens) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
+      max_tokens: maxTokens,
       system: systemPrompt,
-      messages: [{ role: 'user', content: `Find the plot holes in ${title.trim()}.` }],
-    }, { label: 'plot-hole-find' });
+      messages: [{ role: 'user', content: `${userTurn}\n\n${extra}\n\n${NO_QUOTE_RULE}` }],
+    }, { label });
 
-    if (!parsed?.overall_verdict) {
-      return res.status(500).json({ error: 'Could not analyze that. Please try again.' });
-    }
+    // Speed (2026-10-15): one call wrote the whole answer (~2,000 tokens, ~46s)
+    // and the guard and story check then ran before anything showed (~73s).
+    // Now a short first pass DECIDES — which findings, their type, severity
+    // and verdict, and the overall label — and the writing is split across
+    // calls that all follow that plan: one for the overview, one per finding.
+    // The parts can't disagree on a verdict or a finding's name, because none
+    // of them chooses one. The checks run after the answer is on screen.
+    const plan = await ask(`FIRST PASS — DECIDE, DO NOT WRITE YET. Apply every rule above, then return ONLY valid JSON:
+{
+  "title_analyzed": "",
+  "overall_label": "TIGHT|MOSTLY HOLDS TOGETHER|A FEW REAL GAPS|PRETTY WOBBLY|LOGIC TAKES A VACATION",
+  "focus_verdict": "the focus_answer verdict when the visitor supplied a question, else null",
+  "findings": [{ "name": "", "type": "", "severity": "", "verdict": "" }]
+}
+Use the exact enum values from the schema. findings AT MOST 5 (0 is fine). Names are short and specific.`, 'plot-hole-find-plan', 900);
+    const planned = (Array.isArray(plan?.findings) ? plan.findings : []).filter(f => f?.name).slice(0, 5);
+    const planText = `THE PLAN (already decided — follow it exactly; never change a name, type, severity or verdict):
+${JSON.stringify({ overall_label: plan?.overall_label, focus_verdict: plan?.focus_verdict ?? null, findings: planned })}`;
+    const slots = new Array(planned.length).fill(null);
 
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [];
-      if (parsed.focus_answer?.show) fields.push(['focus_answer.explanation', parsed.focus_answer.explanation]);
-      (parsed.findings || []).forEach((f, i) => {
-        fields.push([`findings[${i}].case_against`, f.case_against]);
-        fields.push([`findings[${i}].best_defense`, f.best_defense]);
-        fields.push([`findings[${i}].why`, f.why]);
-        if (f.snarky_version) fields.push([`findings[${i}].snarky_version`, f.snarky_version]);
-      });
-      if (parsed.strongest_case?.show) fields.push(['strongest_case.why', parsed.strongest_case.why]);
-      if (parsed.hardest_question?.show) fields.push(['hardest_question.why', parsed.hardest_question.why]);
-      if (parsed.what_the_story_gets_right?.show) fields.push(['what_the_story_gets_right.text', parsed.what_the_story_gets_right.text]);
-      if (parsed.why_it_still_works?.show) fields.push(['why_it_still_works.text', parsed.why_it_still_works.text]);
+    return await answer(req, res, {
+      label: 'plot-hole-find',
+      parts: [
+        // The verdict shows first (small); the closing sections are their own
+        // pass, since together they took ~20s (2026-10-15).
+        { required: true,
+          run: () => ask(`${planText}
 
-      await runOutputGuard(parsed, {
-        label: 'plot-hole-find',
-        fields,
-        supplied: suppliedLines.join('\n'),
-        promise: 'Test a suspected plot hole (or scan the whole work) against the story\'s own established rules — sorting a genuine contradiction from an unexplained gap, a debatable character decision, a convenience, or something the story already explains, then adjudicating each with a verdict. Never a forced quota of findings, never an invented off-screen fact used as a defense, never a fabricated Reddit quote.',
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log('[plot-hole-find] v2 guard skipped:', guardErr.message);
-    }
+THIS PASS writes only the verdict (other passes write the findings and the closing sections at the same time). Return ONLY valid JSON with these keys from the schema: title_analyzed, overall_verdict (label = the plan's overall_label), swiss_cheese_rating, swiss_cheese_note, focus_answer (verdict = the plan's focus_verdict; show false when it is null).`, 'plot-hole-find-verdict', 1200),
+          apply: (d, o) => { ['title_analyzed', 'overall_verdict', 'swiss_cheese_rating', 'swiss_cheese_note', 'focus_answer'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+        { run: () => ask(`${planText}
 
-    await checkStoryClaims(parsed, await synopsisPromise, { title: title.trim(), userLanguage });
+THIS PASS writes only the closing sections (other passes write the verdict and the findings at the same time). Return ONLY valid JSON with these keys from the schema: strongest_case, hardest_question, what_the_story_gets_right, why_it_still_works. strongest_case.finding, when shown, is one of the planned finding names exactly.`, 'plot-hole-find-closing', 1500),
+          apply: (d, o) => { ['strongest_case', 'hardest_question', 'what_the_story_gets_right', 'why_it_still_works'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+        ...planned.map((f, i) => ({
+          run: () => ask(`${planText}
 
-    res.json(parsed);
+THIS PASS writes ONE finding in full: "${f.name}". Keep its name, type, severity and verdict exactly as planned. Return ONLY valid JSON: { "finding": { one object with every key of a findings item in the schema } }`, 'plot-hole-find-finding', 1500),
+          apply: (d, o) => {
+            const got = o?.finding || (Array.isArray(o?.findings) ? o.findings[0] : null);
+            if (got) slots[i] = { ...got, name: f.name, type: f.type || got.type, severity: f.severity ?? got.severity, verdict: f.verdict || got.verdict };
+            d.findings = slots.filter(Boolean);
+          },
+        })),
+      ],
+      // Key order as the one-call schema; findings in the plan's order.
+      finish: d => ({ title_analyzed: d.title_analyzed, overall_verdict: d.overall_verdict, swiss_cheese_rating: d.swiss_cheese_rating, swiss_cheese_note: d.swiss_cheese_note,
+        focus_answer: d.focus_answer, findings: d.findings || [], strongest_case: d.strongest_case, hardest_question: d.hardest_question,
+        what_the_story_gets_right: d.what_the_story_gets_right, why_it_still_works: d.why_it_still_works }),
+      ready: d => Boolean(d.overall_verdict),
+      complete: d => Boolean(d.overall_verdict),
+      check: async (d) => {
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+          const fields = [];
+          if (d.focus_answer?.show) fields.push(['focus_answer.explanation', d.focus_answer.explanation]);
+          (d.findings || []).forEach((f, i) => {
+            fields.push([`findings[${i}].case_against`, f.case_against]);
+            fields.push([`findings[${i}].best_defense`, f.best_defense]);
+            fields.push([`findings[${i}].why`, f.why]);
+            if (f.snarky_version) fields.push([`findings[${i}].snarky_version`, f.snarky_version]);
+          });
+          if (d.strongest_case?.show) fields.push(['strongest_case.why', d.strongest_case.why]);
+          if (d.hardest_question?.show) fields.push(['hardest_question.why', d.hardest_question.why]);
+          if (d.what_the_story_gets_right?.show) fields.push(['what_the_story_gets_right.text', d.what_the_story_gets_right.text]);
+          if (d.why_it_still_works?.show) fields.push(['why_it_still_works.text', d.why_it_still_works.text]);
+
+          await runOutputGuard(d, {
+            label: 'plot-hole-find',
+            fields,
+            supplied: suppliedLines.join('\n'),
+            promise: 'Test a suspected plot hole (or scan the whole work) against the story\'s own established rules — sorting a genuine contradiction from an unexplained gap, a debatable character decision, a convenience, or something the story already explains, then adjudicating each with a verdict. Never a forced quota of findings, never an invented off-screen fact used as a defense, never a fabricated Reddit quote.',
+            guard: router.outputGuard,
+            userLanguage,
+          });
+        } catch (guardErr) {
+          console.log('[plot-hole-find] v2 guard skipped:', guardErr.message);
+        }
+        await checkStoryClaims(d, await synopsisPromise, { title: title.trim(), userLanguage });
+      },
+    });
   } catch (error) {
     console.error('❌ Plot Hole Finder error:', error.message);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

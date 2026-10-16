@@ -64,6 +64,12 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
     } catch (err) {
       console.warn(`[${label}] part ${i + 1}/${parts.length} failed:`, err.message);
       if (p.required && !fatal) fatal = err;
+      // A failure can be what makes the answer ready (the last of a set
+      // settling — Name Storm's picks wait for every lead), so check again.
+      if (!fatal && !firstAt && ready(draft)) {
+        firstAt = Date.now();
+        send({ draft: finish(draft) });
+      }
     }
   }));
 
@@ -93,4 +99,25 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
   res.end();
 }
 
-module.exports = { progressive };
+// answer — one route body for both callers (2026-10-15). A browser that asks
+// (`progressive: true`) gets the parts as they land and the check afterwards;
+// anything else (saved test cases, older pages, scripts) gets the finished,
+// checked answer as one JSON body, exactly as before. Same parts, same check,
+// so the two can't drift apart.
+async function answer(req, res, opts) {
+  if (req.body?.progressive === true) return progressive(req, res, opts);
+  const { label, parts, ready = () => true, complete = () => true, check = null, after = null, finish = d => d } = opts;
+  const draft = {};
+  await Promise.all(parts.map(async (p, i) => {
+    try { p.apply(draft, await p.run()); } catch (err) {
+      if (p.required) throw err;
+      console.warn(`[${label}] part ${i + 1}/${parts.length} failed:`, err.message);
+    }
+  }));
+  if (!ready(draft) || !complete(draft)) throw new Error('incomplete answer');
+  if (after) { try { await after(draft); } catch (err) { console.warn(`[${label}] after-part failed:`, err.message); } }
+  if (check) { try { await check(draft); } catch (err) { console.warn(`[${label}] check failed:`, err.message); } }
+  return res.json(finish(draft));
+}
+
+module.exports = { progressive, answer };

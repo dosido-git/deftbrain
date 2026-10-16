@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -23,7 +24,7 @@ const EVENTS = [
 ];
 
 const PaperworkPath = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -63,6 +64,7 @@ const PaperworkPath = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [lifeEvent, setLifeEvent] = useState('');
@@ -93,19 +95,26 @@ const PaperworkPath = ({ tool }) => {
     setLifeEvent(ex.event);
     setSituation(t(ex.sit));
     setLocation(t(ex.loc));
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setError('');
-  }, [t, setResults]);
+  }, [t, setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ──
   const handleGenerate = useCallback(async () => {
     if (!lifeEvent.trim()) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('paperwork-path', {
+      // Progressive (2026-10-15): checklist and plan show as they land; the
+      // details are double-checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('paperwork-path', {
         lifeEvent, situation: situation.trim(), location: location.trim(),
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -115,9 +124,9 @@ const PaperworkPath = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('pwp_error'));
     }
-  }, [lifeEvent, situation, location, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [lifeEvent, situation, location, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
-  const handleReset = () => { setResults(null); setLifeEvent(''); setSituation(''); setLocation(''); setError(''); };
+  const handleReset = () => { cancelProgressive(); setCheckStatus(null); setResults(null); setLifeEvent(''); setSituation(''); setLocation(''); setError(''); };
 
   handleGenerateRef.current = handleGenerate;
   canSubmitRef.current = !!lifeEvent.trim();
@@ -302,6 +311,7 @@ const PaperworkPath = ({ tool }) => {
       {/* ═══ RESULTS ═══ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
           {/* Summary */}
           {results?.situation_summary && (

@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -337,54 +338,59 @@ Never place a double-quote (") character inside any JSON string value — quoted
 Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
 
 
-    const [stagesEarly, stagesLate, strategyPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLanguage('You are a consumer advocacy strategist. STANCE. You are a strategist, not a litigator. The visitor came here confused and ignored; the job is to reduce that, not to arm them. Three rules that override anything else in this prompt: 1. NO INVENTED PRECISION. Never give a success percentage, a probability, or any figure implying a dataset you do not have. "82% if the ladder is followed" reads as a model output and there is no model. 2. NO LEGAL CONCLUSIONS. You are not qualified to declare a violation from a paragraph of description. Never write "this is a clear violation" or "a direct, documentable violation". Write what is defensible: "based on what you have described, this appears inconsistent with <rule>, which may strengthen your position." State the rule confidently; state its application to THIS case tentatively. 3. NO ATTRIBUTED INTENT AND NO WAR. Do not claim a company designed its process to exhaust people, or characterise its motives at all — intent is unprovable and it is not your call. Do not coach pressure tactics: no "never soften this", no "never counter-propose", no framing a phone call as a trap with no paper trail. Where a public or regulatory step genuinely exists, describe it as an option with its trade-offs, not as a weapon. Tone throughout: an informed, calm consumer who knows the process — not a pre-litigation demand. You are one. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: promptStagesEarly }]
-      }, { label: 'ComplaintEscalation-stages' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLanguage('You are a consumer advocacy strategist. STANCE. You are a strategist, not a litigator. The visitor came here confused and ignored; the job is to reduce that, not to arm them. Three rules that override anything else in this prompt: 1. NO INVENTED PRECISION. Never give a success percentage, a probability, or any figure implying a dataset you do not have. "82% if the ladder is followed" reads as a model output and there is no model. 2. NO LEGAL CONCLUSIONS. You are not qualified to declare a violation from a paragraph of description. Never write "this is a clear violation" or "a direct, documentable violation". Write what is defensible: "based on what you have described, this appears inconsistent with <rule>, which may strengthen your position." State the rule confidently; state its application to THIS case tentatively. 3. NO ATTRIBUTED INTENT AND NO WAR. Do not claim a company designed its process to exhaust people, or characterise its motives at all — intent is unprovable and it is not your call. Do not coach pressure tactics: no "never soften this", no "never counter-propose", no framing a phone call as a trap with no paper trail. Where a public or regulatory step genuinely exists, describe it as an option with its trade-offs, not as a weapon. Tone throughout: an informed, calm consumer who knows the process — not a pre-litigation demand. You are one. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: promptStagesLate }]
-      }, { label: 'ComplaintEscalation-stages-late' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage('You are a consumer advocacy strategist. STANCE. You are a strategist, not a litigator. The visitor came here confused and ignored; the job is to reduce that, not to arm them. Three rules that override anything else in this prompt: 1. NO INVENTED PRECISION. Never give a success percentage, a probability, or any figure implying a dataset you do not have. "82% if the ladder is followed" reads as a model output and there is no model. 2. NO LEGAL CONCLUSIONS. You are not qualified to declare a violation from a paragraph of description. Never write "this is a clear violation" or "a direct, documentable violation". Write what is defensible: "based on what you have described, this appears inconsistent with <rule>, which may strengthen your position." State the rule confidently; state its application to THIS case tentatively. 3. NO ATTRIBUTED INTENT AND NO WAR. Do not claim a company designed its process to exhaust people, or characterise its motives at all — intent is unprovable and it is not your call. Do not coach pressure tactics: no "never soften this", no "never counter-propose", no framing a phone call as a trap with no paper trail. Where a public or regulatory step genuinely exists, describe it as an option with its trade-offs, not as a weapon. Tone throughout: an informed, calm consumer who knows the process — not a pre-litigation demand. You are one. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: promptStrategy }]
-      }, { label: 'ComplaintEscalation-strategy' }),
-    ]);
-    // The two halves each return an escalation_stages object holding their own
-    // rungs; disjoint keys, so one spread rebuilds the full five-stage ladder.
-    const parsed = {
-      ...strategyPart,
-      escalation_stages: { ...(stagesEarly.escalation_stages || {}), ...(stagesLate.escalation_stages || {}) },
-    };
-
-    // The UI renders each timeline value directly as text. If the model nests
-    // an object/array here (seen live: {actions: [...]} — crashed React to a
-    // blank page), flatten it to a string.
-    if (parsed.timeline && typeof parsed.timeline === 'object') {
-      for (const k of Object.keys(parsed.timeline)) {
-        const v = parsed.timeline[k];
-        if (typeof v === 'string') continue;
-        if (Array.isArray(v)) parsed.timeline[k] = v.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
-        else if (v && typeof v === 'object') {
-          const inner = Array.isArray(v.actions) ? v.actions : Object.values(v).flat();
-          parsed.timeline[k] = inner.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
-        } else parsed.timeline[k] = String(v ?? '');
+    const system = withLanguage('You are a consumer advocacy strategist. STANCE. You are a strategist, not a litigator. The visitor came here confused and ignored; the job is to reduce that, not to arm them. Three rules that override anything else in this prompt: 1. NO INVENTED PRECISION. Never give a success percentage, a probability, or any figure implying a dataset you do not have. "82% if the ladder is followed" reads as a model output and there is no model. 2. NO LEGAL CONCLUSIONS. You are not qualified to declare a violation from a paragraph of description. Never write "this is a clear violation" or "a direct, documentable violation". Write what is defensible: "based on what you have described, this appears inconsistent with <rule>, which may strengthen your position." State the rule confidently; state its application to THIS case tentatively. 3. NO ATTRIBUTED INTENT AND NO WAR. Do not claim a company designed its process to exhaust people, or characterise its motives at all — intent is unprovable and it is not your call. Do not coach pressure tactics: no "never soften this", no "never counter-propose", no framing a phone call as a trap with no paper trail. Where a public or regulatory step genuinely exists, describe it as an option with its trade-offs, not as a weapon. Tone throughout: an informed, calm consumer who knows the process — not a pre-litigation demand. You are one. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const ask = (content, label, maxTokens) => callClaudeWithRetry({
+      model: MODELS.SMART, max_tokens: maxTokens, system,
+      messages: [{ role: 'user', content }],
+    }, { label });
+    // Speed (2026-10-15): the strategy layer was one 4000-token call, the
+    // slowest of the three. Two passes now write disjoint halves of it.
+    const SIX = 'Your response MUST contain ALL SIX top-level keys — situation_assessment, legal_leverage, evidence_checklist, timeline, quick_tips, call_script — never omit any of them.';
+    const strategyFor = (keys) => promptStrategy.replace(SIX, `THIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Another pass writes the other keys of the schema below at the same time — return exactly these keys, never omit one, and leave the others out.`)
+      + `\nReturn ONLY the keys ${keys.join(', ')}.`;
+    const flattenTimeline = (parsed) => {
+      // The UI renders each timeline value directly as text. If the model nests
+      // an object/array here (seen live: {actions: [...]} — crashed React to a
+      // blank page), flatten it to a string.
+      if (parsed.timeline && typeof parsed.timeline === 'object') {
+        for (const k of Object.keys(parsed.timeline)) {
+          const v = parsed.timeline[k];
+          if (typeof v === 'string') continue;
+          if (Array.isArray(v)) parsed.timeline[k] = v.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+          else if (v && typeof v === 'object') {
+            const inner = Array.isArray(v.actions) ? v.actions : Object.values(v).flat();
+            parsed.timeline[k] = inner.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+          } else parsed.timeline[k] = String(v ?? '');
+        }
       }
-    }
+      return parsed;
+    };
+    const stages = [null, null];
+    const STRATEGY_A = ['situation_assessment', 'legal_leverage', 'timeline'];
+    const STRATEGY_B = ['evidence_checklist', 'quick_tips', 'call_script'];
 
-    if (!parsed.situation_assessment) {
-      return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'complaint-escalation-writer', userLanguage: req.body?.userLanguage });
-    res.json(scrubEmails(parsed, req.body));
+    // Progressive (2026-10-15, lib/progressive.js): each part shows as it
+    // lands; the consistency check runs after the answer is on screen.
+    return await answer(req, res, {
+      label: 'complaint-escalation-writer',
+      parts: [
+        // The two halves each return an escalation_stages object holding their
+        // own rungs; disjoint keys, so one spread rebuilds the five-stage ladder.
+        ...[[0, promptStagesEarly, 'ComplaintEscalation-stages', 3500], [1, promptStagesLate, 'ComplaintEscalation-stages-late', 3500]].map(([i, prompt, label, max]) => ({
+          run: () => ask(prompt, label, max),
+          apply: (d, out) => { stages[i] = out?.escalation_stages || {}; d.escalation_stages = { ...(stages[0] || {}), ...(stages[1] || {}) }; },
+        })),
+        ...[[STRATEGY_A, 'ComplaintEscalation-strategy'], [STRATEGY_B, 'ComplaintEscalation-strategy-b']].map(([keys, label]) => ({
+          run: () => ask(strategyFor(keys), label, 2500),
+          apply: (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); },
+        })),
+      ],
+      finish: d => scrubEmails(flattenTimeline(structuredClone(d)), req.body),
+      ready: d => Boolean(d.situation_assessment || d.escalation_stages?.stage_1_direct),
+      complete: d => Boolean(d.situation_assessment),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(flattenTimeline(d), { label: 'complaint-escalation-writer', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('[ComplaintEscalationWriter] Error:', error);

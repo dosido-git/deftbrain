@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import Caret from '../components/Caret';
 import AutoGrowTextarea from '../components/AutoGrowTextarea';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { getToolById } from '../data/tools';
@@ -77,7 +78,7 @@ const SITUATIONS = [
 
 const LeaseTrapDetector = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
   const LEASE_TYPES = [
     { value: 'residential', label: t('ltd_lt_residential'), icon: '🏢' },
@@ -142,6 +143,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const linkStyle = isDark
     ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
     : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [inputMethod, setInputMethod] = useState('text');
   const [leaseText, setLeaseText] = useState('');
@@ -225,14 +227,22 @@ const LeaseTrapDetector = ({ tool }) => {
     setFollowupHistory([]); setFollowupA(null); setDraftEmail(null); setComparison(null);
     setAmendment(null); setChecklist(null); setRenewalTraps(null); setShowHighlights(false);
     setAmendmentClauses([]); setCheckedItems({});
+    setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('lease-trap-detector', {
+      // Progressive (2026-10-15): the overall assessment and red flags show
+      // first, the rest as it lands; the numbers and consistency are
+      // double-checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('lease-trap-detector', {
         leaseText: inputMethod === 'text' ? leaseText.trim() : null,
         pdfBase64: inputMethod === 'file' ? fileBase64 : null,
         location: location.trim(), leaseType, concerns: concerns.trim(),
         situation: situation || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), location: location.trim(), leaseType, risk: data.overall_assessment?.risk_level, redFlags: data.red_flags?.length || 0, name: uploadedFile?.name || t('ltd_pasted_text'), preview: (location.trim() || uploadedFile?.name || t('ltd_lease_fallback')).slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('ltd_err_analyze')); }
@@ -373,6 +383,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const handleReset = () => {
     // Analyze mode
     setLeaseText(''); setUploadedFile(null); setFileBase64(null); setLocation(''); setLeaseType(''); setConcerns(''); setSituation('');
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setExpandedSections({}); setFollowupHistory([]); setFollowupA(null); setFollowupQ('');
     setDraftEmail(null); setComparison(null); setShowCompare(false); setAmendment(null); setShowAmendment(false);
     setAmendmentClauses([]); setChecklist(null); setChecklistType(null); setCheckedItems({});
@@ -390,15 +401,19 @@ const LeaseTrapDetector = ({ tool }) => {
   // whole thing has to be redone, not relabelled.
   const reanalyzeUnder = async (state) => {
     setGoverningLaw(state); setJurisdictionConfirmed(true);
-    setResults(null); setError('');
+    setResults(null); setError(''); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('lease-trap-detector', {
+      const data = await callToolEndpointProgressive('lease-trap-detector', {
         leaseText: leaseText.trim() || undefined,
         pdfBase64: fileBase64 || undefined,
         location: state,
         leaseType, concerns: concerns.trim(), situation: situation || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
     } catch (err) { setError(err.message || t('ltd_err_analyze')); }
   };
@@ -882,6 +897,8 @@ const LeaseTrapDetector = ({ tool }) => {
             </div>
           </div>
         )}
+
+        {ltdMode === 'analyze' && results && <CheckNote status={checkStatus} className={c.textMuted} />}
 
         {ltdMode === 'analyze' && results && !(results.jurisdiction_check?.mismatch && results.jurisdiction_check?.lease_jurisdiction && !jurisdictionConfirmed) && (
           <div className="space-y-5">

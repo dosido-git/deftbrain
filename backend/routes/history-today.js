@@ -7,6 +7,7 @@ const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 
 const { checkConsistency } = require('../lib/outputGuard');
 const { bothChecks } = require('../lib/bothChecks');
+const { answer } = require('../lib/progressive');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write historical quotes or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════
@@ -228,15 +229,6 @@ Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, u
       system: withLanguage(SYSTEM_CORE, userLanguage),
       messages: [{ role: 'user', content: halfPrompt(n, h) }],
     }, { label: `history-today-p${n}-${h}` });
-    const [a1, a2, b1, b2, c] = await Promise.all([
-      half(1, 'history'), half(1, 'mapping'), half(2, 'history'), half(2, 'mapping'),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2400,
-        system: withLanguage(SYSTEM_CORE, userLanguage),
-        messages: [{ role: 'user', content: promptC }],
-      }, { label: 'history-today-p3' }),
-    ]);
     // Key order as the original single-call schema, so the page renders the same.
     const ORDER = ['title', 'period', 'region', 'structural_match_score', 'what_happened', 'structural_similarities', 'contemporary_understanding', 'what_happened_next', 'where_it_breaks_down', 'key_figures', 'surprise_insight'];
     const join = (h, m) => {
@@ -246,50 +238,62 @@ Your response MUST contain ALL 3 keys: big_idea, synthesis, further_reading.`, u
       for (const k of ORDER) if (k in both) out[k] = both[k];
       return out;
     };
-    const a = { parallel: join(a1, a2) };
-    const b = { parallel: join(b1, b2) };
+    const halves = [[null, null], [null, null]];
 
-    // Merge back into the ORIGINAL response shape — frontend unchanged.
-    const parsed = {
-      event_summary: pick.event_summary,
-      premise_check: pick.premise_check,
-      parallels: [a.parallel, b.parallel].filter(Boolean),
-      big_idea: c.big_idea,
-      synthesis: c.synthesis,
-      further_reading: c.further_reading,
-    };
-
-    if (!parsed.event_summary) {
-      return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
-    }
-    // Dates and facts check (2026-10-08). The tool-page example run put
-    // Pompey's 67 BCE command down as a grain-supply fix (it was the anti-
-    // piracy command; the grain one was 57 BCE), dated Caesar's cut of the
-    // grain rolls 59 BCE (46 BCE) and gave Hearst ~30 papers by 1917. "Names,
-    // dates, numbers" is the brief, so every one of them is a claim to check.
-    const fields = [];
-    const walk = (v, path) => {
-      if (typeof v === 'string' && v.trim().length > 20) fields.push([path, v]);
-      else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
-      else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
-    };
-    parsed.parallels.forEach((p, i) => walk(p, `parallels[${i}]`));
-    walk(parsed.big_idea, 'big_idea');
-    walk(parsed.synthesis, 'synthesis');
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
-      d => withNumberCheck(d, {
+    // Progressive (2026-10-15, lib/progressive.js): the selection step's
+    // summary shows at once, each parallel fills in as its halves land, and
+    // the date/fact and consistency checks run after the answer is on screen.
+    return await answer(req, res, {
       label: 'history-today',
-      context: visitorContext(req.body),
-      fields: fields.filter(([, v]) => /\d/.test(v) || /\b(?:under|during|after|before|when|by)\b/i.test(v)),
-      facts: true,
-      extraRules: `This is history. Check every date, year, reign, office, law, battle, number and attribution against the historical record: a real event placed in the wrong year, assigned to the wrong person, or given the wrong purpose is an error even when the sentence reads well. Fix the fact and keep the sentence. Do not judge the analogy itself, only the facts it rests on.`,
-      userLanguage,
-    }),
-      d => checkConsistency(d, { label: 'history-today', userLanguage: req.body?.userLanguage }),
-      { label: 'history-today' });
-    res.json(parsed);
+      parts: [
+        { required: true, run: async () => pick, apply: (d, p) => { d.event_summary = p.event_summary; d.premise_check = p.premise_check; } },
+        ...[[0, 0, 1, 'history'], [0, 1, 1, 'mapping'], [1, 0, 2, 'history'], [1, 1, 2, 'mapping']].map(([i, j, n, h]) => ({
+          run: () => half(n, h),
+          apply: (d, out) => { halves[i][j] = out; d.parallels = halves.map(([x, y]) => join(x, y)).filter(Boolean); },
+        })),
+        { run: () => callClaudeWithRetry({
+            model: MODELS.SMART,
+            max_tokens: 2400,
+            system: withLanguage(SYSTEM_CORE, userLanguage),
+            messages: [{ role: 'user', content: promptC }],
+          }, { label: 'history-today-p3' }),
+          apply: (d, c) => { d.big_idea = c?.big_idea; d.synthesis = c?.synthesis; d.further_reading = c?.further_reading; } },
+      ],
+      // Merge back into the ORIGINAL response shape — frontend unchanged.
+      finish: d => ({ event_summary: d.event_summary, premise_check: d.premise_check, parallels: d.parallels || [],
+        big_idea: d.big_idea, synthesis: d.synthesis, further_reading: d.further_reading }),
+      ready: d => Boolean(d.event_summary),
+      complete: d => (d.parallels || []).length > 0,
+      check: (parsed) => {
+        // Dates and facts check (2026-10-08). The tool-page example run put
+        // Pompey's 67 BCE command down as a grain-supply fix (it was the anti-
+        // piracy command; the grain one was 57 BCE), dated Caesar's cut of the
+        // grain rolls 59 BCE (46 BCE) and gave Hearst ~30 papers by 1917. "Names,
+        // dates, numbers" is the brief, so every one of them is a claim to check.
+        const fields = [];
+        const walk = (v, path) => {
+          if (typeof v === 'string' && v.trim().length > 20) fields.push([path, v]);
+          else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+          else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+        };
+        (parsed.parallels || []).forEach((p, i) => walk(p, `parallels[${i}]`));
+        walk(parsed.big_idea, 'big_idea');
+        walk(parsed.synthesis, 'synthesis');
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        // Number and consistency checks run side by side (lib/bothChecks.js).
+        return bothChecks(parsed,
+          d => withNumberCheck(d, {
+            label: 'history-today',
+            context: visitorContext(req.body),
+            fields: fields.filter(([, v]) => /\d/.test(v) || /\b(?:under|during|after|before|when|by)\b/i.test(v)),
+            facts: true,
+            extraRules: `This is history. Check every date, year, reign, office, law, battle, number and attribution against the historical record: a real event placed in the wrong year, assigned to the wrong person, or given the wrong purpose is an error even when the sentence reads well. Fix the fact and keep the sentence. Do not judge the analogy itself, only the facts it rests on.`,
+            userLanguage,
+          }),
+          d => checkConsistency(d, { label: 'history-today', userLanguage: req.body?.userLanguage }),
+          { label: 'history-today' });
+      },
+    });
 
   } catch (error) {
     console.error('[HistoryToday] Error:', error);

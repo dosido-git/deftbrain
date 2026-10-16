@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -49,7 +50,7 @@ const EXAMPLES = [
 ];
 const ComplaintEscalationWriter = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
@@ -123,6 +124,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Helper color maps (dynamic + isDark) ───
   const legalStrengthBadge = {
@@ -591,14 +593,20 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const handleSubmit = async () => {
     if (!company.trim() || !issue.trim()) { setError(t('cew_err_company_issue')); return; }
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('complaint-escalation-writer', {
+      // Progressive (2026-10-15): each part shows as it lands; the details
+      // are double-checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('complaint-escalation-writer', {
         company: company.trim(), industry: industry === 'auto' ? null : industry, issue: issue.trim(),
         previousAttempts: previousAttempts.trim() || null, desiredOutcome: desiredOutcome.trim() || null,
         amountAtStake: amountAtStake.trim() || null, hasDocumentation: hasDocumentation.trim() || null, tone,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setAnalysisLog(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
       setActiveStage(1);
@@ -628,6 +636,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   };
 
   const reset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setError(''); setActiveStage(1); setExpandedSections({});
     setActiveComplaintId(null); setResponseText(''); setResponseAnalysis(null);
     setShowResponseInput(null); setEditingLetter(null); setEditedLetters({});
@@ -713,7 +722,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
     if (h.hasDocumentation != null) setHasDocumentation(h.hasDocumentation);
     setActiveComplaintId(h.id);
     const savedResults = resultsMap[h.id] || null;
-    setResults(savedResults);
+    setResults(savedResults); setCheckStatus(null);
     setError('');
     setActiveStage(1);
     setExpandedSections({});
@@ -1046,6 +1055,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           ═══════════════════════════════════════════════════════════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
           {/* Fixed copy. Someone arrives here having already been ignored once
               — the first thing they need is that this is normal and

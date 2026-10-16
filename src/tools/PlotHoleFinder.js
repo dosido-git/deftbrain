@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -52,7 +53,7 @@ const EXAMPLES = [
 ];
 
 const PlotHoleFinder = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -96,6 +97,7 @@ const PlotHoleFinder = ({ tool }) => {
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [view, setView]               = useState('find');
@@ -201,12 +203,18 @@ const PlotHoleFinder = ({ tool }) => {
   // ── Handlers ──
   const runAnalysis = useCallback(async () => {
     if (!title.trim()) return;
-    setError(''); setResults(null); setViewingHistoryId(null);
+    setError(''); setResults(null); setViewingHistoryId(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('plot-hole-finder', {
+      // Progressive (2026-10-15): the verdict shows first, each finding as it
+      // lands; story facts are double-checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('plot-hole-finder', {
         title: title.trim(), whatToLookAt: whatToLookAt.trim(), mediaType,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // Recent stores enough to restore the past RESULT on its own — never
       // re-run silently and present a new analysis as though it were the old
@@ -219,7 +227,7 @@ const PlotHoleFinder = ({ tool }) => {
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('plh_error_analysis')); }
-  }, [title, whatToLookAt, mediaType, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [title, whatToLookAt, mediaType, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const runDefend = useCallback(async () => {
     if (!allegedHole.trim()) return;
@@ -234,6 +242,7 @@ const PlotHoleFinder = ({ tool }) => {
   }, [title, allegedHole, whatFeelsWrong, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setDefendResults(null); setViewingHistoryId(null);
     setTitle(''); setWhatToLookAt(''); setAllegedHole(''); setWhatFeelsWrong('');
     setError('');
@@ -251,6 +260,7 @@ const PlotHoleFinder = ({ tool }) => {
       return;
     }
     setWhatToLookAt(ex.whatToLookAt);
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setViewingHistoryId(null);
   }, [setView, setMediaType, setTitle, setWhatToLookAt, setResults, setAllegedHole, setWhatFeelsWrong, setDefendResults]);
 
@@ -269,7 +279,7 @@ const PlotHoleFinder = ({ tool }) => {
   // disagree with the stored one, and the stored findings are never fed
   // back in as though they were established story facts.
   const handleViewHistoryAnalysis = (entry) => {
-    setResults(entry.result); setTitle(entry.title); setMediaType(entry.mediaType);
+    setResults(entry.result); setCheckStatus(null); setTitle(entry.title); setMediaType(entry.mediaType);
     setWhatToLookAt(entry.whatToLookAt || ''); setView('find'); setViewingHistoryId(entry.id);
   };
   const handleLookAgain = (entry) => {
@@ -426,6 +436,7 @@ const PlotHoleFinder = ({ tool }) => {
           {/* Results */}
           {results && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
               {viewingHistoryId && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-lg p-2 text-center`}>
                   <p className={`text-[13px] ${c.textMuted}`}>{t('plh_viewing_saved')}</p>

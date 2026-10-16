@@ -7,6 +7,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 const { runOutputGuard, stringFields, suppliedText } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 const { allChecks } = require('../lib/bothChecks');
+const { answer } = require('../lib/progressive');
 
 const LABEL_RE = /^(critical|important|optional)$/i;
 // ════════════════════════════════════════════════════════════
@@ -111,39 +112,41 @@ ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion
       max_tokens: 2500,
       messages: [{ role: 'user', content }],
     }, { label });
-    const [list, plan] = await Promise.all([ask(checklistPrompt, 'paperwork-path-checklist'), ask(planPrompt, 'paperwork-path-plan')]);
-    const parsed = {
-      situation_summary: list.situation_summary,
-      event_label: list.event_label,
-      document_checklist: list.document_checklist,
-      ordered_steps: plan.ordered_steps,
-      watch_outs: plan.watch_outs,
-      verify_note: list.verify_note,
-    };
+    const KEYS = ['situation_summary', 'event_label', 'document_checklist', 'ordered_steps', 'watch_outs', 'verify_note'];
 
-    if (!parsed.document_checklist || !parsed.ordered_steps) {
-      return res.status(500).json({ error: 'Could not build your checklist. Please try again.' });
-    }
-
-    // World facts (T1) and the v2 guard — which includes the T3/T7
-    // consistency checks — run side by side (lib/bothChecks.js). Sourced
-    // corrections win where both touch the same field.
-    const fields = stringFields(parsed);
-    await allChecks(parsed, [
-      ...(research ? [d => checkWorldFacts(d, research, { label: 'paperwork-path', fields: fields.filter(([, v]) => v.length > 15), subject: `${lifeEvent} in ${locationText}`, userLanguage })] : []),
-      d => runOutputGuard(d, {
-        label: 'paperwork-path',
-        fields,
-        readOnly: fields.filter(([, v]) => LABEL_RE.test(v)).map(([p]) => p),
-        supplied: suppliedText(req.body),
-        promise: 'A document checklist and the order to handle it for this life event, sequenced by what each step depends on, with the specific figures it can stand behind and where to confirm the rest.',
-        guard: router.outputGuard,
-        userLanguage,
-        locale: withLocaleContext(userLocale, userCurrency, userRegion),
-      }),
-    ], { label: 'paperwork-path' });
-
-    res.json(parsed);
+    // Progressive (2026-10-15, lib/progressive.js): the checklist and the plan
+    // each show as they land; world facts (T1) and the v2 guard — which
+    // includes the T3/T7 consistency checks — run side by side after the
+    // answer is on screen (lib/bothChecks.js). Sourced corrections win where
+    // both touch the same field.
+    return await answer(req, res, {
+      label: 'paperwork-path',
+      parts: [
+        { run: () => ask(checklistPrompt, 'paperwork-path-checklist'),
+          apply: (d, list) => { ['situation_summary', 'event_label', 'document_checklist', 'verify_note'].forEach(k => { d[k] = list?.[k]; }); } },
+        { run: () => ask(planPrompt, 'paperwork-path-plan'),
+          apply: (d, plan) => { d.ordered_steps = plan?.ordered_steps; d.watch_outs = plan?.watch_outs; } },
+      ],
+      finish: d => Object.fromEntries(KEYS.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
+      ready: d => Boolean(d.document_checklist || d.ordered_steps),
+      complete: d => Boolean(d.document_checklist && d.ordered_steps),
+      check: (d) => {
+        const fields = stringFields(d);
+        return allChecks(d, [
+          ...(research ? [x => checkWorldFacts(x, research, { label: 'paperwork-path', fields: fields.filter(([, v]) => v.length > 15), subject: `${lifeEvent} in ${locationText}`, userLanguage })] : []),
+          x => runOutputGuard(x, {
+            label: 'paperwork-path',
+            fields,
+            readOnly: fields.filter(([, v]) => LABEL_RE.test(v)).map(([p]) => p),
+            supplied: suppliedText(req.body),
+            promise: 'A document checklist and the order to handle it for this life event, sequenced by what each step depends on, with the specific figures it can stand behind and where to confirm the rest.',
+            guard: router.outputGuard,
+            userLanguage,
+            locale: withLocaleContext(userLocale, userCurrency, userRegion),
+          }),
+        ], { label: 'paperwork-path' });
+      },
+    });
   } catch (error) {
     console.error('[PaperworkPath]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
