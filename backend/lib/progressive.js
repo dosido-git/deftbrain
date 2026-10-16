@@ -128,17 +128,46 @@ async function answer(req, res, opts) {
   return res.json(finish(draft));
 }
 
+// onlyKeys — the same prompt, cut down to the keys one pass writes
+// (2026-10-16). A pass that saw the WHOLE answer template sometimes wrote the
+// whole answer anyway, ran into its smaller max_tokens and lost a section
+// (Contract Decoder's before_you_sign came back empty). This keeps the
+// template's own text for the named top-level keys only, then adds a line
+// saying so. The template is the first block that opens with a line "{" and
+// closes with a line "}", its keys at two-space indent — the shape every
+// route here writes. With no such block the line is simply appended.
+function onlyKeys(prompt, keys) {
+  const line = `\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the rest at the same time — leave them out, and keep every rule above for the keys you write.`;
+  const lines = String(prompt).split('\n');
+  const start = lines.findIndex(l => l === '{');
+  const end = start < 0 ? -1 : lines.findIndex((l, i) => i > start && l === '}');
+  if (start < 0 || end < 0) return prompt + line;
+  const body = lines.slice(start + 1, end);
+  const pre = [], chunks = [];
+  for (const l of body) {
+    const m = l.match(/^ {2}"([A-Za-z0-9_]+)":/);
+    if (m) chunks.push({ key: m[1], lines: [l] });
+    else if (chunks.length) chunks[chunks.length - 1].lines.push(l);
+    else pre.push(l);
+  }
+  const kept = chunks.filter(c => keys.includes(c.key));
+  if (!kept.length) return prompt + line;
+  const out = kept.flatMap(c => c.lines);
+  while (out.length && !out[out.length - 1].trim()) out.pop();
+  out[out.length - 1] = out[out.length - 1].replace(/,\s*$/, '');
+  return [...lines.slice(0, start + 1), ...pre, ...out, ...lines.slice(end)].join('\n') + line;
+}
+
 // keyGroups — split a one-call answer into parts by its top-level keys
-// (2026-10-16). Every part sends the same full prompt plus a line naming the
-// keys it writes, so the tool's rules and voice stay in one place. The first
-// group should be the small one a visitor reads first; it is required.
-//   keyGroups([['at_a_glance'], ['lenses'], ...], (extra, i) => callClaude(prompt + extra))
+// (2026-10-16). run(keys, i) builds and sends one pass, normally with
+// onlyKeys(prompt, keys). The first group should be the small one a visitor
+// reads first; it is required.
 function keyGroups(groups, run) {
   return groups.map((keys, i) => ({
     required: i === 0,
-    run: () => run(`\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the other keys at the same time — leave them out of your JSON, and keep every rule above for the keys you write.`, i),
+    run: () => run(keys, i),
     apply: (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); },
   }));
 }
 
-module.exports = { progressive, answer, keyGroups };
+module.exports = { progressive, answer, keyGroups, onlyKeys };

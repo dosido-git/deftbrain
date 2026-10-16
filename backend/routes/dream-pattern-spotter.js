@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer, keyGroups } = require('../lib/progressive');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -150,10 +150,10 @@ Return ONLY the JSON object. No markdown, no preamble.`;
         ['possible_associations'],
         ['different_lenses'],
         ['connections_to_your_life', 'questions_worth_sitting_with', 'patterns_to_watch'],
-      ], (extra, i) => callClaudeWithRetry({
+      ], (keys, i) => callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 1500,
-        messages: [{ role: 'user', content: withLanguage(prompt + extra, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: withLanguage(onlyKeys(prompt, keys), userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
       }, { label: `dream-single-${i + 1}` })),
       finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, k === 'connections_to_your_life' && noLife ? [] : d[k]])),
       ready: d => Boolean(d.at_a_glance),

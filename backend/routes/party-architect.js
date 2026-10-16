@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer, keyGroups } = require('../lib/progressive');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -1575,11 +1575,11 @@ router.post('/party-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const relax = (prompt) => prompt.replace(EXACT, 'these top-level keys (each pass writes only the ones named at the end):');
     const arc = relax(buildArcPrompt(brief));
     const mech = relax(buildMechanicsPrompt(brief));
-    const call = (prompt) => (extra, i) => callClaudeWithRetry({
+    const call = (prompt) => (keys, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 1800,
+      max_tokens: 2000,
       system: withLanguage(SHARED_PROMPT, userLanguage) + locale,
-      messages: [{ role: 'user', content: prompt + extra }],
+      messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
     }, { label: `party-architect:part${i + 1}` });
     const arcParts = keyGroups([['event_read', 'event_shape'], ['timeline'], ['wind_down']], call(arc));
     const mechParts = keyGroups([['helping_people_connect', 'conversation_catalysts'], ['food_and_drink', 'music'], ['budget_priorities', 'things_to_plan_for']], call(mech))

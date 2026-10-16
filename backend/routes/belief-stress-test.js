@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer } = require('../lib/progressive');
+const { answer, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -96,7 +96,6 @@ verdict.rating must be one of the exact English values listed — the interface 
       system: withLanguage(PERSONALITY, userLanguage) + systemSuffix,
       messages: [{ role: 'user', content }],
     }, { label });
-    const only = (keys) => `\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the rest at the same time — leave them out, and keep every rule above for the keys you write.`;
     // Speed (2026-10-16): the tests call wrote ~1,700 tokens (~40s). The
     // restatement now comes from its own small pass (shown in seconds), and
     // the stress tests are split by KIND, not by count, so the two passes
@@ -112,12 +111,12 @@ verdict.rating must be one of the exact English values listed — the interface 
     return await answer(req, res, {
       label: 'belief-stress-test',
       parts: [
-        { required: true, run: () => ask(testPrompt + only(['belief_as_understood', 'belief_type']), 'belief-stress-test:frame', 600),
+        { required: true, run: () => ask(onlyKeys(testPrompt, ['belief_as_understood', 'belief_type']), 'belief-stress-test:frame', 800),
           apply: (d, o) => { d.belief_as_understood = o?.belief_as_understood; d.belief_type = o?.belief_type; } },
-        { run: () => ask(testPrompt + only(['where_it_holds']), 'belief-stress-test:holds', 1200),
+        { run: () => ask(onlyKeys(testPrompt, ['where_it_holds']), 'belief-stress-test:holds', 1500),
           apply: (d, o) => { d.where_it_holds = o?.where_it_holds; } },
         ...['real', 'logic'].map((kind, i) => ({
-          run: () => ask(`${testPrompt}${only(['stress_tests'])}\n${KIND[kind]}`, `belief-stress-test:tests-${kind}`, 2000),
+          run: () => ask(`${onlyKeys(testPrompt, ['stress_tests'])}\n${KIND[kind]}`, `belief-stress-test:tests-${kind}`, 2500),
           apply: (d, o) => {
             tests[i] = Array.isArray(o?.stress_tests) ? o.stress_tests : [];
             // Ordered by severity, fatal first, as the one-call answer was.

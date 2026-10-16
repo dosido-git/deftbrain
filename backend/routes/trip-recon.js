@@ -25,7 +25,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
-const { answer, keyGroups } = require('../lib/progressive');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 function cleanString(value, max = 4000) {
   if (typeof value !== 'string') return '';
   return value.trim().slice(0, max);
@@ -497,11 +497,11 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
         ['worth_preparing_for'],
         ['before_you_go', 'while_youre_there', 'backup_plan'],
         ['things_you_could_ask', 'unknowns_that_matter'],
-      ], (extra, i) => callClaudeWithRetry({
+      ], (keys, i) => callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 2000,
-        system: withLanguage(MAIN_SYSTEM, userLanguage),
-        messages: [{ role: 'user', content: supplied + extra }],
+        system: withLanguage(onlyKeys(MAIN_SYSTEM, keys), userLanguage),
+        messages: [{ role: 'user', content: supplied }],
       }, { label: `trip-recon-${i + 1}` })),
       finish: d => stripEmptyItems(Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, structuredClone(d[k])]))),
       ready: d => Boolean(d.summary),

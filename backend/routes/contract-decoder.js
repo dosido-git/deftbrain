@@ -1,6 +1,6 @@
 // contract-decoder.js — DeftBrain V2
 const express = require('express');
-const { answer } = require('../lib/progressive');
+const { answer, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -231,7 +231,6 @@ Rules:
       system,
       messages: [{ role: 'user', content: [...pdfBlocks, { type: 'text', text }] }],
     }, { label });
-    const only = (keys) => `\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the rest at the same time — leave them out, and keep every rule above for the keys you write.`;
 
     // Progressive (2026-10-16, lib/progressive.js): the first pass wrote
     // ~2,900 tokens (~60s), mostly the important terms. Now a short pass
@@ -239,14 +238,14 @@ Rules:
     // own call, and the summary and the other sections are written alongside
     // — the summary shows first. The law lookup, the refine pass and the
     // guard run after the answer is on screen.
-    const summaryP = ask(firstPassPrompt + only(['summary']), 'contract-decoder-v2-summary', 1000);
-    const clarifyP = ask(firstPassPrompt + only(['things_to_clarify', 'before_you_sign']), 'contract-decoder-v2-clarify', 2500);
-    const legalP = ask(firstPassPrompt + only(['legal_questions']), 'contract-decoder-v2-legal', 1500);
+    const summaryP = ask(onlyKeys(firstPassPrompt, ['summary']), 'contract-decoder-v2-summary', 1500);
+    const clarifyP = ask(onlyKeys(firstPassPrompt, ['things_to_clarify', 'before_you_sign']), 'contract-decoder-v2-clarify', 2500);
+    const legalP = ask(onlyKeys(firstPassPrompt, ['legal_questions']), 'contract-decoder-v2-legal', 1500);
     // If the plan fails, these are abandoned; never leave a rejection unhandled.
     [summaryP, clarifyP, legalP].forEach(p => p.catch(() => {}));
-    const plan = await ask(`${firstPassPrompt}
+    const plan = await ask(`${onlyKeys(firstPassPrompt, ['important_terms'])}
 
-FIRST PASS — CHOOSE ONLY. Pick the important_terms you would write (same rules, at most 6, fewer is better) and return ONLY valid JSON: { "important_terms": [{ "heading": "", "quote": "exact excerpt, at most 300 characters" }] }`, 'contract-decoder-v2-plan', 1200);
+FIRST PASS — CHOOSE ONLY. Pick the important_terms you would write (same rules, at most 6, fewer is better) and return ONLY valid JSON: { "important_terms": [{ "heading": "", "quote": "exact excerpt, at most 300 characters" }] }`, 'contract-decoder-v2-plan', 1500);
     const planned = (Array.isArray(plan?.important_terms) ? plan.important_terms : []).filter(x => x?.heading && x?.quote).slice(0, 6);
     const slots = new Array(planned.length).fill(null);
     let contractLawCacheKey = null;
@@ -259,9 +258,9 @@ FIRST PASS — CHOOSE ONLY. Pick the important_terms you would write (same rules
         { run: () => clarifyP, apply: (d, o) => { d.things_to_clarify = o?.things_to_clarify; d.before_you_sign = o?.before_you_sign; } },
         { run: () => legalP, apply: (d, o) => { d.legal_questions = o?.legal_questions; } },
         ...planned.map((term, i) => ({
-          run: () => ask(`${firstPassPrompt}
+          run: () => ask(`${onlyKeys(firstPassPrompt, ['important_terms'])}
 
-THIS PASS writes ONE important_terms item in full — heading "${term.heading}", quoting exactly: ${JSON.stringify(term.quote)}. Other passes write the other terms and sections at the same time. Return ONLY valid JSON: { "term": { every key of an important_terms item } }`, 'contract-decoder-v2-term', 1200),
+THIS PASS writes ONE important_terms item in full — heading "${term.heading}", quoting exactly: ${JSON.stringify(term.quote)}. Other passes write the other terms and sections at the same time. Return ONLY valid JSON: { "term": { every key of an important_terms item } }`, 'contract-decoder-v2-term', 2000),
           apply: (d, o) => {
             const got = o?.term || (Array.isArray(o?.important_terms) ? o.important_terms[0] : null);
             if (got) slots[i] = { ...got, heading: got.heading || term.heading, quote: term.quote };
