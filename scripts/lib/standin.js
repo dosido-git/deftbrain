@@ -148,8 +148,8 @@ function childEnv(backendDir, port, apiPort) {
 }
 
 // Starts backendDir/server.js on a spare port. Resolves { child, port, logs }.
-async function startBackend(backendDir, apiPort) {
-  const port = await freePort();
+async function startBackend(backendDir, apiPort, fixedPort = null) {
+  const port = fixedPort || await freePort();
   const state = { buf: '' };
   const child = spawn(process.execPath, ['server.js'], { cwd: backendDir, env: childEnv(backendDir, port, apiPort), stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', d => { state.buf += d; });

@@ -31,7 +31,14 @@
 
 const { changedPaths } = require('./bothChecks');
 
-async function progressive(req, res, { label, parts, ready = () => true, complete = () => true, check = null, after = null, finish = d => d }) {
+// Timing switch (2026-10-15, owner: keep test costs down). A local timing run
+// measures how soon the answer shows, which the checks don't affect — and the
+// checks were half of a night's test spend. `x-skip-checks: 1` skips them, on
+// a development server only; production ignores the header.
+const skipChecks = (req) => req.headers?.['x-skip-checks'] === '1' && process.env.NODE_ENV !== 'production';
+
+async function progressive(req, res, { label, parts, ready = () => true, complete = () => true, check: checkFn = null, after = null, finish = d => d }) {
+  const check = skipChecks(req) ? null : checkFn;
   const draft = {};
   let open = false;
   const send = (frame) => {
@@ -106,7 +113,8 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
 // so the two can't drift apart.
 async function answer(req, res, opts) {
   if (req.body?.progressive === true) return progressive(req, res, opts);
-  const { label, parts, ready = () => true, complete = () => true, check = null, after = null, finish = d => d } = opts;
+  const { label, parts, ready = () => true, complete = () => true, after = null, finish = d => d } = opts;
+  const check = skipChecks(req) ? null : (opts.check || null);
   const draft = {};
   await Promise.all(parts.map(async (p, i) => {
     try { p.apply(draft, await p.run()); } catch (err) {

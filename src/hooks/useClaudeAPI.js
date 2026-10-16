@@ -6,6 +6,18 @@ import { signalBusy } from '../utils/busySignal';
 import { t } from '../i18n';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+// Canned-answer mode (scripts/canned-backend.js, $0 page testing): in a
+// development build only, localStorage 'db-backend-url' points tool calls at
+// another local backend. Production builds strip this branch.
+const backendUrl = () => {
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      const v = window.localStorage.getItem('db-backend-url');
+      if (v && /^http:\/\/localhost:\d+$/.test(v)) return v;
+    } catch (_) { /* storage blocked */ }
+  }
+  return BACKEND_URL;
+};
 
 // Surge mode (2026-10-05): a run the server answers 503 { code: 'busy' } is
 // waited out and tried again this many times before the visitor is told —
@@ -37,7 +49,7 @@ export const useClaudeAPI = () => {
     try {
       let response;
       for (let attempt = 0; ; attempt++) {
-        response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+        response = await fetch(`${backendUrl()}/api/${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -113,7 +125,7 @@ export const useClaudeAPI = () => {
     const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data) });
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+      const response = await fetch(`${backendUrl()}/api/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency }),
@@ -212,7 +224,7 @@ export const useClaudeAPI = () => {
     try {
       let response;
       for (let attempt = 0; ; attempt++) {
-        response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+        response = await fetch(`${backendUrl()}/api/${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...data, progressive: true, userLanguage, userLocale, userRegion, userCurrency }),
@@ -287,7 +299,7 @@ export const useClaudeAPI = () => {
   // and skew every per-tool number on the dashboard. Errors carry status and
   // code like the tracked call.
   const pollToolEndpoint = async (endpoint, data) => {
-    const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
+    const response = await fetch(`${backendUrl()}/api/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency }),
