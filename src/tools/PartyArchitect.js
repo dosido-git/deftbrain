@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -32,7 +33,7 @@ const phaseEmoji = (phase) => {
 };
 
 const PartyArchitect = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -74,6 +75,7 @@ const PartyArchitect = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [occasion, setOccasion] = useState('');
   const [guestCount, setGuestCount] = useState('');
@@ -104,7 +106,7 @@ const PartyArchitect = ({ tool }) => {
 
   const generate = useCallback(async () => {
     if (!occasion.trim()) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     try {
       const durMeta = DURATIONS.find(d => d.value === duration);
       const inputs = {
@@ -117,7 +119,9 @@ const PartyArchitect = ({ tool }) => {
         duration,
         constraints: constraints.trim(),
       };
-      const data = await callToolEndpoint('party-architect', {
+      // Progressive (2026-10-16): the event read shows first, the rest as it
+      // lands; checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('party-architect', {
         occasion: inputs.occasion,
         guestCount: inputs.guestCount || null,
         whoIsComing: inputs.whoIsComing || null,
@@ -127,7 +131,11 @@ const PartyArchitect = ({ tool }) => {
         duration: durMeta ? t(durMeta.labelKey) : duration,
         constraints: inputs.constraints || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setPlans(prev => [{
         id: 'plan_' + Date.now(),
         createdAt: new Date().toISOString(),
@@ -140,7 +148,7 @@ const PartyArchitect = ({ tool }) => {
       }, ...prev].slice(0, 15));
       setResults(data);
     } catch (err) { setError(err.message || t('pa_error')); }
-  }, [occasion, guestCount, whoIsComing, space, budget, vibe, duration, constraints, callToolEndpoint, setResults, setPlans, t, userLocale, userCurrency, userRegion]);
+  }, [occasion, guestCount, whoIsComing, space, budget, vibe, duration, constraints, callToolEndpointProgressive, setResults, setPlans, t, userLocale, userCurrency, userRegion]);
 
   const loadExample = useCallback(() => {
     // Five, rotated across vibe, duration and budget: a chill backyard 40th,
@@ -177,13 +185,13 @@ const PartyArchitect = ({ tool }) => {
     setVibe(ex.vibe);
     setDuration(ex.duration);
     setConstraints(ex.constraints);
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
   }, [sym, setResults]);
 
   const handleReset = useCallback(() => {
     setOccasion(''); setGuestCount(''); setWhoIsComing(''); setSpace('');
     setBudget(''); setVibe(''); setDuration('3_hours'); setConstraints('');
-    setResults(null); setError('');
+    cancelProgressive(); setCheckStatus(null); setResults(null); setError('');
   }, [setResults]);
 
   // Reopens a STORED plan — never regenerates. Also repopulates the input
@@ -198,7 +206,7 @@ const PartyArchitect = ({ tool }) => {
     setVibe(p.inputs?.vibe || '');
     setDuration(p.inputs?.duration || '3_hours');
     setConstraints(p.inputs?.constraints || '');
-    setResults(p.plan);
+    setResults(p.plan); setCheckStatus(null);
     setError('');
   }, [setResults]);
 
@@ -214,7 +222,7 @@ const PartyArchitect = ({ tool }) => {
     setVibe(p.inputs?.vibe || '');
     setDuration(p.inputs?.duration || '3_hours');
     setConstraints(p.inputs?.constraints || '');
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
     setError('');
   }, [setResults]);
 
@@ -400,6 +408,7 @@ const PartyArchitect = ({ tool }) => {
       {/* ── RESULTS ── */}
       {results && (
         <div className="space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
           <div data-copy-results ref={resultsRef} className="scroll-mt-24"/>
 
           {r.event_read?.what_matters && (

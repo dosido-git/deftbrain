@@ -1,6 +1,7 @@
 import Caret from '../components/Caret';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -35,7 +36,7 @@ function ImportantTerm({ term, c, t }) {
 }
 
 function ContractDecoder({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -94,6 +95,7 @@ function ContractDecoder({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [contractText, setContractText] = useState('');
   const [pdfBase64, setPdfBase64]       = useState(null);
@@ -140,7 +142,7 @@ function ContractDecoder({ tool }) {
 
 
   const handleReset = useCallback(() => {
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
     setError('');
     setContractText('');
     setPdfBase64(null); setFileName('');
@@ -154,7 +156,7 @@ function ContractDecoder({ tool }) {
     setContext(ex.context);
     setJurisdiction(ex.jurisdiction || '');
     setContractText(ex.contractText);
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
     setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults]);
@@ -162,10 +164,14 @@ function ContractDecoder({ tool }) {
   const handleAnalyze = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
+    // Do NOT embed the full contract text (can be huge) — preview + count only.
+    const withInputs = d => ({ ...d, context, jurisdiction, _input: { contractPreview: contractText.slice(0, 300), contractChars: contractText.length } });
 
     try {
-      const parsed = await callToolEndpoint('contract-decoder/stream', {
+      // Progressive (2026-10-16): the summary shows first, each term as it
+      // lands; current law and wording are double-checked after (CheckNote).
+      const parsed = await callToolEndpointProgressive('contract-decoder/stream', {
         contractText,
         pdfBase64,
         context,
@@ -173,9 +179,12 @@ function ContractDecoder({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(withInputs(d)); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(withInputs(d)); setCheckStatus(checkStatusFor(changed)); },
       });
-      // Do NOT embed the full contract text (can be huge) — preview + count only.
-      setResults({ ...parsed, context, jurisdiction, _input: { contractPreview: contractText.slice(0, 300), contractChars: contractText.length } });
+      if (!parsed) return; // replaced by a newer run
+      setResults(withInputs(parsed));
       // An uploaded PDF leaves contractText empty, so this recorded a blank
       // line for every file-based analysis — the entry appeared, with nothing
       // in it. Name the file in that case.
@@ -189,7 +198,7 @@ function ContractDecoder({ tool }) {
     } catch (err) {
       setError(err.message || t('cd_error'));
     }
-  }, [canSubmit, loading, contractText, pdfBase64, context, jurisdiction, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, contractText, pdfBase64, context, jurisdiction, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleAnalyzeRef.current = handleAnalyze;
   canSubmitRef.current     = canSubmit;
@@ -473,6 +482,7 @@ function ContractDecoder({ tool }) {
       {results && renderResults()}
       {results && (
         <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
           <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🔗 {t('cd_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/LeaseTrapDetector" className={`text-xs ${linkStyle}`}>🏠 {t('cd_lease')}</a>

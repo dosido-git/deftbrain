@@ -25,6 +25,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
+const { answer, keyGroups } = require('../lib/progressive');
 function cleanString(value, max = 4000) {
   if (typeof value !== 'string') return '';
   return value.trim().slice(0, max);
@@ -484,36 +485,46 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
     // between Denver airport's garage and terminal.
     const research = researchFacts({ topic: ['place', location], label: 'trip-recon', brief: `Facts about the physical place "${location}"${placeType ? ` (${placeType})` : ''}: its layout, entrances, how people get in and between its parts (garages, trains, shuttles, walkways), opening hours, and busy times or crowd and noise information the place or reliable guides publish.` });
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4500,
-      system: withLanguage(MAIN_SYSTEM, userLanguage),
-      messages: [{ role: 'user', content: supplied }],
-    }, { label: 'trip-recon' });
-
-    if (!parsed?.summary) {
-      return res.status(500).json({ error: 'Could not build a plan. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
+    // Progressive (2026-10-16, lib/progressive.js): one call wrote ~1,450
+    // tokens (~31s) and the guard and the place-facts check ran before
+    // anything showed. Now four passes write disjoint sections at once — the
+    // summary first — and both checks run after the answer is on screen.
+    const ORDER = ['summary', 'what_you_know', 'worth_preparing_for', 'before_you_go', 'while_youre_there', 'things_you_could_ask', 'backup_plan', 'unknowns_that_matter'];
+    return await answer(req, res, {
       label: 'trip-recon',
-      fields: collectProseFields(parsed),
-      supplied,
-      promise: 'Help the visitor prepare for the sensory demands of a specific place using only what they supplied, plus general, clearly-labeled possibilities for that type of setting — never inventing crowd, noise, lighting, or layout facts about this specific place.',
-      guard: router.outputGuard,
-      userLanguage,
+      parts: keyGroups([
+        ['summary', 'what_you_know'],
+        ['worth_preparing_for'],
+        ['before_you_go', 'while_youre_there', 'backup_plan'],
+        ['things_you_could_ask', 'unknowns_that_matter'],
+      ], (extra, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2000,
+        system: withLanguage(MAIN_SYSTEM, userLanguage),
+        messages: [{ role: 'user', content: supplied + extra }],
+      }, { label: `trip-recon-${i + 1}` })),
+      finish: d => stripEmptyItems(Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, structuredClone(d[k])]))),
+      ready: d => Boolean(d.summary),
+      complete: d => Boolean(d.summary),
+      check: async (parsed) => {
+        await runOutputGuard(parsed, {
+          label: 'trip-recon',
+          fields: collectProseFields(parsed),
+          supplied,
+          promise: 'Help the visitor prepare for the sensory demands of a specific place using only what they supplied, plus general, clearly-labeled possibilities for that type of setting — never inventing crowd, noise, lighting, or layout facts about this specific place.',
+          guard: router.outputGuard,
+          userLanguage,
+        });
+        // Run AFTER the guard, not before: the guard mutates `parsed` in place,
+        // and its repair pass can blank out a flagged field instead of
+        // substituting it — despite being told not to. Cleaning first only
+        // catches blanks already in the raw model output, not ones the repair
+        // step introduces afterward. (Caught live during v2.1/v3.1 verification —
+        // don't move this back above runOutputGuard.) stripEmptyItems runs in
+        // finish, after both.
+        await checkWorldFacts(parsed, research, { label: 'trip-recon', fields: collectProseFields(parsed), subject: location, userLanguage });
+      },
     });
-
-    // Run AFTER the guard, not before: the guard mutates `parsed` in place,
-    // and its repair pass can blank out a flagged field instead of
-    // substituting it — despite being told not to. Cleaning first only
-    // catches blanks already in the raw model output, not ones the repair
-    // step introduces afterward. (Caught live during v2.1/v3.1 verification —
-    // don't move this back above runOutputGuard.)
-    await checkWorldFacts(parsed, research, { label: 'trip-recon', fields: collectProseFields(parsed), subject: location, userLanguage });
-    const cleaned = stripEmptyItems(parsed);
-
-    res.json(cleaned);
   } catch (error) {
     console.error('[TripRecon]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

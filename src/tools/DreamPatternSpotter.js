@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -58,7 +59,7 @@ const PATTERN_EXAMPLES = [
 ];
 
 const DreamPatternSpotter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -84,6 +85,7 @@ const DreamPatternSpotter = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Mode selection
   const [mode, setMode] = useState('single'); // 'single' or 'pattern'
@@ -141,16 +143,22 @@ const DreamPatternSpotter = ({ tool }) => {
     const selectedEmotions = Object.keys(singleDream.emotions).filter(key => singleDream.emotions[key]);
 
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
 
     try {
-      const data = await callToolEndpoint('dream-pattern-spotter-single', {
+      // Progressive (2026-10-16): the description shows first, the other
+      // sections as they land; checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('dream-pattern-spotter-single', {
         description: singleDream.description.trim(),
         date: singleDream.date,
         emotions: selectedEmotions,
         lifeContext: singleDream.lifeContext.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       
       const entry = {
         id: Date.now().toString(),
@@ -177,7 +185,7 @@ const DreamPatternSpotter = ({ tool }) => {
     }
 
     setError('');
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
 
     try {
       const data = await callToolEndpoint('dream-pattern-spotter-pattern', {
@@ -237,7 +245,7 @@ const DreamPatternSpotter = ({ tool }) => {
         emotions: [],
         lifeContext: '',
       })));
-      setResults(null);
+      cancelProgressive(); setCheckStatus(null); setResults(null);
       return;
     }
     const ex = pickExample('DreamPatternSpotter:single', EXAMPLES);
@@ -248,7 +256,7 @@ const DreamPatternSpotter = ({ tool }) => {
       description: t(ex.descriptionKey),
       date: new Date().toISOString().slice(0, 10),
     }));
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
   }, [mode, setDreams, setSingleDream, setResults, t]);
 
   const handleReset = () => {
@@ -273,7 +281,7 @@ const DreamPatternSpotter = ({ tool }) => {
       emotions: [],
       lifeContext: '',
     }]);
-    setResults(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null);
     setError('');
   };
 
@@ -618,6 +626,7 @@ const DreamPatternSpotter = ({ tool }) => {
         {/* Results */}
         {results && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-6">
+            <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
             {/* ── Single dream: seven sections, in the order a reader wants
                    them — what happened, what is notable, what it might be
@@ -763,7 +772,7 @@ const DreamPatternSpotter = ({ tool }) => {
                   key={h.id || i}
                   onClick={() => {
                     if (h.results) {
-                      setResults(h.results);
+                      setResults(h.results); setCheckStatus(null);
                       if (h.input?.singleDream) setSingleDream(h.input.singleDream);
                       if (h.input?.dreams?.length) setDreams(h.input.dreams);
                       if (h.mode) setMode(h.mode);

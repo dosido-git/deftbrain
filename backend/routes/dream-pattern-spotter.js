@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups } = require('../lib/progressive');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -134,18 +135,34 @@ Give 3-5 items in what_stands_out and 3-5 in questions_worth_sitting_with.
 
 Return ONLY the JSON object. No markdown, no preamble.`;
 
-    const result = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 3000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'dream-single' });
-
+    // Progressive (2026-10-16, lib/progressive.js): one call wrote ~1,800
+    // tokens (~41s) and the guard ran before anything showed. Now four passes
+    // write disjoint sections at once — the description first — and the guard
+    // runs after the answer is on screen.
+    const ORDER = ['at_a_glance', 'what_stands_out', 'possible_associations', 'different_lenses', 'connections_to_your_life', 'questions_worth_sitting_with', 'patterns_to_watch'];
     // A connection to a life the dreamer never described is the one thing this
     // tool must not manufacture, so it is enforced rather than requested.
-    if (!lifeContext || !lifeContext.trim()) result.connections_to_your_life = [];
-
-    await guardDream(result, req.body, 'dream-single', 'What is in the dream the person described, several ways of looking at it, and questions worth sitting with — never a diagnosis and never a single meaning.');
-    res.json(result);
+    const noLife = !lifeContext || !lifeContext.trim();
+    return await answer(req, res, {
+      label: 'dream-single',
+      parts: keyGroups([
+        ['at_a_glance', 'what_stands_out'],
+        ['possible_associations'],
+        ['different_lenses'],
+        ['connections_to_your_life', 'questions_worth_sitting_with', 'patterns_to_watch'],
+      ], (extra, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: withLanguage(prompt + extra, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      }, { label: `dream-single-${i + 1}` })),
+      finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, k === 'connections_to_your_life' && noLife ? [] : d[k]])),
+      ready: d => Boolean(d.at_a_glance),
+      complete: d => Boolean(d.at_a_glance),
+      check: d => {
+        if (noLife) d.connections_to_your_life = [];
+        return guardDream(d, req.body, 'dream-single', 'What is in the dream the person described, several ways of looking at it, and questions worth sitting with — never a diagnosis and never a single meaning.');
+      },
+    });
   } catch (error) {
     console.error('Dream analysis error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -201,6 +218,9 @@ Return ONLY the JSON object. No markdown, no preamble.`;
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'dream-patterns' });
+    if (!result || typeof result !== 'object') {
+      return res.status(500).json({ error: 'Could not read the patterns. Please try again.' });
+    }
 
     // A "pattern" of one is a single dream wearing a label. And `of` is the
     // same number every time, so fill it here rather than trust three arrays

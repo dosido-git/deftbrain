@@ -1,5 +1,6 @@
 // contract-decoder.js — DeftBrain V2
 const express = require('express');
+const { answer } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -223,150 +224,191 @@ Rules:
 - Do not score risk, diagnose fairness, or prescribe what the signer must do.`;
 
   try {
-    const firstRaw = await callClaudeWithRetry({
+    const system = withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const ask = (text, label, maxTokens) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: [...pdfBlocks, { type: 'text', text: firstPassPrompt }] }],
-    }, { label: 'contract-decoder-v2-first-pass' });
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: [...pdfBlocks, { type: 'text', text }] }],
+    }, { label });
+    const only = (keys) => `\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the rest at the same time — leave them out, and keep every rule above for the keys you write.`;
 
-    const first = normalizeDraft(firstRaw);
-    if (!validateOutput(first)) {
-      return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
-    }
+    // Progressive (2026-10-16, lib/progressive.js): the first pass wrote
+    // ~2,900 tokens (~60s), mostly the important terms. Now a short pass
+    // picks the terms (heading + exact quote), each term is explained in its
+    // own call, and the summary and the other sections are written alongside
+    // — the summary shows first. The law lookup, the refine pass and the
+    // guard run after the answer is on screen.
+    const summaryP = ask(firstPassPrompt + only(['summary']), 'contract-decoder-v2-summary', 1000);
+    const clarifyP = ask(firstPassPrompt + only(['things_to_clarify', 'before_you_sign']), 'contract-decoder-v2-clarify', 2500);
+    const legalP = ask(firstPassPrompt + only(['legal_questions']), 'contract-decoder-v2-legal', 1500);
+    // If the plan fails, these are abandoned; never leave a rejection unhandled.
+    [summaryP, clarifyP, legalP].forEach(p => p.catch(() => {}));
+    const plan = await ask(`${firstPassPrompt}
 
-    let verifiedLawBlock = '';
+FIRST PASS — CHOOSE ONLY. Pick the important_terms you would write (same rules, at most 6, fewer is better) and return ONLY valid JSON: { "important_terms": [{ "heading": "", "quote": "exact excerpt, at most 300 characters" }] }`, 'contract-decoder-v2-plan', 1200);
+    const planned = (Array.isArray(plan?.important_terms) ? plan.important_terms : []).filter(x => x?.heading && x?.quote).slice(0, 6);
+    const slots = new Array(planned.length).fill(null);
     let contractLawCacheKey = null;
-    if (jurisdiction?.trim() && first.legal_questions.length) {
-      const topics = first.legal_questions.map(q => q.topic).join('; ');
-      contractLawCacheKey = `contract-law-v2:${normalizeKeyPart(jurisdiction)}:${normalizeKeyPart(topics)}`;
-      const facts = await groundedFacts({
-        cacheKey: contractLawCacheKey,
-        label: 'contract-decoder-v2-targeted-law',
-        userPrompt: `Verify only the following current legal questions for ${jurisdiction.trim()} as of today, because they were raised by terms actually present in a contract: ${first.legal_questions.map(q => `${q.topic} — ${q.why_relevant}`).join(' | ')}. Use authoritative government, statutory, regulatory, or court sources where available. Skip any proposition you cannot verify. Do not add unrelated contract-law rules.\n\nReturn ONLY valid JSON:\n{ "verified": [{ "topic": "topic", "rule": "narrow verified rule", "authority": "statute/regulation/case or official source", "effective": "effective date if material and known", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official government/statutory/court domain when the search found one." }] }`,
-        // See matchVerifiedSources (lib/groundedFacts.js): a fact only gets a
-        // visible citation when its claimed domain matches a page web_search
-        // actually retrieved — the model's own domain self-report isn't
-        // independently trustworthy on its own.
-        render: (cleanFacts, searchResults) => {
-          if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
-          const block = cleanFacts.verified.map(f =>
-            `- ${f.topic}: ${f.rule} (${f.authority}${f.effective ? `; ${f.effective}` : ''}; source: ${f.source})`
-          ).join('\n');
-          return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
-        },
-      });
-      verifiedLawBlock = facts || '';
-    }
+    const PUBLIC = ['summary', 'important_terms', 'things_to_clarify', 'before_you_sign'];
 
-    let final = first;
-    if (verifiedLawBlock) {
-      const finalPrompt = `Refine this grounded contract explanation using ONLY the verified current-law facts below where they materially affect a term already identified. Do not add unrelated legal commentary. Do not convert a narrow verified rule into a broad claim that the whole clause or contract is legal, illegal, enforceable, unenforceable, fair, unfair, safe, or risky.
+    return await answer(req, res, {
+      label: 'contract-decoder',
+      parts: [
+        { required: true, run: () => summaryP, apply: (d, o) => { d.summary = o?.summary; } },
+        { run: () => clarifyP, apply: (d, o) => { d.things_to_clarify = o?.things_to_clarify; d.before_you_sign = o?.before_you_sign; } },
+        { run: () => legalP, apply: (d, o) => { d.legal_questions = o?.legal_questions; } },
+        ...planned.map((term, i) => ({
+          run: () => ask(`${firstPassPrompt}
 
-VERIFIED CURRENT LAW FOR THE STATED JURISDICTION:
-${verifiedLawBlock}
-
-FIRST-PASS ANALYSIS:
-${JSON.stringify(first)}
-
-Return ONLY valid JSON with this exact public shape:
-{
-  "summary": "...",
-  "important_terms": [{
-    "heading": "...",
-    "quote": "...",
-    "plain_english": "...",
-    "practical_effect": "...",
-    "question_to_consider": "...",
-    "possible_negotiation_ask": "... or null"
-  }],
-  "things_to_clarify": [{ "observation": "...", "question": "..." }],
-  "before_you_sign": ["..."]
-}`;
-
-      const finalRaw = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 6000,
-        system: withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: finalPrompt }],
-      }, { label: 'contract-decoder-v2-final' });
-      final = normalizeDraft(finalRaw);
-      if (!validateOutput(final)) {
-        return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
+THIS PASS writes ONE important_terms item in full — heading "${term.heading}", quoting exactly: ${JSON.stringify(term.quote)}. Other passes write the other terms and sections at the same time. Return ONLY valid JSON: { "term": { every key of an important_terms item } }`, 'contract-decoder-v2-term', 1200),
+          apply: (d, o) => {
+            const got = o?.term || (Array.isArray(o?.important_terms) ? o.important_terms[0] : null);
+            if (got) slots[i] = { ...got, heading: got.heading || term.heading, quote: term.quote };
+            d.important_terms = slots.filter(Boolean);
+          },
+        })),
+      ],
+      finish: (d) => {
+        const n = normalizeDraft(d);
+        const verifiedSources = contractLawCacheKey ? groundedData(contractLawCacheKey)?.sources : null;
+        return stripCites({
+          ...Object.fromEntries(PUBLIC.map(k => [k, n[k]])),
+          ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+        });
+      },
+      ready: d => Boolean(d.summary),
+      complete: d => validateOutput(normalizeDraft(d)),
+      check: async (d) => {
+        const first = normalizeDraft(d);
+        let final = first;
+      let verifiedLawBlock = '';
+      if (jurisdiction?.trim() && (first.legal_questions || []).length) {
+        const topics = (first.legal_questions || []).map(q => q.topic).join('; ');
+        contractLawCacheKey = `contract-law-v2:${normalizeKeyPart(jurisdiction)}:${normalizeKeyPart(topics)}`;
+        const facts = await groundedFacts({
+          cacheKey: contractLawCacheKey,
+          label: 'contract-decoder-v2-targeted-law',
+          userPrompt: `Verify only the following current legal questions for ${jurisdiction.trim()} as of today, because they were raised by terms actually present in a contract: ${(first.legal_questions || []).map(q => `${q.topic} — ${q.why_relevant}`).join(' | ')}. Use authoritative government, statutory, regulatory, or court sources where available. Skip any proposition you cannot verify. Do not add unrelated contract-law rules.\n\nReturn ONLY valid JSON:\n{ "verified": [{ "topic": "topic", "rule": "narrow verified rule", "authority": "statute/regulation/case or official source", "effective": "effective date if material and known", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official government/statutory/court domain when the search found one." }] }`,
+          // See matchVerifiedSources (lib/groundedFacts.js): a fact only gets a
+          // visible citation when its claimed domain matches a page web_search
+          // actually retrieved — the model's own domain self-report isn't
+          // independently trustworthy on its own.
+          render: (cleanFacts, searchResults) => {
+            if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
+            const block = cleanFacts.verified.map(f =>
+              `- ${f.topic}: ${f.rule} (${f.authority}${f.effective ? `; ${f.effective}` : ''}; source: ${f.source})`
+            ).join('\n');
+            return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
+          },
+        });
+        verifiedLawBlock = facts || '';
       }
-    }
 
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [['summary', final.summary]];
-      final.important_terms.forEach((term, i) => {
-        fields.push([`important_terms[${i}].plain_english`, term.plain_english]);
-        fields.push([`important_terms[${i}].practical_effect`, term.practical_effect]);
-        // question_to_consider is visitor-facing text like any other, and it
-        // was the one field of the six not being checked — which is where the
-        // legal conclusions kept surfacing after the others were cleaned.
-        if (term.question_to_consider) fields.push([`important_terms[${i}].question_to_consider`, term.question_to_consider]);
-        fields.push([`important_terms[${i}].heading`, term.heading]);
-        if (term.possible_negotiation_ask) fields.push([`important_terms[${i}].possible_negotiation_ask`, term.possible_negotiation_ask]);
-      });
-      final.things_to_clarify.forEach((item, i) => {
-        fields.push([`things_to_clarify[${i}].observation`, item.observation]);
-        fields.push([`things_to_clarify[${i}].question`, item.question]);
-      });
-      final.before_you_sign.forEach((item, i) => fields.push([`before_you_sign[${i}]`, item]));
+      if (verifiedLawBlock) {
+        const finalPrompt = `Refine this grounded contract explanation using ONLY the verified current-law facts below where they materially affect a term already identified. Do not add unrelated legal commentary. Do not convert a narrow verified rule into a broad claim that the whole clause or contract is legal, illegal, enforceable, unenforceable, fair, unfair, safe, or risky.
 
-      await runOutputGuard(final, {
-        label: 'contract-decoder',
-        fields,
-        supplied: `CONTRACT TYPE: whatever the document itself shows it to be
-STATED JURISDICTION: ${jurisdiction?.trim() || '(not supplied — do not infer one)'}
-VISITOR CONTEXT: ${context?.trim() || '(not supplied)'}
-${verifiedLawBlock ? `VERIFIED CURRENT LAW:\n${verifiedLawBlock}` : 'NO LAW WAS VERIFIED — any legal conclusion is unsupported.'}
+  VERIFIED CURRENT LAW FOR THE STATED JURISDICTION:
+  ${verifiedLawBlock}
 
-${hasPdf
-  ? `THE CONTRACT WAS SUPPLIED AS A PDF. You cannot see it — but the quotes below ARE the contract, verbatim, and they are your source of truth for everything else:\n${final.important_terms.map(term => `- "${term.quote}"`).join('\n')}\n\nYOUR EVIDENCE IS PARTIAL AND YOU MUST ACT ACCORDINGLY. Those quotes are a handful of excerpts from a longer document you cannot open, so absence from them proves nothing. Do not flag a statement as invented merely because you cannot confirm it — that test would fail every true sentence about the parts you were not shown.
+  FIRST-PASS ANALYSIS:
+  ${JSON.stringify(first)}
 
-Flag only:
-- a statement that CONTRADICTS a quote above, or
-- a legal, enforceability, fairness, standardness or risk claim, which needs verified law rather than the document, or
-- an illustrative scenario, a prediction, or advice to consult a professional.
+  Return ONLY valid JSON with this exact public shape:
+  {
+    "summary": "...",
+    "important_terms": [{
+      "heading": "...",
+      "quote": "...",
+      "plain_english": "...",
+      "practical_effect": "...",
+      "question_to_consider": "...",
+      "possible_negotiation_ask": "... or null"
+    }],
+    "things_to_clarify": [{ "observation": "...", "question": "..." }],
+    "before_you_sign": ["..."]
+  }`;
 
-For everything else about the contract's contents, assume the generator read the document and you did not.`
-  : `CONTRACT TEXT:\n${contractText.trim().slice(0, 12000)}`}
+        const finalRaw = await callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 6000,
+          system: withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          messages: [{ role: 'user', content: finalPrompt }],
+        }, { label: 'contract-decoder-v2-final' });
+        const refined = normalizeDraft(finalRaw);
+        // A refine that comes back malformed keeps the answer already shown.
+        if (validateOutput(refined)) final = { ...refined, legal_questions: first.legal_questions };
+      }
 
-THE CONTRACT TEXT ITSELF IS THE SOURCE OF TRUTH. A term is supported when the quoted language says it; anything about fairness, standardness, enforceability or risk is NOT in the document and needs verified law, which is listed above or absent.`,
-        promise: `Explain what this contract says in ordinary language, name the terms that materially affect the signer, and give questions worth asking before signing.
+      // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+      try {
+        const fields = [['summary', final.summary]];
+        final.important_terms.forEach((term, i) => {
+          fields.push([`important_terms[${i}].plain_english`, term.plain_english]);
+          fields.push([`important_terms[${i}].practical_effect`, term.practical_effect]);
+          // question_to_consider is visitor-facing text like any other, and it
+          // was the one field of the six not being checked — which is where the
+          // legal conclusions kept surfacing after the others were cleaned.
+          if (term.question_to_consider) fields.push([`important_terms[${i}].question_to_consider`, term.question_to_consider]);
+          fields.push([`important_terms[${i}].heading`, term.heading]);
+          if (term.possible_negotiation_ask) fields.push([`important_terms[${i}].possible_negotiation_ask`, term.possible_negotiation_ask]);
+        });
+        final.things_to_clarify.forEach((item, i) => {
+          fields.push([`things_to_clarify[${i}].observation`, item.observation]);
+          fields.push([`things_to_clarify[${i}].question`, item.question]);
+        });
+        final.before_you_sign.forEach((item, i) => fields.push([`before_you_sign[${i}]`, item]));
 
-THE ONE RULE THAT DECIDES MOST OF THESE. A contract establishes what it SAYS. It does not by itself establish what a party can legally do, cannot do, sue for, recover, forfeit, enforce, or be liable for. Unless that consequence appears in the verified-law block above — and if there is no such block, nothing was verified — the text must describe it as the apparent effect of the contract language, not as a legal fact.
+        await runOutputGuard(final, {
+          label: 'contract-decoder',
+          fields,
+          supplied: `CONTRACT TYPE: whatever the document itself shows it to be
+  STATED JURISDICTION: ${jurisdiction?.trim() || '(not supplied — do not infer one)'}
+  VISITOR CONTEXT: ${context?.trim() || '(not supplied)'}
+  ${verifiedLawBlock ? `VERIFIED CURRENT LAW:\n${verifiedLawBlock}` : 'NO LAW WAS VERIFIED — any legal conclusion is unsupported.'}
 
-So flag "you cannot withhold delivery", "you forfeit that payment", "they can sue you for it", "this is unenforceable", "you would be liable". Do not flag "under the contract's wording, the work is the Company's from creation", "the clause states that unbilled work is not compensable", "the agreement purports to waive moral rights" — those describe the document, which is what the document can support.
+  ${hasPdf
+    ? `THE CONTRACT WAS SUPPLIED AS A PDF. You cannot see it — but the quotes below ARE the contract, verbatim, and they are your source of truth for everything else:\n${final.important_terms.map(term => `- "${term.quote}"`).join('\n')}\n\nYOUR EVIDENCE IS PARTIAL AND YOU MUST ACT ACCORDINGLY. Those quotes are a handful of excerpts from a longer document you cannot open, so absence from them proves nothing. Do not flag a statement as invented merely because you cannot confirm it — that test would fail every true sentence about the parts you were not shown.
 
-THREE MORE, and they are the ones that survive the phrasing rule:
+  Flag only:
+  - a statement that CONTRADICTS a quote above, or
+  - a legal, enforceability, fairness, standardness or risk claim, which needs verified law rather than the document, or
+  - an illustrative scenario, a prediction, or advice to consult a professional.
 
-1. A CASE ADJUDICATED AGAINST THE CLAUSE. Permits, applies, binds, waives, covers and requires are fine describing what the agreement provides, and become rulings when a specific scenario is run through them and the outcome announced. Flag "a 40% increase falls squarely within what this clause permits" and "after continued use the new terms apply". Do not flag "the clause allows renewal increases without a stated limit" or "the agreement says continued use constitutes acceptance".
+  For everything else about the contract's contents, assume the generator read the document and you did not.`
+    : `CONTRACT TEXT:\n${contractText.trim().slice(0, 12000)}`}
 
-2. A PREMISE ABOUT THE VISITOR THAT IS NOT IN THE INPUTS. Company size, how they use the service, how many people depend on it, what switching would cost, how central it is to their operation. Flag "because you use this software across the whole company" and "the whole company relies on the service". A conditional is not a violation: "if this service is operationally important to you" invents nothing.
+  THE CONTRACT TEXT ITSELF IS THE SOURCE OF TRUTH. A term is supported when the quoted language says it; anything about fairness, standardness, enforceability or risk is NOT in the document and needs verified law, which is listed above or absent.`,
+          promise: `Explain what this contract says in ordinary language, name the terms that materially affect the signer, and give questions worth asking before signing.
 
-3. A CLAIM SOURCED FROM A CLAUSE THAT WAS NOT QUOTED. Everything under a quoted term must come from that quote. If the explanation asserts something the quoted words do not contain — a fee, a rate, a definition living elsewhere — flag it unless the sentence names the other clause it came from.`,
-        guard: router.outputGuard,
-        // The quote field is excluded on purpose: it is verbatim contract text,
-        // and "unsupported" is not a thing a verbatim excerpt can be.
-        requiredNonEmpty: ['summary', ...final.important_terms.map((_, i) => `important_terms[${i}].plain_english`)],
-        userLanguage,
-        locale: withLocaleContext(userLocale, userCurrency, userRegion),
-      });
-    } catch (guardErr) {
-      console.error('[contract-decoder] v2 guard skipped:', guardErr.message);
-    }
+  THE ONE RULE THAT DECIDES MOST OF THESE. A contract establishes what it SAYS. It does not by itself establish what a party can legally do, cannot do, sue for, recover, forfeit, enforce, or be liable for. Unless that consequence appears in the verified-law block above — and if there is no such block, nothing was verified — the text must describe it as the apparent effect of the contract language, not as a legal fact.
 
-    const verifiedSources = contractLawCacheKey ? groundedData(contractLawCacheKey)?.sources : null;
-    res.json(stripCites({
-      summary: final.summary,
-      important_terms: final.important_terms,
-      things_to_clarify: final.things_to_clarify,
-      before_you_sign: final.before_you_sign,
-      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
-    }));
+  So flag "you cannot withhold delivery", "you forfeit that payment", "they can sue you for it", "this is unenforceable", "you would be liable". Do not flag "under the contract's wording, the work is the Company's from creation", "the clause states that unbilled work is not compensable", "the agreement purports to waive moral rights" — those describe the document, which is what the document can support.
+
+  THREE MORE, and they are the ones that survive the phrasing rule:
+
+  1. A CASE ADJUDICATED AGAINST THE CLAUSE. Permits, applies, binds, waives, covers and requires are fine describing what the agreement provides, and become rulings when a specific scenario is run through them and the outcome announced. Flag "a 40% increase falls squarely within what this clause permits" and "after continued use the new terms apply". Do not flag "the clause allows renewal increases without a stated limit" or "the agreement says continued use constitutes acceptance".
+
+  2. A PREMISE ABOUT THE VISITOR THAT IS NOT IN THE INPUTS. Company size, how they use the service, how many people depend on it, what switching would cost, how central it is to their operation. Flag "because you use this software across the whole company" and "the whole company relies on the service". A conditional is not a violation: "if this service is operationally important to you" invents nothing.
+
+  3. A CLAIM SOURCED FROM A CLAUSE THAT WAS NOT QUOTED. Everything under a quoted term must come from that quote. If the explanation asserts something the quoted words do not contain — a fee, a rate, a definition living elsewhere — flag it unless the sentence names the other clause it came from.`,
+          guard: router.outputGuard,
+          // The quote field is excluded on purpose: it is verbatim contract text,
+          // and "unsupported" is not a thing a verbatim excerpt can be.
+          requiredNonEmpty: ['summary', ...final.important_terms.map((_, i) => `important_terms[${i}].plain_english`)],
+          userLanguage,
+          locale: withLocaleContext(userLocale, userCurrency, userRegion),
+        });
+      } catch (guardErr) {
+        console.error('[contract-decoder] v2 guard skipped:', guardErr.message);
+      }
+
+
+        Object.keys(d).forEach(k => { delete d[k]; });
+        Object.assign(d, final);
+        slots.splice(0, slots.length, ...(final.important_terms || []));
+      },
+    });
   } catch (err) {
     console.error('[contract-decoder] Error:', err.message);
     if (!res.headersSent) {

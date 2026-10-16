@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups } = require('../lib/progressive');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -1551,23 +1552,10 @@ function pruneEmpties(parsed) {
 }
 
 router.post('/party-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  // Keep-alive heartbeat. Two parallel SMART generations + a FAST v2 guard
-  // check/repair is a non-streaming request that can legitimately run
-  // 40-55s (measured locally) with ZERO response bytes sent until the very
-  // end — this tool already has documented history of tripping a browser/
-  // proxy idle-connection timeout at this shape (the pre-split version
-  // measured ~82s; see tool-notes). A live report of "NetworkError when
-  // attempting to fetch resource" at 43s — succeeding on retry — matches
-  // that failure mode exactly, not a code crash (43s isn't any timeout
-  // constant in this file). Writing a single whitespace byte periodically
-  // keeps the connection visibly active; JSON.parse ignores leading/
-  // trailing whitespace, so the frontend's plain `await response.json()`
-  // needs no change for the SUCCESS path. The error path DOES need a
-  // frontend change (see useClaudeAPI.js) because once any byte is
-  // written, the HTTP status is already committed to 200 — an error
-  // discovered afterward can only be reported inside the JSON body, not
-  // via a 4xx/5xx status.
-  let keepAlive = null;
+  // A keep-alive heartbeat used to live here (spaces written every 10s while
+  // a ~45s non-streaming answer was built, after Safari/proxy idle-timeout
+  // drops). The answer is progressive now (2026-10-16): the first part lands
+  // in seconds, so the heartbeat — and its 200-then-error-in-body path — went.
   try {
     const { occasion, guestCount, whoIsComing, space, budget, vibe, duration, constraints, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1578,94 +1566,87 @@ router.post('/party-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const brief = buildBrief({ occasion, guestCount, whoIsComing, space, budget, vibe, duration, constraints });
     const locale = withLocaleContext(userLocale, userCurrency, userRegion);
 
-    res.setHeader('Content-Type', 'application/json');
-    res.flushHeaders();
-    keepAlive = setInterval(() => {
-      try { res.write(' '); } catch { /* connection already gone */ }
-    }, 10000);
+    // Progressive (2026-10-16, lib/progressive.js): two calls wrote ~1,000
+    // tokens each (~23s) and the guard ran before anything showed — which is
+    // why this route used to send keep-alive spaces. Now six passes write
+    // disjoint sections at once (the event read first) and the guard runs
+    // after the answer is on screen; no heartbeat is needed.
+    const EXACT = /EXACTLY these (four|six) top-level keys:/;
+    const relax = (prompt) => prompt.replace(EXACT, 'these top-level keys (each pass writes only the ones named at the end):');
+    const arc = relax(buildArcPrompt(brief));
+    const mech = relax(buildMechanicsPrompt(brief));
+    const call = (prompt) => (extra, i) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 1800,
+      system: withLanguage(SHARED_PROMPT, userLanguage) + locale,
+      messages: [{ role: 'user', content: prompt + extra }],
+    }, { label: `party-architect:part${i + 1}` });
+    const arcParts = keyGroups([['event_read', 'event_shape'], ['timeline'], ['wind_down']], call(arc));
+    const mechParts = keyGroups([['helping_people_connect', 'conversation_catalysts'], ['food_and_drink', 'music'], ['budget_priorities', 'things_to_plan_for']], call(mech))
+      .map(p => ({ ...p, required: false }));
+    return await answer(req, res, {
+      label: 'party-architect',
+      parts: [...arcParts, ...mechParts],
+      finish: d => pruneEmpties(sanitize(structuredClone(d))),
+      ready: d => Boolean(d.event_read),
+      complete: d => Boolean(d.event_read),
+      check: async (d) => {
+        const parsed = sanitize(d);
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+        const fields = [
+          ['event_read.what_matters', parsed.event_read?.what_matters],
+          ['event_read.design_priority', parsed.event_read?.design_priority],
+          ['event_shape', parsed.event_shape],
+        ];
+        (parsed.timeline || []).forEach((item, i) => {
+          fields.push([`timeline[${i}].action`, item.action]);
+          fields.push([`timeline[${i}].host_job`, item.host_job]);
+          if (item.why) fields.push([`timeline[${i}].why`, item.why]);
+          if (item.adjust_if) fields.push([`timeline[${i}].adjust_if`, item.adjust_if]);
+        });
+        (parsed.helping_people_connect || []).forEach((item, i) => {
+          fields.push([`helping_people_connect[${i}].how`, item.how]);
+          fields.push([`helping_people_connect[${i}].why_it_fits`, item.why_it_fits]);
+        });
+        (parsed.conversation_catalysts || []).forEach((c, i) => fields.push([`conversation_catalysts[${i}]`, c]));
+        if (parsed.food_and_drink) {
+          fields.push(['food_and_drink.format', parsed.food_and_drink.format]);
+          if (parsed.food_and_drink.dietary_considerations) fields.push(['food_and_drink.dietary_considerations', parsed.food_and_drink.dietary_considerations]);
+        }
+        if (parsed.budget_priorities) {
+          fields.push(['budget_priorities.approach', parsed.budget_priorities.approach]);
+          (parsed.budget_priorities.protect_spending_on || []).forEach((v, i) => fields.push([`budget_priorities.protect_spending_on[${i}]`, v]));
+        }
+        (parsed.things_to_plan_for || []).forEach((item, i) => {
+          fields.push([`things_to_plan_for[${i}].issue`, item.issue]);
+          fields.push([`things_to_plan_for[${i}].plan`, item.plan]);
+        });
+        if (parsed.wind_down?.script) fields.push(['wind_down.script', parsed.wind_down.script]);
 
-    const [arcPart, mechanicsPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(SHARED_PROMPT, userLanguage) + locale,
-        messages: [{ role: 'user', content: buildArcPrompt(brief) }],
-      }, { label: 'party-architect:arc' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(SHARED_PROMPT, userLanguage) + locale,
-        messages: [{ role: 'user', content: buildMechanicsPrompt(brief) }],
-      }, { label: 'party-architect:mechanics' }),
-    ]);
+        await runOutputGuard(parsed, {
+          label: 'party-architect',
+          fields,
+          supplied: brief,
+          promise: `Design the FLOW of a specific gathering — what happens when, what deserves structure, how to help unfamiliar guests connect, and how to end it naturally — grounded only in what the host supplied about the occasion, guest count, who's coming, space, budget, vibe, duration, and constraints.
 
-    let parsed = sanitize({ ...mechanicsPart, ...arcPart });
+  Flag any claim about a specific guest's personality, likely behavior, or a relationship/shared interest between guests that was not supplied ("the two of them will hit it off", "the quieter guests will need drawing out"). Flag social-dynamics predictions stated as fact ("the first 45 minutes determine the whole night", "the group will either merge or stay separate"). Flag a technique justified by claimed social psychology rather than a practical, mechanical reason. Flag any invented clock start time (this event has none supplied — only relative offsets like "Arrival" or "+20 min" are correct). Flag any fabricated price, cost total, or a claim that a stated budget "is workable" or that something "typically" costs a certain share. Flag any assumption the host owns specific furniture, lighting, or equipment not confirmed ("free" upgrades must be framed as "if you already have..."). Flag a casual food-safety assurance around a stated allergy, or an invented alcohol/music preference for a specific person. Flag host guidance that amounts to continuous surveillance of the room (monitoring "energy," "social temperature," or who is peripheral) rather than a few concrete jobs.
 
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [
-        ['event_read.what_matters', parsed.event_read?.what_matters],
-        ['event_read.design_priority', parsed.event_read?.design_priority],
-        ['event_shape', parsed.event_shape],
-      ];
-      (parsed.timeline || []).forEach((item, i) => {
-        fields.push([`timeline[${i}].action`, item.action]);
-        fields.push([`timeline[${i}].host_job`, item.host_job]);
-        if (item.why) fields.push([`timeline[${i}].why`, item.why]);
-        if (item.adjust_if) fields.push([`timeline[${i}].adjust_if`, item.adjust_if]);
-      });
-      (parsed.helping_people_connect || []).forEach((item, i) => {
-        fields.push([`helping_people_connect[${i}].how`, item.how]);
-        fields.push([`helping_people_connect[${i}].why_it_fits`, item.why_it_fits]);
-      });
-      (parsed.conversation_catalysts || []).forEach((c, i) => fields.push([`conversation_catalysts[${i}]`, c]));
-      if (parsed.food_and_drink) {
-        fields.push(['food_and_drink.format', parsed.food_and_drink.format]);
-        if (parsed.food_and_drink.dietary_considerations) fields.push(['food_and_drink.dietary_considerations', parsed.food_and_drink.dietary_considerations]);
-      }
-      if (parsed.budget_priorities) {
-        fields.push(['budget_priorities.approach', parsed.budget_priorities.approach]);
-        (parsed.budget_priorities.protect_spending_on || []).forEach((v, i) => fields.push([`budget_priorities.protect_spending_on[${i}]`, v]));
-      }
-      (parsed.things_to_plan_for || []).forEach((item, i) => {
-        fields.push([`things_to_plan_for[${i}].issue`, item.issue]);
-        fields.push([`things_to_plan_for[${i}].plan`, item.plan]);
-      });
-      if (parsed.wind_down?.script) fields.push(['wind_down.script', parsed.wind_down.script]);
+  Flag an invented relationship TOPOLOGY between guest groups the visitor never stated ("nobody outside their own pair knows anyone else," "the work friends all know each other"). Flag fabricated content inside a recommended introduction — an invented job, hometown, shared interest, or backstory used as the connecting detail. Flag a claim that a planned moment has already succeeded ("the introduction landed," "the moment worked," "that broke the ice") — a plan cannot report its own outcome. Flag ordinary guest behavior (standing quietly, not talking) diagnosed as a problem needing intervention. Flag a manufactured conversational purpose for an ordinary object, food, or drink ("gives people something to talk about") where the input supplies no specific reason. Flag a claimed psychological or interpretive effect of music on guests ("the conversation itself will carry the room," "a volume drop reads as a signal"). Flag an unsupported claim that a budget or quantity will be "enough," or a claim that a purchase makes the event feel intentional, special, or memorable. Flag a supplied rule (noise, lease, venue policy) expanded beyond its literal wording — the visitor's words are the entire rule. Flag an unsupported ranking of who is "most affected" by anything. Flag an invented order for guests arriving, eating, or leaving not required by the design. Flag cleanup or environmental changes framed primarily as a way to make guests infer they should leave, rather than as a practical step.
 
-      await runOutputGuard(parsed, {
-        label: 'party-architect',
-        fields,
-        supplied: brief,
-        promise: `Design the FLOW of a specific gathering — what happens when, what deserves structure, how to help unfamiliar guests connect, and how to end it naturally — grounded only in what the host supplied about the occasion, guest count, who's coming, space, budget, vibe, duration, and constraints.
-
-Flag any claim about a specific guest's personality, likely behavior, or a relationship/shared interest between guests that was not supplied ("the two of them will hit it off", "the quieter guests will need drawing out"). Flag social-dynamics predictions stated as fact ("the first 45 minutes determine the whole night", "the group will either merge or stay separate"). Flag a technique justified by claimed social psychology rather than a practical, mechanical reason. Flag any invented clock start time (this event has none supplied — only relative offsets like "Arrival" or "+20 min" are correct). Flag any fabricated price, cost total, or a claim that a stated budget "is workable" or that something "typically" costs a certain share. Flag any assumption the host owns specific furniture, lighting, or equipment not confirmed ("free" upgrades must be framed as "if you already have..."). Flag a casual food-safety assurance around a stated allergy, or an invented alcohol/music preference for a specific person. Flag host guidance that amounts to continuous surveillance of the room (monitoring "energy," "social temperature," or who is peripheral) rather than a few concrete jobs.
-
-Flag an invented relationship TOPOLOGY between guest groups the visitor never stated ("nobody outside their own pair knows anyone else," "the work friends all know each other"). Flag fabricated content inside a recommended introduction — an invented job, hometown, shared interest, or backstory used as the connecting detail. Flag a claim that a planned moment has already succeeded ("the introduction landed," "the moment worked," "that broke the ice") — a plan cannot report its own outcome. Flag ordinary guest behavior (standing quietly, not talking) diagnosed as a problem needing intervention. Flag a manufactured conversational purpose for an ordinary object, food, or drink ("gives people something to talk about") where the input supplies no specific reason. Flag a claimed psychological or interpretive effect of music on guests ("the conversation itself will carry the room," "a volume drop reads as a signal"). Flag an unsupported claim that a budget or quantity will be "enough," or a claim that a purchase makes the event feel intentional, special, or memorable. Flag a supplied rule (noise, lease, venue policy) expanded beyond its literal wording — the visitor's words are the entire rule. Flag an unsupported ranking of who is "most affected" by anything. Flag an invented order for guests arriving, eating, or leaving not required by the design. Flag cleanup or environmental changes framed primarily as a way to make guests infer they should leave, rather than as a practical step.
-
-Flag a visitor's own approximate forecast strengthened into a new fact ("should be warm until around 9" becoming "the cooling temperature after 9pm" or "late September cooling is a known factor"). Flag an invented arrival-time distribution ("most guests will have arrived by...", "arrivals typically taper"). Flag the presence of children, a sober guest, or unfamiliar guests treated as a default problem needing a dedicated solution the visitor never asked for. Flag an occasion assigned emotional significance the visitor never stated ("a 40th birthday is a meaningful occasion"). Flag dietary safety guaranteed from a partial measure alone ("labeling alone" or "separate utensils alone" establishing safety) rather than a conservative "verify, don't guarantee" framing. Flag an invented need for a sober guest beyond having a non-alcoholic option available (a special mocktail, ceremonial equal treatment, highlighting their sobriety) unless the visitor asked for it. Flag equipment sufficiency ("no need to rent for this scale") inferred from guest count alone with nothing about the space or the equipment itself. Flag an invented darkness or sunset fact from a season or month alone. Flag "the planned end time" or any invented clock end time when only a duration was supplied, never a start or end time. Flag the host assumed to be the person being celebrated when the occasion label doesn't establish that. **Most importantly**: flag a WHY/explanation field that asserts something its own recommendation did not — "keep food self-serve" needing no justification does not license "because otherwise everyone will queue at once"; a recommendation's explanation must never introduce a new invented cause, timing claim, or psychological effect the recommendation itself avoided.`,
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log('[party-architect] v2 guard skipped:', guardErr.message);
-    }
-
-    parsed = pruneEmpties(parsed);
-    clearInterval(keepAlive);
-    // headers are always already sent by this point (the heartbeat flushed
-    // them before the two generation calls started) — res.end, not res.json,
-    // since Express's res.json() would try to set headers again.
-    return res.end(JSON.stringify(parsed));
+  Flag a visitor's own approximate forecast strengthened into a new fact ("should be warm until around 9" becoming "the cooling temperature after 9pm" or "late September cooling is a known factor"). Flag an invented arrival-time distribution ("most guests will have arrived by...", "arrivals typically taper"). Flag the presence of children, a sober guest, or unfamiliar guests treated as a default problem needing a dedicated solution the visitor never asked for. Flag an occasion assigned emotional significance the visitor never stated ("a 40th birthday is a meaningful occasion"). Flag dietary safety guaranteed from a partial measure alone ("labeling alone" or "separate utensils alone" establishing safety) rather than a conservative "verify, don't guarantee" framing. Flag an invented need for a sober guest beyond having a non-alcoholic option available (a special mocktail, ceremonial equal treatment, highlighting their sobriety) unless the visitor asked for it. Flag equipment sufficiency ("no need to rent for this scale") inferred from guest count alone with nothing about the space or the equipment itself. Flag an invented darkness or sunset fact from a season or month alone. Flag "the planned end time" or any invented clock end time when only a duration was supplied, never a start or end time. Flag the host assumed to be the person being celebrated when the occasion label doesn't establish that. **Most importantly**: flag a WHY/explanation field that asserts something its own recommendation did not — "keep food self-serve" needing no justification does not license "because otherwise everyone will queue at once"; a recommendation's explanation must never introduce a new invented cause, timing claim, or psychological effect the recommendation itself avoided.`,
+          guard: router.outputGuard,
+          userLanguage,
+        });
+        } catch (guardErr) {
+          console.log('[party-architect] v2 guard skipped:', guardErr.message);
+        }
+      },
+    });
 
   } catch (error) {
-    if (keepAlive) clearInterval(keepAlive);
     console.error('PartyArchitect error:', error);
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Something went wrong. Please try again.' });
-    } else {
-      res.end(JSON.stringify({ error: 'Something went wrong. Please try again.' }));
-    }
+    if (!res.headersSent) res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

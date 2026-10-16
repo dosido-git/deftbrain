@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -89,27 +90,49 @@ Return ONLY valid JSON with EXACTLY these three top-level keys:
 verdict.rating must be one of the exact English values listed — the interface switches on it.`;
 
     const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or restated beliefs plainly or with single quotes, or it breaks the JSON.';
-    const [testPart, rebuildPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(PERSONALITY, userLanguage) + systemSuffix,
-        messages: [{ role: 'user', content: testPrompt }],
-      }, { label: 'belief-stress-test:tests' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2500,
-        system: withLanguage(PERSONALITY, userLanguage) + systemSuffix,
-        messages: [{ role: 'user', content: rebuildPrompt }],
-      }, { label: 'belief-stress-test:rebuild' }),
-    ]);
-    const parsed = { ...rebuildPart, ...testPart };
-    if (!parsed.belief_as_understood) {
-      return res.status(500).json({ error: 'Could not stress-test this belief. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'belief-stress-test', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+    const ask = (content, label, maxTokens) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system: withLanguage(PERSONALITY, userLanguage) + systemSuffix,
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const only = (keys) => `\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the rest at the same time — leave them out, and keep every rule above for the keys you write.`;
+    // Speed (2026-10-16): the tests call wrote ~1,700 tokens (~40s). The
+    // restatement now comes from its own small pass (shown in seconds), and
+    // the stress tests are split by KIND, not by count, so the two passes
+    // can't write the same test (lib/progressive.js; parallel-split rules).
+    const KIND = {
+      real: 'THIS PASS writes 2-3 stress tests drawn from REAL cases — documented examples, history, data or well-known situations. Another pass writes logical and hypothetical edge cases at the same time; do not write those.',
+      logic: 'THIS PASS writes 1-3 stress tests that are LOGICAL or HYPOTHETICAL — edge cases, thought experiments, or where the belief contradicts itself. Another pass writes real-world counterexamples at the same time; do not write those.',
+    };
+    const tests = [null, null];
+    const SEVERITY = { fatal: 0, significant: 1, minor: 2 };
+    const ORDER = ['belief_as_understood', 'belief_type', 'where_it_holds', 'stress_tests', 'the_hidden_structure', 'the_nuanced_version', 'verdict'];
+
+    return await answer(req, res, {
+      label: 'belief-stress-test',
+      parts: [
+        { required: true, run: () => ask(testPrompt + only(['belief_as_understood', 'belief_type']), 'belief-stress-test:frame', 600),
+          apply: (d, o) => { d.belief_as_understood = o?.belief_as_understood; d.belief_type = o?.belief_type; } },
+        { run: () => ask(testPrompt + only(['where_it_holds']), 'belief-stress-test:holds', 1200),
+          apply: (d, o) => { d.where_it_holds = o?.where_it_holds; } },
+        ...['real', 'logic'].map((kind, i) => ({
+          run: () => ask(`${testPrompt}${only(['stress_tests'])}\n${KIND[kind]}`, `belief-stress-test:tests-${kind}`, 2000),
+          apply: (d, o) => {
+            tests[i] = Array.isArray(o?.stress_tests) ? o.stress_tests : [];
+            // Ordered by severity, fatal first, as the one-call answer was.
+            d.stress_tests = tests.flatMap(t => t || []).sort((x, y) => (SEVERITY[x?.severity] ?? 3) - (SEVERITY[y?.severity] ?? 3)).slice(0, 6);
+          },
+        })),
+        { run: () => ask(rebuildPrompt, 'belief-stress-test:rebuild', 2500),
+          apply: (d, o) => { ['the_hidden_structure', 'the_nuanced_version', 'verdict'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+      ],
+      finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
+      ready: d => Boolean(d.belief_as_understood),
+      complete: d => Boolean(d.belief_as_understood),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'belief-stress-test', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('BeliefStressTest error:', error);

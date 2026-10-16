@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -72,7 +73,7 @@ const CHANGE_OPTIONS = [
 
 function TripRecon({ tool }) {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { t } = useTranslation();
 
   const c = {
@@ -97,6 +98,7 @@ function TripRecon({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── View ──
   const [view, setView] = useState('form'); // form | results | route (place-prep is the landing screen; route is a tab, not a separate page)
@@ -254,6 +256,7 @@ function TripRecon({ tool }) {
   const resetAll = () => {
     setLocation(''); setPlaceType(''); setVisitDate(''); setVisitTime('');
     setConcerns({}); setKnownInfo(''); setSpecificNotes(''); setActiveProfileNotes('');
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setRouteResults(null); setError(''); setSelectedRecent(null); setShowAllRecent(false);
     setSelectedRecentRoute(null); setShowAllRecentRoutes(false);
     setShowPanel(null); setRescanResult(null); setRescanChanged({}); setRescanOtherText('');
@@ -284,10 +287,13 @@ function TripRecon({ tool }) {
   const analyzeLocation = async () => {
     if (!location.trim()) { setError(t('smm_err_enter_location')); return; }
     if (selectedConcerns.length === 0) { setError(t('smm_err_select_concern')); return; }
-    setError(''); setResults(null); setShowPanel(null);
+    setError(''); setResults(null); setShowPanel(null); setCheckStatus(null);
     setRescanResult(null); setComfortKit(null); setKitChecked({}); setAskResult(null);
+    const withInputs = d => ({ ...d, location: location.trim(), placeType, concerns: selectedConcerns });
     try {
-      const data = await callToolEndpoint('trip-recon', {
+      // Progressive (2026-10-16): the summary shows first, the rest as it
+      // lands; the place facts are double-checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('trip-recon', {
         location: location.trim(),
         placeType: placeType || undefined,
         visitDateTime: (visitDate || visitTime) ? `${visitDate || ''} ${visitTime || ''}`.trim() : undefined,
@@ -296,8 +302,12 @@ function TripRecon({ tool }) {
         specificNotes: specificNotes.trim() || undefined,
         profileNotes: activeProfileNotes || undefined,
         pastVisits: pastVisitsHere.slice(0, 3).map(v => ({ summary: v.whatHelped ? `Previous visit — what helped: ${v.whatHelped}` : '' })),
+      }, {
+        onDraft: d => { setResults(withInputs(d)); setCheckStatus('checking'); setView('results'); },
+        onChecked: (d, changed) => { setResults(withInputs(d)); setCheckStatus(checkStatusFor(changed)); },
       });
-      setResults({ ...data, location: location.trim(), placeType, concerns: selectedConcerns });
+      if (!data) return; // replaced by a newer run
+      setResults(withInputs(data));
       // Exception: the 40 is a preview-string truncation length, not a history cap; history itself is capped at 6 below.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: location.slice(0, 40) }, ...prev].slice(0, 6));
       rememberPlace(location, placeType, selectedConcerns, knownInfo.trim(), specificNotes.trim());
@@ -753,6 +763,7 @@ function TripRecon({ tool }) {
         {/* ════════ RESULTS ════════ */}
         {view === 'results' && results && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
             <div className={`${c.card} border-2 border-cyan-600/40 rounded-2xl p-5`}>
               <p className={`text-[13px] font-boldst mb-1 ${c.accentTxt}`}>🗺️ {t('smm_your_plan')}</p>
               <h2 className={`text-xl font-black ${c.text}`}>{results.summary?.heading || results.location}</h2>

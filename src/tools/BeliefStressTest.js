@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTranslation } from '../i18n/useTranslation';
@@ -25,7 +26,7 @@ const VERDICT_CONFIG = {
 };
 
 const BeliefStressTest = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -65,6 +66,7 @@ const BeliefStressTest = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [context, setContext] = useState('');
   const [error, setError] = useState('');
@@ -93,13 +95,19 @@ const BeliefStressTest = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!belief.trim()) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('belief-stress-test', {
+      // Progressive (2026-10-16): the restated belief shows first, the rest
+      // as it lands; checked after (CheckNote says so).
+      const data = await callToolEndpointProgressive('belief-stress-test', {
         belief: belief.trim(),
         context: context.trim() || undefined,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       const newEntry = {
         id: Date.now(),
@@ -112,6 +120,7 @@ const BeliefStressTest = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setBelief('');
     setContext('');
@@ -132,8 +141,9 @@ const BeliefStressTest = ({ tool }) => {
     ]);
     setBelief(t(ex.belief));
     setContext(ex.context ? t(ex.context) : '');
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
-  }, [setBelief, setResults, t]);
+  }, [setBelief, setResults, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -214,7 +224,7 @@ const BeliefStressTest = ({ tool }) => {
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} focus:outline-none focus:ring-2`} />
               <div className="flex flex-wrap gap-2 mt-2">
                 {EXAMPLE_BELIEFS.map(b => (
-                  <button key={b} onClick={() => { setBelief(b); setResults(null); }}
+                  <button key={b} onClick={() => { setBelief(b); cancelProgressive(); setCheckStatus(null); setResults(null); }}
                     className={`px-2.5 py-1 rounded-lg text-xs ${c.btnSecondary}`}>
                     {b}
                   </button>
@@ -260,7 +270,7 @@ const BeliefStressTest = ({ tool }) => {
                 <div className="space-y-1.5 mt-3">
                   {sessionHistory.map(entry => (
                     <button key={entry.id}
-                      onClick={() => setResults(entry.result)}
+                      onClick={() => { setResults(entry.result); setCheckStatus(null); }}
                       className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>
                       <span className={c.textMuteded}>
                         {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
@@ -282,6 +292,7 @@ const BeliefStressTest = ({ tool }) => {
 
         {results && (
           <div ref={revealRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
 
             {results.belief_as_understood && (

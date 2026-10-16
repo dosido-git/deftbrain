@@ -128,4 +128,17 @@ async function answer(req, res, opts) {
   return res.json(finish(draft));
 }
 
-module.exports = { progressive, answer };
+// keyGroups — split a one-call answer into parts by its top-level keys
+// (2026-10-16). Every part sends the same full prompt plus a line naming the
+// keys it writes, so the tool's rules and voice stay in one place. The first
+// group should be the small one a visitor reads first; it is required.
+//   keyGroups([['at_a_glance'], ['lenses'], ...], (extra, i) => callClaude(prompt + extra))
+function keyGroups(groups, run) {
+  return groups.map((keys, i) => ({
+    required: i === 0,
+    run: () => run(`\n\nTHIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Other passes write the other keys at the same time — leave them out of your JSON, and keep every rule above for the keys you write.`, i),
+    apply: (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); },
+  }));
+}
+
+module.exports = { progressive, answer, keyGroups };
