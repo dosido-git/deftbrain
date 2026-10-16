@@ -57,7 +57,8 @@
     "audit:i18n": "node scripts/i18n-quality-audit.js",
     "audit:i18n-conventions": "node scripts/i18n-convention-audit.js",
     "audit:backend": "node scripts/audit-backend.js",
-    "canned": "node scripts/canned-backend.js"
+    "canned": "node scripts/canned-backend.js",
+    "golden:prepush": "node scripts/golden-for-push.js"
   },
   "eslintConfig": {
     "extends": [

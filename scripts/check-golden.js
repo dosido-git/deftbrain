@@ -61,6 +61,7 @@ function loadCases(golden, tool) {
 }
 
 async function post(endpoint, input) {
+  const t0 = Date.now();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), CASE_TIMEOUT_MS);
   try {
@@ -69,14 +70,29 @@ async function post(endpoint, input) {
       // GOLDEN_PERF_PROBE=1: a replay run fires ~100 cases at a throwaway
       // backend in seconds; skip its per-IP rate limit (dev-only bypass).
       headers: { 'Content-Type': 'application/json', ...(process.env.GOLDEN_PERF_PROBE === '1' ? { 'x-perf-probe': '1' } : {}) },
-      body: JSON.stringify(input),
+      // progressive: true (2026-10-16): a progressive route (lib/progressive.js)
+      // then streams its parts, so one paid run also measures how soon the
+      // first part shows; the checked answer at the end is what gets compared.
+      // Routes that are not progressive ignore the flag.
+      body: JSON.stringify({ ...input, progressive: true }),
       signal: ctrl.signal,
     });
+    if (/text\/event-stream/i.test(res.headers.get('content-type') || '')) {
+      // Read frames as they arrive, to time the first draft.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let text = '', firstMs = null;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        if (firstMs === null && /"draft":/.test(text)) firstMs = Date.now() - t0;
+      }
+      return { status: res.status, json: parseSse(text), firstMs };
+    }
     const text = await res.text();
-    const json = /text\/event-stream/i.test(res.headers.get('content-type') || '')
-      ? parseSse(text)
-      : (() => { try { return JSON.parse(text); } catch { return null; } })();
-    return { status: res.status, json };
+    const json = (() => { try { return JSON.parse(text); } catch { return null; } })();
+    return { status: res.status, json, firstMs: null };
   } finally {
     clearTimeout(timer);
   }
@@ -90,6 +106,7 @@ async function post(endpoint, input) {
 // have to describe the transport.
 function parseSse(text) {
   let assembled = '';
+  let progressive = null; // lib/progressive.js frames: the checked answer, else the last draft
   for (const line of text.split(/\r?\n/)) {
     if (!line.startsWith('data:')) continue;
     let frame;
@@ -97,9 +114,12 @@ function parseSse(text) {
     if (frame && typeof frame === 'object') {
       if (frame.parsed && typeof frame.parsed === 'object') return frame.parsed;
       if (frame.error) return { error: frame.error };
+      if (frame.checked && typeof frame.checked === 'object') progressive = frame.checked;
+      else if (frame.draft && typeof frame.draft === 'object') progressive = frame.draft;
       if (typeof frame.chunk === 'string') assembled += frame.chunk;
     }
   }
+  if (progressive) return progressive;
   try { return JSON.parse(assembled.replace(/^```(?:json)?\s*|\s*```$/g, '').trim()); } catch { return null; }
 }
 
@@ -178,7 +198,7 @@ async function runTool(tool) {
     const sec = Math.round((Date.now() - t0) / 1000);
     if (!process.env.GOLDEN_PERF_PROBE) {
       if (sec > SLOW_WARN_S) slowCases.push(`${c.name} ${sec}s`);
-      process.stdout.write(`${sec}s `);
+      process.stdout.write(fresh.firstMs !== null ? `first ${(fresh.firstMs / 1000).toFixed(1)}s, all ${sec}s ` : `${sec}s `);
     }
     if (fails.length === 0) { console.log('PASS'); passed++; passedNames.push(c.name); }
     else { console.log('FAIL'); fails.forEach(f => console.log(`     ✖ ${f}`)); }
