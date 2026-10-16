@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -87,49 +88,7 @@ WRITING INSTRUCTIONS:
 
     const noQuoteRule = `- Never place a double-quote (") character inside any JSON string value — write quoted phrases or letter text plainly or with single quotes, or it breaks the JSON.`;
 
-    // Call A: narrative + concise letters.
-    const promptA = `${sharedContext}
-1. Generate 2 VERSIONS of the letter, each with a different structure and emphasis:
-
-   VERSION 1 — NARRATIVE: Opens with a specific anecdote or moment, then builds the case through storytelling. Most personal and memorable. Best for competitive applications where the letter needs to stand out.
-
-   VERSION 2 — CONCISE: Gets to the point quickly. Strong opening endorsement, 2-3 key points with brief evidence, decisive close. Best for LinkedIn recommendations, brief references, or when you know the reader has limited time.
-
-${perVersionInstructions}
-
-OUTPUT FORMAT — Return ONLY valid JSON:
-{
-  "versions": [
-    {
-      "style": "narrative",
-      "label": "Narrative — Personal & Memorable",
-      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
-      "word_count": 350,
-      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
-      "strengths": ["what this version does well"],
-      "customize_prompts": ["specific things the writer should personalize"]
-    },
-    {
-      "style": "concise",
-      "label": "Concise — Quick & Powerful",
-      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
-      "word_count": 200,
-      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
-      "strengths": ["what this version does well"],
-      "customize_prompts": ["specific things the writer should personalize"]
-    }
-  ]
-}
-
-IMPORTANT RULES:
-${sharedRules}
-- LIMITS: strengths and customize_prompts AT MOST 3 per version. Keep them terse (one line each) — the letters themselves carry the length.
-- Your response MUST contain the top-level key "versions" with BOTH versions, styles exactly "narrative" and "concise" in that order.
-${noQuoteRule}
-
-Return ONLY the JSON object. No markdown fences, no preamble.`;
-
-    // Call B: structured letter + the cross-cutting extras.
+    // The cross-cutting extras' template (onlyKeys keeps their part of it).
     const promptB = `${sharedContext}
 1. Generate 1 VERSION of the letter:
 
@@ -176,30 +135,74 @@ ${noQuoteRule}
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const localeSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const [a, b] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3800,
-        messages: [{ role: 'user', content: withLanguage(promptA, userLanguage) + localeSuffix }],
-      }, { label: 'ghost-writer' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3200,
-        messages: [{ role: 'user', content: withLanguage(promptB, userLanguage) + localeSuffix }],
-      }, { label: 'ghost-writer-b' }),
-    ]);
+    // Progressive (2026-10-16, lib/progressive.js): one pass per letter, all
+    // at once — the concise letter usually lands first. The tips, placeholders
+    // and power phrases are written after the letters land, handed all three,
+    // so the phrases are lifted from letters that exist and the placeholders
+    // are the ones actually in them. No check runs on this route.
+    const VERSION = {
+      narrative: { n: 'NARRATIVE: Opens with a specific anecdote or moment, then builds the case through storytelling. Most personal and memorable. Best for competitive applications where the letter needs to stand out.', label: 'Narrative — Personal & Memorable', words: 350, maxTokens: 2000 },
+      structured: { n: 'STRUCTURED: Clear thesis statement, organized sections covering different qualities, specific examples for each. Most comprehensive. Best for formal applications (grad school, senior positions).', label: 'Structured — Comprehensive & Formal', words: 450, maxTokens: 2400 },
+      concise: { n: 'CONCISE: Gets to the point quickly. Strong opening endorsement, 2-3 key points with brief evidence, decisive close. Best for LinkedIn recommendations, brief references, or when you know the reader has limited time.', label: 'Concise — Quick & Powerful', words: 200, maxTokens: 1400 },
+    };
+    const letterPrompt = (style) => `${sharedContext}
+1. Generate 1 VERSION of the letter. Other writers are producing the other versions at the same time, each with a different structure:
 
-    // Merge back into the ORIGINAL response shape (narrative, structured, concise).
-    const styleOrder = ['narrative', 'structured', 'concise'];
-    const versions = [
-      ...(Array.isArray(a.versions) ? a.versions : []),
-      ...(Array.isArray(b.versions) ? b.versions : []),
-    ].sort((x, y) => styleOrder.indexOf(x && x.style) - styleOrder.indexOf(y && y.style));
-    const parsed = { ...b, ...a, versions };
-    if (!parsed.versions || parsed.versions.length === 0) {
-      return res.status(500).json({ error: 'Could not generate content. Please try again.' });
+   ${VERSION[style].n}
+
+${perVersionInstructions}
+
+OUTPUT FORMAT — Return ONLY valid JSON:
+{
+  "versions": [
+    {
+      "style": "${style}",
+      "label": "${VERSION[style].label}",
+      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
+      "word_count": ${VERSION[style].words},
+      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
+      "strengths": ["what this version does well"],
+      "customize_prompts": ["specific things the writer should personalize"]
     }
-    res.json(parsed);
+  ]
+}
+
+IMPORTANT RULES:
+${sharedRules}
+- LIMITS: strengths and customize_prompts AT MOST 3. Keep them terse (one line each) — the letter itself carries the length.
+- Your response MUST contain the top-level key "versions" with exactly one version, style exactly "${style}".
+${noQuoteRule}
+
+Return ONLY the JSON object. No markdown fences, no preamble.`;
+    const call = (prompt, maxTokens, label) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + localeSuffix }],
+    }, { label });
+    const styleOrder = ['narrative', 'structured', 'concise'];
+    const versionsOf = d => styleOrder.map(st => d.letters?.[st]).filter(Boolean);
+    const EXTRAS = ['writing_tips', 'placeholders_to_fill', 'power_phrases'];
+    return await answer(req, res, {
+      label: 'ghost-writer',
+      parts: styleOrder.map(style => ({
+        run: () => call(letterPrompt(style), VERSION[style].maxTokens, style === 'narrative' ? 'ghost-writer' : `ghost-writer-${style}`),
+        apply: (d, out) => {
+          const v = (Array.isArray(out?.versions) ? out.versions : []).find(x => x && x.letter);
+          if (v) d.letters = { ...d.letters, [style]: { ...v, style } };
+        },
+      })),
+      after: async (d) => {
+        const letters = versionsOf(d).map(v => `--- ${v.style.toUpperCase()} ---\n${v.letter}`).join('\n\n');
+        const out = await call(`${onlyKeys(promptB, EXTRAS)}\n\nTHE LETTERS ALREADY WRITTEN (other passes wrote them; the placeholders are the [BRACKETS] actually in them, and power phrases are lifted verbatim from them):\n${letters}`, 1500, 'ghost-writer-b');
+        EXTRAS.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
+      },
+      finish: d => {
+        const { letters, ...rest } = structuredClone(d);
+        return { ...rest, versions: versionsOf(d).map(v => structuredClone(v)) };
+      },
+      ready: d => versionsOf(d).length > 0,
+      complete: d => versionsOf(d).length > 0,
+    });
 
   } catch (error) {
     console.error('Ghost Writer error:', error);

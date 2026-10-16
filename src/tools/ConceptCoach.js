@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -68,7 +69,7 @@ const RISK_LEVELS = {
 };
 
 function ConceptCoach({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -105,6 +106,7 @@ function ConceptCoach({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [ideaStage, setIdeaStage]           = useState('idea');
   const [ideaDescription, setIdeaDescription] = useState('');
@@ -123,6 +125,7 @@ function ConceptCoach({ tool }) {
   const canSubmit = ideaDescription.trim().length >= 30;
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setError('');
     setIdeaStage('idea');
@@ -131,7 +134,7 @@ function ConceptCoach({ tool }) {
     setFounderContext('');
     setFocusAreas([]);
     setActiveTab('evidence');
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
     const ex = pickExample('IdeaAutopsy', EXAMPLES);
@@ -150,11 +153,12 @@ function ConceptCoach({ tool }) {
   const handleRun = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setActiveTab('evidence');
 
     try {
-      const parsed = await callToolEndpoint('idea-autopsy/stream', {
+      // Progressive (2026-10-16): the assessment shows first; checked after.
+      const parsed = await callToolEndpointProgressive('idea-autopsy/stream', {
         ideaDescription: ideaDescription.trim(),
         evidenceSoFar: evidenceSoFar.trim() || null,
         ideaStage,
@@ -163,7 +167,11 @@ function ConceptCoach({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!parsed) return; // replaced by a newer run
       setResults(parsed);
       // PF-25 exception: 80 is an idea-description preview length, not a history cap.
       setSessionHistory(prev => [{
@@ -175,7 +183,7 @@ function ConceptCoach({ tool }) {
     } catch (err) {
       setError(err.message || t('ia_error'));
     }
-  }, [canSubmit, loading, ideaDescription, evidenceSoFar, ideaStage, founderContext, focusAreas, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, ideaDescription, evidenceSoFar, ideaStage, founderContext, focusAreas, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleRunRef.current = handleRun;
   canSubmitRef.current = canSubmit;
@@ -355,6 +363,7 @@ function ConceptCoach({ tool }) {
     if (!results) return null;
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
 
         {/* Verdict banner */}
         <div className={`border-t ${c.border} pt-5`}>

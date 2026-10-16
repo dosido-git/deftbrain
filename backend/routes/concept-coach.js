@@ -1,6 +1,7 @@
 // concept-coach.js
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -582,27 +583,38 @@ Important:
 - Return only the required JSON.`;
 
   try {
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): four section passes at
+    // once — the assessment first, then the risks, the strengths and
+    // questions, and the tests. normalizeResult gives a section not yet
+    // written an empty list, so the page never reads a missing one. The
+    // consistency check runs after the answer is on screen.
+    const system = withLanguage(SYSTEM_PROMPT, userLanguage || userLocale) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const pass = (keys, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5200,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage || userLocale)
-        + withLocaleContext(userLocale, userCurrency, userRegion),
+      max_tokens: 2200,
+      system: onlyKeys(system, keys),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'concept-coach' });
-
-    const result = normalizeResult(parsed);
-    const problems = validateResult(result);
-
-    if (problems.length) {
-      console.error('[concept-coach] invalid model output:', problems);
-      return res.status(500).json({ error: 'Concept Coach could not produce a reliable assessment. Please try again.' });
-    }
-
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-
-    await checkConsistency(result, { label: 'concept-coach', userLanguage: req.body?.userLanguage });
-
-    res.json(result);
+    }, { label: `concept-coach:${i + 1}` });
+    return await answer(req, res, {
+      label: 'concept-coach',
+      parts: keyGroups([
+        ['assessment_label', 'verdict', 'one_liner', 'evidence_summary'],
+        ['risks'],
+        ['strengths', 'questions'],
+        ['next_tests'],
+      ], pass),
+      finish: normalizeResult,
+      ready: d => Boolean(d.verdict && d.one_liner),
+      complete: d => {
+        const problems = validateResult(normalizeResult(d));
+        if (problems.length) console.error('[concept-coach] invalid model output:', problems);
+        return !problems.length;
+      },
+      check: async (draft) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(draft, { label: 'concept-coach', userLanguage: req.body?.userLanguage });
+      },
+    });
   } catch (err) {
     console.error('[concept-coach] generation failed:', err?.message || err);
     if (!res.headersSent) {

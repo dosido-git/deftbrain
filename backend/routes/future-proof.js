@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -1019,81 +1020,103 @@ what_this_means_for_you. Be terse.
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): four section passes at
+    // once — the trajectory, certainty and pattern first; the synthesis (what
+    // this means for you, the one action) is written after them, handed the
+    // analysis it sums up. Enum pins, force filters and source checks run on
+    // every draft; the guard runs after the answer is on screen.
+    const system = withLanguage(PERSONALITY, userLanguage)
+      + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
+      + ' ' + NO_QUOTE_RULE;
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6500,
-      system: withLanguage(PERSONALITY, userLanguage)
-        + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
-        + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'future-proof' });
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const SYNTHESIS = ['what_this_means_for_you', 'one_action', 'one_action_why'];
+    const clean = (parsed) => {
+      // The frontend switches on this enum, and withLanguage translates JSON
+      // string values, so a translated trajectory would render as no style at all.
+      const TRAJ = ['growing', 'stable', 'transforming', 'declining', 'volatile', 'context_dependent'];
+      if (!TRAJ.includes(parsed.trajectory)) parsed.trajectory = 'context_dependent';
+      const CERT = ['high', 'moderate', 'low'];
+      if (!CERT.includes(parsed.certainty)) parsed.certainty = 'moderate';
 
-    console.log(`[fp-timing] main ${Date.now() - tMain}ms`);
-    if (!parsed.subject_as_understood) {
-      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-    }
+      // A force with a name and no explanation, or an explanation and no name, is
+      // not an item — it is half of one, and it rendered as an empty card. The
+      // prompt says so too, but a prompt rule is not a mechanism.
+      const usableForce = (x) => x && typeof x.force === 'string' && x.force.trim()
+        && typeof x.explanation === 'string' && x.explanation.trim();
+      parsed.tailwinds = (Array.isArray(parsed.tailwinds) ? parsed.tailwinds : []).filter(usableForce);
+      parsed.headwinds = (Array.isArray(parsed.headwinds) ? parsed.headwinds : []).filter(usableForce);
+      parsed.the_pivot = parsed.the_pivot || {};
+      parsed.the_pivot.adjacent_moves = (Array.isArray(parsed.the_pivot.adjacent_moves) ? parsed.the_pivot.adjacent_moves : [])
+        .filter(m => m && typeof m.move === 'string' && m.move.trim());
 
-    // The frontend switches on this enum, and withLanguage translates JSON
-    // string values, so a translated trajectory would render as no style at all.
-    const TRAJ = ['growing', 'stable', 'transforming', 'declining', 'volatile', 'context_dependent'];
-    if (!TRAJ.includes(parsed.trajectory)) parsed.trajectory = 'context_dependent';
-    const CERT = ['high', 'moderate', 'low'];
-    if (!CERT.includes(parsed.certainty)) parsed.certainty = 'moderate';
+      // An observed record exists to be checked. Without a claim there is nothing
+      // to check, and a URL that is not http(s) is not something to hand a reader.
+      // The URLs the search actually returned. Anything else is the model
+      // reconstructing a plausible path — one run produced two ISA links
+      // differing only in a directory segment, and a link that 404s is worse
+      // than no link because it looks checkable.
+      const verifiedUrls = new Set(
+        (groundedData(factsKey({ subject: subject.trim(), subjectType: type })) || [])
+          .map(f => String((f && f.url) || '').trim().toLowerCase())
+          .filter(Boolean)
+      );
 
-    // A force with a name and no explanation, or an explanation and no name, is
-    // not an item — it is half of one, and it rendered as an empty card. The
-    // prompt says so too, but a prompt rule is not a mechanism.
-    const usableForce = (x) => x && typeof x.force === 'string' && x.force.trim()
-      && typeof x.explanation === 'string' && x.explanation.trim();
-    parsed.tailwinds = (Array.isArray(parsed.tailwinds) ? parsed.tailwinds : []).filter(usableForce);
-    parsed.headwinds = (Array.isArray(parsed.headwinds) ? parsed.headwinds : []).filter(usableForce);
-    parsed.the_pivot = parsed.the_pivot || {};
-    parsed.the_pivot.adjacent_moves = (Array.isArray(parsed.the_pivot.adjacent_moves) ? parsed.the_pivot.adjacent_moves : [])
-      .filter(m => m && typeof m.move === 'string' && m.move.trim());
-
-    // An observed record exists to be checked. Without a claim there is nothing
-    // to check, and a URL that is not http(s) is not something to hand a reader.
-    // The URLs the search actually returned. Anything else is the model
-    // reconstructing a plausible path — one run produced two ISA links
-    // differing only in a directory segment, and a link that 404s is worse
-    // than no link because it looks checkable.
-    const verifiedUrls = new Set(
-      (groundedData(factsKey({ subject: subject.trim(), subjectType: type })) || [])
-        .map(f => String((f && f.url) || '').trim().toLowerCase())
-        .filter(Boolean)
-    );
-
-    const sa = parsed.sources_and_assumptions;
-    if (sa && Array.isArray(sa.observed)) {
-      sa.observed = sa.observed
-        .map(o => (typeof o === 'string' ? { claim: o } : o))
-        .filter(o => o && typeof o.claim === 'string' && o.claim.trim())
-        // "BLS, cited by environmentalscience.org" is the record admitting its
-        // own url does not point at the source. The instruction to follow the
-        // figure back to its origin does not reliably hold, and a citation the
-        // reader cannot follow is worse than no citation: it looks checkable.
-        .filter(o => !/\b(cited by|via|as reported by|according to|reported on|republished)\b/i.test(String(o.publisher || '')))
-        .map(o => {
-          const url = typeof o.url === 'string' ? o.url.trim() : '';
-          const wellFormed = /^https?:\/\//i.test(url);
-          // If the search returned nothing (cold cache) there is nothing to
-          // check against, so a well-formed url is left alone rather than
-          // stripping every citation on the unverified path.
-          const traceable = !verifiedUrls.size || verifiedUrls.has(url.toLowerCase());
-          if (wellFormed && !traceable) {
-            console.log(`[future-proof] observed url not among the searched sources, dropped: ${url}`);
-          }
-          return { ...o, url: (wellFormed && traceable) ? url : undefined };
-        });
-    }
-
-    const tGuard = Date.now();
-    await guardAnalysis(parsed, req.body, startedAt, type);
-    console.log(`[fp-timing] guard ${Date.now() - tGuard}ms | TOTAL ${Date.now() - startedAt}ms`);
-    // groundedFacts strips cite tags before the block is rendered, but the main
-    // call reads that block and can copy a tag back out into its own prose.
-    // Stripping again on the way out costs nothing and catches that.
-    res.json(stripCites(parsed));
+      const sa = parsed.sources_and_assumptions;
+      if (sa && Array.isArray(sa.observed)) {
+        sa.observed = sa.observed
+          .map(o => (typeof o === 'string' ? { claim: o } : o))
+          .filter(o => o && typeof o.claim === 'string' && o.claim.trim())
+          // "BLS, cited by environmentalscience.org" is the record admitting its
+          // own url does not point at the source. The instruction to follow the
+          // figure back to its origin does not reliably hold, and a citation the
+          // reader cannot follow is worse than no citation: it looks checkable.
+          .filter(o => !/\b(cited by|via|as reported by|according to|reported on|republished)\b/i.test(String(o.publisher || '')))
+          .map(o => {
+            const url = typeof o.url === 'string' ? o.url.trim() : '';
+            const wellFormed = /^https?:\/\//i.test(url);
+            // If the search returned nothing (cold cache) there is nothing to
+            // check against, so a well-formed url is left alone rather than
+            // stripping every citation on the unverified path.
+            const traceable = !verifiedUrls.size || verifiedUrls.has(url.toLowerCase());
+            if (wellFormed && !traceable) {
+              console.log(`[future-proof] observed url not among the searched sources, dropped: ${url}`);
+            }
+            return { ...o, url: (wellFormed && traceable) ? url : undefined };
+          });
+      }
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'future-proof',
+      parts: keyGroups([
+        ['analysis_title', 'the_question', 'subject_as_understood', 'trajectory', 'trajectory_label', 'certainty', 'certainty_because', 'the_pattern'],
+        ['tailwinds', 'headwinds'],
+        ['the_automation_question', 'the_pivot'],
+        ['scenarios', 'sources_and_assumptions'],
+      ], (keys, i) => call(onlyKeys(userPrompt, keys), 2200, i ? `future-proof-${i + 1}` : 'future-proof')),
+      after: async (d) => {
+        const analysis = Object.fromEntries(Object.entries(d).filter(([k]) => !SYNTHESIS.includes(k)));
+        const out = await call(onlyKeys(userPrompt, SYNTHESIS) + `\n\nTHE ANALYSIS ALREADY WRITTEN (other passes wrote it; synthesise THIS analysis, never contradict it):\n${JSON.stringify(analysis)}`, 1200, 'future-proof-synthesis');
+        SYNTHESIS.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
+      },
+      // groundedFacts strips cite tags before the block is rendered, but a
+      // pass reads that block and can copy a tag back out into its own prose.
+      finish: d => stripCites(clean(structuredClone(d))),
+      ready: d => Boolean(d.subject_as_understood),
+      complete: d => Boolean(d.subject_as_understood),
+      check: async (parsed) => {
+        clean(parsed);
+        console.log(`[fp-timing] main ${Date.now() - tMain}ms`);
+        const tGuard = Date.now();
+        await guardAnalysis(parsed, req.body, startedAt, type);
+        console.log(`[fp-timing] guard ${Date.now() - tGuard}ms | TOTAL ${Date.now() - startedAt}ms`);
+      },
+    });
 
   } catch (error) {
     console.error('FutureProof error:', error);

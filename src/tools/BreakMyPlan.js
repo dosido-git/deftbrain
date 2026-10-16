@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -18,7 +19,7 @@ const PRIORITY_KEY = { 'PRIMARY WATCH': 'pm_prob_high', 'IMPORTANT WATCH': 'pm_p
 const PRIORITY_CLS = { 'PRIMARY WATCH': 'red', 'IMPORTANT WATCH': 'amber', 'SECONDARY WATCH': 'emerald' };
 
 const BreakMyPlan = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -83,6 +84,7 @@ const BreakMyPlan = ({ tool }) => {
   };
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [plan, setPlan]             = useState('');
@@ -107,7 +109,7 @@ const BreakMyPlan = ({ tool }) => {
   // ── Handler ──
   const handleSubmit = useCallback(async () => {
     if (!plan.trim()) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     const inputs = {
       plan: plan.trim(),
       planType: planType || '',
@@ -115,13 +117,18 @@ const BreakMyPlan = ({ tool }) => {
       assumptions: assumptions.trim(),
     };
     try {
-      const data = await callToolEndpoint('pre-mortem', {
+      // Progressive (2026-10-16): the failure modes show first; checked after.
+      const data = await callToolEndpointProgressive('pre-mortem', {
         plan:        inputs.plan,
         planType:    inputs.planType || undefined,
         stakes:      inputs.stakes || undefined,
         assumptions: inputs.assumptions || undefined,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
       // Stores the full input snapshot too, so Revisit can restore the form.
@@ -131,7 +138,7 @@ const BreakMyPlan = ({ tool }) => {
         results: data,
       }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || t('pm_error')); }
-  }, [plan, planType, stakes, assumptions, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [plan, planType, stakes, assumptions, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('PreMortem', EXAMPLES);
@@ -224,7 +231,7 @@ const BreakMyPlan = ({ tool }) => {
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(results || assumptions.trim() || plan.trim() || planType.trim() || stakes.trim()) ? (
-                <button onClick={() => { setResults(null); setPlan(''); setPlanType(''); setStakes(''); setAssumptions(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                <button onClick={() => { cancelProgressive(); setCheckStatus(null); setResults(null); setPlan(''); setPlanType(''); setStakes(''); setAssumptions(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   {t('pm_new_plan')}
                 </button>
               ) : null}
@@ -315,6 +322,7 @@ const BreakMyPlan = ({ tool }) => {
       {/* ── Results ── */}
       {results && (
         <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Opens with the assumption the plan most depends on (owner decision
               2026-10-09): the imagined failure story is no longer shown — a

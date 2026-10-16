@@ -13,6 +13,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted phrases or example wording must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -261,83 +262,92 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       assumptions?.trim() || null,
     );
     const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const [memoHalf, preventionHalf] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2500,
-        system: withLanguage(buildMemoPrompt(brief), userLanguage) + systemSuffix,
-        messages: [{ role: 'user', content: 'Write the post-mortem memo and its warning signs.' }],
-      }, { label: 'pre-mortem-memo' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(buildPreventionPrompt(brief), userLanguage) + systemSuffix,
-        messages: [{ role: 'user', content: 'Build the actionable half — assumption, failure modes, prevention, first move.' }],
-      }, { label: 'pre-mortem-prevention' }),
-    ]);
-    const parsed = { ...memoHalf, ...preventionHalf };
-
-    if (!parsed.failure_modes || !Array.isArray(parsed.failure_modes)) {
-      return res.status(500).json({ error: 'Could not generate pre-mortem. Please try again.' });
-    }
-
-    // Safety net: exactly one PRIMARY WATCH, no matter what the model returned.
-    // Zero (everything IMPORTANT/SECONDARY) leaves no clear "address this first"
-    // signal; more than one defeats the point of a single priority. Deterministic
-    // fallback keeps the first PRIMARY WATCH found and demotes the rest; if none
-    // was marked, promotes primary_failure_path's named mode, or failing that
-    // the first mode in the list.
-    {
-      const primaryIdx = [];
-      parsed.failure_modes.forEach((f, i) => { if (f.priority === 'PRIMARY WATCH') primaryIdx.push(i); });
-      if (primaryIdx.length > 1) {
-        primaryIdx.slice(1).forEach(i => { parsed.failure_modes[i].priority = 'IMPORTANT WATCH'; });
-      } else if (primaryIdx.length === 0 && parsed.failure_modes.length > 0) {
-        const namedIdx = parsed.failure_modes.findIndex(f => f.mode === parsed.primary_failure_path?.failure_mode);
-        parsed.failure_modes[namedIdx >= 0 ? namedIdx : 0].priority = 'PRIMARY WATCH';
+    // Progressive (2026-10-16, lib/progressive.js): the prevention half is
+    // split three ways beside the memo — the failure modes (with the primary
+    // path that must name one of them) show first. The guard runs after the
+    // answer is on screen. The prevention passes still never see the memo.
+    const call = (system, maxTokens, content, label) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system: withLanguage(system, userLanguage) + systemSuffix,
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const prevention = buildPreventionPrompt(brief);
+    const onePrimary = (parsed) => {
+      if (!Array.isArray(parsed.failure_modes)) return parsed;
+      // Safety net: exactly one PRIMARY WATCH, no matter what the model returned.
+      // Zero (everything IMPORTANT/SECONDARY) leaves no clear "address this first"
+      // signal; more than one defeats the point of a single priority. Deterministic
+      // fallback keeps the first PRIMARY WATCH found and demotes the rest; if none
+      // was marked, promotes primary_failure_path's named mode, or failing that
+      // the first mode in the list.
+      {
+        const primaryIdx = [];
+        parsed.failure_modes.forEach((f, i) => { if (f.priority === 'PRIMARY WATCH') primaryIdx.push(i); });
+        if (primaryIdx.length > 1) {
+          primaryIdx.slice(1).forEach(i => { parsed.failure_modes[i].priority = 'IMPORTANT WATCH'; });
+        } else if (primaryIdx.length === 0 && parsed.failure_modes.length > 0) {
+          const namedIdx = parsed.failure_modes.findIndex(f => f.mode === parsed.primary_failure_path?.failure_mode);
+          parsed.failure_modes[namedIdx >= 0 ? namedIdx : 0].priority = 'PRIMARY WATCH';
+        }
       }
-    }
-
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [];
-      if (parsed.the_postmortem) {
-        fields.push(['the_postmortem.executive_summary', parsed.the_postmortem.executive_summary]);
-        fields.push(['the_postmortem.narrative', parsed.the_postmortem.narrative]);
-      }
-      (parsed.warning_signs || []).forEach((w, i) => {
-        fields.push([`warning_signs[${i}].watch_for`, w.watch_for]);
-        fields.push([`warning_signs[${i}].why_it_matters`, w.why_it_matters]);
-      });
-      if (parsed.assumption_to_test_first) fields.push(['assumption_to_test_first.what_is_known', parsed.assumption_to_test_first.what_is_known]);
-      if (parsed.when_to_reconsider) fields.push(['when_to_reconsider.condition', parsed.when_to_reconsider.condition]);
-      (parsed.failure_modes || []).forEach((f, i) => {
-        fields.push([`failure_modes[${i}].why_this_could_happen`, f.why_this_could_happen]);
-        fields.push([`failure_modes[${i}].reduce_the_risk`, f.reduce_the_risk]);
-      });
-      (parsed.assumptions_autopsy || []).forEach((a, i) => {
-        fields.push([`assumptions_autopsy[${i}].what_we_know`, a.what_we_know]);
-        fields.push([`assumptions_autopsy[${i}].if_wrong`, a.if_wrong]);
-      });
-      if (parsed.first_move) fields.push(['first_move.why_this_first', parsed.first_move.why_this_first]);
-
-      await runOutputGuard(parsed, {
-        label: 'pre-mortem',
-        fields,
-        supplied: brief,
-        promise: 'Write a fictional post-mortem as if the plan already failed, then use it to surface plausible failure modes, observable warning signs, an assumption worth testing first, and one concrete first move — using the imagined failure as a thinking device, never as fabricated evidence with invented precise numbers, dates, or named entities.',
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log('[pre-mortem] v2 guard skipped:', guardErr.message);
-    }
-
+      return parsed;
+    };
     // Owner decision 2026-10-09: the imagined failure story is not shown — a
     // made-up story reads like evidence. It is still written (the warning
     // signs are derived from it) but never leaves the server.
-    delete parsed.the_postmortem;
-    return res.json(parsed);
+    const shown = (d) => { const parsed = onePrimary(structuredClone(d)); delete parsed.the_postmortem; return parsed; };
+    return await answer(req, res, {
+      label: 'pre-mortem',
+      parts: [
+        ...keyGroups([
+          ['failure_modes', 'primary_failure_path'],
+          ['assumption_to_test_first', 'when_to_reconsider', 'first_move'],
+          ['assumptions_autopsy'],
+        ], (keys, i) => call(onlyKeys(prevention, keys), 2000, 'Build your part of the actionable half.', `pre-mortem-prevention${i + 1}`)),
+        { run: () => call(buildMemoPrompt(brief), 2500, 'Write the post-mortem memo and its warning signs.', 'pre-mortem-memo'), apply: (d, out) => { ['the_postmortem', 'warning_signs'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+      ],
+      finish: shown,
+      ready: d => Array.isArray(d.failure_modes),
+      complete: d => Array.isArray(d.failure_modes),
+      check: async (parsed) => {
+        onePrimary(parsed);
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+          const fields = [];
+          if (parsed.the_postmortem) {
+            fields.push(['the_postmortem.executive_summary', parsed.the_postmortem.executive_summary]);
+            fields.push(['the_postmortem.narrative', parsed.the_postmortem.narrative]);
+          }
+          (parsed.warning_signs || []).forEach((w, i) => {
+            fields.push([`warning_signs[${i}].watch_for`, w.watch_for]);
+            fields.push([`warning_signs[${i}].why_it_matters`, w.why_it_matters]);
+          });
+          if (parsed.assumption_to_test_first) fields.push(['assumption_to_test_first.what_is_known', parsed.assumption_to_test_first.what_is_known]);
+          if (parsed.when_to_reconsider) fields.push(['when_to_reconsider.condition', parsed.when_to_reconsider.condition]);
+          (parsed.failure_modes || []).forEach((f, i) => {
+            fields.push([`failure_modes[${i}].why_this_could_happen`, f.why_this_could_happen]);
+            fields.push([`failure_modes[${i}].reduce_the_risk`, f.reduce_the_risk]);
+          });
+          (parsed.assumptions_autopsy || []).forEach((a, i) => {
+            fields.push([`assumptions_autopsy[${i}].what_we_know`, a.what_we_know]);
+            fields.push([`assumptions_autopsy[${i}].if_wrong`, a.if_wrong]);
+          });
+          if (parsed.first_move) fields.push(['first_move.why_this_first', parsed.first_move.why_this_first]);
+
+          await runOutputGuard(parsed, {
+            label: 'pre-mortem',
+            fields,
+            supplied: brief,
+            promise: 'Write a fictional post-mortem as if the plan already failed, then use it to surface plausible failure modes, observable warning signs, an assumption worth testing first, and one concrete first move — using the imagined failure as a thinking device, never as fabricated evidence with invented precise numbers, dates, or named entities.',
+            guard: router.outputGuard,
+            userLanguage,
+          });
+        } catch (guardErr) {
+          console.log('[pre-mortem] v2 guard skipped:', guardErr.message);
+        }
+      },
+    });
   } catch (err) {
     console.error('pre-mortem error:', err);
     return res.status(500).json({ error: 'Something went wrong. Please try again.' });

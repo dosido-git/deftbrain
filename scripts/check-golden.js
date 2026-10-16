@@ -191,6 +191,15 @@ async function runTool(tool) {
       continue;
     }
     const fails = diffCase(c.output, fresh, c.optionalSections);
+    // GOLDEN_SAVE_DIR (2026-10-16): keep the fresh answer beside the saved one,
+    // so a quality comparison reuses the paid run instead of buying another.
+    if (process.env.GOLDEN_SAVE_DIR) {
+      try {
+        fs.mkdirSync(process.env.GOLDEN_SAVE_DIR, { recursive: true });
+        fs.writeFileSync(path.join(process.env.GOLDEN_SAVE_DIR, `${tool}--${String(c.name).replace(/[^A-Za-z0-9_-]+/g, '_')}.json`),
+          JSON.stringify({ tool, case: c.name, endpoint: c.endpoint, input: c.input, before: c.output, after: fresh }, null, 2));
+      } catch (_) { /* best-effort */ }
+    }
     // Time (2026-10-14): a live case is a real request, so its time is a free
     // early warning. Not on a replay (GOLDEN_PERF_PROBE, stand-in API) — those
     // times mean nothing. Warns, never fails: one sample is noisy, and the

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -355,21 +356,71 @@ visitor has to read all of it.
 Return ONLY valid JSON. ${NO_QUOTE_RULE}
 `;
 
-    const tMain = Date.now();
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first: one small
+    // pass picks the four ideas, the wildcard and the anti-pick together (so
+    // they stay four different ideas) and shows them; three passes then write
+    // the details at once — picks 1-2, picks 3-4, wildcard and last-minute
+    // option — each keeping the planned idea word for word. The guard runs
+    // after the answer is on screen.
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + ' ' + NO_QUOTE_RULE;
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4200,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'giftology' });
-    if (!parsed.perfect_picks && !parsed.gifts) {
-      return res.status(500).json({ error: 'Could not generate gift ideas. Please try again.' });
-    }
-    console.log(`[gft-timing] main ${Date.now() - tMain}ms`);
-    const tGuard = Date.now();
-    await guardGifts(parsed, req.body, startedAt);
-    console.log(`[gft-timing] guard ${Date.now() - tGuard}ms | TOTAL ${Date.now() - startedAt}ms`);
-    res.json(parsed);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN_TEMPLATE = `{
+  "situation_read": "1-2 sentences naming the gift problem as you read it, from what they actually told you. Warm, not clinical, and not a biography of the recipient.",
+  "perfect_picks": [
+    { "gift": "The gift IDEA, stated so it is immediately understandable — a concept, not a catalogue entry." }
+  ],
+  "the_wildcard": { "gift": "A different ANGLE on the same person — an experience, a service, something the giver makes, an unexpected join between two of their interests, or something drawn from personality rather than hobby." },
+  "never_do_this": "One TEMPTING but poorly matched gift category for THIS recipient, with why it misses them — written so the giver can apply the same reasoning to other options they are weighing."
+}
+
+THIS PASS chooses the ideas only: exactly 4 perfect_picks, four genuinely different ideas, each with ONLY its gift field; the_wildcard with ONLY its gift field. Other passes write the details for each idea afterwards.`;
+    const planPrompt = userPrompt.replace(/Return ONLY valid JSON:\s*\{[\s\S]*?\n\}\n/, `Return ONLY valid JSON:\n\n${PLAN_TEMPLATE}\n`);
+    const plan = call(planPrompt, 900, 'giftology-plan');
+    plan.catch(() => {}); // the plan part reports its own failure
+    const planned = (p) => `\n\nTHE IDEAS ALREADY CHOSEN (another pass chose them together; keep each gift EXACTLY as written, in this order, and never contradict never_do_this):\n${JSON.stringify({ situation_read: p?.situation_read, perfect_picks: (p?.perfect_picks || []).map(x => x?.gift), the_wildcard: p?.the_wildcard?.gift, never_do_this: p?.never_do_this })}`;
+    const pickPart = (from, to, slot) => ({
+      run: async () => {
+        const p = await plan;
+        return call(onlyKeys(userPrompt, ['perfect_picks']) + planned(p) + `\n\nTHIS PASS writes perfect_picks for ideas ${from + 1} and ${to} ONLY — exactly ${to - from} items, in that order, each in full.`, 1600, `giftology-picks${slot}`);
+      },
+      apply: (d, out) => { d.pickDetail = { ...d.pickDetail, [from]: Array.isArray(out?.perfect_picks) ? out.perfect_picks.slice(0, to - from) : [] }; },
+    });
+    const merged = (d) => {
+      const { pickDetail, wildDetail, ...rest } = structuredClone(d);
+      const picks = (rest.perfect_picks || []).map((x, i) => {
+        const base = i < 2 ? 0 : 2;
+        const detail = pickDetail?.[base]?.[i - base];
+        return detail ? { ...x, ...detail, gift: x.gift } : x;
+      });
+      const wild = rest.the_wildcard ? { ...rest.the_wildcard, ...(wildDetail || {}), gift: rest.the_wildcard.gift } : rest.the_wildcard;
+      return { ...rest, perfect_picks: picks, the_wildcard: wild };
+    };
+    return await answer(req, res, {
+      label: 'giftology',
+      parts: [
+        { required: true, run: () => plan, apply: (d, out) => { ['situation_read', 'perfect_picks', 'the_wildcard', 'never_do_this'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+        pickPart(0, 2, 1),
+        pickPart(2, 4, 2),
+        {
+          run: async () => call(onlyKeys(userPrompt, ['the_wildcard', 'if_deadline_is_now']) + planned(await plan), 1600, 'giftology-wildcard'),
+          apply: (d, out) => { if (out?.the_wildcard) d.wildDetail = out.the_wildcard; if (out?.if_deadline_is_now !== undefined) d.if_deadline_is_now = out.if_deadline_is_now; },
+        },
+      ],
+      finish: merged,
+      ready: d => Array.isArray(d.perfect_picks) && d.perfect_picks.length > 0,
+      complete: d => Array.isArray(d.perfect_picks) && d.perfect_picks.length > 0,
+      check: async (draft) => {
+        const parsed = merged(draft);
+        await guardGifts(parsed, req.body, startedAt);
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, parsed);
+      },
+    });
 
   } catch (error) {
     console.error('Giftology error:', error);

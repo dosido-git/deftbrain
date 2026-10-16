@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -54,7 +55,7 @@ const EXPOSURE_KEYS = {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const FutureProof = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -94,6 +95,7 @@ const FutureProof = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const trajStyle = (traj) => {
     const map = {
@@ -140,10 +142,11 @@ const FutureProof = ({ tool }) => {
   const handleSubmit = async () => {
     if (!subject.trim()) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setActiveScenario('base_case');
     try {
-      const data = await callToolEndpoint('future-proof', {
+      // Progressive (2026-10-16): the trajectory shows first; checked after.
+      const data = await callToolEndpointProgressive('future-proof', {
         subject: subject.trim(),
         subjectType: subjectType || undefined,
         context: context.trim() || undefined,
@@ -151,7 +154,11 @@ const FutureProof = ({ tool }) => {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -188,6 +195,7 @@ const FutureProof = ({ tool }) => {
   }, [setSubject, setSubjectType, setContext, setTimeframe, setResults, t]);
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setSubject('');
     setSubjectType('');
     setContext('');
@@ -415,6 +423,7 @@ const FutureProof = ({ tool }) => {
 
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Trajectory banner */}
           {results?.trajectory && (() => {

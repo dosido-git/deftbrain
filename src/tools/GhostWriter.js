@@ -155,7 +155,7 @@ const EXAMPLES = [
   },
 ];
 const GhostWriter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -286,7 +286,8 @@ const GhostWriter = ({ tool }) => {
     setRefiningVersion(null); setActiveVersion('narrative'); setPreviousResults(null);
     try {
       const ltDef = LETTER_TYPES.find(lt => lt.value === letterType);
-      const data = await callToolEndpoint('ghost-writer', {
+      // Progressive (2026-10-16): each letter shows as it lands.
+      const data = await callToolEndpointProgressive('ghost-writer', {
         recipientName: recipientName.trim(),
         pronouns: pronouns || null,
         yourRelationship: yourRelationship.trim(),
@@ -300,13 +301,14 @@ const GhostWriter = ({ tool }) => {
         formalityLevel,
         additionalContext: additionalContext.trim() || null,
         userLocale, userCurrency, userRegion,
-      });
+      }, { onDraft: setResults });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       resetVariants();
       trackVariant('GhostWriter', 'narrative', 'auto');
       saveToHistory(data);
     } catch (err) { setError(err.message || t('ghw_err_generate')); }
-  }, [recipientName, pronouns, yourRelationship, whatFor, letterType, qualities, anecdotes, duration, whyRecommending, oneThingRemembered, formalityLevel, additionalContext, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [recipientName, pronouns, yourRelationship, whatFor, letterType, qualities, anecdotes, duration, whyRecommending, oneThingRemembered, formalityLevel, additionalContext, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t]);
   handleSubmitRef.current = generate;
 
   const handleRefine = useCallback(async (version) => {
@@ -333,11 +335,12 @@ const GhostWriter = ({ tool }) => {
   }, []);
 
   const handleReset = useCallback(() => {
+    cancelProgressive();
     setRecipientName(''); setPronouns(''); setYourRelationship(''); setWhatFor('');
     setQualities([]); setAnecdotes(['']); setDuration('');
     setWhyRecommending(''); setOneThingRemembered(''); setAdditionalContext(''); setResults(null); setError('');
     setRefinedVersions({}); setRefiningVersion(null); setPreviousResults(null);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ══════════════════════════════════════════
   // HISTORY
@@ -522,6 +525,8 @@ const GhostWriter = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderResults = () => {
     if (!results?.versions?.length) return null;
+    // Letters arrive one at a time; until the chosen one lands, show the first that has.
+    const shownVersion = results.versions.some(v => v.style === activeVersion) ? activeVersion : results.versions[0].style;
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
@@ -531,7 +536,7 @@ const GhostWriter = ({ tool }) => {
             {results.versions.map(v => (
               <button key={v.style} onClick={() => { setActiveVersion(v.style); trackVariant('GhostWriter', v.style); }}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-all ${
-                  activeVersion === v.style ? c.tabActive : c.tabInactive
+                  shownVersion === v.style ? c.tabActive : c.tabInactive
                 }`}>
                 <span>{VERSION_ICONS[v.style] || '📝'}</span>
                 <span className="hidden sm:inline">{v.label?.split('—')[0]?.trim() || v.style}</span>
@@ -541,7 +546,7 @@ const GhostWriter = ({ tool }) => {
           </div>
 
           {results.versions.map(v => {
-            if (v.style !== activeVersion) return null;
+            if (v.style !== shownVersion) return null;
             const displayText = refinedVersions[v.style] || v.letter;
             const isRefined = !!refinedVersions[v.style];
 
