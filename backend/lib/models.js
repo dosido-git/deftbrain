@@ -38,6 +38,8 @@ const ALL_MODELS = [...new Set(Object.values(MODELS))];
 // and turn the check green again. This keeps the decision explicit and reviewable
 // rather than silently ignored. Empty = adopt-or-be-nagged.
 const ACKNOWLEDGED_NEWER = [
+  // Noted 2026-10-16 (owner): staying on Haiku 4.5 for now; not evaluated.
+  'claude-haiku-5-5',
   // Evaluated 2026-07-11: staying on claude-sonnet-4-6. Sonnet 5 is more verbose —
   // AlternatePath deep-mode truncated at the max_tokens tuned for 4.6 (golden
   // 3/3 → 2/3). Adopting it is a deliberate migration (re-tune max_tokens on the

@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -400,87 +401,86 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
     // withLanguage() calls against Anthropic calls in the file.
     const systemBase = `You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items. ${NO_QUOTE_RULE}`;
 
-    const [approachParts, messagesPart, readPart, preparePart] = await Promise.all([
-      Promise.all(APPROACH_ANGLES.map((angle, i) => callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2500,
-        system: withLanguage(systemBase, userLanguage),
-        messages: [{ role: 'user', content: approachPrompt(angle, i) }]
-      }, { label: `DifficultTalkCoach-approach-${angle.key}` }))),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3400,
-        system: withLanguage(systemBase, userLanguage),
-        messages: [{ role: 'user', content: promptMessages }]
-      }, { label: 'DifficultTalkCoach-messages' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(systemBase, userLanguage),
-        messages: [{ role: 'user', content: promptRead }]
-      }, { label: 'DifficultTalkCoach-read' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(systemBase, userLanguage),
-        messages: [{ role: 'user', content: promptPrepare }]
-      }, { label: 'DifficultTalkCoach-prepare' }),
-    ]);
-    // Every approach call emits conversation_approaches, so they concatenate in
-    // APPROACH_ANGLES order — collaborative, direct, boundary, which is the
-    // escalating order the tool has always shown.
-    const parsed = {
-      ...readPart,
-      ...preparePart,
-      ...messagesPart,
-      conversation_approaches: approachParts.flatMap(part =>
-        Array.isArray(part.conversation_approaches) ? part.conversation_approaches : []),
-    };
-    // The interface prints body_language_guidance's key/value pairs straight
-    // into JSX, so a nested object there is a blank-page crash, not a typo.
-    if (parsed.body_language_guidance && typeof parsed.body_language_guidance === 'object') {
-      for (const [k, v] of Object.entries(parsed.body_language_guidance)) {
-        if (v !== null && typeof v === 'object') {
-          parsed.body_language_guidance[k] = Array.isArray(v) ? v.filter(x => typeof x === 'string').join(' ') : Object.values(v).filter(x => typeof x === 'string').join(' ');
+    // Progressive (2026-10-16, lib/progressive.js): the read, prepare and
+    // messages calls are now section passes (the situation read first), with
+    // the three approaches alongside; the checks run after display.
+    const relax = (prompt) => prompt.replace(/with EXACTLY the \d+ keys shown above/, 'with the keys this pass names below');
+    const ask = (content, label, maxTokens) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system: withLanguage(systemBase, userLanguage),
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const sections = (prompt, groups, tag) => keyGroups(groups, (keys, i) => ask(onlyKeys(relax(prompt), keys), `DifficultTalkCoach-${tag}${i + 1}`, 2200));
+    const approaches = new Array(APPROACH_ANGLES.length).fill(null);
+    const finish = (d) => {
+      const parsed = structuredClone(d);
+      // Every approach call emits conversation_approaches, so they concatenate in
+      // APPROACH_ANGLES order — collaborative, direct, boundary, which is the
+      // escalating order the tool has always shown.
+      parsed.conversation_approaches = approaches.flatMap(part => (Array.isArray(part?.conversation_approaches) ? part.conversation_approaches : []));
+      // The interface prints body_language_guidance's key/value pairs straight
+      // into JSX, so a nested object there is a blank-page crash, not a typo.
+      if (parsed.body_language_guidance && typeof parsed.body_language_guidance === 'object') {
+        for (const [k, v] of Object.entries(parsed.body_language_guidance)) {
+          if (v !== null && typeof v === 'object') {
+            parsed.body_language_guidance[k] = Array.isArray(v) ? v.filter(x => typeof x === 'string').join(' ') : Object.values(v).filter(x => typeof x === 'string').join(' ');
+          }
         }
       }
-    }
-
-    if (!parsed.situation_reading && !parsed.scripts) {
-      return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
-    }
-    // 2026-10-07 quality wave: dated deadlines nobody set (Oct 17 / Oct 31)
-    // and a Very Firm rung ending on an unnamed threat ("decisions I have to
-    // make about my own situation"), which the prompt above forbids. Fail-open.
-    if (!isSurging()) {
-      const fields = [];
-      const walk = (v, path) => {
-        if (typeof v === 'string' && v.trim().length > 25) fields.push([path, v]);
-        else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
-        else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
-      };
-      walk(parsed.firmness_messages, 'firmness_messages');
-      walk(parsed.conversation_approaches, 'conversation_approaches');
-      walk(parsed.pushback_scripts, 'pushback_scripts');
-      walk(parsed.follow_up_plan, 'follow_up_plan');
-      try {
-        await checkAgainstSupplied(parsed, {
-          label: 'difficult-talk-coach',
-          supplied: [`Topic: ${topic}`, `Relationship: ${relationship}`, goals && `Goals: ${Array.isArray(goals) ? goals.join(', ') : goals}`,
-            fears && `Fears: ${Array.isArray(fears) ? fears.join(', ') : fears}`, biggestFear && `Biggest fear: ${biggestFear}`,
-            theirPerspective && `Their perspective: ${theirPerspective}`, previousAttempts && `Previous attempts: ${previousAttempts}`].filter(Boolean).join('\n'),
-          fields: fields.slice(0, 40),
-          lookFor: `- a date, deadline or timeframe the user did not set (by October 17, within two weeks) — a placeholder like [date] is fine
-- a consequence, limit or decision the user did not say they would act on, including an unnamed one that only hints at a threat (I will have to think about my options, decisions I have to make about my own situation)
-- a fact about the other person or the history between them that the user did not give`,
-          repairNote: 'Replace an invented date with a placeholder like [a date that works for you]. Remove an invented or hinted consequence entirely; a firm line stays firm by being clear about the ask, not by threatening.',
-          userLanguage,
-        });
-      } catch (e) { console.error('difficult-talk-coach check:', e.message); }
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'difficult-talk-coach', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'difficult-talk-coach',
+      parts: [
+        ...sections(promptRead, [['situation_reading'], ['emotional_landmines', 'deescalation_toolkit']], 'read'),
+        ...[
+          ...sections(promptPrepare, [['validation', 'reality_check', 'reassurance_badges', 'confidence_note'], ['body_language_guidance', 'preparation_plan'], ['follow_up_plan', 'follow_up_guidance']], 'prepare'),
+          ...sections(promptMessages, [['firmness_messages'], ['pushback_scripts']], 'messages'),
+        ].map(p => ({ ...p, required: false })),
+        ...APPROACH_ANGLES.map((angle, i) => ({
+          run: () => ask(approachPrompt(angle, i), `DifficultTalkCoach-approach-${angle.key}`, 2500),
+          apply: (d, out) => { approaches[i] = out; d.conversation_approaches = finish(d).conversation_approaches; },
+        })),
+      ],
+      finish,
+      ready: d => Boolean(d.situation_reading),
+      complete: d => Boolean(d.situation_reading || d.scripts),
+      check: async (parsed) => {
+        Object.assign(parsed, finish(parsed));
+        if (!isSurging()) {
+          const fields = [];
+          const walk = (v, path) => {
+            if (typeof v === 'string' && v.trim().length > 25) fields.push([path, v]);
+            else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+            else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => walk(x, `${path}.${k}`));
+          };
+          walk(parsed.firmness_messages, 'firmness_messages');
+          walk(parsed.conversation_approaches, 'conversation_approaches');
+          walk(parsed.pushback_scripts, 'pushback_scripts');
+          walk(parsed.follow_up_plan, 'follow_up_plan');
+          try {
+            await checkAgainstSupplied(parsed, {
+              label: 'difficult-talk-coach',
+              supplied: [`Topic: ${topic}`, `Relationship: ${relationship}`, goals && `Goals: ${Array.isArray(goals) ? goals.join(', ') : goals}`,
+                fears && `Fears: ${Array.isArray(fears) ? fears.join(', ') : fears}`, biggestFear && `Biggest fear: ${biggestFear}`,
+                theirPerspective && `Their perspective: ${theirPerspective}`, previousAttempts && `Previous attempts: ${previousAttempts}`].filter(Boolean).join('\n'),
+              fields: fields.slice(0, 40),
+              lookFor: `- a date, deadline or timeframe the user did not set (by October 17, within two weeks) — a placeholder like [date] is fine
+    - a consequence, limit or decision the user did not say they would act on, including an unnamed one that only hints at a threat (I will have to think about my options, decisions I have to make about my own situation)
+    - a fact about the other person or the history between them that the user did not give`,
+              repairNote: 'Replace an invented date with a placeholder like [a date that works for you]. Remove an invented or hinted consequence entirely; a firm line stays firm by being clear about the ask, not by threatening.',
+              userLanguage,
+            });
+          } catch (e) { console.error('difficult-talk-coach check:', e.message); }
+        }
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'difficult-talk-coach', userLanguage: req.body?.userLanguage });
+        // Approach cards are rebuilt from their slots on every finish; keep
+        // any correction the checks made to them.
+        approaches.splice(0, approaches.length, { conversation_approaches: parsed.conversation_approaches }, ...new Array(APPROACH_ANGLES.length - 1).fill(null));
+      },
+    });
 
   } catch (error) {
     console.error('[DifficultTalkCoach] Error:', error);

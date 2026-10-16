@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -223,7 +224,7 @@ const createAlarm = () => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const SafeWalk = ({ tool }) => {
-  const { callToolEndpoint, loading, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -273,6 +274,7 @@ const SafeWalk = ({ tool }) => {
   };
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Returns true if value contains city+state abbreviation or 5-digit zip
   const isLocationComplete = (val) => {
@@ -653,10 +655,16 @@ const SafeWalk = ({ tool }) => {
   }, [t]);
 
   const runAssessment = useCallback(async (inputs) => {
-    setError(''); setAssessResult(null); setCheckedItems({});
+    setError(''); setAssessResult(null); setCheckedItems({}); setCheckStatus(null);
     try {
       const userLocation = await getGpsContext();
-      const res = await callToolEndpoint('safe-walk', {
+      // Progressive (2026-10-16): what matters shows first; checked after.
+      let opened = false;
+      const show = (d) => {
+        setAssessResult(stripCitesDeep(d));
+        if (!opened) { opened = true; setExpandedSections({ matters: true, before: true, route: true, watch: true, checkin: true, sources: false }); }
+      };
+      const res = await callToolEndpointProgressive('safe-walk', {
         action: 'assess',
         from: inputs.from,
         to: inputs.to,
@@ -665,10 +673,13 @@ const SafeWalk = ({ tool }) => {
         walkDuration: inputs.walkDuration,
         routeKnowledge: inputs.routeKnowledge,
         concerns: inputs.concerns,
+      }, {
+        onDraft: d => { show(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { show(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!res) return; // replaced by a newer run
       const cleaned = stripCitesDeep(res);
-      setAssessResult(cleaned);
-      setExpandedSections({ matters: true, before: true, route: true, watch: true, checkin: true, sources: false });
+      show(res);
       setSessionHistory(prev => [{
         id: Date.now(),
         date: new Date().toISOString(),
@@ -678,7 +689,7 @@ const SafeWalk = ({ tool }) => {
         result: cleaned,
       }, ...(prev || [])].slice(0, 20));
     } catch (err) { setError(err.message || t('sw_assess_failed')); }
-  }, [callToolEndpoint, setSessionHistory, t]);
+  }, [callToolEndpointProgressive, setSessionHistory, t]);
 
   const submitAssessment = useCallback(() => {
     if (!fromLocation.trim()) return;
@@ -699,7 +710,7 @@ const SafeWalk = ({ tool }) => {
   // asks for a fresh plan, since route conditions can change.
   const viewPastPlan = useCallback((entry) => {
     setFromLocation(entry.from || ''); setToLocation(entry.to || '');
-    setAssessResult(entry.result);
+    setAssessResult(entry.result); setCheckStatus(null);
     setExpandedSections({ matters: true, before: true, route: true, watch: true, checkin: true, sources: false });
     setShowRecent(false);
   }, []);
@@ -728,7 +739,7 @@ const SafeWalk = ({ tool }) => {
   const handleReset = useCallback(() => {
     setFromLocation(''); setToLocation(''); setFromTouched(false); setToTouched(false);
     setTimeOfDay(''); setWalkDuration(''); setRouteKnowledge(''); setConcerns('');
-    setAssessResult(null); setCheckedItems({}); setError('');
+    cancelProgressive(); setCheckStatus(null); setAssessResult(null); setCheckedItems({}); setError('');
   }, []);
 
   const loadExample = useCallback(() => {
@@ -740,7 +751,7 @@ const SafeWalk = ({ tool }) => {
     setWalkDuration(ex.walkDuration);
     setRouteKnowledge(ex.routeKnowledge);
     setConcerns(ex.concerns);
-    setAssessResult(null);
+    cancelProgressive(); setCheckStatus(null); setAssessResult(null);
   }, []);
 
   const buildFullText = useCallback(() => {
@@ -1043,6 +1054,7 @@ const SafeWalk = ({ tool }) => {
 
       return (
         <div className="scroll-mt-24 space-y-3" ref={assessResultRef}>
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {/* What Matters */}
           {r.what_matters && renderCollapsible('matters', '🚶', t('sw_what_matters'), (
             <div className={`p-4 rounded-xl border ${c.cardAlt} ${c.border}`}>

@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -293,40 +294,52 @@ Return ONLY valid JSON with EXACTLY these three top-level keys:
 AT MOST 4 steps in best_plan, 4 food, 3 lounges, 5 pro_tips.`;
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const [leavePart, stayPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system: withLanguage(systemPrompt, userLanguage) + locale,
-        messages: [{ role: 'user', content: leavePrompt }],
-      }, { label: 'layover-maximizer:leave' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3200,
-        system: withLanguage(systemPrompt, userLanguage) + locale,
-        messages: [{ role: 'user', content: stayPrompt }],
-      }, { label: 'layover-maximizer:stay' }),
-    ]);
-    const parsed = { ...stayPart, ...leavePart };
-    // Before the code-computed clock times below, which then overwrite
-    // whatever the check touched there — subtraction stays in code.
-    await withNumberCheck(parsed, { label: 'layover-maximizer', context: visitorContext(req.body), userLanguage });
-    // The model supplies the judgement (what, and how long before); the clock
-    // time is subtraction, and subtraction belongs here.
-    if (parsed.time_math) parsed.time_math.return_by_time = clockOrNull(parsed.time_math.return_by_time);
-    if (Array.isArray(parsed.live_deadlines)) {
-      parsed.live_deadlines = liveDeparture
-        ? parsed.live_deadlines
-            .map(d => ({ ...d, at_time: addMinutes(liveDeparture, -Math.abs(Number(d?.minutes_before_departure) || 0)) }))
-            .filter(d => d.what && d.at_time)
-        : [];
-    }
-    if (!parsed.verdict) {
-      return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'layover-maximizer', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+    // Progressive (2026-10-16, lib/progressive.js): five section passes at
+    // once — the verdict first; the number and consistency checks run after
+    // the answer is on screen. Clock times stay code-computed on every draft.
+    const relax = (prompt) => prompt.replace(/with EXACTLY these \w+ top-level keys:/, 'with these top-level keys (each pass writes only the ones named at the end):');
+    const pass = (prompt, tag) => (keys, i) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2200,
+      system: withLanguage(systemPrompt, userLanguage) + locale,
+      messages: [{ role: 'user', content: onlyKeys(relax(prompt), keys) }],
+    }, { label: `layover-maximizer:${tag}${i + 1}` });
+    const clocks = (parsed) => {
+      // The model supplies the judgement (what, and how long before); the clock
+      // time is subtraction, and subtraction belongs here.
+      if (parsed.time_math) parsed.time_math.return_by_time = clockOrNull(parsed.time_math.return_by_time);
+      if (Array.isArray(parsed.live_deadlines)) {
+        parsed.live_deadlines = liveDeparture
+          ? parsed.live_deadlines
+              .map(d => ({ ...d, at_time: addMinutes(liveDeparture, -Math.abs(Number(d?.minutes_before_departure) || 0)) }))
+              .filter(d => d.what && d.at_time)
+          : [];
+      }
+      return parsed;
+    };
+    const stayParts = keyGroups([['best_plan'], ['stay_in_airport', 'pro_tips']], pass(stayPrompt, 'stay')).map(p => ({ ...p, required: false }));
+    return await answer(req, res, {
+      label: 'layover-maximizer',
+      parts: [
+        ...keyGroups([
+          ['airport_name', 'airport_code', 'city', 'verdict', 'verdict_emoji', 'verdict_summary', 'terminal_change_warning'],
+          ['time_math', 'live_deadlines', 'need_to_know'],
+          ['leave_the_airport'],
+        ], pass(leavePrompt, 'leave')),
+        ...stayParts,
+      ],
+      finish: d => clocks(structuredClone(d)),
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+      check: async (parsed) => {
+        // Before the code-computed clock times, which then overwrite whatever
+        // the check touched there — subtraction stays in code.
+        await withNumberCheck(parsed, { label: 'layover-maximizer', context: visitorContext(req.body), userLanguage });
+        clocks(parsed);
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'layover-maximizer', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('LayoverMaximizer error:', error);

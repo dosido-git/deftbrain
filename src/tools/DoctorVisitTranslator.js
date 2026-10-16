@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import Caret from '../components/Caret';
 import DOMPurify from 'dompurify';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -151,7 +152,7 @@ function DiagramBtn({ description, diagramType, isDark, c }) {
 
 
 const DoctorVisitTranslator = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -181,6 +182,7 @@ const DoctorVisitTranslator = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── useState (all first per PF-14) ──
   // MODE: input | results | journal | health | sessionHistory | prep
@@ -253,12 +255,15 @@ const DoctorVisitTranslator = ({ tool }) => {
   // ─── TRANSLATE ───
   const handleTranslate = async () => {
     if (!doctorNotes.trim() && !pdfFile) { setError(t('dvt_err_notes_or_pdf')); return; }
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     const allMeds = currentMedications.trim()
       ? currentMedications.trim() + (activeMeds.length ? `\n\nAlso taking (from tracked list): ${activeMeds.map(m => m.name).join(', ')}` : '')
       : activeMeds.length ? activeMeds.map(m => m.name).join(', ') : null;
     try {
-      const data = await callToolEndpoint('doctor-visit-translator', {
+      // Progressive (2026-10-16): the plain-English summary shows first; the
+      // details are double-checked against the notes after (CheckNote).
+      let opened = false;
+      const data = await callToolEndpointProgressive('doctor-visit-translator', {
         doctorNotes: doctorNotes.trim() || null, visitType,
         concerns: concerns.trim() || null,
         currentMedications: allMeds,
@@ -266,9 +271,16 @@ const DoctorVisitTranslator = ({ tool }) => {
         knownMedications: activeMeds.length ? activeMeds.map(m => ({ name: m.name, purpose: m.purpose, prescribedDate: m.prescribedDate })) : null,
         pdfData: pdfFile?.base64 || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => {
+          setResults(d); setCheckStatus('checking');
+          if (!opened) { opened = true; setMode('results'); setSecs(p => ({ ...p, summary: true, actions: true, followUp: true, medSafety: !!allMeds, comparison: false })); }
+        },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data); setMode('results');
-      setSecs(p => ({ ...p, summary: true, actions: true, followUp: true, medSafety: !!allMeds, comparison: false }));
+      if (!opened) setSecs(p => ({ ...p, summary: true, actions: true, followUp: true, medSafety: !!allMeds, comparison: false }));
     } catch (err) { setError(err.message || t('dvt_err_translate')); }
   };
 
@@ -315,7 +327,7 @@ const DoctorVisitTranslator = ({ tool }) => {
   }, [results, visitType, doctorNotes, concerns, documentType, setSessionHistory, setMedList, setReminders]);
 
   const viewEntry = (entry) => {
-    setResults(entry.results); setDoctorNotes(entry.doctorNotes);
+    setResults(entry.results); setCheckStatus(null); setDoctorNotes(entry.doctorNotes);
     setVisitType(entry.visitType);
     setConcerns(entry.concerns || '');
     setDocumentType(entry.documentType || 'visit'); setMode('results');
@@ -404,14 +416,14 @@ const DoctorVisitTranslator = ({ tool }) => {
   const handleReset = () => {
     setDoctorNotes(''); setVisitType('Follow-up'); setConcerns('');
     setCurrentMedications(''); setDoctorName('');
-    setDocumentType('visit'); setResults(null); setError('');
+    setDocumentType('visit'); cancelProgressive(); setCheckStatus(null); setResults(null); setError('');
     setPdfFile(null); setPdfDragging(false); setMode('input');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // ─── PF-17: Try Example ───
   const loadExample = () => {
-    setResults(null); setError(''); setPdfFile(null);
+    cancelProgressive(); setCheckStatus(null); setResults(null); setError(''); setPdfFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
     // Five document types, rotated: visit notes, an insurance EOB, a
     // prescription label with a drug-interaction warning, an abnormal lab
@@ -654,6 +666,7 @@ const DoctorVisitTranslator = ({ tool }) => {
       {/* ══════════ RESULTS MODE ══════════ */}
       {mode === 'results' && results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
               <button

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -197,7 +198,7 @@ function deriveTimeBudget(tm) {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const LayoverMaximizer = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -229,6 +230,7 @@ const LayoverMaximizer = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── View ──
   const resultsRef = React.useRef(null);
@@ -358,9 +360,10 @@ const LayoverMaximizer = ({ tool }) => {
     if (!ap) { setError(t('lmx_err_enter_airport')); return; }
     if (!hours || hours < 0.5) { setError(t('lmx_err_enter_duration')); return; }
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('layover-maximizer', {
+      // Progressive (2026-10-16): the verdict shows first; checked after.
+      const data = await callToolEndpointProgressive('layover-maximizer', {
         airport: ap, layoverHours: hours, nationality: nationality.trim() || null,
         hasCheckedBags, hasPreCheck,
         arrivalTerminal: arrivalTerminal.trim() || null,
@@ -371,7 +374,11 @@ const LayoverMaximizer = ({ tool }) => {
         isLive: isLiveMode || undefined,
         nowAtAirport: isLiveMode && nowMinutes !== null ? minutesToHhmm(nowMinutes) : undefined,
         departureTime: isLiveMode ? (departureTime || undefined) : undefined,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setTimeout(() => revealSection(resultsRef.current), 100);
       // Auto-populate lounge/risk airport
@@ -390,7 +397,7 @@ const LayoverMaximizer = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('lmx_err_analysis_failed'));
     }
-  }, [airport, layoverHours, nationality, hasCheckedBags, hasPreCheck, arrivalTerminal, connectionTerminal, arrivalTime, travelStyle, isLiveMode, liveHoursRemaining, nowMinutes, departureTime, callToolEndpoint, t]);
+  }, [airport, layoverHours, nationality, hasCheckedBags, hasPreCheck, arrivalTerminal, connectionTerminal, arrivalTime, travelStyle, isLiveMode, liveHoursRemaining, nowMinutes, departureTime, callToolEndpointProgressive, t]);
 
   // ── API: Lounge finder ──
   const loadExample = useCallback(() => {
@@ -406,8 +413,9 @@ const LayoverMaximizer = ({ tool }) => {
     setArrivalTime(ex.arrivalTime);
     setTravelStyle(ex.travelStyle);
     setShowDetails(true);
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
-  }, [setView, setAirport, setLayoverHours, setNationality, setHasCheckedBags, setHasPreCheck, setArrivalTerminal, setConnectionTerminal, setArrivalTime, setTravelStyle, setResults]);
+  }, [setView, setAirport, setLayoverHours, setNationality, setHasCheckedBags, setHasPreCheck, setArrivalTerminal, setConnectionTerminal, setArrivalTime, setTravelStyle, setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const runLounge = useCallback(async () => {
     if (!loungeAirport.trim()) { setError(t('lmx_err_enter_airport')); return; }
@@ -956,6 +964,7 @@ const LayoverMaximizer = ({ tool }) => {
           const hasUnknownDeduction = !!timeBudget?.provisional;
           return (
             <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+              <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
               {/* A traveller already at the airport reads the clock first and the
                   verdict second. Durations are for planning; these are moments. */}
               {isLiveMode && liveMinutesRemaining !== null && (
@@ -2463,7 +2472,7 @@ const LayoverMaximizer = ({ tool }) => {
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(results || airport.trim() || layoverHours.trim() || nationality.trim()) ? (
                 <button onClick={() => {
-                  setResults(null); setAirport(''); setLayoverHours(''); setNationality('');
+                  cancelProgressive(); setCheckStatus(null); setResults(null); setAirport(''); setLayoverHours(''); setNationality('');
                   setArrivalTerminal(''); setConnectionTerminal(''); setArrivalTime('');
                   setTravelStyle(''); setHasCheckedBags(false); setHasPreCheck(false);
                   setIsLiveMode(false);

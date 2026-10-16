@@ -98,7 +98,9 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
   if (check) {
     const before = JSON.parse(JSON.stringify(draft));
     try { await check(draft); } catch (err) { console.warn(`[${label}] check failed (answer kept as shown):`, err.message); }
-    const changed = changedPaths(before, draft);
+    // Compared as the visitor sees them (finish), so bookkeeping a check does
+    // to the raw draft never reads as a correction.
+    const changed = changedPaths(finish(before), finish(draft));
     send({ checked: finish(draft), changed });
   }
   console.log(`[${label}] progressive: first part ${((firstAt - t0) / 1000).toFixed(1)}s, all parts ${((shownAt - t0) / 1000).toFixed(1)}s, checked ${((Date.now() - t0) / 1000).toFixed(1)}s`);

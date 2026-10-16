@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -305,47 +306,43 @@ Omit empty optional sections rather than padding them. Do not force before_you_g
 
 Return ONLY valid JSON. No markdown fences, no preamble.`;
 
-      let parsed;
-      try {
-        parsed = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 4000,
-          system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{ role: 'user', content: supplied }],
-        }, { label: 'safe-walk' });
-      } catch (retryErr) {
-        // Truncation is a real reliability bug (schema/budget mismatch) — let
-        // it fall through to the generic 500 below. A SyntaxError that survives
-        // all retries is a parse failure on OUR side (e.g. unescaped quotes),
-        // not the user's fault — that must 500 honestly, never blame the input.
-        // Anything else is almost always the model answering in prose instead
-        // of the schema — deterministic, so surface a helpful 422 instead of a
-        // generic 500.
-        if (!/truncated at max_tokens/.test(retryErr.message) && !(retryErr instanceof SyntaxError)) {
-          return res.status(422).json({ error: 'Add a bit more detail about your route (nearby streets, neighborhood, or a landmark) and try again.' });
-        }
-        throw retryErr;
-      }
-
-      if (!parsed?.what_matters || !parsed?.bottom_line) {
-        return res.status(500).json({ error: 'Could not put together a walk plan. Please try again.' });
-      }
-
-      const cleaned = stripCites(parsed);
-      limitRepeats(cleaned, `${concerns} ${routeKnowledge}`);
-      dropInventedTurns(cleaned, `${from} ${to} ${routeKnowledge} ${concerns} ${userLocation}`);
-
-      await runOutputGuard(cleaned, {
+      // Progressive (2026-10-16, lib/progressive.js): three section passes at
+      // once — what matters first. Only the pass that needs current local
+      // information runs web search (so search cost doesn't multiply); the
+      // guard runs after the answer is on screen. An answer in words instead
+      // of the schema now gets the shared "add a little more detail" 422
+      // (lib/claude.js, T10).
+      const KEYS = ['what_matters', 'before_you_go', 'route_choice', 'watch_for', 'check_in_plan', 'verified_local_info', 'bottom_line'];
+      return await answer(req, res, {
         label: 'safe-walk',
-        fields: collectProseFields(cleaned),
-        supplied,
-        promise: 'Help the visitor plan a walk from only what they actually supplied and verifiable current local information — never an overall risk rating, never an invented street condition or personal state, never a crime/danger claim about a neighborhood.',
-        guard: router.outputGuard,
-        userLanguage,
+        parts: keyGroups([
+          ['what_matters'],
+          ['before_you_go', 'route_choice', 'check_in_plan'],
+          ['watch_for', 'verified_local_info', 'bottom_line'],
+        ], (keys, i) => callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: i === 2 ? 3000 : 1800,
+          system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          ...(keys.includes('verified_local_info') ? { tools: [{ type: 'web_search_20250305', name: 'web_search' }] } : {}),
+          messages: [{ role: 'user', content: onlyKeys(supplied, keys) }],
+        }, { label: `safe-walk-${i + 1}` })),
+        finish: (d) => {
+          const cleaned = stripCites(Object.fromEntries(KEYS.filter(k => d[k] !== undefined).map(k => [k, structuredClone(d[k])])));
+          limitRepeats(cleaned, `${concerns} ${routeKnowledge}`);
+          dropInventedTurns(cleaned, `${from} ${to} ${routeKnowledge} ${concerns} ${userLocation}`);
+          return cleaned;
+        },
+        ready: d => Boolean(d.what_matters),
+        complete: d => Boolean(d.what_matters && d.bottom_line),
+        check: d => runOutputGuard(d, {
+          label: 'safe-walk',
+          fields: collectProseFields(d),
+          supplied,
+          promise: 'Help the visitor plan a walk from only what they actually supplied and verifiable current local information — never an overall risk rating, never an invented street condition or personal state, never a crime/danger claim about a neighborhood.',
+          guard: router.outputGuard,
+          userLanguage,
+        }),
       });
-
-      return res.json(cleaned);
     }
 
     return res.status(400).json({ error: `Unknown action: ${action}` });

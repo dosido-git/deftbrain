@@ -3,6 +3,7 @@ import Caret from '../components/Caret';
 import AutoGrowTextarea from '../components/AutoGrowTextarea';
 
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -75,7 +76,7 @@ const EXAMPLES = [
 ];
 
 const DifficultTalkCoach = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -121,6 +122,7 @@ const DifficultTalkCoach = ({ tool }) => {
   const linkStyle = isDark
     ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
     : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Input State ───
   const [relationship, setRelationship] = useState('');
@@ -268,13 +270,14 @@ const DifficultTalkCoach = ({ tool }) => {
     if (!relationship) { setError(t('dtc_err_relationship')); return; }
     if (goals.length === 0) { setError(t('dtc_err_goal')); return; }
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setSimMessages([]);
     setSimStarted(false);
     setDebriefResults(null);
 
     try {
-      const data = await callToolEndpoint('difficult-talk-coach', {
+      // Progressive (2026-10-16): the situation read shows first; checked after.
+      const data = await callToolEndpointProgressive('difficult-talk-coach', {
         topic: topic.trim(),
         relationship,
         communicationStyle,
@@ -286,7 +289,11 @@ const DifficultTalkCoach = ({ tool }) => {
         previousAttempts: previousAttempts.trim() || null,
         userLanguage: navigator.language || 'en',
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setActiveTab('prepare');
       setExpandedApproach(0);
@@ -458,7 +465,7 @@ const DifficultTalkCoach = ({ tool }) => {
   const reset = () => {
     setTopic(''); setRelationship(''); setGoals([]); setFears([]); setBiggestFear('');
     setTheirPerspective(''); setPreviousAttempts('');
-    setResults(null); setError(''); setSimMessages([]); setSimStarted(false);
+    cancelProgressive(); setCheckStatus(null); setResults(null); setError(''); setSimMessages([]); setSimStarted(false);
     setDebriefResults(null); setHowItWent(''); setActiveTab('prepare');
     setSimOpenness(50); setPracticeResistance(null);
     setPracticeSummary(null); setShowCorrection(null); setCorrectionText('');
@@ -759,6 +766,7 @@ const DifficultTalkCoach = ({ tool }) => {
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
           {/* Fixed copy. Named the real obstacle before the tabs start handing
               out scripts — the words were never the hard part. */}

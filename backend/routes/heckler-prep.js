@@ -1,4 +1,5 @@
 const express = require('express');
+const { answer } = require('../lib/progressive');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -552,59 +553,77 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const ledgerOnly = ledgerText(ledger);
 
     // PASS 2 — generators see ONLY the ledger, never the raw form.
-    const analyticalPrompt = `${ledgerOnly}\n\nGenerate exactly ${splitA} questions about THE CASE ITSELF: evidence, cost, feasibility, timing, scope, execution, alternatives. Do not cover trust, accountability, precedent, or consequences. At least ${brutalA} must be brutal. Return ONLY valid JSON: {"questions":[${qShape}]}. Number 1-${splitA}. ${difficultyRule}`;
-    const humanPrompt = `${ledgerOnly}\n\nGenerate exactly ${splitB} questions about WHAT FOLLOWS FROM IT: accountability, decision rights, precedent, trust, consequences, what happens if it goes wrong, and what approval signals. At least ${brutalB} must be brutal. Also generate grounded framing. Return ONLY valid JSON: {"questions":[${qShape}],"situation_read":{"text":"2 concise sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"the_curveball":{"question":"one unexpected credible question","how_to_handle":"2 concise grounded coaching sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[],"hypothetical":false,"hypothetical_premise":null},"opening_move":{"text":"one grounded sentence acknowledging the biggest explicit objection without conceding it, or null","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"confidence_note":{"text":"one grounded preparation insight, not generic encouragement","fact_ids":[],"objection_ids":[],"unknown_ids":[]}}. Number 1-${splitB}. ${difficultyRule}`;
 
-    const budget = stakes === 'high' ? 5200 : stakes === 'moderate' ? 3200 : 2200;
-    const [analytical, human] = await Promise.all([
-      callClaudeWithRetry({ model: MODELS.SMART, max_tokens: budget, system: withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix, messages: [{ role: 'user', content: analyticalPrompt }] }, { label: 'heckler-prep:generate-case' }),
-      callClaudeWithRetry({ model: MODELS.SMART, max_tokens: budget + 800, system: withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix, messages: [{ role: 'user', content: humanPrompt }] }, { label: 'heckler-prep:generate-human' }),
-    ]);
+    // Progressive (2026-10-16, lib/progressive.js): after the ledger, five
+    // passes at once — the framing (situation read first) and the questions
+    // split by topic into four — each shown as it lands. Validation against
+    // the ledger and the consistency check run after the answer is on screen.
+    const system = withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix;
+    const ask = (content, label, maxTokens) => callClaudeWithRetry({ model: MODELS.SMART, max_tokens: maxTokens, system, messages: [{ role: 'user', content }] }, { label });
+    const half = (n) => [Math.ceil(n / 2), Math.floor(n / 2)];
+    const [aCount1, aCount2] = half(splitA), [hCount1, hCount2] = half(splitB);
+    const [aBrutal1, aBrutal2] = half(brutalA), [hBrutal1, hBrutal2] = half(brutalB);
+    const questionPass = (count, brutal, topics, avoid) => `${ledgerOnly}\n\nGenerate exactly ${count} questions about ${topics}. Do not cover ${avoid} — other passes write those at the same time. ${brutal ? `At least ${brutal} must be brutal. ` : ''}Return ONLY valid JSON: {"questions":[${qShape}]}. ${difficultyRule}`;
+    const QUESTION_PASSES = [
+      [aCount1, aBrutal1, 'THE CASE ITSELF — its evidence, cost and the alternatives to it', 'feasibility, timing, scope, execution, trust, accountability, precedent or consequences'],
+      [aCount2, aBrutal2, 'THE CASE ITSELF — its feasibility, timing, scope and execution', 'evidence, cost, alternatives, trust, accountability, precedent or consequences'],
+      [hCount1, hBrutal1, 'WHAT FOLLOWS FROM IT — accountability, decision rights and precedent', 'the case itself, trust, consequences, what happens if it goes wrong, or what approval signals'],
+      [hCount2, hBrutal2, 'WHAT FOLLOWS FROM IT — trust, consequences, what happens if it goes wrong, and what approval signals', 'the case itself, accountability, decision rights or precedent'],
+    ].filter(([count]) => count > 0);
+    const framingPrompt = `${ledgerOnly}\n\nOther passes are writing the audience questions at the same time. THIS PASS writes only the grounded framing. Return ONLY valid JSON: {"situation_read":{"text":"2 concise sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"the_curveball":{"question":"one unexpected credible question","how_to_handle":"2 concise grounded coaching sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[],"hypothetical":false,"hypothetical_premise":null},"opening_move":{"text":"one grounded sentence acknowledging the biggest explicit objection without conceding it, or null","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"confidence_note":{"text":"one grounded preparation insight, not generic encouragement","fact_ids":[],"objection_ids":[],"unknown_ids":[]}}`;
 
     const RANK = { moderate: 0, hard: 1, brutal: 2 };
-    let questions = [...(analytical?.questions || []), ...(human?.questions || [])]
-      .sort((a, b) => (RANK[a?.difficulty] ?? 0) - (RANK[b?.difficulty] ?? 0))
-      .map((q, i) => ({ ...q, number: i + 1 }));
-    if (!questions.length) return res.status(500).json({ error: 'Could not generate your prep questions. Please try again.' });
-
-    // PASS 3 — validate each independent surface; repair only failures.
-    questions = await Promise.all(questions.map((q, i) => validateAndRepair(q, ledger, userLanguage, localeSuffix, `q${i + 1}`)));
-    questions = questions.map((q, i) => ({ ...q, number: i + 1 }));
-
-    const framingEntries = await Promise.all([
-      validateAndRepair(human?.situation_read || null, ledger, userLanguage, localeSuffix, 'situation'),
-      validateAndRepair(human?.opening_move || null, ledger, userLanguage, localeSuffix, 'opening'),
-      validateAndRepair(human?.the_curveball || null, ledger, userLanguage, localeSuffix, 'curveball'),
-      validateAndRepair(human?.confidence_note || null, ledger, userLanguage, localeSuffix, 'closing'),
-    ]);
-
-    const [situationObj, openingObj, curveballObj, confidenceObj] = framingEntries;
-    const final = {
-      questions,
-      situation_read: situationObj?.text ?? situationObj ?? null,
-      opening_move: openingObj?.text ?? openingObj ?? null,
-      the_curveball: curveballObj ? {
-        question: curveballObj.question,
-        how_to_handle: curveballObj.how_to_handle,
-      } : null,
-      confidence_note: confidenceObj?.text ?? confidenceObj ?? null,
+    const qSlots = new Array(QUESTION_PASSES.length).fill(null);
+    const FRAMING = ['situation_read', 'opening_move', 'the_curveball', 'confidence_note'];
+    const build = (d) => {
+      const questions = (d.validatedQuestions || qSlots.flatMap(x => x || []))
+        .slice().sort((x, y) => (RANK[x?.difficulty] ?? 0) - (RANK[y?.difficulty] ?? 0))
+        .map((q, i) => ({ ...q, number: i + 1 }));
+      const f = d.validatedFraming || d.framing || {};
+      const final = {
+        questions,
+        situation_read: f.situation_read?.text ?? f.situation_read ?? null,
+        opening_move: f.opening_move?.text ?? f.opening_move ?? null,
+        the_curveball: f.the_curveball ? { question: f.the_curveball.question, how_to_handle: f.the_curveball.how_to_handle } : null,
+        confidence_note: f.confidence_note?.text ?? f.confidence_note ?? null,
+      };
+      const publicResult = dropSentencesWithIds(stripProvenance(final));
+      try { assertNoInternalKeys(publicResult); } catch (e) { console.error('[heckler-prep]', e.message); }
+      return publicResult;
     };
 
-    // Provenance is intentionally hidden from the current frontend. Keep it in
-    // server logs during rollout so failed runs can be diagnosed by evidence ID.
-    if (process.env.HP_LOG_PROVENANCE === '1') {
-      console.log('[heckler-prep] evidence ledger', JSON.stringify(ledger));
-      console.log('[heckler-prep] provenance output', JSON.stringify({ questions, situationObj, openingObj, curveballObj, confidenceObj }));
-    }
-
-    // Public response boundary. `final` is assembled field by field from the
-    // validated components — an allowlist, so a new internal field cannot
-    // arrive by accident — then stripped recursively, then checked.
-    const publicResult = dropSentencesWithIds(stripProvenance(final));
-    assertNoInternalKeys(publicResult);
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(publicResult, { label: 'heckler-prep', userLanguage: req.body?.userLanguage });
-    return res.json(publicResult);
+    return await answer(req, res, {
+      label: 'heckler-prep',
+      parts: [
+        { run: () => ask(framingPrompt, 'heckler-prep:framing', 1500), apply: (d, o) => { d.framing = Object.fromEntries(FRAMING.map(k => [k, o?.[k] || null])); } },
+        ...QUESTION_PASSES.map(([count, brutal, topics, avoid], i) => ({
+          run: () => ask(questionPass(count, brutal, topics, avoid), `heckler-prep:generate-${i + 1}`, Math.max(1600, count * 450)),
+          apply: (d, o) => { qSlots[i] = Array.isArray(o?.questions) ? o.questions.slice(0, count) : []; d.questionCount = qSlots.flat().filter(Boolean).length; },
+        })),
+      ],
+      finish: d => (d.final ? structuredClone(d.final) : build(d)),
+      ready: d => Boolean(d.framing?.situation_read),
+      complete: () => qSlots.some(x => x && x.length),
+      check: async (d) => {
+        const questions = qSlots.flatMap(x => x || []);
+        d.validatedQuestions = await Promise.all(questions.map((q, i) => validateAndRepair(q, ledger, userLanguage, localeSuffix, `q${i + 1}`)));
+        const f = d.framing || {};
+        const [situation_read, opening_move, the_curveball, confidence_note] = await Promise.all([
+          validateAndRepair(f.situation_read || null, ledger, userLanguage, localeSuffix, 'situation'),
+          validateAndRepair(f.opening_move || null, ledger, userLanguage, localeSuffix, 'opening'),
+          validateAndRepair(f.the_curveball || null, ledger, userLanguage, localeSuffix, 'curveball'),
+          validateAndRepair(f.confidence_note || null, ledger, userLanguage, localeSuffix, 'closing'),
+        ]);
+        d.validatedFraming = { situation_read, opening_move, the_curveball, confidence_note };
+        if (process.env.HP_LOG_PROVENANCE === '1') {
+          console.log('[heckler-prep] evidence ledger', JSON.stringify(ledger));
+          console.log('[heckler-prep] provenance output', JSON.stringify(d.validatedQuestions));
+        }
+        const publicResult = build(d);
+        await checkConsistency(publicResult, { label: 'heckler-prep', userLanguage: req.body?.userLanguage });
+        d.final = publicResult;
+      },
+    });
   } catch (error) {
     console.error('HecklerPrep error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

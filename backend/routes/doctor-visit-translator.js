@@ -8,6 +8,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
 const { bothChecks } = require('../lib/bothChecks');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 // Defense-in-depth strip of the model-generated diagram markup. The frontend
 // also runs DOMPurify; this ensures the API itself never emits <script>,
 // event-handler attributes, <foreignObject>, or js:/external resource URLs.
@@ -270,64 +271,76 @@ Return ONLY the JSON object.`;
       + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     // When a PDF is present, send the prompt text first, then the native document block.
-    const userContent = pdfData
+    const contentFor = (text) => (pdfData
       ? [
-          { type: 'text', text: augmentedPrompt },
+          { type: 'text', text },
           {
             type: 'document',
             source: { type: 'base64', media_type: 'application/pdf', data: pdfData },
           },
         ]
-      : augmentedPrompt;
+      : text);
 
-    const results = await callClaudeWithRetry({
-      model: MODELS.DEEP,
-      // Large nested schema: 2500 truncated the JSON → parse failure → 3 retries (~2.5 min) → error.
-      max_tokens: 8000,
-      messages: [{ role: 'user', content: userContent }]
-    }, { label: 'doctor-visit-translator' });
-
-    if (!results.plain_english_summary) {
-      return res.status(500).json({ error: 'Could not translate your medical information. Please try again.' });
-    }
-
-    // Checks (2026-10-07) — this tool had none. A medical explanation that
-    // invents a dose, a test value or an instruction the notes never gave is
-    // the worst error the catalog can make. Both checks are the shared,
-    // proven ones (lib/factCheck.js) and both fail open.
-    //   1. Supplied facts: anything patient-specific must come from the notes.
-    //      Text notes only — a PDF's text isn't available to the checker.
-    //   2. Number check: doses, values and dates must agree everywhere.
-    const notes = (doctorNotes || '').trim();
-    if (notes && !isSurging()) {
-      try {
-        const fields = [];
-        const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
-        Object.entries(results.plain_english_summary || {}).forEach(([k, v]) => add(`plain_english_summary.${k}`, v));
-        (results.action_checklist || []).forEach((a, i) => { add(`action_checklist[${i}].action`, a?.action); add(`action_checklist[${i}].how`, a?.how); add(`action_checklist[${i}].when`, a?.when); });
-        (results.medications || []).forEach((m, i) => { add(`medications[${i}].name`, m?.name); add(`medications[${i}].how_to_take`, m?.how_to_take); });
-        (results.test_results_explained || []).forEach((t, i) => { add(`test_results_explained[${i}].your_result`, t?.your_result); add(`test_results_explained[${i}].trend`, t?.trend); });
-        const fu = results.follow_up_requirements || {};
-        add('follow_up_requirements.next_appointment', fu.next_appointment);
-        await checkAgainstSupplied(results, {
-          label: 'doctor-visit-translator',
-          supplied: `THE DOCTOR'S NOTES / DOCUMENT:\n${notes.slice(0, 6000)}${concerns ? `\n\nPATIENT'S CONCERNS: ${concerns}` : ''}${currentMedications ? `\n\nMEDICATIONS THE PATIENT LISTED: ${currentMedications}` : ''}`,
-          fields,
-          lookFor: `- a dose, frequency, timing, test value, date, diagnosis or instruction about THIS patient that the notes do not state, or state differently
-- a medication the notes do not mention presented as part of this patient's plan
-General medical explanation — what a test measures, what a drug class does, typical side effects, common target ranges — is NOT a violation.`,
-          repairNote: 'Keep the plain-language explanation. Remove or correct only the patient-specific detail the notes do not support; if the notes are unclear, say to confirm it with the doctor or pharmacist.',
-          userLanguage,
-        });
-      } catch (e) { console.error('doctor-visit-translator supplied-facts check:', e.message); }
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(results,
-      d => withNumberCheck(d, { label: 'doctor-visit-translator', context: notes.slice(0, 4000), userLanguage }),
-      d => checkConsistency(d, { label: 'doctor-visit-translator', userLanguage: req.body?.userLanguage }),
-      { label: 'doctor-visit-translator' });
-    res.json(results);
+    // Progressive (2026-10-16, lib/progressive.js): one large call became
+    // four section passes at once — the plain-English summary first — and
+    // the supplied-facts, number and consistency checks run after display.
+    // Four, not more: each pass re-reads the notes or PDF, which is paid input.
+    const KEYS = ['plain_english_summary', 'medical_terms_explained', 'visual_aids_recommended', 'action_checklist', 'medications', 'medication_safety', 'test_results_explained', 'follow_up_requirements', 'questions_for_next_visit', 'second_opinion_guidance', 'patient_advocacy', 'insurance_navigation', 'health_literacy_tips'];
+    return await answer(req, res, {
+      label: 'doctor-visit-translator',
+      parts: keyGroups([
+        ['plain_english_summary'],
+        ['medical_terms_explained', 'visual_aids_recommended', 'test_results_explained'],
+        ['action_checklist', 'medications', 'medication_safety', 'follow_up_requirements'],
+        ['questions_for_next_visit', 'second_opinion_guidance', 'patient_advocacy', 'insurance_navigation', 'health_literacy_tips'],
+      ], (keys, i) => callClaudeWithRetry({
+        model: MODELS.DEEP,
+        // The whole schema needed 8000 (2500 truncated); a pass writes a part.
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: contentFor(onlyKeys(augmentedPrompt, keys)) }],
+      }, { label: `doctor-visit-translator-${i + 1}` })),
+      finish: d => Object.fromEntries(KEYS.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
+      ready: d => Boolean(d.plain_english_summary),
+      complete: d => Boolean(d.plain_english_summary),
+      check: async (results) => {
+        // Checks (2026-10-07) — this tool had none. A medical explanation that
+        // invents a dose, a test value or an instruction the notes never gave is
+        // the worst error the catalog can make. Both checks are the shared,
+        // proven ones (lib/factCheck.js) and both fail open.
+        //   1. Supplied facts: anything patient-specific must come from the notes.
+        //      Text notes only — a PDF's text isn't available to the checker.
+        //   2. Number check: doses, values and dates must agree everywhere.
+        const notes = (doctorNotes || '').trim();
+        if (notes && !isSurging()) {
+          try {
+            const fields = [];
+            const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
+            Object.entries(results.plain_english_summary || {}).forEach(([k, v]) => add(`plain_english_summary.${k}`, v));
+            (results.action_checklist || []).forEach((a, i) => { add(`action_checklist[${i}].action`, a?.action); add(`action_checklist[${i}].how`, a?.how); add(`action_checklist[${i}].when`, a?.when); });
+            (results.medications || []).forEach((m, i) => { add(`medications[${i}].name`, m?.name); add(`medications[${i}].how_to_take`, m?.how_to_take); });
+            (results.test_results_explained || []).forEach((t, i) => { add(`test_results_explained[${i}].your_result`, t?.your_result); add(`test_results_explained[${i}].trend`, t?.trend); });
+            const fu = results.follow_up_requirements || {};
+            add('follow_up_requirements.next_appointment', fu.next_appointment);
+            await checkAgainstSupplied(results, {
+              label: 'doctor-visit-translator',
+              supplied: `THE DOCTOR'S NOTES / DOCUMENT:\n${notes.slice(0, 6000)}${concerns ? `\n\nPATIENT'S CONCERNS: ${concerns}` : ''}${currentMedications ? `\n\nMEDICATIONS THE PATIENT LISTED: ${currentMedications}` : ''}`,
+              fields,
+              lookFor: `- a dose, frequency, timing, test value, date, diagnosis or instruction about THIS patient that the notes do not state, or state differently
+    - a medication the notes do not mention presented as part of this patient's plan
+    General medical explanation — what a test measures, what a drug class does, typical side effects, common target ranges — is NOT a violation.`,
+              repairNote: 'Keep the plain-language explanation. Remove or correct only the patient-specific detail the notes do not support; if the notes are unclear, say to confirm it with the doctor or pharmacist.',
+              userLanguage,
+            });
+          } catch (e) { console.error('doctor-visit-translator supplied-facts check:', e.message); }
+        }
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(results,
+          d => withNumberCheck(d, { label: 'doctor-visit-translator', context: notes.slice(0, 4000), userLanguage }),
+          d => checkConsistency(d, { label: 'doctor-visit-translator', userLanguage: req.body?.userLanguage }),
+          { label: 'doctor-visit-translator' });
+      },
+    });
 
   } catch (error) {
     console.error('Doctor Visit Translator error:', error);
