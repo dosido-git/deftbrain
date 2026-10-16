@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -309,55 +310,51 @@ Return ONLY valid JSON matching this schema:
 
 LIMITS: what_this_study_supports at most 4, what_it_doesnt_establish at most 4, limitations.reported_in_source at most 5, limitations.design_limits at most 4, important_unknowns at most 4.`}`;
 
-    const [saidPart, meansPart, jargonPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt('said')) }],
-      }, { label: 'research-decoder-v2-said' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt('means')) }],
-      }, { label: 'research-decoder-v2-means' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2500,
-        system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, userPrompt('jargon')) }],
-      }, { label: 'research-decoder-v2-jargon' }),
-    ]);
+    // Progressive (2026-10-16, lib/progressive.js): the finding is its own
+    // small pass so it shows in seconds; what they did, what it means and the
+    // jargon fill in as they land. The guard runs after the answer is on screen.
+    const system = withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (prompt, maxTokens, tag) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: withContentBlocks(hasPdf, blocks, prompt) }],
+    }, { label: `research-decoder-v2-${tag}` });
+    const take = (keys) => (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); };
+    const SAID_FIRST = ['source_scope', 'finding'];
+    const SAID_REST = ['what_they_did', 'key_numbers'];
+    const MEANS = ['what_this_study_supports', 'what_it_doesnt_establish', 'limitations', 'bottom_line', 'important_unknowns'];
     // Original key order, so the page renders as before.
-    const parsed = {
-      source_scope: saidPart?.source_scope,
-      finding: saidPart?.finding,
-      what_they_did: saidPart?.what_they_did,
-      key_numbers: saidPart?.key_numbers,
-      what_this_study_supports: meansPart?.what_this_study_supports,
-      what_it_doesnt_establish: meansPart?.what_it_doesnt_establish,
-      limitations: meansPart?.limitations,
-      jargon: Array.isArray(jargonPart?.jargon) && jargonPart.jargon.length ? jargonPart.jargon : undefined,
-      bottom_line: meansPart?.bottom_line,
-      important_unknowns: meansPart?.important_unknowns,
+    const ORDER = ['source_scope', 'finding', 'what_they_did', 'key_numbers', 'what_this_study_supports', 'what_it_doesnt_establish', 'limitations', 'jargon', 'bottom_line', 'important_unknowns'];
+    const ordered = (d) => {
+      const out = {};
+      for (const k of ORDER) if (d[k] !== undefined) out[k] = d[k];
+      if (!(Array.isArray(out.jargon) && out.jargon.length)) delete out.jargon;
+      return out;
     };
-    for (const k of Object.keys(parsed)) if (parsed[k] === undefined) delete parsed[k];
-
-    if (!parsed?.finding) {
-      return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
-      label: 'research-decoder-v2',
-      fields: collectProseFields(parsed),
-      supplied: `TITLE: ${title || 'none'}\nTEXT: ${hasPdf ? '[PDF document uploaded — see attached]' : text}`,
-      promise: 'Explain what the supplied research reports, what the study did, what the numbers mean, and what it does and does not support — without importing outside research, filling in missing methodology, or overstating causation.',
-      guard: router.outputGuard,
-      userLanguage,
+    const said = userPrompt('said').replace(/THIS PASS writes only what the study SAYS: source_scope, finding, what_they_did and key_numbers\. /, '');
+    return await answer(req, res, {
+      label: 'research-decoder',
+      parts: [
+        { required: true, run: () => call(onlyKeys(said, SAID_FIRST), 900, 'finding'), apply: take(SAID_FIRST) },
+        { run: () => call(onlyKeys(said, SAID_REST), 3000, 'said'), apply: take(SAID_REST) },
+        { run: () => call(userPrompt('means'), 3500, 'means'), apply: take(MEANS) },
+        { run: () => call(userPrompt('jargon'), 2500, 'jargon'), apply: take(['jargon']) },
+      ],
+      finish: d => ordered(structuredClone(d)),
+      ready: d => Boolean(d.finding),
+      complete: d => Boolean(d.finding),
+      check: async (parsed) => {
+        await runOutputGuard(parsed, {
+          label: 'research-decoder-v2',
+          fields: collectProseFields(parsed),
+          supplied: `TITLE: ${title || 'none'}\nTEXT: ${hasPdf ? '[PDF document uploaded — see attached]' : text}`,
+          promise: 'Explain what the supplied research reports, what the study did, what the numbers mean, and what it does and does not support — without importing outside research, filling in missing methodology, or overstating causation.',
+          guard: router.outputGuard,
+          userLanguage,
+        });
+      },
     });
-
-    res.json(parsed);
   } catch (error) {
     console.error('[ResearchDecoder]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

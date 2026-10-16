@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -141,7 +142,7 @@ const ASSESSMENT_TONE = {
 };
 
 const ResearchDecoder = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   // Defensive fallback for the primary submit buttons — t() already treats an
@@ -187,6 +188,7 @@ const ResearchDecoder = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Mode ───
   const [mode, setMode] = useState('decode');
@@ -274,12 +276,16 @@ const ResearchDecoder = ({ tool }) => {
   // ═══ API HANDLERS ═══
   const handleDecode = useCallback(async () => {
     if (!paperText.trim() && !pdfBase64) { setError(t('rd_err_paste_or_upload')); return; }
-    setError('');
+    setError(''); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('research-decoder', {
+      // Progressive (2026-10-16): the finding shows first; checked after.
+      const data = await callToolEndpointProgressive('research-decoder', {
         text: paperText.trim(), pdfBase64, title: paperTitle.trim(),
         interest, interestOther: interest === 'OTHER' ? interestOther.trim() : '',
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setDecodeResult(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setDecodeResult(d); setCheckStatus(checkStatusFor(changed)); },
       });
       if (data) {
         setDecodeResult(data);
@@ -287,7 +293,7 @@ const ResearchDecoder = ({ tool }) => {
         saveToRecentLog('decode', paperTitle.trim(), pdfBase64 ? `[${t('rd_uploaded_file')}] ${fileName}` : paperText.trim(), paperTitle.trim(), data);
       }
     } catch (e) { setError(e.message || t('rd_err_request_failed')); }
-  }, [paperText, pdfBase64, paperTitle, interest, interestOther, fileName, callToolEndpoint, saveToRecentLog, userLocale, userCurrency, userRegion, t]);
+  }, [paperText, pdfBase64, paperTitle, interest, interestOther, fileName, callToolEndpointProgressive, saveToRecentLog, userLocale, userCurrency, userRegion, t]);
 
   const handleRelevance = useCallback(async () => {
     if ((!paperText.trim() && !pdfBase64) || !relWonder.trim()) return;
@@ -379,6 +385,7 @@ const ResearchDecoder = ({ tool }) => {
   }, [mode]);
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setMode('decode');
     setPaperText(''); setPaperTitle(''); setPdfBase64(null); setFileName('');
     setInterest('UNDERSTAND'); setInterestOther(''); setDecodeResult(null);
@@ -576,6 +583,7 @@ const ResearchDecoder = ({ tool }) => {
 
         {decodeResult && (() => { const r = decodeResult; return (
           <div className="space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuted} />
             <div className={`${c.warningBox} border rounded-xl p-5 space-y-3`}>
               <h3 className={`font-bold ${c.accentTxt} text-sm`}>📌 {t('rd_the_finding')}</h3>
               <p className={`text-lg font-semibold ${c.text}`}>{r.finding}</p>

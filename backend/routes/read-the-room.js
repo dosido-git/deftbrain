@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -382,27 +383,38 @@ ${concerns ? `CONCERNS: ${concerns}` : ''}
 COMFORT LEVEL: ${comfort}
 ${topicsToAvoid ? `TOPICS TO AVOID: ${topicsToAvoid}` : ''}${playbookContext(playbook)}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): the aim and plan, the
+    // starters, and the cautions are written at once; the aim shows first.
+    // The guard runs after the answer is on screen.
+    const system = withLanguage(PREPARE_EVENT_SYSTEM, userLanguage);
+    const pass = (keys, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2200,
-      system: withLanguage(PREPARE_EVENT_SYSTEM, userLanguage),
+      max_tokens: 1400,
+      system: onlyKeys(system, keys),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'room-reader-prepare-event' });
-
-    if (!parsed?.what_to_aim_for) {
-      return res.status(500).json({ error: 'Could not read the room. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
-      label: 'room-reader-prepare-event',
-      fields: collectProseFields(parsed),
-      supplied,
-      promise: 'Help the visitor prepare for a real social event using only what they supplied — realistic planning assumptions, actual lines to say, and cautions grounded in their own context, never invented facts about the room or the people in it.',
-      guard: router.outputGuard,
-      userLanguage,
+    }, { label: `room-reader-prepare-event:${i + 1}` });
+    const ORDER = ['what_to_aim_for', 'simple_plan', 'starters', 'if_it_stalls', 'things_to_handle_carefully', 'one_thing_to_remember'];
+    return await answer(req, res, {
+      label: 'room-reader',
+      parts: keyGroups([
+        ['what_to_aim_for', 'simple_plan', 'one_thing_to_remember'],
+        ['starters'],
+        ['if_it_stalls', 'things_to_handle_carefully'],
+      ], pass),
+      finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, structuredClone(d[k])])),
+      ready: d => Boolean(d.what_to_aim_for),
+      complete: d => Boolean(d.what_to_aim_for),
+      check: async (parsed) => {
+        await runOutputGuard(parsed, {
+          label: 'room-reader-prepare-event',
+          fields: collectProseFields(parsed),
+          supplied,
+          promise: 'Help the visitor prepare for a real social event using only what they supplied — realistic planning assumptions, actual lines to say, and cautions grounded in their own context, never invented facts about the room or the people in it.',
+          guard: router.outputGuard,
+          userLanguage,
+        });
+      },
     });
-
-    res.json(parsed);
   } catch (error) {
     console.error('[RoomReaderPrepareEvent]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

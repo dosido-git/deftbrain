@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useReducer, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -169,7 +170,7 @@ function compressImageFile(file) {
 }
 
 const RecipeChaosSolver = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -208,6 +209,7 @@ const RecipeChaosSolver = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── Nav ──
   const [view, setView] = useState('rescue'); // rescue | substitute | scale | preflight | flavor | recent
@@ -372,7 +374,7 @@ const RecipeChaosSolver = ({ tool }) => {
       return;
     }
     setError('');
-    setRescueResults(null);
+    setRescueResults(null); setCheckStatus(null);
     setWalkthroughOpen(false);
     setWalkthroughStep(0);
 
@@ -387,14 +389,19 @@ const RecipeChaosSolver = ({ tool }) => {
       timePressure: timePressure.trim(),
     };
     try {
-      const data = await callToolEndpoint('recipe-chaos-solver', body);
+      // Progressive (2026-10-16): the fix shows before the check finishes.
+      const data = await callToolEndpointProgressive('recipe-chaos-solver', body, {
+        onDraft: d => { setRescueResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setRescueResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (!data) return; // replaced by a newer run
       setRescueResults(data);
       addToRecentLog('rescue', context || problemDescription.trim(), body, data);
     } catch (err) {
       setError(err.message || t('rcs_err_rescue'));
     }
   }, [inputMode, quickDish, recipeText, recipeImageBase64, pantryImageBase64, disasterImageBase64,
-    problemDescription, availableIngredients, dietaryRestrictions, timePressure, callToolEndpoint, addToRecentLog, t]);
+    problemDescription, availableIngredients, dietaryRestrictions, timePressure, callToolEndpointProgressive, addToRecentLog, t]);
 
   // ── Substitute helpers ──
   const addSubSlot = () => setSubIngredients(p => [...p, '']);
@@ -593,6 +600,7 @@ const RecipeChaosSolver = ({ tool }) => {
     scaleRecipe.trim() || pfRecipe.trim() || ffDish.trim());
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setRescueResults(null); setSubResults(null); setScaleResults(null); setPfResults(null); setFfResults(null);
     setQuickDish(''); setRecipeText(''); setProblemDescription(''); setAvailableIngredients('');
     setDietaryRestrictions(''); setTimePressure('');
@@ -762,6 +770,7 @@ const RecipeChaosSolver = ({ tool }) => {
     const f = r.fix;
     return (
       <div className="space-y-3">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {r.immediate_action && (
           <div className={`${c.warningBox} border rounded-xl p-3.5`}>
             <p className="text-xs font-bold mb-1">⚡ {t('rcs_do_now')}</p>

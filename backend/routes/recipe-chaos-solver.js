@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -205,31 +206,39 @@ ${NO_QUOTE_RULE}`;
 
     contentBlocks.push({ type: 'text', text: userPrompt });
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: contentBlocks }],
-    }, { label: 'recipe-chaos-solver' });
-
-    if (!parsed.fix && !parsed.immediate_action) {
-      return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
-    }
-
-    await guardRecipeChaos(parsed, {
+    // Progressive (2026-10-16, lib/progressive.js): one model part — the fix
+    // and the pivot depend on each other, so they stay in one pass — but the
+    // guard now runs after the answer is on screen instead of before it.
+    return await answer(req, res, {
       label: 'recipe-chaos-solver',
-      promise: 'Rescue a specific in-progress dish with a fix grounded in what the visitor actually has and told us, not a reconstructed recipe or an invented outcome.',
-      supplied: `WHAT THEY'RE MAKING: ${recipeContext || (hasRecipeImage ? '(from photo)' : 'not stated')}\nWHAT THEY HAVE: ${availableIngredients || (hasPantryImage ? '(from photo)' : 'not stated')}\nWHAT'S GOING WRONG: ${problemDescription || 'not stated'}\nDIETARY: ${dietaryRestrictions || 'none stated'}\n\nAnything not listed above (exact quantities, oven temperature, bake time, pan size, batch size, what's currently in the pan) was NOT supplied — a value for it in the output is invented, not a violation to invent one only if it's framed as a general starting point rather than a fact about this dish.`,
-      userLanguage,
-    });
-
-    res.json({
-      immediate_action: parsed.immediate_action ?? null,
-      safety_warning: parsed.safety_warning ?? null,
-      visual_observation: parsed.visual_observation ?? null,
-      ingredients_recognized: parsed.ingredients_recognized ?? [],
-      fix: parsed.fix ?? null,
-      pivot: parsed.pivot ?? null,
+      parts: [{
+        required: true,
+        run: () => callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 3000,
+          system: withLanguage(systemPrompt, userLanguage),
+          messages: [{ role: 'user', content: contentBlocks }],
+        }, { label: 'recipe-chaos-solver' }),
+        apply: (d, out) => Object.assign(d, out),
+      }],
+      finish: d => ({
+        immediate_action: d.immediate_action ?? null,
+        safety_warning: d.safety_warning ?? null,
+        visual_observation: d.visual_observation ?? null,
+        ingredients_recognized: structuredClone(d.ingredients_recognized ?? []),
+        fix: structuredClone(d.fix ?? null),
+        pivot: structuredClone(d.pivot ?? null),
+      }),
+      ready: d => Boolean(d.fix || d.immediate_action),
+      complete: d => Boolean(d.fix || d.immediate_action),
+      check: async (parsed) => {
+        await guardRecipeChaos(parsed, {
+          label: 'recipe-chaos-solver',
+          promise: 'Rescue a specific in-progress dish with a fix grounded in what the visitor actually has and told us, not a reconstructed recipe or an invented outcome.',
+          supplied: `WHAT THEY'RE MAKING: ${recipeContext || (hasRecipeImage ? '(from photo)' : 'not stated')}\nWHAT THEY HAVE: ${availableIngredients || (hasPantryImage ? '(from photo)' : 'not stated')}\nWHAT'S GOING WRONG: ${problemDescription || 'not stated'}\nDIETARY: ${dietaryRestrictions || 'none stated'}\n\nAnything not listed above (exact quantities, oven temperature, bake time, pan size, batch size, what's currently in the pan) was NOT supplied — a value for it in the output is invented, not a violation to invent one only if it's framed as a general starting point rather than a fact about this dish.`,
+          userLanguage,
+        });
+      },
     });
 
   } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -147,7 +148,7 @@ function compressImageFile(file) {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const BillRescue = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -224,6 +225,7 @@ const BillRescue = ({ tool }) => {
   const linkStyle = isDark
     ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
     : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const billPhotoRef = useRef(null);
   const resultsRef = useRef(null);
@@ -356,9 +358,11 @@ const BillRescue = ({ tool }) => {
   const analyze = useCallback(async () => {
     if (!billType) { setError(t('br_err_select_type')); return; }
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('bill-rescue', {
+      // Progressive (2026-10-16): where they stand shows first; checked after.
+      const withInput = d => ({ ...d, _input: { billType, amount: amount || null, currency, details: details.trim() || null } });
+      const data = await callToolEndpointProgressive('bill-rescue', {
         billType,
         amount: amount ? Number(amount) : null,
         currency,
@@ -368,13 +372,17 @@ const BillRescue = ({ tool }) => {
         pastedBill: pastedBill.trim() || null,
         billImageBase64: billImageBase64 || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(withInput(d)); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(withInput(d)); setCheckStatus(checkStatusFor(changed)); },
       });
-      setResults({ ...data, _input: { billType, amount: amount || null, currency, details: details.trim() || null } });
+      if (!data) return; // replaced by a newer run
+      setResults(withInput(data));
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('br_err_analysis'));
     }
-  }, [billType, amount, currency, overdueStatus, reason, details, pastedBill, billImageBase64, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [billType, amount, currency, overdueStatus, reason, details, pastedBill, billImageBase64, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   // ── Triage ──
   const runTriage = useCallback(async () => {
@@ -630,8 +638,9 @@ const BillRescue = ({ tool }) => {
     setBillType(''); setAmount(''); setOverdueStatus(''); setReason([]);
     setDetails(''); setPastedBill('');
     setBillImagePreview(null); setBillImageBase64(null);
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setError('');
-  }, [setBillType, setResults]);
+  }, [setBillType, setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Five per view, rotated. Rescue: too big to pay, simply wrong, already in
   // collections, rent a few weeks late, and a loan nobody can explain — five
@@ -1064,6 +1073,7 @@ const BillRescue = ({ tool }) => {
     const r = results;
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {r._input && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

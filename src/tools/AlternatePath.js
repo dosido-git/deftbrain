@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -20,7 +21,7 @@ const plausInt = (v) => {
 };
 
 const AlternatePath = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -89,6 +90,7 @@ const AlternatePath = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State ───
   const [yearOrContext, setYearOrContext] = useState('');
@@ -109,10 +111,11 @@ const AlternatePath = ({ tool }) => {
   const handleSubmit = async () => {
     if (!whatIf.trim()) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
 
     try {
-      const data = await callToolEndpoint('alternate-path', {
+      // Progressive (2026-10-16): the divergence shows first, then the chain.
+      const data = await callToolEndpointProgressive('alternate-path', {
         whatIf: whatIf.trim(),
         yearOrContext: yearOrContext.trim(),
         reach,
@@ -120,7 +123,11 @@ const AlternatePath = ({ tool }) => {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -134,6 +141,7 @@ const AlternatePath = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setWhatIf('');
     setYearOrContext('');
     setReach('decades');
@@ -381,6 +389,7 @@ const AlternatePath = ({ tool }) => {
       {/* ── Results ── */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Divergence banner */}
           <div className={`${c.divergenceBg} border-2 rounded-2xl p-5 text-center`}>

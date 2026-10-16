@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -78,22 +79,40 @@ Return ONLY valid JSON:
 
 "plausibility" MUST be a single integer from 1 to 10 (digits only — no decimals, no text, no "/10").`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): the divergence and the
+    // real history (small) and the timeline (the chain — one pass, each link
+    // follows the last) are written at once; the summary lines that look back
+    // over the chain are written after it lands, so they never describe a
+    // different timeline. The consistency check runs after the answer shows.
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or speech plainly or with single quotes, or it breaks the JSON.';
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      // 6000 was the anti-truncation fix for the old deep mode. today+weird is
-      // a combination that never existed before — the full 8-link chain *and*
-      // licence to get florid — so it gets headroom on top, which matters most
-      // in German, where the same timeline runs about a third longer.
-      max_tokens: 7000,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or speech plainly or with single quotes, or it breaks the JSON.',
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'AlternatePath' });
-    if (!parsed.divergence_point) {
-      return res.status(500).json({ error: 'Could not generate the alternate path. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'alternate-path', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: `AlternatePath:${tag}` });
+    const take = (keys) => (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); };
+    const HEAD = ['divergence_point', 'real_history'];
+    const SUMMARY = ['today_looks_like', 'biggest_surprise', 'butterfly_moment', 'plausibility'];
+    return await answer(req, res, {
+      label: 'alternate-path',
+      parts: [
+        { required: true, run: () => call(onlyKeys(userPrompt, HEAD), 800, 'head'), apply: take(HEAD) },
+        // 6000 was the anti-truncation fix for the old deep mode; today+weird
+        // gets headroom on top, which matters most in German.
+        { required: true, run: () => call(onlyKeys(userPrompt, ['timeline']), 6000, 'timeline'), apply: take(['timeline']) },
+      ],
+      after: async (d) => {
+        const out = await call(onlyKeys(userPrompt, SUMMARY) + `\n\nTHE TIMELINE ALREADY WRITTEN (another pass wrote it; describe THIS chain, never a different one):\n${JSON.stringify({ divergence_point: d.divergence_point, timeline: d.timeline })}`, 1500, 'summary');
+        take(SUMMARY)(d, out);
+      },
+      ready: d => Boolean(d.divergence_point),
+      complete: d => Boolean(d.divergence_point && Array.isArray(d.timeline) && d.timeline.length),
+      check: async (parsed) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'alternate-path', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('AlternatePath error:', error);

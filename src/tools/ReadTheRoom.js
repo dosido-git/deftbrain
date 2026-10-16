@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -217,7 +218,7 @@ const Req = ({ c }) => <span className={c.required}>*</span>;
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const ReadTheRoom = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -256,6 +257,7 @@ const ReadTheRoom = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [group, setGroup] = useState('prepare');
@@ -426,12 +428,17 @@ const ReadTheRoom = ({ tool }) => {
   const handlePrepareEvent = useCallback(async () => {
     const el = effectiveEventType || eventDetails?.trim();
     if (!el) { setError(t('rr_err_event')); return; }
-    setError('');
+    setError(''); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('room-reader', { eventType: el, eventDetails, people, concerns, topicsToAvoid, comfort, playbook });
-      if (data) { setEventResult({ ...data, _recap: recapOf(eventLabel, eventDetails !== eventLabel ? eventDetails : '', concerns) }); addToHistory('prepare:event', el); }
+      // Progressive (2026-10-16): the aim and plan show first; checked after.
+      const recap = recapOf(eventLabel, eventDetails !== eventLabel ? eventDetails : '', concerns);
+      const data = await callToolEndpointProgressive('room-reader', { eventType: el, eventDetails, people, concerns, topicsToAvoid, comfort, playbook }, {
+        onDraft: d => { setEventResult({ ...d, _recap: recap }); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setEventResult({ ...d, _recap: recap }); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (data) { setEventResult({ ...data, _recap: recap }); addToHistory('prepare:event', el); }
     } catch (e) { setError(e.message || t('rr_err_request_failed')); }
-  }, [effectiveEventType, eventLabel, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, callToolEndpoint, addToHistory, t]);
+  }, [effectiveEventType, eventLabel, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, callToolEndpointProgressive, addToHistory, t]);
 
   const handlePreparePerson = useCallback(async () => {
     if (!personKnow.trim() && !effectivePersonRel) { setError(t('rr_err_person')); return; }
@@ -553,6 +560,7 @@ const ReadTheRoom = ({ tool }) => {
 
   // ── Reset (S1.5 / PF-16: header-only, single instance) ──
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setError('');
     setEventType(''); setEventOther(''); setEventDetails(''); setPeople('');
     setConcerns(''); setTopicsToAvoid(''); setComfort('nervous'); setEventResult(null);
@@ -570,7 +578,7 @@ const ReadTheRoom = ({ tool }) => {
     setDepthWhat(''); setDepthRelationship(''); setDepthResult(null);
     setAfterEvent(''); setAfterWhat(''); setAfterWentWell(''); setAfterFeltOff(''); setAfterTimeline(''); setAfterFeeling(''); setAfterResult(null);
     setFollowUpWho(''); setFollowUpContext(''); setFollowUpWhat(''); setFollowUpGoal(''); setFollowUpResult(null);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Try Example (PF-17: demo functionality on multi-field tools) ──
   const loadExample = useCallback(() => {
@@ -877,6 +885,7 @@ const ReadTheRoom = ({ tool }) => {
 
           {eventResult && (
             <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+              <CheckNote status={checkStatus} className={c.textMuted} />
               {renderRecap(eventResult)}
               <button onClick={() => saveGamePlan(effectiveEventType || eventDetails?.trim() || t('rr_default_event'), eventResult)}
                 className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>

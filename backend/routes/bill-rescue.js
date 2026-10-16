@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -424,38 +425,56 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     // paste-bill call — 2026-07-23 audit; DE passed at 161s). Split 4500 (core:
     // autopsy + steps + scripts + payment plan) + 4400 (support: rights + letters +
     // programs + worst case) — sum unchanged, each half has generous headroom.
-    const [coreHalf, supportHalf] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 5500,
-        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: contentFor(userPromptA) }],
-      }, { label: 'bill-rescue-core' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4400,
-        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: contentFor(userPromptB) }],
-      }, { label: 'bill-rescue-support' }),
-    ]);
-
-    // Merge in ORIGINAL shape; core half wins any (unexpected) key overlap so
-    // the guard field below always comes from the call that owns it.
-    const parsed = { ...supportHalf, ...coreHalf };
-    // The visitor watched a file upload. If it could not be used, the answer
-    // has to say so rather than quietly arriving without an autopsy.
-    if (hasBillImage && !billBlock) parsed.attachment_ignored = true;
-    if (!parsed.verdict) {
-      return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
-    }
-    await withNumberCheck(parsed, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage });
-    if (hasAmount) fixPlanMonths(parsed, amount);
-    const verifiedSources = groundedData(billFactsCacheKey)?.sources;
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
-    res.json({
-      ...stripCites(parsed),
-      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
+    // Progressive (2026-10-16, lib/progressive.js): both halves are split
+    // further into section passes, all at once — where they stand and the one
+    // job for today show first. Consistency pairs still share a pass
+    // (autopsy total with its charges; the plan's arithmetic inside the plan).
+    // The number and consistency checks run after the answer is on screen;
+    // plan months stay code-computed on every draft.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const forKeys = (prompt, all, keys) => onlyKeys(prompt.replace(
+      `Your response MUST contain ALL ${all.length} top-level keys — ${all.join(', ')} — and NO other keys.`,
+      `Your response contains ONLY these top-level keys: ${keys.join(', ')}.`), keys);
+    const half = (prompt, all, tag, maxTokens) => (keys, i) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: contentFor(forKeys(prompt, all, keys)) }],
+    }, { label: `bill-rescue-${tag}${i + 1}` });
+    const only = (all) => (groups) => groups.map(g => g.filter(k => all.includes(k))).filter(g => g.length);
+    const coreParts = keyGroups(only(keysA)([
+      ['verdict', 'recommendation', 'todays_job'],
+      ['shame_to_action', 'money_you_might_not_owe', 'bill_autopsy'],
+      ['action_steps', 'phone_script'],
+      ['payment_plan', 'escalation_ladder'],
+    ]), half(userPromptA, keysA, 'core', 3000));
+    const supportParts = keyGroups(only(keysB)([
+      ['hardship_letter', 'collections_defense'],
+      ['know_your_rights', 'what_they_wont_tell_you', 'assistance_programs'],
+      ['worst_case', 'worst_case_reassurance', 'follow_up', 'permission'],
+    ]), half(userPromptB, keysB, 'support', 3000)).map(p => ({ ...p, required: false }));
+    const verifiedSources = () => groundedData(billFactsCacheKey)?.sources;
+    const shape = (d) => {
+      const parsed = structuredClone(d);
+      // The visitor watched a file upload. If it could not be used, the answer
+      // has to say so rather than quietly arriving without an autopsy.
+      if (hasBillImage && !billBlock) parsed.attachment_ignored = true;
+      if (hasAmount) fixPlanMonths(parsed, amount);
+      const sources = verifiedSources();
+      return { ...stripCites(parsed), ...(sources && sources.length ? { verified_sources: sources } : {}) };
+    };
+    return await answer(req, res, {
+      label: 'bill-rescue',
+      parts: [...coreParts, ...supportParts],
+      finish: shape,
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+      check: async (parsed) => {
+        await withNumberCheck(parsed, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage });
+        if (hasAmount) fixPlanMonths(parsed, amount);
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
+      },
     });
 
   } catch (error) {
