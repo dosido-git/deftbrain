@@ -134,6 +134,17 @@ function noteRefusal(model) {
   isSurging();
 }
 
+// The model answered in words instead of the JSON asked for — almost always
+// "I need more detail about…" on an input too vague to work with (Name Storm
+// quick mode, "my", 2026-10-15). Marked here so the middleware below can
+// answer 422 { code: 'unclear_input' } instead of a generic 500.
+function noteUnclearInput() {
+  const s = busyScope.getStore();
+  if (s) s.unclear = true;
+}
+
+const UNCLEAR_MESSAGE = 'This needs a little more detail to work with. Add a few words about what it is, then try again.';
+
 // A request can be moved to a smaller model only when nothing in it needs the
 // bigger one: server-side tools (web search) and extended thinking stay put.
 function swappable(params) {
@@ -198,6 +209,10 @@ function busyMiddleware(req, res, next) {
   busyScope.enterWith(scope);
   const json = res.json.bind(res);
   res.json = (body) => {
+    if (scope.unclear && !scope.overloaded && res.statusCode >= 500 && !res.headersSent) {
+      res.status(422);
+      return json({ error: UNCLEAR_MESSAGE, code: 'unclear_input' });
+    }
     if (scope.overloaded && res.statusCode >= 500 && !res.headersSent) {
       busyAnswers++;
       res.status(503);
@@ -223,4 +238,4 @@ function surgeStatus() {
 const ticker = setInterval(() => { if (mode() !== 'on' && mode() !== 'off') isSurging(); }, 30 * 1000);
 if (ticker.unref) ticker.unref();
 
-module.exports = { withSurge, isSurging, busyMiddleware, surgeStatus, BUSY_MESSAGE, _test: { familyOf, fallbackFor, isOverload } };
+module.exports = { withSurge, isSurging, busyMiddleware, surgeStatus, BUSY_MESSAGE, noteUnclearInput, UNCLEAR_MESSAGE, _test: { familyOf, fallbackFor, isOverload } };

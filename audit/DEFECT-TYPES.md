@@ -29,6 +29,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T7 | A visitor's choice ignored | Same check, reads the form choices itself | **Built 2026-10-09**; 96 routes | 0 |
 | T8 | Built-in examples stale or inconsistent | `scripts/example-dates-audit.js` (Gate 13) + `exampleDate`/`dayMonthFromToday` | Built 2026-10-09 | 0 |
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
+| T10 | Too-vague input answered in words, shown as a generic error | `lib/claude.js` stops at a words-not-JSON reply; `lib/surge.js` middleware answers 422 `unclear_input`; `useClaudeAPI` shows `err_unclear_input` | **Built 2026-10-15**; every route | 0 |
 
 ---
 
@@ -234,6 +235,18 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 | Instance | Status |
 |---|---|
 | Surge wrapper broke all streaming (Small Change, Which Life?) for 3 days | fixed (6d4030c5) |
+
+---
+
+## T10 — Too-vague input answered in words
+
+**What goes wrong.** On an input too vague to work with ("my", "?"), the model replies in words ("I need more detail about…") instead of the JSON asked for. The shared retry tried the same input three times, so the visitor waited ~13s for "Something went wrong" (Name Storm quick mode, 2026-10-15).
+
+**Shared fix: built 2026-10-15.** `callClaudeWithRetry` stops at the first reply with no JSON in it and marks the request; the `/api` middleware in `lib/surge.js` turns the route's 500 into 422 `{ code: 'unclear_input' }`, and `useClaudeAPI` shows `err_unclear_input` in the visitor's language. A sub-call a route survives (a check, a pre-pass) changes nothing. Reproduced and verified: "my" → 422 in 3.4s.
+
+| Instance | Status |
+|---|---|
+| Name Storm quick mode, vague input | **fixed with shared fix** |
 
 ---
 

@@ -3,6 +3,7 @@ import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
 import { beginWait, summarizeRequest, toolFromPath } from '../utils/waitSignal';
 import { signalBusy } from '../utils/busySignal';
+import { t } from '../i18n';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -64,6 +65,8 @@ export const useClaudeAPI = () => {
         err.status = response.status;
         if (typeof errorData.code === 'string') err.code = errorData.code;
         if (err.code === 'busy') signalBusy('failed');
+        // Too vague to work with (lib/surge.js): say so in their language.
+        if (err.code === 'unclear_input') err.message = t('err_unclear_input');
         throw err;
       }
 
@@ -228,6 +231,8 @@ export const useClaudeAPI = () => {
         err.status = response.status;
         if (typeof errorData.code === 'string') err.code = errorData.code;
         if (err.code === 'busy') signalBusy('failed');
+        // Too vague to work with (lib/surge.js): say so in their language.
+        if (err.code === 'unclear_input') err.message = t('err_unclear_input');
         throw err;
       }
       const reader = response.body.getReader();

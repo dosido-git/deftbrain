@@ -7,7 +7,7 @@ const { withEpistemics } = require('./epistemics');
 const { currentRoute, currentIsTestClient } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
-const { withSurge, isSurging } = require('./surge');
+const { withSurge, isSurging, noteUnclearInput } = require('./surge');
 const { withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
@@ -497,6 +497,18 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       // Complete response but unparseable JSON — uncommon model variance; a retry may help.
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} parse error:`, err.message);
+      // No JSON at all — the model answered in words, which on these prompts
+      // means it is asking for more ("I need more detail about…"). The same
+      // input gets the same reply, so retrying only made the visitor wait
+      // ~13s for a misleading error. Stop now; the /api middleware turns it
+      // into a 422 asking for a little more detail.
+      const reply = message.content.filter(item => item.type === 'text').map(item => item.text).join('');
+      if (!/[{[]/.test(reply)) {
+        noteUnclearInput();
+        const e = new Error(`[${label}] The model answered in words, not JSON (the input was likely too vague)`);
+        e.code = 'unclear_input';
+        throw e;
+      }
       if (outOfTime()) { console.error(`[${label}] budget ${CALL_BUDGET_MS}ms spent — not retrying`); break; }
       if (attempt < maxRetries) {
         await new Promise(r => setTimeout(r, retryBackoffMs(attempt)));
