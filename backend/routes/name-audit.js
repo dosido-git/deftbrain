@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const dns = require('dns').promises;
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -474,9 +475,7 @@ router.post('/nameaudit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // Started first: on a name nobody has searched, the search is the slow part.
     const usesPromise = existingUses(name.trim(), context, industry).catch(() => null);
 
-    const [aiAnalysis, domainResults] = await Promise.all([
-      (async () => {
-        const prompt = `${NAME_AUDIT_CORE}
+    const prompt = `${NAME_AUDIT_CORE}
 
 NAME: "${name}"
 WHAT IT'S FOR: ${context}
@@ -643,38 +642,53 @@ Return ONLY this JSON (no markdown, no preamble):
   "competition_and_findability": { "structural_findability": "One or two sentences — dictionary word vs coined, spelling ambiguity, query ambiguity", "checks_needed": ["Specific current-world check this name warrants — one sentence each, 1-3 items"] },
   "longevity": "One or two sentences",
   "language_flags": [
-    { "language": "Spanish — one sentence", "issue": "What it means or sounds like — one sentence", "severity": "caution | problem" }
+{ "language": "Spanish — one sentence", "issue": "What it means or sounds like — one sentence", "severity": "caution | problem" }
   ]
 }
 
 language_flags: ONLY include languages where there is a genuine caution or problem, with reasonable confidence. Omit neutral/positive findings entirely — most names will have 0-3 flags.
 ${NO_QUOTE_RULE}`;
 
-        return await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 3000,
-          messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-        }, { label: 'NameAudit' });
-      })(),
-
-      showDomainChecks ? checkDomains(name) : null,
-    ]);
-
-    const result = validateResult(pinRating(pinVerdict(aiAnalysis, 'verdict', 'MIXED')));
-    result.live_availability = showDomainChecks ? {
-      domains: domainResults,
-      suggested_handle: suggestedHandle(name),
-    } : null;
-    result.check_before_you_commit = checklistFor(showDomainChecks);
-    const uses = await usesPromise;
-    await applyExistingUses(result, uses, { name: name.trim(), context, userLanguage });
-
-    if (!result.verdict) {
-      return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(result, { label: 'name-audit', userLanguage: req.body?.userLanguage });
-    res.json(result);
+    // Progressive (2026-10-16, lib/progressive.js): four section passes at
+    // once — the verdict and bottom line first. The existing-uses search and
+    // the consistency check run after the answer is on screen; a verdict the
+    // search changes is reported as a correction, never swapped silently.
+    const pass = (keys, i) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 1600,
+      messages: [{ role: 'user', content: withLanguage(onlyKeys(prompt, keys), userLanguage) }],
+    }, { label: `NameAudit:${i + 1}` });
+    const clean = (d) => {
+      const result = validateResult(pinRating(pinVerdict(d, 'verdict', 'MIXED')));
+      result.live_availability = showDomainChecks ? {
+        domains: d._domains || null,
+        suggested_handle: suggestedHandle(name),
+      } : null;
+      result.check_before_you_commit = checklistFor(showDomainChecks);
+      delete result._domains;
+      return result;
+    };
+    return await answer(req, res, {
+      label: 'name-audit',
+      parts: [
+        ...keyGroups([
+          ['name_analyzed', 'verdict', 'bottom_line', 'what_works', 'what_could_get_in_the_way'],
+          ['how_it_sounds', 'word_of_mouth'],
+          ['tone_and_associations', 'fit_for_context', 'how_it_looks', 'abbreviation_audit'],
+          ['competition_and_findability', 'longevity', 'language_flags'],
+        ], pass),
+        ...(showDomainChecks ? [{ run: () => checkDomains(name), apply: (d, out) => { d._domains = out; } }] : []),
+      ],
+      finish: d => clean(structuredClone(d)),
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+      check: async (draft) => {
+        validateResult(pinRating(pinVerdict(draft, 'verdict', 'MIXED')));
+        await applyExistingUses(draft, await usesPromise, { name: name.trim(), context, userLanguage });
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(draft, { label: 'name-audit', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('[NameAudit] Error:', error);

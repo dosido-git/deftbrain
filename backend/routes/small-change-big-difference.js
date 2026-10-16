@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, withLocaleContext, cleanJsonResponse, repairMalformedJson } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, onlyKeys } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -27,7 +28,7 @@ const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
-  note: 'No LLM-adversarial guard here (this route streams via anthropic.messages.stream, not callClaudeWithRetry) — validateResult is a local regex walk over the final assembled object, run once before the SSE done event. Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. A fourth-pass polish added three more narrow phrase bans the same day: overstating control as "entirely"/"completely" within the visitor\'s control when their own routine involves other people; inventing a hidden force "pulling" the visitor back to an old behavior mid-experiment (the same armchair-psychology problem, applied to relapse); and constructing an unearned causal hierarchy between alternatives ("sits at the end of the chain," "downstream of"). EXPERIMENT HISTORY (added same day) governs the new previous_experiments feature: overgeneralizing one reported experiment into a trait or category verdict ("isn\'t your real problem," "you\'ve discovered that," "this reveals that") is backstopped; treating a prior recommendation\'s PREDICTION as an observed RESULT, or an unreviewed experiment as outcome evidence, is prompt-only — too contextual for a keyword ban. A same-day HISTORY FINAL CORRECTIONS pass, following a live report the model was treating a bare "Helped" status (no written report) as confirmation of the ORIGINAL recommendation\'s predicted effect ("the evening boundary is already working," "already helped with the evening") and inventing a deliberate cross-session strategy out of unrelated experiments ("you\'ve now tested both ends of the day," "the other bookend"), added two more backstopped phrase categories for the exact reported wording, plus prompt-only sections (A BARE STATUS IS NOT A DETAILED REPORT / DO NOT CONSTRUCT A STRATEGY OUT OF SEPARATE EXPERIMENTS) for the broader judgment call, and rewrote the WHAT I NOTICE worked-example line that had been modeling the same "two obvious places" framing. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
+  note: 'No LLM-adversarial guard here — validateResult is a local regex walk, run on every progressive draft (lib/progressive.js finish). Rule categories: invented physiology/neuroscience (cortisol, melatonin, dopamine, threat-detection/threat-detecting states, stress debt, cognitive depletion/fuel/tank, circadian, reactive mode, ambient anxiety, passive numbing, doom-scrolling framed as compensation, brain-training/rewiring/resetting verbs); false bottleneck-certainty ("the chokepoint," "is the engine," "upstream of," "determines the rest of your day," "not a symptom... is the cause"); claimed mathematical/scientific optimality; predicting the visitor\'s future or a changed self-identity without evidence; armchair psychology about why the visitor hasn\'t already made the change; invented downstream time/energy/productivity savings not derivable from a supplied quantity (including "downstream quality improvement" and any bare large recovered-hours figure); and — added after a THIRD live bug report the same day, a subtler failure mode than the others — a chronological fact silently turned into a causal claim ("continues until midnight" becoming "keeps you up," "extending/ending your night," "does nothing to address" a cause the routine never established) and a claim that the chosen change directly produces a stated goal it only creates room for ("the only change that directly addresses X and Y"). That broader chronology-vs-causation and room-for-vs-produces discipline is mostly prompt-only (CHRONOLOGY IS NOT CAUSATION / CREATES ROOM, DOES NOT PRODUCE THE GOAL sections) — the general judgment call is too varied to reduce to regex, only the exact reported phrasings are backstopped. A fourth-pass polish added three more narrow phrase bans the same day: overstating control as "entirely"/"completely" within the visitor\'s control when their own routine involves other people; inventing a hidden force "pulling" the visitor back to an old behavior mid-experiment (the same armchair-psychology problem, applied to relapse); and constructing an unearned causal hierarchy between alternatives ("sits at the end of the chain," "downstream of"). EXPERIMENT HISTORY (added same day) governs the new previous_experiments feature: overgeneralizing one reported experiment into a trait or category verdict ("isn\'t your real problem," "you\'ve discovered that," "this reveals that") is backstopped; treating a prior recommendation\'s PREDICTION as an observed RESULT, or an unreviewed experiment as outcome evidence, is prompt-only — too contextual for a keyword ban. A same-day HISTORY FINAL CORRECTIONS pass, following a live report the model was treating a bare "Helped" status (no written report) as confirmation of the ORIGINAL recommendation\'s predicted effect ("the evening boundary is already working," "already helped with the evening") and inventing a deliberate cross-session strategy out of unrelated experiments ("you\'ve now tested both ends of the day," "the other bookend"), added two more backstopped phrase categories for the exact reported wording, plus prompt-only sections (A BARE STATUS IS NOT A DETAILED REPORT / DO NOT CONSTRUCT A STRATEGY OUT OF SEPARATE EXPERIMENTS) for the broader judgment call, and rewrote the WHAT I NOTICE worked-example line that had been modeling the same "two obvious places" framing. Math itself is NOT regex-validated — arithmetic correctness from a supplied quantity is a judgment call this file can\'t make; the prompt\'s own MATH section and FINAL SELF-CHECK are the only guard there. why_not_start_elsewhere.alternatives is capped at 2 in code (capAlternatives), matching the prompt\'s own limit, as a structural backstop.',
 };
 
 const CORE_PROMPT = `SMALL CHANGE, BIG DIFFERENCE
@@ -849,55 +850,46 @@ Morning, Daytime, Work, Evening, Sleep, Other — even when the rest of your
 response is in another language. The frontend matches this value literally
 to choose a label and icon; a translated value renders as unlabeled.`;
 
-    // SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-
-    const stream = anthropic.messages.stream({
+    // Progressive (2026-10-16, lib/progressive.js), plan first: one pass
+    // chooses the change and shows it; the math/alternatives and the
+    // watch-for/history passes then run at once, told which change was chosen,
+    // so nothing contradicts the choice. The number check (T2,
+    // audit/DEFECT-TYPES.md) runs after the answer is on screen.
+    const system = withLanguage(CORE_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(CORE_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: `small-change-big-difference:${tag}` });
+    const PLAN = ['what_i_notice', 'change_to_try', 'routine_area'];
+    const planned = call(onlyKeys(userPrompt, PLAN), 1800, 'plan');
+    planned.catch(() => {}); // the plan part reports its own failure
+    const follow = (keys, tag) => ({
+      run: async () => {
+        const plan = await planned;
+        return call(onlyKeys(userPrompt, keys) + `\n\nTHE CHANGE ALREADY CHOSEN (another pass wrote it; build on it, never contradict or replace it):\n${JSON.stringify({ what_i_notice: plan?.what_i_notice, change_to_try: plan?.change_to_try })}`, 1800, tag);
+      },
+      apply: (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); },
     });
-
-    let fullText = '';
-    for await (const event of stream) {
-      if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
-        fullText += event.delta.text;
-        res.write(`data: ${JSON.stringify({ chunk: event.delta.text })}\n\n`);
-      }
-    }
-
-    // Server-side validate + repair before declaring done: the raw stream can
-    // carry model slip-ups (missing comma, code fences) that the frontend's
-    // bare JSON.parse can't survive — the user would watch the whole stream
-    // and then get a parse error (audit 2026-07-19). Send the repaired object
-    // in the done event; the frontend prefers it over its own parse.
-    let parsedFinal = null;
-    try {
-      parsedFinal = JSON.parse(cleanJsonResponse(fullText));
-    } catch (_) {
-      try { parsedFinal = JSON.parse(repairMalformedJson(cleanJsonResponse(fullText))); } catch (_) { /* frontend fallback */ }
-    }
-    if (parsedFinal) parsedFinal = validateResult(parsedFinal);
-    // T2 (audit/DEFECT-TYPES.md): "20 min x 5 weekdays = 100 min/week" then
-    // "x 365 days = ~122 hours/year". Arithmetic gets the shared number check,
-    // not another prompt rule; it runs before done, while the visitor waits on
-    // the same stream.
-    if (parsedFinal) await withNumberCheck(parsedFinal, { label: 'small-change-big-difference', context: visitorContext(req.body), userLanguage });
-    res.write(`data: ${JSON.stringify({ done: true, ...(parsedFinal ? { parsed: parsedFinal } : {}) })}\n\n`);
-    res.end();
+    return await answer(req, res, {
+      label: 'small-change-big-difference',
+      parts: [
+        { required: true, run: () => planned, apply: (d, out) => { PLAN.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+        follow(['math', 'why_not_start_elsewhere'], 'math'),
+        follow(['what_to_watch_for', 'previous_experiments'], 'watch'),
+      ],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.what_i_notice && d.change_to_try),
+      complete: d => Boolean(d.what_i_notice && d.change_to_try),
+      check: async (parsed) => {
+        await withNumberCheck(parsed, { label: 'small-change-big-difference', context: visitorContext(req.body), userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('Small Change, Big Difference error:', error);
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Something went wrong. Please try again.' });
-    } else {
-      res.write(`data: ${JSON.stringify({ error: 'Something went wrong. Please try again.' })}\n\n`);
-      res.end();
-    }
+    if (!res.headersSent) res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

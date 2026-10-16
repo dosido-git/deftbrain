@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -70,49 +71,68 @@ Output only:
 
 Exactly four strategies. Nothing else.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): the message read and two
+    // pairs of responses, split by approach (softer / firmer) so the four stay
+    // different, are written at once; the first pair shows in seconds. The
+    // output guard runs after the answer is on screen.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'ConflictCoach' });
-
-    if (!Array.isArray(parsed.strategies) || !parsed.strategies.length) {
-      console.error('ConflictCoach: strategies not an array', typeof parsed.strategies);
-      return res.status(500).json({ error: 'Could not put together a response. Please try again.' });
-    }
-
-    // Four tests, and a strategy that fails any of them is not a strategy.
-    try {
-      await runOutputGuard(parsed, {
-        label: 'conflict-coach',
-        // Titles are checked too. "Redirect without chasing" invents a chasing
-        // dynamic nobody described, and it is the visitor-facing label on the
-        // option — a violation there is as visible as one in the message.
-        fields: parsed.strategies
-          .flatMap((st, i) => [
-            [`strategies[${i}].response_text`, st?.response_text],
-            [`strategies[${i}].title`, st?.title],
-          ])
-          .filter(([, v]) => typeof v === 'string' && v.trim())
-          .concat(typeof parsed.message_read === 'string' && parsed.message_read.trim()
-            ? [['message_read', parsed.message_read]] : []),
-        supplied: `THE MESSAGE THEY RECEIVED: ${receivedMessage}
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: `ConflictCoach:${tag}` });
+    const pairPrompt = (tones) => onlyKeys(userPrompt.replace('Exactly four strategies.', `THIS PASS writes exactly TWO strategies, tones ${tones} — one each. Other passes write the other approaches.`), ['strategies']);
+    const pair = (tones, tag, slot) => ({
+      run: () => call(pairPrompt(tones), 1600, tag),
+      apply: (d, out) => { d.pairs = { ...d.pairs, [slot]: Array.isArray(out?.strategies) ? out.strategies.slice(0, 2) : [] }; },
+    });
+    const strategiesOf = d => [...(d.pairs?.a || []), ...(d.pairs?.b || [])];
+    return await answer(req, res, {
+      label: 'conflict-coach',
+      parts: [
+        { run: () => call(onlyKeys(userPrompt.replace('Exactly four strategies. Nothing else.', ''), ['message_read']), 600, 'read'), apply: (d, out) => { d.message_read = out?.message_read ?? null; } },
+        pair('calm and warm', 'soft', 'a'),
+        pair('firm and direct', 'firm', 'b'),
+      ],
+      finish: d => ({ message_read: d.message_read ?? null, strategies: strategiesOf(d) }),
+      ready: d => strategiesOf(d).length > 0,
+      complete: d => strategiesOf(d).length > 0,
+      check: async (draft) => {
+        const parsed = { message_read: draft.message_read ?? null, strategies: strategiesOf(draft) };
+        // Four tests, and a strategy that fails any of them is not a strategy.
+        try {
+          await runOutputGuard(parsed, {
+            label: 'conflict-coach',
+            // Titles are checked too. "Redirect without chasing" invents a chasing
+            // dynamic nobody described, and it is the visitor-facing label on the
+            // option — a violation there is as visible as one in the message.
+            fields: parsed.strategies
+              .flatMap((st, i) => [
+                [`strategies[${i}].response_text`, st?.response_text],
+                [`strategies[${i}].title`, st?.title],
+              ])
+              .filter(([, v]) => typeof v === 'string' && v.trim())
+              .concat(typeof parsed.message_read === 'string' && parsed.message_read.trim()
+                ? [['message_read', parsed.message_read]] : []),
+            supplied: `THE MESSAGE THEY RECEIVED: ${receivedMessage}
 WHAT THEY ARE TEMPTED TO SEND: ${userDraft || '(not supplied)'}
 RELATIONSHIP: ${relationship || '(not supplied)'}${personLabel ? ` (${personLabel})` : ''}
 THE GOAL THEY SELECTED: ${goalsText || '(not specified)'}
 IN THEIR OWN WORDS: ${actualGoal || '(not supplied)'}`,
-        promise: 'Four responses the visitor can send directly to the other person, each pursuing the goal they selected.',
-        guard: router.outputGuard,
-        requiredNonEmpty: parsed.strategies.map((_, i) => `strategies[${i}].response_text`),
-        userLanguage,
-        locale: withLocaleContext(userLocale, userCurrency, userRegion),
-      });
-    } catch (err) {
-      console.error('ConflictCoach v2 guard skipped:', err.message);
-    }
-
-    res.json(parsed);
+            promise: 'Four responses the visitor can send directly to the other person, each pursuing the goal they selected.',
+            guard: router.outputGuard,
+            requiredNonEmpty: parsed.strategies.map((_, i) => `strategies[${i}].response_text`),
+            userLanguage,
+            locale: withLocaleContext(userLocale, userCurrency, userRegion),
+          });
+        } catch (err) {
+          console.error('ConflictCoach v2 guard skipped:', err.message);
+        }
+        draft.message_read = parsed.message_read;
+        draft.pairs = { a: parsed.strategies.slice(0, (draft.pairs?.a || []).length), b: parsed.strategies.slice((draft.pairs?.a || []).length) };
+      },
+    });
 
   } catch (error) {
     console.error('ConflictCoach error:', error);

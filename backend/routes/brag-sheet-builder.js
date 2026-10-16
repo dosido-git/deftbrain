@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -201,7 +202,7 @@ ${NO_INVENTED_FACTS}`;
       yearsExp ? `Years of experience: ${yearsExp}` : null,
     ].filter(Boolean).join('\n');
 
-    const userPrompt = withLanguage(`Here are the accomplishments to transform:
+    const rawPrompt = `Here are the accomplishments to transform:
 ${personContext ? `\n${personContext}\n` : ''}
 ${numberedAccomplishments}
 
@@ -212,23 +213,61 @@ TRUTHFULNESS RULES: Never upgrade the person's role in an event beyond what they
 
 Generate one transformation per accomplishment. Generate 2-4 metrics questions (include accomplishment_index to track which accomplishment each question is about, 0-indexed). ${wantInterview ? 'Generate 1-2 STAR stories from the strongest accomplishments.' : ''} ${wantResume ? 'Generate resume bullets for ALL accomplishments.' : ''} ${wantRaise ? 'Generate value statements for ALL accomplishments.' : ''}
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): the rewrites are split by
+    // accomplishment (two per pass, in input order) and every other section is
+    // its own pass, all at once — the first rewrites show in seconds.
+    // Grounding and the consistency check run after the answer is on screen.
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const system = withLanguage(systemPrompt, userLanguage) + locale + ' ' + NO_QUOTE_RULE;
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'BragSheetBuilder' });
-
-    // guard: accept any of the common top-level keys the schema may return
-    if (!parsed.transformations && !parsed.transformed && !parsed.bullets && !parsed.achievements && !parsed.brag_sheet) {
-      return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
-    }
-    await groundBrag(parsed, req.body, 'brag-sheet-builder');
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'brag-sheet-builder', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
+    }, { label: `BragSheetBuilder:${tag}` });
+    const PER = 2;
+    const chunks = [];
+    for (let i = 0; i < accomplishments.length; i += PER) chunks.push([i, Math.min(i + PER, accomplishments.length)]);
+    const rewriteParts = chunks.map(([from, to], ci) => ({
+      required: ci === 0,
+      run: () => call(onlyKeys(rawPrompt, ['transformations']) + `\nTHIS PASS writes transformations ONLY for accomplishments ${from + 1}${to - from > 1 ? `-${to}` : ''} above, in that order — one each. Other passes write the others.`, 1400, `rewrite${ci + 1}`),
+      apply: (d, out) => { d.rewrites = { ...d.rewrites, [ci]: Array.isArray(out?.transformations) ? out.transformations.slice(0, to - from) : [] }; },
+    }));
+    const inSpec = k => outputSpec.includes(`\n  "${k}":`);
+    const sectionParts = keyGroups([
+      ['metrics_to_find', 'confidence'],
+      ['star_stories'],
+      ['resume_bullets', 'raise_ammunition'],
+      ['linkedin_about', 'performance_review', 'custom_output'],
+    ].map(g => g.filter(inSpec)).filter(g => g.length), (keys, i) => call(onlyKeys(rawPrompt, keys), 2000, `section${i + 1}`))
+      .map(p => ({ ...p, required: false }));
+    const transformationsOf = d => chunks.flatMap((_, ci) => d.rewrites?.[ci] || []);
+    const assemble = (d) => {
+      const { rewrites, ...rest } = d;
+      return { transformations: transformationsOf(d), ...rest };
+    };
+    return await answer(req, res, {
+      label: 'brag-sheet-builder',
+      parts: [...rewriteParts, ...sectionParts],
+      finish: d => assemble(structuredClone(d)),
+      ready: d => Boolean(d.rewrites?.[0]?.length),
+      complete: d => transformationsOf(d).length > 0,
+      check: async (draft) => {
+        const parsed = assemble(draft);
+        await groundBrag(parsed, req.body, 'brag-sheet-builder');
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'brag-sheet-builder', userLanguage: req.body?.userLanguage });
+        // Back into the draft's shape, each rewrite in its own pass's slot.
+        let at = 0;
+        const rewrites = {};
+        chunks.forEach((_, ci) => { const n = (draft.rewrites?.[ci] || []).length; rewrites[ci] = (parsed.transformations || []).slice(at, at + n); at += n; });
+        Object.keys(draft).forEach(k => delete draft[k]);
+        const { transformations, ...rest } = parsed;
+        Object.assign(draft, rest, { rewrites });
+      },
+    });
 
   } catch (error) {
     console.error('[BragSheetBuilder] Error:', error);

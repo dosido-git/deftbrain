@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { usePremium, PremiumGate, PremiumBadge } from '../hooks/usePremium';
@@ -96,7 +97,7 @@ const EXAMPLES = [
   },
 ];
 const NameAudit = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { isUnlocked } = usePremium();
   const { t } = useTranslation();
@@ -136,6 +137,7 @@ const NameAudit = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State ───
   const [mode, setMode] = useState('analyze'); // 'analyze' | 'compare'
@@ -267,16 +269,21 @@ const NameAudit = ({ tool }) => {
     if (!quickName.trim()) return;
     if (!context) { setError(t('nau_err_select_context')); return; }
     setName(quickName.trim());
-    setError(''); setResults(null); setFixResults(null);
+    setError(''); setResults(null); setCheckStatus(null); setFixResults(null);
     setDeepDiveResults(null); setSecondOpinionResults(null);
     setShowMockups(false);
     try {
-      const data = await callToolEndpoint('nameaudit', {
+      // Progressive (2026-10-16): the verdict shows first; checked after.
+      const data = await callToolEndpointProgressive('nameaudit', {
         name: quickName.trim(), context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
         priority: priority.trim() || null,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setExpandedSections({ sound: true, 'word-of-mouth': true });
       setQuickName('');
@@ -631,16 +638,21 @@ const NameAudit = ({ tool }) => {
   const handleAnalyze = useCallback(async () => {
     if (!name.trim()) { setError(t('nau_err_enter_name')); return; }
     if (!context) { setError(t('nau_err_select_context')); return; }
-    setError(''); setResults(null); setFixResults(null);
+    setError(''); setResults(null); setCheckStatus(null); setFixResults(null);
     setDeepDiveResults(null); setSecondOpinionResults(null);
     setShowMockups(false);
     try {
-      const data = await callToolEndpoint('nameaudit', {
+      // Progressive (2026-10-16): the verdict shows first; checked after.
+      const data = await callToolEndpointProgressive('nameaudit', {
         name: name.trim(), context,
         industry: industry.trim() || null,
         targetAudience: targetAudience.trim() || null,
         priority: priority.trim() || null,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setExpandedSections({ sound: true, 'word-of-mouth': true });
       saveToHistory(data);
@@ -648,7 +660,7 @@ const NameAudit = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('nau_err_analyze_failed'));
     }
-  }, [name, context, industry, targetAudience, priority, callToolEndpoint, saveToHistory, saveToEvolution, t]);
+  }, [name, context, industry, targetAudience, priority, callToolEndpointProgressive, saveToHistory, saveToEvolution, t]);
 
   const handleCompare = useCallback(async () => {
     const filled = compareNames.filter(n => n.trim());
@@ -668,6 +680,7 @@ const NameAudit = ({ tool }) => {
   }, [compareNames, context, industry, priority, callToolEndpoint, t]);
 
   const reset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setName(''); setIndustry(''); setTargetAudience(''); setPriority('');
     setResults(null); setError(''); setCompareResults(null);
     setCompareNames(['', '']); setFixResults(null); setFixLoading(false);
@@ -1180,6 +1193,7 @@ const NameAudit = ({ tool }) => {
       {/* ═══ ANALYSIS RESULTS ═══ */}
       {results && (
         <div className="space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Controls */}
           <div id="nau-anchor-controls" className={`border-t ${c.border} pt-5 space-y-3`}>

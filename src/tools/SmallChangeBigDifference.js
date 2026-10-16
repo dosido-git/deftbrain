@@ -3,6 +3,7 @@ import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
@@ -16,7 +17,7 @@ const CHECK_IN_STATUSES = ['helped', 'helped_a_little', 'not_really', 'not_tried
 
 const SmallChangeBigDifference = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpointStreaming, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
 
   const EXAMPLES = [
@@ -84,6 +85,7 @@ const SmallChangeBigDifference = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // All four outcomes are "useful evidence" (North Star) — none of them is
   // hidden or dismissed. Explicit user request 2026-09-05 to use red for
@@ -126,15 +128,6 @@ const SmallChangeBigDifference = ({ tool }) => {
   const [draftStatus, setDraftStatus] = useState(null);
   const [draftReport, setDraftReport] = useState('');
 
-  const getStreamStage = (text) => {
-    if (text.includes('"what_to_watch_for"'))       return t('op_stage_watch');
-    if (text.includes('"why_not_start_elsewhere"'))  return t('op_stage_alternatives');
-    if (text.includes('"math"'))                     return t('op_stage_math');
-    if (text.includes('"change_to_try"'))            return t('op_stage_change');
-    if (text.includes('"what_i_notice"'))            return t('op_stage_notice');
-    return t('op_stage_default');
-  };
-
   // Reveal the answer when it arrives: frame the tool if its header fits,
   // otherwise put the answer on top. Focus moves either way.
   const revealRef = useRef(null);
@@ -156,60 +149,49 @@ const SmallChangeBigDifference = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!routine.trim()) return;
-    setError(''); setResults(null); setStreamStage(t('op_stage_default'));
+    setError(''); setResults(null); setCheckStatus(null); setStreamStage(t('op_stage_default'));
     const previousExperiments = relevantPreviousExperiments();
-    callToolEndpointStreaming(
-      'one-percenter',
-      { routine: routine.trim(), goals: goals.trim() || undefined, painPoints: painPoints.trim() || undefined,
-        previousExperiments: previousExperiments.length ? previousExperiments : undefined,
-        userLocale, userCurrency, userRegion },
-      {
-        onChunk: (accumulated) => setStreamStage(getStreamStage(accumulated)),
-        onDone: (finalText, serverParsed) => {
-          setStreamStage('');
-          try {
-            let parsed = serverParsed;
-            if (!parsed) {
-              const start = finalText.indexOf('{');
-              const end   = finalText.lastIndexOf('}');
-              if (start === -1 || end === -1) throw new Error('No JSON object found in response');
-              parsed = JSON.parse(finalText.slice(start, end + 1));
-            }
-            if (!parsed.what_i_notice || !parsed.change_to_try) {
-              setError(t('op_err_analyze'));
-            } else {
-              setResults(parsed);
-              // Auto-saved as "unreviewed" — the check-in prompt is never
-              // shown as an interstitial here. It only ever surfaces later,
-              // passively, as a row in Recent Small Changes below.
-              const ch = parsed.change_to_try || {};
-              setExperiments(prev => [{
-                id: 'exp_' + Date.now(),
-                createdAt: new Date().toISOString(),
-                // PF-25 exception: 40-char preview-text truncation, same
-                // convention as every other tool's history entry — this one
-                // is a fallback display string, since the row itself
-                // normally renders recommendation.change directly.
-                preview: (ch.change || routine).trim().slice(0, 40),
-                originalInput: { typicalDay: routine.trim(), improvementGoal: goals.trim(), offTrack: painPoints.trim() },
-                recommendation: {
-                  change: ch.change || '', whyThisOne: ch.why_this_one || '',
-                  howToTryIt: ch.how_to_try_it || '', whatItMayChange: ch.what_it_may_change || '',
-                },
-                experimentContext: { routineArea: parsed.routine_area || 'Other' },
-                checkIn: { status: 'unreviewed', visitorReport: '', reviewedAt: null },
-                storedResult: parsed,
-              }, ...prev].slice(0, 15));
-            }
-          } catch (e) {
-            console.error('[SmallChangeBigDifference] JSON parse failed:', e.message);
-            console.error('[SmallChangeBigDifference] Raw text (first 500):', finalText.slice(0, 500));
-            setError(t('op_err_parse'));
-          }
+    try {
+      // Progressive (2026-10-16): the chosen change shows first; checked after.
+      const parsed = await callToolEndpointProgressive(
+        'one-percenter',
+        { routine: routine.trim(), goals: goals.trim() || undefined, painPoints: painPoints.trim() || undefined,
+          previousExperiments: previousExperiments.length ? previousExperiments : undefined,
+          userLocale, userCurrency, userRegion },
+        {
+          onDraft: d => { setStreamStage(''); setResults(d); setCheckStatus('checking'); },
+          onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+        }
+      );
+      setStreamStage('');
+      if (!parsed) return; // replaced by a newer run
+      if (!parsed.what_i_notice || !parsed.change_to_try) { setError(t('op_err_analyze')); return; }
+      setResults(parsed);
+      // Auto-saved as "unreviewed" — the check-in prompt is never
+      // shown as an interstitial here. It only ever surfaces later,
+      // passively, as a row in Recent Small Changes below.
+      const ch = parsed.change_to_try || {};
+      setExperiments(prev => [{
+        id: 'exp_' + Date.now(),
+        createdAt: new Date().toISOString(),
+        // PF-25 exception: 40-char preview-text truncation, same
+        // convention as every other tool's history entry — this one
+        // is a fallback display string, since the row itself
+        // normally renders recommendation.change directly.
+        preview: (ch.change || routine).trim().slice(0, 40),
+        originalInput: { typicalDay: routine.trim(), improvementGoal: goals.trim(), offTrack: painPoints.trim() },
+        recommendation: {
+          change: ch.change || '', whyThisOne: ch.why_this_one || '',
+          howToTryIt: ch.how_to_try_it || '', whatItMayChange: ch.what_it_may_change || '',
         },
-        onError: (msg) => { setStreamStage(''); setError(msg || t('op_err_generic')); },
-      }
-    );
+        experimentContext: { routineArea: parsed.routine_area || 'Other' },
+        checkIn: { status: 'unreviewed', visitorReport: '', reviewedAt: null },
+        storedResult: parsed,
+      }, ...prev].slice(0, 15));
+    } catch (err) {
+      setStreamStage('');
+      setError(err.message || t('op_err_generic'));
+    }
   };
 
 
@@ -364,7 +346,7 @@ const SmallChangeBigDifference = ({ tool }) => {
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(results || routine.trim()) && (
-              <button onClick={() => { setResults(null); setRoutine(''); setGoals(''); setPainPoints(''); setError(''); }}
+              <button onClick={() => { cancelProgressive(); setCheckStatus(null); setResults(null); setRoutine(''); setGoals(''); setPainPoints(''); setError(''); }}
                 className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                 ↺ {t('start_over')}
               </button>
@@ -424,6 +406,7 @@ const SmallChangeBigDifference = ({ tool }) => {
         {/* Results */}
         {results && (
           <div ref={revealRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuted} />
 
             {/* What I Notice */}
             {results?.what_i_notice && (

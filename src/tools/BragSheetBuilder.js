@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -91,7 +92,7 @@ const EXAMPLES = [
 },
 ];
 const BragSheetBuilder = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -152,6 +153,7 @@ const BragSheetBuilder = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Constants ───
   const INDUSTRIES = [
@@ -279,20 +281,26 @@ const BragSheetBuilder = ({ tool }) => {
     const all = [...accomplishments];
     if (currentEntry.trim()) { all.push(currentEntry.trim()); setAccomplishments(all); setCurrentEntry(''); }
     if (all.length === 0) { setError(t('bsb_err_add_one')); return; }
-    setError(''); setResults(null); setRefinedData(null); setMetricsAnswers({}); setRefineRound(0);
+    setError(''); setResults(null); setCheckStatus(null); setRefinedData(null); setMetricsAnswers({}); setRefineRound(0);
     setPreUpgradeVersions({}); setCustomStarStories([]);
     setRadarData(null); setTailorData(null); setMatrixData(null); setVoiceData(null);
     try {
-      const data = await callToolEndpoint('brag-sheet-builder', {
+      // Progressive (2026-10-16): the first rewrites show first; checked after.
+      let shown = false;
+      const data = await callToolEndpointProgressive('brag-sheet-builder', {
         accomplishments: all, industry: industry || 'general', level: level || 'mid',
         purposes: purposes.length > 0 ? purposes : ['resume'],
         purposeOther: purposeOther.trim() || null,
         roleTitle: roleTitle.trim() || null, yearsExp: yearsExp ? Number(yearsExp) : null,
         tone: tone || 'balanced', userLanguage: navigator.language || 'en',
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); if (!shown) { shown = true; setActiveTab('transform'); } },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
-      setActiveTab('transform');
+      if (!shown) setActiveTab('transform');
       setSessionHistory(prev => [{
         id: Date.now().toString(),
         preview: (all[0] || '').slice(0, 40), // Exception: preview truncation, not history cap
@@ -526,6 +534,7 @@ const BragSheetBuilder = ({ tool }) => {
   };
 
   const reset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setAccomplishments([]); setCurrentEntry(''); setResults(null); setError('');
     setRefinedData(null); setMetricsAnswers({}); setRefineRound(0); setPreUpgradeVersions({});
     setActiveTab('transform'); setExpandedSections({}); setCustomStarStories([]);
@@ -952,6 +961,7 @@ const BragSheetBuilder = ({ tool }) => {
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {/* ── FIRST, THIS MATTERS ────────────────────────────────────
               Fixed copy, before the polished bullets. Someone opening this
               tool is not short of achievements — they are short of the belief

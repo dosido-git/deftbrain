@@ -10,6 +10,7 @@
 // audit/REWRITE-INSTALL-KIT.md).
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -1067,35 +1068,41 @@ ${messageText}
 ---
 ${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${interactionLabel}${interactionStatus === 'other' && interactionOther ? ` — ${interactionOther}` : ''}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): four section passes at
+    // once — the verdict first, then the concerns, the steps, and the
+    // what-ifs. The output guard runs after the answer is on screen; empty
+    // items are stripped from every draft and again after the guard.
+    const system = withLanguage(SCAM_RADAR_SYSTEM, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + `\n\n${NO_QUOTE_RULE}`;
+    const pass = (keys, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage(SCAM_RADAR_SYSTEM, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + `\n\n${NO_QUOTE_RULE}`,
+      max_tokens: 2000,
+      system: onlyKeys(system, keys),
       messages: [{ role: 'user', content: supplied }],
-    }, { label: 'scam-radar' });
-
-    if (!parsed?.verdict) {
-      return res.status(500).json({ error: 'Could not analyze this message. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
+    }, { label: `scam-radar:${i + 1}` });
+    return await answer(req, res, {
       label: 'scam-radar',
-      fields: collectProseFields(parsed),
-      supplied,
-      promise: 'Help the visitor evaluate a suspicious message using only the message and context they supplied — no invented facts about the sender, no fabricated confidence, and a next step that verifies through a channel the message does not control.',
-      guard: router.outputGuard,
-      userLanguage,
+      parts: keyGroups([
+        ['verdict', 'verdict_explanation', 'input_conflict', 'scam_pattern'],
+        ['why_concerning', 'what_doesnt_settle_it'],
+        ['how_to_verify', 'what_to_do_now', 'avoid'],
+        ['if_you_already_interacted', 'important_unknowns'],
+      ], pass),
+      // Run AFTER the guard, not before (and on every draft): the guard's
+      // repair pass can blank a flagged field instead of substituting it.
+      finish: d => stripEmptyItems(structuredClone(d)),
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+      check: async (parsed) => {
+        await runOutputGuard(parsed, {
+          label: 'scam-radar',
+          fields: collectProseFields(parsed),
+          supplied,
+          promise: 'Help the visitor evaluate a suspicious message using only the message and context they supplied — no invented facts about the sender, no fabricated confidence, and a next step that verifies through a channel the message does not control.',
+          guard: router.outputGuard,
+          userLanguage,
+        });
+      },
     });
-
-    // Run AFTER the guard, not before: the guard mutates `parsed` in place,
-    // and its repair pass can blank out a flagged field instead of
-    // substituting it — despite being told not to. Cleaning first only
-    // catches blanks already in the raw model output, not ones the repair
-    // step introduces afterward. Caught live on Sensory Scout's near-
-    // identical code during the same session; fixed here to match.
-    const cleaned = stripEmptyItems(parsed);
-
-    res.json(cleaned);
   } catch (err) {
     console.error('[ScamRadar]', err);
     if (!res.headersSent) {

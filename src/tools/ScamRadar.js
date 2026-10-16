@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -89,7 +90,7 @@ Failure to pay will result in additional storage charges.`,
 ];
 
 function ScamRadar({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -128,6 +129,7 @@ function ScamRadar({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [messageText, setMessageText]       = useState('');
   const [senderContext, setSenderContext]   = useState('');
@@ -144,13 +146,14 @@ function ScamRadar({ tool }) {
   const canSubmit = !!messageText.trim();
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setError('');
     setMessageText('');
     setSenderContext('');
     setInteractionStatus('none');
     setInteractionOther('');
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
     const ex = pickExample('ScamRadar', EXAMPLES);
@@ -158,17 +161,20 @@ function ScamRadar({ tool }) {
     setSenderContext(ex.senderContext || '');
     setInteractionStatus(ex.interactionStatus || 'none');
     setInteractionOther('');
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setError('');
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleScan = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
 
     try {
-      const parsed = await callToolEndpoint('scam-radar/stream', {
+      // Progressive (2026-10-16): the verdict shows first; checked after.
+      const keep = d => ({ ...d, messageText, senderContext });
+      const parsed = await callToolEndpointProgressive('scam-radar/stream', {
         messageText,
         senderContext,
         interactionStatus,
@@ -176,7 +182,11 @@ function ScamRadar({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(keep(d)); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(keep(d)); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!parsed) return; // replaced by a newer run
       const entry = { ...parsed, messageText, senderContext };
       setResults(entry);
       // PF-25 exception: 80 is a message-preview length; history itself is capped at 10 lookups.
@@ -184,7 +194,7 @@ function ScamRadar({ tool }) {
     } catch (err) {
       setError(err.message || t('scam_error'));
     }
-  }, [canSubmit, loading, messageText, senderContext, interactionStatus, interactionOther, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, messageText, senderContext, interactionStatus, interactionOther, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleScanRef.current = handleScan;
   canSubmitRef.current  = canSubmit;
@@ -412,6 +422,7 @@ function ScamRadar({ tool }) {
 
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
 
         {/* Recap of the analyzed message — anchors persisted results on revisits */}
         {results.messageText && (
