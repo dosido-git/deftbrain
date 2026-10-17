@@ -115,14 +115,15 @@ RULES:
     // written after the speeches land, handed them (they are tied to moments
     // in these speeches). The consistency check runs after display.
     const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const onePrompt = (label) => withLanguage(onlyKeys(systemPrompt.replace('1. Generate EXACTLY 3 versions.', '1. Generate EXACTLY 1 version — the one named at the end.'), ['versions']), userLanguage)
-      + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
-      + `\nTHIS PASS writes ONLY the ${label} version — exactly one item in versions, label "${label}". Other passes write the other two versions at the same time.`;
-    const call = (sys, maxTokens, tag) => callClaudeWithRetry({
+    // The answer template is in the user message (not the system prompt), so
+    // that is what each pass cuts down.
+    const onePrompt = (label) => onlyKeys(userPrompt.replace('1. Generate EXACTLY 3 versions.', '1. Generate EXACTLY 1 version — the one named at the end.'), ['versions'])
+      + `\nTHIS PASS writes ONLY the ${label} version, in full and at the requested length — exactly one item in versions, label "${label}". Other passes write the other two versions at the same time.`;
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: maxTokens,
-      system: sys,
-      messages: [{ role: 'user', content: userPrompt }],
+      system,
+      messages: [{ role: 'user', content }],
     }, { label: tag });
     const LABELS = ['Straightforward', 'Story-led', 'Concise'];
     // T2 (audit/DEFECT-TYPES.md): speaking time is arithmetic, not a guess —
@@ -144,7 +145,7 @@ RULES:
       label: 'toast-writer',
       parts: [
         ...LABELS.map((label, i) => ({
-          run: () => call(onePrompt(label), 2600, i ? `toast-writer-${i + 1}` : 'toast-writer'),
+          run: () => call(onePrompt(label), 3000, i ? `toast-writer-${i + 1}` : 'toast-writer'),
           apply: (d, out) => {
             const v = Array.isArray(out?.versions) ? out.versions[0] : null;
             if (!v?.speech) return;
@@ -152,11 +153,11 @@ RULES:
             d.order = [...(d.order || []).filter(l => l !== label), label];
           },
         })),
-        { run: () => call(withLanguage(onlyKeys(systemPrompt, ['occasion_read', 'emergency_closer']), userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion), 800, 'toast-writer-read'),
+        { run: () => call(onlyKeys(userPrompt, ['occasion_read', 'emergency_closer']), 800, 'toast-writer-read'),
           apply: (d, out) => { ['occasion_read', 'emergency_closer'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
       ],
       after: async (d) => {
-        const out = await call(system + planNote({ versions: versionsOf(d).map(v => ({ label: v.label, speech: v.speech })) }, ['versions'])
+        const out = await call(onlyKeys(userPrompt, TIPS) + planNote({ versions: versionsOf(d).map(v => ({ label: v.label, speech: v.speech })) }, ['versions'])
           + `\nTHIS PASS writes ONLY ${TIPS.join(' and ')}, tied to moments in these speeches.`, 1200, 'toast-writer-tips');
         TIPS.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
       },
