@@ -623,35 +623,8 @@ function buildEvidence(body) {
   };
 }
 
-function generationPrompt(evidence) {
-  return `CURRENT USER EVIDENCE — this is the only source of user-specific facts:
-
-ABOUT THEM:
-${evidence.about_them || '(not supplied)'}
-
-WHAT THEY WANT MORE OF:
-${evidence.goals || '(not supplied)'}
-
-FREE TIME:
-${evidence.free_time || '(not supplied)'}
-
-STARTUP BUDGET:
-${evidence.startup_budget || '(not supplied)'}
-
-CONSTRAINTS:
-${evidence.constraints || '(none supplied)'}
-
-ALREADY TRIED:
-${evidence.already_tried || '(not supplied)'}
-
-Return ONLY valid JSON in this exact shape:
-
-{
-  "matching_for": [
-    "2-4 short plural predicates that complete the fixed UI lead-in 'The strongest matches:'"
-  ],
-  "hobbies": [
-    {
+// One hobby's shape, shared by the full-set prompt and the per-hobby writer.
+const HOBBY_SCHEMA = `    {
       "name": "specific hobby",
       "icon": "one emoji",
       "why_it_made_the_list": "1-2 concise grounded sentences",
@@ -664,32 +637,11 @@ Return ONLY valid JSON in this exact shape:
       "try_it_once": "smallest realistic experiment before significant commitment",
       "where_to_look": "generic kinds of places/resources to look; empty string if unnecessary",
       "watch_for": "brief material constraint/safety/access note; empty string if none"
-    }
-  ],
-  "wildcard": {
-    "name": "constraint-compliant hobby in a materially different activity mode",
-    "activity_mode": "one allowed mode different from every main pick",
-    "why": "brief grounded explanation"
-  },
-  "pattern_in_matches": "brief pattern in the recommendations tied to supplied facts, or empty string"
-}
+    }`;
 
-Return 4-5 main hobbies plus one wildcard.`;
-}
-
-function validatorPrompt(evidence, draft, violations) {
-  return `CURRENT USER EVIDENCE — authoritative:
-${JSON.stringify(evidence, null, 2)}
-
-DRAFT:
-${JSON.stringify(draft, null, 2)}
-
-DETERMINISTIC VIOLATIONS ALREADY FOUND:
-${violations.length ? violations.map(v => `- ${v}`).join('\n') : '- none'}
-
-Edit the draft for compliance.
-
-MANDATORY CHECKS:
+// The compliance editor's checks, shared by the full-set editor and the
+// per-hobby editor (the same rules, whether it sees one hobby or the set).
+const VALIDATOR_CHECKS = `MANDATORY CHECKS:
 
 1. HARD CONSTRAINTS
 Every main hobby and wildcard must clearly satisfy the user's constraints without
@@ -740,7 +692,62 @@ Fit first. Where equally strong options exist, prefer different modes.
 2-4 plural predicates only. No 'You need'. No personality reading.
 
 13. PATTERN
-Pattern in recommendations only, tied to supplied facts. No hidden user trait.
+Pattern in recommendations only, tied to supplied facts. No hidden user trait.`;
+
+function generationPrompt(evidence) {
+  return `CURRENT USER EVIDENCE — this is the only source of user-specific facts:
+
+ABOUT THEM:
+${evidence.about_them || '(not supplied)'}
+
+WHAT THEY WANT MORE OF:
+${evidence.goals || '(not supplied)'}
+
+FREE TIME:
+${evidence.free_time || '(not supplied)'}
+
+STARTUP BUDGET:
+${evidence.startup_budget || '(not supplied)'}
+
+CONSTRAINTS:
+${evidence.constraints || '(none supplied)'}
+
+ALREADY TRIED:
+${evidence.already_tried || '(not supplied)'}
+
+Return ONLY valid JSON in this exact shape:
+
+{
+  "matching_for": [
+    "2-4 short plural predicates that complete the fixed UI lead-in 'The strongest matches:'"
+  ],
+  "hobbies": [
+${HOBBY_SCHEMA}
+  ],
+  "wildcard": {
+    "name": "constraint-compliant hobby in a materially different activity mode",
+    "activity_mode": "one allowed mode different from every main pick",
+    "why": "brief grounded explanation"
+  },
+  "pattern_in_matches": "brief pattern in the recommendations tied to supplied facts, or empty string"
+}
+
+Return 4-5 main hobbies plus one wildcard.`;
+}
+
+function validatorPrompt(evidence, draft, violations) {
+  return `CURRENT USER EVIDENCE — authoritative:
+${JSON.stringify(evidence, null, 2)}
+
+DRAFT:
+${JSON.stringify(draft, null, 2)}
+
+DETERMINISTIC VIOLATIONS ALREADY FOUND:
+${violations.length ? violations.map(v => `- ${v}`).join('\n') : '- none'}
+
+Edit the draft for compliance.
+
+${VALIDATOR_CHECKS}
 
 Return 4-5 strong main hobbies and one wildcard.
 Return ONLY the corrected JSON in the identical schema.`;
@@ -809,6 +816,130 @@ FREE MODES — pick exactly one of these for activity_mode: ${freeModes.join(', 
   return null;
 }
 
+// ── Fast path (2026-10-16) ─────────────────────────────────────────────────
+// The full path wrote the whole set (~2,800 tokens, 26s) and then the editor
+// wrote it all again (~2,600 tokens, 25s): ~51s before anything could show.
+// Now: one small pass picks the set — names, icons, activity modes, the
+// wildcard, the summary lines — so the hobbies stay distinct and the wildcard
+// stays in its own mode; then every hobby is written and edited by its own
+// pair of calls, all at once, and the editor answers "keep" (a few tokens)
+// unless it has a correction. Nothing is shown until every piece has passed
+// its editor and the whole set passes the deterministic gate, as before.
+
+function evidenceBlock(evidence) {
+  return `CURRENT USER EVIDENCE — this is the only source of user-specific facts:
+${JSON.stringify(evidence, null, 2)}`;
+}
+
+function planPrompt(evidence) {
+  return `${evidenceBlock(evidence)}
+
+Choose the set first. Return ONLY valid JSON:
+{
+  "matching_for": ["2-4 short plural predicates that complete the fixed UI lead-in 'The strongest matches:'"],
+  "hobbies": [ { "name": "specific hobby", "icon": "one emoji", "activity_mode": "making | solving | collecting | performing | exploring | competing | observing | repairing | writing | moving | social | digital_creation" } ],
+  "wildcard": { "name": "constraint-compliant hobby in a materially different activity mode", "activity_mode": "one allowed mode different from every main pick" },
+  "pattern_in_matches": "brief pattern in the recommendations tied to supplied facts, or empty string"
+}
+
+4-5 main hobbies plus one wildcard. Every hobby must satisfy the constraints as written and connect to something the user actually supplied. Fit first; where equally strong options exist, prefer different modes. Other passes write each hobby's details afterwards.`;
+}
+
+function setLine(plan) {
+  return `THE SET ALREADY CHOSEN (another pass chose it; keep the name and mode you are given):
+${(plan.hobbies || []).map(h => `- ${h.name} [${h.activity_mode}]`).join('\n')}
+Wildcard: ${plan.wildcard?.name} [${plan.wildcard?.activity_mode}]`;
+}
+
+function hobbyWritePrompt(evidence, plan, h) {
+  return `${evidenceBlock(evidence)}
+
+${setLine(plan)}
+
+Write the full entry for ONE hobby of this set: "${h.name}" (activity_mode "${h.activity_mode}", icon "${h.icon || ''}"). Keep that name, icon and activity_mode exactly. Return ONLY valid JSON: { "hobby": ${HOBBY_SCHEMA.trim()} }`;
+}
+
+function wildcardWritePrompt(evidence, plan) {
+  return `${evidenceBlock(evidence)}
+
+${setLine(plan)}
+
+Write the wildcard's entry: "${plan.wildcard?.name}" (activity_mode "${plan.wildcard?.activity_mode}"). Keep that name and activity_mode exactly. Return ONLY valid JSON: { "wildcard": { "name": "${plan.wildcard?.name}", "activity_mode": "${plan.wildcard?.activity_mode}", "why": "brief grounded explanation" } }`;
+}
+
+function pieceCheckPrompt(evidence, plan, label, piece, violations) {
+  return `CURRENT USER EVIDENCE — authoritative:
+${JSON.stringify(evidence, null, 2)}
+
+${setLine(plan)}
+
+THE PIECE TO EDIT (${label}):
+${JSON.stringify(piece, null, 2)}
+
+DETERMINISTIC VIOLATIONS ALREADY FOUND IN IT:
+${violations.length ? violations.map(v => `- ${v}`).join('\n') : '- none'}
+
+Edit this one piece for compliance. The checks that concern the whole set (diversity, the wildcard's mode) are the set's, already settled — apply the rest to this piece.
+
+${VALIDATOR_CHECKS}
+
+If the piece passes every check as written, return ONLY {"verdict":"keep"}.
+Otherwise return ONLY {"verdict":"edit","piece": <the corrected piece in the identical shape>}. To replace a hobby that violates a hard constraint, return the replacement as the corrected piece, with an activity_mode different from the wildcard's.`;
+}
+
+async function checkPiece(evidence, plan, label, piece, { userLanguage, localeSuffix }) {
+  const violations = [];
+  const texts = typeof piece === 'string' ? [piece] : Object.values(piece || {}).flat().filter(v => typeof v === 'string');
+  for (const t of texts) for (const f of textFaults(t)) violations.push(f);
+  const out = await callClaudeWithRetry({
+    model: MODELS.FAST,
+    max_tokens: 1400,
+    temperature: 0,
+    system: withLanguage(VALIDATOR_SYSTEM, userLanguage) + localeSuffix,
+    messages: [{ role: 'user', content: pieceCheckPrompt(evidence, plan, label, piece, violations) }],
+  }, { label: `hobby-match-check:${label}` });
+  if (out?.verdict === 'edit' && out.piece && typeof out.piece === 'object') return out.piece;
+  if (out?.verdict === 'keep') return piece;
+  // VALIDATOR_SYSTEM asks for the same shape back; an editor that returns the
+  // corrected piece itself, without a verdict, has still made its edit.
+  if (out && typeof out === 'object' && !('verdict' in out) && Object.keys(out).some(k => k in piece)) return { ...piece, ...out };
+  return piece;
+}
+
+async function fastDraft(evidence, lang) {
+  const { userLanguage, localeSuffix } = lang;
+  const plan = hardScrub(await callClaudeWithRetry({
+    model: MODELS.FAST,
+    max_tokens: 900,
+    temperature: 0.35,
+    system: withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix,
+    messages: [{ role: 'user', content: planPrompt(evidence) }],
+  }, { label: 'hobby-match-plan' }));
+  if (!Array.isArray(plan.hobbies) || plan.hobbies.length < MIN_MAIN || !plan.wildcard?.name || !plan.wildcard.activity_mode
+    || plan.hobbies.some(h => !h?.name || !h.activity_mode)) {
+    console.warn('[hobby-match] fast plan unusable — full path');
+    return null;
+  }
+  const write = (content, tag) => callClaudeWithRetry({
+    model: MODELS.FAST, max_tokens: 1400, temperature: 0.35, system: withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix,
+    messages: [{ role: 'user', content }],
+  }, { label: `hobby-match-write:${tag}` });
+  const [hobbies, wildcard, summary] = await Promise.all([
+    Promise.all(plan.hobbies.map(async (h, i) => {
+      const out = await write(hobbyWritePrompt(evidence, plan, h), `h${i + 1}`);
+      const written = { ...(out?.hobby || {}), name: out?.hobby?.name || h.name, icon: out?.hobby?.icon || h.icon };
+      return checkPiece(evidence, plan, `hobbies[${i}]`, written, lang);
+    })),
+    (async () => {
+      const out = await write(wildcardWritePrompt(evidence, plan), 'wildcard');
+      const w = { name: plan.wildcard.name, activity_mode: plan.wildcard.activity_mode, why: out?.wildcard?.why || '' };
+      return checkPiece(evidence, plan, 'wildcard', w, lang);
+    })(),
+    checkPiece(evidence, plan, 'summary', { matching_for: plan.matching_for || [], pattern_in_matches: plan.pattern_in_matches || '' }, lang),
+  ]);
+  return hardScrub({ matching_for: summary.matching_for, hobbies, wildcard, pattern_in_matches: summary.pattern_in_matches });
+}
+
 router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
@@ -830,37 +961,42 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const localeSystem = withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix;
 
     // Progressive (2026-10-16, lib/progressive.js): the answer is still only
-    // shown once it has passed the compliance editor and the deterministic
-    // gate — "do not show a knowingly noncompliant result" — so it is one
-    // part; the consistency check now runs after it is on screen.
+    // shown once every piece has passed the compliance editor and the set has
+    // passed the deterministic gate — "do not show a knowingly noncompliant
+    // result" — so it is one part (built by fastDraft, the full path as its
+    // fallback); the consistency check runs after it is on screen.
     const pipeline = async () => {
-        // PASS 1 — generate from the closed evidence set.
-        let draft = await callClaudeWithRetry({
-          model: MODELS.FAST,
-          max_tokens: 5000,
-          temperature: 0.35,
-          system: localeSystem,
-          messages: [{ role: 'user', content: generationPrompt(evidence) }],
-        }, { label: 'hobby-match-generate' });
+        let result = await fastDraft(evidence, { userLanguage, localeSuffix })
+          .catch(err => { console.warn('[hobby-match] fast path failed — full path:', err.message); return null; });
+        if (!result) {
+          // PASS 1 — generate from the closed evidence set.
+          let draft = await callClaudeWithRetry({
+            model: MODELS.FAST,
+            max_tokens: 5000,
+            temperature: 0.35,
+            system: localeSystem,
+            messages: [{ role: 'user', content: generationPrompt(evidence) }],
+          }, { label: 'hobby-match-generate' });
 
-        draft = hardScrub(draft);
+          draft = hardScrub(draft);
 
-        // PASS 2 — cold compliance editor. It may replace a bad recommendation.
-        const firstViolations = deterministicViolations(draft);
+          // PASS 2 — cold compliance editor. It may replace a bad recommendation.
+          const firstViolations = deterministicViolations(draft);
 
-        const edited = await callClaudeWithRetry({
-          model: MODELS.FAST,
-          max_tokens: 5000,
-          temperature: 0,
-          system: withLanguage(VALIDATOR_SYSTEM, userLanguage)
-            + withLocaleContext(userLocale, userCurrency, userRegion),
-          messages: [{
-            role: 'user',
-            content: validatorPrompt(evidence, draft, firstViolations)
-          }],
-        }, { label: 'hobby-match-validate' });
+          const edited = await callClaudeWithRetry({
+            model: MODELS.FAST,
+            max_tokens: 5000,
+            temperature: 0,
+            system: withLanguage(VALIDATOR_SYSTEM, userLanguage)
+              + withLocaleContext(userLocale, userCurrency, userRegion),
+            messages: [{
+              role: 'user',
+              content: validatorPrompt(evidence, draft, firstViolations)
+            }],
+          }, { label: 'hobby-match-validate' });
 
-        let result = hardScrub(edited);
+          result = hardScrub(edited);
+        }
 
         // PASS 3 — deterministic final gate.
         const finalViolations = deterministicViolations(result);
