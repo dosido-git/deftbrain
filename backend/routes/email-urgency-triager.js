@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { answer, onlyKeys, planNote } = require('../lib/progressive');
+const { answer, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -481,8 +481,7 @@ THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other pass
     const SLOTS = 5;
     const perFor = (n) => Math.max(1, Math.ceil(n / SLOTS));
     const analysisFor = (group) => onlyKeys(analysisPrompt.replace('Your response MUST contain urgency_analysis and summary.', ''), ['urgency_analysis'])
-      + planNote({ emails: group }, ['emails'])
-      + '\nTHIS PASS writes ONLY these emails, one urgency_analysis entry each, in this order — with exactly the urgency_tier and email_category given, and reasoning that explains that tier.';
+      + `\nTHIS PASS writes ONLY ${group.length === 1 ? 'this email' : `these ${group.length} emails`} — one urgency_analysis entry each, in this order, nothing for any other email. The tier was decided across the whole inbox by another pass: keep it exactly, and make the reasoning explain it.\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'} → urgency_tier ${e.urgency_tier}, email_category ${e.email_category || 'Response Expected'}`).join('\n')}`;
     const chunkPart = (ci) => ({
       run: async () => {
         const list = await listed;
@@ -501,8 +500,16 @@ THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other pass
       const list = Array.isArray(d.listed) ? d.listed : [];
       if (!list.length) return (d.chunks?.[0] || []).slice(0, 15).map(sanitizeEmail);
       const per = perFor(list.length);
+      // A detail counts only if it is about this email (same sender or
+      // subject): a pass once wrote the whole inbox, and position alone
+      // pinned the boss's email onto three rows.
+      const norm = v => String(v || '').toLowerCase().replace(/^(re|aw|fwd?|wg):\s*/g, '').trim();
+      const sameSubject = (a, b) => norm(a.email_subject) && norm(a.email_subject) === norm(b.email_subject);
+      const sameSender = (a, b) => norm(a.from) && norm(a.from) === norm(b.from);
       return list.map((e, i) => {
-        const detail = d.chunks?.[Math.floor(i / per)]?.[i % per];
+        const chunk = (d.chunks?.[Math.floor(i / per)] || []).filter(Boolean);
+        // Subject first — one sender can send two different emails.
+        const detail = chunk.find(x => sameSubject(x, e)) || (chunk.length === 1 && sameSender(chunk[0], e) ? chunk[0] : null);
         return sanitizeEmail(detail ? { ...detail, urgency_tier: e.urgency_tier, email_category: e.email_category || detail.email_category } : e);
       });
     };
