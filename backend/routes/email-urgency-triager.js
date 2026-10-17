@@ -454,7 +454,8 @@ Return only the JSON object.`;
 
     // Progressive (2026-10-17, lib/progressive.js): a quick pass lists the
     // emails (sender and subject, in order); then the emails are analysed
-    // three to a pass, all at once, beside the cross-email insights — the
+    // in up to five passes at once (one email each for a short paste), beside
+    // the cross-email insights — the
     // first emails show in seconds instead of after one pass wrote all 15.
     // The summary is recomputed in code from whatever has landed; the guard
     // runs after the answer is on screen.
@@ -472,7 +473,7 @@ THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other p
       // everything in one call, as before (it once truncated and took the
       // whole answer down with it).
       .catch(err => { console.warn('[email-urgency-triager] list failed — one pass:', err.message); return []; });
-    const PER = 3;
+    const SLOTS = 5;
     const analysisFor = (group) => onlyKeys(analysisPrompt.replace('Your response MUST contain urgency_analysis and summary.', ''), ['urgency_analysis'])
       + `\nTHIS PASS analyses ONLY these emails, one urgency_analysis entry each, in this order:\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'}`).join('\n')}`;
     const chunkPart = (ci) => ({
@@ -481,7 +482,8 @@ THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other p
         const list = await listed;
         // No list (or a failed one): the first pass analyses everything, as before.
         if (!list.length) return ci === 0 ? call(analysisPrompt, 6000, 'email-urgency-triage-analysis-v2') : null;
-        const group = list.slice(ci * PER, ci * PER + PER);
+        const per = Math.max(1, Math.ceil(list.length / SLOTS));
+        const group = list.slice(ci * per, ci * per + per);
         if (!group.length) return null;
         return call(analysisFor(group), 2600, `email-urgency-triage-analysis-v2:${ci + 1}`);
       },
@@ -495,7 +497,7 @@ THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other p
     return await answer(req, res, {
       label: 'email-urgency-triager',
       parts: [
-        ...[0, 1, 2, 3, 4].map(chunkPart),
+        ...Array.from({ length: SLOTS }, (_, i) => chunkPart(i)),
         { run: () => call(insightsPrompt, 1400, 'email-urgency-triage-insights-v2'), apply: (d, out) => { d.insights = out; } },
       ],
       finish: d => shape(structuredClone(d)),

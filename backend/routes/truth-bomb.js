@@ -119,9 +119,9 @@ RULES:
 16. INTERPRETATION CHECK: preserve the status of every claim, in every field. An impression stays an impression, an inference stays an inference, and a prediction stays a prediction. Never convert what the user thinks into something established or directly observed.`;
 
     // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
-    // thing examined, the reality check and any safety note show first; the
-    // three ways to say it, and the timing and permission not to, then run at
-    // once, handed that reading so the scripts say no more than it does.
+    // thing examined and any safety note show first (~7s); the reality check,
+    // the three ways to say it, and the timing and permission not to, then
+    // run at once, handed that reading so the scripts say no more than it does.
     const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
@@ -129,10 +129,11 @@ RULES:
       system,
       messages: [{ role: 'user', content }],
     }, { label: tag });
-    const PLAN = ['the_thing_examined', 'reality_check', 'safety_note'];
+    const PLAN = ['the_thing_examined', 'safety_note'];
     return await answer(req, res, {
       label: 'truth-bomb',
-      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1600, 'truth-bomb'), [
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1200, 'truth-bomb'), [
+        ['reality_check'],
         ['three_ways_to_say_it'],
         ['the_timing', 'permission_to_not_say_it'],
       ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1600, `truth-bomb-${i + 2}`)),
