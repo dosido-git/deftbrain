@@ -40,12 +40,19 @@ const crypto = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { startFakeApi, startBackend, bestCase } = require('./lib/standin');
+const { startFakeApi, startBackend, startLiveBackend, bestCase } = require('./lib/standin');
 
 const ROOT = path.join(__dirname, '..');
-const PASS_FILE = path.join(ROOT, '.git', 'golden-pass.json');
+// --git-path, not ROOT/.git: in a worktree .git is a file, the write failed
+// silently, and every push from one paid for its live cases again.
+const PASS_FILE = (() => {
+  try { return path.resolve(ROOT, execFileSync('git', ['rev-parse', '--git-path', 'golden-pass.json'], { cwd: ROOT, encoding: 'utf8' }).trim()); }
+  catch { return path.join(ROOT, '.git', 'golden-pass.json'); }
+})();
 const MAX_CASES = Number(process.env.GOLDEN_MAX_CASES || 12);
-const BASE_URL = process.env.GOLDEN_BASE_URL || 'http://localhost:3001';
+// Live cases run on a backend this script starts from the pushed tree, unless
+// GOLDEN_BASE_URL names one explicitly.
+const BASE_URL = process.env.GOLDEN_BASE_URL || '';
 const COST_PER_CASE = 0.15;
 
 // A changed line that matches this can change what the model writes.
@@ -198,12 +205,12 @@ function touchedEndpoints(slug, newLines) {
   return hit;
 }
 
-function runCheckGolden(slug, baseUrl, skip, quiet) {
+function runCheckGolden(slug, baseUrl, skip, quiet, replayRun = false) {
   const report = path.join(os.tmpdir(), `golden-${slug}-${process.pid}-${Date.now()}.json`);
   return new Promise(resolve => {
     const child = spawn('node', [path.join(__dirname, 'check-golden.js'), slug], {
       cwd: ROOT, stdio: quiet ? 'ignore' : 'inherit',
-      env: { ...process.env, GOLDEN_BASE_URL: baseUrl, GOLDEN_SKIP_CASES: [...skip].join(','), GOLDEN_REPORT_FILE: report, ...(baseUrl !== BASE_URL ? { GOLDEN_PERF_PROBE: '1' } : {}) },
+      env: { ...process.env, GOLDEN_BASE_URL: baseUrl, GOLDEN_SKIP_CASES: [...skip].join(','), GOLDEN_REPORT_FILE: report, GOLDEN_PERF_PROBE: replayRun ? '1' : '' },
     });
     child.on('close', () => {
       let passed = [];
@@ -213,11 +220,11 @@ function runCheckGolden(slug, baseUrl, skip, quiet) {
   });
 }
 
-async function backendUp() {
+async function backendUp(url) {
   try {
     const c = new AbortController();
     const t = setTimeout(() => c.abort(), 3000);
-    const r = await fetch(`${BASE_URL}/api/endpoints`, { signal: c.signal });
+    const r = await fetch(`${url}/api/endpoints`, { signal: c.signal });
     clearTimeout(t);
     return r.ok;
   } catch { return false; }
@@ -241,8 +248,8 @@ async function replay(slugs, base) {
     ]);
     for (const slug of slugs) {
       current = loadCases(slug);
-      const atBase = await runCheckGolden(slug, `http://127.0.0.1:${old.port}`, [], true);
-      const atHead = await runCheckGolden(slug, `http://127.0.0.1:${head.port}`, [], process.env.GOLDEN_REPLAY_VERBOSE !== '1');
+      const atBase = await runCheckGolden(slug, `http://127.0.0.1:${old.port}`, [], true, true);
+      const atHead = await runCheckGolden(slug, `http://127.0.0.1:${head.port}`, [], process.env.GOLDEN_REPLAY_VERBOSE !== '1', true);
       const broke = current.filter(c => atBase.has(c.name) && !atHead.has(c.name)).map(c => c.name);
       const fixed = current.filter(c => !atBase.has(c.name) && atHead.has(c.name)).length;
       if (broke.length) {
@@ -312,18 +319,42 @@ async function replay(slugs, base) {
   if (replaySlugs.length) failed += await replay(replaySlugs, base);
 
   if (toRun) {
-    if (!await backendUp()) {
-      console.log(`⚠️  golden-for-push: ${toRun} live case(s) need the dev backend, and nothing is answering at ${BASE_URL}.`);
-      console.log('   NOT CHECKED — start it with `npm run dev:backend` and re-push to have this verified.');
+    let live = null, url = BASE_URL;
+    const metricsFile = path.join(os.tmpdir(), `golden-live-${process.pid}.jsonl`);
+    if (!url) {
+      try { live = await startLiveBackend(ROOT, metricsFile); } catch (err) { console.log(`⚠️  golden-for-push: live backend failed to start — ${err.message.split('\n')[0]}`); }
+      if (live) url = `http://127.0.0.1:${live.port}`;
+    }
+    if (!url || !await backendUp(url)) {
+      console.log(`⚠️  golden-for-push: ${toRun} live case(s) need a backend with the API key, and none could be started${BASE_URL ? ` (nothing answering at ${BASE_URL})` : ' (no backend/.env found here or in the main checkout)'}.`);
+      console.log('   NOT CHECKED — re-push once it can run to have this verified.');
     } else {
-      for (const p of plan) {
-        if (!p.pick.length) continue;
-        const skip = p.cases.map(c => c.name).filter(n => !p.pick.includes(n));
-        console.log(`golden-for-push: ${p.slug} (live)`);
-        const passed = await runCheckGolden(p.slug, BASE_URL, skip, false);
-        const ran = p.pick.filter(n => passed.has(n));
-        writePass(p.slug, p.fp, ran);
-        if (ran.length < p.pick.length) failed++;
+      try {
+        if (live) console.log(`golden-for-push: live cases run on this tree's own backend (:${live.port})`);
+        for (const p of plan) {
+          if (!p.pick.length) continue;
+          const skip = p.cases.map(c => c.name).filter(n => !p.pick.includes(n));
+          console.log(`golden-for-push: ${p.slug} (live)`);
+          const passed = await runCheckGolden(p.slug, url, skip, false);
+          const ran = p.pick.filter(n => passed.has(n));
+          writePass(p.slug, p.fp, ran);
+          if (ran.length < p.pick.length) failed++;
+        }
+      } finally {
+        if (live) {
+          live.child.kill('SIGTERM');
+          // What it cost, from the run's own record of every model call.
+          await new Promise(r => setTimeout(r, 300));
+          let usd = 0, calls = 0;
+          try {
+            for (const l of fs.readFileSync(metricsFile, 'utf8').split('\n')) {
+              if (!l.includes('"llm_usage"')) continue;
+              try { const j = JSON.parse(l); if (typeof j.usd === 'number') { usd += j.usd; calls++; } } catch (_) { /* partial line */ }
+            }
+            fs.unlinkSync(metricsFile);
+          } catch (_) { /* no calls recorded */ }
+          console.log(`golden-for-push: live spend $${usd.toFixed(4)} (${calls} model call(s), from the run's metrics)`);
+        }
       }
     }
   }

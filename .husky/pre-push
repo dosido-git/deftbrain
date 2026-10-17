@@ -102,9 +102,11 @@ node scripts/i18n-convention-audit.js --strict
 # a stale dev backend left running on :3001 answered three golden runs with the
 # previous day's code, so the check reported PASS while testing nothing current.
 # Scoped to changed route files — running all ~120 locked tools would be that
-# many live model calls. Skips loudly, and exits 0, when no backend is answering:
-# a push should not hang on a dev server nobody promised to run. It never reports
-# a pass it did not observe.
+# many live model calls. Since 2026-10-17 live cases run on a backend the check
+# starts from the tree being pushed (key from backend/.env, or the main
+# checkout's for a worktree), never on whatever :3001 happens to run, and it
+# prints what they cost. Skips loudly, and exits 0, when no key is found. It
+# never reports a pass it did not observe.
 # Since 2026-10-09 it pays only for what a change can affect (owner rule): a
 # change after generation (checks, filters, wiring) replays every saved answer
 # against a stand-in API at the base and at HEAD, free; only a prompt/model

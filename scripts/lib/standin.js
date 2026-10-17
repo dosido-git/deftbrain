@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const net = require('net');
-const { spawn } = require('child_process');
+const { spawn, execFileSync } = require('child_process');
 
 function promptText(body) {
   const parts = [];
@@ -167,4 +167,55 @@ async function startBackend(backendDir, apiPort, fixedPort = null) {
   return { child, port, logs: () => state.buf };
 }
 
-module.exports = { promptText, largestJsonIn, bestCase, startFakeApi, freePort, startBackend };
+// The real API key lives in the main checkout's backend/.env; a git worktree
+// has none (it is gitignored). Found through the shared git dir so a push from
+// any worktree finds the same file.
+function liveEnvFile(root) {
+  const own = path.join(root, 'backend', '.env');
+  if (fs.existsSync(own)) return own;
+  try {
+    const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: root, encoding: 'utf8' }).trim();
+    const main = path.join(path.dirname(common), 'backend', '.env');
+    if (fs.existsSync(main)) return main;
+  } catch (_) { /* not a git checkout */ }
+  return null;
+}
+
+// Starts backendDir/server.js against the REAL API, for live goldens. A live
+// check must run the code being pushed: the dev backend on :3001 runs whatever
+// checkout started it — the main one, even for a push from a worktree — and
+// once answered three golden runs with the previous day's code. Every model
+// call it makes is recorded in metricsFile, so the caller can report what the
+// run actually cost. Resolves { child, port, logs }, or null with no key.
+async function startLiveBackend(root, metricsFile) {
+  const envFile = liveEnvFile(root);
+  if (!envFile) return null;
+  const backendDir = path.join(root, 'backend');
+  const port = await freePort();
+  const state = { buf: '' };
+  const env = {
+    ...require('dotenv').parse(fs.readFileSync(envFile)),
+    ...process.env,
+    PORT: String(port),
+    METRICS_LOG_FILE: metricsFile,
+    // A failing test case is not an outage: no alert emails, no audit watchdog.
+    AUDIT_WATCH: 'off',
+    TOOL_ERROR_ALERT_NETWORK: 'off',
+  };
+  const child = spawn(process.execPath, ['server.js'], { cwd: backendDir, env, stdio: ['ignore', 'pipe', 'pipe'] });
+  child.stdout.on('data', d => { state.buf += d; });
+  child.stderr.on('data', d => { state.buf += d; });
+  await new Promise((resolve, reject) => {
+    const t0 = Date.now();
+    const poll = setInterval(() => {
+      if (/startup OK/.test(state.buf)) { clearInterval(poll); resolve(); }
+      else if (child.exitCode !== null || Date.now() - t0 > 60000) {
+        clearInterval(poll);
+        reject(new Error('backend did not start:\n' + state.buf.slice(-2000)));
+      }
+    }, 200);
+  });
+  return { child, port, logs: () => state.buf };
+}
+
+module.exports = { promptText, largestJsonIn, bestCase, startFakeApi, freePort, startBackend, startLiveBackend };
