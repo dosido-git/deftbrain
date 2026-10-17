@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, useReducer } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -241,7 +242,7 @@ function KeepOnTrack({ results, c, isDark, onFinish, t }) {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const MeetingHijackStopper = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { t } = useTranslation();
   const { isDark } = useTheme();
 
@@ -286,6 +287,7 @@ const MeetingHijackStopper = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── The three stages, plus two utilities that are not stages ──
   const [stage, setStage] = useState('plan');
@@ -331,10 +333,11 @@ const MeetingHijackStopper = ({ tool }) => {
   const buildPlan = useCallback(async () => {
     if (!canGenerate) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setFollowUp(null);
     try {
-      const data = await callToolEndpoint('meeting-hijack-stopper', {
+      // Progressive (2026-10-16): the agenda shows first; checked after.
+      const data = await callToolEndpointProgressive('meeting-hijack-stopper', {
         meetingGoal: meetingGoal.trim(),
         duration: effectiveDuration,
         participantCount: participantCount ? parseInt(participantCount, 10) : null,
@@ -346,7 +349,11 @@ const MeetingHijackStopper = ({ tool }) => {
         challengeOther: challengeOther.trim() || null,
         decisionFramework,
         extraContext: extraContext.trim() || null,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -364,7 +371,7 @@ const MeetingHijackStopper = ({ tool }) => {
     }
   }, [canGenerate, meetingGoal, effectiveDuration, participantCount, participantNotes, format, platform,
       isVirtualish, meetingType, challenges, challengeOther, decisionFramework, extraContext,
-      callToolEndpoint, setSessionHistory, t]);
+      callToolEndpointProgressive, setSessionHistory, t]);
 
   // ── The follow-up, on demand, from what they actually captured ──
   const capturedSomething = [decided, stillOpen, forNextTime].some(x => x.trim())
@@ -512,6 +519,7 @@ const MeetingHijackStopper = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setFollowUp(null); setError('');
     setMeetingGoal(''); setDuration(60); setCustomDuration('');
     setParticipantCount(''); setParticipantNotes('');
@@ -703,6 +711,7 @@ const MeetingHijackStopper = ({ tool }) => {
     const p = results.meeting_plan || {};
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
         <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
           <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>🎯 {t('mhp_h_goal')}</p>
           {p.goal && <p className={`text-sm ${c.textSecondary} mb-3`}>{p.goal}</p>}

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -102,18 +103,32 @@ RULES:
 7. KEEP THE OTHER PARTY HUMAN: do not assume dishonesty, manipulation, or predatory intent merely because this is a sales conversation.
 8. FINAL CHECK before returning the JSON: every claim about the seller, market, price, availability, product, contract, or the user's alternatives must be either supplied by the user or explicitly framed in before_you_commit as something to verify. If it's neither, remove it.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js): three section passes at
+    // once — the plan and the exit lines first, then what to watch for, then
+    // the questions and checklist. The consistency check runs after the
+    // answer is on screen.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const pass = (keys, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'upsell-shield' });
-    if (!Array.isArray(parsed.your_plan) || !parsed.your_plan.length || !Array.isArray(parsed.watch_for)) {
-      return res.status(500).json({ error: 'Could not build your plan. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'upsell-shield', userLanguage: req.body?.userLanguage });
-    return res.json(parsed);
+      max_tokens: 1800,
+      system,
+      messages: [{ role: 'user', content: onlyKeys(userPrompt, keys) }],
+    }, { label: i ? `upsell-shield-${i + 1}` : 'upsell-shield' });
+    return await answer(req, res, {
+      label: 'upsell-shield',
+      parts: keyGroups([
+        ['your_plan', 'exit_line', 'if_pressure_continues'],
+        ['watch_for'],
+        ['questions_worth_asking', 'before_you_commit'],
+      ], pass),
+      finish: d => structuredClone(d),
+      ready: d => Array.isArray(d.your_plan) && d.your_plan.length > 0,
+      complete: d => Array.isArray(d.your_plan) && d.your_plan.length > 0 && Array.isArray(d.watch_for),
+      check: async (parsed) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'upsell-shield', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('UpsellShield error:', error);

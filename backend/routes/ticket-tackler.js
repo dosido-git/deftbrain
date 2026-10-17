@@ -5,6 +5,7 @@
 // — never an "AI lawyer", never an outcome promise, never a manufactured case.
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext, extractSearchResults } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -120,8 +121,7 @@ Return your answer as JSON using the exact schema in the user message.`;
 router.post('/ticket-tackler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   // Two-stage architecture: the investigator performs case-directed web research first;
   // the reviewer then reasons from that compact dossier and produces the existing UI JSON.
-  // Keep the connection alive across both calls because the research stage can be slow.
-  let keepAlive = null;
+  // The connection is kept alive across the research by answer()'s heartbeat.
   try {
     const {
       ticketType, ticketText, ticketImageBase64, imageMediaType,
@@ -137,12 +137,6 @@ router.post('/ticket-tackler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     }
 
     const typeLabel = TYPE_LABELS[ticketType] || TYPE_LABELS.parking;
-
-    res.setHeader('Content-Type', 'application/json');
-    res.flushHeaders();
-    keepAlive = setInterval(() => {
-      try { res.write(' '); } catch { /* connection already gone */ }
-    }, 10000);
 
     const imageBlocks = [];
     if (ticketImageBase64) {
@@ -198,71 +192,79 @@ RULES:
       ? [...imageBlocks, { type: 'text', text: investigatorPrompt }]
       : investigatorPrompt;
 
-    const { parsed: investigation, message: investigatorMessage } = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      // 2026-09-16: bumped 2600 -> 4000 after a live golden-check truncation
-      // on the German quote-heavy case (stop_reason max_tokens, all 3 retries
-      // truncated identically — deterministic, not a flake). The schema is
-      // small (<=4 decision_questions, <=6 findings) but German text plus
-      // named authoritative sources/URLs pushed a real case over 2600.
-      max_tokens: 4000,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      system: withLanguage(INVESTIGATOR_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: investigatorContent }],
-    }, { label: 'ticket-tackler-investigator', returnMessage: true });
-
-    const researchDossier = JSON.stringify(stripCites(investigation));
-
-    // Rule-application check (2026-10-07). The reviewer kept applying an
-    // exemption for a car "parked after the sweeper has passed" to a car parked
-    // the night before — a rule instruction alone didn't stop it. A separate
-    // pass tests each researched rule's conditions against the facts, one by
-    // one, and its verdict on each rule is binding on the reviewer. Fail-open:
-    // without it the reviewer runs exactly as before.
-    let ruleCheckBlock = '';
-    try {
-      const rc = await callClaudeWithRetry({
+    // Research first, everything else after: the verdict cannot be written
+    // before the rules are known. The research (investigator + rule check) is
+    // one promise every part waits on.
+    let verifiedSources = [];
+    const research = (async () => {
+      const { parsed: investigation, message: investigatorMessage } = await callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 1800,
-        system: withLanguage('You test whether rules apply to facts. You do not research, advise or persuade. For each rule, exemption or defense named in the research findings, list its conditions exactly as the finding states them, then test each condition against the citation and the user\'s account — paying close attention to the order of events in time. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-        messages: [{ role: 'user', content: `${baseCasePrompt}
+        // 2026-09-16: bumped 2600 -> 4000 after a live golden-check truncation
+        // on the German quote-heavy case (stop_reason max_tokens, all 3 retries
+        // truncated identically — deterministic, not a flake). The schema is
+        // small (<=4 decision_questions, <=6 findings) but German text plus
+        // named authoritative sources/URLs pushed a real case over 2600.
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: withLanguage(INVESTIGATOR_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: investigatorContent }],
+      }, { label: 'ticket-tackler-investigator', returnMessage: true });
 
-RESEARCH FINDINGS:
-${researchDossier}
+      const researchDossier = JSON.stringify(stripCites(investigation));
 
-Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|failed|unknown","why":"the fact that settles it, or what is missing — one sentence"}],"applies":"yes|no|unknown"}]}. "applies" is yes only if every condition is met, no if any condition failed, otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
-      }, { label: 'ticket-tackler-rulecheck', maxRetries: 1 });
-      const rules = Array.isArray(rc?.rules) ? rc.rules.filter(r => r && r.rule) : [];
-      if (rules.length) {
-        ruleCheckBlock = `\n\nRULE APPLICATION CHECK (done separately; BINDING): a rule marked applies: no cannot support contesting and must not appear as a basis in the assessment, what_may_matter or the appeal; a rule marked unknown is unresolved, not supportive.\n${rules.map(r => `- ${r.rule}: applies ${r.applies}${(r.conditions || []).filter(c => c.status !== 'met').map(c => ` | ${c.status}: ${c.condition} — ${c.why}`).join('')}`).join('\n')}`;
-        console.log(`[ticket-tackler] rule check: ${rules.map(r => `${r.rule}=${r.applies}`).join(', ')}`);
-      }
-    } catch (e) { console.warn('[ticket-tackler] rule check skipped:', e.message); }
+      // Rule-application check (2026-10-07). The reviewer kept applying an
+      // exemption for a car "parked after the sweeper has passed" to a car parked
+      // the night before — a rule instruction alone didn't stop it. A separate
+      // pass tests each researched rule's conditions against the facts, one by
+      // one, and its verdict on each rule is binding on the reviewer. Fail-open:
+      // without it the reviewer runs exactly as before.
+      let ruleCheckBlock = '';
+      try {
+        const rc = await callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 1800,
+          system: withLanguage('You test whether rules apply to facts. You do not research, advise or persuade. For each rule, exemption or defense named in the research findings, list its conditions exactly as the finding states them, then test each condition against the citation and the user\'s account — paying close attention to the order of events in time. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
+          messages: [{ role: 'user', content: `${baseCasePrompt}
 
-    // The investigator names a source per VERIFIED finding (source_name/
-    // source_url) directly in its own JSON — but that's the model's own
-    // self-report, not independently confirmed; a plausible-looking URL can
-    // be invented the same way a bare domain can (see lease-trap-detector).
-    // Cross-check each named source against pages web_search actually
-    // retrieved in THIS call before treating it as real. Unlike the other
-    // tools' groundedFacts() pre-passes, there's no cache here — every
-    // ticket's investigation is unique to that specific citation, so this
-    // runs once per request against this request's own search results.
-    //
-    // source_url, when present, gives a reliable domain directly (no need to
-    // fuzzy-extract one from a human-readable name); fall back to pulling a
-    // domain-shaped token out of source_name for a finding that named a
-    // source without a URL.
-    const ticketSearchResults = extractSearchResults(investigatorMessage);
-    const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
-    const verifiedSources = Array.isArray(investigation.findings)
-      ? matchVerifiedSources(
-          investigation.findings.map(f => ({ source: (f.source_url && hostnameOf(f.source_url)) || f.source_name })),
-          ticketSearchResults,
-        )
-      : [];
+  RESEARCH FINDINGS:
+  ${researchDossier}
 
-    const userPrompt = `${baseCasePrompt}
+  Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|failed|unknown","why":"the fact that settles it, or what is missing — one sentence"}],"applies":"yes|no|unknown"}]}. "applies" is yes only if every condition is met, no if any condition failed, otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
+        }, { label: 'ticket-tackler-rulecheck', maxRetries: 1 });
+        const rules = Array.isArray(rc?.rules) ? rc.rules.filter(r => r && r.rule) : [];
+        if (rules.length) {
+          ruleCheckBlock = `\n\nRULE APPLICATION CHECK (done separately; BINDING): a rule marked applies: no cannot support contesting and must not appear as a basis in the assessment, what_may_matter or the appeal; a rule marked unknown is unresolved, not supportive.\n${rules.map(r => `- ${r.rule}: applies ${r.applies}${(r.conditions || []).filter(c => c.status !== 'met').map(c => ` | ${c.status}: ${c.condition} — ${c.why}`).join('')}`).join('\n')}`;
+          console.log(`[ticket-tackler] rule check: ${rules.map(r => `${r.rule}=${r.applies}`).join(', ')}`);
+        }
+      } catch (e) { console.warn('[ticket-tackler] rule check skipped:', e.message); }
+
+      // The investigator names a source per VERIFIED finding (source_name/
+      // source_url) directly in its own JSON — but that's the model's own
+      // self-report, not independently confirmed; a plausible-looking URL can
+      // be invented the same way a bare domain can (see lease-trap-detector).
+      // Cross-check each named source against pages web_search actually
+      // retrieved in THIS call before treating it as real. Unlike the other
+      // tools' groundedFacts() pre-passes, there's no cache here — every
+      // ticket's investigation is unique to that specific citation, so this
+      // runs once per request against this request's own search results.
+      //
+      // source_url, when present, gives a reliable domain directly (no need to
+      // fuzzy-extract one from a human-readable name); fall back to pulling a
+      // domain-shaped token out of source_name for a finding that named a
+      // source without a URL.
+      const ticketSearchResults = extractSearchResults(investigatorMessage);
+      const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
+      verifiedSources = Array.isArray(investigation.findings)
+        ? matchVerifiedSources(
+            investigation.findings.map(f => ({ source: (f.source_url && hostnameOf(f.source_url)) || f.source_name })),
+            ticketSearchResults,
+          )
+        : [];
+      return { researchDossier, ruleCheckBlock };
+    })();
+    research.catch(() => {}); // the plan part reports its own failure
+
+    const reviewerPrompt = ({ researchDossier, ruleCheckBlock }) => `${baseCasePrompt}
 
 INVESTIGATOR DOSSIER
 The research stage has already run. Use these findings; do not invent missing research or silently upgrade unresolved findings to facts.
@@ -322,59 +324,58 @@ RULES:
 - Keep every string field to the stated length. Never restate the same point across fields.
 - ${NO_QUOTE_RULE}`;
 
-    const content = imageBlocks.length
-      ? [...imageBlocks, { type: 'text', text: userPrompt }]
-      : userPrompt;
-
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): once the
+    // research lands, the verdict and pay-or-contest (which must match) are
+    // written and shown; the facts and evidence, and the appeal and filing,
+    // then run at once, handed that verdict. The guard runs after the answer
+    // is on screen. heartbeat keeps the connection open through the research.
+    const system = withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (text, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content }],
-    }, { label: 'ticket-tackler' });
-
-    // v2 guard (PF-39a), after the reviewer and before the heartbeat stops —
-    // it can take a few seconds and the client is still waiting. The research
-    // and the rule check count as supplied facts: a VERIFIED finding is
-    // established, an inference built on top of it is not. Fail-open.
-    if (parsed && parsed.assessment) {
-      try {
-        const fields = [];
-        const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
-        add('assessment.reason', parsed.assessment.reason);
-        (parsed.what_may_matter || []).forEach((m, i) => { add(`what_may_matter[${i}].fact`, m?.fact); add(`what_may_matter[${i}].why_it_matters`, m?.why_it_matters); });
-        add('appeal_letter', parsed.appeal_letter);
-        add('before_appeal', parsed.before_appeal);
-        add('pay_or_contest.supports_contesting', parsed.pay_or_contest?.supports_contesting);
-        add('pay_or_contest.next_step', parsed.pay_or_contest?.next_step);
-        await runOutputGuard(parsed, {
-          label: 'ticket-tackler',
-          fields,
-          supplied: `${baseCasePrompt}\n\nRESEARCH FINDINGS (only VERIFIED ones are established):\n${researchDossier}${ruleCheckBlock}`,
-          promise: 'Read a parking or camera ticket against the facts and verified rules, say whether contesting is supported and why, name the one fact that would change that, and draft an appeal only when established facts support one.',
-          guard: router.outputGuard,
-          requiredNonEmpty: ['assessment.reason', 'pay_or_contest.next_step'],
-          userLanguage,
-        });
-      } catch (guardErr) {
-        console.log('[ticket-tackler] v2 guard skipped:', guardErr.message);
-      }
-    }
-
-    clearInterval(keepAlive);
-
-    if (!parsed.assessment) {
-      return res.end(JSON.stringify({ error: 'Could not analyze your ticket. Please try again.' }));
-    }
-    // headers are already sent (the heartbeat flushed them before the call) —
-    // res.end, not res.json, since Express's res.json() would try to set
-    // headers again and throw ERR_HTTP_HEADERS_SENT.
-    res.end(JSON.stringify({
-      ...stripCites(parsed),
-      ...(verifiedSources.length ? { verified_sources: verifiedSources } : {}),
-    }));
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: imageBlocks.length ? [...imageBlocks, { type: 'text', text }] : text }],
+    }, { label: tag });
+    const PLAN = ['assessment', 'pay_or_contest'];
+    return await answer(req, res, {
+      label: 'ticket-tackler',
+      heartbeat: true,
+      parts: planFirst(PLAN, async () => call(onlyKeys(reviewerPrompt(await research), PLAN), 1500, 'ticket-tackler'), [
+        ['what_may_matter', 'what_to_verify', 'evidence_to_get'],
+        ['appeal_letter', 'before_appeal', 'how_to_file', 'dont_say'],
+      ], async (keys, i, plan) => call(onlyKeys(reviewerPrompt(await research), keys) + planNote(plan, PLAN), 3000, `ticket-tackler-${i + 2}`)),
+      finish: d => ({ ...stripCites(structuredClone(d)), ...(verifiedSources.length ? { verified_sources: verifiedSources } : {}) }),
+      ready: d => Boolean(d.assessment),
+      complete: d => Boolean(d.assessment),
+      check: async (parsed) => {
+        const { researchDossier, ruleCheckBlock } = await research;
+        // v2 guard (PF-39a). The research and the rule check count as supplied
+        // facts: a VERIFIED finding is established, an inference built on top
+        // of it is not. Fail-open.
+          try {
+            const fields = [];
+            const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
+            add('assessment.reason', parsed.assessment.reason);
+            (parsed.what_may_matter || []).forEach((m, i) => { add(`what_may_matter[${i}].fact`, m?.fact); add(`what_may_matter[${i}].why_it_matters`, m?.why_it_matters); });
+            add('appeal_letter', parsed.appeal_letter);
+            add('before_appeal', parsed.before_appeal);
+            add('pay_or_contest.supports_contesting', parsed.pay_or_contest?.supports_contesting);
+            add('pay_or_contest.next_step', parsed.pay_or_contest?.next_step);
+            await runOutputGuard(parsed, {
+              label: 'ticket-tackler',
+              fields,
+              supplied: `${baseCasePrompt}\n\nRESEARCH FINDINGS (only VERIFIED ones are established):\n${researchDossier}${ruleCheckBlock}`,
+              promise: 'Read a parking or camera ticket against the facts and verified rules, say whether contesting is supported and why, name the one fact that would change that, and draft an appeal only when established facts support one.',
+              guard: router.outputGuard,
+              requiredNonEmpty: ['assessment.reason', 'pay_or_contest.next_step'],
+              userLanguage,
+            });
+          } catch (guardErr) {
+            console.log('[ticket-tackler] v2 guard skipped:', guardErr.message);
+          }
+      },
+    });
   } catch (error) {
-    if (keepAlive) clearInterval(keepAlive);
     console.error('[TicketTackler]', error);
     if (!res.headersSent) {
       res.status(500).json({ error: 'Something went wrong. Please try again.' });

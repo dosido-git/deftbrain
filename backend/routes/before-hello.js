@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -184,21 +185,33 @@ Before returning the JSON, verify:
 5. Is there a clear stop condition if contact is unwelcome?
 If any answer reveals a problem, revise before returning.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): where
+    // they stand and whether they are ready show first; building the
+    // position, the overlap, and the first contact then run at once, handed
+    // that status so none of them argues for a different one.
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — use single quotes or brackets inside values instead.';
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3200,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — use single quotes or brackets inside values instead.',
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'gravity-well' });
-
-    if (!parsed.starting_position) return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-
-    // The prompt's whole thesis is: no invented facts about the other person,
-    // and no action whose real purpose is being noticed. A prompt rule nothing
-    // checks is a prompt rule that drifts, so check the fields a person acts
-    // on — the actions they will take and the message they will send.
-    await guardBeforeHello(parsed, req.body, startedAt);
-    res.json(parsed);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['starting_position', 'ready_to_say_hello'];
+    return await answer(req, res, {
+      label: 'gravity-well',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1400, 'gravity-well'), [
+        ['strengthen_your_position', 'genuine_overlap'],
+        ['first_contact', 'do_today'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1600, `gravity-well-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.starting_position),
+      complete: d => Boolean(d.starting_position),
+      // The prompt's whole thesis is: no invented facts about the other person,
+      // and no action whose real purpose is being noticed. A prompt rule nothing
+      // checks is a prompt rule that drifts, so check the fields a person acts
+      // on — the actions they will take and the message they will send.
+      check: async (parsed) => { await guardBeforeHello(parsed, req.body, startedAt); },
+    });
   } catch (error) {
     console.error('BeforeHello error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { checkConsistency } = require('../lib/outputGuard');
@@ -561,20 +562,34 @@ The agenda minutes must sum to at most ${duration}. Leave time unscheduled if th
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): the
+    // agenda and the decision plan (which must agree) show first; what to
+    // watch for, the preparation and the close then run at once, handed that
+    // plan. Agenda minutes are fitted to the slot on every draft; the
+    // consistency check runs after the answer is on screen.
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-hijack-stopper' });
-
-    if (!parsed.meeting_plan || !Array.isArray(parsed.meeting_plan.agenda)) {
-      return res.status(500).json({ error: 'Could not build the plan. Please try again.' });
-    }
-
-    fitAgendaToDuration(parsed.meeting_plan, duration);
-    // T7 (audit/DEFECT-TYPES.md): decision_plan ignored "Disagree & commit".
-    await checkConsistency(parsed, { label: 'meeting-hijack-stopper', promise: 'Plans a meeting that reaches its goal the way the visitor chose to decide, without claiming authority the facilitator may not have.', userLanguage });
-    res.json(validateResult(parsed));
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
+    }, { label: tag });
+    const PLAN = ['meeting_plan', 'decision_plan'];
+    const shape = (d) => { if (d.meeting_plan && Array.isArray(d.meeting_plan.agenda)) fitAgendaToDuration(d.meeting_plan, duration); return d; };
+    return await answer(req, res, {
+      label: 'meeting-hijack-stopper',
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 3000, 'meeting-hijack-stopper'), [
+        ['watch_for'],
+        ['before_the_meeting', 'finish_strong'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 1800, `meeting-hijack-stopper-${i + 2}`)),
+      finish: d => validateResult(shape(structuredClone(d))),
+      ready: d => Boolean(d.meeting_plan && Array.isArray(d.meeting_plan.agenda)),
+      complete: d => Boolean(d.meeting_plan && Array.isArray(d.meeting_plan.agenda)),
+      check: async (parsed) => {
+        shape(parsed);
+        // T7 (audit/DEFECT-TYPES.md): decision_plan ignored "Disagree & commit".
+        await checkConsistency(parsed, { label: 'meeting-hijack-stopper', promise: 'Plans a meeting that reaches its goal the way the visitor chose to decide, without claiming authority the facilitator may not have.', userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('[MeetingHijackStopper]', error);

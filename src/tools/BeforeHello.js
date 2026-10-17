@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTranslation } from '../i18n/useTranslation';
@@ -55,7 +56,7 @@ const TARGET_TYPES = [
 ];
 
 const BeforeHello = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -87,6 +88,7 @@ const BeforeHello = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [targetType, setTargetType] = useState('');
   const [whyThemContext, setWhyThemContext] = useState('');
@@ -99,9 +101,10 @@ const BeforeHello = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!targetDescription.trim()) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('gravity-well', {
+      // Progressive (2026-10-16): where they stand shows first; checked after.
+      const data = await callToolEndpointProgressive('gravity-well', {
         targetDescription: targetDescription.trim(),
         targetType: targetType || undefined,
         whyThemContext: whyThemContext.trim() || undefined,
@@ -109,7 +112,11 @@ const BeforeHello = ({ tool }) => {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: targetDescription.slice(0, 40) }, ...prev].slice(0, 6));
@@ -197,7 +204,7 @@ const BeforeHello = ({ tool }) => {
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(results || targetDescription.trim() || targetType.trim() || whyThemContext.trim() || yourBackground.trim()) ? (
-                <button onClick={() => { setResults(null); setTargetDescription(''); setTargetType(''); setWhyThemContext(''); setYourBackground(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                <button onClick={() => { cancelProgressive(); setCheckStatus(null); setResults(null); setTargetDescription(''); setTargetType(''); setWhyThemContext(''); setYourBackground(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   {t('bh_new_target')}
                 </button>
               ) : null}
@@ -278,6 +285,7 @@ const BeforeHello = ({ tool }) => {
 
         {results && (
           <div ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuted} />
             {results.starting_position && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🧭 {t('bh_starting_position')}</p>

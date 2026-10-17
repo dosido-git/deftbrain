@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { checkConsistency } = require('../lib/outputGuard');
@@ -490,18 +491,33 @@ ARRAY BOUNDS: your_position at most 5, their_position at most 5, what_matters_mo
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): the
+    // read and what matters most show first; the positions, the unknowns and
+    // traps, and the approach and lines then run at once, handed that read.
+    // The consistency check runs after the answer is on screen.
+    const locale = withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    }, { label: 'leverage-logic' });
-    if (!parsed.read) {
-      return res.status(500).json({ error: 'Could not read your situation. Please try again.' });
-    }
-    // T3 (audit/DEFECT-TYPES.md): an explanation reversed which way an
-    // existing exception cuts.
-    await checkConsistency(parsed, { label: 'leverage-logic', promise: 'Reads the visitor\'s negotiating position from what they described.', userLanguage });
-    res.json(validateResult(parsed, { theirSideSupplied }));
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
+    }, { label: tag });
+    const PLAN = ['read', 'what_matters_most'];
+    return await answer(req, res, {
+      label: 'leverage-logic',
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1500, 'leverage-logic'), [
+        ['your_position', 'their_position', 'their_position_note'],
+        ['unknowns', 'traps'],
+        ['how_to_negotiate', 'what_to_say'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 2200, `leverage-logic-${i + 2}`)),
+      finish: d => validateResult(structuredClone(d), { theirSideSupplied }),
+      ready: d => Boolean(d.read),
+      complete: d => Boolean(d.read),
+      check: async (parsed) => {
+        // T3 (audit/DEFECT-TYPES.md): an explanation reversed which way an
+        // existing exception cuts.
+        await checkConsistency(parsed, { label: 'leverage-logic', promise: 'Reads the visitor\'s negotiating position from what they described.', userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('[LeverageLogic] Error:', error);

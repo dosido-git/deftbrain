@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -53,7 +54,7 @@ const EXAMPLES = [
 ];
 
 const TicketTackler = ({ tool }) => {
-  const { callToolEndpoint, loading, error, userLocale, userCurrency } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, error, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -95,6 +96,7 @@ const TicketTackler = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.label = c.labelText;
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [ticketType, setTicketType] = useState('parking');
@@ -138,6 +140,7 @@ const TicketTackler = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setTicketType('parking');
     setCity(''); setTicketText(''); setTicketImage(null);
     setWhatHappened(''); setFineAmount(''); setDeadline('');
@@ -156,9 +159,10 @@ const TicketTackler = ({ tool }) => {
   const handleSubmit = useCallback(async () => {
     if (loading || !city.trim() || (!ticketText.trim() && !ticketImage && !whatHappened.trim())) return;
     setPhase('main');
-    setResults(null); setFollowup(null);
+    setResults(null); setCheckStatus(null); setFollowup(null);
     try {
-      const data = await callToolEndpoint('ticket-tackler', {
+      // Progressive (2026-10-16): the verdict shows once the research lands; checked after.
+      const data = await callToolEndpointProgressive('ticket-tackler', {
         ticketType,
         city,
         ticketText: ticketText || undefined,
@@ -167,7 +171,11 @@ const TicketTackler = ({ tool }) => {
         whatHappened: whatHappened || undefined,
         fineAmount: fineAmount || undefined,
         deadline: deadline || undefined,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [
         {
@@ -184,7 +192,7 @@ const TicketTackler = ({ tool }) => {
       ].slice(0, 6));
     } catch (_) { /* error state handled by hook */ }
     finally { setPhase(null); }
-  }, [loading, city, ticketText, ticketImage, whatHappened, fineAmount, deadline, ticketType, callToolEndpoint, setResults, setSessionHistory]);
+  }, [loading, city, ticketText, ticketImage, whatHappened, fineAmount, deadline, ticketType, callToolEndpointProgressive, setResults, setSessionHistory]);
 
   const handleFollowup = useCallback(async () => {
     if (loading || !followupQ.trim() || !results) return;
@@ -455,6 +463,7 @@ const TicketTackler = ({ tool }) => {
       {/* Results */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {/* Verdict */}
           {results?.assessment ? (
             <div className={`border-t ${c.border} pt-5`}>

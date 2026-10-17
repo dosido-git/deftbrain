@@ -37,75 +37,91 @@ const { changedPaths } = require('./bothChecks');
 // a development server only; production ignores the header.
 const skipChecks = (req) => req.headers?.['x-skip-checks'] === '1' && process.env.NODE_ENV !== 'production';
 
-async function progressive(req, res, { label, parts, ready = () => true, complete = () => true, check: checkFn = null, after = null, finish = d => d }) {
+async function progressive(req, res, { label, parts, ready = () => true, complete = () => true, check: checkFn = null, after = null, finish = d => d, heartbeat = false }) {
   const check = skipChecks(req) ? null : checkFn;
   const draft = {};
   let open = false;
+  const openStream = () => {
+    if (open) return;
+    // no-transform: compression() would otherwise buffer the frames.
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+    open = true;
+  };
   const send = (frame) => {
-    if (!open) {
-      // no-transform: compression() would otherwise buffer the frames.
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache, no-transform');
-      res.setHeader('Connection', 'keep-alive');
-      res.setHeader('X-Accel-Buffering', 'no');
-      res.flushHeaders();
-      open = true;
-    }
+    openStream();
     res.write(`data: ${JSON.stringify(frame)}\n\n`);
   };
   const t0 = Date.now();
   let firstAt = 0;
+  // heartbeat (2026-10-16): for a route whose first part waits on slow
+  // research (Ticket Tackler's web search), open the stream now and send an
+  // SSE comment every 10s, which the page ignores, so the connection is not
+  // dropped as idle. The cost: an error before any part lands travels as a
+  // frame, not as an HTTP status.
+  let beat = null;
+  if (heartbeat) {
+    openStream();
+    beat = setInterval(() => { try { res.write(': ping\n\n'); } catch { /* gone */ } }, 10000);
+  }
+  try {
 
-  // Every part starts now. A part that fails is dropped (logged) unless it is
-  // required; the answer is judged by ready/complete, not by the part count.
-  let fatal = null;
-  await Promise.all(parts.map(async (p, i) => {
-    try {
-      const out = await p.run();
-      if (fatal) return;
-      p.apply(draft, out);
-      if (ready(draft)) {
-        if (!firstAt) firstAt = Date.now();
-        send({ draft: finish(draft) });
+    // Every part starts now. A part that fails is dropped (logged) unless it is
+    // required; the answer is judged by ready/complete, not by the part count.
+    let fatal = null;
+    await Promise.all(parts.map(async (p, i) => {
+      try {
+        const out = await p.run();
+        if (fatal) return;
+        p.apply(draft, out);
+        if (ready(draft)) {
+          if (!firstAt) firstAt = Date.now();
+          send({ draft: finish(draft) });
+        }
+      } catch (err) {
+        console.warn(`[${label}] part ${i + 1}/${parts.length} failed:`, err.message);
+        if (p.required && !fatal) fatal = err;
+        // A failure can be what makes the answer ready (the last of a set
+        // settling — Name Storm's picks wait for every lead), so check again.
+        if (!fatal && !firstAt && ready(draft)) {
+          firstAt = Date.now();
+          send({ draft: finish(draft) });
+        }
       }
-    } catch (err) {
-      console.warn(`[${label}] part ${i + 1}/${parts.length} failed:`, err.message);
-      if (p.required && !fatal) fatal = err;
-      // A failure can be what makes the answer ready (the last of a set
-      // settling — Name Storm's picks wait for every lead), so check again.
-      if (!fatal && !firstAt && ready(draft)) {
-        firstAt = Date.now();
-        send({ draft: finish(draft) });
-      }
+    }));
+
+    if (fatal || !ready(draft) || !complete(draft)) {
+      // Nothing shown yet: an ordinary error status, so the busy middleware can
+      // still turn an overload into its 503 + retry. Once frames are out, the
+      // error travels as a frame.
+      if (!open) throw fatal || new Error('incomplete answer');
+      send({ error: 'Something went wrong. Please try again.' });
+      return res.end();
     }
-  }));
 
-  if (fatal || !ready(draft) || !complete(draft)) {
-    // Nothing shown yet: an ordinary error status, so the busy middleware can
-    // still turn an overload into its 503 + retry. Once frames are out, the
-    // error travels as a frame.
-    if (!open) throw fatal || new Error('incomplete answer');
-    send({ error: 'Something went wrong. Please try again.' });
-    return res.end();
+    // `after(draft)`: a part that needs all the others (a summary over every
+    // name). It adds to the answer, so it goes out as a draft, not as a check.
+    if (after) {
+      try { await after(draft); send({ draft: finish(draft) }); } catch (err) { console.warn(`[${label}] after-part failed (answer kept as shown):`, err.message); }
+    }
+    const shownAt = Date.now();
+    if (check) {
+      const before = JSON.parse(JSON.stringify(draft));
+      try { await check(draft); } catch (err) { console.warn(`[${label}] check failed (answer kept as shown):`, err.message); }
+      // Compared as the visitor sees them (finish), so bookkeeping a check does
+      // to the raw draft never reads as a correction.
+      const changed = changedPaths(finish(before), finish(draft));
+      send({ checked: finish(draft), changed });
+    }
+    console.log(`[${label}] progressive: first part ${((firstAt - t0) / 1000).toFixed(1)}s, all parts ${((shownAt - t0) / 1000).toFixed(1)}s, checked ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+    send({ done: true });
+    res.end();
+  } finally {
+    if (beat) clearInterval(beat);
   }
-
-  // `after(draft)`: a part that needs all the others (a summary over every
-  // name). It adds to the answer, so it goes out as a draft, not as a check.
-  if (after) {
-    try { await after(draft); send({ draft: finish(draft) }); } catch (err) { console.warn(`[${label}] after-part failed (answer kept as shown):`, err.message); }
-  }
-  const shownAt = Date.now();
-  if (check) {
-    const before = JSON.parse(JSON.stringify(draft));
-    try { await check(draft); } catch (err) { console.warn(`[${label}] check failed (answer kept as shown):`, err.message); }
-    // Compared as the visitor sees them (finish), so bookkeeping a check does
-    // to the raw draft never reads as a correction.
-    const changed = changedPaths(finish(before), finish(draft));
-    send({ checked: finish(draft), changed });
-  }
-  console.log(`[${label}] progressive: first part ${((firstAt - t0) / 1000).toFixed(1)}s, all parts ${((shownAt - t0) / 1000).toFixed(1)}s, checked ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-  send({ done: true });
-  res.end();
 }
 
 // answer — one route body for both callers (2026-10-15). A browser that asks
@@ -115,19 +131,36 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
 // so the two can't drift apart.
 async function answer(req, res, opts) {
   if (req.body?.progressive === true) return progressive(req, res, opts);
-  const { label, parts, ready = () => true, complete = () => true, after = null, finish = d => d } = opts;
+  const { label, parts, ready = () => true, complete = () => true, after = null, finish = d => d, heartbeat = false } = opts;
   const check = skipChecks(req) ? null : (opts.check || null);
-  const draft = {};
-  await Promise.all(parts.map(async (p, i) => {
-    try { p.apply(draft, await p.run()); } catch (err) {
-      if (p.required) throw err;
-      console.warn(`[${label}] part ${i + 1}/${parts.length} failed:`, err.message);
-    }
-  }));
-  if (!ready(draft) || !complete(draft)) throw new Error('incomplete answer');
-  if (after) { try { await after(draft); } catch (err) { console.warn(`[${label}] after-part failed:`, err.message); } }
-  if (check) { try { await check(draft); } catch (err) { console.warn(`[${label}] check failed:`, err.message); } }
-  return res.json(finish(draft));
+  // heartbeat: the one-JSON caller gets the old keep-alive — headers now, a
+  // space every 10s (JSON ignores leading whitespace), the body at the end.
+  let beat = null;
+  if (heartbeat) {
+    res.setHeader('Content-Type', 'application/json');
+    res.flushHeaders();
+    beat = setInterval(() => { try { res.write(' '); } catch { /* gone */ } }, 10000);
+  }
+  try {
+    const draft = {};
+    await Promise.all(parts.map(async (p, i) => {
+      try { p.apply(draft, await p.run()); } catch (err) {
+        if (p.required) throw err;
+        console.warn(`[${label}] part ${i + 1}/${parts.length} failed:`, err.message);
+      }
+    }));
+    if (!ready(draft) || !complete(draft)) throw new Error('incomplete answer');
+    if (after) { try { await after(draft); } catch (err) { console.warn(`[${label}] after-part failed:`, err.message); } }
+    if (check) { try { await check(draft); } catch (err) { console.warn(`[${label}] check failed:`, err.message); } }
+    if (heartbeat) return res.end(JSON.stringify(finish(draft)));
+    return res.json(finish(draft));
+  } catch (err) {
+    if (!heartbeat) throw err;
+    console.error(`[${label}]`, err);
+    return res.end(JSON.stringify({ error: 'Something went wrong. Please try again.' }));
+  } finally {
+    if (beat) clearInterval(beat);
+  }
 }
 
 // onlyKeys — the same prompt, cut down to the keys one pass writes

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -35,7 +36,7 @@ const RELATIONSHIP = [
 
 const LeverageLogic = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
@@ -67,6 +68,7 @@ const LeverageLogic = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── Views ──
   const [view, setView] = useState('form'); // form | results | counter | prep | email
@@ -130,13 +132,18 @@ const LeverageLogic = ({ tool }) => {
   // ════════════════════════════════════
   const analyze = async () => {
     if (!situation.trim()) { setError(t('llog_err_describe')); return; }
-    setError(''); setResults(null); setLoading(true);
+    setError(''); setResults(null); setCheckStatus(null); setLoading(true);
     try {
-      const data = await callToolEndpoint('leverage-logic', {
+      // Progressive (2026-10-16): the read shows first; checked after.
+      const data = await callToolEndpointProgressive('leverage-logic', {
         situation: situation.trim(), yourSide: yourSide.trim() || null, theirSide: theirSide.trim() || null,
         desired: desired.trim() || null, negotiationType, urgency, relationship,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setView('results'); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data); setView('results');
       setSavedAt(null);
       setSessionHistory(prev => [{
@@ -250,6 +257,7 @@ const LeverageLogic = ({ tool }) => {
   };
 
   const resetAll = () => {
+    cancelProgressive(); setCheckStatus(null);
     setSituation(''); setYourSide(''); setTheirSide(''); setDesired(''); setNegotiationType('');
     setUrgency('moderate'); setRelationship('moderate'); setResults(null);
     setCounterResults(null); setPrepResults(null); setTheyJustSaid('');
@@ -461,6 +469,7 @@ const LeverageLogic = ({ tool }) => {
       {/* ════════ RESULTS ════════ */}
       {view === 'results' && results && (
         <div className="space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {/* A recalled analysis is the copy saved that day. Saying so matters
               here more than in most tools: half of what this one produces is a
               list of things you did not know yet, and some of them you may since
