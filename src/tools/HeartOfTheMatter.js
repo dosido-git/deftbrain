@@ -30,7 +30,7 @@ const MODE_EMOJI = { distill: '🎯', understand: '💡', connect: '🔗' };
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const HeartOfTheMatter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -216,11 +216,13 @@ const HeartOfTheMatter = ({ tool }) => {
       let data;
       if (activeMode === 'distill') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
-        data = await callToolEndpoint('heart-of-the-matter', {
+        // Progressive (2026-10-16): the ranked points show first; explanations follow.
+        data = await callToolEndpointProgressive('heart-of-the-matter', {
           transcript: transcript.trim(), subject: activeSubject.trim() || null,
           lectureTitle: lectureTitle.trim() || null, bulletCount, priority,
           userLocale, userCurrency, userRegion,
-        });
+        }, { onDraft: setResults });
+        if (!data) return; // replaced by a newer run
       } else if (activeMode === 'understand') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
         // Reuse the existing comprehension endpoint, but deliberately omit
@@ -270,14 +272,15 @@ const HeartOfTheMatter = ({ tool }) => {
         // weight in storage indefinitely.
       }, ...prev.filter(e => e?.results)].slice(0, 6));
     } catch (err) { setError(err.message || t('rec_err_failed')); }
-  }, [mode, transcript, subject, lectureTitle, bulletCount, priority, lectures, callToolEndpoint, setResults, setSessionHistory,
+  }, [mode, transcript, subject, lectureTitle, bulletCount, priority, lectures, callToolEndpoint, callToolEndpointProgressive, setResults, setSessionHistory,
       userLocale, userCurrency, userRegion, t]);
 
   const handleReset = useCallback(() => {
+    cancelProgressive();
     setTranscript(''); setSubject(''); setLectureTitle('');
     setResults(null); setError('');
     setLectures([{ title: '', transcript: '' }, { title: '', transcript: '' }]);
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Past Sessions: reopen, and combine into a new Connect run ──
   // A session card is a memory of what was UNDERSTOOD, not a saved document —

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -181,16 +182,44 @@ Extract exactly ${count} key points, ranked by how central they are to understan
 
 LIMITS (keep the response compact so it never gets cut off): vocabulary AT MOST 8, connections AT MOST 4, professor_signals AT MOST 5, gaps AT MOST 4. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): one
+    // pass ranks the key points (rank and point only) with the summary and
+    // shows them; the explanation of each point, the vocabulary, and the
+    // connections then run at once, handed that list.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'heart-of-the-matter' });
-
-    const result = validateResult('distill', parsed);
-    if (!result) return res.status(500).json({ error: 'Could not process this. Please try again.' });
-    res.json(result);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const POINT_DETAIL = ['why_important', 'type', 'testable', 'test_hint'];
+    const PLAN = ['lecture_summary', 'subject_detected', 'bullets'];
+    const planPrompt = onlyKeys(userPrompt, PLAN)
+      .split('\n').filter(l => !POINT_DETAIL.some(f => l.startsWith(`      "${f}":`))).join('\n')
+      .replace(/,(\s*\n\s*\})/g, '$1')
+      + '\nTHIS PASS ranks the points only: each bullet has ONLY rank and point. Another pass explains each point afterwards.';
+    const withDetail = (d) => {
+      const { pointDetail, ...rest } = d;
+      if (Array.isArray(rest.bullets) && Array.isArray(pointDetail)) {
+        rest.bullets = rest.bullets.map((b, i) => (pointDetail[i] ? { ...pointDetail[i], rank: b.rank, point: b.point } : b));
+      }
+      return rest;
+    };
+    return await answer(req, res, {
+      label: 'heart-of-the-matter',
+      parts: planFirst(PLAN, () => call(planPrompt, 2500, 'heart-of-the-matter'), [
+        ['bullets'],
+        ['vocabulary'],
+        ['connections', 'professor_signals', 'gaps'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN)
+        + (keys[0] === 'bullets' ? '\nTHIS PASS writes bullets in full for EXACTLY the points above — same rank, same point text, same order — explaining each.' : ''),
+      keys[0] === 'bullets' ? 4000 : 1800, `heart-of-the-matter-${i + 2}`))
+        .map((p, i) => (i === 1 ? { ...p, apply: (d, out) => { d.pointDetail = Array.isArray(out?.bullets) ? out.bullets : []; } } : p)),
+      finish: d => validateResult('distill', withDetail(structuredClone(d))),
+      ready: d => Boolean(d.lecture_summary),
+      complete: d => Boolean(d.lecture_summary),
+    });
 
   } catch (error) {
     console.error('HeartOfTheMatter distill error:', error);

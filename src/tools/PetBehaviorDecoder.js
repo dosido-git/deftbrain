@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -142,7 +143,7 @@ function detectFieldConflict(behaviorText, duration, frequency) {
 }
 
 const PetBehaviorDecoder = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t, tPlural } = useTranslation();
 
@@ -170,6 +171,7 @@ const PetBehaviorDecoder = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ═══ FORM STATE ═══
   const [petType, setPetType] = useState('Dog');
@@ -345,7 +347,7 @@ const PetBehaviorDecoder = ({ tool }) => {
       if (conflict) { setConflictWarning(conflict); return; }
     }
     setConflictWarning(null);
-    setError(''); setResults(null); setFollowupHistory([]); setJustSaved(false);
+    setError(''); setResults(null); setCheckStatus(null); setFollowupHistory([]); setJustSaved(false);
     try {
       const payload = {
         petType, breed: breed.trim(), age: parseInt(age, 10),
@@ -359,7 +361,11 @@ const PetBehaviorDecoder = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       };
       if (imageBase64) payload.imageBase64 = imageBase64;
-      const data = await callToolEndpoint('pet-weirdness-decoder', payload);
+      // Progressive (2026-10-16): how concerned to be shows first; checked after.
+      const data = await callToolEndpointProgressive('pet-weirdness-decoder', payload, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
       if (data) setResults(data);
     } catch (err) { setError(err.message || t('pwd_err_failed')); }
   };
@@ -370,6 +376,7 @@ const PetBehaviorDecoder = ({ tool }) => {
   const handleChangeSelections = () => { setConflictWarning(null); durationSelectRef.current?.focus(); };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setPetType('Dog'); setBreed(''); setAge(''); setBehavior('');
     setDuration('Just started (today)'); setFrequency('Occasionally');
     setOtherChanges({}); setWhenItHappens('');
@@ -635,6 +642,7 @@ const PetBehaviorDecoder = ({ tool }) => {
 
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-6">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {results?.assessment && (
             <div className={`${actionColor(results?.assessment.action_level)} border-s-4 rounded-e-lg p-6 shadow-lg`}>
               <div className="flex items-center justify-between flex-wrap gap-3">

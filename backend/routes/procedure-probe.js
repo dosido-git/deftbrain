@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -129,22 +130,37 @@ Return ONLY valid JSON:
 
 Generate AT MOST 6 questions to ask (6 is plenty). Keep every field to one concise sentence (plain_english/explanation may be 2-3 sentences). verdict_level MUST stay one of the exact English keys standard|alternatives|question|second_opinion even when the rest of the response is in another language (it is a code value, not display text). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): what
+    // it is and the judgements that must agree — is it standard, second
+    // opinion, urgency — show first; the questions and red flags, the cost,
+    // and what to expect then run at once, handed those. The consistency
+    // check runs after the answer is on screen.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'procedure-probe' });
-    if (!parsed.plain_english) {
-      return res.status(500).json({ error: 'Could not analyze this procedure. Please try again.' });
-    }
-    const verifiedSources = groundedData(procedureFactsCacheKey)?.sources;
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'procedure-probe', userLanguage: req.body?.userLanguage });
-    return res.json(stripCites({
-      ...parsed,
-      ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}),
-    }));
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['procedure_name', 'plain_english', 'is_this_standard', 'second_opinion', 'urgency_check'];
+    return await answer(req, res, {
+      label: 'procedure-probe',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1500, 'procedure-probe'), [
+        ['questions_to_ask', 'red_flags'],
+        ['cost_picture'],
+        ['what_to_expect', 'empowerment_note'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1500, `procedure-probe-${i + 2}`)),
+      finish: d => {
+        const verifiedSources = groundedData(procedureFactsCacheKey)?.sources;
+        return stripCites({ ...structuredClone(d), ...(verifiedSources && verifiedSources.length ? { verified_sources: verifiedSources } : {}) });
+      },
+      ready: d => Boolean(d.plain_english),
+      complete: d => Boolean(d.plain_english),
+      check: async (parsed) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'procedure-probe', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('ProcedureProbe error:', error);

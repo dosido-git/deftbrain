@@ -3,6 +3,7 @@ import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import { currencySymbol } from '../utils/formatLocale';
@@ -36,7 +37,7 @@ const COST_KEY = { free: 'hm_cost_free', low: 'hm_cost_low', moderate: 'hm_cost_
 const FIT_KEY = { short_sessions: 'hm_fit_short', longer_block: 'hm_fit_long', either: 'hm_fit_either' };
 
 const HobbyMatch = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -90,6 +91,7 @@ const HobbyMatch = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State ───
   const [schedule, setSchedule] = useState('');
@@ -127,13 +129,14 @@ const HobbyMatch = ({ tool }) => {
   const generate = useCallback(async () => {
     if (!personality.trim() && selectedGoals.length === 0) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setExpandedHobby(null);
 
     const lookingFor = selectedGoals.map(g => { const l = LOOKING_FOR.find(x => x.value === g); return l ? t(l.labelKey) : null; }).filter(Boolean).join(', ');
 
     try {
-      const data = await callToolEndpoint('hobby-match', {
+      // Progressive (2026-10-16): shown once it passes the compliance gate; checked after.
+      const data = await callToolEndpointProgressive('hobby-match', {
         personality: personality.trim() || null,
         schedule: schedule.trim() || null,
         budget: budget || 'flexible',
@@ -141,7 +144,11 @@ const HobbyMatch = ({ tool }) => {
         triedBefore: triedBefore.trim() || null,
         lookingFor: lookingFor || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // preview was hard-coded empty, so every row rendered the fallback word
       // "Session" and six runs were six identical lines. Store what the run was
@@ -156,7 +163,7 @@ const HobbyMatch = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('hm_error'));
     }
-  }, [personality, schedule, budget, physical, triedBefore, selectedGoals, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [personality, schedule, budget, physical, triedBefore, selectedGoals, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('HobbyMatch', EXAMPLES);
@@ -172,8 +179,9 @@ const HobbyMatch = ({ tool }) => {
   const handleReset = useCallback(() => {
     setPersonality(''); setSchedule(''); setBudget('');
     setPhysical(''); setTriedBefore(''); setSelectedGoals([]);
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setError(''); setExpandedHobby(null);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Build text ───
   const buildFullText = useCallback(() => {
@@ -384,6 +392,7 @@ const HobbyMatch = ({ tool }) => {
       {/* ══════════════════════════════════════════════════════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* ── WHAT I'M MATCHING FOR ── selection criteria, not a personality read */}
           {r.matching_for && (

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -356,54 +357,64 @@ LIMITS: what_could_explain_it AT MOST 3 possibilities, each with AT MOST 3 plaus
 
     const systemPrompt = withLanguage(CORE_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const content = [];
+    const imageBlocks = [];
     if (imageBase64) {
       const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
       const mediaType = imageBase64.includes('image/png') ? 'image/png' : 'image/jpeg';
-      content.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } });
+      imageBlocks.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } });
     }
-    content.push({ type: 'text', text: prompt });
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): how
+    // concerned to be (the action level) and what was reported show first —
+    // an emergency is on screen in seconds; the possible explanations, and
+    // what to watch and do, then run at once, handed that assessment. The
+    // guard runs after the answer is on screen.
+    const call = (text, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      max_tokens: maxTokens,
       system: systemPrompt,
-      messages: [{ role: 'user', content }],
-    }, { label: 'pet-weirdness-decode' });
+      messages: [{ role: 'user', content: [...imageBlocks, { type: 'text', text }] }],
+    }, { label: tag });
+    const PLAN = ['assessment', 'what_you_reported'];
+    return await answer(req, res, {
+      label: 'pet-weirdness-decoder',
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1000, 'pet-weirdness-decode'), [
+        ['what_could_explain_it'],
+        ['what_to_watch', 'what_would_change_the_next_step', 'what_you_can_do_now', 'vet_prep'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 1600, `pet-weirdness-decode-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.assessment?.action_level && d.what_you_reported),
+      complete: d => Boolean(d.assessment?.action_level && d.what_you_reported),
+      check: async (parsed) => {
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+          const fields = [
+            ['assessment.headline', parsed.assessment?.headline],
+            ['assessment.bottom_line', parsed.assessment?.bottom_line],
+          ];
+          (parsed.what_you_reported || []).forEach((v, i) => fields.push([`what_you_reported[${i}]`, v]));
+          (parsed.what_could_explain_it || []).forEach((item, i) => {
+            fields.push([`what_could_explain_it[${i}].possibility`, item.possibility]);
+            fields.push([`what_could_explain_it[${i}].why_it_could_fit`, item.why_it_could_fit]);
+            (item.what_would_make_it_more_or_less_plausible || []).forEach((v, j) => fields.push([`what_could_explain_it[${i}].what_would_make_it_more_or_less_plausible[${j}]`, v]));
+          });
+          (parsed.what_to_watch || []).forEach((v, i) => fields.push([`what_to_watch[${i}]`, v]));
+          (parsed.what_would_change_the_next_step || []).forEach((v, i) => fields.push([`what_would_change_the_next_step[${i}]`, v]));
+          (parsed.what_you_can_do_now || []).forEach((v, i) => fields.push([`what_you_can_do_now[${i}]`, v]));
 
-    if (!parsed?.assessment?.action_level || !parsed?.what_you_reported) {
-      return res.status(500).json({ error: 'Could not analyze the behavior. Please try again.' });
-    }
-
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [
-        ['assessment.headline', parsed.assessment?.headline],
-        ['assessment.bottom_line', parsed.assessment?.bottom_line],
-      ];
-      (parsed.what_you_reported || []).forEach((v, i) => fields.push([`what_you_reported[${i}]`, v]));
-      (parsed.what_could_explain_it || []).forEach((item, i) => {
-        fields.push([`what_could_explain_it[${i}].possibility`, item.possibility]);
-        fields.push([`what_could_explain_it[${i}].why_it_could_fit`, item.why_it_could_fit]);
-        (item.what_would_make_it_more_or_less_plausible || []).forEach((v, j) => fields.push([`what_could_explain_it[${i}].what_would_make_it_more_or_less_plausible[${j}]`, v]));
-      });
-      (parsed.what_to_watch || []).forEach((v, i) => fields.push([`what_to_watch[${i}]`, v]));
-      (parsed.what_would_change_the_next_step || []).forEach((v, i) => fields.push([`what_would_change_the_next_step[${i}]`, v]));
-      (parsed.what_you_can_do_now || []).forEach((v, i) => fields.push([`what_you_can_do_now[${i}]`, v]));
-
-      await runOutputGuard(parsed, {
-        label: 'pet-weirdness-decoder',
-        fields,
-        supplied,
-        promise: `Help an owner reason about an observed pet behavior — plausible explanations grounded only in what was reported, what would make each more or less likely, what to watch for, and what would change the next step. Never a diagnosis, never a probability, never an invented symptom, trigger, internal state, medical condition, medication/diet effect, toxin exposure, breed predisposition, prevalence claim, or improvement timeline that the owner didn't establish. "Not mentioned" must never be written as "not present" or "no [X]" — only "no [X] was reported."`,
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log('[pet-weirdness-decoder] v2 guard skipped:', guardErr.message);
-    }
-
-    res.json(parsed);
+          await runOutputGuard(parsed, {
+            label: 'pet-weirdness-decoder',
+            fields,
+            supplied,
+            promise: `Help an owner reason about an observed pet behavior — plausible explanations grounded only in what was reported, what would make each more or less likely, what to watch for, and what would change the next step. Never a diagnosis, never a probability, never an invented symptom, trigger, internal state, medical condition, medication/diet effect, toxin exposure, breed predisposition, prevalence claim, or improvement timeline that the owner didn't establish. "Not mentioned" must never be written as "not present" or "no [X]" — only "no [X] was reported."`,
+            guard: router.outputGuard,
+            userLanguage,
+          });
+        } catch (guardErr) {
+          console.log('[pet-weirdness-decoder] v2 guard skipped:', guardErr.message);
+        }
+      },
+    });
   } catch (error) {
     console.error('❌ Pet Behavior Decoder error:', error.message);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

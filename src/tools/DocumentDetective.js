@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -31,7 +32,7 @@ const DOC_TYPE_VALUES = [
 // branch is what a translated value degrades to: a plain, unstyled badge
 // showing whatever text came back, never a crash.
 const DocumentDetective = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -94,6 +95,7 @@ const DocumentDetective = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const STATUS_LABEL = {
     'CLEAR FROM DOCUMENT': t('nc_status_clear'),
@@ -170,13 +172,18 @@ const DocumentDetective = ({ tool }) => {
   const filter = useCallback(async () => {
     if (!docText.trim() && !pdfBase64) { setError(t('nc_err_paste_doc')); return; }
     if (!mySituation.trim()) { setError(t('nc_err_situation')); return; }
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('document-detective', {
+      // Progressive (2026-10-16): the bottom line shows first; checked after.
+      const data = await callToolEndpointProgressive('document-detective', {
         document: docText.trim(), pdfBase64, documentType, mySituation: mySituation.trim(),
         concerns: concerns.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: 'dd_' + Date.now(), date: new Date().toISOString(),
@@ -188,7 +195,7 @@ const DocumentDetective = ({ tool }) => {
         results: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('nc_err_failed')); }
-  }, [docText, pdfBase64, documentType, mySituation, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [docText, pdfBase64, documentType, mySituation, concerns, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     // Five, rotated: a legal clause, a home-insurance policy, a residential
@@ -212,9 +219,10 @@ const DocumentDetective = ({ tool }) => {
   }, [setResults, t, sym]);
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setDocText(''); setPdfBase64(null); setFileName(''); setMySituation(''); setConcerns(''); setResults(null); setError('');
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const buildCopy = useCallback(() => {
     if (!results) return '';
@@ -300,6 +308,7 @@ const DocumentDetective = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {/* What Matters Here (was "The Chase" under the old Cut to the Chase name) */}
         <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>
           <div className="flex items-center gap-2 mb-2">

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -828,105 +829,115 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const localeSuffix = withLocaleContext(userLocale, userCurrency, userRegion);
     const localeSystem = withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix;
 
-    // PASS 1 — generate from the closed evidence set.
-    let draft = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      max_tokens: 5000,
-      temperature: 0.35,
-      system: localeSystem,
-      messages: [{ role: 'user', content: generationPrompt(evidence) }],
-    }, { label: 'hobby-match-generate' });
+    // Progressive (2026-10-16, lib/progressive.js): the answer is still only
+    // shown once it has passed the compliance editor and the deterministic
+    // gate — "do not show a knowingly noncompliant result" — so it is one
+    // part; the consistency check now runs after it is on screen.
+    const pipeline = async () => {
+        // PASS 1 — generate from the closed evidence set.
+        let draft = await callClaudeWithRetry({
+          model: MODELS.FAST,
+          max_tokens: 5000,
+          temperature: 0.35,
+          system: localeSystem,
+          messages: [{ role: 'user', content: generationPrompt(evidence) }],
+        }, { label: 'hobby-match-generate' });
 
-    draft = hardScrub(draft);
+        draft = hardScrub(draft);
 
-    // PASS 2 — cold compliance editor. It may replace a bad recommendation.
-    const firstViolations = deterministicViolations(draft);
+        // PASS 2 — cold compliance editor. It may replace a bad recommendation.
+        const firstViolations = deterministicViolations(draft);
 
-    const edited = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      max_tokens: 5000,
-      temperature: 0,
-      system: withLanguage(VALIDATOR_SYSTEM, userLanguage)
-        + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{
-        role: 'user',
-        content: validatorPrompt(evidence, draft, firstViolations)
-      }],
-    }, { label: 'hobby-match-validate' });
+        const edited = await callClaudeWithRetry({
+          model: MODELS.FAST,
+          max_tokens: 5000,
+          temperature: 0,
+          system: withLanguage(VALIDATOR_SYSTEM, userLanguage)
+            + withLocaleContext(userLocale, userCurrency, userRegion),
+          messages: [{
+            role: 'user',
+            content: validatorPrompt(evidence, draft, firstViolations)
+          }],
+        }, { label: 'hobby-match-validate' });
 
-    let result = hardScrub(edited);
+        let result = hardScrub(edited);
 
-    // PASS 3 — deterministic final gate.
-    const finalViolations = deterministicViolations(result);
+        // PASS 3 — deterministic final gate.
+        const finalViolations = deterministicViolations(result);
 
-    if (finalViolations.length) {
-      console.warn('[hobby-match] final compliance issues:', finalViolations);
+        if (finalViolations.length) {
+          console.warn('[hobby-match] final compliance issues:', finalViolations);
 
-      // One targeted repair attempt, only because something objectively failed.
-      const repaired = await callClaudeWithRetry({
-        model: MODELS.FAST,
-        max_tokens: 5000,
-        temperature: 0,
-        system: withLanguage(VALIDATOR_SYSTEM, userLanguage)
-          + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{
-          role: 'user',
-          content: validatorPrompt(evidence, result, finalViolations)
-        }],
-      }, { label: 'hobby-match-repair' });
+          // One targeted repair attempt, only because something objectively failed.
+          const repaired = await callClaudeWithRetry({
+            model: MODELS.FAST,
+            max_tokens: 5000,
+            temperature: 0,
+            system: withLanguage(VALIDATOR_SYSTEM, userLanguage)
+              + withLocaleContext(userLocale, userCurrency, userRegion),
+            messages: [{
+              role: 'user',
+              content: validatorPrompt(evidence, result, finalViolations)
+            }],
+          }, { label: 'hobby-match-repair' });
 
-      result = hardScrub(repaired);
-    }
-
-    let unresolved = deterministicViolations(result);
-
-    // A failed wildcard slot is repaired, not waived. Filtering these violations
-    // out — which this did until 2026-08-31 — silenced the gate for the single
-    // thing it was there to guard, and a missing wildcard shipped as a normal
-    // result. One targeted attempt to fill the slot; whatever it returns faces
-    // the same gate, and if it still fails the response is refused as designed.
-    if (unresolved.some(v => v.startsWith('wildcard'))) {
-      console.warn('[hobby-match] wildcard failed the gate —', unresolved.filter(v => v.startsWith('wildcard')).join('; '));
-      try {
-        const replacement = await generateWildcard(evidence, result, userLanguage, localeSuffix);
-        if (replacement) {
-          result.wildcard = replacement;
-          result = hardScrub(result);
-          console.log(`[hobby-match] wildcard regenerated — ${replacement.name} [${replacement.activity_mode}]`);
+          result = hardScrub(repaired);
         }
-        else {
-          // Nothing valid came back. Clear the offending wildcard rather than
-          // shipping a known-duplicate one; the gate below then refuses on an
-          // honest "missing", which is the architecture's own requirement.
-          result.wildcard = { name: '', activity_mode: null, why: '' };
+
+        let unresolved = deterministicViolations(result);
+
+        // A failed wildcard slot is repaired, not waived. Filtering these violations
+        // out — which this did until 2026-08-31 — silenced the gate for the single
+        // thing it was there to guard, and a missing wildcard shipped as a normal
+        // result. One targeted attempt to fill the slot; whatever it returns faces
+        // the same gate, and if it still fails the response is refused as designed.
+        if (unresolved.some(v => v.startsWith('wildcard'))) {
+          console.warn('[hobby-match] wildcard failed the gate —', unresolved.filter(v => v.startsWith('wildcard')).join('; '));
+          try {
+            const replacement = await generateWildcard(evidence, result, userLanguage, localeSuffix);
+            if (replacement) {
+              result.wildcard = replacement;
+              result = hardScrub(result);
+              console.log(`[hobby-match] wildcard regenerated — ${replacement.name} [${replacement.activity_mode}]`);
+            }
+            else {
+              // Nothing valid came back. Clear the offending wildcard rather than
+              // shipping a known-duplicate one; the gate below then refuses on an
+              // honest "missing", which is the architecture's own requirement.
+              result.wildcard = { name: '', activity_mode: null, why: '' };
+            }
+          } catch (err) {
+            console.error('[hobby-match] wildcard regeneration failed:', err.message);
+          }
+          unresolved = deterministicViolations(result);
         }
-      } catch (err) {
-        console.error('[hobby-match] wildcard regeneration failed:', err.message);
-      }
-      unresolved = deterministicViolations(result);
-    }
 
-    // Do not show a knowingly noncompliant result.
-    if (unresolved.length) {
-      console.error('[hobby-match] unresolved compliance issues:', unresolved);
-      return res.status(500).json({
-        error: 'Could not generate a grounded set of matches. Please try again.'
-      });
-    }
+        // Do not show a knowingly noncompliant result.
+        if (unresolved.length) {
+          console.error('[hobby-match] unresolved compliance issues:', unresolved);
+          throw Object.assign(new Error('unresolved compliance issues'), { userMessage: 'Could not generate a grounded set of matches. Please try again.' });
+        }
 
-    if (!Array.isArray(result.matching_for) || !result.matching_for.length) {
-      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-    }
-
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-
-    await checkConsistency(result, { label: 'hobby-match', userLanguage: req.body?.userLanguage });
-
-    return res.json(result);
+        if (!Array.isArray(result.matching_for) || !result.matching_for.length) {
+          throw Object.assign(new Error('no matching_for'), { userMessage: 'Could not generate a response. Please try again.' });
+        }
+      return result;
+    };
+    return await answer(req, res, {
+      label: 'hobby-match',
+      parts: [{ required: true, run: pipeline, apply: (d, out) => Object.assign(d, out) }],
+      finish: d => structuredClone(d),
+      ready: d => Array.isArray(d.matching_for) && d.matching_for.length > 0,
+      complete: d => Array.isArray(d.matching_for) && d.matching_for.length > 0,
+      check: async (result) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(result, { label: 'hobby-match', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('HobbyMatch error:', error);
-    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    return res.status(500).json({ error: error.userMessage || 'Something went wrong. Please try again.' });
   }
 });
 

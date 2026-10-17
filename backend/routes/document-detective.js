@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -549,104 +550,119 @@ ${NO_QUOTE_RULE}`;
     // "[object Object],…", destroying both the prompt and the PDF block (this
     // exact bug broke every PDF upload on doctor-visit-translator, commit
     // 8199f070). userPrompt itself is always a plain string either way.
-    let parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): the
+    // bottom line shows first (small); what needs attention, the money, what
+    // else is relevant, and the buried language and next steps then run at
+    // once, each reading the document and handed that bottom line. The guard
+    // runs after the answer is on screen.
+    const system = withLanguage(CORE_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (text, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(CORE_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: hasPdf ? [...pdfBlocks, { type: 'text', text: userPrompt }] : userPrompt }],
-    }, { label: 'document-detective' });
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: hasPdf ? [...pdfBlocks, { type: 'text', text }] : text }],
+    }, { label: tag });
+    const PLAN = ['document'];
+    const shown = (d) => {
+      const parsed = capArrays(structuredClone(d));
+      // Defensive: the old schema had an aggregate confidence badge; the
+      // CONFIDENCE section explicitly bans it.
+      delete parsed.confidence;
+      delete parsed.confidence_note;
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'document-detective',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 800, 'document-detective'), [
+        ['needs_attention'],
+        ['money'],
+        ['also_relevant', 'doesnt_appear_relevant'],
+        ['buried_but_important', 'practical_next_steps', 'questions_to_ask', 'outside_help'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 2200, `document-detective-${i + 2}`)),
+      finish: shown,
+      ready: d => Boolean(d.document?.bottom_line),
+      complete: d => Boolean(d.document?.bottom_line),
+      check: async (parsed) => {
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+          const fields = [['document.bottom_line', parsed.document?.bottom_line]];
+          (parsed.needs_attention || []).forEach((item, i) => {
+            fields.push([`needs_attention[${i}].what`, item.what]);
+            if (item.why_it_matters_to_you) fields.push([`needs_attention[${i}].why_it_matters_to_you`, item.why_it_matters_to_you]);
+            if (item.if_you_do_nothing) fields.push([`needs_attention[${i}].if_you_do_nothing`, item.if_you_do_nothing]);
+            if (item.what_to_do) fields.push([`needs_attention[${i}].what_to_do`, item.what_to_do]);
+          });
+          (parsed.money || []).forEach((item, i) => {
+            fields.push([`money[${i}].what`, item.what]);
+            if (item.amount_or_rule) fields.push([`money[${i}].amount_or_rule`, item.amount_or_rule]);
+          });
+          (parsed.also_relevant || []).forEach((item, i) => {
+            fields.push([`also_relevant[${i}].what`, item.what]);
+            fields.push([`also_relevant[${i}].why_it_matters`, item.why_it_matters]);
+          });
+          (parsed.doesnt_appear_relevant || []).forEach((item, i) => {
+            fields.push([`doesnt_appear_relevant[${i}].what`, item.what]);
+            fields.push([`doesnt_appear_relevant[${i}].why`, item.why]);
+            if (item.could_change_if) fields.push([`doesnt_appear_relevant[${i}].could_change_if`, item.could_change_if]);
+          });
+          (parsed.buried_but_important || []).forEach((item, i) => {
+            fields.push([`buried_but_important[${i}].what`, item.what]);
+            fields.push([`buried_but_important[${i}].why_easy_to_miss`, item.why_easy_to_miss]);
+          });
+          (parsed.practical_next_steps || []).forEach((step, i) => fields.push([`practical_next_steps[${i}]`, step]));
+          (parsed.questions_to_ask || []).forEach((q, i) => fields.push([`questions_to_ask[${i}]`, q]));
+          (parsed.outside_help || []).forEach((item, i) => {
+            fields.push([`outside_help[${i}].question`, item.question]);
+            fields.push([`outside_help[${i}].why_the_document_doesnt_resolve_it`, item.why_the_document_doesnt_resolve_it]);
+            if (item.who_to_ask_first) fields.push([`outside_help[${i}].who_to_ask_first`, item.who_to_ask_first]);
+          });
 
-    if (!parsed?.document?.bottom_line) {
-      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-    }
+          // The guard's own check call is text-only and never receives the PDF
+          // (attaching it twice would double the cost for no real benefit — the
+          // guard is checking for invented outside facts, not re-reading the
+          // document). When the document was a PDF, tell the checker so plainly,
+          // the same way contract-decoder does for its own PDF path: it cannot
+          // verify a `source` locator against text it never saw, so it must
+          // trust this tool's own extraction for THAT and confine itself to the
+          // violation types that don't require seeing the document at all.
+          const documentBlock = hasPdf
+            ? `THE DOCUMENT WAS SUPPLIED AS A PDF. You cannot see it — the "source" and quoted/paraphrased document language in the proposed output below is this tool's own extraction from a document you were not shown. Do not flag an item as unsupported merely because you cannot confirm its source locator or wording against text you don't have — that test would fail every true statement about a document you can't open. Flag only the violation types below that don't depend on seeing the document itself (invented outside practice, invented reader psychology, invented third-party obligations, absence-treated-as-opposite reasoning, a requirement stated for a suggestion, an aggregate confidence badge, an invented time/effort estimate) — never "unsourced_conclusion" or "broadened_or_strengthened_document_language" on this PDF path, since both require reading the document to judge.`
+            : `THE DOCUMENT TEXT ITSELF IS THE SOLE SOURCE OF TRUTH:\n${document.trim().slice(0, 12000)}`;
 
-    parsed = capArrays(parsed);
-    // Defensive: the old schema had an aggregate confidence badge; the
-    // CONFIDENCE section explicitly bans it. Strip it if an older-shaped
-    // response ever slips through.
-    delete parsed.confidence;
-    delete parsed.confidence_note;
+          await runOutputGuard(parsed, {
+            label: 'document-detective',
+            fields,
+            supplied: `DOCUMENT TYPE (hint only): ${documentType || 'not specified'}
+    VISITOR'S SITUATION: ${mySituation.trim()}
+    VISITOR'S CONCERN: ${concerns?.trim() || '(not supplied)'}
 
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [['document.bottom_line', parsed.document?.bottom_line]];
-      (parsed.needs_attention || []).forEach((item, i) => {
-        fields.push([`needs_attention[${i}].what`, item.what]);
-        if (item.why_it_matters_to_you) fields.push([`needs_attention[${i}].why_it_matters_to_you`, item.why_it_matters_to_you]);
-        if (item.if_you_do_nothing) fields.push([`needs_attention[${i}].if_you_do_nothing`, item.if_you_do_nothing]);
-        if (item.what_to_do) fields.push([`needs_attention[${i}].what_to_do`, item.what_to_do]);
-      });
-      (parsed.money || []).forEach((item, i) => {
-        fields.push([`money[${i}].what`, item.what]);
-        if (item.amount_or_rule) fields.push([`money[${i}].amount_or_rule`, item.amount_or_rule]);
-      });
-      (parsed.also_relevant || []).forEach((item, i) => {
-        fields.push([`also_relevant[${i}].what`, item.what]);
-        fields.push([`also_relevant[${i}].why_it_matters`, item.why_it_matters]);
-      });
-      (parsed.doesnt_appear_relevant || []).forEach((item, i) => {
-        fields.push([`doesnt_appear_relevant[${i}].what`, item.what]);
-        fields.push([`doesnt_appear_relevant[${i}].why`, item.why]);
-        if (item.could_change_if) fields.push([`doesnt_appear_relevant[${i}].could_change_if`, item.could_change_if]);
-      });
-      (parsed.buried_but_important || []).forEach((item, i) => {
-        fields.push([`buried_but_important[${i}].what`, item.what]);
-        fields.push([`buried_but_important[${i}].why_easy_to_miss`, item.why_easy_to_miss]);
-      });
-      (parsed.practical_next_steps || []).forEach((step, i) => fields.push([`practical_next_steps[${i}]`, step]));
-      (parsed.questions_to_ask || []).forEach((q, i) => fields.push([`questions_to_ask[${i}]`, q]));
-      (parsed.outside_help || []).forEach((item, i) => {
-        fields.push([`outside_help[${i}].question`, item.question]);
-        fields.push([`outside_help[${i}].why_the_document_doesnt_resolve_it`, item.why_the_document_doesnt_resolve_it]);
-        if (item.who_to_ask_first) fields.push([`outside_help[${i}].who_to_ask_first`, item.who_to_ask_first]);
-      });
+    ${documentBlock}`,
+            promise: `Read a long document through this visitor's specific situation and surface only what actually requires their attention, affects their money, or matters to their circumstances — grounded in the document's own language, with genuine uncertainty shown rather than filled in.
 
-      // The guard's own check call is text-only and never receives the PDF
-      // (attaching it twice would double the cost for no real benefit — the
-      // guard is checking for invented outside facts, not re-reading the
-      // document). When the document was a PDF, tell the checker so plainly,
-      // the same way contract-decoder does for its own PDF path: it cannot
-      // verify a `source` locator against text it never saw, so it must
-      // trust this tool's own extraction for THAT and confine itself to the
-      // violation types that don't require seeing the document at all.
-      const documentBlock = hasPdf
-        ? `THE DOCUMENT WAS SUPPLIED AS A PDF. You cannot see it — the "source" and quoted/paraphrased document language in the proposed output below is this tool's own extraction from a document you were not shown. Do not flag an item as unsupported merely because you cannot confirm its source locator or wording against text you don't have — that test would fail every true statement about a document you can't open. Flag only the violation types below that don't depend on seeing the document itself (invented outside practice, invented reader psychology, invented third-party obligations, absence-treated-as-opposite reasoning, a requirement stated for a suggestion, an aggregate confidence badge, an invented time/effort estimate) — never "unsourced_conclusion" or "broadened_or_strengthened_document_language" on this PDF path, since both require reading the document to judge.`
-        : `THE DOCUMENT TEXT ITSELF IS THE SOLE SOURCE OF TRUTH:\n${document.trim().slice(0, 12000)}`;
+    THE ONE RULE THAT DECIDES MOST OF THESE. A conclusion is supported when the document text actually says it, or is a cautious, clearly-labeled connection between the document and a fact the visitor supplied. Anything else — outside law, standard practice, what an organization usually does, what a professional would advise, who besides the document's own party owes money — is NOT supported unless the visitor supplied it.
 
-      await runOutputGuard(parsed, {
-        label: 'document-detective',
-        fields,
-        supplied: `DOCUMENT TYPE (hint only): ${documentType || 'not specified'}
-VISITOR'S SITUATION: ${mySituation.trim()}
-VISITOR'S CONCERN: ${concerns?.trim() || '(not supplied)'}
+    Flag "your claim is almost certainly still valid" (the document alone can't establish claim validity), "the neighbour or their insurer would need to cover that" (the document saying something isn't covered under one provision doesn't establish who else owes for it), "insurers routinely apply betterment" or "easy to miss when anxious" (invented outside practice or reader psychology), and "there is no indication the flat was unoccupied, so this exclusion isn't a concern" (absence of a fact is not evidence of its opposite — the correct handling states what would need to be true and notes the visitor didn't say).
 
-${documentBlock}`,
-        promise: `Read a long document through this visitor's specific situation and surface only what actually requires their attention, affects their money, or matters to their circumstances — grounded in the document's own language, with genuine uncertainty shown rather than filled in.
+    THE MOST IMPORTANT ONE: governing-law and enforceability reasoning. Flag "the absence of a governing-law clause is a material gap," calling that absence "the primary factor" in an unresolved question, "governing law clauses are typically present in agreements of this type," and any explanation of how different states or jurisdictions treat a clause (e.g. "some states void non-competes entirely; others enforce them with modifications") — all of that is outside legal knowledge, not document content, however naturally it reads. The correct handling is flat and short: "This document does not state which law governs the agreement," and if that's what stands between the document and the visitor's question, "the document alone cannot answer that." Also flag a legal-effect verb standing in for a consequence ("by signing, you accept these waivers") when the document itself only states what the clause provides, and any visitor fact that got invented rather than supplied (unvested equity, an existing non-compete, a resignation plan the visitor never mentioned).
 
-THE ONE RULE THAT DECIDES MOST OF THESE. A conclusion is supported when the document text actually says it, or is a cautious, clearly-labeled connection between the document and a fact the visitor supplied. Anything else — outside law, standard practice, what an organization usually does, what a professional would advise, who besides the document's own party owes money — is NOT supported unless the visitor supplied it.
+    CONSISTENCY ACROSS FIELDS. Read every field against every other. When two fields describe the same clause, deadline or amount in ways that cannot both be true (one says notice can only be given after month 12, another says notice can be served in month 10 so that it expires at the end of month 12), flag the field whose reading goes BEYOND the document's words — here, the clause sets when notice must expire, and nothing in it says when notice may be given — as two_fields_read_the_same_clause_incompatibly. The fix keeps the reading the text actually supports; where the text genuinely allows both, it says so plainly instead of picking one.
 
-Flag "your claim is almost certainly still valid" (the document alone can't establish claim validity), "the neighbour or their insurer would need to cover that" (the document saying something isn't covered under one provision doesn't establish who else owes for it), "insurers routinely apply betterment" or "easy to miss when anxious" (invented outside practice or reader psychology), and "there is no indication the flat was unoccupied, so this exclusion isn't a concern" (absence of a fact is not evidence of its opposite — the correct handling states what would need to be true and notes the visitor didn't say).
+    Flag time_condition_moved_to_a_different_event wherever ANY field — the bottom line included, even when every field agrees — attaches a time condition to a different event than the document does: "notice cannot be given until month 12" when the clause only says notice must expire on or after month 12 is the pattern. The fix states the condition on the document's own event.
 
-THE MOST IMPORTANT ONE: governing-law and enforceability reasoning. Flag "the absence of a governing-law clause is a material gap," calling that absence "the primary factor" in an unresolved question, "governing law clauses are typically present in agreements of this type," and any explanation of how different states or jurisdictions treat a clause (e.g. "some states void non-competes entirely; others enforce them with modifications") — all of that is outside legal knowledge, not document content, however naturally it reads. The correct handling is flat and short: "This document does not state which law governs the agreement," and if that's what stands between the document and the visitor's question, "the document alone cannot answer that." Also flag a legal-effect verb standing in for a consequence ("by signing, you accept these waivers") when the document itself only states what the clause provides, and any visitor fact that got invented rather than supplied (unvested equity, an existing non-compete, a resignation plan the visitor never mentioned).
-
-CONSISTENCY ACROSS FIELDS. Read every field against every other. When two fields describe the same clause, deadline or amount in ways that cannot both be true (one says notice can only be given after month 12, another says notice can be served in month 10 so that it expires at the end of month 12), flag the field whose reading goes BEYOND the document's words — here, the clause sets when notice must expire, and nothing in it says when notice may be given — as two_fields_read_the_same_clause_incompatibly. The fix keeps the reading the text actually supports; where the text genuinely allows both, it says so plainly instead of picking one.
-
-Flag time_condition_moved_to_a_different_event wherever ANY field — the bottom line included, even when every field agrees — attaches a time condition to a different event than the document does: "notice cannot be given until month 12" when the clause only says notice must expire on or after month 12 is the pattern. The fix states the condition on the document's own event.
-
-Do not flag a status of REASONABLE READING or NEEDS CLARIFICATION merely for existing — those are the tool's own way of showing real uncertainty, which is correct, not a violation.`,
-        guard: router.outputGuard,
-        requiredNonEmpty: ['document.bottom_line'],
-        userLanguage,
-        // SMART since 2026-10-08: the FAST check passed an answer that read one
-        // break clause two incompatible ways. Contradictions between fields of
-        // a legal document are this tool's costliest mistake (~$0.03/run).
-        model: MODELS.SMART,
-      });
-    } catch (guardErr) {
-      console.log('[document-detective] v2 guard skipped:', guardErr.message);
-    }
-
-    res.json(parsed);
+    Do not flag a status of REASONABLE READING or NEEDS CLARIFICATION merely for existing — those are the tool's own way of showing real uncertainty, which is correct, not a violation.`,
+            guard: router.outputGuard,
+            requiredNonEmpty: ['document.bottom_line'],
+            userLanguage,
+            // SMART since 2026-10-08: the FAST check passed an answer that read one
+            // break clause two incompatible ways. Contradictions between fields of
+            // a legal document are this tool's costliest mistake (~$0.03/run).
+            model: MODELS.SMART,
+          });
+        } catch (guardErr) {
+          console.log('[document-detective] v2 guard skipped:', guardErr.message);
+        }
+      },
+    });
 
   } catch (error) {
     console.error('Document Detective error:', error);
