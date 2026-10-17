@@ -407,12 +407,27 @@ Return only the JSON object.`;
   const pushPart = (i) => ({
     run: async () => {
       const p = await plan;
-      const route = (p?.pushes || [])[i];
-      if (!route) return null;
-      return call(onlyKeys(prompt, ['pushes']) + planNote(p, ['acknowledgment', 'pushes'])
-        + `\nTHIS PASS writes pushes with exactly ONE item — the "${route.label}" route (approach ${route.approach}) — in full, keeping that approach and label.`, 900, `gpg-generate-${i + 2}`);
+      const routes = p?.pushes || [];
+      const route = routes[i];
+      // A plan that chose fewer than three routes still gets three pushes:
+      // this pass picks a route unlike the ones listed.
+      const which = route
+        ? `the "${route.label}" route (approach ${route.approach}) — in full, keeping that approach and label.`
+        : `a NEW route genuinely different from every route listed above — in full, with its own approach and label.`;
+      const ask = () => call(onlyKeys(prompt, ['pushes']) + planNote(p, ['acknowledgment', 'pushes'])
+        + `\nTHIS PASS writes pushes with exactly ONE item — ${which} Every field of the push is required.`, 1200, `gpg-generate-${i + 2}`);
+      // One incomplete push would leave the reader with two options; ask once more.
+      const first = await ask().catch(() => null);
+      if (isCompletePush(first?.pushes?.[0])) return first;
+      console.log(`[gentle-push-generator] push ${i + 1} came back incomplete — asking once more`);
+      return ask();
     },
-    apply: (d, out) => { const one = Array.isArray(out?.pushes) ? out.pushes[0] : null; if (one) d.pushDetail = { ...d.pushDetail, [i]: one }; },
+    apply: (d, out) => {
+      const one = Array.isArray(out?.pushes) ? out.pushes[0] : null;
+      if (!one) return;
+      d.pushDetail = { ...d.pushDetail, [i]: one };
+      if (!(d.pushes || [])[i] && one.approach) { const r = [...(d.pushes || [])]; r[i] = { approach: one.approach, label: one.label }; d.pushes = r; }
+    },
   });
   const completeOf = d => (d.pushes || []).map((r, i) => (d.pushDetail?.[i] ? { ...d.pushDetail[i], approach: r.approach, label: r.label } : null)).filter(isCompletePush).slice(0, 3);
   const shape = (d) => { const { pushDetail, ...rest } = structuredClone(d); return { ...rest, pushes: completeOf(d) }; };
