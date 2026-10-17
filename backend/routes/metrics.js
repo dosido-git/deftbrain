@@ -1383,10 +1383,28 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           btn.setAttribute('aria-expanded', 'true');
           btn.querySelector('.ledger-caret').textContent = '\u25BE';
         });
-        document.addEventListener('keydown', function (e) {
-          if (e.key !== 'Escape') return;
-          document.querySelectorAll('.ledger-open[aria-expanded="true"]').forEach(closeRow);
+        // Esc, or a click anywhere outside the open day and its detail, closes
+        // it. The report runs in the dashboard's same-origin iframe, so the
+        // dashboard's own keys and clicks are listened to as well — otherwise
+        // Esc only works while the report has focus.
+        function closeAll() { document.querySelectorAll('.ledger-open[aria-expanded="true"]').forEach(closeRow); }
+        function onKey(e) { if (e.key === 'Escape') closeAll(); }
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('click', function (e) {
+          if (e.target.closest && e.target.closest('.ledger-open, .ledger-detail-row')) return;
+          closeAll();
         });
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.document.addEventListener('keydown', onKey);
+            window.parent.document.addEventListener('click', closeAll);
+            // A reloaded report must not leave its listeners on the dashboard.
+            window.addEventListener('pagehide', function () {
+              window.parent.document.removeEventListener('keydown', onKey);
+              window.parent.document.removeEventListener('click', closeAll);
+            });
+          }
+        } catch (err) { /* not same-origin: the report's own listeners still work */ }
       })();
     </script>
     <h2 class="sec">2 · Needs attention</h2>
