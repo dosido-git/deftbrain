@@ -7,7 +7,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 const { runOutputGuard, stringFields, suppliedText } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
 const { allChecks } = require('../lib/bothChecks');
-const { answer } = require('../lib/progressive');
+const { answer, planNote } = require('../lib/progressive');
 
 const LABEL_RE = /^(critical|important|optional)$/i;
 // ════════════════════════════════════════════════════════════
@@ -44,7 +44,7 @@ FIGURE DISCIPLINE: each deadline belongs to ITS OWN item — never reuse one ite
     const tail = `Return ONLY the JSON object.`;
     const checklistPrompt = withLanguage(`${intro}
 
-THIS PASS writes the summary, the event label, the document checklist and the verify note. A second pass is writing the ordered steps and watch-outs at the same time from the same inputs.
+THIS PASS writes the summary, the event label, the verify note and the document checklist as NAMES AND PRIORITIES ONLY — other passes add each document's why and where to get it, and write the ordered steps and watch-outs, from your list.
 
 Return ONLY valid JSON:
 
@@ -54,8 +54,6 @@ Return ONLY valid JSON:
   "document_checklist": [
     {
       "document": "Name of the document/task (e.g. 'File a change of address with the postal service')",
-      "why": "Why it matters — one sentence",
-      "where_to_get": "Where/how to obtain or file it — one sentence",
       "priority": "critical | important | optional"
     }
   ],
@@ -72,7 +70,7 @@ RULES:
 ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const planPrompt = withLanguage(`${intro}
 
-THIS PASS writes the ordered steps and the watch-outs. A second pass is writing the document checklist at the same time from the same inputs: make the steps cover the essential documents and tasks for this event (the same ones a complete checklist would list), and name each task plainly so it matches the checklist's wording.
+THIS PASS writes the ordered steps only. Other passes are writing the document checklist and the watch-outs at the same time from the same inputs: make the steps cover the essential documents and tasks for this event (the same ones a complete checklist would list), and name each task plainly so it matches the checklist's wording.
 
 Return ONLY valid JSON:
 
@@ -86,19 +84,53 @@ Return ONLY valid JSON:
       "timing": "When to do it (e.g. 'first', 'within 2 weeks', 'after you have X')",
       "why_first": "Why it comes at this point in the order — often because a later step depends on it. One sentence."
     }
-  ],
-  "watch_outs": [
-    "A common mistake or thing people forget for THIS event — one sentence"
   ]
 }
 
 RULES:
 - TIMELINE ANCHOR (relative weeks): the life event ITSELF is WEEK 0. "event_label" is a 1-3 word name for it (e.g. "Move day", "Baby arrives", "First day", "Date of passing"). Every step's week_start/week_end are integers RELATIVE to that: NEGATIVE = weeks BEFORE the event (preparation), 0 = the event week, POSITIVE = weeks AFTER (follow-up). Examples: "2 to 4 weeks before the move" → week_start -4, week_end -2; "the week before" → -1, -1; "the week of / on the day" → 0, 0; "within the 2nd–3rd week after" → +2, +3. A single-week step has week_start == week_end; a windowed step spans it with week_start ≤ week_end. If the event has already occurred when someone uses this (e.g. a death, where handling begins after), keep event at 0 and put every step at 0 or positive.
 - ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically. week_start/week_end are RELATIVE to week 0 (the event) per the anchor rule above — they are the recommended window, not a legal deadline. Keep the whole plan realistic (typically about -4 to +8 weeks).
-- watch_outs: 2-4 items.
 - Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
 - Be specific to the life event; generic "make a checklist" advice is a failure.
-- Both keys above must be present.
+
+${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+
+    const watchPrompt = withLanguage(`${intro}
+
+THIS PASS writes the watch-outs only. Other passes are writing the checklist and the ordered steps at the same time from the same inputs.
+
+Return ONLY valid JSON:
+
+{
+  "watch_outs": [
+    "A common mistake or thing people forget for THIS event — one sentence"
+  ]
+}
+
+RULES:
+- watch_outs: 2-4 items, specific to the life event, one tight sentence each. Never put a double-quote (") inside a JSON string value.
+
+${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    // Each document's why and where, for a slice of the planned list, matched
+    // back by position (the plan keeps the names and priorities).
+    const detailPrompt = (plan, from, to) => withLanguage(`${intro}${planNote(plan, ['situation_summary', 'document_checklist'])}
+
+THIS PASS adds, for documents ${from + 1} to ${to} of the document_checklist above (in that order, exactly those), why it matters and where or how to get or file it. Other passes cover the rest.
+
+Return ONLY valid JSON:
+
+{
+  "details": [
+    {
+      "document": "The document name, copied exactly from the list",
+      "why": "Why it matters — one sentence",
+      "where_to_get": "Where/how to obtain or file it — one sentence"
+    }
+  ]
+}
+
+RULES:
+- One details item per document, in the list's order. Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
 
 ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
@@ -119,20 +151,46 @@ ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion
     // includes the T3/T7 consistency checks — run side by side after the
     // answer is on screen (lib/bothChecks.js). Sourced corrections win where
     // both touch the same field.
+    // Progressive, plan first (2026-10-17, T11): the summary and the document
+    // NAMES show first (~7s); two passes add each one's why and where, and the
+    // steps and watch-outs are written alongside from the start.
+    const list = ask(checklistPrompt, 'paperwork-path-checklist');
+    list.catch(() => {}); // the list part reports its own failure
+    const half = l => Math.ceil(((l?.document_checklist) || []).length / 2);
+    const detailPart = (i) => ({
+      run: async () => {
+        const l = await list;
+        const n = (l?.document_checklist || []).length, from = i ? half(l) : 0, to = i ? n : half(l);
+        return from < to ? ask(detailPrompt(l, from, to), `paperwork-path-detail-${i + 1}`) : null;
+      },
+      apply: (d, out) => { if (Array.isArray(out?.details)) d.docDetail = { ...d.docDetail, [i]: out.details }; },
+    });
+    // Details merge by position; the plan keeps each document's name and priority.
+    const withDetail = (d) => {
+      const docs = d.document_checklist || [], h = Math.ceil(docs.length / 2);
+      const detail = [...(d.docDetail?.[0] || []).slice(0, h), ...Array(Math.max(0, h - (d.docDetail?.[0] || []).length)).fill(null), ...(d.docDetail?.[1] || [])];
+      const out = Object.fromEntries(KEYS.filter(k => d[k] !== undefined).map(k => [k, d[k]]));
+      if (docs.length) out.document_checklist = docs.map((x, j) => ({ document: x.document, why: x.why ?? detail[j]?.why, where_to_get: x.where_to_get ?? detail[j]?.where_to_get, priority: x.priority }));
+      return out;
+    };
     return await answer(req, res, {
       label: 'paperwork-path',
       parts: [
-        { run: () => ask(checklistPrompt, 'paperwork-path-checklist'),
-          apply: (d, list) => { ['situation_summary', 'event_label', 'document_checklist', 'verify_note'].forEach(k => { d[k] = list?.[k]; }); } },
+        { required: true, run: () => list,
+          apply: (d, l) => { ['situation_summary', 'event_label', 'document_checklist', 'verify_note'].forEach(k => { d[k] = l?.[k]; }); } },
+        detailPart(0), detailPart(1),
         { run: () => ask(planPrompt, 'paperwork-path-plan'),
-          apply: (d, plan) => { d.ordered_steps = plan?.ordered_steps; d.watch_outs = plan?.watch_outs; } },
+          apply: (d, plan) => { d.ordered_steps = plan?.ordered_steps; } },
+        { run: () => ask(watchPrompt, 'paperwork-path-watch'),
+          apply: (d, w) => { d.watch_outs = w?.watch_outs; } },
       ],
-      finish: d => Object.fromEntries(KEYS.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
-      ready: d => Boolean(d.document_checklist || d.ordered_steps),
-      complete: d => Boolean(d.document_checklist && d.ordered_steps),
-      check: (d) => {
+      finish: withDetail,
+      ready: d => Boolean(d.document_checklist?.length),
+      complete: d => Boolean(d.ordered_steps && withDetail(d).document_checklist.every(x => x.why)),
+      check: async (draft) => {
+        const d = withDetail(draft);
         const fields = stringFields(d);
-        return allChecks(d, [
+        await allChecks(d, [
           ...(research ? [x => checkWorldFacts(x, research, { label: 'paperwork-path', fields: fields.filter(([, v]) => v.length > 15), subject: `${lifeEvent} in ${locationText}`, userLanguage })] : []),
           x => runOutputGuard(x, {
             label: 'paperwork-path',
@@ -145,6 +203,9 @@ ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion
             locale: withLocaleContext(userLocale, userCurrency, userRegion),
           }),
         ], { label: 'paperwork-path' });
+        // Back into the draft from the new object: details merged, repairs included.
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, d);
       },
     });
   } catch (error) {
