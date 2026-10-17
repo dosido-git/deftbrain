@@ -487,9 +487,14 @@ Return only the JSON object.`;
       return { timing: parts.join('; '), deadline_status: status };
     };
     const timingRule = 'TIMING lines are computed in code from the date each email was sent — established facts; never recompute them. A deadline that has ALREADY PASSED is overdue: say so plainly, and never describe it as due later today. An overdue item is NOW only if acting still matters; if the email gives no reason it still does, say the deadline has passed and what the user could check.';
-    const extracted = call(`${sharedContext}
+    // Only the emails, not the triage brief: handed the whole brief, the
+    // copying step also wrote a full triage of every email (1,200 tokens).
+    const extracted = call(`EMAILS:
+---
+${emails}
+---
 
-THIS STEP ONLY COPIES FACTS FROM THE EMAILS — no tiers, no analysis; other passes do that. List the emails in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). For each: sender as a name or address; subject at most 80 characters; sent_date = the date on the email's own Date / Sent / Datum / Gesendet line, written as YYYY-MM-DD, or null if the email shows none (never guess one); deadline = the deadline phrase exactly as written (phrase) and its kind: same_day ("today", "by 5pm", "heute"), next_day ("tomorrow"), end_of_week ("by the end of the week"), weekday (a named day — give weekday in English), date (a calendar date — give date as YYYY-MM-DD), or none. time = HH:MM if a time is stated, else null. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject","sent_date":null,"deadline":{"phrase":"","kind":"none","weekday":null,"date":null,"time":null}}]}`, 1800, 'email-urgency-triage-extract', MODELS.FAST)
+THIS STEP ONLY COPIES FACTS FROM THE EMAILS — no tiers, no analysis, no reasons, no drafts; other passes do that. List the emails in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). For each: sender as a name or address; subject at most 80 characters; sent_date = the date on the email's own Date / Sent / Datum / Gesendet line, written as YYYY-MM-DD, or null if the email shows none (never guess one); deadline = the deadline phrase exactly as written (phrase) and its kind: same_day ("today", "by 5pm", "heute"), next_day ("tomorrow"), end_of_week ("by the end of the week"), weekday (a named day — give weekday in English), date (a calendar date — give date as YYYY-MM-DD), or none. time = HH:MM if a time is stated, else null. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject","sent_date":null,"deadline":{"phrase":"","kind":"none","weekday":null,"date":null,"time":null}}]}`, 1800, 'email-urgency-triage-extract', MODELS.FAST)
       .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []))
       .then(list => list.map(e => ({ ...e, ...timingOf(e) })));
     const listed = extracted.then(async (list) => {
