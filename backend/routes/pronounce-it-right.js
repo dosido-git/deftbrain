@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -167,28 +168,46 @@ Keep variants to 0-2 entries and watch_out_for to 0-3 entries. Every prose field
     // T1: how the word is actually said, from a cached web search, run alongside the guide.
     const research = researchFacts({ topic: ['pronounce', word, category || ''], label: 'pronounce-it-right', brief: `How "${word}"${category ? ` (${category})` : ''}${context ? ` — ${String(context).slice(0, 120)}` : ''} is pronounced: the authoritative or native pronunciation (IPA if a source gives it), common mispronunciations, regional variants, and the origin of the word or name.` });
     
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART, // 2026-09-07: Haiku confidently got Hermès's final /s/ wrong as /z/
-      // (verified against real French phonology) across repeated prompt-only fixes; the
-      // identical prompt on SMART got it right including the new French-rhythm framing.
-      // This is a knowledge gap, not a compliance gap — see PRONOUNCEITRIGHT-NOTES.md.
-      max_tokens: 3500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'pronounce-it-right' });
-    if (!parsed.pronunciation) {
-      return res.status(500).json({ error: 'Could not analyze pronunciation. Please try again.' });
-    }
-    if (!READING_STATUSES.includes(parsed.reading_status)) {
-      parsed.reading_status = parsed.pronunciation?.phonetic ? 'CLEAR' : 'UNCERTAIN';
-    }
-    if (parsed.pronunciation) {
-      parsed.pronunciation.phonetic = stripMarkdown(parsed.pronunciation.phonetic);
-      if (Array.isArray(parsed.pronunciation.syllables)) parsed.pronunciation.syllables = parsed.pronunciation.syllables.map(stripMarkdown);
-    }
-    (parsed.variants || []).forEach(v => { if (v) v.phonetic = stripMarkdown(v.phonetic); });
-    await checkWorldFacts(parsed, research, { label: 'pronounce-it-right', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: word, userLanguage });
-    res.json(parsed);
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // reading status and the pronunciation show first; variants and pitfalls,
+    // and the context and script, then run at once, handed that reading. The
+    // world-facts check runs after the answer is on screen.
+    // MODELS.SMART since 2026-09-07: Haiku confidently got Hermès's final /s/
+    // wrong as /z/ across repeated prompt-only fixes; this is a knowledge gap,
+    // not a compliance gap — see PRONOUNCEITRIGHT-NOTES.md.
+    const system = withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['word', 'reading_status', 'language', 'pronunciation', 'needs_context'];
+    const tidy = (parsed) => {
+      if (!READING_STATUSES.includes(parsed.reading_status)) {
+        parsed.reading_status = parsed.pronunciation?.phonetic ? 'CLEAR' : 'UNCERTAIN';
+      }
+      if (parsed.pronunciation) {
+        parsed.pronunciation.phonetic = stripMarkdown(parsed.pronunciation.phonetic);
+        if (Array.isArray(parsed.pronunciation.syllables)) parsed.pronunciation.syllables = parsed.pronunciation.syllables.map(stripMarkdown);
+      }
+      (parsed.variants || []).forEach(v => { if (v) v.phonetic = stripMarkdown(v.phonetic); });
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'pronounce-it-right',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1400, 'pronounce-it-right'), [
+        ['variants', 'watch_out_for'],
+        ['context_info', 'confirmation_script'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1400, `pronounce-it-right-${i + 2}`)),
+      finish: d => tidy(structuredClone(d)),
+      ready: d => Boolean(d.pronunciation),
+      complete: d => Boolean(d.pronunciation),
+      check: async (parsed) => {
+        tidy(parsed);
+        await checkWorldFacts(parsed, research, { label: 'pronounce-it-right', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: word, userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('PronounceItRight error:', error);

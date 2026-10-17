@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -55,7 +56,7 @@ const EXAMPLES = [
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const DecisionCoach = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -125,6 +126,7 @@ const DecisionCoach = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── Session ──
   const [activeTab, setActiveTab] = useState('decide');
@@ -279,18 +281,23 @@ const DecisionCoach = ({ tool }) => {
   // ══════════════════════════════════════════
   const generate = useCallback(async (rejected = [], rejectionReason = '') => {
     if (!decisionNeeded.trim()) { setError(t('dc_label_whatdecide')); return; }
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     try {
-      const res = await callToolEndpoint('decision-coach', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const res = await callToolEndpointProgressive('decision-coach', {
         decisionNeeded: decisionNeeded.trim(), category: category ? getLabelFor(DECISION_CATEGORIES, category) : '',
         preferences: prefString(), capacityLevel: capacity, recentDecisions: recentChoices,
         rejectedChoices: rejected, rejectionReason: rejectionReason || '', locale: navigator.language || 'en',
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!res) return; // replaced by a newer run
       setResults(res); saveToHistory(res, decisionNeeded.trim(), rejected.length);
     } catch (err) { setError(err.message || t('something_wrong')); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [decisionNeeded, category, constraints, extraContext, capacity, recentChoices, callToolEndpoint, saveToHistory, userLocale, userCurrency, userRegion, t]);
+  }, [decisionNeeded, category, constraints, extraContext, capacity, recentChoices, callToolEndpoint, callToolEndpointProgressive, saveToHistory, userLocale, userCurrency, userRegion, t]);
 
   const answerOneFact = useCallback(() => {
     const q = results?.one_thing_that_could_change_this?.question || '';
@@ -314,6 +321,7 @@ const DecisionCoach = ({ tool }) => {
 
   // Full header reset — clears every mode's inputs, results and errors (history/templates/prefs stay).
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setError('');
     setResults(null); setRejectedChoices([]); setShowRejectionPicker(false); setDecideMode('standard');
     setDecisionNeeded(''); setCategory(''); setConstraints([]); setExtraContext(''); setCapacity('overwhelmed');
@@ -667,6 +675,7 @@ const DecisionCoach = ({ tool }) => {
     const awaitingAnswer = !!results?.one_thing_that_could_change_this?.question;
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>

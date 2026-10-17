@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer } = require('../lib/progressive');
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const crypto = require('crypto');
@@ -470,41 +471,51 @@ Return ONLY this JSON:
       return res.status(400).json({ error: 'Invalid mode' });
     }
 
-    // ── Call Claude ──
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: maxTokens,
-      messages: [{ role: 'user', content: withLanguage(prompt + NO_QUOTE_RULE, userLanguage) }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
+    // Progressive (2026-10-17, lib/progressive.js): the verdict is one pass
+    // (eight modes, each its own schema); the v2 output guard now runs after
+    // it is on screen instead of before.
+    const generate = async () => {
+      let message;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          message = await anthropic.messages.create({
+            model: MODELS.SMART,
+            max_tokens: maxTokens,
+            messages: [{ role: 'user', content: withLanguage(prompt + NO_QUOTE_RULE, userLanguage) }]
+          });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
       }
-    }
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(textContent);
-    parsed._mode = mode;
-
-    // v2 output guard — only the 7 modes that reason about facts either party
-    // actually supplied (see MODE_GUARD above). Mutates parsed in place.
-    if (MODE_GUARD[mode]) {
-      await runOutputGuard(parsed, {
-        label: `the-final-word-${mode}`,
-        fields: collectProseFields(parsed),
-        supplied,
-        promise: MODE_GUARD[mode].promise,
-        guard: router.outputGuard,
-        userLanguage,
-        requiredNonEmpty: MODE_GUARD[mode].requiredNonEmpty,
-      });
-    }
-
-    res.json(normalizeNullStrings(parsed));
+      const textContent = message.content.find(item => item.type === 'text')?.text || '';
+      const parsed = safeParseJSON(textContent);
+      parsed._mode = mode;
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'the-final-word',
+      parts: [{ required: true, run: generate, apply: (d, out) => Object.assign(d, out) }],
+      finish: d => normalizeNullStrings(structuredClone(d)),
+      ready: d => Object.keys(d).length > 1,
+      complete: d => Object.keys(d).length > 1,
+      check: async (parsed) => {
+        // v2 output guard — only the 7 modes that reason about facts either party
+        // actually supplied (see MODE_GUARD above). Mutates parsed in place.
+        if (MODE_GUARD[mode]) {
+          await runOutputGuard(parsed, {
+            label: `the-final-word-${mode}`,
+            fields: collectProseFields(parsed),
+            supplied,
+            promise: MODE_GUARD[mode].promise,
+            guard: router.outputGuard,
+            userLanguage,
+            requiredNonEmpty: MODE_GUARD[mode].requiredNonEmpty,
+          });
+        }
+      },
+    });
 
   } catch (error) {
     console.error('The Final Word error:', error);

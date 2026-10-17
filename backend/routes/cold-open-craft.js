@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -228,28 +229,65 @@ NO COMMENTARY ANYWHERE. No why_it_works, no best_if, no note on the tradeoff, no
 
 Every factual statement about either person must trace directly to the supplied fields above.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): one
+    // small pass picks the three approaches (labels), the subject line and any
+    // situation read; each opener is then written by its own pass at once,
+    // beside the before-you-send note and follow-up. An opener shows the
+    // moment it is written; the supplied-facts check runs after display.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'cold-open-craft' });
-
-    // Guard on the deliverable, not on a field that is now legitimately null.
-    if (!Array.isArray(parsed.openers) || !parsed.openers.length) {
-      return res.status(500).json({ error: 'Could not craft your opener. Please try again.' });
-    }
-    // Fail-open: this wraps a working answer and must never be able to drop it.
-    try {
-      await enforceSuppliedFacts(parsed, { who, why, whatYouKnow, yourBackground }, {
-        userLanguage,
-        locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      });
-    } catch (err) {
-      console.error('ColdOpenCraft supplied-facts check skipped:', err.message);
-    }
-
-    return res.json(parsed);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['situation_read', 'openers', 'subject_line'];
+    const planPrompt = onlyKeys(userPrompt, PLAN)
+      .split('\n').filter(l => !l.startsWith('      "message":')).join('\n')
+      .replace(/,(\s*\n\s*\})/g, '$1')
+      + '\nTHIS PASS chooses the approaches only: exactly three openers, three genuinely different approaches, each with ONLY its label. Other passes write each message afterwards.';
+    const plan = call(planPrompt, 600, 'cold-open-craft');
+    plan.catch(() => {}); // the plan part reports its own failure
+    const openerPart = (i) => ({
+      run: async () => {
+        const p = await plan;
+        const o = (p?.openers || [])[i];
+        if (!o?.label) return null;
+        return call(onlyKeys(userPrompt, ['openers']) + planNote(p, PLAN)
+          + `\nTHIS PASS writes openers with exactly ONE item — "${o.label}" — keeping that label and writing its message in full.`, 1200, `cold-open-craft-${i + 2}`);
+      },
+      apply: (d, out) => { const one = Array.isArray(out?.openers) ? out.openers[0] : null; if (one?.message) d.openerText = { ...d.openerText, [i]: one.message }; },
+    });
+    const openersOf = d => (d.openers || []).map((o, i) => (d.openerText?.[i] ? { label: o.label, message: d.openerText[i] } : null)).filter(Boolean);
+    const shape = (d) => { const { openerText, ...rest } = structuredClone(d); return { ...rest, openers: openersOf(d) }; };
+    return await answer(req, res, {
+      label: 'cold-open-craft',
+      parts: [
+        { required: true, run: () => plan, apply: (d, out) => { PLAN.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+        openerPart(0), openerPart(1), openerPart(2),
+        { run: async () => call(onlyKeys(userPrompt, ['before_you_send', 'follow_up']) + planNote(await plan, PLAN), 900, 'cold-open-craft-5'),
+          apply: (d, out) => { ['before_you_send', 'follow_up'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+      ],
+      finish: shape,
+      // Guard on the deliverable, not on a field that is legitimately null.
+      ready: d => openersOf(d).length > 0,
+      complete: d => openersOf(d).length > 0,
+      check: async (draft) => {
+        const parsed = shape(draft);
+        // Fail-open: this wraps a working answer and must never be able to drop it.
+        try {
+          await enforceSuppliedFacts(parsed, { who, why, whatYouKnow, yourBackground }, {
+            userLanguage,
+            locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          });
+        } catch (err) {
+          console.error('ColdOpenCraft supplied-facts check skipped:', err.message);
+        }
+        const { openers, ...rest } = parsed;
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, rest, { openers: openers.map(o => ({ label: o.label })), openerText: Object.fromEntries(openers.map((o, i) => [i, o.message])) });
+      },
+    });
 
   } catch (error) {
     console.error('ColdOpenCraft error:', error);

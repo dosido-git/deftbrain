@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -140,7 +141,7 @@ const EXAMPLES = [
   },
 ];
 const MicroAdventureMapper = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -197,6 +198,7 @@ const MicroAdventureMapper = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── Inputs ──
   const [location, setLocation] = useState('');
@@ -339,15 +341,20 @@ const MicroAdventureMapper = ({ tool }) => {
 
   const generate = useCallback(async () => {
     if (location.trim().length < 2) return;
-    setError(''); setResults(null); setCheckedItems({});
+    setError(''); setResults(null); setCheckStatus(null); setCheckedItems({});
     try {
       const pastForLocation = getPastAdventureNames(location.trim());
-      const res = await callToolEndpoint('micro-adventure-mapper', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const res = await callToolEndpointProgressive('micro-adventure-mapper', {
         action: 'generate',
         ...getInputPayload(),
         previousAdventures: pastForLocation,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setShowInputs(false); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!res) return; // replaced by a newer run
       setResults(res);
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: location.slice(0, 40) }, ...prev].slice(0, 6));
@@ -356,7 +363,7 @@ const MicroAdventureMapper = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('mam_err_plan'));
     }
-  }, [location, callToolEndpoint, getInputPayload, getPastAdventureNames, saveToJournal, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [location, callToolEndpoint, callToolEndpointProgressive, getInputPayload, getPastAdventureNames, saveToJournal, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   // True once there is an answer on screen, or the visitor has changed
   // anything away from the value the form shipped with.
@@ -373,6 +380,7 @@ const MicroAdventureMapper = ({ tool }) => {
     || accessibility.length > 0;
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setError('');
     setResults(null);
     setCheckedItems({});
@@ -811,6 +819,7 @@ const MicroAdventureMapper = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {/* Edit toggle */}
         <button onClick={() => setShowInputs(!showInputs)}
           className={`flex items-center gap-2 text-xs font-semibold ${c.btnGhost} mb-4`}>

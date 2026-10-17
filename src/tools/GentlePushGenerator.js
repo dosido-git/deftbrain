@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -120,7 +121,7 @@ const EXAMPLES = [
 ];
 
 const GentlePushGenerator = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -149,6 +150,7 @@ const GentlePushGenerator = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [view, setView] = useState('setup'); // setup | pick | active | log | reflection
   const [error, setError] = useState('');
@@ -221,6 +223,7 @@ const GentlePushGenerator = ({ tool }) => {
   const hasInput = !!(domain || comfortZone.trim() || growthArea.trim() || capacity !== 'medium');
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     // Start over means the form too. Without this the button was live on the
     // setup screen and changed nothing a visitor could see.
     setDomain('');
@@ -354,9 +357,17 @@ const GentlePushGenerator = ({ tool }) => {
       return;
     }
     setError('');
-    setPushOptions([]);
+    setPushOptions([]); setCheckStatus(null);
+    // Progressive (2026-10-17): each push shows as it is written; checked after.
+    const show = (d) => {
+      setPushOptions(d.pushes || []);
+      setAcknowledgment(d.acknowledgment || '');
+      setIfYouDont(d.if_you_dont || '');
+      setPatternNote(d.pattern_note || '');
+      setView('pick');
+    };
     try {
-      const data = await callToolEndpoint('gentle-push-generator', {
+      const data = await callToolEndpointProgressive('gentle-push-generator', {
         action: 'generate',
         userLocale,
         userCurrency,
@@ -366,12 +377,12 @@ const GentlePushGenerator = ({ tool }) => {
         growthArea: growthArea.trim(),
         currentCapacity: capacity,
         pushHistory: pushLog.slice(0, 6),
+      }, {
+        onDraft: d => { show(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { show(d); setCheckStatus(checkStatusFor(changed)); },
       });
-      setPushOptions(data.pushes || []);
-      setAcknowledgment(data.acknowledgment || '');
-      setIfYouDont(data.if_you_dont || '');
-      setPatternNote(data.pattern_note || '');
-      setView('pick');
+      if (!data) return; // replaced by a newer run
+      show(data);
     } catch (err) {
       setError(err.message || t('gpg_err_generate'));
     }
@@ -640,6 +651,7 @@ const GentlePushGenerator = ({ tool }) => {
         )}
 
         <h2 className={`text-sm font-bold ${c.text} text-center`}>{t('gpg_pick_your_push')}</h2>
+        <CheckNote status={checkStatus} className={c.textMuted} />
 
         <div className="space-y-4">
           {pushOptions.map((push, i) => (

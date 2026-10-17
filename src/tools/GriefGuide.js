@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -53,7 +54,7 @@ const EXAMPLES = [
 ];
 
 function GriefGuide({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -89,6 +90,7 @@ function GriefGuide({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [mode, setMode]         = useState('myself');
   const [lossType, setLossType] = useState('');
@@ -114,9 +116,10 @@ function GriefGuide({ tool }) {
     setTimeline('');
     setFreeform('');
     setCountry('');
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setError('');
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Rotated per mode — each tab keeps its own counter and pool so Try
   // Example never bounces you to a different tab than the one you're on.
@@ -135,10 +138,11 @@ function GriefGuide({ tool }) {
   const handleGuide = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
 
     try {
-      const parsed = await callToolEndpoint('grief-guide/stream', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const parsed = await callToolEndpointProgressive('grief-guide/stream', {
         mode,
         lossType: lossType || null,
         timeline: timeline || null,
@@ -147,7 +151,11 @@ function GriefGuide({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults({ ...d, _input: { mode, freeform: freeform.trim(), lossType, timeline } }); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults({ ...d, _input: { mode, freeform: freeform.trim(), lossType, timeline } }); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!parsed) return; // replaced by a newer run
       setResults({ ...parsed, _input: { mode, freeform: freeform.trim(), lossType, timeline } });
 
       const lossEntry = LOSS_TYPES.find(l => l.id === lossType);
@@ -158,7 +166,7 @@ function GriefGuide({ tool }) {
     } catch (err) {
       setError(err.message || t('gg_error'));
     }
-  }, [canSubmit, loading, mode, lossType, timeline, freeform, country, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, mode, lossType, timeline, freeform, country, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleRef.current    = handleGuide;
   canSubmitRef.current = canSubmit;
@@ -207,6 +215,7 @@ function GriefGuide({ tool }) {
 
     return (
       <div ref={resultsRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {results?.crisis_support && (
           <div className={`${c.danger} border-2 rounded-xl p-5`}>
             <p className="text-sm font-semibold leading-relaxed">🆘 {results?.crisis_support}</p>

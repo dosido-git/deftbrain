@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { toolTagline } from '../utils/toolTagline';
@@ -472,7 +473,7 @@ function GroundedResult({ mode, results, c, t }) {
 }
 
 const MoneyDiplomat = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -516,6 +517,7 @@ const MoneyDiplomat = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [activeType, setActiveType] = useState(null);
   const [situation, setSituation] = useState('');
@@ -603,7 +605,7 @@ const MoneyDiplomat = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!activeType) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
     const sit = situation.trim();
 
     const payloads = {
@@ -628,7 +630,12 @@ const MoneyDiplomat = ({ tool }) => {
     };
 
     try {
-      const data = await callToolEndpoint(`money-diplomat-${activeType}`, payloads[activeType]);
+      // Progressive (2026-10-17): the answer shows first; checked after.
+      const data = await callToolEndpointProgressive(`money-diplomat-${activeType}`, payloads[activeType], {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // Save to sessionHistory for profile
       const label = sitLabel(activeType);
@@ -721,6 +728,7 @@ const MoneyDiplomat = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null); setSituation(''); setError(''); setNudgeData(null);
     setActiveType(null);
     setTipFields(FIELD_DEFAULTS.tip); setSplitFields(FIELD_DEFAULTS.split);
@@ -828,6 +836,7 @@ const MoneyDiplomat = ({ tool }) => {
     // on, so the post-result half could never pass however many links were there.
     const renderResults = () => (
       <div ref={revealRef} className="scroll-mt-24 space-y-4">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         <div className="flex items-center justify-between">
           <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
             <span>{SITUATIONS.find(s => s.id === activeType)?.icon}</span>

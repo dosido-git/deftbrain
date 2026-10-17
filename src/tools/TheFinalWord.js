@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { ShareBtn } from '../components/ActionButtons';
@@ -137,7 +138,7 @@ function getTimeAgo(timestamp, t) {
 // ════════════════════════════════════════════════════════
 
 const TheFinalWord = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -171,6 +172,7 @@ const TheFinalWord = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Localized display label for a trivia-category id (rename .find param to avoid shadowing t).
   const optCatLabel = (id) => {
@@ -473,7 +475,7 @@ const TheFinalWord = ({ tool }) => {
   const handleSubmit = async (overrides = {}) => {
     const activeMode = overrides.mode ?? mode;
     setError('');
-    setResult(null);
+    setResult(null); setCheckStatus(null);
     setShowChallenge(false);
     setChallengeResult(null);
     setFollowUpResults([]);
@@ -502,7 +504,12 @@ const TheFinalWord = ({ tool }) => {
     }
 
     try {
-      const data = await callToolEndpoint('the-final-word', payload);
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('the-final-word', payload, {
+        onDraft: d => { setResult(d); setResultInputSummary(inputSummary); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResult(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (!data) return; // replaced by a newer run
       setResult(data);
       setResultInputSummary(inputSummary);
       saveToHistory(data, inputSummary);
@@ -814,6 +821,7 @@ const TheFinalWord = ({ tool }) => {
   };
 
   const resetAll = () => {
+    cancelProgressive(); setCheckStatus(null);
     setResult(null); setError(''); setShowChallenge(false); setChallengeResult(null); setChallengeText('');
     setQuestion(''); setClaim(''); setClaimA(''); setClaimB(''); setPersonA(''); setPersonB(''); setDisputeContext('');
     setFollowUpText(''); setFollowUpResults([]);
@@ -1626,6 +1634,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ VERDICT CARDS ═══════ */}
         <div data-copy-results ref={resultsRef} className="scroll-mt-24">
+        {result && <CheckNote status={checkStatus} className={c.textMuted} />}
 
         {/* Quick Question Result */}
         {result?._mode === 'question' && (

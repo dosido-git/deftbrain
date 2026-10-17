@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -384,17 +385,30 @@ a quota; an empty array is correct when nothing else is genuinely useful.
 
 ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // opening, what they're worried about and the one next action show first;
+    // the preparation and words, and the rest, then run at once, handed that.
+    // The consistency check runs after the answer is on screen.
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
-    }, { label: 'nerve-check' });
-    if (!parsed.opening) {
-      return res.status(500).json({ error: 'Could not put together your plan. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'nerve-check', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) }],
+    }, { label: tag });
+    const PLAN = ['opening', 'what_youre_worried_about', 'do_this_next'];
+    return await answer(req, res, {
+      label: 'nerve-check',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1000, 'nerve-check'), [
+        ['what_you_can_prepare', 'words_if_you_need_them'],
+        ['if_the_moment_gets_awkward', 'settle_yourself', 'remember'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1800, `nerve-check-${i + 2}`)),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.opening),
+      complete: d => Boolean(d.opening),
+      check: async (parsed) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'nerve-check', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('[NerveCheck] Error:', error);

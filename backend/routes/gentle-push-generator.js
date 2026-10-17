@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -291,7 +292,7 @@ router.post('/gentle-push-generator', rateLimit(DEFAULT_LIMITS), async (req, res
     if (!action) return res.status(400).json({ error: 'action is required' });
 
     switch (action) {
-      case 'generate': return await handleGenerate(payload, userLanguage, localeContext, res);
+      case 'generate': return await handleGenerate(payload, userLanguage, localeContext, res, req);
       case 'regenerate': return await handleRegenerate(payload, userLanguage, localeContext, res);
       case 'reflect': return await handleReflect(payload, userLanguage, localeContext, res);
       default: return res.status(400).json({ error: `Unknown action: ${action}` });
@@ -302,7 +303,7 @@ router.post('/gentle-push-generator', rateLimit(DEFAULT_LIMITS), async (req, res
   }
 });
 
-async function handleGenerate({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, localeContext, res) {
+async function handleGenerate({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, localeContext, res, req) {
   const startedAt = Date.now();
   if (!growthArea?.trim()) return res.status(400).json({ error: 'growthArea is required' });
 
@@ -385,28 +386,60 @@ If recent history contains a very clear calibration pattern, pattern_note may be
 ${NO_QUOTE_RULE}
 Return only the JSON object.`;
 
-  const parsed = await callClaudeWithRetry({
+  // Progressive (2026-10-17, lib/progressive.js), plan first (T11): one small
+  // pass writes the acknowledgment and picks three different routes (route id
+  // and label only, so they stay different); each push is then written in
+  // full by its own pass, at once. A push shows once it is complete; the
+  // guard runs after the answer is on screen.
+  const system = withLanguage('Follow the user-facing language requested for this DeftBrain tool. Keep JSON keys and stable programmatic values unchanged.', userLanguage)
+    + withLocaleContext(localeContext.userLocale, localeContext.userCurrency, localeContext.userRegion)
+    + ' ' + NO_QUOTE_RULE;
+  const call = (content, maxTokens, tag) => callClaudeWithRetry({
     model: MODELS.SMART,
-    max_tokens: 2600,
-    system: withLanguage('Follow the user-facing language requested for this DeftBrain tool. Keep JSON keys and stable programmatic values unchanged.', userLanguage)
-      + withLocaleContext(localeContext.userLocale, localeContext.userCurrency, localeContext.userRegion)
-      + ' ' + NO_QUOTE_RULE,
-    messages: [{ role: 'user', content: prompt }],
-  }, { label: 'gpg-generate' });
-
-  const pushes = Array.isArray(parsed?.pushes) ? parsed.pushes.filter(isCompletePush).slice(0, 3) : [];
-  // Two usable options beat an error page. The safety and calibration rules
-  // genuinely constrain what can be offered — for a sedentary person at high
-  // capacity, or a money goal where almost every obvious push is banned, the
-  // model can legitimately land on two good ones and a third it should not
-  // make. Failing the whole request in that case punishes the visitor for the
-  // rules working. Below two there is no real choice to present, so that still
-  // fails and asks them to retry.
-  if (pushes.length < 2) return res.status(502).json({ error: 'The generated pushes were incomplete. Please try again.' });
-  if (pushes.length < 3) console.log(`[gentle-push-generator] returned ${pushes.length} complete pushes, not 3 — served rather than failed`);
-  const out = { ...parsed, pushes };
-  await guardPushes(out, { domain, comfortZone, growthArea, currentCapacity }, startedAt, pushes);
-  res.json(out);
+    max_tokens: maxTokens,
+    system,
+    messages: [{ role: 'user', content }],
+  }, { label: tag });
+  const planPrompt = prompt.replace(/"pushes": \[[\s\S]*?\n {2}\]/, '"pushes": [ { "approach": "short stable snake_case id describing the route", "label": "2-4 word human label for this approach" } ]')
+    + '\nTHIS PASS chooses the routes only: exactly three pushes, three genuinely different approaches, each with ONLY approach and label. Other passes write each push in full afterwards.';
+  const plan = call(planPrompt, 700, 'gpg-generate');
+  plan.catch(() => {}); // the plan part reports its own failure
+  const pushPart = (i) => ({
+    run: async () => {
+      const p = await plan;
+      const route = (p?.pushes || [])[i];
+      if (!route) return null;
+      return call(onlyKeys(prompt, ['pushes']) + planNote(p, ['acknowledgment', 'pushes'])
+        + `\nTHIS PASS writes pushes with exactly ONE item — the "${route.label}" route (approach ${route.approach}) — in full, keeping that approach and label.`, 900, `gpg-generate-${i + 2}`);
+    },
+    apply: (d, out) => { const one = Array.isArray(out?.pushes) ? out.pushes[0] : null; if (one) d.pushDetail = { ...d.pushDetail, [i]: one }; },
+  });
+  const completeOf = d => (d.pushes || []).map((r, i) => (d.pushDetail?.[i] ? { ...d.pushDetail[i], approach: r.approach, label: r.label } : null)).filter(isCompletePush).slice(0, 3);
+  const shape = (d) => { const { pushDetail, ...rest } = structuredClone(d); return { ...rest, pushes: completeOf(d) }; };
+  return await answer(req, res, {
+    label: 'gentle-push-generator',
+    parts: [
+      { required: true, run: () => plan, apply: (d, out) => { ['acknowledgment', 'if_you_dont', 'pattern_note', 'pushes'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+      pushPart(0), pushPart(1), pushPart(2),
+    ],
+    finish: shape,
+    ready: d => completeOf(d).length > 0,
+    // Two usable options beat an error page. The safety and calibration rules
+    // genuinely constrain what can be offered — the model can legitimately land
+    // on two good ones and a third it should not make. Below two there is no
+    // real choice to present, so that still fails and asks them to retry.
+    complete: d => {
+      const n = completeOf(d).length;
+      if (n === 2) console.log('[gentle-push-generator] returned 2 complete pushes, not 3 — served rather than failed');
+      return n >= 2;
+    },
+    check: async (draft) => {
+      const out = shape(draft);
+      await guardPushes(out, { domain, comfortZone, growthArea, currentCapacity }, startedAt, out.pushes);
+      Object.keys(draft).forEach(k => delete draft[k]);
+      Object.assign(draft, { ...out, pushes: out.pushes.map(p => ({ approach: p.approach, label: p.label })), pushDetail: Object.fromEntries(out.pushes.map((p, i) => [i, p])) });
+    },
+  });
 }
 
 async function handleRegenerate({ previousPush, feedback, domain, comfortZone, growthArea, currentCapacity }, userLanguage, localeContext, res) {

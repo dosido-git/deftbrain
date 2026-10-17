@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -568,22 +569,35 @@ ${RESPONSE_SCHEMA}`;
 
       // T1 (audit/DEFECT-TYPES.md): place facts from a cached web search, run alongside the itinerary.
       const research = researchFacts({ topic: ['micro-adventure', location], label: 'micro-adventure-mapper', brief: `Facts about the best-known places in and around ${location} that a short local outing might include: named landmarks, parks, trails, streets and neighborhoods, where they sit relative to each other (which end, which side, start or finish of a route), how to get between them, and opening hours.` });
-      const data = await callClaudeWithRetry({
+      // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+      // adventure and its stops show first; the in-between notes, what to
+      // bring, and the backup and extension then run at once, handed those
+      // stops. World-facts and consistency checks run after the answer shows.
+      const system = withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+      const call = (content, maxTokens, tag) => callClaudeWithRetry({
         model: MODELS.FAST,
-        max_tokens: 4000,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: prompt }]
-      }, { label: 'micro-adventure-mapper-generate' });
-
-      if (!data.adventure) {
-        return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
-      }
-      // World-facts and consistency checks run side by side (lib/bothChecks.js allChecks).
-      await allChecks(data, [
-        d => checkWorldFacts(d, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage }),
-        d => checkConsistency(d, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage }),
-      ], { label: 'micro-adventure-mapper' });
-      return res.json(validateResult(data));
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: 'user', content }],
+      }, { label: tag });
+      const PLAN = ['adventure', 'stops'];
+      return await answer(req, res, {
+        label: 'micro-adventure-mapper',
+        parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 2600, 'micro-adventure-mapper-generate'), [
+          ['between_stops', 'what_to_bring'],
+          ['backup_plan', 'keep_going'],
+        ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 1400, `micro-adventure-mapper-generate-${i + 2}`)),
+        finish: d => validateResult(structuredClone(d)),
+        ready: d => Boolean(d.adventure),
+        complete: d => Boolean(d.adventure),
+        check: async (data) => {
+          // World-facts and consistency checks run side by side (lib/bothChecks.js allChecks).
+          await allChecks(data, [
+            d => checkWorldFacts(d, research, { label: 'micro-adventure-mapper', fields: stringFields(data).filter(([, v]) => v.length > 15), subject: location, userLanguage: req.body?.userLanguage }),
+            d => checkConsistency(d, { label: 'micro-adventure-mapper', userLanguage: req.body?.userLanguage }),
+          ], { label: 'micro-adventure-mapper' });
+        },
+      });
     }
 
     // ─── REGENERATE: Different adventure, same inputs ───

@@ -1,6 +1,7 @@
 // grief-guide.js — GriefGuide rewrite
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -225,40 +226,57 @@ FINAL CHECK BEFORE RETURNING:
 - If acute safety risk is present, did crisis_support come first in substance and contain no invented contact information?`;
 
   try {
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): any
+    // crisis support, the reflection and the one next step show first; the
+    // understanding and suggestions, and the words and cautions, then run at
+    // once, handed that reading. The guard runs after the answer is on screen.
+    const system = withLanguage(personality, userLanguage || userLocale) + withLocaleContext(userLocale, userCurrency, userRegion) + ' Never place a double-quote character inside a JSON string value; use single quotes if quotation is needed.';
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2600,
-      system: withLanguage(personality, userLanguage || userLocale) + withLocaleContext(userLocale, userCurrency, userRegion) + ' Never place a double-quote character inside a JSON string value; use single quotes if quotation is needed.',
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'grief-guide' });
-
-    if (!parsed?.reflection || !Array.isArray(parsed?.suggestions) || !parsed?.next_step) {
-      return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
-    }
-
-    const out = {
-      crisis_support: parsed.crisis_support || null,
-      reflection: parsed.reflection,
-      understanding: Array.isArray(parsed.understanding) ? parsed.understanding.slice(0, 2) : [],
-      suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 3) : [],
-      words: Array.isArray(parsed.words) ? parsed.words.slice(0, 3) : [],
-      avoid: Array.isArray(parsed.avoid) ? parsed.avoid.slice(0, 2) : [],
-      next_step: parsed.next_step,
-      more_support: {
-        when: parsed.more_support?.when || '',
-        options: Array.isArray(parsed.more_support?.options) ? parsed.more_support.options.slice(0, 3) : [],
-      },
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['crisis_support', 'reflection', 'next_step'];
+    const shape = (parsed) => {
+      const out = {
+        crisis_support: parsed.crisis_support || null,
+        reflection: parsed.reflection,
+        understanding: Array.isArray(parsed.understanding) ? parsed.understanding.slice(0, 2) : [],
+        suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 3) : [],
+        words: Array.isArray(parsed.words) ? parsed.words.slice(0, 3) : [],
+        avoid: Array.isArray(parsed.avoid) ? parsed.avoid.slice(0, 2) : [],
+        next_step: parsed.next_step,
+        more_support: {
+          when: parsed.more_support?.when || '',
+          options: Array.isArray(parsed.more_support?.options) ? parsed.more_support.options.slice(0, 3) : [],
+        },
+      };
+      // Outside the US, 988 is not a crisis line: drop any sentence naming it.
+      if (!isUS) {
+        const no988 = t => (typeof t === 'string' ? t.split(/(?<=[.!?])\s+/).filter(x => !/\b988\b/.test(x)).join(' ') : t);
+        if (out.crisis_support) out.crisis_support = no988(out.crisis_support);
+        out.more_support.when = no988(out.more_support.when);
+        out.more_support.options = out.more_support.options.map(no988).filter(o => typeof o !== 'string' || o.trim());
+      }
+      return out;
     };
-
-    // Outside the US, 988 is not a crisis line: drop any sentence naming it.
-    if (!isUS) {
-      const no988 = t => (typeof t === 'string' ? t.split(/(?<=[.!?])\s+/).filter(x => !/\b988\b/.test(x)).join(' ') : t);
-      if (out.crisis_support) out.crisis_support = no988(out.crisis_support);
-      out.more_support.when = no988(out.more_support.when);
-      out.more_support.options = out.more_support.options.map(no988).filter(o => typeof o !== 'string' || o.trim());
-    }
-    await guardGriefGuide(out, req.body, startedAt);
-    res.json(out);
+    return await answer(req, res, {
+      label: 'grief-guide',
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 900, 'grief-guide'), [
+        ['understanding', 'suggestions'],
+        ['words', 'avoid', 'more_support'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 1400, `grief-guide-${i + 2}`)),
+      finish: d => shape(structuredClone(d)),
+      ready: d => Boolean(d.reflection && d.next_step),
+      complete: d => Boolean(d.reflection && d.next_step),
+      check: async (draft) => {
+        const out = shape(draft);
+        await guardGriefGuide(out, req.body, startedAt);
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, out);
+      },
+    });
   } catch (err) {
     if (!res.headersSent) res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }

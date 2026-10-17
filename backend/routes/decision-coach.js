@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -226,14 +227,36 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
-    const parsed = enforceOutputState(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' }));
-    await withNumberCheck(parsed, {
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // call and any one fact that could change it show first; the steps and
+    // the closing line follow, handed the call — and only when there is no
+    // open question (STATE B gives no steps until it is answered). The number
+    // check and guard run after the answer is on screen.
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({ model: MODELS.SMART, max_tokens: maxTokens, messages: [{ role: 'user', content }] }, { label: tag });
+    const PLAN = ['decision_made_for_you', 'one_thing_that_could_change_this'];
+    return await answer(req, res, {
       label: 'decision-coach',
-      context: visitorContext(req.body) + (pay ? '\n\n' + pay.context : ''),
-      extraRules: 'A sentence that says a gap narrows, widens, or barely changes is a numeric claim: check its direction and size against PAY FACTS when they are given.',
-      userLanguage,
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1400, 'DecisionCoach1'), [
+        ['execution_instructions', 'no_second_guessing'],
+      ], (keys, i, plan) => (plan?.one_thing_that_could_change_this
+        ? { execution_instructions: [], no_second_guessing: '' }
+        : call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 1000, 'DecisionCoach1-2'))),
+      finish: d => enforceOutputState(structuredClone(d)),
+      ready: d => Boolean(d.decision_made_for_you?.choice),
+      complete: d => Boolean(d.decision_made_for_you?.choice),
+      check: async (draft) => {
+        const parsed = enforceOutputState(draft);
+        await withNumberCheck(parsed, {
+          label: 'decision-coach',
+          context: visitorContext(req.body) + (pay ? '\n\n' + pay.context : ''),
+          extraRules: 'A sentence that says a gap narrows, widens, or barely changes is a numeric claim: check its direction and size against PAY FACTS when they are given.',
+          userLanguage,
+        });
+        const guarded = await guardResult(parsed, req.body, 'DecisionCoach1');
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, guarded);
+      },
     });
-    res.json(await guardResult(parsed, req.body, 'DecisionCoach1'));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 

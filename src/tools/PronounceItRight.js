@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -83,7 +84,7 @@ const EXAMPLES = [
 // MAIN
 // ════════════════════════════════════════════════════════════
 const PronounceItRight = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -131,6 +132,7 @@ const PronounceItRight = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const resultsRef = useRef(null);
 
@@ -160,19 +162,21 @@ const PronounceItRight = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('pronounce-it-right-history', []);
   const [results, setResults] = usePersistentState('pronounce-it-right-results-v2', null);
 
+  // Once per answer, not once per progressive draft.
+  const hasResults = Boolean(results || batchResults);
   useEffect(() => {
-    if (!(results || batchResults) || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, batchResults]);
+  }, [hasResults]);
 
   const toggleSection = useCallback((key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] })), []);
 
   const activeCat = CATEGORIES.find(cat => cat.value === category) || CATEGORIES[7];
 
   const submit = useCallback(async () => {
-    setError(''); setResults(null); setBatchResults(null);
+    setError(''); setResults(null); setCheckStatus(null); setBatchResults(null);
     try {
       if (batchMode) {
         const words = batchWords.split(/[,\n]/).map(w => w.trim()).filter(Boolean);
@@ -185,15 +189,21 @@ const PronounceItRight = ({ tool }) => {
         });
       } else {
         if (!word.trim()) { setError(t('pir_err_enter_word')); return; }
-        const data = await callToolEndpoint('pronounce-it-right', { word: word.trim(), category, context: context.trim() || null, nativeLang, userLocale, userCurrency, userRegion });
+        // Progressive (2026-10-17): the pronunciation shows first; checked after.
+        const data = await callToolEndpointProgressive('pronounce-it-right', { word: word.trim(), category, context: context.trim() || null, nativeLang, userLocale, userCurrency, userRegion }, {
+          onDraft: d => { setResults(d); setCheckStatus('checking'); },
+          onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+        });
+        if (!data) return; // replaced by a newer run
         setResults(data);
         const entry = { id: 'sir_' + Date.now(), date: new Date().toISOString(), word: word.trim(), category, emoji: activeCat.emoji, phonetic: data?.pronunciation?.phonetic, preview: `${activeCat.emoji} ${word.trim()}` };
         setSessionHistory(prev => [entry, ...prev].slice(0, 6));
       }
     } catch (err) { setError(err.message || t('pir_err_failed')); }
-  }, [word, category, context, nativeLang, batchMode, batchWords, callToolEndpoint, setSessionHistory, activeCat.emoji, userLocale, userCurrency, userRegion, t]);
+  }, [word, category, context, nativeLang, batchMode, batchWords, callToolEndpoint, callToolEndpointProgressive, setSessionHistory, activeCat.emoji, userLocale, userCurrency, userRegion, t]);
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setWord(''); setContext(''); setResults(null); setBatchResults(null); setError('');
     setBatchWords(''); setExpandedSections({}); setAudioUrl(null);
   }, []);
@@ -415,6 +425,7 @@ const PronounceItRight = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {/* Hero pronunciation, or an honest "not enough to go on" state */}
         {hasHero ? (
           <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>

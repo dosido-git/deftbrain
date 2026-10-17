@@ -247,6 +247,17 @@ export const useClaudeAPI = () => {
         if (err.code === 'unclear_input') err.message = t('err_unclear_input');
         throw err;
       }
+      // A route that has not been made progressive answers with one JSON body
+      // (Money Diplomat's endpoints share one page call, and only some stream).
+      // Take it as the finished answer rather than finding no frames in it.
+      if (!String(response.headers.get('Content-Type') || '').includes('text/event-stream')) {
+        latest = await response.json();
+        if (latest?.error) throw new Error(latest.error);
+        onDraft?.(latest);
+        signalBusy('clear');
+        track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
+        return latest; // finally ends the wait and the loading state
+      }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';

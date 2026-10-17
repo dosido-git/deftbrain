@@ -1,6 +1,7 @@
 // quote-check.js
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -261,45 +262,35 @@ Omit-by-emptying rather than padding: document_discrepancies, specific_concerns,
 
 CODES VS SENTENCES: the only ALL_CAPS values in this schema are the fields whose schema text lists options separated by "|" (verdict, itemization_level, scope_comparable, second_opinion.assessment). Every other string — including repair_vs_replace.assessment and second_quote.assessment — is a plain-language sentence written in the visitor's language, never a code such as NOT_YET_DETERMINABLE. If a repair-vs-replace comparison is not possible yet, say so in an ordinary sentence. ${NO_QUOTE_RULE}`;
 
-    const content = fileBlock
-      ? [fileBlock, { type: 'text', text: userPrompt }]
-      : userPrompt;
-
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // verdict and its explanation (and any safety note) show first; the quote
+    // summary and arithmetic, the concerns and what to say, and the
+    // comparisons then run at once, handed that verdict. The guard and the
+    // number check run after the answer is on screen.
+    const system = withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (text, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content }],
-    }, { label: 'quote-check' });
-
-    if (!VALID_VERDICTS.includes(parsed?.verdict)) {
-      return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
-    }
-
-    await guardQuoteCheck(parsed, {
-      typeName, itemDescription: itemDescription.trim(), whatWentWrong: whatWentWrong.trim(),
-      whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown,
-      itemAge, hasFile: !!fileBlock, userLanguage, userLocale, userCurrency, userRegion,
-    });
-
-    // A sentence field that came back as a code (e.g. "NOT_YET_DETERMINABLE",
-    // seen live 2026-09-27) would render raw. Blank it; a repair-vs-replace
-    // block with nothing left to say is dropped rather than shown empty.
-    const isCode = v => typeof v === 'string' && /^[A-Z0-9_ ]+$/.test(v.trim());
-    for (const key of ['repair_vs_replace', 'second_quote']) {
-      const block = parsed[key];
-      if (block && (typeof block.assessment !== 'string' || isCode(block.assessment))) block.assessment = '';
-    }
-    const rvr = parsed.repair_vs_replace;
-    if (rvr && rvr.applies && !rvr.assessment && !(Array.isArray(rvr.missing_information) && rvr.missing_information.length)) {
-      rvr.applies = false;
-    }
-
-    // The model does its own arithmetic_check on the quote; recompute it and
-    // every other figure before the visitor relies on it.
-    await withNumberCheck(parsed, { label: 'quote-check', context: visitorContext(req.body), userLanguage });
-
-    res.json({
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: fileBlock ? [fileBlock, { type: 'text', text }] : text }],
+    }, { label: tag });
+    const PLAN = ['understanding', 'verdict', 'verdict_explanation', 'safety_note'];
+    const tidy = (parsed) => {
+      // A sentence field that came back as a code (e.g. "NOT_YET_DETERMINABLE",
+      // seen live 2026-09-27) would render raw. Blank it; a repair-vs-replace
+      // block with nothing left to say is dropped rather than shown empty.
+      const isCode = v => typeof v === 'string' && /^[A-Z0-9_ ]+$/.test(v.trim());
+      for (const key of ['repair_vs_replace', 'second_quote']) {
+        const block = parsed[key];
+        if (block && (typeof block.assessment !== 'string' || isCode(block.assessment))) block.assessment = '';
+      }
+      const rvr = parsed.repair_vs_replace;
+      if (rvr && rvr.applies && !rvr.assessment && !(Array.isArray(rvr.missing_information) && rvr.missing_information.length)) {
+        rvr.applies = false;
+      }
+      return parsed;
+    };
+    const shape = (parsed) => ({
       understanding:          parsed.understanding ?? '',
       verdict:                parsed.verdict,
       verdict_explanation:    parsed.verdict_explanation ?? '',
@@ -314,6 +305,28 @@ CODES VS SENTENCES: the only ALL_CAPS values in this schema are the fields whose
       what_to_say:            parsed.what_to_say ?? '',
       second_opinion:         parsed.second_opinion ?? null,
       safety_note:            parsed.safety_note ?? '',
+    });
+    return await answer(req, res, {
+      label: 'quote-check',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1000, 'quote-check'), [
+        ['quote_summary', 'document_discrepancies', 'arithmetic_check'],
+        ['specific_concerns', 'unknowns_that_matter', 'questions_to_ask', 'what_to_say', 'second_opinion'],
+        ['second_quote', 'repair_vs_replace'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1800, `quote-check-${i + 2}`)),
+      finish: d => shape(tidy(structuredClone(d))),
+      ready: d => VALID_VERDICTS.includes(d.verdict),
+      complete: d => VALID_VERDICTS.includes(d.verdict),
+      check: async (parsed) => {
+        await guardQuoteCheck(parsed, {
+          typeName, itemDescription: itemDescription.trim(), whatWentWrong: whatWentWrong.trim(),
+          whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown,
+          itemAge, hasFile: !!fileBlock, userLanguage, userLocale, userCurrency, userRegion,
+        });
+        tidy(parsed);
+        // The model does its own arithmetic_check on the quote; recompute it and
+        // every other figure before the visitor relies on it.
+        await withNumberCheck(parsed, { label: 'quote-check', context: visitorContext(req.body), userLanguage });
+      },
     });
   } catch (error) {
     console.error('quote-check error:', error);

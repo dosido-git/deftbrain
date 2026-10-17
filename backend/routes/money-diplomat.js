@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -454,23 +455,28 @@ ARRAY BOUNDS: why 2-4, check_first at most 4.
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide what to tip. You do the bill arithmetic exactly from what they supply, and you are honest that local tipping expectations vary and may need checking. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatTip' });
-
-    if (!parsed.practical_answer) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatTip' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.practical_answer),
+      complete: d => Boolean(d.practical_answer),
+      check: async (parsed) => {
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-tip', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatTip] Error:', error);
@@ -778,22 +784,27 @@ Return ONLY valid JSON:
   "common_trap": "The most common roommate money mistake for this type of arrangement — one sentence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou allocate shared household costs from the figures supplied. Where several allocations are defensible you show them and name the assumption behind each. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatRoommate' });
-
-    if (!parsed.fair_split) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatRoommate' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.fair_split),
+      complete: d => Boolean(d.fair_split),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-roommate', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatRoommate] Error:', error);
@@ -955,22 +966,27 @@ Return ONLY valid JSON:
   "pro_tip": "One piece of dining diplomacy wisdom specific to this situation — one sentence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle the money side of a group meal. Specific words to say, not vague advice. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatDining' });
-
-    if (!parsed.pre_game) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatDining' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.pre_game),
+      complete: d => Boolean(d.pre_game),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-dining', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatDining] Error:', error);
@@ -1020,22 +1036,27 @@ Return ONLY valid JSON:
   "next_event_tip": "How to set up money tracking from the START next time — one sentence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou settle group expenses from the figures supplied, minimising transactions and handling dropouts. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatGroup' });
-
-    if (!parsed.settlement) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatGroup' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.settlement),
+      complete: d => Boolean(d.settlement),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-group', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatGroup] Error:', error);
@@ -1150,22 +1171,27 @@ ARRAY BOUNDS: why 2-4, what_is_known at most 5, what_is_not_known at most 4, bef
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide whether lending is prudent given what they know. You never predict repayment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatLend' });
-
-    if (!parsed.recommendation) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatLend' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(pinEnums(structuredClone(d), ['recommendation'])),
+      ready: d => Boolean(d.recommendation),
+      complete: d => Boolean(d.recommendation),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-lend', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(pinEnums(parsed, ['recommendation'])));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatLend] Error:', error);
@@ -1316,22 +1342,27 @@ ARRAY BOUNDS: what_you_have_described at most 4, what_not_to_assume at most 4, q
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help a traveller prepare for money situations abroad. You do not know current local norms, so you name what to check rather than asserting it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatTravel' });
-
-    if (!parsed.bridge) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatTravel' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.bridge),
+      complete: d => Boolean(d.bridge),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-travel', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatTravel] Error:', error);
@@ -1451,22 +1482,27 @@ Return ONLY valid JSON:
   "alternatives": "Is there a better way to structure this? — e.g., 'At 18/month split 4 ways, you're each paying 4.50. Individual plans are 7. The savings are real but so is the drama. Worth it?' — one sentence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou split a shared subscription from the figures supplied, including the work of managing it if they mentioned it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatSubs' });
-
-    if (!parsed.fair_split) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatSubs' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.fair_split),
+      complete: d => Boolean(d.fair_split),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-subs', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatSubs] Error:', error);
@@ -1661,22 +1697,27 @@ ARRAY BOUNDS: what_you_have_to_work_with at most 5, what_you_still_need_to_know 
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone prepare for a compensation conversation. You are not a salary-data source and you never invent a number. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatSalary' });
-
-    if (!parsed.ask) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatSalary' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.ask),
+      complete: d => Boolean(d.ask),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-salary', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatSalary] Error:', error);
@@ -1724,22 +1765,27 @@ ARRAY BOUNDS: what_the_numbers_show at most 4, what_is_missing at most 4, questi
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou give an honest read on affordability from the numbers supplied, and say plainly what was not supplied. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatAfford' });
-
-    if (!parsed.gut_check) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatAfford' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(pinEnums(structuredClone(d), ['gut_check'])),
+      ready: d => Boolean(d.gut_check),
+      complete: d => Boolean(d.gut_check),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-afford', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(pinEnums(parsed, ['gut_check'])));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatAfford] Error:', error);
@@ -1790,22 +1836,27 @@ ARRAY BOUNDS: principles_in_tension 2-4, facts_that_matter at most 5, needs_prof
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the answer shows as soon
+    // as it is written; the number and consistency checks run after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: [{ required: true, run: () => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone think through an inheritance question practically, and name what needs professional confirmation. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatInheritance' });
-
-    if (!parsed.arrangement_considered) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
+    }, { label: 'MoneyDiplomatInheritance' }), apply: (d, out) => Object.assign(d, out) }],
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.arrangement_considered),
+      complete: d => Boolean(d.arrangement_considered),
+      check: async (parsed) => {
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
       d => withNumberCheck(d, { label: 'money-diplomat-inheritance', context: visitorContext(req.body), userLanguage }),
       d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
       { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatInheritance] Error:', error);

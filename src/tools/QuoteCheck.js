@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -29,7 +30,7 @@ const EXAMPLES = [
 ];
 
 function QuoteCheck({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -78,6 +79,7 @@ function QuoteCheck({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [repairType, setRepairType]           = useState('appliance');
   const [itemDescription, setItemDescription] = useState('');
@@ -102,6 +104,7 @@ function QuoteCheck({ tool }) {
   const canSubmit = itemDescription.trim().length > 0 && whatWentWrong.trim().length > 0 && quotedPrice !== '' && !isNaN(Number(quotedPrice));
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setError('');
     setRepairType('appliance');
@@ -190,7 +193,7 @@ function QuoteCheck({ tool }) {
   const handleCheck = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
 
     const inputSnapshot = {
       repairType, itemDescription: itemDescription.trim(), whatWentWrong: whatWentWrong.trim(),
@@ -200,14 +203,19 @@ function QuoteCheck({ tool }) {
     };
 
     try {
-      const parsed = await callToolEndpoint('quote-check', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const parsed = await callToolEndpointProgressive('quote-check', {
         ...inputSnapshot,
         secondQuotePrice: inputSnapshot.secondQuotePrice ?? undefined,
         quoteFileBase64: fileBase64 || undefined,
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults({ ...d, repairType, _input: inputSnapshot }); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults({ ...d, repairType, _input: inputSnapshot }); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!parsed) return; // replaced by a newer run
       const withRecap = { ...parsed, repairType, _input: inputSnapshot };
       setResults(withRecap);
       // PF-25 exception: 80 is an item-description preview length, not a history cap.
@@ -222,7 +230,7 @@ function QuoteCheck({ tool }) {
     } catch (err) {
       setError(err.message || t('qc_error'));
     }
-  }, [canSubmit, loading, repairType, itemDescription, whatWentWrong, whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown, itemAge, fileBase64, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, repairType, itemDescription, whatWentWrong, whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown, itemAge, fileBase64, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleCheckRef.current = handleCheck;
   canSubmitRef.current   = canSubmit;
@@ -518,6 +526,7 @@ function QuoteCheck({ tool }) {
     const rvr = results?.repair_vs_replace;
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
 
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {results?._input && (

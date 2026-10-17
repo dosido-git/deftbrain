@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -42,7 +43,7 @@ const sitTypeMeta = (value) => SIT_TYPES.find(s => s.value === value);
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const NerveCheck = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -78,6 +79,7 @@ const NerveCheck = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── Refs (always-fresh pattern for the keyboard shortcut) ──
   const resultsRef = useRef(null);
@@ -154,9 +156,10 @@ const NerveCheck = ({ tool }) => {
   const runMain = useCallback(async () => {
     if (!situation.trim()) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('nerve-check', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('nerve-check', {
         situation: situation.trim(),
         situationType: situationType || undefined,
         readinessLevel,
@@ -169,7 +172,11 @@ const NerveCheck = ({ tool }) => {
           const match = sessionHistory.find(h => h.situationType === situationType && h.quote);
           return match ? `Before a past ${sitTypeMeta(match.situationType)?.value || 'similar'} situation, readiness was rated ${match.readinessBefore}/10. Afterward: ${match.quote}` : undefined;
         })(),
+      }, {
+        onDraft: d => { setResults(d); setView('results'); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -191,7 +198,7 @@ const NerveCheck = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('nck_err_analyze'));
     }
-  }, [situation, situationType, readinessLevel, specificFears, timeUntil, sessionHistory, callToolEndpoint, setResults, setSessionHistory, t]);
+  }, [situation, situationType, readinessLevel, specificFears, timeUntil, sessionHistory, callToolEndpoint, callToolEndpointProgressive, setResults, setSessionHistory, t]);
 
   // ── Help Me Now ──
   const runLive = useCallback(async () => {
@@ -286,6 +293,7 @@ const NerveCheck = ({ tool }) => {
   }, [setSessionHistory]);
 
   const resetAll = () => {
+    cancelProgressive(); setCheckStatus(null);
     setSituation(''); setSituationType(''); setReadinessLevel(4); setSpecificFears(''); setTimeUntil('today');
     setResults(null); setError('');
     setLiveResults(null); setLiveError('');
@@ -582,6 +590,7 @@ const NerveCheck = ({ tool }) => {
         {/* ── RESULTS VIEW (main plan) ── */}
         {view === 'results' && results && (
           <div ref={resultsRef} className="scroll-mt-24 space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuted} />
             <h2 className={`text-lg font-black ${c.text}`}>💪 {t('nck_heres_plan')}</h2>
             {renderRecap()}
             {results?.opening && <p className={`text-sm ${c.textSecondary}`}>{results?.opening}</p>}
