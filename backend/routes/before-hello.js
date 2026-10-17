@@ -185,8 +185,8 @@ Before returning the JSON, verify:
 5. Is there a clear stop condition if contact is unwelcome?
 If any answer reveals a problem, revise before returning.`;
 
-    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): where
-    // they stand and whether they are ready show first; building the
+    // Progressive (2026-10-16, lib/progressive.js), plan first (T11): whether
+    // they are ready shows first (small: ~5s); where they stand, building the
     // position, the overlap, and the first contact then run at once, handed
     // that status so none of them argues for a different one.
     const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — use single quotes or brackets inside values instead.';
@@ -196,16 +196,18 @@ If any answer reveals a problem, revise before returning.`;
       system,
       messages: [{ role: 'user', content }],
     }, { label: tag });
-    const PLAN = ['starting_position', 'ready_to_say_hello'];
+    const PLAN = ['ready_to_say_hello'];
     return await answer(req, res, {
       label: 'gravity-well',
-      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1400, 'gravity-well'), [
-        ['strengthen_your_position', 'genuine_overlap'],
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 800, 'gravity-well'), [
+        ['starting_position'],
+        ['strengthen_your_position'],
+        ['genuine_overlap'],
         ['first_contact', 'do_today'],
-      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1600, `gravity-well-${i + 2}`)),
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1400, `gravity-well-${i + 2}`)),
       finish: d => structuredClone(d),
-      ready: d => Boolean(d.starting_position),
-      complete: d => Boolean(d.starting_position),
+      ready: d => Boolean(d.ready_to_say_hello),
+      complete: d => Boolean(d.ready_to_say_hello && d.starting_position),
       // The prompt's whole thesis is: no invented facts about the other person,
       // and no action whose real purpose is being noticed. A prompt rule nothing
       // checks is a prompt rule that drifts, so check the fields a person acts

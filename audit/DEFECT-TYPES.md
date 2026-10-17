@@ -172,6 +172,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | AnalogyEngine — "nothing capable of causing disease" | **fixed with shared fix** |
 | BreakMyPlan — opens with an imagined failure story | **fixed** (owner decision 2026-10-09: story no longer shown; results open with the assumption to test first) |
 | DecisionCoach — page promise "One answer. Not options." vs charter | **fixed** (owner decision 2026-10-09: "A clear recommendation, and what would change it", 13 languages) |
+| TicketTackler — the reverse: under-reach. The visitor's own account (sign hours, park time) read as "unknown", so the verdict hedged to NOT_ENOUGH_INFORMATION_YET (2026-10-16 blind comparison) | **fixed** (rule check gains `met_per_account` / `yes_per_account`: the account is evidence, stated conditionally, never a reason to withhold the verdict) |
 
 ---
 

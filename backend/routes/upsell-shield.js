@@ -42,30 +42,31 @@ Favor short, usable language over negotiation theater. The user should leave fee
 
 Never place a double-quote (") character inside any JSON string value — write scripts and questions plainly with no inner quote marks, or it breaks the JSON.`;
 
-    const userPrompt = `SITUATION: ${situation}
+    // The numbered instructions, one per answer section, so each pass reads
+    // only its own — told about all six, the first pass wrote all six.
+    const SECTIONS = {
+      your_plan: `1. YOUR PLAN
+In 2-4 bullets, restate only the priorities and limits the user actually supplied. Clearly distinguish anything that remains undecided.`,
+      watch_for: `2. WATCH FOR
+Give up to 4 pressure or decision moments that are plausibly relevant to this type of interaction. For each: what might happen (described as a possibility, not a prediction), why it can be difficult (the practical decision problem, in plain language — avoid pop-psychology claims unless necessary), and the user's response (a short sentence or action that protects their stated goal without inventing facts or bluffing).`,
+      questions_worth_asking: `3. QUESTIONS WORTH ASKING
+Give up to 4 questions that help the user clarify total cost, obligations, alternatives, cancellation terms, included/excluded items, or other uncertainties relevant to this situation. Questions should obtain useful information — not merely signal sophistication.`,
+      before_you_commit: `4. BEFORE YOU COMMIT
+Give a short checklist of things the user should verify before agreeing. Clearly label anything requiring current prices, policies, contract terms, or outside research as something to check, not something already known.`,
+      exit_line: `5. YOUR EXIT LINE
+Give one natural, polite exit line that requires no excuse or bluff. Example: 'Thanks. I'm not ready to agree to this today, so I'm going to stop here and think it over.'`,
+      if_pressure_continues: `6. IF PRESSURE CONTINUES
+Give one firmer response that restates the user's boundary and ends the interaction. This is not a 'nuclear option' — keep it plain and grounded.`
+    };
+    const sectionsFor = (keys) => keys.map(k => SECTIONS[k]).filter(Boolean).join('\n\n');
+    const userPrompt = (keys) => `SITUATION: ${situation}
 ${whatYouWant ? `WHAT THEY WANT: ${whatYouWant}` : ''}
 ${budget ? `BUDGET / LIMIT: ${budget}` : ''}
 ${concerns ? `CONCERNS: ${concerns}` : ''}
 
 Prepare the user for this interaction.
 
-1. YOUR PLAN
-In 2-4 bullets, restate only the priorities and limits the user actually supplied. Clearly distinguish anything that remains undecided.
-
-2. WATCH FOR
-Give up to 4 pressure or decision moments that are plausibly relevant to this type of interaction. For each: what might happen (described as a possibility, not a prediction), why it can be difficult (the practical decision problem, in plain language — avoid pop-psychology claims unless necessary), and the user's response (a short sentence or action that protects their stated goal without inventing facts or bluffing).
-
-3. QUESTIONS WORTH ASKING
-Give up to 4 questions that help the user clarify total cost, obligations, alternatives, cancellation terms, included/excluded items, or other uncertainties relevant to this situation. Questions should obtain useful information — not merely signal sophistication.
-
-4. BEFORE YOU COMMIT
-Give a short checklist of things the user should verify before agreeing. Clearly label anything requiring current prices, policies, contract terms, or outside research as something to check, not something already known.
-
-5. YOUR EXIT LINE
-Give one natural, polite exit line that requires no excuse or bluff. Example: 'Thanks. I'm not ready to agree to this today, so I'm going to stop here and think it over.'
-
-6. IF PRESSURE CONTINUES
-Give one firmer response that restates the user's boundary and ends the interaction. This is not a 'nuclear option' — keep it plain and grounded.
+${sectionsFor(keys)}
 
 Return ONLY valid JSON:
 {
@@ -112,7 +113,7 @@ RULES:
       model: MODELS.SMART,
       max_tokens: 1800,
       system,
-      messages: [{ role: 'user', content: onlyKeys(userPrompt, keys) }],
+      messages: [{ role: 'user', content: onlyKeys(userPrompt(keys), keys) }],
     }, { label: i ? `upsell-shield-${i + 1}` : 'upsell-shield' });
     return await answer(req, res, {
       label: 'upsell-shield',

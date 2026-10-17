@@ -229,11 +229,15 @@ RULES:
   RESEARCH FINDINGS:
   ${researchDossier}
 
-  Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|failed|unknown","why":"the fact that settles it, or what is missing — one sentence"}],"applies":"yes|no|unknown"}]}. "applies" is yes only if every condition is met, no if any condition failed, otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
+  Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|met_per_account|failed|unknown","why":"the fact that settles it, or what is missing — one sentence"}],"applies":"yes|yes_per_account|no|unknown"}]}. A condition is met when the citation or a verified finding settles it; met_per_account when only the user's own account settles it (what they say the sign read, when they parked) — their account is evidence, not a gap; unknown only when nothing supplied speaks to it. "applies" is yes if every condition is met; yes_per_account if every condition is met or met_per_account and at least one is met_per_account; no if any condition failed; otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
         }, { label: 'ticket-tackler-rulecheck', maxRetries: 1 });
         const rules = Array.isArray(rc?.rules) ? rc.rules.filter(r => r && r.rule) : [];
         if (rules.length) {
-          ruleCheckBlock = `\n\nRULE APPLICATION CHECK (done separately; BINDING): a rule marked applies: no cannot support contesting and must not appear as a basis in the assessment, what_may_matter or the appeal; a rule marked unknown is unresolved, not supportive.\n${rules.map(r => `- ${r.rule}: applies ${r.applies}${(r.conditions || []).filter(c => c.status !== 'met').map(c => ` | ${c.status}: ${c.condition} — ${c.why}`).join('')}`).join('\n')}`;
+          // yes_per_account (2026-10-16): the rule applies if the visitor's own
+        // account is true. Reading that as "unknown" made the verdict hedge to
+        // NOT_ENOUGH_INFORMATION_YET on a case the account plainly supports
+        // (Seattle load zone, parked 40 minutes after the posted end time).
+        ruleCheckBlock = `\n\nRULE APPLICATION CHECK (done separately; BINDING): a rule marked applies: no cannot support contesting and must not appear as a basis in the assessment, what_may_matter or the appeal; a rule marked unknown is unresolved, not supportive; a rule marked applies: yes_per_account DOES support contesting on the user's own account — state the basis conditionally ('if the sign reads as you describe…'), list what would confirm it in evidence_to_get, and do not treat confirming it as a reason to withhold a verdict or the appeal.\n${rules.map(r => `- ${r.rule}: applies ${r.applies}${(r.conditions || []).filter(c => c.status !== 'met').map(c => ` | ${c.status}: ${c.condition} — ${c.why}`).join('')}`).join('\n')}`;
           console.log(`[ticket-tackler] rule check: ${rules.map(r => `${r.rule}=${r.applies}`).join(', ')}`);
         }
       } catch (e) { console.warn('[ticket-tackler] rule check skipped:', e.message); }

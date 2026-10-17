@@ -201,8 +201,20 @@ function keyGroups(groups, run) {
   return groups.map((keys, i) => ({
     required: i === 0,
     run: () => run(keys, i),
-    apply: (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); },
+    apply: takeKeys(keys),
   }));
+}
+
+// takeKeys — copy a pass's own keys into the draft, and say so when it wrote
+// others (2026-10-16). Extra keys are thrown away, but writing them is where
+// the time went: Upsell Shield's first pass wrote all six sections (1,427
+// tokens, 28s) because the prompt's numbered instructions described them all.
+function takeKeys(keys) {
+  return (d, out) => {
+    keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
+    const extra = out && typeof out === 'object' ? Object.keys(out).filter(k => !keys.includes(k)) : [];
+    if (extra.length) console.warn(`[progressive] a pass for ${keys.join(', ')} also wrote ${extra.join(', ')} — trim its prompt`);
+  };
 }
 
 // planFirst — parts that must agree with one choice (2026-10-16). The plan
@@ -213,10 +225,9 @@ function keyGroups(groups, run) {
 function planFirst(planKeys, runPlan, groups, runFollow) {
   const plan = runPlan();
   plan.catch(() => {}); // the plan part reports its own failure
-  const take = (keys) => (d, out) => { keys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); };
   return [
-    { required: true, run: () => plan, apply: take(planKeys) },
-    ...groups.map((keys, i) => ({ run: async () => runFollow(keys, i, await plan), apply: take(keys) })),
+    { required: true, run: () => plan, apply: takeKeys(planKeys) },
+    ...groups.map((keys, i) => ({ run: async () => runFollow(keys, i, await plan), apply: takeKeys(keys) })),
   ];
 }
 
@@ -225,4 +236,4 @@ function planFirst(planKeys, runPlan, groups, runFollow) {
 // questioned the pronouns they used.
 const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording):\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
 
-module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote };
+module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote, takeKeys };

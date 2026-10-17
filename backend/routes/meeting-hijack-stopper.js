@@ -574,20 +574,42 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
     }, { label: tag });
     const PLAN = ['meeting_plan', 'decision_plan'];
+    // The plan pass writes the agenda as titles and minutes only (it wrote
+    // the whole agenda in full: 1,100 tokens, 24s before anything showed); a
+    // detail pass, handed that agenda, fills in how to run each block.
+    const BLOCK_DETAIL = ['purpose', 'how_to_run_it', 'say_this_if_helpful'];
+    const planPrompt = onlyKeys(prompt, PLAN)
+      .split('\n').filter(l => !BLOCK_DETAIL.some(f => l.startsWith(`        "${f}":`))).join('\n')
+      .replace(/,(\s*\n\s*\})/g, '$1')
+      + '\nTHIS PASS plans the agenda only: each agenda block has ONLY title and minutes. Another pass writes how to run each block afterwards.';
+    const withBlocks = (d) => {
+      const { agendaDetail, ...rest } = d;
+      const agenda = rest.meeting_plan?.agenda;
+      if (Array.isArray(agenda) && Array.isArray(agendaDetail)) {
+        rest.meeting_plan = { ...rest.meeting_plan, agenda: agenda.map((b, i) => (agendaDetail[i] ? { ...agendaDetail[i], title: b.title, minutes: b.minutes } : b)) };
+      }
+      return rest;
+    };
     const shape = (d) => { if (d.meeting_plan && Array.isArray(d.meeting_plan.agenda)) fitAgendaToDuration(d.meeting_plan, duration); return d; };
     return await answer(req, res, {
       label: 'meeting-hijack-stopper',
-      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 3000, 'meeting-hijack-stopper'), [
+      parts: planFirst(PLAN, () => call(planPrompt, 1500, 'meeting-hijack-stopper'), [
+        ['meeting_plan'],
         ['watch_for'],
         ['before_the_meeting', 'finish_strong'],
-      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 1800, `meeting-hijack-stopper-${i + 2}`)),
-      finish: d => validateResult(shape(structuredClone(d))),
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN)
+        + (keys[0] === 'meeting_plan' ? '\nTHIS PASS writes meeting_plan in full with EXACTLY the agenda blocks above — same titles, same minutes, same order — filling in each block.' : ''),
+      2200, `meeting-hijack-stopper-${i + 2}`)).map((p, i) => (i === 1 ? { ...p, apply: (d, out) => { d.agendaDetail = Array.isArray(out?.meeting_plan?.agenda) ? out.meeting_plan.agenda : []; } } : p)),
+      finish: d => validateResult(shape(withBlocks(structuredClone(d)))),
       ready: d => Boolean(d.meeting_plan && Array.isArray(d.meeting_plan.agenda)),
       complete: d => Boolean(d.meeting_plan && Array.isArray(d.meeting_plan.agenda)),
-      check: async (parsed) => {
-        shape(parsed);
+      check: async (draft) => {
+        const parsed = shape(withBlocks(draft));
         // T7 (audit/DEFECT-TYPES.md): decision_plan ignored "Disagree & commit".
         await checkConsistency(parsed, { label: 'meeting-hijack-stopper', promise: 'Plans a meeting that reaches its goal the way the visitor chose to decide, without claiming authority the facilitator may not have.', userLanguage });
+        // Back into the draft: the blocks are merged now, repairs included.
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, parsed);
       },
     });
 
