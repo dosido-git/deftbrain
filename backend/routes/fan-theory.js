@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { answer } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -22,14 +22,13 @@ async function canonCheck(title, claims, userLanguage) {
 
 ${claims.map((c, i) => `${i}. ${c}`).join('\n')}
 
-For each, return a verdict:
-- "ok" — accurate as written.
+Return a verdict ONLY for a claim that needs fixing or cutting — leave every accurate claim out (an absent claim is "ok"). If every claim is accurate, return {"verdicts":[]}. For each claim you do return:
 - "fix" — recognisably about something real but wrong in a detail, exaggerated, or overstated. Supply a "replacement": the same observation, corrected and made broader/safer, keeping it one sentence.
 - "cut" — describes something that does not happen in the work, contradicts it, or you cannot verify.
 
 Exaggeration counts as wrong. "The office burns down" is not a fix of a small fire; it is a different event. Do not soften a false claim into a vague one — if it did not happen, cut it.
 
-Write "verdict" as the English word ok, fix or cut whatever language the rest of this is in — code compares it literally. "replacement" is shown to the reader and must be in their language.\n\nReturn ONLY valid JSON: { "verdicts": [ { "n": 0, "verdict": "ok|fix|cut", "replacement": "only when fix" } ] }`;
+Write "verdict" as the English word fix or cut whatever language the rest of this is in — code compares it literally. "replacement" is shown to the reader and must be in their language.\n\nReturn ONLY valid JSON: { "verdicts": [ { "n": 0, "verdict": "fix|cut", "replacement": "only when fix" } ] }`;
   try {
     const res = await Promise.race([
       // SMART since 2026-10-08: on FAST the check passed invented Severance
@@ -169,12 +168,19 @@ If uncertain, remove it.`;
     // only after the canon check has cut what does not happen in the work —
     // an invented scene must never be on screen, even briefly — so generation
     // and canon check are one part; the guard runs after it is on screen.
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    // Plan first (T11): the first pass writes the claims — name, one-liner,
+    // evidence, smoking gun — and the canon check runs on just those, so the
+    // first part shows after ~12s instead of after the whole theory and a
+    // check of it (~32s). The theory, counterargument and scores are then
+    // written from the CHECKED evidence, so they cannot lean on a cut scene.
+    const PLAN = ['theory_name', 'one_line', 'evidence', 'detected_type', 'smoking_gun_is_weak', 'the_smoking_gun'];
     const pipeline = async () => {
       const parsed = await callClaudeWithRetry({
         model: MODELS.FAST,
-        max_tokens: 4000,
-        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: userPrompt }],
+        max_tokens: 2400,
+        system,
+        messages: [{ role: 'user', content: onlyKeys(userPrompt, PLAN) }],
       }, { label: 'fan-theory' });
 
       // A model told to think in "observation → interpretation" sometimes writes
@@ -241,7 +247,13 @@ If uncertain, remove it.`;
     };
     return await answer(req, res, {
       label: 'fan-theory',
-      parts: [{ required: true, run: pipeline, apply: (d, out) => Object.assign(d, out) }],
+      parts: planFirst(PLAN, pipeline, [['the_theory', 'counterargument', 'plausibility', 'mind_blown_factor', 'rabbit_hole']],
+        (keys, i, plan) => callClaudeWithRetry({
+          model: MODELS.FAST,
+          max_tokens: 2000,
+          system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          messages: [{ role: 'user', content: onlyKeys(userPrompt, keys) + planNote(plan, PLAN) + '\nBuild only on the evidence above — it has been checked against the work; never bring back a detail that is not in it. Return ONLY valid JSON.' }],
+        }, { label: 'fan-theory-2' })),
       finish: d => structuredClone(d),
       ready: d => Boolean(d.theory_name),
       complete: d => Boolean(d.theory_name),
