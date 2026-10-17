@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { answer, onlyKeys } = require('../lib/progressive');
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -452,44 +452,60 @@ RULES:
 - Keep all prose concise.
 Return only the JSON object.`;
 
-    // Progressive (2026-10-17, lib/progressive.js): a quick pass lists the
-    // emails (sender and subject, in order); then the emails are analysed
-    // in up to five passes at once (one email each for a short paste), beside
-    // the cross-email insights — the
-    // first emails show in seconds instead of after one pass wrote all 15.
-    // The summary is recomputed in code from whatever has landed; the guard
-    // runs after the answer is on screen.
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): one
+    // pass lists the emails AND sorts them into tiers, seeing the whole inbox
+    // at once — the tiers show in seconds. Up to five passes then write each
+    // email's details at once, each handed its tier to keep. (Rating each
+    // email in its own pass dropped a colleague's thrice-asked question from
+    // "now" to "this week" in two blind comparisons; the tier is a judgement
+    // across the inbox.) The summary is recomputed in code from whatever has
+    // landed; the guard runs after the answer is on screen.
     const locale = withLocaleContext(userLocale, userCurrency, userRegion);
     const call = (content, maxTokens, tag, model = MODELS.SMART) => callClaudeWithRetry({
       model,
       max_tokens: maxTokens,
       messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
     }, { label: tag });
+    // The tier rules, as the full analysis states them.
+    const tierRules = analysisPrompt.slice(analysisPrompt.indexOf('TODAY THRESHOLD:'), analysisPrompt.indexOf('THREAD FIELDS:')).trim();
     const listed = call(`${sharedContext}
 
-THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other passes do that. List them in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). Sender as a name or address, subject at most 80 characters. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject"}]}`, 1500, 'email-urgency-triage-list', MODELS.FAST)
+${tierRules}
+
+THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other passes write the details. In the order they appear, at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). Sender as a name or address, subject at most 80 characters. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject","urgency_tier":"now | this_week | optional","email_category":"FYI | Action Required | Response Expected | Automated | Newsletter"}]}`, 1500, 'email-urgency-triage-list')
       .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []))
       // A failed list is not a failed triage: the first pass then analyses
       // everything in one call, as before (it once truncated and took the
       // whole answer down with it).
       .catch(err => { console.warn('[email-urgency-triager] list failed — one pass:', err.message); return []; });
     const SLOTS = 5;
+    const perFor = (n) => Math.max(1, Math.ceil(n / SLOTS));
     const analysisFor = (group) => onlyKeys(analysisPrompt.replace('Your response MUST contain urgency_analysis and summary.', ''), ['urgency_analysis'])
-      + `\nTHIS PASS analyses ONLY these emails, one urgency_analysis entry each, in this order:\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'}`).join('\n')}`;
+      + planNote({ emails: group }, ['emails'])
+      + '\nTHIS PASS writes ONLY these emails, one urgency_analysis entry each, in this order — with exactly the urgency_tier and email_category given, and reasoning that explains that tier.';
     const chunkPart = (ci) => ({
-      required: ci === 0,
       run: async () => {
         const list = await listed;
         // No list (or a failed one): the first pass analyses everything, as before.
         if (!list.length) return ci === 0 ? call(analysisPrompt, 6000, 'email-urgency-triage-analysis-v2') : null;
-        const per = Math.max(1, Math.ceil(list.length / SLOTS));
+        const per = perFor(list.length);
         const group = list.slice(ci * per, ci * per + per);
         if (!group.length) return null;
         return call(analysisFor(group), 2600, `email-urgency-triage-analysis-v2:${ci + 1}`);
       },
       apply: (d, out) => { if (out) d.chunks = { ...d.chunks, [ci]: Array.isArray(out.urgency_analysis) ? out.urgency_analysis : [] }; },
     });
-    const analysisOf = d => Object.keys(d.chunks || {}).map(Number).sort((x, y) => x - y).flatMap(k => d.chunks[k]).slice(0, 15).map(sanitizeEmail);
+    // The listed emails, each overlaid with its details once they land; the
+    // list keeps the last word on tier and category.
+    const analysisOf = (d) => {
+      const list = Array.isArray(d.listed) ? d.listed : [];
+      if (!list.length) return (d.chunks?.[0] || []).slice(0, 15).map(sanitizeEmail);
+      const per = perFor(list.length);
+      return list.map((e, i) => {
+        const detail = d.chunks?.[Math.floor(i / per)]?.[i % per];
+        return sanitizeEmail(detail ? { ...detail, urgency_tier: e.urgency_tier, email_category: e.email_category || detail.email_category } : e);
+      });
+    };
     const shape = (d) => {
       const urgencyAnalysis = analysisOf(d);
       return { urgency_analysis: urgencyAnalysis, summary: recomputeSummary(urgencyAnalysis), ...sanitizeInsights(d.insights) };
@@ -497,11 +513,12 @@ THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other p
     return await answer(req, res, {
       label: 'email-urgency-triager',
       parts: [
+        { run: () => listed, apply: (d, out) => { d.listed = out; } },
         ...Array.from({ length: SLOTS }, (_, i) => chunkPart(i)),
         { run: () => call(insightsPrompt, 1400, 'email-urgency-triage-insights-v2'), apply: (d, out) => { d.insights = out; } },
       ],
       finish: d => shape(structuredClone(d)),
-      ready: d => Array.isArray(d.chunks?.[0]) && d.chunks[0].length > 0,
+      ready: d => (Array.isArray(d.listed) && d.listed.length > 0) || (Array.isArray(d.chunks?.[0]) && d.chunks[0].length > 0),
       complete: d => analysisOf(d).length > 0,
       check: async (draft) => {
         // Same trade as drive-home: the guard is a quality pass on top of a
@@ -539,7 +556,8 @@ THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other p
           userLanguage,
           locale: withLocaleContext(userLocale, userCurrency, userRegion),
         });
-        // Back into the draft: one chunk holding the checked list.
+        // Back into the draft: the checked list, whole, in place of the parts.
+        draft.listed = [];
         draft.chunks = { 0: parsed.urgency_analysis };
         draft.insights = { ...draft.insights, batch_insights: parsed.batch_insights };
       },
