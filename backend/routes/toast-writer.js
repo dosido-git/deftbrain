@@ -118,14 +118,7 @@ RULES:
     // The answer template is in the user message (not the system prompt), so
     // that is what each pass cuts down.
     const onePrompt = (label) => onlyKeys(userPrompt.replace('1. Generate EXACTLY 3 versions.', '1. Generate EXACTLY 1 version — the one named at the end.'), ['versions'])
-      + `\nTHIS PASS writes ONLY the ${label} version — exactly one item in versions, label "${label}". Other passes write the other two versions at the same time.`
-      // Written alone, a version came out at a fraction of the requested
-      // length (40-75 seconds for five minutes): the ceiling rule read as a
-      // reason to stop early. The ceiling stays; the supplied material sets
-      // how close to it a version comes.
-      + (label === 'Concise'
-        ? ' Concise is the short take: well under the maximum.'
-        : ` Use the supplied material fully: when the stories support it, this version should come close to the maximum length (${duration || '2_minutes'}, about 130 spoken words a minute) without padding or inventing.`);
+      + `\nTHIS PASS writes ONLY the ${label} version, in full and at the requested length — exactly one item in versions, label "${label}". Other passes write the other two versions at the same time.`;
     const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: maxTokens,
