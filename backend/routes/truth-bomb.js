@@ -4,6 +4,7 @@ const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
 const PERSONALITY = `Clear-eyed confidant for things people are afraid to say.
 
@@ -18,6 +19,44 @@ Never diagnose another person, predict another person's reaction as fact, invent
 If the subject involves health, substance use, abuse, self-harm, violence, coercion, retaliation, employment power, legal exposure, or another high-stakes situation, reduce certainty and prioritize safety, support, and appropriate professional or emergency help over confrontation.
 
 The three scripts are options, not an escalation ladder. 'Full Truth' means the fullest supportable truth from the user's perspective — not maximum accusation, certainty, or force.`;
+
+const str = (v) => typeof v === 'string' && v.trim().length > 12;
+
+// Fail-open: it wraps an answer already on screen.
+async function guardTruthBomb(parsed, body, userLanguage) {
+  try {
+    const fields = [];
+    const add = (path, v) => { if (str(v)) fields.push([path, v]); };
+    const te = parsed.the_thing_examined || {};
+    ['what_its_really_about', 'why_its_hard_to_say', 'what_hiding_it_costs'].forEach(k => add(`the_thing_examined.${k}`, te[k]));
+    const rc = parsed.reality_check || {};
+    ['what_you_know', 'what_you_dont_know', 'what_saying_it_can_do'].forEach(k => add(`reality_check.${k}`, rc[k]));
+    (Array.isArray(parsed.three_ways_to_say_it) ? parsed.three_ways_to_say_it : []).forEach((w, i) => add(`three_ways_to_say_it[${i}].the_words`, w?.the_words));
+    add('the_timing.if_they_dont_respond_well', parsed.the_timing?.if_they_dont_respond_well);
+    add('permission_to_not_say_it.the_honest_cost', parsed.permission_to_not_say_it?.the_honest_cost);
+    add('safety_note', parsed.safety_note);
+    if (!fields.length) return;
+
+    await runOutputGuard(parsed, {
+      label: 'truth-bomb-v2',
+      fields,
+      supplied: `WHAT THE USER TOLD US, IN FULL — nothing else is known:
+The thing they are not saying: ${(body.theUnsaidThing || '').trim() || '(not given)'}
+Who it is about / to: ${(body.whoItsAbout || '').trim() || '(not given)'}
+Why they have not said it: ${(body.whyNotSaying || '').trim() || '(not given)'}
+Relationship context: ${(body.relationshipContext || '').trim() || '(not given)'}
+
+Anything the user says another person might think, feel, say or do is the
+user's guess, not that person's position. Nothing is known about how the other
+person will react.`,
+      promise: 'Help someone look clearly at a thing they have not said: what it is about, what they actually know versus suspect, what staying silent does, three honest ways to say it that claim no more than they told us, when and how, and why not saying it can also be a legitimate choice.',
+      guard: router.outputGuard,
+      userLanguage,
+    });
+  } catch (err) {
+    console.log('[truth-bomb] v2 guard skipped:', err.message);
+  }
+}
 
 router.post('/truth-bomb', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -140,6 +179,11 @@ RULES:
       finish: d => structuredClone(d),
       ready: d => Boolean(d.the_thing_examined),
       complete: d => Boolean(d.the_thing_examined),
+      // The prompt's sixteen rules all guard one thing: never make the user's
+      // evidence stronger than they gave it. Nothing checked them, so check
+      // the fields that carry it — the reading of the situation, the words
+      // they would say, and what silence costs.
+      check: async (draft) => { await guardTruthBomb(draft, req.body, userLanguage); },
     });
 
   } catch (error) {
@@ -147,5 +191,32 @@ RULES:
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+router.outputStandard = 'v2';
+// truth-bomb, reviewed 2026-10-17. The failure is never a missing answer — it
+// is an answer that quietly upgrades what the user said: a suspicion becomes a
+// fact, a guess about the other person becomes their stated reason,
+// "sometimes" becomes "always", or the script says more than the user would.
+// And it must not tilt the choice toward speaking.
+router.outputGuard = {
+  prohibit: [
+    'turns_the_users_suspicion_impression_or_inference_into_established_fact',
+    'states_another_persons_motive_feeling_or_likely_reaction_as_fact',
+    'presents_what_the_user_guessed_another_person_might_say_as_that_persons_actual_position',
+    'diagnoses_addiction_mental_illness_abuse_dishonesty_or_any_condition',
+    'strengthens_the_users_scope_such_as_some_to_all_or_sometimes_to_always',
+    'treats_speaking_as_braver_healthier_or_more_honest_than_staying_silent',
+    'claims_silence_is_causing_damage_or_distance_the_user_did_not_report',
+    'script_adds_an_apology_concession_acknowledgment_or_feeling_the_user_did_not_supply',
+    'imposes_a_moral_or_psychological_narrative_the_user_did_not_supply',
+    'recommends_confrontation_where_safety_power_coercion_or_legal_risk_is_at_stake',
+    'invents_a_conversation_partner_when_the_user_is_talking_to_themselves',
+  ],
+  require: [
+    'speaking_and_silence_presented_as_equally_legitimate',
+    'each_script_claims_no_more_than_the_user_supplied',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
