@@ -338,7 +338,15 @@ async function replay(slugs, base) {
           const passed = await runCheckGolden(p.slug, url, skip, false);
           const ran = p.pick.filter(n => passed.has(n));
           writePass(p.slug, p.fp, ran);
-          if (ran.length < p.pick.length) failed++;
+          if (ran.length < p.pick.length) {
+            failed++;
+            // The backend's own account of the failure — retries, parse
+            // errors, timeouts — would otherwise die with the process.
+            if (live) {
+              const lines = live.logs().split('\n').filter(l => l.includes(`[${p.slug}`) || /error|timeout|overload|529/i.test(l)).filter(l => !l.startsWith('METRIC'));
+              if (lines.length) console.log(`   backend log for ${p.slug}:\n` + lines.slice(-30).map(l => '     ' + l.slice(0, 300)).join('\n'));
+            }
+          }
         }
       } finally {
         if (live) {
