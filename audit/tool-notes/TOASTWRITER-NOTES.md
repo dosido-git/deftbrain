@@ -14,4 +14,13 @@ Backend `toast-writer.js` — 1 endpoint `POST /toast-writer`, `MODELS.FAST`, ma
 - Guard `!Array.isArray(parsed.versions) || !length` keys a top-level field. Correct. PF-2 already clean (labelText + aliases present).
 
 ## Verify
-`npm run check:golden toast-writer` (1 DE 5-minute case). Backend must be up. ~38s.
+`npm run check:golden toast-writer` (EN + DE cases since v2). Backend must be up. ~25-40s each.
+
+## v2 (2026-10-17)
+- **Declares `router.outputStandard = 'v2'`** with a tool guard (`router.outputGuard`): invented story detail/cause/aftermath, a character verdict drawn from an anecdote, words or feelings put in someone's mouth, unsupplied absolutes, the avoid list, tips written as notes to the writer.
+- **`runOutputGuard` replaces `checkConsistency`** inside the progressive `check` — one call runs the v2 review and the contradiction/ignored-choice check side by side. Labels and `estimated_time` are read-only; speeches are `requiredNonEmpty`.
+- **Guard on `MODELS.SMART`**, not the route's Haiku. Live: the Haiku checker passed "three hours by bike" (she drove) and "the way you've shown up for the people you love"; Sonnet caught and cleanly removed the same class. Cost per run ~$0.12 → ~$0.19.
+- **After a repair**, `opening_line`/`closing_line` are re-read from the speech if they no longer match it, and `estimated_time` is recomputed.
+- Tips and mistakes: fixed "2-3" → "1-3" (v2 §7: a slot is not a reason to fill it).
+- Golden re-captured: EN best-man example (avoid list) + the DE 5-minute case. Short speeches on thin input are by design.
+- Residual: the check is a model and misses some (see the golden's `known_issues`).

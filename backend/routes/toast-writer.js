@@ -5,7 +5,80 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// The v2 guard reads every line the speaker will say out loud or act on — the
+// three speeches, the lines lifted from them, the tips and the emergency
+// closer. Labels and the computed speaking time are shown, never rewritten.
+// One call runs the v2 review and the contradiction / ignored-choice check
+// side by side (lib/outputGuard.js), so this replaces checkConsistency.
+async function guardToast(parsed, body, userLanguage) {
+  const fields = [];
+  if (typeof parsed.occasion_read === 'string') fields.push(['occasion_read', parsed.occasion_read]);
+  (parsed.versions || []).forEach((v, i) => {
+    ['speech', 'style', 'opening_line', 'closing_line'].forEach(k => {
+      if (typeof v?.[k] === 'string' && v[k].trim()) fields.push([`versions[${i}].${k}`, v[k]]);
+    });
+  });
+  ['delivery_tips', 'common_mistakes'].forEach(k => (parsed[k] || []).forEach((t, i) => {
+    if (typeof t === 'string' && t.trim()) fields.push([`${k}[${i}]`, t]);
+  }));
+  if (typeof parsed.emergency_closer === 'string') fields.push(['emergency_closer', parsed.emergency_closer]);
+  if (!fields.length) return;
+
+  // Sonnet, not the route's own Haiku: the violations this tool cares about are
+  // readings — a capper sentence, a story quietly retold — and the small
+  // checker passed them (live, 2026-10-17: "three hours by bike" for a sister
+  // who drove, and "the way you've shown up for the people you love").
+  await runOutputGuard(parsed, {
+    label: 'toast-writer',
+    model: MODELS.SMART,
+    // T4: "the night before" a presentation the visitor only said she stayed late for.
+    promise: 'Writes a toast the visitor can deliver, built only from the facts and meaning they supplied, within their length, tone and avoid list.',
+    fields,
+    readOnly: (parsed.versions || []).flatMap((_, i) => [`versions[${i}].label`, `versions[${i}].estimated_time`]),
+    requiredNonEmpty: (parsed.versions || []).map((_, i) => `versions[${i}].speech`),
+    userLanguage,
+    supplied: `WHAT THE SPEAKER TOLD US, IN FULL — nothing else about anyone is known:
+Being honored: ${(body.person || '').trim() || '(not given)'}
+Occasion: ${(body.occasion || '').trim() || '(not given)'}
+Speaker's relationship to them: ${(body.relationship || '').trim() || '(not given)'}
+Stories / details: ${(body.stories || '').trim() || '(none)'}
+Tone: ${body.tone || 'warm_and_funny'}
+Maximum length: ${body.duration || '2_minutes'}
+Do not mention or allude to: ${(body.avoid || '').trim() || '(nothing)'}
+
+WHAT FAILS:
+1. A detail added to a supplied story — its cause, its aftermath, a time, a
+   place, a reaction, a quantity — or a story nobody supplied.
+2. A sentence that tells the room what a story means or proves about the
+   person ("that's who he is", "when it matters, she shows up").
+3. Words put in someone's mouth, or a claim about what anyone felt, thought
+   or realised that the speaker did not say.
+4. An absolute the speaker did not supply: always, never, best friend,
+   everyone knows.
+5. Anything that touches the avoid list, including a joke or euphemism.
+6. A tip or mistake that reads as a note to whoever wrote the speech rather
+   than to the person giving it.
+Bracketed delivery cues ([PAUSE], [RAISE GLASS]) and [YOUR NAME] are not
+violations.`,
+  });
+}
+
+// opening_line and closing_line are quoted from the speech. A repair that
+// rewrote the speech can leave them quoting a line that is no longer in it, so
+// they are re-read from the speech itself whenever they no longer match.
+function syncQuotedLines(v) {
+  const speech = String(v?.speech || '');
+  if (!speech.trim()) return v;
+  const plain = (x) => String(x || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim();
+  const body = plain(speech);
+  const sentences = body.match(/[^.!?。！？]+[.!?。！？]+["'”’)]*|[^.!?。！？]+$/g)?.map(x => x.trim()).filter(Boolean) || [];
+  const out = { ...v };
+  if (v.opening_line && !body.includes(plain(v.opening_line)) && sentences.length) out.opening_line = sentences[0];
+  if (v.closing_line && !body.includes(plain(v.closing_line)) && sentences.length) out.closing_line = sentences[sentences.length - 1];
+  return out;
+}
 // ════════════════════════════════════════════════════════════
 // POST /toast-writer — Write a Toast, Speech, or Tribute
 // ════════════════════════════════════════════════════════════
@@ -87,10 +160,10 @@ Return ONLY valid JSON:
     }
   ],
   "delivery_tips": [
-    "2-3 tips tied to specific moments in these speeches or this occasion. May suggest pacing, pauses, emphasis, eye contact, breathing, or how to deliver supplied material — may NOT interpret what an anecdote reveals about the person or expand the user's stated emotional meaning. Bad (expands meaning): 'You're remembering something that made you and others better.' Good (delivery only): 'The Monday-joke line invites a small smile before you deliver it — give the audience a beat to picture those Monday mornings.'"
+    "1-3 tips tied to specific moments in these speeches or this occasion. May suggest pacing, pauses, emphasis, eye contact, breathing, or how to deliver supplied material — may NOT interpret what an anecdote reveals about the person or expand the user's stated emotional meaning. Bad (expands meaning): 'You're remembering something that made you and others better.' Good (delivery only): 'The Monday-joke line invites a small smile before you deliver it — give the audience a beat to picture those Monday mornings.'"
   ],
   "common_mistakes": [
-    "2-3 practical delivery or editing cautions the speaker can actually use, e.g. overexplaining a joke, rushing an emotional line, reading instead of looking up, adding an unsupplied story at the last minute, making an inside joke the room won't understand. These are notes to the SPEAKER about giving the toast, never internal drafting rules. Bad (exposes the LLM's own guardrails as user advice): 'Don't turn the presentation story into proof that Maria always shows up' or 'Don't invent what the presentation meant to Maria.' Good: 'Don't rush the presentation line — let the audience picture that night before you move on.'"
+    "1-3 practical delivery or editing cautions the speaker can actually use — only ones that fit these speeches, not a generic checklist — e.g. overexplaining a joke, rushing an emotional line, reading instead of looking up, adding an unsupplied story at the last minute, making an inside joke the room won't understand. These are notes to the SPEAKER about giving the toast, never internal drafting rules. Bad (exposes the LLM's own guardrails as user advice): 'Don't turn the presentation story into proof that Maria always shows up' or 'Don't invent what the presentation meant to Maria.' Good: 'Don't rush the presentation line — let the audience picture that night before you move on.'"
   ],
   "emergency_closer": "One short, GROUNDED line built only from facts and phrasing the speaker actually supplied — a plain callback to the supplied material (e.g. 'Twenty-five years, two kids, and all those ordinary Tuesday nights. Here's to us.'), never a superlative or conclusion the speaker didn't state ('the best decision I ever made', 'this proves...')"
 }
@@ -166,9 +239,11 @@ RULES:
       complete: d => versionsOf(d).length > 0,
       check: async (draft) => {
         const parsed = shape(draft);
-        // T4: "the night before" a presentation the visitor only said she stayed late for.
-        await checkConsistency(parsed, { label: 'toast-writer', promise: 'Writes a toast from only the facts and meaning the visitor supplied.', userLanguage });
-        const { versions, ...rest } = parsed;
+        await guardToast(parsed, req.body, userLanguage);
+        // A repaired speech changes its length and may drop a quoted line.
+        const versions = parsed.versions.map(v => timed(syncQuotedLines(v)));
+        const rest = { ...parsed };
+        delete rest.versions;
         Object.keys(draft).forEach(k => delete draft[k]);
         Object.assign(draft, rest, { byLabel: Object.fromEntries(versions.map(v => [v.label, v])), order: versions.map(v => v.label) });
       },
@@ -179,5 +254,32 @@ RULES:
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-10-17. The
+// prompt already carried most of the standard in its own terms — length as a
+// ceiling (§8), the speech is the deliverable (§1), the emergency closer is the
+// recovery path (§5). What it lacked was enforcement: only the consistency
+// check ran, so a capper sentence or an invented aftermath shipped whenever
+// the prompt's own rules slipped. Tips and mistakes lost their fixed "2-3"
+// count (§7: a slot is not a reason to fill it).
+router.outputStandard = 'v2';
+// toast-writer. The failure mode is not a bad speech — it is a good-sounding
+// one the speaker stands up and says in front of the honoree, with a detail
+// that never happened or a verdict about the person they never meant.
+router.outputGuard = {
+  prohibit: [
+    'invents_a_story_detail_cause_or_aftermath',
+    'draws_a_character_verdict_from_an_anecdote',
+    'puts_words_or_feelings_in_someones_mouth',
+    'unsupplied_absolute_or_superlative',
+    'touches_the_avoid_list',
+    'tip_written_as_a_note_to_the_writer',
+  ],
+  require: [
+    'every_version_is_a_complete_speakable_toast',
+    'honors_requested_tone_and_maximum_length',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
