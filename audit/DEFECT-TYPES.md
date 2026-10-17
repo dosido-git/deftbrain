@@ -96,6 +96,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | SmallChangeBigDifference — weekday rate × 365 days | **fixed with shared fix** (number check before the stream's done event) |
 | BatchFlow — padded batch time exceeds its own window | **fixed with shared fix** (number check, all 13 modes) |
 | ToastWriter — asked for 2 minutes, writes about 1 | **fixed in code** (estimated_time = words ÷ 130/min; length stays a ceiling by design) |
+| EmailUrgencyTriager — "today 17:00" read against the reader's clock, not the day the email was sent (a Thursday deadline pasted Saturday came out as due now) | **fixed in code** (`lib/relativeDates.js`: the model copies the sent date and sorts the deadline phrase; code resolves the calendar date and overdue/today/upcoming; every tool reading relative dates in pasted messages should use it) |
 
 **Sweep needed.** Every tool whose output contains numbers it derived itself (totals, durations, counts, per-year figures) and doesn't run the number check.
 

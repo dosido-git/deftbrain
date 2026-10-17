@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { answer, onlyKeys } = require('../lib/progressive');
+const { todayIn, resolveDeadline, deadlineStatus, daysBetween, weekdayOf } = require('../lib/relativeDates');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -468,12 +469,47 @@ Return only the JSON object.`;
     }, { label: tag });
     // The tier rules, as the full analysis states them.
     const tierRules = analysisPrompt.slice(analysisPrompt.indexOf('TODAY THRESHOLD:'), analysisPrompt.indexOf('THREAD FIELDS:')).trim();
-    const listed = call(`${sharedContext}
+    // Dates (T2, audit/DEFECT-TYPES.md; lib/relativeDates.js): a quick pass
+    // copies each email's sent date and sorts its deadline phrase into a kind;
+    // code works out the calendar deadline from the day the email was SENT and
+    // whether it has passed. "Today 17:00" in a Thursday email pasted on
+    // Saturday is two days overdue, not due now. The tier pass and every
+    // detail pass get these facts as established.
+    const today = todayIn(timezone);
+    const timingOf = (e) => {
+      const sent = /^\d{4}-\d{2}-\d{2}$/.test(String(e.sent_date || '')) ? e.sent_date : null;
+      const resolved = resolveDeadline(e.deadline, sent, today.date);
+      const status = deadlineStatus(resolved, today);
+      const parts = [sent
+        ? `sent ${weekdayOf(sent)} ${sent} (${daysBetween(sent, today.date)} day(s) before today, ${weekdayOf(today.date)} ${today.date})`
+        : 'no sent date on the email — relative deadlines are read against today'];
+      if (resolved) parts.push(`its deadline${e.deadline?.phrase ? ` "${String(e.deadline.phrase).slice(0, 80)}"` : ''} falls on ${weekdayOf(resolved.date)} ${resolved.date}${resolved.time ? ` ${resolved.time}` : ''} — ${status === 'overdue' ? 'ALREADY PASSED (overdue)' : status === 'today' ? 'due today' : 'still ahead'}`);
+      return { timing: parts.join('; '), deadline_status: status };
+    };
+    const timingRule = 'TIMING lines are computed in code from the date each email was sent — established facts; never recompute them. A deadline that has ALREADY PASSED is overdue: say so plainly, and never describe it as due later today. An overdue item is NOW only if acting still matters; if the email gives no reason it still does, say the deadline has passed and what the user could check.';
+    const extracted = call(`${sharedContext}
+
+THIS STEP ONLY COPIES FACTS FROM THE EMAILS — no tiers, no analysis; other passes do that. List the emails in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). For each: sender as a name or address; subject at most 80 characters; sent_date = the date on the email's own Date / Sent / Datum / Gesendet line, written as YYYY-MM-DD, or null if the email shows none (never guess one); deadline = the deadline phrase exactly as written (phrase) and its kind: same_day ("today", "by 5pm", "heute"), next_day ("tomorrow"), end_of_week ("by the end of the week"), weekday (a named day — give weekday in English), date (a calendar date — give date as YYYY-MM-DD), or none. time = HH:MM if a time is stated, else null. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject","sent_date":null,"deadline":{"phrase":"","kind":"none","weekday":null,"date":null,"time":null}}]}`, 1800, 'email-urgency-triage-extract', MODELS.FAST)
+      .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []))
+      .then(list => list.map(e => ({ ...e, ...timingOf(e) })));
+    const listed = extracted.then(async (list) => {
+      if (!list.length) return [];
+      const out = await call(`${sharedContext}
 
 ${tierRules}
 
-THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other passes write the details. In the order they appear, at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). Sender as a name or address, subject at most 80 characters. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject","urgency_tier":"now | this_week | optional","email_category":"FYI | Action Required | Response Expected | Automated | Newsletter"}]}`, 1500, 'email-urgency-triage-list')
-      .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []))
+${timingRule}
+
+THE EMAILS, IN ORDER, WITH THEIR TIMING:
+${list.map((e, i) => `${i + 1}. from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'}\n   TIMING: ${e.timing}`).join('\n')}
+
+THIS STEP SORTS THE EMAILS INTO TIERS, seeing the whole inbox at once — no reasoning; other passes write the details. Return ONLY valid JSON: {"tiers":[{"n":1,"urgency_tier":"now | this_week | optional","email_category":"FYI | Action Required | Response Expected | Automated | Newsletter"}]} with one entry per email above, n matching its number.`, 900, 'email-urgency-triage-list');
+      const tiers = Array.isArray(out?.tiers) ? out.tiers : [];
+      return list.map((e, i) => {
+        const t = tiers.find(x => Number(x?.n) === i + 1) || tiers[i] || {};
+        return { ...e, urgency_tier: t.urgency_tier, email_category: t.email_category };
+      });
+    })
       // A failed list is not a failed triage: the first pass then analyses
       // everything in one call, as before (it once truncated and took the
       // whole answer down with it).
@@ -481,7 +517,7 @@ THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other pass
     const SLOTS = 5;
     const perFor = (n) => Math.max(1, Math.ceil(n / SLOTS));
     const analysisFor = (group) => onlyKeys(analysisPrompt.replace('Your response MUST contain urgency_analysis and summary.', ''), ['urgency_analysis'])
-      + `\nTHIS PASS writes ONLY ${group.length === 1 ? 'this email' : `these ${group.length} emails`} — one urgency_analysis entry each, in this order, nothing for any other email. The tier was decided across the whole inbox by another pass: keep it exactly, and make the reasoning explain it.\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'} → urgency_tier ${e.urgency_tier}, email_category ${e.email_category || 'Response Expected'}`).join('\n')}`;
+      + `\n${timingRule}\nTHIS PASS writes ONLY ${group.length === 1 ? 'this email' : `these ${group.length} emails`} — one urgency_analysis entry each, in this order, nothing for any other email. The tier was decided across the whole inbox by another pass: keep it exactly, and make the reasoning explain it.\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'} → urgency_tier ${e.urgency_tier}, email_category ${e.email_category || 'Response Expected'}\n  TIMING: ${e.timing}`).join('\n')}`;
     const chunkPart = (ci) => ({
       run: async () => {
         const list = await listed;
@@ -498,7 +534,7 @@ THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other pass
     // list keeps the last word on tier and category.
     const analysisOf = (d) => {
       const list = Array.isArray(d.listed) ? d.listed : [];
-      if (!list.length) return (d.chunks?.[0] || []).slice(0, 15).map(sanitizeEmail);
+      if (!list.length) return (d.chunks?.[0] || []).slice(0, 15).map(x => ({ ...sanitizeEmail(x), ...(x.deadline_status ? { deadline_status: x.deadline_status } : {}) }));
       const per = perFor(list.length);
       // A detail counts only if it is about this email (same sender or
       // subject): a pass once wrote the whole inbox, and position alone
@@ -510,7 +546,8 @@ THIS STEP LISTS AND SORTS THE EMAILS — one line each, no reasoning; other pass
         const chunk = (d.chunks?.[Math.floor(i / per)] || []).filter(Boolean);
         // Subject first — one sender can send two different emails.
         const detail = chunk.find(x => sameSubject(x, e)) || (chunk.length === 1 && sameSender(chunk[0], e) ? chunk[0] : null);
-        return sanitizeEmail(detail ? { ...detail, urgency_tier: e.urgency_tier, email_category: e.email_category || detail.email_category } : e);
+        const shown = sanitizeEmail(detail ? { ...detail, urgency_tier: e.urgency_tier, email_category: e.email_category || detail.email_category } : e);
+        return e.deadline_status ? { ...shown, deadline_status: e.deadline_status } : shown;
       });
     };
     const shape = (d) => {

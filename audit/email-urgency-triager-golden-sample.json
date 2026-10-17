@@ -1,203 +1,353 @@
 {
- "_meta": {
-  "tool": "EmailUrgencyTriager",
-  "generated": "2026-07-12",
-  "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint w/ action-dispatch (triage default + compose)",
-  "baseline_commit": "emailurgencytriager-v1",
-  "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden email-urgency-triager) and diff for QUALITY not exact match: HTTP 200 / no error, urgency_analysis non-empty (triage) / composed_reply present (compose), no truncation. The triage-de-enum-and-sync-guard case GUARDS two fixes: (1) urgency_tier / email_category / for_urgency must be CLEAN enum values (e.g. 'now', not 'now — 2-4 words') — the frontend normalizes urgency_tier and buckets emails into now/this_week/optional columns; a leaked value drops the email from all columns; (2) always_urgent_senders/always_optional_senders live under recurring_patterns and delegation_count under summary (frontend was reading a non-existent sender_profiles object -> Sender Patterns never rendered; now repointed). DO NOT silently reverse: (1) both actions sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) NO annotation suffixes on enum values (urgency_tier/email_category/for_urgency) or copy-paste output (composed_reply/subject_line/draft_reply); (3) triage max_tokens 8000 + 'AT MOST 20 emails' cap; (4) frontend reads recurring_patterns.always_*_senders + summary.delegation_count (NOT sender_profiles).",
-  "note": "optionalSections 2026-08-26: batch_insights side-fields are told to come back empty when there is no useful cross-email insight, so response_templates and recurring_patterns vary run to run and cannot be asserted non-empty. urgency_analysis and summary still are."
- },
- "cases": [
-  {
-   "name": "triage-de-enum-and-sync-guard",
-   "endpoint": "/api/email-urgency-triager",
-   "input": {
-    "emailContent": "Von: chef@firma.de\nBetreff: DRINGEND: Quartalsbericht bis heute 17 Uhr\nIch brauche den Bericht heute unbedingt, sonst verpassen wir die Deadline.\n\nVon: newsletter@shop.de\nBetreff: 20% Rabatt nur heute!\nKlicken Sie hier zum Abmelden.\n\nVon: kollege@firma.de\nBetreff: Re: Re: Re: Meeting-Notizen?\nDritte Erinnerung — kannst du mir die Notizen schicken?\n\nVon: hr@firma.de\nBetreff: Erinnerung: Urlaubsantrag\nBitte reichen Sie Ihren Urlaubsantrag bis Ende der Woche ein.",
-    "userRole": "Projektmanager",
-    "userTimezone": "Europe/Berlin",
-    "userLanguage": "de",
-    "userLocale": "de-DE",
-    "userCurrency": "EUR",
-    "userRegion": "DE"
-   },
-   "output": {
-    "urgency_analysis": [
-     {
-      "email_subject": "DRINGEND: Quartalsbericht bis heute 17 Uhr",
-      "from": "chef@firma.de",
-      "urgency_tier": "now",
-      "email_category": "Action Required",
-      "reasoning": "Vorgesetzter mit expliziter Deadline heute 17 Uhr — geschäftskritisch, keine Verzögerung möglich.",
-      "sender_marked_urgent": true,
-      "thread_analysis": {
-       "follow_up_count": 0,
-       "is_escalating": false,
-       "on_cc": false
-      },
-      "deadline_detected": "Heute 17:00 Uhr (13.07.2026)",
-      "consequence_of_delay": "Quartalsbericht wird verpasst, direkter Konflikt mit Vorgesetztem.",
-      "response_optimization": {
-       "best_time": "Sofort — Deadline ist heute 17 Uhr MESZ",
-       "recipient_timezone": "Europe/Berlin",
-       "estimated_time": "1–2 Stunden",
-       "estimated_minutes": 90,
-       "can_delegate": false,
-       "delegate_to": null
-      },
-      "draft_reply": "Hallo [Chef-Name], ich arbeite gerade am Quartalsbericht und werde ihn bis 17 Uhr heute liefern. Falls es Engpässe gibt, melde ich mich vorab kurz. Viele Grüße, [Ihr Name]"
-     },
-     {
-      "email_subject": "Re: Re: Re: Meeting-Notizen?",
-      "from": "kollege@firma.de",
-      "urgency_tier": "now",
-      "email_category": "Response Expected",
-      "reasoning": "Dritte Erinnerung = signifikante Eskalation, 3+ Folgenachrichten lösen automatisch NOW aus.",
-      "sender_marked_urgent": false,
-      "thread_analysis": {
-       "follow_up_count": 3,
-       "is_escalating": true,
-       "on_cc": false
-      },
-      "deadline_detected": null,
-      "consequence_of_delay": "Kollege ist blockiert, Beziehungsschaden und mögliche Eskalation an Vorgesetzte.",
-      "response_optimization": {
-       "best_time": "Noch heute Morgen beim ersten Arbeitsbeginn",
-       "recipient_timezone": "Europe/Berlin",
-       "estimated_time": "5 min",
-       "estimated_minutes": 5,
-       "can_delegate": false,
-       "delegate_to": null
-      },
-      "draft_reply": "Hallo [Kollege-Name], sorry für die Verzögerung! Ich schicke dir die Meeting-Notizen vom [Datum] direkt im Anhang. Melde dich, falls etwas fehlt. Grüße, [Ihr Name]"
-     },
-     {
-      "email_subject": "Erinnerung: Urlaubsantrag",
-      "from": "hr@firma.de",
-      "urgency_tier": "this_week",
-      "email_category": "Action Required",
-      "reasoning": "Interne HR-Frist bis Ende der Woche — wichtig, aber kein sofortiger Handlungsbedarf.",
-      "sender_marked_urgent": false,
-      "thread_analysis": {
-       "follow_up_count": 1,
-       "is_escalating": false,
-       "on_cc": false
-      },
-      "deadline_detected": "Ende der Woche (17.07.2026)",
-      "consequence_of_delay": "Urlaubsantrag wird nicht rechtzeitig bearbeitet, mögliche Probleme bei der Urlaubsplanung.",
-      "response_optimization": {
-       "best_time": "Montag oder Dienstag während regulärer Bürozeiten",
-       "recipient_timezone": "Europe/Berlin",
-       "estimated_time": "5 min",
-       "estimated_minutes": 5,
-       "can_delegate": false,
-       "delegate_to": null
-      },
-      "draft_reply": "Hallo HR-Team, vielen Dank für die Erinnerung. Ich werde den Urlaubsantrag für [Zeitraum] bis Ende dieser Woche einreichen. Viele Grüße, [Ihr Name]"
-     },
-     {
-      "email_subject": "20% Rabatt nur heute!",
-      "from": "newsletter@shop.de",
-      "urgency_tier": "optional",
-      "email_category": "Newsletter",
-      "reasoning": "Werblicher Newsletter mit Abmelde-Link — keinerlei berufliche Relevanz.",
-      "sender_marked_urgent": false,
-      "thread_analysis": {
-       "follow_up_count": 0,
-       "is_escalating": false,
-       "on_cc": false
-      },
-      "deadline_detected": null,
-      "consequence_of_delay": "Keine beruflichen Konsequenzen.",
-      "response_optimization": {
-       "best_time": "Nicht erforderlich",
-       "recipient_timezone": null,
-       "estimated_time": "5 min",
-       "estimated_minutes": 0,
-       "can_delegate": false,
-       "delegate_to": null
-      },
-      "draft_reply": null
-     }
-    ],
-    "summary": {
-     "total_emails": 4,
-     "urgent_count": 2,
-     "this_week_count": 1,
-     "optional_count": 1,
-     "total_estimated_minutes": 100,
-     "delegation_count": 0
-    },
-    "batch_insights": {
-     "similar_emails": [
-      "HR-Urlaubsantrag und Meeting-Notizen sind beide interne Verwaltungsaufgaben — könnten direkt nacheinander erledigt werden."
-     ],
-     "delegation_opportunities": "Keine Delegationsmöglichkeiten erkannt — alle Aufgaben erfordern persönliche Bearbeitung.",
-     "time_block_suggestion": "Priorität 1 (sofort): Meeting-Notizen senden (5 Min), dann Quartalsbericht bis 17 Uhr fertigstellen. Priorität 2 (diese Woche): Urlaubsantrag einreichen."
-    },
-    "anxiety_relief": {
-     "permission_to_wait": "Nur 2 von 4 E-Mails sind wirklich dringend — der Newsletter und der Urlaubsantrag erzeugen keinen Stress für heute.",
-     "what_to_ignore": "Newsletter von newsletter@shop.de kann sofort archiviert oder gelöscht werden.",
-     "batch_processing_tip": "Erledigen Sie die Meeting-Notizen in 5 Minuten, bevor Sie mit dem Quartalsbericht beginnen — das räumt den Kopf frei."
-    },
-    "recurring_patterns": {
-     "always_optional_senders": [
-      "newsletter@shop.de — Werblicher Newsletter, kein Handlungsbedarf"
-     ],
-     "always_urgent_senders": [],
-     "unsubscribe_candidates": [
-      "newsletter@shop.de — Abmeldelink vorhanden, kein beruflicher Mehrwert"
-     ],
-     "volume_observation": "Zu wenig Verlauf für Muster — nach 10+ E-Mails werden Absenderprofile aufgebaut."
-    },
-    "response_templates": [
-     {
-      "for_urgency": "now",
-      "template": "Hallo [Name], danke für Ihre Nachricht. Ich kümmere mich sofort darum und melde mich bis [Uhrzeit] mit einem Update. Sollte es Verzögerungen geben, informiere ich Sie vorab. Viele Grüße, [Ihr Name]"
-     },
-     {
-      "for_urgency": "this_week",
-      "template": "Hallo [Name], vielen Dank für die Erinnerung. Ich werde mich bis [Datum] darum kümmern und melde mich dann. Viele Grüße, [Ihr Name]"
-     }
-    ]
-   },
-   "optionalSections": [
-    "response_templates",
-    "recurring_patterns"
-   ]
+  "_meta": {
+    "tool": "EmailUrgencyTriager",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint w/ action-dispatch (triage default + compose)",
+    "baseline_commit": "emailurgencytriager-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden email-urgency-triager) and diff for QUALITY not exact match: HTTP 200 / no error, urgency_analysis non-empty (triage) / composed_reply present (compose), no truncation. The triage-de-enum-and-sync-guard case GUARDS two fixes: (1) urgency_tier / email_category / for_urgency must be CLEAN enum values (e.g. 'now', not 'now — 2-4 words') — the frontend normalizes urgency_tier and buckets emails into now/this_week/optional columns; a leaked value drops the email from all columns; (2) always_urgent_senders/always_optional_senders live under recurring_patterns and delegation_count under summary (frontend was reading a non-existent sender_profiles object -> Sender Patterns never rendered; now repointed). DO NOT silently reverse: (1) both actions sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) NO annotation suffixes on enum values (urgency_tier/email_category/for_urgency) or copy-paste output (composed_reply/subject_line/draft_reply); (3) triage max_tokens 8000 + 'AT MOST 20 emails' cap; (4) frontend reads recurring_patterns.always_*_senders + summary.delegation_count (NOT sender_profiles).",
+    "note": "optionalSections 2026-08-26: batch_insights side-fields are told to come back empty when there is no useful cross-email insight, so response_templates and recurring_patterns vary run to run and cannot be asserted non-empty. urgency_analysis and summary still are."
   },
-  {
-   "name": "compose-de",
-   "endpoint": "/api/email-urgency-triager",
-   "input": {
-    "action": "compose",
-    "emailSubject": "Re: DRINGEND: Quartalsbericht bis heute 17 Uhr",
-    "emailFrom": "chef@firma.de",
-    "emailBody": "Ich brauche den Bericht heute unbedingt, sonst verpassen wir die Deadline.",
-    "tone": "professional",
-    "length": "standard",
-    "instructions": "Erkläre höflich, dass ich bis 16 Uhr liefere",
-    "userRole": "Projektmanager",
-    "userLanguage": "de",
-    "userLocale": "de-DE",
-    "userCurrency": "EUR",
-    "userRegion": "DE"
-   },
-   "output": {
-    "composed_reply": "vielen Dank für Ihre Nachricht. Ich möchte Sie kurz informieren, dass der Quartalsbericht heute bis 16:00 Uhr bei Ihnen vorliegen wird – damit haben Sie noch ausreichend Zeit vor der Deadline um 17:00 Uhr, den Bericht zu prüfen.\n\nSollten kurzfristig noch Rückfragen oder Änderungswünsche entstehen, stehe ich selbstverständlich zur Verfügung.",
-    "subject_line": "Re: DRINGEND: Quartalsbericht bis heute 17 Uhr",
-    "tone_used": "professional",
-    "word_count": 52,
-    "key_points_addressed": [
-     "Zusage der Lieferung bis 16:00 Uhr – eine Stunde vor der Deadline",
-     "Pufferzeit für Rückfragen und Korrekturen wird explizit erwähnt",
-     "Offenheit für Rückfragen signalisiert"
-    ],
-    "alternative_closings": [
-     "Mit freundlichen Grüßen,",
-     "Beste Grüße,",
-     "Viele Grüße,"
-    ]
-   }
-  }
- ]
+  "cases": [
+    {
+      "name": "triage-de-enum-and-sync-guard",
+      "endpoint": "/api/email-urgency-triager",
+      "input": {
+        "emailContent": "Von: chef@firma.de\nBetreff: DRINGEND: Quartalsbericht bis heute 17 Uhr\nIch brauche den Bericht heute unbedingt, sonst verpassen wir die Deadline.\n\nVon: newsletter@shop.de\nBetreff: 20% Rabatt nur heute!\nKlicken Sie hier zum Abmelden.\n\nVon: kollege@firma.de\nBetreff: Re: Re: Re: Meeting-Notizen?\nDritte Erinnerung — kannst du mir die Notizen schicken?\n\nVon: hr@firma.de\nBetreff: Erinnerung: Urlaubsantrag\nBitte reichen Sie Ihren Urlaubsantrag bis Ende der Woche ein.",
+        "userRole": "Projektmanager",
+        "userTimezone": "Europe/Berlin",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "urgency_analysis": [
+          {
+            "email_subject": "DRINGEND: Quartalsbericht bis heute 17 Uhr",
+            "from": "chef@firma.de",
+            "urgency_tier": "now",
+            "email_category": "Action Required",
+            "reasoning": "Vorgesetzter mit expliziter Deadline heute 17 Uhr — geschäftskritisch, keine Verzögerung möglich.",
+            "sender_marked_urgent": true,
+            "thread_analysis": {
+              "follow_up_count": 0,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "deadline_detected": "Heute 17:00 Uhr (13.07.2026)",
+            "consequence_of_delay": "Quartalsbericht wird verpasst, direkter Konflikt mit Vorgesetztem.",
+            "response_optimization": {
+              "best_time": "Sofort — Deadline ist heute 17 Uhr MESZ",
+              "recipient_timezone": "Europe/Berlin",
+              "estimated_time": "1–2 Stunden",
+              "estimated_minutes": 90,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": "Hallo [Chef-Name], ich arbeite gerade am Quartalsbericht und werde ihn bis 17 Uhr heute liefern. Falls es Engpässe gibt, melde ich mich vorab kurz. Viele Grüße, [Ihr Name]"
+          },
+          {
+            "email_subject": "Re: Re: Re: Meeting-Notizen?",
+            "from": "kollege@firma.de",
+            "urgency_tier": "now",
+            "email_category": "Response Expected",
+            "reasoning": "Dritte Erinnerung = signifikante Eskalation, 3+ Folgenachrichten lösen automatisch NOW aus.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 3,
+              "is_escalating": true,
+              "on_cc": false
+            },
+            "deadline_detected": null,
+            "consequence_of_delay": "Kollege ist blockiert, Beziehungsschaden und mögliche Eskalation an Vorgesetzte.",
+            "response_optimization": {
+              "best_time": "Noch heute Morgen beim ersten Arbeitsbeginn",
+              "recipient_timezone": "Europe/Berlin",
+              "estimated_time": "5 min",
+              "estimated_minutes": 5,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": "Hallo [Kollege-Name], sorry für die Verzögerung! Ich schicke dir die Meeting-Notizen vom [Datum] direkt im Anhang. Melde dich, falls etwas fehlt. Grüße, [Ihr Name]"
+          },
+          {
+            "email_subject": "Erinnerung: Urlaubsantrag",
+            "from": "hr@firma.de",
+            "urgency_tier": "this_week",
+            "email_category": "Action Required",
+            "reasoning": "Interne HR-Frist bis Ende der Woche — wichtig, aber kein sofortiger Handlungsbedarf.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 1,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "deadline_detected": "Ende der Woche (17.07.2026)",
+            "consequence_of_delay": "Urlaubsantrag wird nicht rechtzeitig bearbeitet, mögliche Probleme bei der Urlaubsplanung.",
+            "response_optimization": {
+              "best_time": "Montag oder Dienstag während regulärer Bürozeiten",
+              "recipient_timezone": "Europe/Berlin",
+              "estimated_time": "5 min",
+              "estimated_minutes": 5,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": "Hallo HR-Team, vielen Dank für die Erinnerung. Ich werde den Urlaubsantrag für [Zeitraum] bis Ende dieser Woche einreichen. Viele Grüße, [Ihr Name]"
+          },
+          {
+            "email_subject": "20% Rabatt nur heute!",
+            "from": "newsletter@shop.de",
+            "urgency_tier": "optional",
+            "email_category": "Newsletter",
+            "reasoning": "Werblicher Newsletter mit Abmelde-Link — keinerlei berufliche Relevanz.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 0,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "deadline_detected": null,
+            "consequence_of_delay": "Keine beruflichen Konsequenzen.",
+            "response_optimization": {
+              "best_time": "Nicht erforderlich",
+              "recipient_timezone": null,
+              "estimated_time": "5 min",
+              "estimated_minutes": 0,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": null
+          }
+        ],
+        "summary": {
+          "total_emails": 4,
+          "urgent_count": 2,
+          "this_week_count": 1,
+          "optional_count": 1,
+          "total_estimated_minutes": 100,
+          "delegation_count": 0
+        },
+        "batch_insights": {
+          "similar_emails": [
+            "HR-Urlaubsantrag und Meeting-Notizen sind beide interne Verwaltungsaufgaben — könnten direkt nacheinander erledigt werden."
+          ],
+          "delegation_opportunities": "Keine Delegationsmöglichkeiten erkannt — alle Aufgaben erfordern persönliche Bearbeitung.",
+          "time_block_suggestion": "Priorität 1 (sofort): Meeting-Notizen senden (5 Min), dann Quartalsbericht bis 17 Uhr fertigstellen. Priorität 2 (diese Woche): Urlaubsantrag einreichen."
+        },
+        "anxiety_relief": {
+          "permission_to_wait": "Nur 2 von 4 E-Mails sind wirklich dringend — der Newsletter und der Urlaubsantrag erzeugen keinen Stress für heute.",
+          "what_to_ignore": "Newsletter von newsletter@shop.de kann sofort archiviert oder gelöscht werden.",
+          "batch_processing_tip": "Erledigen Sie die Meeting-Notizen in 5 Minuten, bevor Sie mit dem Quartalsbericht beginnen — das räumt den Kopf frei."
+        },
+        "recurring_patterns": {
+          "always_optional_senders": [
+            "newsletter@shop.de — Werblicher Newsletter, kein Handlungsbedarf"
+          ],
+          "always_urgent_senders": [],
+          "unsubscribe_candidates": [
+            "newsletter@shop.de — Abmeldelink vorhanden, kein beruflicher Mehrwert"
+          ],
+          "volume_observation": "Zu wenig Verlauf für Muster — nach 10+ E-Mails werden Absenderprofile aufgebaut."
+        },
+        "response_templates": [
+          {
+            "for_urgency": "now",
+            "template": "Hallo [Name], danke für Ihre Nachricht. Ich kümmere mich sofort darum und melde mich bis [Uhrzeit] mit einem Update. Sollte es Verzögerungen geben, informiere ich Sie vorab. Viele Grüße, [Ihr Name]"
+          },
+          {
+            "for_urgency": "this_week",
+            "template": "Hallo [Name], vielen Dank für die Erinnerung. Ich werde mich bis [Datum] darum kümmern und melde mich dann. Viele Grüße, [Ihr Name]"
+          }
+        ]
+      },
+      "optionalSections": [
+        "response_templates",
+        "recurring_patterns"
+      ]
+    },
+    {
+      "name": "dated-emails-relative-deadlines-resolved-from-sent-date",
+      "endpoint": "/api/email-urgency-triager",
+      "input": {
+        "emailContent": "From: maria@client.com\nDate: Tue, 13 Oct 2026 09:14\nSubject: Signed contract back by today 5pm please\nCan you send the signed contract back today by 5pm? Legal closes the file tonight.\n\nFrom: ops@company.com\nDate: Mon, 12 Oct 2026 16:02\nSubject: Timesheets due end of week\nPlease submit your timesheets by the end of the week.\n\nFrom: dan@company.com\nDate: Fri, 16 Oct 2026 11:30\nSubject: Budget review numbers by 1 March 2027\nCould you send your department numbers by 1 March 2027 for the annual review?\n\nFrom: news@deals.com\nSubject: Weekend sale\nUnsubscribe here.",
+        "userRole": "Project manager",
+        "userTimezone": "America/New_York",
+        "senderHistory": {},
+        "triageHistory": [],
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "urgency_analysis": [
+          {
+            "email_subject": "Signed contract back by today 5pm please",
+            "from": "maria@client.com",
+            "urgency_tier": "now",
+            "email_category": "Action Required",
+            "reasoning": "The 5pm deadline was Tuesday 13 Oct — four days ago and already passed. Acting may still matter if the contract file can be reopened, but that is not established in the email; the user should contact Maria to find out whether the opportunity still exists.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 0,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "action_requested": "Send signed contract by 5pm Tuesday 13 Oct",
+            "deadline_detected": "Tuesday 2026-10-13 17:00 — ALREADY PASSED",
+            "consequence_of_delay": "Legal was stated to close the file Tuesday night; whether it can still be reopened is unknown from the email supplied",
+            "response_optimization": {
+              "best_time": "Today — deadline has passed, reach out now to find out if action is still possible",
+              "recipient_timezone": null,
+              "estimated_time": "about 5 min",
+              "estimated_minutes": 5,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": "Hi Maria — I see your deadline was Tuesday 13 Oct. Is the file still open, or has legal closed it? Let me know and I can send the signed contract right away."
+          },
+          {
+            "email_subject": "Timesheets due end of week",
+            "from": "ops@company.com",
+            "urgency_tier": "now",
+            "email_category": "Action Required",
+            "reasoning": "The stated deadline of 'end of week' fell on Friday 2026-10-16, which has already passed — timesheets are overdue as of today, Saturday 2026-10-17.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 0,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "action_requested": "Submit timesheets",
+            "deadline_detected": "End of week — Friday 2026-10-16 (already passed)",
+            "consequence_of_delay": "The email does not state a consequence for late submission.",
+            "response_optimization": {
+              "best_time": "Today — deadline already passed",
+              "recipient_timezone": null,
+              "estimated_time": "about 2 min",
+              "estimated_minutes": 2,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": null
+          },
+          {
+            "email_subject": "Budget review numbers by 1 March 2027",
+            "from": "dan@company.com",
+            "urgency_tier": "this_week",
+            "email_category": "Action Required",
+            "reasoning": "The deadline is 1 March 2027, roughly 4.5 months away; no same-day or this-week consequence is stated.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 0,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "action_requested": "Send department numbers for the annual budget review by 1 March 2027",
+            "deadline_detected": "1 March 2027",
+            "consequence_of_delay": null,
+            "response_optimization": {
+              "best_time": "The 1 March 2027 deadline is five months away — no action needed this week",
+              "recipient_timezone": null,
+              "estimated_time": "about 2 min",
+              "estimated_minutes": 2,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": "Hi Dan, thanks for the reminder. I'll have the department numbers to you by 1 March."
+          },
+          {
+            "email_subject": "Weekend sale",
+            "from": "news@deals.com",
+            "urgency_tier": "optional",
+            "email_category": "Newsletter",
+            "reasoning": "Promotional newsletter with an unsubscribe link — no ask directed at the user, no reply needed.",
+            "sender_marked_urgent": false,
+            "thread_analysis": {
+              "follow_up_count": 0,
+              "is_escalating": false,
+              "on_cc": false
+            },
+            "action_requested": null,
+            "deadline_detected": null,
+            "consequence_of_delay": null,
+            "response_optimization": {
+              "best_time": "No reply needed",
+              "recipient_timezone": null,
+              "estimated_time": "No reply needed",
+              "estimated_minutes": 2,
+              "can_delegate": false,
+              "delegate_to": null
+            },
+            "draft_reply": null
+          }
+        ],
+        "summary": {
+          "total_emails": 4,
+          "urgent_count": 2,
+          "this_week_count": 1,
+          "optional_count": 1,
+          "total_estimated_minutes": 11,
+          "delegation_count": 0
+        },
+        "batch_insights": {
+          "similar_emails": [],
+          "delegation_opportunities": null,
+          "time_block_suggestion": "Two emails need attention: the contract (deadline passed Tuesday) and the timesheets (deadline passed Friday). Both are overdue. Start with a short email to maria@client.com asking if the contract window is still open — about 5 minutes. Then submit your timesheets if they are not already in."
+        },
+        "anxiety_relief": {
+          "permission_to_wait": "The budget numbers (dan@company.com) are due 1 March 2027 — nothing in that email requires action this week.",
+          "what_to_ignore": "The weekend sale email (news@deals.com) needs no reply. The timesheet reminder is an internal notice; act on it yourself before end of business Friday but no reply is needed.",
+          "batch_processing_tip": null
+        },
+        "recurring_patterns": {
+          "always_optional_senders": [],
+          "always_urgent_senders": [],
+          "unsubscribe_candidates": [
+            "news@deals.com — marketing email with explicit unsubscribe link"
+          ],
+          "volume_observation": null
+        },
+        "response_templates": []
+      },
+      "optionalSections": [
+        "response_templates",
+        "recurring_patterns"
+      ]
+    },
+    {
+      "name": "compose-de",
+      "endpoint": "/api/email-urgency-triager",
+      "input": {
+        "action": "compose",
+        "emailSubject": "Re: DRINGEND: Quartalsbericht bis heute 17 Uhr",
+        "emailFrom": "chef@firma.de",
+        "emailBody": "Ich brauche den Bericht heute unbedingt, sonst verpassen wir die Deadline.",
+        "tone": "professional",
+        "length": "standard",
+        "instructions": "Erkläre höflich, dass ich bis 16 Uhr liefere",
+        "userRole": "Projektmanager",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "composed_reply": "vielen Dank für Ihre Nachricht. Ich möchte Sie kurz informieren, dass der Quartalsbericht heute bis 16:00 Uhr bei Ihnen vorliegen wird – damit haben Sie noch ausreichend Zeit vor der Deadline um 17:00 Uhr, den Bericht zu prüfen.\n\nSollten kurzfristig noch Rückfragen oder Änderungswünsche entstehen, stehe ich selbstverständlich zur Verfügung.",
+        "subject_line": "Re: DRINGEND: Quartalsbericht bis heute 17 Uhr",
+        "tone_used": "professional",
+        "word_count": 52,
+        "key_points_addressed": [
+          "Zusage der Lieferung bis 16:00 Uhr – eine Stunde vor der Deadline",
+          "Pufferzeit für Rückfragen und Korrekturen wird explizit erwähnt",
+          "Offenheit für Rückfragen signalisiert"
+        ],
+        "alternative_closings": [
+          "Mit freundlichen Grüßen,",
+          "Beste Grüße,",
+          "Viele Grüße,"
+        ]
+      }
+    }
+  ]
 }
