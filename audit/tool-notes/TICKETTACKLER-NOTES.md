@@ -677,3 +677,12 @@ clear-cut case, no sycophancy.
 `npm run check:golden ticket-tackler` — 5 cases (small-city EN, quote-heavy DE,
 weak-case JUST PAY, camera consistency, followup). Structure only — eyeball
 wording after prompt edits.
+
+## First look (2026-10-17) — time to first result ~70s → ~3s
+- The research (Sonnet + web_search) takes ~50-60s whatever it is allowed (lib/groundedFacts.js), and the verdict waits on it plus the rule check. Nothing showed for ~66-77s.
+- New `first_look` part (Haiku, 1200 tokens — 700 truncated German), started with the research: `turns_on` (what the outcome hinges on, as open questions) and `preserve_now` (0-3 items of evidence that could disappear). It knows only the citation and the account, never the rules. Measured live: first frame 3.2s (Seattle).
+- Days since the citation date and a stated N-day window are computed in code and handed to it, so a closed window leads `turns_on` (the Seattle golden, dated 07/22/2026, is now past its 15-day window).
+- Page: `turns_on` sits in the verdict's slot with a "checking the local rules" line until the verdict lands; "Save these now" stays. The evidence pass is told those items are already shown. The double-check note is hidden until there is a verdict.
+- Rule check writes `why` only for conditions that are not met (the code never read the others). One sample: 615 output tokens / 8.9s vs 500-725 / 10-13s before — not established as a saving.
+- Merging the rule check into the verdict call was NOT done: both calls are output-bound, so it would save only one call's start-up (~2s).
+- Residual: on the camera case Haiku keeps listing a school calendar as something to save — a look-up, not perishable evidence — despite the rule.

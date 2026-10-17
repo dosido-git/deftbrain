@@ -110,6 +110,9 @@ const TicketTackler = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('ticket-tackler-history', []);
   const [showHistory, setShowHistory] = useState(false);
   const [phase, setPhase] = useState(null); // 'main' | 'followup'
+  // The first look shows before the research ends; the hook's `loading` goes
+  // false at the first draft, so "still checking the rules" is tracked here.
+  const [researching, setResearching] = useState(false);
   const [followupQ, setFollowupQ] = useState('');
   const [followup, setFollowup] = useState(null);
   const resultsRef = useRef(null);
@@ -140,7 +143,7 @@ const TicketTackler = ({ tool }) => {
   };
 
   const handleReset = () => {
-    cancelProgressive(); setCheckStatus(null);
+    cancelProgressive(); setCheckStatus(null); setResearching(false);
     setTicketType('parking');
     setCity(''); setTicketText(''); setTicketImage(null);
     setWhatHappened(''); setFineAmount(''); setDeadline('');
@@ -172,8 +175,8 @@ const TicketTackler = ({ tool }) => {
         fineAmount: fineAmount || undefined,
         deadline: deadline || undefined,
       }, {
-        onDraft: d => { setResults(d); setCheckStatus('checking'); },
-        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+        onDraft: d => { setResults(d); setResearching(!d?.assessment); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setResearching(false); setCheckStatus(checkStatusFor(changed)); },
       });
       if (!data) return; // replaced by a newer run
       setResults(data);
@@ -190,8 +193,8 @@ const TicketTackler = ({ tool }) => {
         },
         ...prev,
       ].slice(0, 6));
-    } catch (_) { /* error state handled by hook */ }
-    finally { setPhase(null); }
+    } catch (_) { setCheckStatus(null); /* error state handled by hook */ }
+    finally { setPhase(null); setResearching(false); }
   }, [loading, city, ticketText, ticketImage, whatHappened, fineAmount, deadline, ticketType, callToolEndpointProgressive, setResults, setSessionHistory]);
 
   const handleFollowup = useCallback(async () => {
@@ -279,6 +282,9 @@ const TicketTackler = ({ tool }) => {
     const parts = [];
     const asmt = results?.assessment;
     if (asmt) parts.push(`${verdictMeta(asmt.verdict).label}\n${asmt.reason}`);
+    if (results?.first_look?.preserve_now?.length) {
+      parts.push(t('tt_preserve_title') + ':\n' + results.first_look.preserve_now.map(x => `• ${x?.item} — ${x?.why}`).join('\n'));
+    }
     if (results?.what_may_matter?.length) {
       parts.push(t('tt_matter_title') + ':\n' + results.what_may_matter.map(a => `• ${a?.fact} [${sourceMeta(a?.source).label}] — ${a?.why_it_matters} (${t('tt_matter_verify')}: ${a?.needs_verification}${a?.evidence_that_would_help ? `; ${t('tt_matter_helps')}: ${a.evidence_that_would_help}` : ''})`).join('\n'));
     }
@@ -463,7 +469,8 @@ const TicketTackler = ({ tool }) => {
       {/* Results */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
-          <CheckNote status={checkStatus} className={c.textMuted} />
+          {/* Nothing is being double-checked while the rules are still being researched. */}
+          <CheckNote status={results?.assessment ? checkStatus : null} className={c.textMuted} />
           {/* Verdict */}
           {results?.assessment ? (
             <div className={`border-t ${c.border} pt-5`}>
@@ -474,6 +481,33 @@ const TicketTackler = ({ tool }) => {
                 </div>
                 <p className="text-sm mt-1">{results.assessment?.reason}</p>
               </div>
+            </div>
+          ) : results?.first_look?.turns_on ? (
+            // First look: shown in seconds, from the ticket and the account
+            // alone, in the verdict's place until the rules are checked.
+            <div className={`border-t ${c.border} pt-5`}>
+              <div className={`${c.cardAlt} rounded-xl px-4 py-3`}>
+                {researching ? (
+                  <p className={`text-sm ${c.textMuted}`}>
+                    <span className="inline-block animate-spin me-2">{tool?.icon ?? '🚦'}</span>{t('tt_first_checking', { city: city.trim() })}
+                  </p>
+                ) : null}
+                <p className={`text-sm mt-1 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('tt_first_turns_on')}:</span> {results.first_look.turns_on}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Save these now — from the first look; evidence that may not last */}
+          {results?.first_look?.preserve_now?.length ? (
+            <div className={`border-t ${c.border} pt-5`}>
+              <h3 className={`font-bold ${c.text}`}>📌 {t('tt_preserve_title')}</h3>
+              <ul className="mt-2 space-y-2">
+                {results.first_look.preserve_now.map((x, i) => (
+                  <li key={i} className={`text-sm ${c.textSecondary}`}>
+                    <span className={`font-medium ${c.text}`}>{x?.item}</span> — {x?.why}
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
 

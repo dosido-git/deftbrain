@@ -5,7 +5,7 @@
 // — never an "AI lawyer", never an outcome promise, never a manufactured case.
 const express = require('express');
 const router = express.Router();
-const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote, takeKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext, extractSearchResults } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -43,6 +43,36 @@ const TYPE_LABELS = {
 // "verdict" (previously it deliberately wasn't, because research could
 // surface new facts mid-review in the single-call design — that scenario no
 // longer exists once research is fully front-loaded into stage 1).
+
+// First look (2026-10-17). The research below takes ~50s whatever it is
+// allowed (lib/groundedFacts.js measured 1-3 searches at 49-52s), and the
+// verdict cannot be written before it — so for a minute the visitor saw
+// nothing. This pass needs only the citation and their account: what the case
+// will turn on, and evidence that could be gone by the time they decide. It
+// shows in seconds; the verdict replaces the "checking" note when it lands.
+// It must not know the rules, because it does not.
+const FIRST_LOOK_PROMPT = `You write the first thing a person sees about their parking or camera ticket, while the local rules are still being researched by someone else.
+
+You know only the citation and the person's own account. You do NOT know the local rules, exemptions, deadlines, fees or procedures. Never state or imply any of them, never say whether the ticket is worth contesting or paying, and never predict an outcome.
+
+Return ONLY valid JSON:
+{
+  "first_look": {
+    "turns_on": "One sentence naming the one or two facts the outcome is likely to turn on, written as open questions drawn from the citation and the account — for example whether the restriction was still in effect at the time on the ticket, or whether the sign could be read from where the car was. No verdict, no rule, no deadline, no advice to pay or contest.",
+    "preserve_now": [
+      { "item": "One piece of evidence that could disappear or change soon and bears directly on what the citation charges or what the person says happened — a photo of the sign, the spot or the meter, a receipt, a screenshot of a parking app session", "why": "What it could show — one sentence" }
+    ]
+  }
+}
+
+RULES:
+- TIME FIRST. When the citation states a response window and DAYS SINCE THE DATE ON THE CITATION shows it has passed or is nearly gone, turns_on leads with whether a response can still be made in time — that comes before anything about the merits. Use only the window the citation or the person states; never supply one.
+- preserve_now is not a to-do list for research: a fact to look up (a school calendar, a rule, what weekday a date was) is never an item — the research and the CALENDAR FACTS cover those.
+- preserve_now holds 0-3 items. Leave it empty when nothing relevant could disappear. Never pad it.
+- Only evidence the person can still get NOW. A scene that has since changed (the car is no longer parked there) cannot be photographed; a permanent public record is not evidence that could disappear. Never ask for evidence that would only confirm the violation happened.
+- Never say evidence will win the case or get the ticket dismissed.
+- Use only details from the citation and the account. Do not invent a sign's wording, a time, a place or anything the person did.
+- ${NO_QUOTE_RULE}`;
 
 const INVESTIGATOR_PROMPT = `You are the investigation stage for Ticket Tackler.
 
@@ -229,7 +259,7 @@ RULES:
   RESEARCH FINDINGS:
   ${researchDossier}
 
-  Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|met_per_account|failed|unknown","why":"the fact that settles it, or what is missing — one sentence"}],"applies":"yes|yes_per_account|no|unknown"}]}. A condition is met when the citation or a verified finding settles it; met_per_account when only the user's own account settles it (what they say the sign read, when they parked) — their account is evidence, not a gap; unknown only when nothing supplied speaks to it. "applies" is yes if every condition is met; yes_per_account if every condition is met or met_per_account and at least one is met_per_account; no if any condition failed; otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
+  Return {"rules":[{"rule":"short name","conditions":[{"condition":"as the finding states it","status":"met|met_per_account|failed|unknown","why":"the fact that settles it, or what is missing — one sentence; OMIT this key when status is met"}],"applies":"yes|yes_per_account|no|unknown"}]}. Speed: a condition that is met needs no why — only the others are read. A condition is met when the citation or a verified finding settles it; met_per_account when only the user's own account settles it (what they say the sign read, when they parked) — their account is evidence, not a gap; unknown only when nothing supplied speaks to it. "applies" is yes if every condition is met; yes_per_account if every condition is met or met_per_account and at least one is met_per_account; no if any condition failed; otherwise unknown. Write status and applies as those exact English words. Leave out findings that are not rules, exemptions or defenses (deadlines, fees, procedures).` }],
         }, { label: 'ticket-tackler-rulecheck', maxRetries: 1 });
         const rules = Array.isArray(rc?.rules) ? rc.rules.filter(r => r && r.rule) : [];
         if (rules.length) {
@@ -341,15 +371,50 @@ RULES:
       messages: [{ role: 'user', content: imageBlocks.length ? [...imageBlocks, { type: 'text', text }] : text }],
     }, { label: tag });
     const PLAN = ['assessment', 'pay_or_contest'];
+    // Starts with the research, not after it; nothing waits on it but the
+    // evidence pass, which is told what is already on screen.
+    // T2: elapsed days are arithmetic, done here — the first look has to see a
+    // window that has already closed (a 15-day notice dated three months ago).
+    // US 07/22/2026, or day-first 22.07.2026.
+    const us = String(ticketText || '').match(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/);
+    const eu = String(ticketText || '').match(/\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b/);
+    const issuedAt = us ? Date.UTC(+us[3], +us[1] - 1, +us[2]) : eu ? Date.UTC(+eu[3], +eu[2] - 1, +eu[1]) : NaN;
+    const daysSince = Math.floor((Date.now() - issuedAt) / 86400000);
+    // A window stated in days ("within 15 days", "21 days from", "14 Tage").
+    const windowDays = Number((`${ticketText || ''} ${deadline || ''}`.match(/\b(\d{1,3})[- ](?:days?|calendar days?|Tage[n]?)\b/i) || [])[1]) || 0;
+    const timing = daysSince >= 0 && daysSince <= 730 ? [
+      `DAYS SINCE THE DATE ON THE CITATION (computed in code, as of today): ${daysSince}`,
+      ...(windowDays ? [`A ${windowDays}-day window counted from that date ${daysSince > windowDays ? `ended ${daysSince - windowDays} day(s) ago` : `has ${windowDays - daysSince} day(s) left`} (computed in code; whether the window counts from that date is not established).`] : []),
+    ] : [];
+    const firstLookPrompt = baseCasePrompt + (timing.length ? `\n${timing.join('\n')}\n` : '');
+    const firstLook = callClaudeWithRetry({
+      model: MODELS.FAST,
+      // 700 truncated the German case (multi-language round: English-sized
+      // budgets are the usual reason a language goes down).
+      max_tokens: 1200,
+      system: withLanguage(FIRST_LOOK_PROMPT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: imageBlocks.length ? [...imageBlocks, { type: 'text', text: firstLookPrompt }] : firstLookPrompt }],
+    }, { label: 'ticket-tackler-first', maxRetries: 1 });
+    firstLook.catch(() => {}); // its own part reports the failure
+    const shownNote = async () => {
+      const items = (await firstLook.catch(() => null))?.first_look?.preserve_now;
+      return Array.isArray(items) && items.length
+        ? `\n\nALREADY SHOWN to the reader under "save these now": ${JSON.stringify(items.map(x => x?.item).filter(Boolean))}. Do not repeat these in evidence_to_get; list only what else to get.`
+        : '';
+    };
     return await answer(req, res, {
       label: 'ticket-tackler',
       heartbeat: true,
-      parts: planFirst(PLAN, async () => call(onlyKeys(reviewerPrompt(await research), PLAN), 1500, 'ticket-tackler'), [
-        ['what_may_matter', 'what_to_verify', 'evidence_to_get'],
-        ['appeal_letter', 'before_appeal', 'how_to_file', 'dont_say'],
-      ], async (keys, i, plan) => call(onlyKeys(reviewerPrompt(await research), keys) + planNote(plan, PLAN), 3000, `ticket-tackler-${i + 2}`)),
+      parts: [
+        { run: () => firstLook, apply: takeKeys(['first_look']) },
+        ...planFirst(PLAN, async () => call(onlyKeys(reviewerPrompt(await research), PLAN), 1500, 'ticket-tackler'), [
+          ['what_may_matter', 'what_to_verify', 'evidence_to_get'],
+          ['appeal_letter', 'before_appeal', 'how_to_file', 'dont_say'],
+        ], async (keys, i, plan) => call(onlyKeys(reviewerPrompt(await research), keys) + planNote(plan, PLAN) + (i === 0 ? await shownNote() : ''), 3000, `ticket-tackler-${i + 2}`)),
+      ],
       finish: d => ({ ...stripCites(structuredClone(d)), ...(verifiedSources.length ? { verified_sources: verifiedSources } : {}) }),
-      ready: d => Boolean(d.assessment),
+      // The first look is enough to show; only the verdict makes it an answer.
+      ready: d => Boolean(d.assessment || d.first_look?.turns_on || d.first_look?.preserve_now?.length),
       complete: d => Boolean(d.assessment),
       check: async (parsed) => {
         const { researchDossier, ruleCheckBlock } = await research;
@@ -360,6 +425,8 @@ RULES:
             const fields = [];
             const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
             add('assessment.reason', parsed.assessment.reason);
+            add('first_look.turns_on', parsed.first_look?.turns_on);
+            (parsed.first_look?.preserve_now || []).forEach((x, i) => { add(`first_look.preserve_now[${i}].item`, x?.item); add(`first_look.preserve_now[${i}].why`, x?.why); });
             (parsed.what_may_matter || []).forEach((m, i) => { add(`what_may_matter[${i}].fact`, m?.fact); add(`what_may_matter[${i}].why_it_matters`, m?.why_it_matters); });
             add('appeal_letter', parsed.appeal_letter);
             add('before_appeal', parsed.before_appeal);

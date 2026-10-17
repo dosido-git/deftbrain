@@ -23,6 +23,19 @@
         "userRegion": "US"
       },
       "output": {
+        "first_look": {
+          "turns_on": "Whether a response can still be submitted 87 days after the citation date, given the 15-day window stated on the notice.",
+          "preserve_now": [
+            {
+              "item": "A photo of the load-zone sign as it currently appears, showing the posted hours and any obstruction from the tree branch",
+              "why": "It could show whether the restriction text and end time (6 PM) were legible from the street, and whether the obstruction affected readability"
+            },
+            {
+              "item": "A photo of the parking spot from street level, showing sightlines to the sign",
+              "why": "It could show what a driver parking there could read from the car"
+            }
+          ]
+        },
         "assessment": {
           "verdict": "STRONG_REASON_TO_CONTEST",
           "reason": "According to your account, the sign posted at the location restricts parking only between 7 AM and 6 PM, and you parked at 6:40 PM — 40 minutes after the restriction ended. Seattle Municipal Code establishes that passenger load zone restrictions are governed by the hours displayed on the sign; if the sign says what you describe, the zone was not in effect at the time of the citation. The sign's exact wording and legibility are the key facts that still need to be confirmed with your own photographs."
@@ -92,7 +105,8 @@
         "dont_say": [
           "Do not say 'the sign is illegible so the ticket is automatically void' — the sign obstruction supports your case but the stronger argument is that the posted hours had expired; frame the obstruction as additional context, not as the sole basis for dismissal."
         ]
-      }
+      },
+      "optionalSections": []
     },
     {
       "name": "main-de-appeal-gate-passes-quote-heavy",
