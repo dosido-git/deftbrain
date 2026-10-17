@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -117,16 +118,28 @@ RULES:
 15. SCOPE CHECK: preserve quantities and scope exactly, in every field. Never strengthen "some," "other," "seems," or similar language into "all," "only," "none," or a stronger claim. If the user said a comment happened "sometimes," do not write as if it happens constantly; if they said "part of" a reason, do not write as if it were the whole reason.
 16. INTERPRETATION CHECK: preserve the status of every claim, in every field. An impression stays an impression, an inference stays an inference, and a prediction stays a prediction. Never convert what the user thinks into something established or directly observed.`;
 
-    const parsed = await callClaudeWithRetry({
-model: MODELS.SMART,
-      max_tokens: 3500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'truth-bomb' });
-    if (!parsed.the_thing_examined) {
-      return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
-    }
-    res.json(parsed);
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // thing examined, the reality check and any safety note show first; the
+    // three ways to say it, and the timing and permission not to, then run at
+    // once, handed that reading so the scripts say no more than it does.
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['the_thing_examined', 'reality_check', 'safety_note'];
+    return await answer(req, res, {
+      label: 'truth-bomb',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1600, 'truth-bomb'), [
+        ['three_ways_to_say_it'],
+        ['the_timing', 'permission_to_not_say_it'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1600, `truth-bomb-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.the_thing_examined),
+      complete: d => Boolean(d.the_thing_examined),
+    });
 
   } catch (error) {
     console.error('TruthBomb error:', error);

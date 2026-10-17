@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -526,18 +527,28 @@ ARRAY BOUNDS: 3 to 5 moves. limits at most 4, already_working at most 4.
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): where you stand and the
+    // moves (with the start-here pick, which must name one of them) are
+    // written at once; where you stand shows first. The consistency check
+    // runs after the answer is on screen.
+    const system = withLanguage('Helps people widen the ways new people, ideas and opportunities can reach them. Works only from what the visitor supplied. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const pass = (keys, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Helps people widen the ways new people, ideas and opportunities can reach them. Works only from what the visitor supplied. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
-    }, { label: 'get-noticed' });
-    if (!parsed.current_surface) {
-      return res.status(500).json({ error: 'Could not read your situation. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'get-noticed', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+      max_tokens: 2400,
+      system,
+      messages: [{ role: 'user', content: withLanguage(onlyKeys(userPrompt, keys), userLanguage) }],
+    }, { label: i ? `get-noticed-${i + 1}` : 'get-noticed' });
+    return await answer(req, res, {
+      label: 'get-noticed',
+      parts: keyGroups([['current_surface'], ['moves', 'start_here']], pass),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.current_surface),
+      complete: d => Boolean(d.current_surface),
+      check: async (parsed) => {
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'get-noticed', userLanguage: req.body?.userLanguage });
+      },
+    });
 
   } catch (error) {
     console.error('LuckSurface error:', error);

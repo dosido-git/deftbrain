@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -451,91 +452,93 @@ RULES:
 - Keep all prose concise.
 Return only the JSON object.`;
 
-    const [analysisRaw, insightsRaw] = await Promise.all([
-      callClaudeWithRetry(
-        {
-          model: MODELS.SMART,
-          max_tokens: 6000,
-          messages: [
-            {
-              role: 'user',
-              content:
-                withLanguage(analysisPrompt, userLanguage) +
-                withLocaleContext(userLocale, userCurrency, userRegion),
-            },
-          ],
-        },
-        { label: 'email-urgency-triage-analysis-v2' }
-      ),
-      callClaudeWithRetry(
-        {
-          model: MODELS.SMART,
-          max_tokens: 1400,
-          messages: [
-            {
-              role: 'user',
-              content:
-                withLanguage(insightsPrompt, userLanguage) +
-                withLocaleContext(userLocale, userCurrency, userRegion),
-            },
-          ],
-        },
-        { label: 'email-urgency-triage-insights-v2' }
-      ),
-    ]);
+    // Progressive (2026-10-17, lib/progressive.js): a quick pass lists the
+    // emails (sender and subject, in order); then the emails are analysed
+    // three to a pass, all at once, beside the cross-email insights — the
+    // first emails show in seconds instead of after one pass wrote all 15.
+    // The summary is recomputed in code from whatever has landed; the guard
+    // runs after the answer is on screen.
+    const locale = withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (content, maxTokens, tag, model = MODELS.SMART) => callClaudeWithRetry({
+      model,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
+    }, { label: tag });
+    const listed = call(`${sharedContext}
 
-    if (!Array.isArray(analysisRaw?.urgency_analysis)) {
-      return res.status(500).json({ error: t(userLanguage, 'analyzeFailed') });
-    }
-
-    const urgencyAnalysis = analysisRaw.urgency_analysis
-      .slice(0, 15)
-      .map(sanitizeEmail);
-
-    const parsed = {
-      urgency_analysis: urgencyAnalysis,
-      summary: recomputeSummary(urgencyAnalysis),
-      ...sanitizeInsights(insightsRaw),
-    };
-
-    // Same trade as drive-home: the triage is complete here, and the guard is a
-    // quality pass on top of it. Two SMART calls at 6000 + 1400 tokens have
-    // already run, so it only gets a slot if there is time left for one.
-    const elapsed = Date.now() - startedAt;
-    if (elapsed > GUARD_ENTRY_MS) {
-      console.log(`[email-urgency-triager-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
-      return res.json(parsed);
-    }
-
-    const fields = [];
-    const walk = (val, path) => {
-      if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
-      else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
-      else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
-    };
-    walk({ urgency_analysis: parsed.urgency_analysis, batch_insights: parsed.batch_insights }, '');
-
-    await runOutputGuard(parsed, {
-      label: 'email-urgency-triager-v2',
-      fields,
-      supplied: `THE EMAILS THE VISITOR PASTED, IN FULL — nothing else about their work, their calendar, their relationships or these senders is known:
-${emailContent}
-
-Their stated role: ${userRole || 'not given'}. Their local time: ${localTimeContext(userTimezone)}.
-
-WHAT FAILS:
-1. A deadline, consequence, or escalation that is not in the pasted text. "They will escalate to your manager" is an invention unless someone wrote it.
-2. A claim about the sender — seniority, importance, how they usually behave, whether they are annoyed. A signature block is not a relationship.
-3. Treating position in the pile, or a subject line containing the word urgent, as evidence that something is urgent. The sender marking it urgent is a fact about the sender, not about the task.
-4. A reply draft that commits the visitor to a date, a deliverable, a price or an apology they never mentioned.
-5. Inventing what the visitor's own workload, priorities or availability are in order to justify a tier.`,
-      promise: 'Email Urgency Triager sorts pasted emails into what needs a reply today, what can wait, and what needs no reply, using only what the emails themselves say. It then drafts replies on request.',
-      guard: router.outputGuard,
-      userLanguage,
-      locale: withLocaleContext(userLocale, userCurrency, userRegion),
+List the emails in the paste, in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject"}]}`, 900, 'email-urgency-triage-list', MODELS.FAST)
+      .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []));
+    listed.catch(() => {});
+    const PER = 3;
+    const analysisFor = (group) => onlyKeys(analysisPrompt.replace('Your response MUST contain urgency_analysis and summary.', ''), ['urgency_analysis'])
+      + `\nTHIS PASS analyses ONLY these emails, one urgency_analysis entry each, in this order:\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'}`).join('\n')}`;
+    const chunkPart = (ci) => ({
+      required: ci === 0,
+      run: async () => {
+        const list = await listed;
+        // No list (or a failed one): the first pass analyses everything, as before.
+        if (!list.length) return ci === 0 ? call(analysisPrompt, 6000, 'email-urgency-triage-analysis-v2') : null;
+        const group = list.slice(ci * PER, ci * PER + PER);
+        if (!group.length) return null;
+        return call(analysisFor(group), 2600, `email-urgency-triage-analysis-v2:${ci + 1}`);
+      },
+      apply: (d, out) => { if (out) d.chunks = { ...d.chunks, [ci]: Array.isArray(out.urgency_analysis) ? out.urgency_analysis : [] }; },
     });
+    const analysisOf = d => Object.keys(d.chunks || {}).map(Number).sort((x, y) => x - y).flatMap(k => d.chunks[k]).slice(0, 15).map(sanitizeEmail);
+    const shape = (d) => {
+      const urgencyAnalysis = analysisOf(d);
+      return { urgency_analysis: urgencyAnalysis, summary: recomputeSummary(urgencyAnalysis), ...sanitizeInsights(d.insights) };
+    };
+    return await answer(req, res, {
+      label: 'email-urgency-triager',
+      parts: [
+        ...[0, 1, 2, 3, 4].map(chunkPart),
+        { run: () => call(insightsPrompt, 1400, 'email-urgency-triage-insights-v2'), apply: (d, out) => { d.insights = out; } },
+      ],
+      finish: d => shape(structuredClone(d)),
+      ready: d => Array.isArray(d.chunks?.[0]) && d.chunks[0].length > 0,
+      complete: d => analysisOf(d).length > 0,
+      check: async (draft) => {
+        // Same trade as drive-home: the guard is a quality pass on top of a
+        // complete triage, and only gets a slot if there is time left for one.
+        const elapsed = Date.now() - startedAt;
+        if (elapsed > GUARD_ENTRY_MS) {
+          console.log(`[email-urgency-triager-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
+          return;
+        }
+        const parsed = shape(draft);
+        const fields = [];
+        const walk = (val, path) => {
+          if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+          else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+          else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+        };
+        walk({ urgency_analysis: parsed.urgency_analysis, batch_insights: parsed.batch_insights }, '');
 
-    return res.json(parsed);
+        await runOutputGuard(parsed, {
+          label: 'email-urgency-triager-v2',
+          fields,
+          supplied: `THE EMAILS THE VISITOR PASTED, IN FULL — nothing else about their work, their calendar, their relationships or these senders is known:
+    ${emailContent}
+
+    Their stated role: ${userRole || 'not given'}. Their local time: ${localTimeContext(userTimezone)}.
+
+    WHAT FAILS:
+    1. A deadline, consequence, or escalation that is not in the pasted text. "They will escalate to your manager" is an invention unless someone wrote it.
+    2. A claim about the sender — seniority, importance, how they usually behave, whether they are annoyed. A signature block is not a relationship.
+    3. Treating position in the pile, or a subject line containing the word urgent, as evidence that something is urgent. The sender marking it urgent is a fact about the sender, not about the task.
+    4. A reply draft that commits the visitor to a date, a deliverable, a price or an apology they never mentioned.
+    5. Inventing what the visitor's own workload, priorities or availability are in order to justify a tier.`,
+          promise: 'Email Urgency Triager sorts pasted emails into what needs a reply today, what can wait, and what needs no reply, using only what the emails themselves say. It then drafts replies on request.',
+          guard: router.outputGuard,
+          userLanguage,
+          locale: withLocaleContext(userLocale, userCurrency, userRegion),
+        });
+        // Back into the draft: one chunk holding the checked list.
+        draft.chunks = { 0: parsed.urgency_analysis };
+        draft.insights = { ...draft.insights, batch_insights: parsed.batch_insights };
+      },
+    });
   } catch (error) {
     console.error('Email Urgency Triager error:', error);
     return res.status(500).json({ error: t(req.body?.userLanguage, 'failed') });

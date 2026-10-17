@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -389,104 +390,117 @@ ${NO_QUOTE_RULE}`;
     const content = buildImageContent(imageBase64, extraPhotos);
     content.push({ type: 'text', text: activeMode === 'identify' ? 'Identify this plant.' : (plantDescription?.trim() || 'See selected symptoms and supplied details above.') });
 
-    let parsed = await callClaudeWithRetry({
+    const requiredKey = activeMode === 'care' ? 'core_care' : activeMode === 'identify' ? 'identification_evidence' : 'bottom_line';
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (system, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: systemPrompt,
+      system,
       messages: [{ role: 'user', content }],
-    }, { label: `plant-rescue-${activeMode}` });
+    }, { label: tag });
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11) for
+    // Rescue: what the plant is, the bottom line, what was reported and any
+    // safety note show first; the explanations and checks, and what to do,
+    // then run at once, handed that. Care and Identify stay one pass. The
+    // guard (and Identify's image-consistency regeneration) runs after the
+    // answer is on screen.
+    const PLAN = ['plant_identification', 'bottom_line', 'what_you_reported', 'safety'];
+    const parts = activeMode === 'rescue'
+      ? planFirst(PLAN, () => call(withLanguage(onlyKeys(prompt, PLAN), userLanguage) + locale, 'plant-rescue-rescue'), [
+        ['possible_explanations', 'check_first'],
+        ['what_to_do_now', 'what_improvement_looks_like', 'useful_next_photo'],
+      ], (keys, i, plan) => call(withLanguage(onlyKeys(prompt, keys) + planNote(plan, PLAN), userLanguage) + locale, `plant-rescue-rescue-${i + 2}`))
+      : [{ required: true, run: () => call(systemPrompt, `plant-rescue-${activeMode}`), apply: (d, out) => Object.assign(d, out) }];
+    return await answer(req, res, {
+      label: `plant-rescue-${activeMode}`,
+      parts,
+      // Identify: current_image_present is set by CODE, never trusted from the model.
+      finish: d => ({ ...structuredClone(d), ...(activeMode === 'identify' ? { current_image_present: !!imageBase64 } : {}) }),
+      ready: d => Boolean(d[requiredKey]),
+      complete: d => Boolean(d[requiredKey]),
+      check: async (parsed) => {
+        if (activeMode === 'identify') parsed.current_image_present = !!imageBase64;
+        // v2 guard (PF-39a). Fail-open: it wraps a working answer.
+        try {
+          const fields = [];
+          if (activeMode === 'rescue') {
+            fields.push(['bottom_line.summary', parsed.bottom_line?.summary]);
+            (parsed.what_you_reported || []).forEach((v, i) => fields.push([`what_you_reported[${i}]`, v]));
+            (parsed.possible_explanations || []).forEach((p, i) => {
+              fields.push([`possible_explanations[${i}].why_it_could_fit`, p.why_it_could_fit]);
+              fields.push([`possible_explanations[${i}].check`, p.check]);
+            });
+            (parsed.check_first || []).forEach((c, i) => {
+              fields.push([`check_first[${i}].if_yes`, c.if_yes]);
+              fields.push([`check_first[${i}].if_no`, c.if_no]);
+            });
+            (parsed.what_to_do_now || []).forEach((a, i) => {
+              fields.push([`what_to_do_now[${i}].why`, a.why]);
+              fields.push([`what_to_do_now[${i}].condition`, a.condition]);
+            });
+          } else if (activeMode === 'care') {
+            fields.push(['core_care.watering', parsed.core_care?.watering]);
+            fields.push(['core_care.feeding', parsed.core_care?.feeding]);
+            (parsed.when_conditions_change || []).forEach((w, i) => fields.push([`when_conditions_change[${i}].adjustment`, w.adjustment]));
+          } else {
+            // Array fields live under identification_evidence per IDENTIFY_SCHEMA
+            // — pushing a container path itself would make getByPath return an
+            // array, which outputGuard.js correctly refuses to repair (a repair
+            // can only rewrite a string leaf, not a whole array) and silently
+            // drops.
+            const ev = parsed.identification_evidence || {};
+            (Array.isArray(ev.distinguishing_visible_features) ? ev.distinguishing_visible_features : []).forEach((v, i) => fields.push([`identification_evidence.distinguishing_visible_features[${i}]`, v]));
+            (Array.isArray(ev.current_image_observations) ? ev.current_image_observations : []).forEach((v, i) => fields.push([`identification_evidence.current_image_observations[${i}]`, v]));
+            (ev.plausible_alternatives || []).forEach((a, i) => {
+              fields.push([`identification_evidence.plausible_alternatives[${i}].why_possible`, a.why_possible]);
+              fields.push([`identification_evidence.plausible_alternatives[${i}].how_to_distinguish`, a.how_to_distinguish]);
+            });
+          }
 
-    const requiredKey = activeMode === 'care' ? 'core_care' : activeMode === 'identify' ? 'identification_evidence' : 'bottom_line';
-    if (!parsed?.[requiredKey]) {
-      return res.status(500).json({ error: 'Could not complete that. Please try again.' });
-    }
-
-    // Identify mode: current_image_present is set by CODE (never trusted from
-    // the model) immediately, so every downstream consumer — including the
-    // v2 guard's own check below — sees the correct ground truth.
-    if (activeMode === 'identify') parsed.current_image_present = !!imageBase64;
-
-    // v2 guard (PF-39a). Fail-open: it wraps a working answer.
-    try {
-      const fields = [];
-      if (activeMode === 'rescue') {
-        fields.push(['bottom_line.summary', parsed.bottom_line?.summary]);
-        (parsed.what_you_reported || []).forEach((v, i) => fields.push([`what_you_reported[${i}]`, v]));
-        (parsed.possible_explanations || []).forEach((p, i) => {
-          fields.push([`possible_explanations[${i}].why_it_could_fit`, p.why_it_could_fit]);
-          fields.push([`possible_explanations[${i}].check`, p.check]);
-        });
-        (parsed.check_first || []).forEach((c, i) => {
-          fields.push([`check_first[${i}].if_yes`, c.if_yes]);
-          fields.push([`check_first[${i}].if_no`, c.if_no]);
-        });
-        (parsed.what_to_do_now || []).forEach((a, i) => {
-          fields.push([`what_to_do_now[${i}].why`, a.why]);
-          fields.push([`what_to_do_now[${i}].condition`, a.condition]);
-        });
-      } else if (activeMode === 'care') {
-        fields.push(['core_care.watering', parsed.core_care?.watering]);
-        fields.push(['core_care.feeding', parsed.core_care?.feeding]);
-        (parsed.when_conditions_change || []).forEach((w, i) => fields.push([`when_conditions_change[${i}].adjustment`, w.adjustment]));
-      } else {
-        // Array fields live under identification_evidence per IDENTIFY_SCHEMA
-        // — pushing a container path itself would make getByPath return an
-        // array, which outputGuard.js correctly refuses to repair (a repair
-        // can only rewrite a string leaf, not a whole array) and silently
-        // drops.
-        const ev = parsed.identification_evidence || {};
-        (Array.isArray(ev.distinguishing_visible_features) ? ev.distinguishing_visible_features : []).forEach((v, i) => fields.push([`identification_evidence.distinguishing_visible_features[${i}]`, v]));
-        (Array.isArray(ev.current_image_observations) ? ev.current_image_observations : []).forEach((v, i) => fields.push([`identification_evidence.current_image_observations[${i}]`, v]));
-        (ev.plausible_alternatives || []).forEach((a, i) => {
-          fields.push([`identification_evidence.plausible_alternatives[${i}].why_possible`, a.why_possible]);
-          fields.push([`identification_evidence.plausible_alternatives[${i}].how_to_distinguish`, a.how_to_distinguish]);
-        });
-      }
-
-      await runOutputGuard(parsed, {
-        label: `plant-rescue-${activeMode}`,
-        fields,
-        supplied,
-        promise: 'Help a plant owner reason about a struggling or unfamiliar plant — plausible explanations grounded only in what was reported/visible, what would distinguish them, and a single most-useful check before any conditional treatment. Never a diagnosis, never a percentage, never an invented recovery timeline, schedule, or chemical treatment the evidence does not support.',
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log(`[plant-rescue-${activeMode}] v2 guard skipped:`, guardErr.message);
-    }
-
-    // Reject-and-regenerate for Identify's image-consistency contradiction.
-    // Runs LAST, after the v2 guard's own repair pass — a repair rewrites the
-    // TEXT of one flagged field without knowing the code's ground truth about
-    // current_image_present, so it can just as easily reintroduce this
-    // contradiction as fix it. Checking only the original generation would
-    // miss that. A single field-level repair also can't fix a whole response
-    // built on the wrong premise, which is why this regenerates rather than
-    // repairing in place.
-    if (activeMode === 'identify') {
-      const imagePresent = !!imageBase64;
-      if (identifyImageConsistencyViolation(parsed, imagePresent)) {
-        console.log('[plant-rescue-identify] image-consistency violation — regenerating once');
-        const retryPrompt = `${prompt}
-
-CORRECTION: your previous attempt contradicted current_image_present=${imagePresent} — ${imagePresent ? 'it denied having a photo that was actually supplied' : 'it described visual features with no photo supplied'}. Do not repeat that. Every section must agree that current_image_present is ${imagePresent}.
-
-Return ONLY valid JSON matching the same shape as before.`;
-        const retrySystemPrompt = withLanguage(retryPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-        const retry = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 2500,
-          system: retrySystemPrompt,
-          messages: [{ role: 'user', content }],
-        }, { label: 'plant-rescue-identify-regenerate' });
-        if (retry?.identification_evidence) {
-          retry.current_image_present = imagePresent;
-          if (!identifyImageConsistencyViolation(retry, imagePresent)) parsed = retry;
+          await runOutputGuard(parsed, {
+            label: `plant-rescue-${activeMode}`,
+            fields,
+            supplied,
+            promise: 'Help a plant owner reason about a struggling or unfamiliar plant — plausible explanations grounded only in what was reported/visible, what would distinguish them, and a single most-useful check before any conditional treatment. Never a diagnosis, never a percentage, never an invented recovery timeline, schedule, or chemical treatment the evidence does not support.',
+            guard: router.outputGuard,
+            userLanguage,
+          });
+        } catch (guardErr) {
+          console.log(`[plant-rescue-${activeMode}] v2 guard skipped:`, guardErr.message);
         }
-      }
-    }
 
-    res.json(parsed);
+        // Reject-and-regenerate for Identify's image-consistency contradiction.
+        // Runs LAST, after the v2 guard's own repair pass — a repair rewrites the
+        // TEXT of one flagged field without knowing the code's ground truth about
+        // current_image_present, so it can just as easily reintroduce this
+        // contradiction as fix it. Checking only the original generation would
+        // miss that. A single field-level repair also can't fix a whole response
+        // built on the wrong premise, which is why this regenerates rather than
+        // repairing in place.
+        if (activeMode === 'identify') {
+          const imagePresent = !!imageBase64;
+          if (identifyImageConsistencyViolation(parsed, imagePresent)) {
+            console.log('[plant-rescue-identify] image-consistency violation — regenerating once');
+            const retryPrompt = `${prompt}
+
+    CORRECTION: your previous attempt contradicted current_image_present=${imagePresent} — ${imagePresent ? 'it denied having a photo that was actually supplied' : 'it described visual features with no photo supplied'}. Do not repeat that. Every section must agree that current_image_present is ${imagePresent}.
+
+    Return ONLY valid JSON matching the same shape as before.`;
+            const retrySystemPrompt = withLanguage(retryPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+            const retry = await callClaudeWithRetry({
+              model: MODELS.SMART,
+              max_tokens: 2500,
+              system: retrySystemPrompt,
+              messages: [{ role: 'user', content }],
+            }, { label: 'plant-rescue-identify-regenerate' });
+            if (retry?.identification_evidence) {
+              retry.current_image_present = imagePresent;
+              if (!identifyImageConsistencyViolation(retry, imagePresent)) { Object.keys(parsed).forEach(k => delete parsed[k]); Object.assign(parsed, retry); }
+            }
+          }
+        }
+      },
+    });
   } catch (error) {
     console.error('❌ Plant Rescue error:', error.message);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -21,7 +22,7 @@ const MOOD_META = [{ v: 'stressed', e: '😤', lk: 'pep_mood_stressed' }, { v: '
 const ENV_META = [{ v: 'home', e: '🏠', lk: 'pep_env_home' }, { v: 'office', e: '🏢', lk: 'pep_env_office' }, { v: 'commuting', e: '🚌', lk: 'pep_env_commuting' }, { v: 'outdoors', e: '🌳', lk: 'pep_env_outdoors' }, { v: 'in_bed', e: '🛏️', lk: 'pep_env_in_bed' }];
 
 const PEP = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -49,6 +50,7 @@ const PEP = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const chip = (active) => active
     ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800')
@@ -148,6 +150,7 @@ const PEP = ({ tool }) => {
   }, [setMyMenu]);
 
   const reset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setError('');
     setResults(null);
     setReflection(null);
@@ -168,8 +171,21 @@ const PEP = ({ tool }) => {
     setError('');
     setReflection(null);
     setActiveAction(oneOnly ? 'oneOnly' : fresh ? 'fresh' : 'main');
+    setCheckStatus(null);
+    // No why_it_fits in Just Tell Me What To Do on purpose — it is meant to
+    // feel noticeably simpler than Show Me What Fits: one activity, one first
+    // step, one stopping point, no analysis paragraph.
+    const wrap = (d) => (oneOnly ? {
+      read: '',
+      top_pick: { activity: d.activity, first_step: d.first_step, duration: d.duration, done_when: d.done_when },
+      alternatives: [],
+      history_note: d.history_note || '',
+      justDo: true,
+    } : d);
+    let revealed = false;
     try {
-      const data = await callToolEndpoint('pep', {
+      // Progressive (2026-10-17): the top pick shows first; checked after.
+      const data = await callToolEndpointProgressive('pep', {
         action: oneOnly ? 'just-do-this' : 'generate',
         energy,
         time_available: timeAvail || null,
@@ -180,33 +196,24 @@ const PEP = ({ tool }) => {
         history: recentHistory,
         avoid: fresh ? sessionAvoid : [],
         ...localeParams,
+      }, {
+        onDraft: d => {
+          setResults(wrap(d)); setCheckStatus('checking');
+          if (!revealed) { revealed = true; setTimeout(() => revealSection(document.getElementById('pep-result')), 100); }
+        },
+        onChecked: (d, changed) => { setResults(wrap(d)); setCheckStatus(checkStatusFor(changed)); },
       });
       if (!data) return;
 
       if (oneOnly) {
-        // No why_it_fits here on purpose — Just Tell Me What To Do is meant
-        // to feel noticeably simpler than Show Me What Fits: one activity,
-        // one first step, one stopping point, no analysis paragraph.
-        const wrapped = {
-          read: '',
-          top_pick: {
-            activity: data.activity,
-            first_step: data.first_step,
-            duration: data.duration,
-            done_when: data.done_when,
-          },
-          alternatives: [],
-          history_note: data.history_note || '',
-          justDo: true,
-        };
-        setResults(wrapped);
+        setResults(wrap(data));
         setSessionAvoid((prev) => [...new Set([...prev, data.activity].filter(Boolean))]);
       } else {
         setResults(data);
         const names = [data?.top_pick?.activity, ...(data?.alternatives || []).map((x) => x.activity)].filter(Boolean);
         setSessionAvoid((prev) => [...new Set([...prev, ...names])]);
       }
-      setTimeout(() => revealSection(document.getElementById('pep-result')), 100);
+      if (!revealed) setTimeout(() => revealSection(document.getElementById('pep-result')), 100);
     } catch (e) {
       setError(e.message || t('pep_err_request_failed'));
     } finally {
@@ -412,6 +419,7 @@ const PEP = ({ tool }) => {
     {error && <div className={`${c.warning} border rounded-xl p-4 text-sm`}>{error}</div>}
 
     {results && (results.top_pick && <div id="pep-result" className="space-y-4">
+      <CheckNote status={checkStatus} className={c.textMuted} />
       {results.read && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{results.read}</p></div>}
       {/* Just Tell Me What To Do skips the "Top pick" framing — there was no menu to pick from. */}
       {results.justDo ? <Activity item={results.top_pick} top /> : <div><h3 className="text-base font-bold text-lg mb-2">⭐ {t('pep_top_pick_label')}</h3><Activity item={results.top_pick} top /></div>}

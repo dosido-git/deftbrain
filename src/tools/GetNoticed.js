@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -47,7 +48,7 @@ const EXAMPLES = [
 
 const GetNoticed = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
 
   const c = {
@@ -82,6 +83,7 @@ const GetNoticed = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [description, setDescription] = useState('');
   const [goals, setGoals] = useState('');
@@ -95,16 +97,22 @@ const GetNoticed = ({ tool }) => {
 
   const handleSubmit = async () => {
     if (!description.trim()) return;
-    setError(''); setResults(null);
+    setError(''); setResults(null); setCheckStatus(null);
+    const withInput = d => ({ ...d, _input: { description: description.trim(), goals: goals.trim(), currentExposures: currentExposures.trim() } });
     try {
-      const data = await callToolEndpoint('get-noticed', {
+      // Progressive (2026-10-17): where you stand shows first; checked after.
+      const data = await callToolEndpointProgressive('get-noticed', {
         description: description.trim(),
         goals: goals.trim() || undefined,
         currentExposures: currentExposures.trim() || undefined,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(withInput(d)); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(withInput(d)); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-      setResults({ ...data, _input: { description: description.trim(), goals: goals.trim(), currentExposures: currentExposures.trim() } });
+      setResults(withInput(data));
     } catch (e) { setError(e.message || t('lks_error')); }
   };
 
@@ -113,7 +121,7 @@ const GetNoticed = ({ tool }) => {
     setDescription(ex.desc); setGoals(ex.goals); setResults(null);
   };
 
-  const handleReset = () => { setResults(null); setDescription(''); setGoals(''); setCurrentExposures(''); setExpanded({}); setError(''); };
+  const handleReset = () => { cancelProgressive(); setCheckStatus(null); setResults(null); setDescription(''); setGoals(''); setCurrentExposures(''); setExpanded({}); setError(''); };
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -245,6 +253,7 @@ const GetNoticed = ({ tool }) => {
 
         {results && (
           <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+            <CheckNote status={checkStatus} className={c.textMuted} />
 
             {/* Recap of what the user told us — anchors persisted results on revisits */}
             {results?._input?.description && (

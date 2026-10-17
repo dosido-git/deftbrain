@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -288,18 +289,30 @@ ${oneOnly ? `Return ONLY valid JSON:
   "history_note": "Only if relevant visitor-reported history materially affected the choice — changed what was picked, avoided a repeat, or changed the ranking. Otherwise empty. Do not mention history just because it exists."
 }`}`;
 
-      const parsed = await callClaudeWithRetry({
+      // Progressive (2026-10-17, lib/progressive.js): the read and the top
+      // pick show first; the alternatives (handed the top pick, so they are
+      // different) and the history note follow. "Just do this" is one small
+      // pass. The consistency check runs after the answer is on screen.
+      const system = withLanguage(SYSTEM, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+      const label = oneOnly ? 'PEP-JustDoThis' : 'PEP-RightNow';
+      const call = (content, maxTokens, tag) => callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 1800,
-        system: withLanguage(SYSTEM, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: prompt }],
-      }, { label: oneOnly ? 'PEP-JustDoThis' : 'PEP-RightNow' });
-
-      if (!parsed || (oneOnly ? !parsed.activity : !parsed.top_pick?.activity)) {
-        return res.status(500).json({ error: 'Could not generate a suggestion. Please try again.' });
-      }
-      await checkConsistency(parsed, { label: 'pep', userLanguage: req.body?.userLanguage });
-      return res.json(validateResult(parsed));
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: 'user', content }],
+      }, { label: tag });
+      const PLAN = ['read', 'top_pick'];
+      return await answer(req, res, {
+        label: 'pep',
+        parts: oneOnly
+          ? [{ required: true, run: () => call(prompt, 1800, label), apply: (d, out) => Object.assign(d, out) }]
+          : planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1000, label), [['alternatives', 'history_note']],
+            (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 900, `${label}-2`)),
+        finish: d => validateResult(structuredClone(d)),
+        ready: d => Boolean(oneOnly ? d.activity : d.top_pick?.activity),
+        complete: d => Boolean(oneOnly ? d.activity : d.top_pick?.activity),
+        check: async (parsed) => { await checkConsistency(parsed, { label: 'pep', userLanguage: req.body?.userLanguage }); },
+      });
     }
 
     if (action === 'reflect') {

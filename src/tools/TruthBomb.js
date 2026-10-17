@@ -31,7 +31,7 @@ const DIRECTNESS_COLORS = [
 
 const TruthBomb = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
 
   const c = {
@@ -79,13 +79,15 @@ const TruthBomb = ({ tool }) => {
     if (!theUnsaidThing.trim()) return;
     setError(''); setResults(null);
     try {
-      const data = await callToolEndpoint('truth-bomb', {
+      // Progressive (2026-10-17): the thing examined shows first; scripts follow.
+      const data = await callToolEndpointProgressive('truth-bomb', {
         theUnsaidThing: theUnsaidThing.trim(),
         whoItsAbout: whoItsAbout.trim() || undefined,
         whyNotSaying: whyNotSaying.trim() || undefined,
         relationshipContext: relationshipContext.trim() || undefined,
         userLocale, userCurrency, userRegion,
-      });
+      }, { onDraft: setResults });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
@@ -97,7 +99,7 @@ const TruthBomb = ({ tool }) => {
         result: data,
       }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || t('tb_error')); }
-  }, [theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, callToolEndpoint, setError, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, callToolEndpointProgressive, setError, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   // Cmd/Ctrl+Enter submits from anywhere
   useEffect(() => {
@@ -154,9 +156,10 @@ const TruthBomb = ({ tool }) => {
   }, [results]);
 
   const handleReset = useCallback(() => {
+    cancelProgressive();
     setResults(null); setTheUnsaidThing(''); setWhoItsAbout('');
     setWhyNotSaying(''); setRelationshipContext(''); setError('');
-  }, [setResults, setTheUnsaidThing, setError]);
+  }, [setResults, setTheUnsaidThing, setError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={`space-y-4 ${c.text}`}>

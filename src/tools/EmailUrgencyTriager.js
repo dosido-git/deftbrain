@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -64,7 +65,7 @@ function normalizeTier(v) {
 }
 
 export default function EmailUrgencyTriager({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t, i18n } = useTranslation();
   const tx = useCallback((key, vars) => t(`eut2_${key}`, vars), [t]);
@@ -97,6 +98,7 @@ export default function EmailUrgencyTriager({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [mode, setMode] = useState('input');
   const [error, setError] = useState('');
@@ -143,6 +145,7 @@ export default function EmailUrgencyTriager({ tool }) {
   );
 
   const reset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setEmailContent('');
     setResults(null);
     setMode('input');
@@ -180,10 +183,11 @@ export default function EmailUrgencyTriager({ tool }) {
       return;
     }
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setHandled({});
     try {
-      const data = await callToolEndpoint('email-urgency-triager', {
+      // Progressive (2026-10-17): the first emails show first; checked after.
+      const data = await callToolEndpointProgressive('email-urgency-triager', {
         emailContent: emailContent.trim(),
         userRole: tx(`role_${profile.role}`),
         userTimezone,
@@ -192,7 +196,11 @@ export default function EmailUrgencyTriager({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setMode('results'); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setMode('results');
     } catch (e) {
@@ -499,6 +507,7 @@ export default function EmailUrgencyTriager({ tool }) {
 
       {mode === 'results' && results && (
         <div data-copy-results className="space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           <div className={`border-t ${c.border} pt-5`}>
             <h3 className="text-lg font-bold">{tx('sorted')}</h3>
             <p className={`mt-1 text-sm ${c.textSecondary}`}>

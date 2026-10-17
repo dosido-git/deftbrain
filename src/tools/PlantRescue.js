@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -143,7 +144,7 @@ const ATTENTION_META = {
 };
 
 const PlantRescue = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -180,6 +181,7 @@ const PlantRescue = ({ tool }) => {
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const load = (k) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch { return null; } };
   const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -365,7 +367,7 @@ const PlantRescue = ({ tool }) => {
   const handleAnalyze = useCallback(async () => {
     if (mode === 'care' && !careSpecies.trim()) { setError(t('pr_err_care_species')); return; }
     if (mode !== 'care' && !imageBase64 && !plantDescription.trim() && selectedSymptoms.length === 0) { setError(t('pr_err_provide')); return; }
-    setError(''); setResults(null); setFollowUpAnswer(''); setFollowUpQuestion(''); setCompanionResults(null);
+    setError(''); setResults(null); setCheckStatus(null); setFollowUpAnswer(''); setFollowUpQuestion(''); setCompanionResults(null);
     try {
       // Each mode sends ONLY its own fields — never whatever another mode's
       // form happened to leave in state. Rescue and Care share a look but
@@ -394,14 +396,19 @@ const PlantRescue = ({ tool }) => {
           priorObservations: priorObservationsForCurrent,
         };
       }
-      const data = await callToolEndpoint('plant-rescue', payload);
+      // Progressive (2026-10-17): the bottom line shows first; checked after.
+      const data = await callToolEndpointProgressive('plant-rescue', payload, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (!data) return; // replaced by a newer run
       setResults(data);
     } catch (err) { setError(err.message || t('pr_err_analysis')); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageBase64, extraPhotos, plantDescription, selectedSymptoms, symptomDuration, recentChanges, lightLevel,
       wateringMethod, wateringFreqText, hasDrainage, location, climateZone, userLocation, hasPets, hasChildren,
       careSpecies, careWhereIsIt, careLight, careHelpWith,
-      mode, plantName, callToolEndpoint, userLocale, userCurrency, userRegion, priorObservationsForCurrent, t]);
+      mode, plantName, callToolEndpointProgressive, userLocale, userCurrency, userRegion, priorObservationsForCurrent, t]);
 
   // Rotated per mode — each of the three tabs (rescue/care/identify) keeps
   // its own counter and pool, so Try Example always fills the tab you're
@@ -459,6 +466,7 @@ const PlantRescue = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setImagePreview(null); setImageBase64(null); setPlantDescription(''); setLightLevel('');
     setWateringMethod(''); setWateringFreqText(''); setHasDrainage(''); setLocation('');
     setSymptomDuration(''); setRecentChanges([]); setHasPets(false);
@@ -1067,6 +1075,7 @@ const PlantRescue = ({ tool }) => {
       {/* ── Results ── */}
       {results && (
         <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           <div className="flex justify-center">
             <button onClick={handleSavePlant} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm`}>{t('pr_save_to_plants')}</button>
