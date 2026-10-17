@@ -884,7 +884,7 @@ Edit this one piece for compliance. The checks that concern the whole set (diver
 ${VALIDATOR_CHECKS}
 
 If the piece passes every check as written, return ONLY {"verdict":"keep"}.
-Otherwise return ONLY {"verdict":"edit","piece": <the corrected piece in the identical shape>}. To replace a hobby that violates a hard constraint, return the replacement as the corrected piece, with an activity_mode different from the wildcard's.`;
+Otherwise return ONLY {"verdict":"edit","piece": { ...only the fields you changed, with their corrected values }}. To replace a hobby that violates a hard constraint, return the whole replacement as the piece, every field, with an activity_mode different from the wildcard's.`;
 }
 
 async function checkPiece(evidence, plan, label, piece, { userLanguage, localeSuffix }) {
@@ -898,7 +898,8 @@ async function checkPiece(evidence, plan, label, piece, { userLanguage, localeSu
     system: withLanguage(VALIDATOR_SYSTEM, userLanguage) + localeSuffix,
     messages: [{ role: 'user', content: pieceCheckPrompt(evidence, plan, label, piece, violations) }],
   }, { label: `hobby-match-check:${label}` });
-  if (out?.verdict === 'edit' && out.piece && typeof out.piece === 'object') return out.piece;
+  // Only the changed fields come back (a replacement brings every field).
+  if (out?.verdict === 'edit' && out.piece && typeof out.piece === 'object') return { ...piece, ...out.piece };
   if (out?.verdict === 'keep') return piece;
   // VALIDATOR_SYSTEM asks for the same shape back; an editor that returns the
   // corrected piece itself, without a verdict, has still made its edit.
