@@ -252,9 +252,9 @@ CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
           extraRules: 'A sentence that says a gap narrows, widens, or barely changes is a numeric claim: check its direction and size against PAY FACTS when they are given.',
           userLanguage,
         });
-        const guarded = await guardResult(parsed, req.body, 'DecisionCoach1');
-        Object.keys(draft).forEach(k => delete draft[k]);
-        Object.assign(draft, guarded);
+        // enforceOutputState and guardResult both edit the draft in place (and
+        // return it), so there is nothing to copy back.
+        await guardResult(parsed, req.body, 'DecisionCoach1');
       },
     });
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
