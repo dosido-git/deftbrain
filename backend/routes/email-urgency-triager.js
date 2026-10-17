@@ -466,9 +466,12 @@ Return only the JSON object.`;
     }, { label: tag });
     const listed = call(`${sharedContext}
 
-List the emails in the paste, in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject"}]}`, 900, 'email-urgency-triage-list', MODELS.FAST)
-      .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []));
-    listed.catch(() => {});
+THIS STEP ONLY LISTS THE EMAILS — no analysis, no tiers, no reasoning; other passes do that. List them in the order they appear — at most 15 (if more were pasted, the ones with the clearest action requests or deadlines). Sender as a name or address, subject at most 80 characters. Return ONLY valid JSON: {"emails":[{"n":1,"from":"sender","email_subject":"subject"}]}`, 1500, 'email-urgency-triage-list', MODELS.FAST)
+      .then(out => (Array.isArray(out?.emails) ? out.emails.filter(e => e && (e.email_subject || e.from)).slice(0, 15) : []))
+      // A failed list is not a failed triage: the first pass then analyses
+      // everything in one call, as before (it once truncated and took the
+      // whole answer down with it).
+      .catch(err => { console.warn('[email-urgency-triager] list failed — one pass:', err.message); return []; });
     const PER = 3;
     const analysisFor = (group) => onlyKeys(analysisPrompt.replace('Your response MUST contain urgency_analysis and summary.', ''), ['urgency_analysis'])
       + `\nTHIS PASS analyses ONLY these emails, one urgency_analysis entry each, in this order:\n${group.map(e => `- from ${e.from || 'unknown'}: ${e.email_subject || '(no subject)'}`).join('\n')}`;
