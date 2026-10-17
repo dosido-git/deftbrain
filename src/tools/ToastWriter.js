@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
@@ -40,7 +41,7 @@ const DURATIONS = [
 ];
 
 const ToastWriter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -74,6 +75,7 @@ const ToastWriter = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [occasion, setOccasion] = useState('');
@@ -156,11 +158,12 @@ const ToastWriter = ({ tool }) => {
   const generate = useCallback(async () => {
     if (!person.trim() || !occasion) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setActiveVersion(0);
 
     try {
-      const data = await callToolEndpoint('toast-writer', {
+      // Progressive (2026-10-17): the first finished version shows first; checked after.
+      const data = await callToolEndpointProgressive('toast-writer', {
         person: person.trim(),
         occasion: occasion === 'other' ? 'special occasion' : OCCASIONS.find(o => o.value === occasion)?.label || occasion,
         relationship: relationship.trim() || null,
@@ -169,7 +172,11 @@ const ToastWriter = ({ tool }) => {
         duration,
         avoid: avoid.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
@@ -183,9 +190,10 @@ const ToastWriter = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('tst_error'));
-    } }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpoint, setError, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+    } }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpointProgressive, setError, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setPerson(''); setOccasion(''); setRelationship('');
     setStories(''); setTone('warm_and_funny'); setDuration('2_minutes');
     setAvoid(''); setResults(null); setError(''); setActiveVersion(0);
@@ -366,6 +374,7 @@ const ToastWriter = ({ tool }) => {
         </div>
       )} {/* ══════════════════════════════════════════════════════════ */} {/* RESULTS                                                  */} {/* ══════════════════════════════════════════════════════════ */} {results && (<div className="space-y-4">
           <div data-copy-results ref={resultsRef} data-results-anchor  className="scroll-mt-24"/>
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {/* ── OCCASION READ ── */} {r.occasion_read && (<div className={`border-t ${c.border} pt-5`}>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.occasion_read}</p>
             </div>

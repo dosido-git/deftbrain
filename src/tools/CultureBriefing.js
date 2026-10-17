@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -66,7 +67,7 @@ const EXAMPLES = [
 ];
 
 function CultureBriefing({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -106,6 +107,7 @@ function CultureBriefing({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [destination, setDestination]   = useState('');
   const [tripPurpose, setTripPurpose]   = useState('tourism');
@@ -125,6 +127,7 @@ function CultureBriefing({ tool }) {
   const canSubmit = destination.trim().length >= 2;
 
   const handleReset = useCallback(() => {
+    cancelProgressive(); setCheckStatus(null);
     setResults(null);
     setError('');
     setDestination('');
@@ -132,7 +135,7 @@ function CultureBriefing({ tool }) {
     setHomeCountry('');
     setTripPurpose('tourism');
     setActiveSection(null);
-  }, [setResults]);
+  }, [setResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
     const ex = pickExample('CultureBriefing', EXAMPLES);
@@ -149,11 +152,14 @@ function CultureBriefing({ tool }) {
   const handleBrief = useCallback(async () => {
     if (!canSubmit || loading) return;
     setError('');
-    setResults(null);
+    setResults(null); setCheckStatus(null);
     setActiveSection(null);
 
     try {
-      const parsed = await callToolEndpoint('culture-briefing', {
+      // Progressive (2026-10-17): the overview and first sections show first; checked after.
+      let opened = false;
+      const keep = d => ({ ...d, destination: destination.trim(), tripPurpose });
+      const parsed = await callToolEndpointProgressive('culture-briefing', {
         destination: destination.trim(),
         tripPurpose,
         duration: duration.trim() || null,
@@ -163,8 +169,15 @@ function CultureBriefing({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => {
+          setResults(keep(d)); setCheckStatus('checking');
+          if (!opened && d?.sections?.[0]?.id) { opened = true; setActiveSection(d.sections[0].id); }
+        },
+        onChecked: (d, changed) => { setResults(keep(d)); setCheckStatus(checkStatusFor(changed)); },
       });
-      setResults({ ...parsed, destination: destination.trim(), tripPurpose });
+      if (!parsed) return; // replaced by a newer run
+      setResults(keep(parsed));
       // PF-25 exception: keeps the last 8 destination lookups for the history panel.
       setSessionHistory(prev => [{
         destination: destination.trim(),
@@ -172,11 +185,11 @@ function CultureBriefing({ tool }) {
         preview: destination.trim().slice(0, 40),
         ts: Date.now(),
       }, ...prev].slice(0, 8));
-      setActiveSection(parsed?.sections?.[0]?.id ?? null);
+      if (!opened) setActiveSection(parsed?.sections?.[0]?.id ?? null);
     } catch (err) {
       setError(err.message || t('cb_error_generic'));
     }
-  }, [canSubmit, loading, destination, tripPurpose, duration, homeCountry, region, context, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, destination, tripPurpose, duration, homeCountry, region, context, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleBriefRef.current = handleBrief;
   canSubmitRef.current   = canSubmit;
@@ -357,6 +370,7 @@ function CultureBriefing({ tool }) {
 
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
 
         {/* Header + overview */}
         <div className={`border-t ${c.border} pt-5`}>

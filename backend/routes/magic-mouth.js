@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -309,15 +310,26 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // read and the best angle show first; the script (which must use that
+    // angle) and the rest then run at once, handed it.
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'magic-mouth' });
-    if (!parsed.the_read && !parsed.the_script) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    res.json(validateResult(parsed));
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + locale }],
+    }, { label: tag });
+    const PLAN = ['your_ask', 'the_read', 'difficulty', 'best_angle'];
+    return await answer(req, res, {
+      label: 'magic-mouth',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1200, 'magic-mouth'), [
+        ['the_script', 'delivery_notes', 'dont_do_this'],
+        ['who_to_ask', 'when_to_ask', 'backup_angle', 'pro_tip'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 1600, `magic-mouth-${i + 2}`)),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.the_read),
+      complete: d => Boolean(d.the_read),
+    });
 
   } catch (error) {
     console.error('MagicMouth error:', error);

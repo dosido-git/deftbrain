@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -321,7 +322,7 @@ const ExCard = ({ ex, idx, swappable, exercisesDone, startTimer, handleSwap, loa
 };
 
 const LazyWorkoutAdapter = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   // currencySymbol imported per localization convention; this tool has no money values.
@@ -362,6 +363,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Input state ───
   const [mode, setMode] = useState('right-now');
@@ -526,14 +528,18 @@ const LazyWorkoutAdapter = ({ tool }) => {
   // ─── API handlers ───
   const handleRightNow = async () => {
     setError('');
-    setWorkout(null);
+    setWorkout(null); setCheckStatus(null);
     setTimerMode(false);
     setNudge(null);
     try {
-      const data = await callToolEndpoint('lazy-workout-adapter', {
+      // Progressive (2026-10-17): the exercise list shows first; how-tos follow; checked after.
+      const data = await callToolEndpointProgressive('lazy-workout-adapter', {
         energy, bodyAreas, timeMinutes: timeMins, limitations, setting,
         completionCount: totalSessions, preferences: prefs, contexts,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setWorkout(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setWorkout(d); setCheckStatus(checkStatusFor(changed)); },
       });
       if (data) setWorkout(data);
     } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
@@ -664,6 +670,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
   };
 
   const handleReset = () => {
+    cancelProgressive(); setCheckStatus(null);
     setWorkout(null); setMicroSession(null);
     setBodySession(null); setStackResult(null);
     setRecoveryResult(null);
@@ -993,6 +1000,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
           </div>
         ) : (
           <div className="space-y-4">
+            <CheckNote status={checkStatus} className={c.textMuted} />
             <div className={`${c.accBox} border rounded-xl p-5`}>
               <h2 className={`text-lg font-bold ${c.accTxt}`}>{workout.workout_name}</h2>
               {workout.vibe && <p className={`text-sm ${c.textSecondaryAlt} mt-1`}>{workout.vibe}</p>}

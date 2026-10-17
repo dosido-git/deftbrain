@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -108,27 +109,69 @@ RULES:
 11. DELIVERY_TIPS obey the same fact-, detail-, attribution-, and meaning-preservation rules as the toast. Give practical coaching on pacing, pauses, emphasis, eye contact, breathing, and delivery of material actually present in the toast. Never introduce a fact, action, or reaction while explaining how to deliver one, and never interpret what an anecdote reveals about the person or expand the user's stated emotional meaning. Run rule 9's MEANING AUDIT on every delivery tip, not only on the speech.
 12. COMMON_MISTAKES is speaker-facing advice, not a window into these rules. Every item must be something a person giving the toast could actually act on — pacing, timing, reading vs. looking up, an inside joke landing flat, rushing a line. Never phrase a mistake as fact-preservation, inference, attribution, or another instruction to yourself ("don't turn X into proof of Y", "don't invent what X meant") — if a caution only makes sense as a note to the model writing the toast, rewrite it as a note to the person delivering it, or drop it.`;
 
-    const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
-      max_tokens: 6000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+    // Progressive (2026-10-17, lib/progressive.js): one pass per version, all
+    // at once, beside the occasion read and emergency closer — the first
+    // finished toast shows in seconds. The delivery tips and mistakes are
+    // written after the speeches land, handed them (they are tied to moments
+    // in these speeches). The consistency check runs after display.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const onePrompt = (label) => withLanguage(onlyKeys(systemPrompt.replace('1. Generate EXACTLY 3 versions.', '1. Generate EXACTLY 1 version — the one named at the end.'), ['versions']), userLanguage)
+      + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
+      + `\nTHIS PASS writes ONLY the ${label} version — exactly one item in versions, label "${label}". Other passes write the other two versions at the same time.`;
+    const call = (sys, maxTokens, tag) => callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: maxTokens,
+      system: sys,
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'toast-writer' });
-    if (!Array.isArray(parsed.versions) || !parsed.versions.length) {
-      return res.status(500).json({ error: 'Could not write your toast. Please try again.' });
-    }
+    }, { label: tag });
+    const LABELS = ['Straightforward', 'Story-led', 'Concise'];
     // T2 (audit/DEFECT-TYPES.md): speaking time is arithmetic, not a guess —
     // asked for two minutes, the model's own estimates ran 0:50-1:15 against
     // speeches it had written. ~130 spoken words a minute; [CUES] are not words.
-    for (const v of parsed.versions) {
+    const timed = (v) => {
       const words = String(v?.speech || '').replace(/\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length;
-      if (!words) continue;
+      if (!words) return v;
       const secs = Math.max(15, Math.round((words / 130) * 60 / 5) * 5);
-      v.estimated_time = secs < 60 ? `about ${secs} seconds` : `about ${Math.floor(secs / 60)} min${secs % 60 ? ` ${secs % 60} sec` : ''}`;
-    }
-    // T4: "the night before" a presentation the visitor only said she stayed late for.
-    await checkConsistency(parsed, { label: 'toast-writer', promise: 'Writes a toast from only the facts and meaning the visitor supplied.', userLanguage });
-    return res.json(parsed);
+      return { ...v, estimated_time: secs < 60 ? `about ${secs} seconds` : `about ${Math.floor(secs / 60)} min${secs % 60 ? ` ${secs % 60} sec` : ''}` };
+    };
+    // Arrival order, not catalogue order: a version that lands later is added
+    // after the ones already on screen, so the tab a visitor is reading never
+    // changes under them.
+    const versionsOf = d => (d.order || []).map(l => d.byLabel?.[l]).filter(Boolean);
+    const shape = (d) => { const { byLabel, order, ...rest } = structuredClone(d); return { ...rest, versions: versionsOf(d).map(timed) }; };
+    const TIPS = ['delivery_tips', 'common_mistakes'];
+    return await answer(req, res, {
+      label: 'toast-writer',
+      parts: [
+        ...LABELS.map((label, i) => ({
+          run: () => call(onePrompt(label), 2600, i ? `toast-writer-${i + 1}` : 'toast-writer'),
+          apply: (d, out) => {
+            const v = Array.isArray(out?.versions) ? out.versions[0] : null;
+            if (!v?.speech) return;
+            d.byLabel = { ...d.byLabel, [label]: { ...v, label } };
+            d.order = [...(d.order || []).filter(l => l !== label), label];
+          },
+        })),
+        { run: () => call(withLanguage(onlyKeys(systemPrompt, ['occasion_read', 'emergency_closer']), userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion), 800, 'toast-writer-read'),
+          apply: (d, out) => { ['occasion_read', 'emergency_closer'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+      ],
+      after: async (d) => {
+        const out = await call(system + planNote({ versions: versionsOf(d).map(v => ({ label: v.label, speech: v.speech })) }, ['versions'])
+          + `\nTHIS PASS writes ONLY ${TIPS.join(' and ')}, tied to moments in these speeches.`, 1200, 'toast-writer-tips');
+        TIPS.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
+      },
+      finish: shape,
+      ready: d => versionsOf(d).length > 0,
+      complete: d => versionsOf(d).length > 0,
+      check: async (draft) => {
+        const parsed = shape(draft);
+        // T4: "the night before" a presentation the visitor only said she stayed late for.
+        await checkConsistency(parsed, { label: 'toast-writer', promise: 'Writes a toast from only the facts and meaning the visitor supplied.', userLanguage });
+        const { versions, ...rest } = parsed;
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, rest, { byLabel: Object.fromEntries(versions.map(v => [v.label, v])), order: versions.map(v => v.label) });
+      },
+    });
 
   } catch (error) {
     console.error('ToastWriter error:', error);

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -164,119 +165,132 @@ Ask only whether it is reliably canonical.
 
 If uncertain, remove it.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      max_tokens: 4000,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'fan-theory' });
+    // Progressive (2026-10-17, lib/progressive.js): the theory is still shown
+    // only after the canon check has cut what does not happen in the work —
+    // an invented scene must never be on screen, even briefly — so generation
+    // and canon check are one part; the guard runs after it is on screen.
+    const pipeline = async () => {
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 4000,
+        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'fan-theory' });
 
-    // A model told to think in "observation → interpretation" sometimes writes
-    // the arrow into the observation field. Split rather than scold: the half
-    // after the arrow is the spin, which is where it belonged.
-    (parsed.evidence || []).forEach(e => {
-      if (typeof e?.detail === 'string' && e.detail.includes('→')) {
-        const [head, ...tail] = e.detail.split('→');
-        const rest = tail.join('→').trim();
-        e.detail = head.trim();
-        if (rest && !e.spin) e.spin = rest;
-      }
-    });
-
-    if (!parsed.theory_name || !Array.isArray(parsed.evidence)) {
-      return res.status(500).json({ error: 'Could not generate a fan theory. Please try again.' });
-    }
-
-    // Canon check, before the guard: bad facts are cheaper to remove than to
-    // argue with, and the guard should not be repairing a claim that should not
-    // be there at all.
-    const claimIdx = [];
-    const claims = [];
-    (parsed.evidence || []).forEach((e, i) => {
-      if (typeof e?.detail === 'string' && e.detail.trim()) { claimIdx.push({ kind: 'evidence', i }); claims.push(e.detail.trim()); }
-    });
-    if (typeof parsed.the_smoking_gun === 'string' && parsed.the_smoking_gun.trim()) { claimIdx.push({ kind: 'smoking_gun' }); claims.push(parsed.the_smoking_gun.trim()); }
-
-    const verdicts = await canonCheck(title.trim(), claims, userLanguage);
-    if (verdicts) {
-      const drop = new Set();
-      let fixed = 0;
-      for (const v of verdicts) {
-        const slot = claimIdx[Number(v?.n)];
-        if (!slot) continue;
-        if (v.verdict === 'cut') { drop.add(Number(v.n)); continue; }
-        if (v.verdict === 'fix' && typeof v.replacement === 'string' && v.replacement.trim()) {
-          fixed++;
-          if (slot.kind === 'evidence') parsed.evidence[slot.i].detail = v.replacement.trim();
-          else parsed.the_smoking_gun = v.replacement.trim();
+      // A model told to think in "observation → interpretation" sometimes writes
+      // the arrow into the observation field. Split rather than scold: the half
+      // after the arrow is the spin, which is where it belonged.
+      (parsed.evidence || []).forEach(e => {
+        if (typeof e?.detail === 'string' && e.detail.includes('→')) {
+          const [head, ...tail] = e.detail.split('→');
+          const rest = tail.join('→').trim();
+          e.detail = head.trim();
+          if (rest && !e.spin) e.spin = rest;
         }
+      });
+
+      if (!parsed.theory_name || !Array.isArray(parsed.evidence)) {
+        throw Object.assign(new Error('no theory'), { userMessage: 'Could not generate a fan theory. Please try again.' });
       }
-      // Cut what did not happen. This used to keep EVERY claim, invented ones
-      // included, whenever cutting would leave fewer than two — so the worst
-      // runs kept their worst evidence. One real detail is still a theory; if
-      // nothing real is left, the run fails and the visitor can try again.
-      const keep = (parsed.evidence || []).filter((_, i) => !drop.has(claimIdx.findIndex(c => c.kind === 'evidence' && c.i === i)));
-      if (!keep.length) return res.status(500).json({ error: 'Could not build this theory from real details. Please try again.' });
-      parsed.evidence = keep;
-      // If the Smoking Gun itself was invented, promote the strongest surviving
-      // evidence rather than leaving the card blank — and label it honestly.
-      const sgIdx = claimIdx.findIndex(c => c.kind === 'smoking_gun');
-      if (sgIdx >= 0 && drop.has(sgIdx)) {
-        const rank = { COMPELLING: 0, SUSPICIOUS: 1, 'A STRETCH': 2, 'PURE DELUSION': 3 };
-        const best = [...(parsed.evidence || [])]
-          .filter(e => e?.detail && e?.spin)
-          .sort((a, b) => (rank[a.strength] ?? 9) - (rank[b.strength] ?? 9))[0];
-        parsed.the_smoking_gun = best ? `${best.detail} ${best.spin}` : '';
-        parsed.smoking_gun_is_weak = true;
+
+      // Canon check, before the guard: bad facts are cheaper to remove than to
+      // argue with, and the guard should not be repairing a claim that should not
+      // be there at all.
+      const claimIdx = [];
+      const claims = [];
+      (parsed.evidence || []).forEach((e, i) => {
+        if (typeof e?.detail === 'string' && e.detail.trim()) { claimIdx.push({ kind: 'evidence', i }); claims.push(e.detail.trim()); }
+      });
+      if (typeof parsed.the_smoking_gun === 'string' && parsed.the_smoking_gun.trim()) { claimIdx.push({ kind: 'smoking_gun' }); claims.push(parsed.the_smoking_gun.trim()); }
+
+      const verdicts = await canonCheck(title.trim(), claims, userLanguage);
+      if (verdicts) {
+        const drop = new Set();
+        let fixed = 0;
+        for (const v of verdicts) {
+          const slot = claimIdx[Number(v?.n)];
+          if (!slot) continue;
+          if (v.verdict === 'cut') { drop.add(Number(v.n)); continue; }
+          if (v.verdict === 'fix' && typeof v.replacement === 'string' && v.replacement.trim()) {
+            fixed++;
+            if (slot.kind === 'evidence') parsed.evidence[slot.i].detail = v.replacement.trim();
+            else parsed.the_smoking_gun = v.replacement.trim();
+          }
+        }
+        // Cut what did not happen. This used to keep EVERY claim, invented ones
+        // included, whenever cutting would leave fewer than two — so the worst
+        // runs kept their worst evidence. One real detail is still a theory; if
+        // nothing real is left, the run fails and the visitor can try again.
+        const keep = (parsed.evidence || []).filter((_, i) => !drop.has(claimIdx.findIndex(c => c.kind === 'evidence' && c.i === i)));
+        if (!keep.length) throw Object.assign(new Error('no canonical evidence left'), { userMessage: 'Could not build this theory from real details. Please try again.' });
+        parsed.evidence = keep;
+        // If the Smoking Gun itself was invented, promote the strongest surviving
+        // evidence rather than leaving the card blank — and label it honestly.
+        const sgIdx = claimIdx.findIndex(c => c.kind === 'smoking_gun');
+        if (sgIdx >= 0 && drop.has(sgIdx)) {
+          const rank = { COMPELLING: 0, SUSPICIOUS: 1, 'A STRETCH': 2, 'PURE DELUSION': 3 };
+          const best = [...(parsed.evidence || [])]
+            .filter(e => e?.detail && e?.spin)
+            .sort((a, b) => (rank[a.strength] ?? 9) - (rank[b.strength] ?? 9))[0];
+          parsed.the_smoking_gun = best ? `${best.detail} ${best.spin}` : '';
+          parsed.smoking_gun_is_weak = true;
+        }
+        if (drop.size || fixed) console.log(`[fan-theory-v2] canon check: ${fixed} corrected, ${drop.size} cut of ${claims.length} claims`);
       }
-      if (drop.size || fixed) console.log(`[fan-theory-v2] canon check: ${fixed} corrected, ${drop.size} cut of ${claims.length} claims`);
-    }
+      return parsed;
+    };
+    return await answer(req, res, {
+      label: 'fan-theory',
+      parts: [{ required: true, run: pipeline, apply: (d, out) => Object.assign(d, out) }],
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.theory_name),
+      complete: d => Boolean(d.theory_name),
+      check: async (parsed) => {
+        const elapsed = Date.now() - startedAt;
+        if (elapsed > GUARD_ENTRY_MS) {
+          console.log(`[fan-theory-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
+          return;
+        }
 
-    const elapsed = Date.now() - startedAt;
-    if (elapsed > GUARD_ENTRY_MS) {
-      console.log(`[fan-theory-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
-      return res.json(parsed);
-    }
+        // Only the halves that claim to be canon. `spin` is the invented reading and
+        // is the product; guarding it would be guarding the joke.
+        const fields = [];
+        (parsed.evidence || []).forEach((e, i) => {
+          if (typeof e?.detail === 'string' && e.detail.trim()) fields.push([`evidence[${i}].detail`, e.detail]);
+        });
+        if (typeof parsed.the_smoking_gun === 'string') fields.push(['the_smoking_gun', parsed.the_smoking_gun]);
+        if (typeof parsed.rabbit_hole === 'string') fields.push(['rabbit_hole', parsed.rabbit_hole]);
 
-    // Only the halves that claim to be canon. `spin` is the invented reading and
-    // is the product; guarding it would be guarding the joke.
-    const fields = [];
-    (parsed.evidence || []).forEach((e, i) => {
-      if (typeof e?.detail === 'string' && e.detail.trim()) fields.push([`evidence[${i}].detail`, e.detail]);
+        await runOutputGuard(parsed, {
+          label: 'fan-theory-v2',
+          fields,
+          supplied: `THE VISITOR NAMED ONE TITLE AND NOTHING ELSE:
+    Title: ${title.trim()}
+    Type: ${mediaType || 'movie'}
+    Theory direction they picked: ${direction || 'wild'}
+
+    The source material is public and widely known; you may use it. What you may not do is add to it.
+
+    WHAT FAILS — and ONLY these. A wild, absurd, obviously-wrong READING is the entire product and must never be flagged:
+    1. A scene, event or moment that does not occur in the source material.
+    2. A line of dialogue nobody says, presented as a quote.
+    3. A relationship, ownership, parentage, or character status that is not established in the work.
+    4. A chronology or outcome that contradicts the work, stated as if it were canon.
+    5. A detail the writer is plainly unsure about, stated flatly as fact rather than qualified.
+    6. A smoking gun that is not actually in the source. The theory's best circumstantial evidence still has to exist.
+
+    The COMPELLING / SUSPICIOUS / A STRETCH / PURE DELUSION rating describes how well a REAL detail supports the theory. A PURE DELUSION rating does not license an invented detail.`,
+          promise: 'Fan Theory builds a wild but defensible theory about a named work: an absurdly clever interpretation of details that really are in it.',
+          guard: router.outputGuard,
+          userLanguage,
+          locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        });
+      },
     });
-    if (typeof parsed.the_smoking_gun === 'string') fields.push(['the_smoking_gun', parsed.the_smoking_gun]);
-    if (typeof parsed.rabbit_hole === 'string') fields.push(['rabbit_hole', parsed.rabbit_hole]);
-
-    await runOutputGuard(parsed, {
-      label: 'fan-theory-v2',
-      fields,
-      supplied: `THE VISITOR NAMED ONE TITLE AND NOTHING ELSE:
-Title: ${title.trim()}
-Type: ${mediaType || 'movie'}
-Theory direction they picked: ${direction || 'wild'}
-
-The source material is public and widely known; you may use it. What you may not do is add to it.
-
-WHAT FAILS — and ONLY these. A wild, absurd, obviously-wrong READING is the entire product and must never be flagged:
-1. A scene, event or moment that does not occur in the source material.
-2. A line of dialogue nobody says, presented as a quote.
-3. A relationship, ownership, parentage, or character status that is not established in the work.
-4. A chronology or outcome that contradicts the work, stated as if it were canon.
-5. A detail the writer is plainly unsure about, stated flatly as fact rather than qualified.
-6. A smoking gun that is not actually in the source. The theory's best circumstantial evidence still has to exist.
-
-The COMPELLING / SUSPICIOUS / A STRETCH / PURE DELUSION rating describes how well a REAL detail supports the theory. A PURE DELUSION rating does not license an invented detail.`,
-      promise: 'Fan Theory builds a wild but defensible theory about a named work: an absurdly clever interpretation of details that really are in it.',
-      guard: router.outputGuard,
-      userLanguage,
-      locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-    });
-
-    res.json(parsed);
 
   } catch (error) {
     console.error('FanTheory error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    res.status(500).json({ error: error.userMessage || 'Something went wrong. Please try again.' });
   }
 });
 

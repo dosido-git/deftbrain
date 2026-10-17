@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -426,18 +427,49 @@ Return ONLY valid JSON:
   "if_you_want_more": "optional extra — one sentence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: prompt }],
-    }, { label: 'lazy-workout-adapter' });
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
-      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'lazy-workout-adapter', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+    // Progressive (2026-10-17, lib/progressive.js), plan first (T11): the
+    // workout's name, vibe and the exercise list (names and times) show
+    // first; how to do each exercise, and the barrier check and closing lines,
+    // then run at once, handed that list. The consistency check runs after
+    // the answer is on screen.
+    const system = withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['workout_name', 'vibe', 'total_time', 'exercises'];
+    const exerciseLine = prompt.match(/"exercises": \[\{[^\n]*\}\]/)?.[0] || '';
+    const planPrompt = onlyKeys(prompt.replace(exerciseLine, '"exercises": [{ "name": "name", "duration": "time", "seconds": 60 }]'), PLAN)
+      + '\nTHIS PASS plans the workout only: each exercise has ONLY name, duration and seconds. Another pass writes how to do each one afterwards.';
+    const withDetail = (d) => {
+      const { exerciseDetail, ...rest } = d;
+      if (Array.isArray(rest.exercises) && Array.isArray(exerciseDetail)) {
+        rest.exercises = rest.exercises.map((x, i) => (exerciseDetail[i] ? { ...exerciseDetail[i], name: x.name, duration: x.duration, seconds: x.seconds } : x));
+      }
+      return rest;
+    };
+    return await answer(req, res, {
+      label: 'lazy-workout-adapter',
+      parts: planFirst(PLAN, () => call(planPrompt, 900, 'lazy-workout-adapter'), [
+        ['exercises'],
+        ['rest_note', 'barrier_check', 'done_is_done', 'if_you_want_more'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN)
+        + (keys[0] === 'exercises' ? '\nTHIS PASS writes exercises in full for EXACTLY the exercises above — same names, durations and seconds, same order.' : ''),
+      keys[0] === 'exercises' ? 2600 : 900, `lazy-workout-adapter-${i + 2}`))
+        .map((p, i) => (i === 1 ? { ...p, apply: (d, out) => { d.exerciseDetail = Array.isArray(out?.exercises) ? out.exercises : []; } } : p)),
+      finish: d => validateResult(withDetail(structuredClone(d))),
+      ready: d => Boolean(d.vibe && Array.isArray(d.exercises)),
+      complete: d => Boolean(d.vibe && Array.isArray(d.exercises)),
+      check: async (draft) => {
+        const parsed = withDetail(draft);
+        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+        await checkConsistency(parsed, { label: 'lazy-workout-adapter', userLanguage: req.body?.userLanguage });
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, parsed);
+      },
+    });
   } catch (error) {
     console.error('[LazyWorkout]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

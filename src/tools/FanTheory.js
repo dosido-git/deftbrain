@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -50,7 +51,7 @@ const EXAMPLES = [
   { title: 'Severance', mediaType: 'show' },
 ];
 const FanTheory = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -98,6 +99,7 @@ const FanTheory = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const loadExample = () => {
     const ex = pickExample('FanTheory', EXAMPLES);
@@ -142,7 +144,13 @@ const FanTheory = ({ tool }) => {
     setError('');
     // Don't blank results yet — keep showing previous while loading
     try {
-      const data = await callToolEndpoint('fan-theory', { title: title.trim(), mediaType, direction, typeTouched, userLocale, userCurrency, userRegion });
+      // Progressive (2026-10-17): shown once the canon check has run; guarded after.
+      setCheckStatus(null);
+      const data = await callToolEndpointProgressive('fan-theory', { title: title.trim(), mediaType, direction, typeTouched, userLocale, userCurrency, userRegion }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // The control corrects itself to whatever medium the work is actually
       // known in, unless the visitor already picked one.
@@ -151,7 +159,7 @@ const FanTheory = ({ tool }) => {
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => revealSection(resultsRef.current), 200);
     } catch (err) { setError(err.message || t('ft_err_theory')); }
-  }, [title, mediaType, direction, typeTouched, callToolEndpoint, results, setTheoryHistory, setResults, userLocale, userCurrency, userRegion, t]);
+  }, [title, mediaType, direction, typeTouched, callToolEndpointProgressive, results, setTheoryHistory, setResults, userLocale, userCurrency, userRegion, t]);
 
   // ── API: Grade theory ──
   const runGrade = useCallback(async () => {
@@ -266,7 +274,7 @@ const FanTheory = ({ tool }) => {
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
             {(gradeResults || results || myTheory.trim() || theoryHistory.length || title.trim()) ? (
-              <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setTypeTouched(false); setDirection('wild'); setTheoryHistory([]); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+              <button onClick={() => { cancelProgressive(); setCheckStatus(null); setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setTypeTouched(false); setDirection('wild'); setTheoryHistory([]); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                 🔄 {t('ft_reset')}
               </button>
             ) : null}
@@ -363,6 +371,7 @@ const FanTheory = ({ tool }) => {
       {/* Current generated theory */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           <div className={`${c.warningBox} border-2 rounded-xl p-5 text-center`}>
             <span className="text-3xl block mb-2">🧵</span>
             <p className={`text-lg font-black ${c.text} mb-2`}>{results.theory_name}</p>

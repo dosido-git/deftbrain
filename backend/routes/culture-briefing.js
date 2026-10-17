@@ -1,5 +1,6 @@
 const express = require('express');
 const router  = express.Router();
+const { answer, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -235,28 +236,67 @@ Rules:
     // T1 (audit/DEFECT-TYPES.md): customs and rules from a cached web search, run alongside the briefing.
     const research = researchFacts({ topic: ['culture', destination], label: 'culture-briefing', brief: `Facts a visitor to ${destination} should know: greetings and etiquette, tipping, dress norms (including at religious sites), laws visitors break by accident, alcohol and photography rules, public holidays and opening-hour norms, and emergency numbers.` });
     
-    const parsed = await callClaudeWithRetry({
+    // Progressive (2026-10-17, lib/progressive.js): the nine topic sections
+    // are split across passes (each sees only its own sections' template),
+    // beside the tips and missteps — the overview and the first sections show
+    // in seconds. Sections keep their catalogue order. The guard and the
+    // world-facts check run after the answer is on screen.
+    const system = withLanguage(`${STANDARD}\n\nReturn only valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted phrases or local-language terms plainly or with single quotes, or it breaks the JSON.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const ORDER = ['greetings', 'taboos', 'dining', 'dress', 'tipping', 'business_etiquette', 'gift_giving', 'religion', 'transport'];
+    // The sections template cut to the given ids (each section object starts
+    // with its "id" line at six spaces).
+    const withSections = (text, ids) => text
+      .replace(/ {4}\{\n {6}"id": "(\w+)"[\s\S]*?\n {4}\},?\n/g, (m, id) => (ids.includes(id) ? m : ''))
+      .replace(/,(\s*\n\s*\])/g, '$1');
+    // The first section object carries the field definitions; passes that do
+    // not write it are shown it as a guide.
+    const fieldGuide = (prompt.match(/ {4}\{\n {6}"id": "greetings"[\s\S]*?\n {4}\}/) || [''])[0];
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 7000,
-      system: withLanguage(`${STANDARD}\n\nReturn only valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted phrases or local-language terms plainly or with single quotes, or it breaks the JSON.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'culture-briefing' });
-
-    if (!parsed.sections || !Array.isArray(parsed.sections) || !parsed.overview) {
-      return res.status(500).json({ error: 'Briefing generation failed. Please try again.' });
-    }
-
-    // cultural_gap and the risk_level derived from it are gone (2026-08-25). A
-    // single 0-100 score for how different a culture is treats a country as one
-    // uniform thing, which is the first line of the standard. Deleted here too,
-    // in case the model volunteers either.
-    delete parsed.cultural_gap;
-    delete parsed.risk_level;
-
-    await guardResult(parsed, req.body);
-
-    await checkWorldFacts(parsed, research, { label: 'culture-briefing', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: destination, userLanguage });
-    return res.json(parsed);
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const sectionPart = (ids, extraKeys, i) => ({
+      required: i === 0,
+      run: () => call(withSections(onlyKeys(prompt, ['sections', ...extraKeys]), ids) + (ids.includes('greetings') ? '' : `\nWHAT EACH SECTION FIELD MEANS (shown on another section; do not write that section):\n${fieldGuide}`) + `\nTHIS PASS writes sections ${ids.join(', ')} ONLY, in that order${extraKeys.length ? `, plus ${extraKeys.join(', ')}` : ''}. Other passes write the other sections at the same time.`, 2400, i ? `culture-briefing-${i + 1}` : 'culture-briefing'),
+      apply: (d, out) => {
+        extraKeys.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
+        const got = Array.isArray(out?.sections) ? out.sections.filter(sec => sec && ids.includes(sec.id)) : [];
+        d.sectionMap = { ...d.sectionMap, ...Object.fromEntries(got.map(sec => [sec.id, sec])) };
+      },
+    });
+    const assemble = (d) => {
+      const { sectionMap, ...rest } = structuredClone(d);
+      // cultural_gap and the risk_level derived from it are gone (2026-08-25):
+      // a single score for how different a culture is treats a country as one
+      // uniform thing. Deleted in case the model volunteers either.
+      delete rest.cultural_gap;
+      delete rest.risk_level;
+      return { ...rest, sections: ORDER.map(id => sectionMap?.[id]).filter(Boolean) };
+    };
+    return await answer(req, res, {
+      label: 'culture-briefing',
+      parts: [
+        sectionPart(['greetings', 'taboos'], ['overview', 'confidence'], 0),
+        sectionPart(['dining', 'dress', 'tipping'], [], 1),
+        sectionPart(['business_etiquette', 'gift_giving'], [], 2),
+        sectionPart(['religion', 'transport'], [], 3),
+        { run: () => call(onlyKeys(prompt, ['practical_tips', 'missteps']), 1600, 'culture-briefing-5'), apply: (d, out) => { ['practical_tips', 'missteps'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+      ],
+      finish: assemble,
+      ready: d => Boolean(d.overview && d.sectionMap && Object.keys(d.sectionMap).length),
+      complete: d => Boolean(d.overview && d.sectionMap && Object.keys(d.sectionMap).length),
+      check: async (draft) => {
+        const parsed = assemble(draft);
+        await guardResult(parsed, req.body);
+        await checkWorldFacts(parsed, research, { label: 'culture-briefing', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: destination, userLanguage });
+        // Back into the draft's shape, repairs included.
+        const { sections, ...rest } = parsed;
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, rest, { sectionMap: Object.fromEntries(sections.map(sec => [sec.id, sec])) });
+      },
+    });
   } catch (err) {
     console.error('culture-briefing error:', err);
     return res.status(500).json({ error: 'Failed to generate briefing. Please try again.' });
