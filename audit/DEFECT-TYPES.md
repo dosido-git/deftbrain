@@ -30,6 +30,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T8 | Built-in examples stale or inconsistent | `scripts/example-dates-audit.js` (Gate 13) + `exampleDate`/`dayMonthFromToday` | Built 2026-10-09 | 0 |
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 | T10 | Too-vague input answered in words, shown as a generic error | `lib/claude.js` stops at a words-not-JSON reply; `lib/surge.js` middleware answers 422 `unclear_input`; `useClaudeAPI` shows `err_unclear_input` | **Built 2026-10-15**; every route | 0 |
+| T11 | Parts written apart drift (second-guess, overlap, thin coverage) | `lib/progressive.js` `planFirst` (one pass chooses the list or the claim, the rest build on it) + `planNote` (treat it as final) | **Built 2026-10-16**; progressive tools | 0 |
 
 ---
 
@@ -247,6 +248,19 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 | Instance | Status |
 |---|---|
 | Name Storm quick mode, vague input | **fixed with shared fix** |
+
+---
+
+## T11 — Parts written apart drift
+
+**What goes wrong.** A progressive answer is written by passes that run apart (lib/progressive.js). A pass that cannot see the others may question or redo their choices, repeat their points, or cover less ground than one pass weighing the whole answer would. Blind comparison, 2026-10-16: Ghost Writer's tips pass, handed the finished letters, questioned the pronouns they used; Break My Plan's split prevention half came back thinner and missed a distinct risk the single call had found.
+
+**Shared fix: built 2026-10-16.** `planFirst` — one small pass chooses what the others must agree on (the list of failure modes, the verdict, the four gift ideas) and is shown first; the other groups start the moment it lands and are handed it. `planNote` quotes it as final: build on it, never contradict, replace or question its choices. A pass that writes after others (an `after` part) quotes them through `planNote` too.
+
+| Instance | Status |
+|---|---|
+| Ghost Writer — tips pass questioned the letters' pronouns | **fixed with shared fix** (`planNote` on the extras pass) |
+| Break My Plan — split prevention half thinner, missed a risk | **fixed with shared fix** (failure modes planned first, details filled by passes handed the list) |
 
 ---
 

@@ -13,7 +13,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 
 const router = express.Router();
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted phrases or example wording must be written plainly or with single quotes, or it breaks the JSON.';
 
@@ -273,6 +273,17 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       messages: [{ role: 'user', content }],
     }, { label });
     const prevention = buildPreventionPrompt(brief);
+    const FULL_MODE = '{ "mode": "", "priority": "PRIMARY WATCH|IMPORTANT WATCH|SECONDARY WATCH", "why_this_could_happen": "", "watch_for": "", "reduce_the_risk": "" }';
+    const PLAN_MODE = '{ "mode": "", "priority": "PRIMARY WATCH|IMPORTANT WATCH|SECONDARY WATCH" }';
+    // The planned modes, with the detail pass's fields filled in by position;
+    // the plan keeps the last word on each mode's name and priority.
+    const withDetail = (d) => {
+      const { modeDetail, ...rest } = d;
+      if (Array.isArray(rest.failure_modes) && Array.isArray(modeDetail)) {
+        rest.failure_modes = rest.failure_modes.map((m, i) => (modeDetail[i] ? { ...modeDetail[i], mode: m.mode, priority: m.priority } : m));
+      }
+      return rest;
+    };
     const onePrimary = (parsed) => {
       if (!Array.isArray(parsed.failure_modes)) return parsed;
       // Safety net: exactly one PRIMARY WATCH, no matter what the model returned.
@@ -296,22 +307,29 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // Owner decision 2026-10-09: the imagined failure story is not shown — a
     // made-up story reads like evidence. It is still written (the warning
     // signs are derived from it) but never leaves the server.
-    const shown = (d) => { const parsed = onePrimary(structuredClone(d)); delete parsed.the_postmortem; return parsed; };
+    const shown = (d) => { const parsed = onePrimary(withDetail(structuredClone(d))); delete parsed.the_postmortem; return parsed; };
     return await answer(req, res, {
       label: 'pre-mortem',
       parts: [
-        ...keyGroups([
-          ['failure_modes', 'primary_failure_path'],
-          ['assumption_to_test_first', 'when_to_reconsider', 'first_move'],
-          ['assumptions_autopsy'],
-        ], (keys, i) => call(onlyKeys(prevention, keys), 2000, 'Build your part of the actionable half.', `pre-mortem-prevention${i + 1}`)),
+        // T11 (audit/DEFECT-TYPES.md), plan first: one small pass names the
+        // failure modes together (distinct, with one PRIMARY WATCH) and the
+        // primary path, and shows them; three passes then write the details,
+        // handed that list — so the modes stay distinct and the assumptions
+        // and first move speak to the same risks.
+        ...planFirst(['failure_modes', 'primary_failure_path'],
+          () => call(onlyKeys(prevention.replace(FULL_MODE, PLAN_MODE), ['failure_modes', 'primary_failure_path']) + '\nTHIS PASS names the failure modes only: each item has ONLY mode and priority. Other passes write the details for each mode afterwards.', 900, 'Name the failure modes.', 'pre-mortem-prevention1'),
+          [['failure_modes'], ['assumption_to_test_first', 'when_to_reconsider', 'first_move'], ['assumptions_autopsy']],
+          (keys, i, plan) => call(onlyKeys(prevention, keys) + planNote(plan, ['failure_modes', 'primary_failure_path'])
+            + (keys[0] === 'failure_modes' ? '\nTHIS PASS writes failure_modes in full for EXACTLY the modes above — same mode names, same priorities, same order.' : ''),
+          2000, 'Build your part of the actionable half.', `pre-mortem-prevention${i + 2}`)
+        ).map((p, i) => (i === 1 ? { ...p, apply: (d, out) => { d.modeDetail = Array.isArray(out?.failure_modes) ? out.failure_modes : []; } } : p)),
         { run: () => call(buildMemoPrompt(brief), 2500, 'Write the post-mortem memo and its warning signs.', 'pre-mortem-memo'), apply: (d, out) => { ['the_postmortem', 'warning_signs'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
       ],
       finish: shown,
       ready: d => Array.isArray(d.failure_modes),
       complete: d => Array.isArray(d.failure_modes),
-      check: async (parsed) => {
-        onePrimary(parsed);
+      check: async (draft) => {
+        const parsed = onePrimary(withDetail(draft));
         // v2 guard (PF-39a). Fail-open: it wraps a working answer.
         try {
           const fields = [];
@@ -346,6 +364,9 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
         } catch (guardErr) {
           console.log('[pre-mortem] v2 guard skipped:', guardErr.message);
         }
+        // Back into the draft: the details are merged now, repairs included.
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, parsed);
       },
     });
   } catch (err) {

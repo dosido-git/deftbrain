@@ -188,6 +188,8 @@ function planFirst(planKeys, runPlan, groups, runFollow) {
 }
 
 // The plan, quoted for a follow-up pass.
-const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass (build on it; never contradict or replace it):\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
+// T11 (audit/DEFECT-TYPES.md): "final" — a pass handed finished letters once
+// questioned the pronouns they used.
+const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording):\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
 
 module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote };

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { answer, onlyKeys } = require('../lib/progressive');
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -192,8 +192,11 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
         },
       })),
       after: async (d) => {
-        const letters = versionsOf(d).map(v => `--- ${v.style.toUpperCase()} ---\n${v.letter}`).join('\n\n');
-        const out = await call(`${onlyKeys(promptB, EXTRAS)}\n\nTHE LETTERS ALREADY WRITTEN (other passes wrote them; the placeholders are the [BRACKETS] actually in them, and power phrases are lifted verbatim from them):\n${letters}`, 1500, 'ghost-writer-b');
+        // T11 (audit/DEFECT-TYPES.md): the letters are final — this pass once
+        // questioned the pronouns they used. Placeholders are the [BRACKETS]
+        // actually in them; power phrases are lifted verbatim from them.
+        const letters = { letters: versionsOf(d).map(v => ({ style: v.style, letter: v.letter })) };
+        const out = await call(`${onlyKeys(promptB, EXTRAS)}${planNote(letters, ['letters'])}\nThe placeholders are the [BRACKETS] actually in these letters; power phrases are lifted verbatim from them; the tips are about using these letters well.`, 1500, 'ghost-writer-b');
         EXTRAS.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
       },
       finish: d => {
