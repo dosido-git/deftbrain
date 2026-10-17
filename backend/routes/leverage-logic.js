@@ -492,8 +492,12 @@ ARRAY BOUNDS: your_position at most 5, their_position at most 5, what_matters_mo
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     // Progressive (2026-10-16, lib/progressive.js), plan first (T11): the
-    // read and what matters most show first; the positions, the unknowns and
-    // traps, and the approach and lines then run at once, handed that read.
+    // read and what matters most show first; then two passes at once, handed
+    // that read — the facts and gaps (positions, unknowns), and the strategy
+    // (approach, lines, traps). Grouped so each pass holds sections that talk
+    // about the same thing: split three ways, the unknowns-and-traps pass and
+    // the approach pass could not see each other and repeated each other, and
+    // lost the do-not-volunteer point (blind comparison, 2026-10-16, twice).
     // The consistency check runs after the answer is on screen.
     const locale = withLocaleContext(userLocale, userCurrency, userRegion);
     const call = (content, maxTokens, tag) => callClaudeWithRetry({
@@ -505,10 +509,9 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     return await answer(req, res, {
       label: 'leverage-logic',
       parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1500, 'leverage-logic'), [
-        ['your_position', 'their_position', 'their_position_note'],
-        ['unknowns', 'traps'],
-        ['how_to_negotiate', 'what_to_say'],
-      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 2200, `leverage-logic-${i + 2}`)),
+        ['your_position', 'their_position', 'their_position_note', 'unknowns'],
+        ['how_to_negotiate', 'what_to_say', 'traps'],
+      ], (keys, i, plan) => call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 2800, `leverage-logic-${i + 2}`)),
       finish: d => validateResult(structuredClone(d), { theirSideSupplied }),
       ready: d => Boolean(d.read),
       complete: d => Boolean(d.read),
