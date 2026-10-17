@@ -629,6 +629,19 @@ const VirtualBodyDouble = ({ tool }) => {
     setUseCustom(false); setPutOff(false); setCustomDuration('');
   };
 
+  // PF-16: one reset, in the header of whichever view is showing. Mid-session
+  // it stops the clocks too, so a discarded session cannot complete itself.
+  const handleReset = () => {
+    clearInterval(timerRef.current); clearInterval(breakTimerRef.current); clearTimeout(ambientTimerRef.current);
+    setIsPaused(false); setIsOnBreak(false);
+    setView('setup'); resetForm();
+  };
+  const startOverBtn = (
+    <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+      ↩ {t('start_over')}
+    </button>
+  );
+
   const buildSessionText = () => {
     if (!completionData) return '';
     return `${t('vbd_copy_session_title')}\n${t('vbd_copy_task')} ${task}\n${t('vbd_copy_mode')} ${modeLabel}\n${t('vbd_copy_duration')} ${actualDuration} ${t('vbd_card_min')}\n${t('vbd_copy_mood')} ${mood} → ${moodAfter}${subTasks.length ? `\n${t('vbd_copy_subtasks')} ${subTasksCompleted}/${subTasks.length}` : ''}\n\n${completionData.celebration}\n${completionData.accomplishment_reframe}${BRAND}`;
@@ -678,9 +691,7 @@ const VirtualBodyDouble = ({ tool }) => {
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
             {(view !== 'setup' || task.trim() || environment.trim() || mood.trim()) ? (
-              <button onClick={() => { setView('setup'); resetForm(); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                ↩ {t('start_over')}
-              </button>
+              startOverBtn
             ) : null}
           </div>
         <div className="max-w-xl mx-auto space-y-5">
@@ -887,6 +898,7 @@ const VirtualBodyDouble = ({ tool }) => {
 
     return (<div ref={viewTopRef} className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-4">
+          <div data-print-hide className="flex justify-end">{startOverBtn}</div>
 
           {/* Timer header with mode-colored bar */} <div className={`${c.card} border rounded-xl p-5 text-center ${modeColors.glow} shadow-sm`}>
             {/* Mode badge + presence */} <div className="flex items-center justify-center gap-2 mb-3">
@@ -993,6 +1005,7 @@ const VirtualBodyDouble = ({ tool }) => {
   if (view === 'complete') {
     return (<div ref={viewTopRef} className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
+          <div data-print-hide className="flex justify-end">{startOverBtn}</div>
 
           <div data-copy-results ref={resultsRef} data-results-anchor />
 
@@ -1111,7 +1124,7 @@ const VirtualBodyDouble = ({ tool }) => {
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> {t('vbd_session_insights')}</h2>
-            <button onClick={() => setView('setup')} className={`text-sm px-3 py-1.5 rounded-lg ${c.tag}`}>{t('vbd_back')}</button>
+            {startOverBtn}
           </div>
 
           {results && (<>
