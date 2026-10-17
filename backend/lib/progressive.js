@@ -233,7 +233,9 @@ function planFirst(planKeys, runPlan, groups, runFollow) {
 
 // The plan, quoted for a follow-up pass.
 // T11 (audit/DEFECT-TYPES.md): "final" — a pass handed finished letters once
-// questioned the pronouns they used.
-const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording):\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
+// questioned the pronouns they used. "Do not restate" — passes handed the
+// plan repeated its observations in their own sections (Leverage Logic lost
+// three blind comparisons on repetition).
+const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass and shown to the reader above your sections — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording), and do not restate what it already says: add what it does not.\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
 
 module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote, takeKeys };
