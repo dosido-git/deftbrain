@@ -21,6 +21,7 @@ const EXAMPLES = [
   yearsTogether: 5,
   duration: 'standard',
   startTime: '6:30 PM',
+  keys: 'dn_ex',
 },
   {
   dateType: 'stay_in',
@@ -28,16 +29,20 @@ const EXAMPLES = [
   yearsTogether: 11,
   duration: 'short',
   startTime: '8:00 PM',
+  keys: 'dn_ex2', // Seoul
 },
   // Three more so the rotation reaches the ends of the range: a big-budget
   // adventurous date early in a relationship, a shoestring first date, and
-  // a long casual date with no occasion at all.
+  // a long casual date with no occasion at all. Each example after the first
+  // is set in a different continent (2026-10-18): Austin, Seoul, Cape Town,
+  // Lisbon, Buenos Aires.
   {
   dateType: 'adventurous',
   budget: 350,
   yearsTogether: 1,
   duration: 'long',
   startTime: '11:00 AM',
+  keys: 'dn_ex3', // Cape Town
 },
   {
   dateType: 'first_date',
@@ -45,6 +50,7 @@ const EXAMPLES = [
   yearsTogether: 0,
   duration: 'quick',
   startTime: '7:00 PM',
+  keys: 'dn_ex4', // Lisbon
 },
   {
   dateType: 'casual',
@@ -52,6 +58,7 @@ const EXAMPLES = [
   yearsTogether: 3,
   duration: 'long',
   startTime: '2:00 PM',
+  keys: 'dn_ex5', // Buenos Aires
 },
 ];
 // ═══════════════════════════════════════════
@@ -393,14 +400,14 @@ const DateNight = ({ tool }) => {
 
   const loadExample = useCallback(() => {
     const ex = pickExample('DateNight', EXAMPLES);
-    setLocation(t('dn_ex_loc'));
+    setLocation(t(`${ex.keys}_loc`));
     setDateType(ex.dateType);
     setBudget(ex.budget);
     setYearsTogether(ex.yearsTogether);
     setDuration(ex.duration);
     setStartTime(ex.startTime);
-    setLastTime(t('dn_ex_last'));
-    setRestrictions(t('dn_ex_res'));
+    setLastTime(t(`${ex.keys}_last`));
+    setRestrictions(t(`${ex.keys}_res`));
     setResults(null);
     setShowInputs(true);
   }, [t, setLocation, setDateType, setBudget, setYearsTogether, setDuration, setStartTime, setLastTime, setRestrictions, setResults, setShowInputs]);
