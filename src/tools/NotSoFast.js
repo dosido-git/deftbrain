@@ -3,6 +3,7 @@ import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { currencySymbol } from '../utils/formatLocale';
@@ -19,7 +20,7 @@ const WIN_LIKELIHOOD_CONFIG = {
 };
 
 const NotSoFast = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -64,6 +65,7 @@ const NotSoFast = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Win-likelihood labels — localized
   const wlLabels = {
@@ -106,15 +108,21 @@ const NotSoFast = ({ tool }) => {
   const handleSubmit = useCallback(async () => {
     if (!system.trim() || !problem.trim()) return;
     setError(''); setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('rulebook-breaker', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('rulebook-breaker', {
         officialAnswer: officialAnswer.trim() || null,
         system: system.trim(),
         problem: problem.trim(),
         whatTried: whatTried.trim() || undefined,
         goal: goal.trim() || undefined,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [
         // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
@@ -122,7 +130,7 @@ const NotSoFast = ({ tool }) => {
         ...prev,
       ].slice(0, 6));
     } catch (e) { setError(e.message || t('rb_error')); }
-  }, [system, problem, whatTried, goal, officialAnswer, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [system, problem, whatTried, goal, officialAnswer, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('NotSoFast', SYSTEM_EXAMPLES);
@@ -161,11 +169,13 @@ const NotSoFast = ({ tool }) => {
   useRegisterActions(buildFullText(), tool?.title || 'Rulebook Breaker');
 
   // Scroll to results
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   // Keyboard shortcut
   useEffect(() => {
@@ -343,6 +353,7 @@ const NotSoFast = ({ tool }) => {
       {/* ── Results ── */}
       {results && (
         <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+<CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Why this happened — first, because someone who has just been
               refused is reading it as a verdict on them. Ordinary reasons,

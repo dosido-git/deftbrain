@@ -191,7 +191,12 @@ function onlyKeys(prompt, keys) {
   while (out.length && !out[out.length - 1].trim()) out.pop();
   out[out.length - 1] = out[out.length - 1].replace(/,\s*$/, '');
   const others = chunks.map(c => c.key).filter(k => !keys.includes(k));
-  return [...lines.slice(0, start + 1), ...pre, ...out, ...lines.slice(end)].join('\n') + line + noOverlap(others);
+  // Rules written for the one-call answer still name the other sections
+  // ("Include 3-5 psychological_tactics…"), and a pass obeys them over the
+  // line above — Markup Detective's first pass wrote the whole answer
+  // (2026-10-18). Name what to leave out.
+  const omit = others.length ? `\nDo NOT write ${others.join(', ')} — even where the rules above ask for them; another pass writes those.` : '';
+  return [...lines.slice(0, start + 1), ...pre, ...out, ...lines.slice(end)].join('\n') + line + omit + noOverlap(others);
 }
 
 // T11 (audit/DEFECT-TYPES.md): passes written apart repeat each other — the

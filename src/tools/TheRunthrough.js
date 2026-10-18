@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -34,7 +35,7 @@ const TONE_OPTIONS = [
 ];
 
 const TheRunthrough = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -119,6 +120,7 @@ const TheRunthrough = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const DIFFICULTY_COLORS = {
     hard:      { badge: isDark ? 'bg-amber-900/20 text-amber-400' : 'bg-amber-100 text-amber-800', labelKey: 'trt_diff_hard' },
@@ -141,13 +143,15 @@ const TheRunthrough = ({ tool }) => {
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
 
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => {
       revealSection(resultsRef.current);
     }, 250);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   const toggleSection = (key) => {
     setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -159,6 +163,7 @@ const TheRunthrough = ({ tool }) => {
     setError('');
     setResults(null);
     setExpandedSections({});
+    cancelProgressive(); setCheckStatus(null);
 
     try {
       let endpoint, payload;
@@ -174,7 +179,15 @@ const TheRunthrough = ({ tool }) => {
         payload = { content: content.trim(), tone, goal, userLocale, userCurrency, userRegion };
       }
 
-      const res = await callToolEndpoint(endpoint, payload);
+      // Progressive (2026-10-18): Cut mode shows its cut plan first; the
+      // trimmed text follows, checked after.
+      const res = mode === 'cut'
+        ? await callToolEndpointProgressive(endpoint, payload, {
+            onDraft: d => { setResults({ mode, data: d }); setCheckStatus('checking'); },
+            onChecked: (d, changed) => { setResults({ mode, data: d }); setCheckStatus(checkStatusFor(changed)); },
+          })
+        : await callToolEndpoint(endpoint, payload);
+      if (!res) return; // replaced by a newer run
       setResults({ mode, data: res });
       // Full input + full result, not a truncated preview: this is what lets
       // a history entry actually be reopened (read the old result), rerun
@@ -456,7 +469,9 @@ const TheRunthrough = ({ tool }) => {
 
     return (
     <div className="space-y-4">
-      {/* Stats bar */}
+      {/* Stats bar and the text — once the text is written (the cut plan
+          shows first, 2026-10-18). */}
+      {d.trimmed_content && (<>
       <div className={`grid ${stats.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
         {stats.map((s, i) => (
           <div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-3 text-center`}>
@@ -483,6 +498,7 @@ const TheRunthrough = ({ tool }) => {
           </p>
         </div>
       </div>
+      </>)}
 
       {/* What was cut */}
       {d.what_was_cut?.length > 0 && (
@@ -957,6 +973,7 @@ const TheRunthrough = ({ tool }) => {
         {/* Results */}
         {results && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
+            {results.mode === 'cut' && <CheckNote status={checkStatus} className={c.textMuted} />}
             {results.mode === 'cut' && <CutResults data={results.data} />}
             {results.mode === 'anticipate' && <AnticipateResults data={results.data} />}
             {results.mode === 'hook' && <HookResults data={results.data} />}

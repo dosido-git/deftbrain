@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -100,18 +101,32 @@ Return ONLY valid JSON:
   "the_first_move": "The single most important action to take in the next 24 hours — specific and actionable"
 }`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // first move, the honest odds and why it happened show first (~9s); the
+    // ladder and phrases (one pass, so a phrase is said once), the other
+    // routes, and how the system works are written alongside, handed it. The
+    // consistency check runs after the answer is on screen.
+    const systemPrompt = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'rulebook-breaker' });
-    if (!Array.isArray(parsed.the_ladder) || !parsed.the_ladder.length) {
-      return res.status(500).json({ error: 'Could not build your strategy. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'not-so-fast', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['the_first_move', 'honest_assessment', 'why_this_happened'];
+    return await answer(req, res, {
+      label: 'not-so-fast',
+      parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1500, 'rulebook-breaker'), [
+        ['the_ladder', 'magic_phrases'],
+        ['the_loopholes', 'the_regulatory_angle', 'the_nuclear_options'],
+        ['system_analysis'],
+      ], (keys, i, plan) => call(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), 3500, `rulebook-breaker-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.the_first_move),
+      complete: d => Array.isArray(d.the_ladder) && d.the_ladder.length > 0,
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'not-so-fast', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('RulebookBreaker error:', error);

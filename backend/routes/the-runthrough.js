@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const PERSONALITY = `Presentation coach for people who already have something to say and need help making it work in the room.
 
 Protect the speaker's meaning, facts, commitments, and natural voice. Improve what is there; do not invent evidence, achievements, statistics, anecdotes, quotations, audience reactions, or certainty the source does not support.
@@ -15,22 +16,6 @@ Never place a double-quote (") character inside any JSON string value — quoted
 
 // ─── CUT: Trim content to fit a time limit ───
 router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  // Keep-alive heartbeat (same pattern as party-architect — see its
-  // tool-notes for the original incident). A single SMART generation
-  // already ran 10-11s locally at typical length; the shortfall-retry path
-  // below can run it TWICE with zero response bytes sent in between, and
-  // long source text pushes token count further still. Reported live as a
-  // 502 with no app-level error body — the signature of an upstream proxy
-  // deciding a silent connection is dead, not a code failure (this route
-  // never returns a bare "502"; that string can only come from in front of
-  // us). Writing a whitespace byte periodically keeps the connection
-  // visibly active; JSON.parse ignores leading/trailing whitespace, so the
-  // success path needs no frontend change. The error path DOES rely on a
-  // frontend change already in place (useClaudeAPI.js): once any byte is
-  // written the HTTP status is committed to 200, so a failure discovered
-  // after that point is reported as a bare {error} body instead of a status
-  // code — the frontend already treats that shape as a failure.
-  let keepAlive = null;
   try {
     const { content, timeMinutes, context, userLanguage } = req.body;
 
@@ -40,12 +25,6 @@ router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) =
     if (!timeMinutes || timeMinutes < 1) {
       return res.status(400).json({ error: 'Set a time limit (in minutes).' });
     }
-
-    res.setHeader('Content-Type', 'application/json');
-    res.flushHeaders();
-    keepAlive = setInterval(() => {
-      try { res.write(' '); } catch { /* connection already gone */ }
-    }, 10000);
 
     const userPrompt = `PRESENTATION CUT MODE:
 
@@ -99,105 +78,85 @@ If nothing needed to change, return an empty what_was_cut array. Do not manufact
 
     // The floor in the prompt (rule 3) is a real instruction, not a
     // formality — but it's a length constraint, exactly the kind of thing a
-    // model follows unreliably even when stated as a HARD FLOOR with a
-    // self-check step. Measured live against the golden 1,284-word/5-min
-    // case: three back-to-back identical calls returned 108, 372, and 459
-    // words against a 455-word floor — one attempt in three actually met it.
-    // One retry, fed the actual shortfall instead of a generic reminder,
+    // model follows unreliably. Measured live against the golden
+    // 1,284-word/5-min case: three identical calls returned 108, 372 and 459
+    // words against a 455-word floor. One retry, fed the actual shortfall,
     // is a real second chance rather than the same coin flip again.
     const floorWords = Math.round(timeMinutes * 130 * 0.7);
     const wordCount = (text) => (text || '').trim().split(/\s+/).filter(Boolean).length;
-    // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + schema
-    // overhead. Base bumped 1200→2000 on 2026-09-14 for the two new short
-    // fields (session_title, context_label) and the extra RULES text added
-    // this session. NOT bumped further to "fix" the truncation below —
-    // measured live on the golden 1284w/5min case, the SAME input produced
-    // 1721 output tokens on one call and ran the ceiling dry at 4100 on the
-    // next: that is model variance, not underbudgeting, and no ceiling
-    // reliably absorbs it without making every call slower (directly
-    // fighting the point of the heartbeat above). A concise-mode retry
-    // handles it instead — see below.
+    // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + overhead.
+    // Model variance can still run it dry; a concise-mode retry handles that.
     const maxTokens = Math.min(8000, 2000 + Number(timeMinutes) * 220);
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const ask = (content2, tokens, label) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: tokens,
+      system,
+      messages: [{ role: 'user', content: content2 }],
+    }, { label });
 
-    let parsed;
-    try {
-      parsed = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: maxTokens,
-        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: userPrompt }],
-      }, { label: 'the-runthrough' });
-    } catch (err) {
-      // callClaudeWithRetry fails fast (no parse attempt) on max_tokens —
-      // the model ran out of room before finishing valid JSON, a different
-      // failure than the floor-shortfall case below (that one gets a
-      // parsed-but-short response; this one gets nothing parseable at all).
-      // One retry with an explicit instruction to be concise, rather than
-      // failing the request outright on what measured as a genuinely
-      // variable failure rate, not a rare fluke.
-      if (!/max_tokens/.test(err?.message || '')) throw err;
-      const concisePrompt = `${userPrompt}\n\nYOUR PREVIOUS ATTEMPT AT THIS ran out of room before finishing — it was too long to complete within the response limit. Try again meaningfully more concise: one clear sentence per what_was_cut entry (not several), no restating the rules back, no repeated phrasing anywhere. Keep every field as tight as the job allows while still meeting the HARD FLOOR in rule 3.\n\nReturn ONLY valid JSON, the same shape as before.`;
-      parsed = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: maxTokens,
-        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: concisePrompt }],
-      }, { label: 'the-runthrough-concise-retry' });
-    }
-
-    // The floor only means anything when a cut was actually required for
-    // time — "unchanged" and "tightened" are legitimately allowed to be
-    // short (or even shorter than the mechanical floor) if that's just what
-    // the source is. Gating on revision_status stops the retry from forcing
-    // padding back into a presentation that was never asked to hit a length.
-    if (parsed.revision_status === 'cut' && parsed.trimmed_content && wordCount(parsed.trimmed_content) < floorWords && wordCount(parsed.trimmed_content) < wordCount(content)) {
-      // Repeats userPrompt's own JSON instruction explicitly (rather than
-      // relying on it riding along inside the ${userPrompt} interpolation)
-      // for the same reason it's worth restating up front: an instruction
-      // nearer the end of a long prompt is followed more reliably than one
-      // buried a thousand words earlier.
-      const shortfallPrompt = `${userPrompt}\n\nYOUR PREVIOUS ATTEMPT AT THIS returned only ${wordCount(parsed.trimmed_content)} words, well under the ${floorWords}-word floor. Try again: add back real material from the source in the speaker's own words — do not invent new content — until trimmed_content clears ${floorWords} words. Cut only what you removed before that was genuinely dispensable; the rest goes back in.\n\nReturn ONLY valid JSON, the same shape as before.`;
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): one
+    // pass decides the edit — the status, what gets cut and why, the central
+    // message — and shows it in seconds. The text is then written to that
+    // plan (rule 9: the cut list and the text must describe the same edit,
+    // and now one is written from the other), with the pacing notes
+    // alongside. Word counts and minutes are computed in code (T2). The
+    // consistency check runs after the answer is on screen.
+    const PLAN = ['session_title', 'context_label', 'revision_status', 'what_was_cut', 'what_was_kept'];
+    // The rules above demand trimmed_content; told only at the end, this pass
+    // sometimes wrote the whole talk anyway and ran out of room (2026-10-18).
+    const PLAN_ONLY = 'THIS PASS PLANS THE EDIT ONLY. Do NOT write the presentation text (trimmed_content) or any word counts — another pass writes the text from your plan. Decide the status, list what to cut (at most 6 items, one line each) and name the central message.';
+    const plan = ask(`${PLAN_ONLY}\n\n${onlyKeys(userPrompt, PLAN)}\n\n${PLAN_ONLY}`, 1500, 'the-runthrough');
+    plan.catch(() => {}); // the plan part reports its own failure
+    const writeText = async () => {
+      const p = await plan;
+      const textPrompt = onlyKeys(userPrompt, ['trimmed_content']) + planNote(p, PLAN) + '\nWrite the text that makes exactly this edit: remove what is listed as cut, keep the rest.';
+      let out;
       try {
-        const retried = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: maxTokens,
-          system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-          messages: [{ role: 'user', content: shortfallPrompt }],
-        }, { label: 'the-runthrough-cut-retry' });
-        // Only replace the first attempt if the retry actually did better —
-        // a second roll of the same dice landing lower would otherwise
-        // silently make the result worse.
-        if (retried.trimmed_content && wordCount(retried.trimmed_content) > wordCount(parsed.trimmed_content)) {
-          parsed = retried;
-        }
-      } catch (_) {
-        // Keep the first attempt — a failed retry must not turn a usable
-        // (if short) result into a hard error.
+        out = await ask(textPrompt, maxTokens, 'the-runthrough-text');
+      } catch (err) {
+        // Out of room before finishing valid JSON — one concise retry rather
+        // than failing on what measured as a genuinely variable failure.
+        if (!/max_tokens/.test(err?.message || '')) throw err;
+      const concisePrompt = `${textPrompt}\n\nYOUR PREVIOUS ATTEMPT AT THIS ran out of room before finishing — it was too long to complete within the response limit. Try again meaningfully more concise: one clear sentence per what_was_cut entry (not several), no restating the rules back, no repeated phrasing anywhere. Keep every field as tight as the job allows while still meeting the HARD FLOOR in rule 3.\n\nReturn ONLY valid JSON, the same shape as before.`;
+        out = await ask(concisePrompt, maxTokens, 'the-runthrough-concise-retry');
       }
-    }
-
-    clearInterval(keepAlive);
-    if (!parsed.trimmed_content) {
-      return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
-    }
-    // T4 (audit/DEFECT-TYPES.md): Cut mode added a sentence the talk never had.
-    await checkConsistency(parsed, { label: 'the-runthrough-cut', promise: 'Trims the visitor\'s own talk without adding anything to it.', userLanguage: req.body?.userLanguage });
-    // res.end, not res.json: the heartbeat already sent and flushed headers
-    // (Express's res.json() would try to set them again and throw).
-    res.end(JSON.stringify(parsed));
-
+      // The floor only means anything when a cut was required for time.
+      if (p?.revision_status === 'cut' && out?.trimmed_content && wordCount(out.trimmed_content) < floorWords && wordCount(out.trimmed_content) < wordCount(content)) {
+      const shortfallPrompt = `${textPrompt}\n\nYOUR PREVIOUS ATTEMPT AT THIS returned only ${wordCount(out.trimmed_content)} words, well under the ${floorWords}-word floor. Try again: add back real material from the source in the speaker's own words — do not invent new content — until trimmed_content clears ${floorWords} words. Cut only what you removed before that was genuinely dispensable; the rest goes back in.\n\nReturn ONLY valid JSON, the same shape as before.`;
+        try {
+          const retried = await ask(shortfallPrompt, maxTokens, 'the-runthrough-cut-retry');
+          // Only replace the first attempt if the retry actually did better.
+          if (retried?.trimmed_content && wordCount(retried.trimmed_content) > wordCount(out.trimmed_content)) out = retried;
+        } catch (_) { /* keep the first attempt — a usable result beats an error */ }
+      }
+      return out;
+    };
+    const minutes = (w) => Math.round((w / 130) * 10) / 10;
+    return await answer(req, res, {
+      label: 'the-runthrough-cut',
+      heartbeat: true,
+      parts: [
+        { required: true, run: () => plan, apply: (d, o) => { PLAN.forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+        { required: true, run: writeText, apply: (d, o) => { if (o?.trimmed_content) d.trimmed_content = o.trimmed_content; } },
+        { run: async () => ask(onlyKeys(userPrompt, ['pacing_notes']) + planNote(await plan, PLAN), 800, 'the-runthrough-pacing'),
+          apply: (d, o) => { if (o?.pacing_notes !== undefined) d.pacing_notes = o.pacing_notes; } },
+      ],
+      finish: (d) => {
+        const out = structuredClone(d);
+        const ow = wordCount(content);
+        out.original_word_count = ow; out.original_est_minutes = minutes(ow); out.target_minutes = Number(timeMinutes);
+        if (out.trimmed_content) { const tw = wordCount(out.trimmed_content); out.trimmed_word_count = tw; out.trimmed_est_minutes = minutes(tw); }
+        return out;
+      },
+      ready: d => Boolean(d.revision_status),
+      complete: d => Boolean(d.trimmed_content),
+      // T4 (audit/DEFECT-TYPES.md): Cut mode added a sentence the talk never had.
+      check: d => checkConsistency(d, { label: 'the-runthrough-cut', promise: 'Trims the visitor\'s own talk without adding anything to it.', userLanguage: req.body?.userLanguage }),
+    });
   } catch (error) {
-    if (keepAlive) clearInterval(keepAlive);
     console.error('TheRunthrough Cut error:', error);
-    // callClaudeWithRetry fails fast (no parse attempt) when stop_reason === 'max_tokens'.
-    const message = /max_tokens/.test(error?.message || '')
-      ? 'The revised version was too long to generate — try a shorter source or split the talk.'
-      : 'Something went wrong. Please try again.';
-    if (!res.headersSent) {
-      res.status(500).json({ error: message });
-    } else {
-      res.end(JSON.stringify({ error: message }));
-    }
+    if (!res.headersSent) res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

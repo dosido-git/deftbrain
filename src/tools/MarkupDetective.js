@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -23,7 +24,7 @@ const MOTIVES = [
 ];
 
 const MarkupDetective = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -69,6 +70,7 @@ const MarkupDetective = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
   const [product, setProduct] = useState('');
@@ -105,8 +107,14 @@ const MarkupDetective = ({ tool }) => {
     if (!product.trim()) return;
     setError('');
     setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('markup-detective', { product: product.trim(), motive: motive || null, userLocale, userCurrency, userRegion });
+      // Progressive (2026-10-18): the numbers show first; checked after.
+      const data = await callToolEndpointProgressive('markup-detective', { product: product.trim(), motive: motive || null, userLocale, userCurrency, userRegion }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(),
@@ -117,9 +125,9 @@ const MarkupDetective = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('mkd_error'));
     }
-  }, [product, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [product, callToolEndpointProgressive, cancelProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
-  const handleReset = () => { setResults(null); setProduct(''); setError(''); };
+  const handleReset = () => { cancelProgressive(); setCheckStatus(null); setResults(null); setProduct(''); setError(''); };
 
   // ── Render-time ref assignments ──
   handleAnalyzeRef.current = handleAnalyze;
@@ -160,12 +168,13 @@ const MarkupDetective = ({ tool }) => {
   useRegisterActions(buildFullText(), tool?.title || 'MarkupDetective');
 
   // ── PF-7: Scroll to results ──
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const t = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [hasResults]);
 
   // ── PF-6: Keyboard handler ──
   useEffect(() => {
@@ -322,6 +331,7 @@ const MarkupDetective = ({ tool }) => {
       {/* ═══ RESULTS ═══ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Verdict banner */}
           <div className={`border-t ${c.border} pt-5`}>

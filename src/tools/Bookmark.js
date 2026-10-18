@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -68,7 +69,7 @@ const EXAMPLES = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const Bookmark = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -119,6 +120,7 @@ const Bookmark = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── useState ──────────────────────────────────────────────
   const [showHistory, setShowHistory] = useState(false);
@@ -149,17 +151,23 @@ const Bookmark = ({ tool }) => {
   const recall = useCallback(async () => {
     if (!title.trim() || !stoppedAt.trim()) { setError(t('bk_err_missing')); return; }
     setError(''); setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('bookmark', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('bookmark', {
         mediaType, title: title.trim(), stoppedAt: stoppedAt.trim(),
         whatYouRemember: whatYouRemember.trim() || null,
         spoilerLevel,
         specificQuestions: specificQuestions.trim() || null,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       saveToHistory(data);
     } catch (err) { setError(err.message || t('bk_err_failed')); }
-  }, [mediaType, title, stoppedAt, whatYouRemember, spoilerLevel, specificQuestions, callToolEndpoint, t]);
+  }, [mediaType, title, stoppedAt, whatYouRemember, spoilerLevel, specificQuestions, callToolEndpointProgressive, t]);
 
   const handleReset = useCallback(() => {
     setTitle(''); setStoppedAt(''); setWhatYouRemember(''); setSpecificQuestions('');
@@ -249,12 +257,13 @@ const Bookmark = ({ tool }) => {
   useRegisterActions(buildFullCopy(), tool?.title || 'Bookmark');
 
   // ── Scroll ────────────────────────────────────────────────
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const t = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [hasResults]);
 
   // ── Keyboard handler ──────────────────────────────────────
   useEffect(() => {
@@ -407,6 +416,7 @@ const Bookmark = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+<CheckNote status={checkStatus} className={c.textMuted} />
         {/* Header */}
         <div className={'p-5 rounded-2xl border-2 ' + c.tip}>
           <div className="flex items-center gap-2 mb-2">

@@ -6,6 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
 const { bothChecks } = require('../lib/bothChecks');
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write task names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -87,21 +88,90 @@ Return ONLY valid JSON:
   "heatmap": [{ "hour": 9, "mode": "creative | analytical | social | mechanical | physical | planning", "intensity": "high|medium|low", "label": "batch name" }]
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'BatchFlowGenerate' });
-      if (!parsed.batches && !parsed.schedule) {
-      return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
-      d => withNumberCheck(d, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
-      d => checkConsistency(d, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
-      { label: 'batch-flow' });
-    return res.json(parsed);
+      // Progressive, plan first (2026-10-18, lib/progressive.js, T11): one
+      // pass groups the tasks — batch names, modes, windows, which task goes
+      // where, the switch-cost math — and shows it (~13s instead of ~70s).
+      // Two passes then detail each half of the batches (handed the plan, so
+      // nothing moves), and one writes the heatmap and day notes. The number
+      // and consistency checks run after the answer is on screen.
+      const system = withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE;
+      const call = (content, maxTokens, tag) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: 'user', content }],
+      }, { label: tag });
+      const head = prompt.slice(0, prompt.indexOf('Return ONLY valid JSON:'));
+      const tail = prompt.slice(prompt.indexOf('Return ONLY valid JSON:'));
+      const SKELETON = `Return ONLY valid JSON:
+{
+  "overview": "1-2 sentences",
+  "switch_cost_before": "X switches random",
+  "switch_cost_after": "Y switches batched",
+  "time_saved_estimate": "~Xm",
+  "total_estimated_time": "total including breaks",
+  "batches": [{ "batch_id": 1, "batch_name": "name", "cognitive_mode": "creative|analytical|social|mechanical|physical|planning", "suggested_time": "9:00 AM - 10:30 AM", "estimated_duration": "~90 min", "tasks": [{ "task": "description", "time_estimate": "~20 min" }] }],
+  "unbatchable": ["tasks that don't fit"]
+}
+THIS PASS groups the tasks and does the batch math only — other passes add each batch's details, the heatmap and the day notes from your plan.
+GROUPING: as few batches as the work allows — tasks that share a mode, tools or location go together; never split them into separate batches for neatness. Each batch's window fits its tasks (padded sum plus its break) with no large unexplained slack.`;
+      const plan = call(head + SKELETON, 3000, 'BatchFlowGenerate');
+      plan.catch(() => {}); // the plan part reports its own failure
+      const DETAIL = `Return ONLY valid JSON:
+{
+  "batch_details": [{ "batch_id": 1, "energy_required": "high|medium|low", "energy_level": 3, "task_locations": ["location of each task in order, or null"], "why_batched": "reason", "tools_needed": ["tool1"], "environment_tip": "setup note", "focus_preset": { "notifications": "off|limited|on", "music": "suggestion", "workspace": "where", "phone": "DND|nearby", "browser_tabs": "open/close", "ritual": "transition ritual" }, "break_after": "5 min stretch" }]
+}`;
+      const half = p => Math.ceil(((p?.batches) || []).length / 2);
+      const detailPart = (i) => ({
+        run: async () => {
+          const p = await plan;
+          const all = (p?.batches || []).map(b => b.batch_id);
+          const ids = i ? all.slice(half(p)) : all.slice(0, half(p));
+          if (!ids.length) return null;
+          return call(head + planNote(p, ['batches']) + `\n\n${DETAIL}\nTHIS PASS details batches ${ids.join(', ')} ONLY (by batch_id) — one batch_details item each. Another pass details the others.`, 2500, `BatchFlowDetail-${i + 1}`);
+        },
+        apply: (d, out) => { if (Array.isArray(out?.batch_details)) d.batchDetail = { ...d.batchDetail, [i]: out.batch_details }; },
+      });
+      const restPart = {
+        run: async () => {
+          const p = await plan;
+          return call(head + planNote(p, ['batches', 'unbatchable']) + '\n\n' + onlyKeys(tail, ['fixed_commitments_placed', 'day_flow_note', 'heatmap']), 2000, 'BatchFlowDay');
+        },
+        apply: (d, out) => { ['fixed_commitments_placed', 'day_flow_note', 'heatmap'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); },
+      };
+      const merged = (d) => {
+        const { batchDetail, ...rest } = structuredClone(d);
+        const byId = Object.fromEntries(Object.values(batchDetail || {}).flat().filter(Boolean).map(x => [String(x.batch_id), x]));
+        if (Array.isArray(rest.batches)) rest.batches = rest.batches.map(b => {
+          const x = byId[String(b.batch_id)];
+          if (!x) return b;
+          const { batch_id, task_locations, ...extra } = x;
+          return { ...b, ...extra, batch_id: b.batch_id,
+            tasks: (b.tasks || []).map((t, j) => ({ ...t, location: Array.isArray(task_locations) ? (task_locations[j] ?? null) : (t.location ?? null) })) };
+        });
+        return rest;
+      };
+      return await answer(req, res, {
+        label: 'batch-flow',
+        parts: [
+          { required: true, run: () => plan, apply: (d, out) => { ['overview', 'switch_cost_before', 'switch_cost_after', 'time_saved_estimate', 'total_estimated_time', 'batches', 'unbatchable'].forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+          detailPart(0), detailPart(1), restPart,
+        ],
+        finish: merged,
+        ready: d => Array.isArray(d.batches) && d.batches.length > 0,
+        complete: d => Array.isArray(d.batches) && d.batches.length > 0,
+        check: async (draft) => {
+          const d = merged(draft);
+          // Number and consistency checks run side by side (lib/bothChecks.js).
+          await bothChecks(d,
+            x => withNumberCheck(x, { label: 'batch-flow', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+            x => checkConsistency(x, { label: 'batch-flow', userLanguage: req.body?.userLanguage }),
+            { label: 'batch-flow' });
+          // Back into the draft from the new object: details merged, repairs included.
+          Object.keys(draft).forEach(k => delete draft[k]);
+          Object.assign(draft, d);
+        },
+      });
     }
 
     // ─── QUICK DUMP ───

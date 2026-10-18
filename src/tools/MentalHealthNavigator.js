@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -90,7 +91,7 @@ const EXAMPLES = [
 ];
 
 function MentalHealthNavigator({ tool }) {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -127,6 +128,7 @@ function MentalHealthNavigator({ tool }) {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [situationAreas, setSituationAreas] = useState([]);
   const [freeform, setFreeform]             = useState('');
@@ -171,9 +173,11 @@ function MentalHealthNavigator({ tool }) {
     if (!canSubmit || loading) return;
     setError('');
     setResults(null);
+    cancelProgressive(); setCheckStatus(null);
 
     try {
-      const parsed = await callToolEndpoint('mental-health-navigator/stream', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const parsed = await callToolEndpointProgressive('mental-health-navigator/stream', {
         situationAreas,
         freeform: freeform.trim() || null,
         triedBefore,
@@ -182,7 +186,11 @@ function MentalHealthNavigator({ tool }) {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults({ ...d, _input: { freeform: freeform.trim(), situationAreas } }); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults({ ...d, _input: { freeform: freeform.trim(), situationAreas } }); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!parsed) return; // replaced by a newer run
       setResults({ ...parsed, _input: { freeform: freeform.trim(), situationAreas } });
       const previewText = situationAreas.map(id => { const a = SITUATION_AREAS.find(s => s.id === id); return a ? t(a.labelKey) : null; }).filter(Boolean).join(', ') || t('mhn_nav_completed');
       // PF-25 exception: 50 is a preview-text length, not a history cap (history caps at 5 below).
@@ -193,7 +201,7 @@ function MentalHealthNavigator({ tool }) {
     } catch (err) {
       setError(err.message || t('mhn_error'));
     }
-  }, [canSubmit, loading, situationAreas, freeform, triedBefore, barriers, country, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, situationAreas, freeform, triedBefore, barriers, country, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleFindRef.current = handleFind;
   canSubmitRef.current  = canSubmit;
@@ -229,12 +237,13 @@ function MentalHealthNavigator({ tool }) {
 
   useRegisterActions(buildFullText(), tool?.title || 'MentalHealthNavigator');
 
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const t = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [hasResults]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -383,6 +392,7 @@ function MentalHealthNavigator({ tool }) {
         )}
 
         {/* What you described */}
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {results?.what_you_described && (
           <div className={`border-t ${c.border} pt-5`}>
             <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>🧭 {t('mhn_what_heard')}</p>

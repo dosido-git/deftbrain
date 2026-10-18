@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -38,7 +39,7 @@ const EXAMPLE_META = {
 // ═══════════════════════════════════════════
 
 const BatchFlow = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -96,6 +97,7 @@ const BatchFlow = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const modeStyle = (mode) => { const m = MODE_COLORS[mode] || MODE_COLORS.mechanical; return isDark ? `${m.bg}900/25 ${m.border}700 ${m.text}300` : `${m.bg}50 ${m.border}300 ${m.text}800`; };
   const modeInfo = (mode) => MODE_COLORS[mode] || MODE_COLORS.mechanical;
@@ -271,17 +273,23 @@ const BatchFlow = ({ tool }) => {
   const handleGenerate = async () => {
     if (filledTasks.length === 0) { setError(t('bf_err_add_task')); setValidFail(true); return; }
     setError(''); setValidFail(false); setResults(null); setChecked({}); setCompletedBatches({});
+    cancelProgressive(); setCheckStatus(null);
     setExpandedBatch(null); setExpandResult(null); setProgressResult(null); setAbResult(null);
     const now = new Date();
     try {
-      const data = await callToolEndpoint('batch-flow', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('batch-flow', {
         action: 'generate', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), duration: tk.duration.trim() || null, location: tk.location.trim() || null })),
         energy_curve: energyCurve || null, day_type: dayType, time_available: timeAvail || null,
         start_time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
         fixed_commitments: commitments.length ? commitments : null, location_mode: locationMode,
         pastBatches: journal.slice(0, 5),
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       if (data) {
         setResults(data);
         saveToJournal(data, filledTasks.length);
@@ -504,11 +512,13 @@ const BatchFlow = ({ tool }) => {
   canSubmitRef.current = dumpMode ? !!dumpText.trim() : filledTasks.length > 0;
 
   // ─── Scroll to results when they arrive ───
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   // ─── Global ⌘/Ctrl+Enter keyboard handler ───
   useEffect(() => {
@@ -822,6 +832,7 @@ const BatchFlow = ({ tool }) => {
 
       {/* ═══ RESULTS VIEW ═══ */}
       {results && <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
+<CheckNote status={checkStatus} className={c.textMuted} />
         {/* ── FIRST, THIS MATTERS ─────────────────────────────────────────
             Fixed copy, ahead of the plan. The visitor arrived because their day
             is a mess and they suspect that is a failure of discipline. It

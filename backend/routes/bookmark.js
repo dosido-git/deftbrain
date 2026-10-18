@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
@@ -335,27 +336,48 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 Never place a double-quote (") character inside any JSON string value — write quoted dialogue, titles, or nicknames plainly or with single quotes, or it breaks the JSON.`;
 
-    const data = await callClaudeWithRetry({
-model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'bookmark' });
-    if (!data.title) {
-      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-    }
-    // Defensive: the model occasionally invents the_story_so_far_continued keys;
-    // the frontend renders only the_story_so_far, silently dropping the rest
-    // (audit 2026-07-19) — merge them back in.
-    if (typeof data.the_story_so_far === 'string') {
-      Object.keys(data).filter(k => /^the_story_so_far_continued/.test(k)).sort().forEach(k => {
-        if (typeof data[k] === 'string') data.the_story_so_far += '\n\n' + data[k];
-        delete data[k];
-      });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(data, { label: 'bookmark', userLanguage: req.body?.userLanguage });
-    res.json(data);
+    // Progressive (2026-10-18, lib/progressive.js): the recap is split by
+    // section. "Before you press play" and the confidence note show first
+    // (they are the whole recap for someone who reads one section); the story,
+    // the people and threads, and the rest are written at the same time. Every
+    // pass gets the same spoiler-safe chronology. The consistency check runs
+    // after the answer is on screen.
+    const system = withLanguage(systemPrompt, userLanguage);
+    const keysOf = prompt.split('\n').map(l => (l.match(/^ {2}"([a-z_]+)":/) || [])[1]).filter(Boolean);
+    const FIRST = ['title', 'media_type', 'stopped_at', 'before_you_press_play', 'confidence', 'confidence_note'];
+    const first = keysOf.filter(k => FIRST.includes(k));
+    const rest = keysOf.filter(k => !FIRST.includes(k));
+    const story = rest.filter(k => /story|left_off|happened|standings|where/.test(k));
+    const others = rest.filter(k => !story.includes(k));
+    const mid = Math.ceil(others.length / 2);
+    const groups = [first, story, others.slice(0, mid), others.slice(mid)].filter(g => g.length);
+    const finish = (d) => {
+      const data = structuredClone(d);
+      // Defensive: the model occasionally invents the_story_so_far_continued keys;
+      // the frontend renders only the_story_so_far, silently dropping the rest
+      // (audit 2026-07-19) — merge them back in.
+      if (typeof data.the_story_so_far === 'string') {
+        Object.keys(data).filter(k => /^the_story_so_far_continued/.test(k)).sort().forEach(k => {
+          if (typeof data[k] === 'string') data.the_story_so_far += '\n\n' + data[k];
+          delete data[k];
+        });
+      }
+      return data;
+    };
+    return await answer(req, res, {
+      label: 'bookmark',
+      parts: keyGroups(groups, (keys, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system,
+        messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
+      }, { label: i ? `bookmark-${i + 1}` : 'bookmark' })),
+      finish,
+      ready: d => Boolean(d.title),
+      complete: d => Boolean(d.title),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'bookmark', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('Bookmark error:', error);

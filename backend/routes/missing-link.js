@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry, NO_INVENTED_FACTS } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -122,17 +123,48 @@ Return ONLY valid JSON:
 
 The prerequisite_chain should have 3-6 items, ordered from most foundational (level 1) to the target concept. Mark the most likely gap with high gap_likelihood. Provide AT MOST 2 if_thats_not_it items. gap_likelihood MUST stay one of the exact English keys high|medium|low regardless of the response language (it is a code value the UI switches on, not display text). Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // diagnosis — what the concept needs and the likely gap — shows first;
+    // the mini-lesson for that gap, the prerequisite chain and the plan are
+    // written alongside, handed it, so they all point at the same gap.
+    const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-gap-trace' });
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const REFRESHER = /\n {4}"refresher": \{[\s\S]*?\n {4}\}/;
+    const PLAN = ['concept_analysis', 'subject_detected', 'likely_gap'];
+    const planPrompt = onlyKeys(userPrompt, PLAN).replace(REFRESHER, '').replace(/("confidence_reasons": \[[\s\S]*?\n {4}\]),/, '$1')
+      + '\nTHIS PASS leaves out likely_gap.refresher — another pass writes the mini-lesson for the gap you name.';
+    const refresherPrompt = (plan) => `${userPrompt.slice(0, userPrompt.indexOf('Return ONLY valid JSON:'))}${planNote(plan, PLAN)}
 
-    if (!parsed.concept_analysis || !parsed.likely_gap) {
-      return res.status(500).json({ error: 'Could not trace the gap. Please try again.' });
-    }
-    res.json(parsed);
+Return ONLY valid JSON:
+{
+  "refresher": ${((userPrompt.match(/"refresher": (\{[\s\S]*?\n {4}\})/) || [])[1] || '{}')}
+}
+THIS PASS writes ONLY the refresher — the mini-lesson for exactly the likely gap above.`;
+    const plan = call(planPrompt, 1500, 'the-gap-trace');
+    plan.catch(() => {}); // the plan part reports its own failure
+    return await answer(req, res, {
+      label: 'the-gap',
+      parts: [
+        ...planFirst(PLAN, () => plan, [
+          ['prerequisite_chain', 'chain_visualization'],
+          ['forward_connection', 'if_thats_not_it', 'study_plan', 'encouragement'],
+        ], (keys, i, p) => call(onlyKeys(userPrompt, keys) + planNote(p, PLAN), 2000, `the-gap-trace-${i + 2}`)),
+        { run: async () => call(refresherPrompt(await plan), 1500, 'the-gap-refresher'),
+          apply: (d, o) => { if (o?.refresher) d.refresher = o.refresher; } },
+      ],
+      finish: d => {
+        const { refresher, ...out } = structuredClone(d);
+        if (out.likely_gap && refresher) out.likely_gap = { ...out.likely_gap, refresher };
+        return out;
+      },
+      ready: d => Boolean(d.concept_analysis && d.likely_gap),
+      complete: d => Boolean(d.concept_analysis && d.likely_gap),
+    });
 
   } catch (error) {
     console.error('The Gap error:', error);

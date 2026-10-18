@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites, matchVerifiedSources } = require('../lib/groundedFacts');
@@ -110,19 +111,23 @@ Return ONLY valid JSON with exactly these keys:
   "caution": "one sentence — name statutes only if certain, otherwise say verify locally"
 }`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 1500,
-      system,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'renters-deposit-saver/rights' });
-
-    if (!parsed.key_rights) {
-      return res.status(500).json({ error: 'Failed to look up deposit rights. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'renters-deposit-saver', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+    // Progressive (2026-10-18, lib/progressive.js): the summary and caution
+    // show first; the rights list is written alongside from the same verified
+    // law. The consistency check runs after the answer is on screen.
+    return await answer(req, res, {
+      label: 'renters-deposit-saver',
+      parts: keyGroups([['rights_summary', 'caution'], ['key_rights']], (keys, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 1500,
+        system,
+        messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
+      }, { label: i ? 'renters-deposit-saver/rights-2' : 'renters-deposit-saver/rights' })),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.rights_summary),
+      complete: d => Array.isArray(d.key_rights) && d.key_rights.length > 0,
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'renters-deposit-saver', userLanguage: req.body?.userLanguage }),
+    });
   } catch (err) {
     console.error('[RentersDepositSaver/rights] Error:', err);
     res.status(500).json({ error: 'Failed to look up deposit rights. Please try again.' });

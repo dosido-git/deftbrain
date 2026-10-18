@@ -7,7 +7,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency, stringFields } = require('../lib/outputGuard');
 const { researchFacts, checkWorldFacts } = require('../lib/worldFacts');
-const { allChecks } = require('../lib/bothChecks');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const AREA_LABELS = {
   anxiety:      'anxiety / excessive worry',
   mood:         'low mood / depression',
@@ -123,32 +123,40 @@ Guidelines:
     // T1: crisis lines and services from a cached web search — a wrong number here is the worst error this tool can make.
     const research = country ? researchFacts({ topic: ['mental-health', country], label: 'mental-health-navigator', brief: `Mental health support in ${country}: national crisis and suicide-prevention lines (exact numbers and hours), how to see a therapist or psychiatrist (referral needed or not, public vs private, typical costs or coverage), free and low-cost options, and online services available there.` }) : null;
     
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // reflection and the DeftBrain pointers show first. The support options
+    // and the steps are written alongside, handed it, and each is checked
+    // against the researched services BEFORE it shows — a wrong crisis number
+    // must never be on screen, even briefly (T1). The consistency check runs
+    // after everything is on screen.
+    const system = systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'mental-health-navigator' });
-
-    if (!parsed?.what_you_described || !Array.isArray(parsed?.recommended_support)) {
-      return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
-    }
-
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-
-    // World-facts and consistency checks run side by side (lib/bothChecks.js allChecks).
-    await allChecks(parsed, [
-      ...(research ? [d => checkWorldFacts(d, research, { label: 'mental-health-navigator', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: `mental health support in ${country}`, userLanguage })] : []),
-      d => checkConsistency(d, { label: 'mental-health-navigator', userLanguage: req.body?.userLanguage }),
-    ], { label: 'mental-health-navigator' });
-
-    res.json({
-      what_you_described:  parsed.what_you_described,
-      recommended_support: parsed.recommended_support,
-      what_to_say:         Array.isArray(parsed.what_to_say)         ? parsed.what_to_say         : [],
-      barriers_addressed:  Array.isArray(parsed.barriers_addressed)  ? parsed.barriers_addressed  : [],
-      immediate_steps:     Array.isArray(parsed.immediate_steps)     ? parsed.immediate_steps     : [],
-      deftbrain_next:      Array.isArray(parsed.deftbrain_next)      ? parsed.deftbrain_next      : [],
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    const PLAN = ['what_you_described', 'deftbrain_next'];
+    const facts = async (out) => {
+      if (research && out) await checkWorldFacts(out, research, { label: 'mental-health-navigator', fields: stringFields(out).filter(([, v]) => v.length > 15), subject: `mental health support in ${country}`, userLanguage });
+      return out;
+    };
+    const ARRAYS = ['what_to_say', 'barriers_addressed', 'immediate_steps', 'deftbrain_next'];
+    return await answer(req, res, {
+      label: 'mental-health-navigator',
+      parts: planFirst(PLAN, () => call(onlyKeys(prompt, PLAN), 1200, 'mental-health-navigator'), [
+        ['recommended_support'],
+        ['what_to_say', 'barriers_addressed', 'immediate_steps'],
+      ], async (keys, i, plan) => facts(await call(onlyKeys(prompt, keys) + planNote(plan, PLAN), 3000, `mental-health-navigator-${i + 2}`))),
+      finish: d => ({
+        what_you_described: d.what_you_described,
+        recommended_support: Array.isArray(d.recommended_support) ? d.recommended_support : [],
+        ...Object.fromEntries(ARRAYS.map(k => [k, Array.isArray(d[k]) ? d[k] : []])),
+      }),
+      ready: d => Boolean(d.what_you_described),
+      complete: d => Boolean(d.what_you_described && Array.isArray(d.recommended_support) && d.recommended_support.length),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'mental-health-navigator', userLanguage: req.body?.userLanguage }),
     });
   } catch (err) {
     if (!res.headersSent) {

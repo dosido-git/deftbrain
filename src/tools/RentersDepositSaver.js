@@ -289,7 +289,7 @@ const SectionSkeleton = ({ isDark, c, generatingLabel }) => (
 
 
 const RentersDepositSaver = ({ tool }) => {
-  const { callToolEndpoint, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -548,7 +548,12 @@ const RentersDepositSaver = ({ tool }) => {
     setRightsResult(null);
     setShowRights(true);
     try {
-      const data = await callToolEndpoint('renters-deposit-saver/rights', { location: locationString });
+      // Progressive (2026-10-18): the summary shows first, the list follows.
+      const data = await callToolEndpointProgressive('renters-deposit-saver/rights', { location: locationString }, {
+        onDraft: d => setRightsResult(d),
+        onChecked: d => setRightsResult(d),
+      });
+      if (!data) return; // replaced by a newer run
       setRightsResult(data);
     } catch (err) {
       setRightsError(err.message || t('rds_rights_failed'));

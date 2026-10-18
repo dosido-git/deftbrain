@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 // Server-side only — not bundled by webpack
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { rateLimit } = require('../lib/rateLimiter');
@@ -80,32 +81,43 @@ Rules:
 - all amount fields (price_paid, true_cost, fair_price, cost_breakdown.amount) are short currency strings in the user's local currency (never assume US dollars)
 - how_to_pay_less must be actionable for this specific item, not generic advice${motiveNote}`;
 
-    const data = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // numbers — price, true cost, fair price, multiplier and breakdown — are
+    // one pass so they agree, and show first; the tactics and the tips are
+    // written alongside, handed them. The number and consistency checks run
+    // after the answer is on screen.
+    const system = systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion);
+    const call = (keys, note, tag) => callClaudeWithRetry({
       model: MODELS.DEEP,
       max_tokens: 2500,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
-    }, { label: 'markup-detective' });
-
-    // Validate required fields
-    if (!data.cost_breakdown?.length || !data.markup_multiplier) {
-      return res.status(500).json({ error: 'Incomplete analysis returned. Please try again.' });
-    }
-
-    // Its own rules (breakdown sums to 100% and to the price; multiplier =
-    // price / true cost) are exactly what a model gets wrong — recompute them.
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(data,
-      d => withNumberCheck(d, {
+      system,
+      // The answer template is in the user message, so that is what is trimmed.
+      messages: [{ role: 'user', content: withLanguage(onlyKeys(userPrompt, keys) + note, userLanguage) }],
+    }, { label: tag });
+    const PLAN = ['product_identified', 'price_paid', 'true_cost', 'fair_price', 'markup_multiplier', 'one_line_verdict', 'cost_breakdown'];
+    return await answer(req, res, {
       label: 'markup-detective',
-      context: visitorContext(req.body),
-      extraRules: 'cost_breakdown percents must sum to 100 and amounts to price_paid; markup_multiplier = price_paid / true_cost to 1 decimal.',
-      userLanguage,
-    }),
-      d => checkConsistency(d, { label: 'markup-detective', userLanguage: req.body?.userLanguage }),
-      { label: 'markup-detective' });
-    return res.json(data);
+      parts: planFirst(PLAN, () => call(PLAN, '', 'markup-detective'), [
+        ['psychological_tactics'],
+        ['industry_secrets', 'how_to_pay_less'],
+      ], (keys, i, plan) => call(keys, planNote(plan, PLAN), `markup-detective-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.cost_breakdown?.length && d.markup_multiplier),
+      complete: d => Boolean(d.cost_breakdown?.length && d.markup_multiplier),
+      // Its own rules (breakdown sums to 100% and to the price; multiplier =
+      // price / true cost) are exactly what a model gets wrong — recompute them.
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      // Number and consistency checks run side by side (lib/bothChecks.js).
+      check: d => bothChecks(d,
+        x => withNumberCheck(x, {
+          label: 'markup-detective',
+          context: visitorContext(req.body),
+          extraRules: 'cost_breakdown percents must sum to 100 and amounts to price_paid; markup_multiplier = price_paid / true_cost to 1 decimal.',
+          userLanguage,
+        }),
+        x => checkConsistency(x, { label: 'markup-detective', userLanguage: req.body?.userLanguage }),
+        { label: 'markup-detective' }),
+    });
 
   } catch (err) {
     console.error('markup-detective error:', err);
