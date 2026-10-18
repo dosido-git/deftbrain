@@ -34,7 +34,7 @@ const EXAMPLES = [
   // Three more so the rotation reaches the ends of the range: a big-budget
   // adventurous date early in a relationship, a shoestring first date, and
   // a long casual date with no occasion at all. Each example after the first
-  // is set in a different continent (2026-10-18): Austin, Seoul, Cape Town,
+  // is set in a different continent: Austin, Seoul, Cape Town,
   // Lisbon, Buenos Aires.
   {
   dateType: 'adventurous',
