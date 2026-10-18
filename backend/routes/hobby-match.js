@@ -907,7 +907,7 @@ async function checkPiece(evidence, plan, label, piece, { userLanguage, localeSu
   return piece;
 }
 
-async function fastDraft(evidence, lang) {
+async function fastDraft(evidence, lang, onSummary) {
   const { userLanguage, localeSuffix } = lang;
   const plan = hardScrub(await callClaudeWithRetry({
     model: MODELS.FAST,
@@ -936,7 +936,8 @@ async function fastDraft(evidence, lang) {
       const w = { name: plan.wildcard.name, activity_mode: plan.wildcard.activity_mode, why: out?.wildcard?.why || '' };
       return checkPiece(evidence, plan, 'wildcard', w, lang);
     })(),
-    checkPiece(evidence, plan, 'summary', { matching_for: plan.matching_for || [], pattern_in_matches: plan.pattern_in_matches || '' }, lang),
+    checkPiece(evidence, plan, 'summary', { matching_for: plan.matching_for || [], pattern_in_matches: plan.pattern_in_matches || '' }, lang)
+      .then(x => { onSummary?.(x); return x; }),
   ]);
   return hardScrub({ matching_for: summary.matching_for, hobbies, wildcard, pattern_in_matches: summary.pattern_in_matches });
 }
@@ -967,7 +968,7 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // result" — so it is one part (built by fastDraft, the full path as its
     // fallback); the consistency check runs after it is on screen.
     const pipeline = async () => {
-        let result = await fastDraft(evidence, { userLanguage, localeSuffix })
+        let result = await fastDraft(evidence, { userLanguage, localeSuffix }, gotSummary)
           .catch(err => { console.warn('[hobby-match] fast path failed — full path:', err.message); return null; });
         if (!result) {
           // PASS 1 — generate from the closed evidence set.
@@ -1060,9 +1061,21 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
         }
       return result;
     };
+    // Speed (2026-10-17): the summary — what they are matching for — shows as
+    // soon as it has passed its own compliance edit (~6s). The matches still
+    // show only once the whole set has passed the gate.
+    let gotSummary;
+    const summary = new Promise(r => { gotSummary = r; });
+    const full = pipeline();
+    full.then(r => gotSummary({ matching_for: r.matching_for, pattern_in_matches: r.pattern_in_matches }), err => gotSummary(Promise.reject(err)));
+    full.catch(() => {}); // the matches part reports its own failure
+    summary.catch(() => {});
     return await answer(req, res, {
       label: 'hobby-match',
-      parts: [{ required: true, run: pipeline, apply: (d, out) => Object.assign(d, out) }],
+      parts: [
+        { required: true, run: () => summary, apply: (d, out) => { if (!d.hobbies) { d.matching_for = out?.matching_for; d.pattern_in_matches = out?.pattern_in_matches; } } },
+        { required: true, run: () => full, apply: (d, out) => Object.assign(d, out) },
+      ],
       finish: d => structuredClone(d),
       ready: d => Array.isArray(d.matching_for) && d.matching_for.length > 0,
       complete: d => Array.isArray(d.matching_for) && d.matching_for.length > 0,

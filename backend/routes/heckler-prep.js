@@ -570,7 +570,10 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       [hCount1, hBrutal1, 'WHAT FOLLOWS FROM IT — accountability, decision rights and precedent', 'the case itself, trust, consequences, what happens if it goes wrong, or what approval signals'],
       [hCount2, hBrutal2, 'WHAT FOLLOWS FROM IT — trust, consequences, what happens if it goes wrong, and what approval signals', 'the case itself, accountability, decision rights or precedent'],
     ].filter(([count]) => count > 0);
-    const framingPrompt = `${ledgerOnly}\n\nOther passes are writing the audience questions at the same time. THIS PASS writes only the grounded framing. Return ONLY valid JSON: {"situation_read":{"text":"2 concise sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"the_curveball":{"question":"one unexpected credible question","how_to_handle":"2 concise grounded coaching sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[],"hypothetical":false,"hypothetical_premise":null},"opening_move":{"text":"one grounded sentence acknowledging the biggest explicit objection without conceding it, or null","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"confidence_note":{"text":"one grounded preparation insight, not generic encouragement","fact_ids":[],"objection_ids":[],"unknown_ids":[]}}`;
+    // Speed (2026-10-17): the framing is two passes — the situation read the
+    // page leads with (~6s after the ledger), and the curveball + confidence note.
+    const framingPromptA = `${ledgerOnly}\n\nOther passes are writing the audience questions at the same time. Another pass writes the curveball and confidence note. THIS PASS writes only the situation read and the opening move. Return ONLY valid JSON: {"situation_read":{"text":"2 concise sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[]},"opening_move":{"text":"one grounded sentence acknowledging the biggest explicit objection without conceding it, or null","fact_ids":[],"objection_ids":[],"unknown_ids":[]}}`;
+    const framingPromptB = `${ledgerOnly}\n\nOther passes are writing the audience questions at the same time. Another pass writes the situation read and opening move. THIS PASS writes only the curveball and the confidence note. Return ONLY valid JSON: {"the_curveball":{"question":"one unexpected credible question","how_to_handle":"2 concise grounded coaching sentences","fact_ids":[],"objection_ids":[],"unknown_ids":[],"hypothetical":false,"hypothetical_premise":null},"confidence_note":{"text":"one grounded preparation insight, not generic encouragement","fact_ids":[],"objection_ids":[],"unknown_ids":[]}}`;
 
     const RANK = { moderate: 0, hard: 1, brutal: 2 };
     const qSlots = new Array(QUESTION_PASSES.length).fill(null);
@@ -595,7 +598,10 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     return await answer(req, res, {
       label: 'heckler-prep',
       parts: [
-        { run: () => ask(framingPrompt, 'heckler-prep:framing', 1500), apply: (d, o) => { d.framing = Object.fromEntries(FRAMING.map(k => [k, o?.[k] || null])); } },
+        ...[[framingPromptA, 'heckler-prep:framing', FRAMING.slice(0, 2)], [framingPromptB, 'heckler-prep:framing-b', FRAMING.slice(2)]].map(([prompt, label, keys]) => ({
+          run: () => ask(prompt, label, 1500),
+          apply: (d, o) => { d.framing = { ...d.framing, ...Object.fromEntries(keys.map(k => [k, o?.[k] || null])) }; },
+        })),
         ...QUESTION_PASSES.map(([count, brutal, topics, avoid], i) => ({
           run: () => ask(questionPass(count, brutal, topics, avoid), `heckler-prep:generate-${i + 1}`, Math.max(1600, count * 450)),
           apply: (d, o) => { qSlots[i] = Array.isArray(o?.questions) ? o.questions.slice(0, count) : []; d.questionCount = qSlots.flat().filter(Boolean).length; },

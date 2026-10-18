@@ -378,7 +378,8 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}
   "never_do_this": "One TEMPTING but poorly matched gift category for THIS recipient, with why it misses them — written so the giver can apply the same reasoning to other options they are weighing."
 }
 
-THIS PASS chooses the ideas only: exactly 4 perfect_picks, four genuinely different ideas, each with ONLY its gift field; the_wildcard with ONLY its gift field. Other passes write the details for each idea afterwards.`;
+THIS PASS chooses the ideas only: exactly 4 perfect_picks, four genuinely different ideas, each with ONLY its gift field; the_wildcard with ONLY its gift field. Other passes write the details for each idea afterwards.
+LENGTH (this pass is what the reader waits for): each gift AT MOST 12 words; situation_read AT MOST 35 words; never_do_this AT MOST 35 words.`;
     const planPrompt = userPrompt.replace(/Return ONLY valid JSON:\s*\{[\s\S]*?\n\}\n/, `Return ONLY valid JSON:\n\n${PLAN_TEMPLATE}\n`);
     const plan = call(planPrompt, 900, 'giftology-plan');
     plan.catch(() => {}); // the plan part reports its own failure

@@ -863,7 +863,11 @@ to choose a label and icon; a translated value renders as unlabeled.`;
       messages: [{ role: 'user', content }],
     }, { label: `small-change-big-difference:${tag}` });
     const PLAN = ['what_i_notice', 'change_to_try', 'routine_area'];
-    const planned = call(onlyKeys(userPrompt, PLAN), 1800, 'plan');
+    // Speed (2026-10-17): the plan writes the change and why (~10s); how to
+    // try it and what it may change come from a pass alongside the others.
+    const dropLines = (txt, names) => txt.split('\n').filter(l => !names.some(n => l.trimStart().startsWith(`"${n}":`))).join('\n').replace(/,(\s*\n\s*\})/g, '$1');
+    const LATER = ['how_to_try_it', 'what_it_may_change'];
+    const planned = call(dropLines(onlyKeys(userPrompt, PLAN), LATER) + `\n\nTHIS PASS leaves out change_to_try's ${LATER.join(' and ')} — another pass writes them.`, 1800, 'plan');
     planned.catch(() => {}); // the plan part reports its own failure
     const follow = (keys, tag) => ({
       run: async () => {
@@ -876,10 +880,21 @@ to choose a label and icon; a translated value renders as unlabeled.`;
       label: 'small-change-big-difference',
       parts: [
         { required: true, run: () => planned, apply: (d, out) => { PLAN.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; }); } },
+        {
+          run: async () => {
+            const plan = await planned;
+            return call(dropLines(onlyKeys(userPrompt, ['change_to_try']), ['change', 'why_this_one']) + `\n\nTHE CHANGE ALREADY CHOSEN (another pass wrote it; build on it, never contradict or replace it):\n${JSON.stringify({ what_i_notice: plan?.what_i_notice, change_to_try: plan?.change_to_try })}\n\nTHIS PASS writes ONLY change_to_try's ${LATER.join(' and ')} for that change.`, 1200, 'how');
+          },
+          apply: (d, out) => { const c = out?.change_to_try; if (c) d.changeHow = Object.fromEntries(LATER.map(k => [k, c[k]])); },
+        },
         follow(['math', 'why_not_start_elsewhere'], 'math'),
         follow(['what_to_watch_for', 'previous_experiments'], 'watch'),
       ],
-      finish: d => validateResult(structuredClone(d)),
+      finish: d => {
+        const { changeHow, ...rest } = structuredClone(d);
+        if (rest.change_to_try && changeHow) rest.change_to_try = { ...rest.change_to_try, ...Object.fromEntries(Object.entries(changeHow).filter(([, v]) => v !== undefined)) };
+        return validateResult(rest);
+      },
       ready: d => Boolean(d.what_i_notice && d.change_to_try),
       complete: d => Boolean(d.what_i_notice && d.change_to_try),
       check: async (parsed) => {

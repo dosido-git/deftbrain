@@ -145,7 +145,7 @@ Return ONLY valid JSON:
   "rabbit_hole": "Where to look for more 'evidence' — what scene to rewatch, what detail to examine"
 }
 
-Generate exactly 4-6 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.
+Generate exactly 4-5 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.
 plausibility and mind_blown_factor are INTEGERS 1-10 (return the number only — most fan theories are plausibility 2-4). Keep every text field to 1-2 sentences — punchy, not padded.
 
 FINAL CANON AUDIT:
@@ -180,7 +180,9 @@ If uncertain, remove it.`;
         model: MODELS.FAST,
         max_tokens: 2400,
         system,
-        messages: [{ role: 'user', content: onlyKeys(userPrompt, PLAN) }],
+        // 2026-10-17: the spins are written by the follow pass (from the
+        // checked details), which takes ~40% off what the reader waits for.
+        messages: [{ role: 'user', content: onlyKeys(userPrompt, PLAN).split('\n').filter(l => !l.trimStart().startsWith('"spin":')).join('\n') + '\nTHIS PASS writes each evidence item with ONLY detail and strength — another pass writes the spin for each, from the details as checked.' }],
       }, { label: 'fan-theory' });
 
       // A model told to think in "observation → interpretation" sometimes writes
@@ -247,14 +249,19 @@ If uncertain, remove it.`;
     };
     return await answer(req, res, {
       label: 'fan-theory',
-      parts: planFirst(PLAN, pipeline, [['the_theory', 'counterargument', 'plausibility', 'mind_blown_factor', 'rabbit_hole']],
+      parts: planFirst(PLAN, pipeline, [['the_theory', 'counterargument', 'plausibility', 'mind_blown_factor', 'rabbit_hole', 'evidence_spin']],
         (keys, i, plan) => callClaudeWithRetry({
           model: MODELS.FAST,
           max_tokens: 2000,
           system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-          messages: [{ role: 'user', content: onlyKeys(userPrompt, keys) + planNote(plan, PLAN) + '\nBuild only on the evidence above — it has been checked against the work; never bring back a detail that is not in it. Return ONLY valid JSON.' }],
+          messages: [{ role: 'user', content: onlyKeys(userPrompt, keys) + planNote(plan, PLAN) + `\nBuild only on the evidence above — it has been checked against the work; never bring back a detail that is not in it.
+ALSO return "evidence_spin": one string per evidence item above, in order — THEORY INTERPRETATION: how a fan theorist could reinterpret that real detail to support the theory (the text after the arrow; it may be audacious, conspiratorial or ridiculous; no arrow). Return ONLY valid JSON.` }],
         }, { label: 'fan-theory-2' })),
-      finish: d => structuredClone(d),
+      finish: d => {
+        const { evidence_spin: spins, ...out } = structuredClone(d);
+        if (Array.isArray(spins) && Array.isArray(out.evidence)) out.evidence = out.evidence.map((e, i) => (e && !e.spin && typeof spins[i] === 'string' ? { ...e, spin: spins[i] } : e));
+        return out;
+      },
       ready: d => Boolean(d.theory_name),
       complete: d => Boolean(d.theory_name),
       check: async (parsed) => {

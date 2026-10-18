@@ -1082,8 +1082,10 @@ ${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${i
     return await answer(req, res, {
       label: 'scam-radar',
       parts: keyGroups([
-        ['verdict', 'verdict_explanation', 'input_conflict', 'scam_pattern'],
-        ['why_concerning', 'what_doesnt_settle_it'],
+        // Speed (2026-10-17): scam_pattern moved out of the verdict pass so the
+        // verdict shows alone, under 15s.
+        ['verdict', 'verdict_explanation', 'input_conflict'],
+        ['scam_pattern', 'why_concerning', 'what_doesnt_settle_it'],
         ['how_to_verify', 'what_to_do_now', 'avoid'],
         ['if_you_already_interacted', 'important_unknowns'],
       ], pass),

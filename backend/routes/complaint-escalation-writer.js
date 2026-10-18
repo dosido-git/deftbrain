@@ -365,7 +365,18 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
       }
       return parsed;
     };
-    const stages = [null, null];
+    const stages = [null, null, null];
+    // Speed (2026-10-17): the first letter is what the page leads with, so it
+    // is written alone (~10s) and rungs 2-3 get their own pass. Each pass sees
+    // only its own rungs of the template — a pass shown all of them writes all
+    // of them (Plain Talk, 2026-10-16).
+    const rung = (name) => new RegExp(`,?\\n {4}"${name}": \\{[\\s\\S]*?\\n {4}\\},?`);
+    const ONLY_THREE = 'Write ONLY the first three rungs of the ladder (stage_1_direct, stage_2_regulatory, stage_3_executive).';
+    if (!promptStagesEarly.includes(ONLY_THREE) || !rung('stage_2_regulatory').test(promptStagesEarly)) throw new Error('complaint-escalation-writer: stage template changed — update the rung split');
+    const promptStage1 = promptStagesEarly.replace(rung('stage_2_regulatory'), '').replace(rung('stage_3_executive'), '')
+      .replace(ONLY_THREE, 'Write ONLY the first rung of the ladder (stage_1_direct).');
+    const promptStages23 = promptStagesEarly.replace(rung('stage_1_direct'), '\n')
+      .replace(ONLY_THREE, 'Write ONLY rungs two and three of the ladder (stage_2_regulatory, stage_3_executive).');
     const STRATEGY_A = ['situation_assessment', 'legal_leverage', 'timeline'];
     const STRATEGY_B = ['evidence_checklist', 'quick_tips', 'call_script'];
 
@@ -376,9 +387,9 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
       parts: [
         // The two halves each return an escalation_stages object holding their
         // own rungs; disjoint keys, so one spread rebuilds the five-stage ladder.
-        ...[[0, promptStagesEarly, 'ComplaintEscalation-stages', 3500], [1, promptStagesLate, 'ComplaintEscalation-stages-late', 3500]].map(([i, prompt, label, max]) => ({
+        ...[[0, promptStage1, 'ComplaintEscalation-stages', 3500], [1, promptStages23, 'ComplaintEscalation-stages-23', 3500], [2, promptStagesLate, 'ComplaintEscalation-stages-late', 3500]].map(([i, prompt, label, max]) => ({
           run: () => ask(prompt, label, max),
-          apply: (d, out) => { stages[i] = out?.escalation_stages || {}; d.escalation_stages = { ...(stages[0] || {}), ...(stages[1] || {}) }; },
+          apply: (d, out) => { stages[i] = out?.escalation_stages || {}; d.escalation_stages = Object.assign({}, ...stages.map(x => x || {})); },
         })),
         ...[[STRATEGY_A, 'ComplaintEscalation-strategy'], [STRATEGY_B, 'ComplaintEscalation-strategy-b']].map(([keys, label]) => ({
           run: () => ask(strategyFor(keys), label, 2500),

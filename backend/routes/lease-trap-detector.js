@@ -411,11 +411,17 @@ ${criticalRules}`;
     const iRed = schemaRisk.indexOf('  "red_flags": [');
     const iNeg = schemaRisk.indexOf('  "negotiation_strategy": {');
     const closeAt = (txt) => `${txt.trimEnd().replace(/,$/, '')}\n}`;
-    const schemaHead = closeAt(schemaRisk.slice(0, iRed));
+    // 2026-10-17: the summary pass was ~850 tokens (~17s) with top_fixes in
+    // it; top_fixes is its own pass now so the summary shows under 15s.
+    const iFix = schemaRisk.indexOf('  "top_fixes": [');
+    const iOverall = schemaRisk.indexOf('  "overall_assessment": {');
+    const schemaHead = closeAt(schemaRisk.slice(0, iFix) + schemaRisk.slice(iOverall, iRed));
+    const schemaFix = closeAt(`{\n${schemaRisk.slice(iFix, iOverall)}`);
     const schemaRed = closeAt(`{\n${schemaRisk.slice(iRed, iNeg)}`);
     const schemaNeg = `{\n${schemaRisk.slice(iNeg)}`;
     const GROUPS = [
-      { label: 'risk',      schema: schemaHead,  keys: ['jurisdiction_check', 'top_fixes', 'overall_assessment'] },
+      { label: 'risk',      schema: schemaHead,  keys: ['jurisdiction_check', 'overall_assessment'] },
+      { label: 'fixes',     schema: schemaFix,   keys: ['top_fixes'] },
       { label: 'red',       schema: schemaRed,   keys: ['red_flags'] },
       { label: 'strategy',  schema: schemaNeg,   keys: ['negotiation_strategy'] },
       { label: 'flags',     schema: schemaFlags, keys: ['yellow_flags', 'green_flags'] },

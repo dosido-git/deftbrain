@@ -160,16 +160,14 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "label": "${VERSION[style].label}",
       "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": ${VERSION[style].words},
-      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
-      "strengths": ["what this version does well"],
-      "customize_prompts": ["specific things the writer should personalize"]
+      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy"
     }
   ]
 }
 
 IMPORTANT RULES:
 ${sharedRules}
-- LIMITS: strengths and customize_prompts AT MOST 3. Keep them terse (one line each) — the letter itself carries the length.
+- The letter is the whole job of this pass; another pass notes its strengths and what to personalize.
 - Your response MUST contain the top-level key "versions" with exactly one version, style exactly "${style}".
 ${noQuoteRule}
 
@@ -196,8 +194,15 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
         // questioned the pronouns they used. Placeholders are the [BRACKETS]
         // actually in them; power phrases are lifted verbatim from them.
         const letters = { letters: versionsOf(d).map(v => ({ style: v.style, letter: v.letter })) };
-        const out = await call(`${onlyKeys(promptB, EXTRAS)}${planNote(letters, ['letters'])}\nThe placeholders are the [BRACKETS] actually in these letters; power phrases are lifted verbatim from them; the tips are about using these letters well.`, 1500, 'ghost-writer-b');
+        // Speed (2026-10-17): each letter's strengths and personalize prompts
+        // moved here from the letter passes, so the first letter shows sooner.
+        const out = await call(`${onlyKeys(promptB, EXTRAS)}${planNote(letters, ['letters'])}\nThe placeholders are the [BRACKETS] actually in these letters; power phrases are lifted verbatim from them; the tips are about using these letters well.
+ALSO return "version_notes": [{ "style": "the letter's style, exactly as given", "strengths": ["what this letter does well — one terse line"], "customize_prompts": ["a specific thing the writer should personalize in this letter — one terse line"] }] — one item per letter above, strengths and customize_prompts AT MOST 3 each.`, 2200, 'ghost-writer-b');
         EXTRAS.forEach(k => { if (out?.[k] !== undefined) d[k] = out[k]; });
+        (Array.isArray(out?.version_notes) ? out.version_notes : []).forEach(n => {
+          const v = n && d.letters?.[n.style];
+          if (v) d.letters[n.style] = { ...v, strengths: n.strengths, customize_prompts: n.customize_prompts };
+        });
       },
       finish: d => {
         const { letters, ...rest } = structuredClone(d);

@@ -142,10 +142,14 @@ Generate AT MOST 6 questions to ask (6 is plenty). Keep every field to one conci
       system,
       messages: [{ role: 'user', content }],
     }, { label: tag });
-    const PLAN = ['procedure_name', 'plain_english', 'is_this_standard', 'second_opinion', 'urgency_check'];
+    // 2026-10-17: second opinion and urgency moved out of the plan (~790
+    // tokens, 15s) into a pass handed the verdict, so the first part shows
+    // under 15s and still agrees with it.
+    const PLAN = ['procedure_name', 'plain_english', 'is_this_standard'];
     return await answer(req, res, {
       label: 'procedure-probe',
       parts: planFirst(PLAN, () => call(onlyKeys(userPrompt, PLAN), 1500, 'procedure-probe'), [
+        ['second_opinion', 'urgency_check'],
         ['questions_to_ask', 'red_flags'],
         ['cost_picture'],
         ['what_to_expect', 'empowerment_note'],

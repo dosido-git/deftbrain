@@ -204,7 +204,7 @@ const FanTheory = ({ tool }) => {
     if (results.the_theory) lines.push(results.the_theory, '');
     if (results.evidence?.length) {
       lines.push(t('ft_copy_evidence'));
-      results.evidence.forEach(e => lines.push(`  ${e.strength === 'COMPELLING' ? '🔥' : '🧐'} ${e.detail} → ${e.spin}`));
+      results.evidence.forEach(e => lines.push(`  ${e.strength === 'COMPELLING' ? '🔥' : '🧐'} ${e.detail}${e.spin ? ` → ${e.spin}` : ''}`));
       lines.push('');
     }
     if (results.the_smoking_gun) lines.push(`🔫 ${t('ft_copy_smoking_gun')} ${results.the_smoking_gun}`);
@@ -405,7 +405,7 @@ const FanTheory = ({ tool }) => {
                         <p className={`text-xs font-medium ${c.text}`}>{es.icon} {e.detail}</p>
                         <span className={`text-[8px] font-black ${c[es.color]} whitespace-nowrap`}>{e.strength}</span>
                       </div>
-                      <p className={`text-[13px] ${c.textMuted}`}>→ {e.spin}</p>
+                      {e.spin && <p className={`text-[13px] ${c.textMuted}`}>→ {e.spin}</p>}
                     </div>
                   );
                 })}

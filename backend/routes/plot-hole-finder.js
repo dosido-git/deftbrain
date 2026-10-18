@@ -396,8 +396,14 @@ ${JSON.stringify({ overall_label: plan?.overall_label, focus_verdict: plan?.focu
         { required: true,
           run: () => ask(`${planText}
 
-THIS PASS writes only the verdict (other passes write the findings and the closing sections at the same time). Return ONLY valid JSON with these keys from the schema: title_analyzed, overall_verdict (label = the plan's overall_label), swiss_cheese_rating, swiss_cheese_note, focus_answer (verdict = the plan's focus_verdict; show false when it is null).`, 'plot-hole-find-verdict', 1200),
-          apply: (d, o) => { ['title_analyzed', 'overall_verdict', 'swiss_cheese_rating', 'swiss_cheese_note', 'focus_answer'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+THIS PASS writes only the verdict (other passes write the answer to the visitor's question, the findings and the closing sections at the same time). Return ONLY valid JSON with these keys from the schema: title_analyzed, overall_verdict (label = the plan's overall_label), swiss_cheese_rating, swiss_cheese_note.`, 'plot-hole-find-verdict', 1200),
+          apply: (d, o) => { ['title_analyzed', 'overall_verdict', 'swiss_cheese_rating', 'swiss_cheese_note'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+        // Speed (2026-10-17): the focus answer is its own pass, so the verdict
+        // shows under 15s.
+        { run: () => (plan?.focus_verdict ? ask(`${planText}
+
+THIS PASS writes only focus_answer (verdict = the plan's focus_verdict). Other passes write the verdict, the findings and the closing sections at the same time. Return ONLY valid JSON: { "focus_answer": { every key of focus_answer in the schema } }`, 'plot-hole-find-focus', 1200) : Promise.resolve({ focus_answer: { show: false } })),
+          apply: (d, o) => { if (o?.focus_answer !== undefined) d.focus_answer = o.focus_answer; } },
         { run: () => ask(`${planText}
 
 THIS PASS writes only the closing sections (other passes write the verdict and the findings at the same time). Return ONLY valid JSON with these keys from the schema: strongest_case, hardest_question, what_the_story_gets_right, why_it_still_works. strongest_case.finding, when shown, is one of the planned finding names exactly.`, 'plot-hole-find-closing', 1500),

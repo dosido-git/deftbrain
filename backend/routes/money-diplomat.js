@@ -1,6 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { answer } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
+
+// Speed (2026-10-17): plan first (T11) — the decision shows alone in a few
+// seconds; the passes after it are handed it as final and write the rest.
+function splitParts({ prompt, system, label, maxTokens, planKeys, groups }) {
+  const write = (keys, note, tag) => callClaudeWithRetry({
+    model: MODELS.SMART,
+    max_tokens: maxTokens,
+    system,
+    messages: [{ role: 'user', content: onlyKeys(prompt, keys) + note + `\nTHIS PASS writes ONLY the keys ${keys.join(', ')}. Return ONLY valid JSON.` }],
+  }, { label: tag });
+  return planFirst(planKeys, () => write(planKeys, '', label), groups,
+    (keys, i, plan) => write(keys, planNote(plan, planKeys), `${label}-${i + 2}`));
+}
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -1175,12 +1188,12 @@ Return ONLY valid JSON.`, userLanguage);
     // as it is written; the number and consistency checks run after.
     return await answer(req, res, {
       label: 'money-diplomat',
-      parts: [{ required: true, run: () => callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide whether lending is prudent given what they know. You never predict repayment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatLend' }), apply: (d, out) => Object.assign(d, out) }],
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatLend', maxTokens: 1500,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone decide whether lending is prudent given what they know. You never predict repayment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['recommendation', 'why'],
+        groups: [['what_is_known', 'what_is_not_known', 'before_you_decide'], ['if_you_lend', 'if_you_do_not_lend', 'existing_debt']],
+      }),
       finish: d => validateResult(pinEnums(structuredClone(d), ['recommendation'])),
       ready: d => Boolean(d.recommendation),
       complete: d => Boolean(d.recommendation),
@@ -1701,12 +1714,12 @@ Return ONLY valid JSON.`, userLanguage);
     // as it is written; the number and consistency checks run after.
     return await answer(req, res, {
       label: 'money-diplomat',
-      parts: [{ required: true, run: () => callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 3000,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone prepare for a compensation conversation. You are not a salary-data source and you never invent a number. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatSalary' }), apply: (d, out) => Object.assign(d, out) }],
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatSalary', maxTokens: 1800,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone prepare for a compensation conversation. You are not a salary-data source and you never invent a number. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['ask'],
+        groups: [['what_you_have_to_work_with', 'what_you_still_need_to_know'], ['if_they_push_back', 'other_terms_you_may_want_to_raise']],
+      }),
       finish: d => validateResult(structuredClone(d)),
       ready: d => Boolean(d.ask),
       complete: d => Boolean(d.ask),
