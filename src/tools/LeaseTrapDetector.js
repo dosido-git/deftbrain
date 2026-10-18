@@ -150,6 +150,19 @@ const LeaseTrapDetector = ({ tool }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [fileBase64, setFileBase64] = useState(null);
   const [location, setLocation] = useState('');
+  // Start the tenant-law search once the location is typed, while the lease
+  // is pasted (2026-10-18) — the first search for a city takes ~38s, and this
+  // way it is usually done by the time they ask. Once per location.
+  const warmedLoc = useRef(new Set());
+  const warmLocation = location.trim();
+  useEffect(() => {
+    if (warmLocation.length < 3 || warmedLoc.current.has(warmLocation.toLowerCase())) return undefined;
+    const id = setTimeout(() => {
+      warmedLoc.current.add(warmLocation.toLowerCase());
+      callToolEndpoint('lease-trap-detector', { action: 'warm', location: warmLocation }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(id);
+  }, [warmLocation, callToolEndpoint]);
   const [leaseType, setLeaseType] = useState('');
   const [concerns, setConcerns] = useState('');
   const [situation, setSituation] = useState('');

@@ -28,7 +28,7 @@ function handleAiError(res, error, longDocMessage) {
 // Grounded facts PRE-PASS — shared implementation with a jurisdiction-keyed
 // TTL cache; see lib/groundedFacts.js for the pattern rationale. Best-effort:
 // returns '' on any failure and the main prompt's hedge rule takes over.
-async function groundTenantLawFacts({ location }) {
+async function groundTenantLawFacts({ location, wait = true }) {
   // v2 (2026-10-07): added upfront_fees — the audit's Boston lease charged
   // move-in, application and pet fees that Massachusetts bans outright, and the
   // report called them "depends on jurisdiction" because nothing verified them.
@@ -40,7 +40,10 @@ async function groundTenantLawFacts({ location }) {
     // it, the cold run answered from memory and called a fee Massachusetts
     // bans "legal" — the warm run, with verified law, got it right. A legal
     // report is worth ~25s more once per jurisdiction; later visitors are warm.
-    coldWaitMs: 45000,
+    // wait:false is pre-warming (2026-10-18): the page starts this search
+    // once the location is typed, while the lease is pasted — the same
+    // pattern as Date Night's venues.
+    coldWaitMs: wait ? 45000 : 0,
     userPrompt: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
 
 Cover ONLY: (1) security deposit maximum, (2) deposit return deadline, (3) late fee limits, including how many days late rent must be before any fee may be charged, (4) landlord entry notice requirement, (5) repair-and-deduct rights waivability, (6) which charges a landlord may require at or before move-in (application, move-in, pet, key or lock fees, last month's rent) and which are prohibited. Skip any you cannot verify.
@@ -123,6 +126,11 @@ router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
     if (!location || !location.trim()) {
       return res.status(400).json({ error: 'Location is required' });
+    }
+    if (req.body.action === 'warm') {
+      // Fire-and-forget: start the tenant-law search; nothing is displayed.
+      groundTenantLawFacts({ location, wait: false }).catch(() => {});
+      return res.json({ warming: true });
     }
     if (!leaseType) {
       return res.status(400).json({ error: 'Lease type is required' });
