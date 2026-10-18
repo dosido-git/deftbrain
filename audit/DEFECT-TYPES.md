@@ -263,6 +263,7 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 |---|---|
 | Ghost Writer — tips pass questioned the letters' pronouns | **fixed with shared fix** (`planNote` on the extras pass) |
 | Break My Plan — split prevention half thinner, missed a risk | **fixed with shared fix** (failure modes planned first, details filled by passes handed the list) |
+| Scam Radar, Money Diplomat (lend), Complaint Escalation — the same reason restated across sections written by separate passes (same-day blind comparison, 2026-10-17) | **shared fix built**: `onlyKeys` names the sections the other passes carry and asks for each point once (`noOverlap`); Complaint's strategy passes use it directly. Letters stay self-contained — each goes to a different reader |
 
 ---
 

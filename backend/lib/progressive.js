@@ -190,8 +190,17 @@ function onlyKeys(prompt, keys) {
   const out = kept.flatMap(c => c.lines);
   while (out.length && !out[out.length - 1].trim()) out.pop();
   out[out.length - 1] = out[out.length - 1].replace(/,\s*$/, '');
-  return [...lines.slice(0, start + 1), ...pre, ...out, ...lines.slice(end)].join('\n') + line;
+  const others = chunks.map(c => c.key).filter(k => !keys.includes(k));
+  return [...lines.slice(0, start + 1), ...pre, ...out, ...lines.slice(end)].join('\n') + line + noOverlap(others);
 }
+
+// T11 (audit/DEFECT-TYPES.md): passes written apart repeat each other — the
+// same reason restated in the verdict, the steps and the scripts (Scam Radar,
+// Money Diplomat lend, Complaint Escalation lost blind comparisons on it,
+// 2026-10-17). Each pass is told which sections the others carry.
+const noOverlap = (others) => (others.length
+  ? `\nThe reader sees every section together. Say each point once, in the section it belongs to: do not restate or re-explain what the other sections (${others.join(', ')}) carry — a few words pointing to it is enough.`
+  : '');
 
 // keyGroups — split a one-call answer into parts by its top-level keys
 // (2026-10-16). run(keys, i) builds and sends one pass, normally with
@@ -238,4 +247,4 @@ function planFirst(planKeys, runPlan, groups, runFollow) {
 // three blind comparisons on repetition).
 const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass and shown to the reader above your sections — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording), and do not restate what it already says: add what it does not.\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
 
-module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote, takeKeys };
+module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote, takeKeys, noOverlap };

@@ -10,7 +10,7 @@
 // audit/REWRITE-INSTALL-KIT.md).
 const express = require('express');
 const router = express.Router();
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -1073,22 +1073,24 @@ ${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${i
     // what-ifs. The output guard runs after the answer is on screen; empty
     // items are stripped from every draft and again after the guard.
     const system = withLanguage(SCAM_RADAR_SYSTEM, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + `\n\n${NO_QUOTE_RULE}`;
-    const pass = (keys, i) => callClaudeWithRetry({
+    const pass = (keys, i, plan) => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: onlyKeys(system, keys),
+      system: onlyKeys(system, keys) + (plan ? planNote(plan, VERDICT) : '\nverdict_explanation: 2-3 sentences — the deciding reason only. The sections below carry the warning signs, the checks, the steps and the what-ifs.'),
       messages: [{ role: 'user', content: supplied }],
     }, { label: `scam-radar:${i + 1}` });
+    // T11 (2026-10-17): plan first — the verdict shows alone; the other
+    // sections are handed it, so they add to its explanation instead of
+    // restating it (a same-day blind comparison lost on repetition).
+    const VERDICT = ['verdict', 'verdict_explanation', 'input_conflict'];
     return await answer(req, res, {
       label: 'scam-radar',
-      parts: keyGroups([
-        // Speed (2026-10-17): scam_pattern moved out of the verdict pass so the
-        // verdict shows alone, under 15s.
-        ['verdict', 'verdict_explanation', 'input_conflict'],
-        ['scam_pattern', 'why_concerning', 'what_doesnt_settle_it'],
-        ['how_to_verify', 'what_to_do_now', 'avoid'],
-        ['if_you_already_interacted', 'important_unknowns'],
-      ], pass),
+      parts: planFirst(VERDICT, () => pass(VERDICT, 0), [
+        // By kind, not size (T11): every action in one pass, so "change your
+        // password" is said once, in the section it belongs to.
+        ['scam_pattern', 'why_concerning', 'what_doesnt_settle_it', 'important_unknowns'],
+        ['how_to_verify', 'what_to_do_now', 'avoid', 'if_you_already_interacted'],
+      ], (keys, i, plan) => pass(keys, i + 1, plan)),
       // Run AFTER the guard, not before (and on every draft): the guard's
       // repair pass can blank a flagged field instead of substituting it.
       finish: d => stripEmptyItems(structuredClone(d)),

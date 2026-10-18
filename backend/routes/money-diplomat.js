@@ -9,7 +9,7 @@ function splitParts({ prompt, system, label, maxTokens, planKeys, groups }) {
     model: MODELS.SMART,
     max_tokens: maxTokens,
     system,
-    messages: [{ role: 'user', content: onlyKeys(prompt, keys) + note + `\nTHIS PASS writes ONLY the keys ${keys.join(', ')}. Return ONLY valid JSON.` }],
+    messages: [{ role: 'user', content: onlyKeys(prompt, keys) + note + `\nA script is words to say out loud, so it stands alone: it may name any fact the conversation needs (an earlier loan, a number), even one another section explains.\nTHIS PASS writes ONLY the keys ${keys.join(', ')}. Return ONLY valid JSON.` }],
   }, { label: tag });
   return planFirst(planKeys, () => write(planKeys, '', label), groups,
     (keys, i, plan) => write(keys, planNote(plan, planKeys), `${label}-${i + 2}`));

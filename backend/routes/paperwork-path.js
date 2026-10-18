@@ -186,7 +186,9 @@ ${tail}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion
       ],
       finish: withDetail,
       ready: d => Boolean(d.document_checklist?.length),
-      complete: d => Boolean(d.ordered_steps && withDetail(d).document_checklist.every(x => x.why)),
+      // A details pass that fails leaves those items with names only; that is
+      // still an answer, never a reason to throw the rest away.
+      complete: d => Boolean(d.ordered_steps && d.document_checklist?.length),
       check: async (draft) => {
         const d = withDetail(draft);
         const fields = stringFields(d);
