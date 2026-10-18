@@ -27,7 +27,7 @@ const CHRONOLOGY_TTL_MS = 90 * 24 * 60 * 60 * 1000; // a published plot does not
 // would rather wait than be handed less than the tool can verify.
 const COLD_WAIT_MS = 30000;
 
-function chronologyFacts({ title, stoppedAt, mediaType }) {
+function chronologyFacts({ title, stoppedAt, mediaType }, { wait = true } = {}) {
   const t = String(title || '').trim();
   const at = String(stoppedAt || '').trim();
   if (t.length < 2 || at.length < 1) return Promise.resolve('');
@@ -35,7 +35,7 @@ function chronologyFacts({ title, stoppedAt, mediaType }) {
     cacheKey: `bookmark:${normalizeKeyPart(mediaType || 'show')}:${normalizeKeyPart(t.slice(0, 70))}:${normalizeKeyPart(at.slice(0, 40))}`,
     label: 'bookmark-chronology',
     ttlMs: CHRONOLOGY_TTL_MS,
-    coldWaitMs: COLD_WAIT_MS,
+    coldWaitMs: wait ? COLD_WAIT_MS : 0,
     maxTokens: 3000,
     system: 'You establish where a specific point falls in a published work, using episode guides, chapter listings, official synopses and encyclopaedic references. You are being used to PREVENT spoilers, so err relentlessly toward the earlier reading: when you cannot place something with certainty, leave it out rather than guessing. Report only what you can confirm from a page. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
     userPrompt: `Establish the chronology of "${t.slice(0, 200)}" (${mediaType || 'show'}) up to and including this exact stopping point: "${at.slice(0, 120)}".
@@ -91,6 +91,14 @@ router.post('/bookmark', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     if (!title?.trim() || !stoppedAt?.trim()) {
       return res.status(400).json({ error: 'Tell us what you were watching/reading/playing and where you stopped' });
+    }
+    // Pre-warming (2026-10-18): the page starts the spoiler-safety chronology
+    // search once the title and stopping point are filled in, while the
+    // visitor is still on the rest of the form — the same pattern as Date
+    // Night's venues. Fire-and-forget; nothing is displayed.
+    if (req.body.action === 'warm') {
+      chronologyFacts({ title, stoppedAt, mediaType }, { wait: false }).catch(() => {});
+      return res.json({ warming: true });
     }
 
     const spoilerPolicy = {

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -119,7 +120,7 @@ const EQUIPMENT_OPTIONS = [
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const MiseEnPlace = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -175,6 +176,7 @@ const MiseEnPlace = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   const resultsRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -211,11 +213,13 @@ const MiseEnPlace = ({ tool }) => {
   const [showLeftovers, setShowLeftovers] = useState(false);
   const [sessionHistory, setSessionHistory] = usePersistentState('mise-en-place-history', []);
 
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (results && resultsRef.current) {
+    if (hasResults && resultsRef.current) {
       setTimeout(() => revealSection(resultsRef.current), 200);
     }
-  }, [results]);
+  }, [hasResults]);
 
   // ══════════════════════════════════════════
   // IMAGE HANDLING
@@ -253,8 +257,10 @@ const MiseEnPlace = ({ tool }) => {
   const plan = useCallback(async () => {
     if (!ingredients.trim() && !imageBase64) { setError(t('mep_err_ingredients')); return; }
     setError(''); setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('mise-en-place', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('mise-en-place', {
         imageBase64: imageBase64 || null,
         ingredients: ingredients.trim() || null,
         servings, dietary, timeAvailable: `${timeAvailable} minutes`,
@@ -262,11 +268,15 @@ const MiseEnPlace = ({ tool }) => {
         preferences: preferences.trim() || null,
         chosenMeal: chosenMeal || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       saveToHistory(data);
     } catch (err) { setError(err.message || t('mep_err_plan')); }
-  }, [ingredients, imageBase64, servings, dietary, timeAvailable, skillLevel, equipment, mealType, preferences, chosenMeal, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [ingredients, imageBase64, servings, dietary, timeAvailable, skillLevel, equipment, mealType, preferences, chosenMeal, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t]);
 
   // Choosing the other option re-runs the plan for it. The alternatives were
   // always listed; only the first one ever got a plan, which made the second
@@ -582,6 +592,7 @@ const MiseEnPlace = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+<CheckNote status={checkStatus} className={c.textMuted} />
         {/* Selected Meal header */}
         {results.selected_meal && (
           <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>

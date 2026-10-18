@@ -289,7 +289,7 @@ const SectionSkeleton = ({ isDark, c, generatingLabel }) => (
 
 
 const RentersDepositSaver = ({ tool }) => {
-  const { callToolEndpointProgressive, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -539,6 +539,23 @@ const RentersDepositSaver = ({ tool }) => {
     });
     setActiveRoom(idx + 1);
   };
+
+  // Start the deposit-law search as soon as the location is chosen
+  // (2026-10-18) — the first search for a place takes ~30s, and this way it is
+  // usually done by the time they look up their rights or build the letter.
+  // Once per location.
+  const warmedLoc = useRef(new Set());
+  const warmLocation = locationValid ? locationString : '';
+  useEffect(() => {
+    if (!warmLocation) return undefined;
+    const k = warmLocation.toLowerCase();
+    if (warmedLoc.current.has(k)) return undefined;
+    const id = setTimeout(() => {
+      warmedLoc.current.add(k);
+      callToolEndpoint('renters-deposit-saver/rights', { location: warmLocation, warm: true }).catch(() => {});
+    }, 1200);
+    return () => clearTimeout(id);
+  }, [warmLocation, callToolEndpoint]);
 
   // ── NEW: Quick rights lookup ──
   const lookupRights = async () => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -161,19 +162,39 @@ Return ONLY the JSON object. No markdown fences, no preamble.
 
 Never place a double-quote (") character inside any JSON string value — write quoted phrases or cooking cues plainly or with single quotes, or it breaks the JSON.`;
 
-    contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
-
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): what is
+    // in the kitchen, the meal options and the pick show first; the battle
+    // plan for that meal and the tips are written alongside, handed it. The
+    // consistency check runs after the answer is on screen.
+    const lang = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    // The timeline is the hard part — sequencing parallel steps so nothing
+    // waits — so it gets the stronger model; it shows after the first part,
+    // so this costs no time the reader waits through first.
+    const call = (text, maxTokens, tag, strong = false) => callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 5500,
-      messages: [{ role: 'user', content: contentBlocks }],
-    }, { label: 'mise-en-place' });
-    if (!parsed.detected_ingredients) {
-      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'mise-en-place', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+      ...(strong ? { model: MODELS.SMART } : {}),
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: [...contentBlocks, { type: 'text', text: withLanguage(text, userLanguage) + lang }] }],
+    }, { label: tag });
+    const PLAN = ['detected_ingredients', 'shopping_list', 'meals', 'selected_meal'];
+    return await answer(req, res, {
+      label: 'mise-en-place',
+      // The pick alone left the timeline free to cook the meal a different
+      // way than the reason promised (oven + wok became wok only, 2026-10-18
+      // blind comparison) — so the plan also fixes the method.
+      parts: planFirst(PLAN, () => call(onlyKeys(basePrompt, PLAN) + '\nselected_meal ALSO gets "method": the cooking approach in one or two sentences — which equipment does what, in what order, and when each ingredient goes in. Another pass writes the minute-by-minute plan from it.', 2000, 'mise-en-place'), [
+        // By kind (T11): the timeline and the technique tips in one pass, so a
+        // cooking point is made once — a same-day blind comparison caught the
+        // same tip in both when they were written apart.
+        ['battle_plan', 'technique_tips'],
+        ['leftovers_strategy', 'scaling_notes'],
+      ], (keys, i, plan) => call(onlyKeys(basePrompt, keys) + planNote(plan, PLAN) + '\nWrite it for the selected_meal above, following its method exactly — the same equipment, order and timing; every ingredient the method uses appears in a step, and the times add up to total_time.', 4000, `mise-en-place-${i + 2}`, i === 0)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.detected_ingredients),
+      complete: d => Boolean(d.detected_ingredients && d.battle_plan),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'mise-en-place', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('Mise en Place error:', error);

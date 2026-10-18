@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -133,7 +134,7 @@ const START_TIMES = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:3
 // ═══════════════════════════════════════════
 
 const DateNight = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t, tPlural } = useTranslation();
 
@@ -182,6 +183,7 @@ const DateNight = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
 
   // ─── Input ───
@@ -274,12 +276,13 @@ const DateNight = ({ tool }) => {
   const handleRef = useRef(null);
   const canSubmitRef = useRef(false);
 
-  // Scroll to results when they load
+  // Scroll to results when they load — once, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (results && !showInputs && resultsRef.current) {
+    if (hasResults && !showInputs && resultsRef.current) {
       revealSection(resultsRef.current);
     }
-  }, [results, showInputs]);
+  }, [hasResults, showInputs]);
 
   // Keyboard: Cmd/Ctrl+Enter to submit
   useEffect(() => {
@@ -433,7 +436,7 @@ const DateNight = ({ tool }) => {
   const generate = async () => {
     if (!location.trim()) { setError(t('dn_err_location')); return; }
     if (!dateType) { setError(t('dn_err_datetype')); return; }
-    setError(''); setResults(null); resetResults();
+    setError(''); setResults(null); resetResults(); cancelProgressive(); setCheckStatus(null);
     try {
       if (isAnni && yearsTogether > 0) {
         const data = await callToolEndpoint('date-night', { action: 'anniversary-deep', ...getPayload(), yearsTogether });
@@ -443,7 +446,12 @@ const DateNight = ({ tool }) => {
         }
         return;
       }
-      const data = await callToolEndpoint('date-night', { action: 'generate', ...getPayload() });
+      // Progressive (2026-10-18): the plan shows when written; the venue and
+      // consistency checks run after and the note says when they finish.
+      const data = await callToolEndpointProgressive('date-night', { action: 'generate', ...getPayload() }, {
+        onDraft: d => { setResults(d); setShowInputs(false); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
       if (data) {
         setResults(data); setShowInputs(false); saveToJournal(data);
         setSessionHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
@@ -612,6 +620,7 @@ const DateNight = ({ tool }) => {
     const stops = results.itinerary || [];
     return (
     <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+      <CheckNote status={checkStatus} className={c.textMuted} />
       <button onClick={() => setShowInputs(true)} className={`text-xs font-bold ${c.roseText}`}>✏️ {t('dn_edit')} · {location} · {fm(budget)}{isFuture ? ` · ${plannedDateLabel}` : ''}</button>
 
       {/* Header */}

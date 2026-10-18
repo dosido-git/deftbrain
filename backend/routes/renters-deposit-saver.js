@@ -13,7 +13,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // deposit law is exactly the volatile-figure domain where training knowledge
 // goes stale (2026-07-23 probe: /stream confidently called an illegal CA
 // 2-month deposit "the legal maximum" — AB 12 capped it at 1 month in 2024).
-async function groundDepositLawFacts({ location }) {
+async function groundDepositLawFacts({ location, wait = true }) {
   const cacheKey = `deposit-law:${normalizeKeyPart(location)}`;
   const block = await groundedFacts({
     cacheKey,
@@ -21,7 +21,10 @@ async function groundDepositLawFacts({ location }) {
     // Wait for the first visitor from a place (2026-10-07): the rights lookup
     // otherwise answers from memory, and memory still says California allows
     // two months' deposit. Later visitors from the same place are warm.
-    coldWaitMs: 45000,
+    // wait:false is pre-warming (2026-10-18): the page starts this search as
+    // soon as the location is chosen, so it is usually done by the time the
+    // visitor asks — the same pattern as Date Night's venues.
+    coldWaitMs: wait ? 45000 : 0,
     userPrompt: `Verify with web_search the CURRENT security-deposit rules (as of today) for residential tenants in: ${location}.
 
 Cover ONLY: (1) maximum deposit amount, (2) return deadline after move-out, (3) itemization requirement, (4) interest on deposit, (5) penalties for landlord non-compliance. Skip any you cannot verify. Note the effective date of any rule that changed since 2023.
@@ -91,6 +94,11 @@ router.post('/renters-deposit-saver/rights', rateLimit(DEFAULT_LIMITS), async (r
   const { location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!location?.trim()) return res.status(400).json({ error: 'Location is required for deposit law lookup' });
+  if (req.body.warm) {
+    // Fire-and-forget: start the deposit-law search; nothing is displayed.
+    groundDepositLawFacts({ location, wait: false }).catch(() => {});
+    return res.json({ warming: true });
+  }
 
   try {
     const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage)

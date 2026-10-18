@@ -5,6 +5,7 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
 const { venueBlockFor, verifiedNamesFrom, markVerified, attachPlaceFacts, eventBlock } = require('../lib/venues');
+const { answer } = require('../lib/progressive');
 const { groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
 const { checkAgainstSupplied } = require('../lib/factCheck');
 const { checkConsistency } = require('../lib/outputGuard');
@@ -282,19 +283,36 @@ ${isFuturePlan ? '\nAlso include: "advance_booking": ["Tip 1 about reservations/
 
 All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop AND overall.`;
 
-      const parsed = await callClaudeWithRetry({
-        model: MODELS.FAST,
-        max_tokens: 3000,
-        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: prompt }],
-      }, { label: 'DateNightGenerate' });
-      if (!parsed.itinerary) {
-      return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
-    }
-    await checkVenueClaims(parsed, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' });
-    markVerified(parsed.itinerary, verified);
-    attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
-    return res.json(parsed);
+      // Progressive (2026-10-18, lib/progressive.js): the plan shows as soon
+      // as it is written (~12s once the venues are in — the form starts that
+      // search while the visitor is still typing); the venue-claim and
+      // consistency checks run after it is on screen and the page says so.
+      return await answer(req, res, {
+        label: 'date-night',
+        parts: [{ required: true,
+          run: async () => {
+            const out = await callClaudeWithRetry({
+              model: MODELS.FAST,
+              max_tokens: 3000,
+              system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+              messages: [{ role: 'user', content: prompt }],
+            }, { label: 'DateNightGenerate' });
+            if (!out?.itinerary) throw Object.assign(new Error('no itinerary'), { userMessage: 'Could not plan your date night. Please try again.' });
+            return out;
+          },
+          apply: (d, out) => Object.assign(d, out) }],
+        finish: (d) => {
+          const out = structuredClone(d);
+          if (Array.isArray(out.itinerary)) {
+            markVerified(out.itinerary, verified);
+            attachPlaceFacts(out.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
+          }
+          return out;
+        },
+        ready: d => Array.isArray(d.itinerary) && d.itinerary.length > 0,
+        complete: d => Array.isArray(d.itinerary) && d.itinerary.length > 0,
+        check: (d) => checkVenueClaims(d, { venuesBlock, datedEvents, body: req.body, label: 'date-night-venue-claims' }),
+      });
     }
 
     // ─── REGENERATE ───

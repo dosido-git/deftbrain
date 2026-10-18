@@ -69,7 +69,7 @@ const EXAMPLES = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const Bookmark = ({ tool }) => {
-  const { callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -148,6 +148,23 @@ const Bookmark = ({ tool }) => {
   const [stoppedAt, setStoppedAt] = usePersistentState('bookmark-stopped-at', '');
 
   // ── Handlers ──────────────────────────────────────────────
+  // Start the spoiler-safety lookup once the title and stopping point are in,
+  // while they fill in the rest (2026-10-18) — the first search for a title
+  // takes ~30s, and this way it is usually done by the time they ask. Once per
+  // title + stopping point; a typing pause counts, not just leaving the field.
+  const warmed = useRef(new Set());
+  useEffect(() => {
+    const ti = title.trim(), at = stoppedAt.trim();
+    if (ti.length < 2 || at.length < 1) return undefined;
+    const k = `${mediaType}|${ti}|${at}`.toLowerCase();
+    if (warmed.current.has(k)) return undefined;
+    const id = setTimeout(() => {
+      warmed.current.add(k);
+      callToolEndpoint('bookmark', { action: 'warm', mediaType, title: ti, stoppedAt: at }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(id);
+  }, [mediaType, title, stoppedAt, callToolEndpoint]);
+
   const recall = useCallback(async () => {
     if (!title.trim() || !stoppedAt.trim()) { setError(t('bk_err_missing')); return; }
     setError(''); setResults(null);
