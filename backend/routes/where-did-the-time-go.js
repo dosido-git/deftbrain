@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
@@ -209,49 +210,59 @@ RULES:
 
 At the end, run the two FINAL CHECK questions from the rules above against every field before answering.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      max_tokens: 3500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'where-did-the-time-go' });
-
-    if (!Array.isArray(parsed.the_day_you_described) || !parsed.the_day_you_described.length || !Array.isArray(parsed.what_stands_out) || !parsed.what_stands_out.length) {
-      return res.status(500).json({ error: 'Could not reconstruct your day. Please try again.' });
-    }
-
-    // Time arithmetic is this tool's whole job, and it slipped (2026-10-08):
-    // "roughly 4 hours available" over blocks it listed itself that add up to
-    // 5, in a 9-to-6 day that leaves 6 after two calls and lunch. The shared
-    // number check recomputes durations against the visitor's own account.
-    const checkable = [];
-    (parsed.the_day_you_described || []).forEach((e, i) => typeof e?.note === 'string' && checkable.push([`the_day_you_described[${i}].note`, e.note]));
-    (parsed.what_stands_out || []).forEach((x, i) => typeof x === 'string' && checkable.push([`what_stands_out[${i}]`, x]));
-    ['the_biggest_mismatch', 'whats_still_unclear', 'try_this_next_time'].forEach(k => typeof parsed[k] === 'string' && checkable.push([k, parsed[k]]));
-    // v2 guard (reviewed 2026-10-08 against lib/outputStandard.js — the prompt
-    // already owns most of it: the visitor's own words, no productivity
-    // verdicts, no causes they didn't state). Fail-open.
-    try {
-      await runOutputGuard(parsed, {
-        label: 'where-did-the-time-go',
-        fields: checkable,
-        supplied: visitorContext(req.body),
-        promise: 'Put the period the visitor described in order, in their own words, total what can be totalled, point out what stands out and what is still unclear — without judging how they spent it or explaining why.',
-        guard: router.outputGuard,
-        userLanguage,
-      });
-    } catch (guardErr) {
-      console.log('[where-did-the-time-go] v2 guard skipped:', guardErr.message);
-    }
-    await withNumberCheck(parsed, {
+    // Progressive (2026-10-18, lib/progressive.js): the reconstruction shows as soon as it is written; the guard and the number check run after it is on screen.
+    return await answer(req, res, {
       label: 'where-did-the-time-go',
-      fields: checkable,
-      context: visitorContext(req.body),
-      extraRules: 'Recompute every duration and every sum of hours from the times in the account. A total must equal the blocks it names.',
-      userLanguage,
-    });
+      parts: [{ required: true,
+        run: async () => {
+          const out = await callClaudeWithRetry({
+            model: MODELS.FAST,
+            max_tokens: 3500,
+            system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+            messages: [{ role: 'user', content: userPrompt }],
+          }, { label: 'where-did-the-time-go' });
+          if (!Array.isArray(out.the_day_you_described) || !out.the_day_you_described.length || !Array.isArray(out.what_stands_out) || !out.what_stands_out.length) throw Object.assign(new Error('incomplete'), { userMessage: 'Could not reconstruct your day. Please try again.' });
+          return out;
+        },
+        apply: (d, out) => Object.assign(d, out) }],
+      finish: d => structuredClone(d),
+      ready: d => Array.isArray(d.the_day_you_described) && d.the_day_you_described.length > 0,
+      complete: d => Array.isArray(d.the_day_you_described) && d.the_day_you_described.length > 0,
+      check: async (parsed) => {
+        // Time arithmetic is this tool's whole job, and it slipped (2026-10-08):
+        // "roughly 4 hours available" over blocks it listed itself that add up to
+        // 5, in a 9-to-6 day that leaves 6 after two calls and lunch. The shared
+        // number check recomputes durations against the visitor's own account.
+        const checkable = [];
+        (parsed.the_day_you_described || []).forEach((e, i) => typeof e?.note === 'string' && checkable.push([`the_day_you_described[${i}].note`, e.note]));
+        (parsed.what_stands_out || []).forEach((x, i) => typeof x === 'string' && checkable.push([`what_stands_out[${i}]`, x]));
+        ['the_biggest_mismatch', 'whats_still_unclear', 'try_this_next_time'].forEach(k => typeof parsed[k] === 'string' && checkable.push([k, parsed[k]]));
+        // v2 guard (reviewed 2026-10-08 against lib/outputStandard.js — the prompt
+        // already owns most of it: the visitor's own words, no productivity
+        // verdicts, no causes they didn't state). Fail-open.
+        try {
+          await runOutputGuard(parsed, {
+            label: 'where-did-the-time-go',
+            fields: checkable,
+            supplied: visitorContext(req.body),
+            promise: 'Put the period the visitor described in order, in their own words, total what can be totalled, point out what stands out and what is still unclear — without judging how they spent it or explaining why.',
+            guard: router.outputGuard,
+            userLanguage,
+          });
+        } catch (guardErr) {
+          console.log('[where-did-the-time-go] v2 guard skipped:', guardErr.message);
+        }
+        await withNumberCheck(parsed, {
+          label: 'where-did-the-time-go',
+          fields: checkable,
+          context: visitorContext(req.body),
+          extraRules: 'Recompute every duration and every sum of hours from the times in the account. A total must equal the blocks it names.',
+          userLanguage,
+        });
 
-    res.json(parsed);
+    
+      },
+    });
   } catch (error) {
     console.error('WhereDidTheTimeGo error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

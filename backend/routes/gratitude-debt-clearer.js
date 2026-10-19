@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -434,35 +435,44 @@ ${NO_QUOTE_RULE}`;
     const wrappedPrompt = withLanguage(prompt, userLanguage)
       + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      max_tokens: 4200,
-      messages: [{ role: 'user', content: wrappedPrompt }],
-    }, { label: 'gratitude-debt-clearer' });
+    // Progressive (2026-10-18, lib/progressive.js): the messages show as
+    // soon as they are written; the guard runs after they are on screen.
+    return await answer(req, res, {
+      label: 'gratitude-debt-clearer',
+      parts: [{ required: true,
+        run: async () => {
+          const parsed = await callClaudeWithRetry({
+            model: MODELS.FAST,
+            max_tokens: 4200,
+            messages: [{ role: 'user', content: wrappedPrompt }],
+          }, { label: 'gratitude-debt-clearer' });
 
-    // A question is a valid answer, not a failed generation. Only refinements may
-    // return one — the first draft always has the visitor's own words to work
-    // from, so there is nothing it could need to ask for.
-    if (parsed?.type === 'clarify' && typeof parsed.question === 'string' && parsed.question.trim()) {
-      if (!originalMessage) {
-        return res.status(500).json({ error: 'Could not generate your messages. Please try again.' });
-      }
-      console.log(`[gratitude-debt-clearer] clarify (${action || 'freeform'}): ${parsed.question.slice(0, 80)}`);
-      return res.json({ type: 'clarify', question: parsed.question.trim(), reason: typeof parsed.reason === 'string' ? parsed.reason.trim() : '' });
-    }
+          // A question is a valid answer, not a failed generation. Only refinements may
+          // return one — the first draft always has the visitor's own words to work
+          // from, so there is nothing it could need to ask for.
+          if (parsed?.type === 'clarify' && typeof parsed.question === 'string' && parsed.question.trim()) {
+            if (!originalMessage) throw Object.assign(new Error('clarify on a first draft'), { userMessage: 'Could not generate your messages. Please try again.' });
+            console.log(`[gratitude-debt-clearer] clarify (${action || 'freeform'}): ${parsed.question.slice(0, 80)}`);
+            return { type: 'clarify', question: parsed.question.trim(), reason: typeof parsed.reason === 'string' ? parsed.reason.trim() : '' };
+          }
 
-    if (!Array.isArray(parsed?.thank_you_messages) || !parsed.thank_you_messages.length) {
-      return res.status(500).json({ error: 'Could not generate your messages. Please try again.' });
-    }
+          if (!Array.isArray(parsed?.thank_you_messages) || !parsed.thank_you_messages.length) {
+            throw Object.assign(new Error('incomplete'), { userMessage: 'Could not generate your messages. Please try again.' });
+          }
 
-    parsed.type = 'messages';
-    parsed.thank_you_messages = parsed.thank_you_messages.slice(0, (adjustmentPrompt || action) ? 1 : 3).map(m => ({
-      ...m,
-      length: typeof m.message_text === 'string' ? m.message_text.trim().split(/\s+/).filter(Boolean).length : 0,
-    }));
-
-    await guardMessages(parsed, req.body, startedAt);
-    res.json(parsed);
+          parsed.type = 'messages';
+          parsed.thank_you_messages = parsed.thank_you_messages.slice(0, (adjustmentPrompt || action) ? 1 : 3).map(m => ({
+            ...m,
+            length: typeof m.message_text === 'string' ? m.message_text.trim().split(/\s+/).filter(Boolean).length : 0,
+          }));
+          return parsed;
+        },
+        apply: (d, out) => Object.assign(d, out) }],
+      finish: d => structuredClone(d),
+      ready: d => d.type === 'clarify' || (Array.isArray(d.thank_you_messages) && d.thank_you_messages.length > 0),
+      complete: d => d.type === 'clarify' || (Array.isArray(d.thank_you_messages) && d.thank_you_messages.length > 0),
+      check: async (parsed) => { if (parsed.type === 'messages') await guardMessages(parsed, req.body, startedAt); },
+    });
   } catch (error) {
     console.error('Gratitude Debt Clearer error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

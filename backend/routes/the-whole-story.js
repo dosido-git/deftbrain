@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -77,16 +78,25 @@ Help them frame this story. Return ONLY valid JSON:
 
 Generate 2-3 versions in the "versions" array, each with a genuinely different strategic approach (not just different tones). One should be the safest/most conservative, one should be the boldest, and one should be somewhere in between.`;
 
-    const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
-      max_tokens: 4000,
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the read and the reframe show first; the versions and the delivery notes are written alongside, handed them.
+    const ask = (content, tag) => callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-alibi' });
-    if (!parsed.reframe || !Array.isArray(parsed.versions)) {
-      return res.status(500).json({ error: 'Could not craft your alibi. Please try again.' });
-    }
-    res.json(parsed);
+      messages: [{ role: 'user', content: content }],
+    }, { label: tag });
+    const PLAN = ['situation_read', 'reframe'];
+    return await answer(req, res, {
+      label: 'the-alibi',
+      parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'the-alibi'), [
+      ['versions'],
+      ['follow_up_prep', 'body_language', 'common_mistakes', 'confidence_note', 'nuclear_option'],
+    ],
+        (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `the-alibi-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.reframe),
+      complete: d => Boolean(d.reframe),
+    });
 
   } catch (error) {
     console.error('The Alibi error:', error);

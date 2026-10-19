@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -194,22 +195,31 @@ Only include care_symbols if a care label photo was provided. separate_these and
 CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all of them; never omit a symbol. For each, set "code" to the single closest match from this list (if none is exact, pick the nearest — never invent codes or emoji, never skip a symbol): ${CARE_CODE_REF}`
       });
 
-      const data = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
-        messages: [{ role: 'user', content: contentBlocks }]
-      }, { label: 'laundro-mat-advise' });
-
-      if (!data.load_assessment && !data.advice) {
-        return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
-      }
-      // Number and consistency checks run side by side (lib/bothChecks.js).
-      await bothChecks(data,
-        d => withNumberCheck(d, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
-        d => checkConsistency(d, { label: 'laundro-mat', userLanguage: req.body?.userLanguage }),
-        { label: 'laundro-mat' });
-      return res.json(validateResult(data));
+      // Progressive (2026-10-18, lib/progressive.js): the advice shows as soon
+      // as it is written; the number and consistency checks run after.
+      return await answer(req, res, {
+        label: 'laundro-mat',
+        parts: [{ required: true,
+          run: async () => {
+            const out = await callClaudeWithRetry({
+              model: MODELS.SMART,
+              max_tokens: 4000,
+              system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+              messages: [{ role: 'user', content: contentBlocks }]
+            }, { label: 'laundro-mat-advise' });
+            if (!out.load_assessment && !out.advice) throw Object.assign(new Error('incomplete'), { userMessage: 'Could not analyze your laundry. Please try again.' });
+            return out;
+          },
+          apply: (d, out) => Object.assign(d, out) }],
+        finish: d => validateResult(structuredClone(d)),
+        ready: d => Boolean(d.load_assessment || d.advice),
+        complete: d => Boolean(d.load_assessment || d.advice),
+        // Number and consistency checks run side by side (lib/bothChecks.js).
+        check: data => bothChecks(data,
+          d => withNumberCheck(d, { label: 'laundro-mat', context: visitorContext(req.body), userLanguage: req.body?.userLanguage }),
+          d => checkConsistency(d, { label: 'laundro-mat', userLanguage: req.body?.userLanguage }),
+          { label: 'laundro-mat' }),
+      });
     }
 
     // ─── LABEL: Care label symbol identification ───

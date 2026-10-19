@@ -42,7 +42,7 @@ const PLATFORMS = [
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const ContextCollapse = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -136,14 +136,17 @@ const ContextCollapse = ({ tool }) => {
     if (!message.trim()) { setError(t('ctc_err_message')); return; }
     if (!audiences.some(a => a.label.trim())) { setError(t('ctc_err_audience')); return; }
     setError(''); setResults(null);
+    cancelProgressive();
     try {
-      const data = await callToolEndpoint('context-collapse', {
+      // Progressive (2026-10-17): the first part shows first.
+      const data = await callToolEndpointProgressive('context-collapse', {
         message: message.trim(), platform,
         audiences: audiences.filter(a => a.label.trim()),
         intent: intent.trim() || null,
         concerns: concerns.trim() || null,
         userLocale, userCurrency, userRegion,
-      });
+      }, { onDraft: d => setResults(d) });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       const entry = {
         id: 'cc_' + Date.now(),
@@ -155,7 +158,7 @@ const ContextCollapse = ({ tool }) => {
       };
       setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('ctc_err_failed')); }
-  }, [message, platform, audiences, intent, concerns, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [message, platform, audiences, intent, concerns, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     // Five, rotated: email, an all-hands announcement, a group chat, a
@@ -209,12 +212,13 @@ const ContextCollapse = ({ tool }) => {
   useRegisterActions(buildCopy(), tool?.title || t('ctc_title'));
 
   // ─── Scroll to results ───
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const scrollTimer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(scrollTimer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [hasResults]);
 
   // ─── Ctrl+Enter submit ───
   useEffect(() => {

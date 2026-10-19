@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -63,7 +64,7 @@ const LENGTHS = [
 ];
 
 const GratitudeDebtClearer = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const resultsRef = useRef(null);
@@ -94,6 +95,7 @@ const GratitudeDebtClearer = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [recipientName, setRecipientName] = useState('');
   const [gratitudePoints, setGratitudePoints] = useState('');
@@ -190,9 +192,12 @@ const GratitudeDebtClearer = ({ tool }) => {
       setError(!recipientName.trim() ? t('gdc_err_who') : t('gdc_err_what'));
       return;
     }
-    setError('');
+    setError(''); cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('gratitude-debt-clearer', {
+      // Progressive (2026-10-18): the messages show first; checked after.
+      let revealed = false;
+      const reveal = () => { if (!revealed) { revealed = true; setTimeout(() => revealSection(resultsRef.current), 50); } };
+      const data = await callToolEndpointProgressive('gratitude-debt-clearer', {
         recipientName: recipientName.trim(),
         gratitudePoints: gratitudePoints.trim(),
         relationship,
@@ -202,7 +207,11 @@ const GratitudeDebtClearer = ({ tool }) => {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); reveal(); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setEditedMessages({});
       setEditingIndex(null);
@@ -210,7 +219,7 @@ const GratitudeDebtClearer = ({ tool }) => {
       setStylePanelIndex(null);
       setClarify(null);
       setClarifyAnswer('');
-      setTimeout(() => revealSection(resultsRef.current), 50);
+      reveal();
     } catch (err) {
       setError(err?.message || t('gdc_err_failed'));
     }
@@ -407,6 +416,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
       {results && (
         <section ref={resultsRef} className="space-y-4 scroll-mt-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>{t('gdc_your_messages')}</h2>
             <p className={`mt-1 ${c.textSecondary}`}>{t('gdc_three_ways')}</p>

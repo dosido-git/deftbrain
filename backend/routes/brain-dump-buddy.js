@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { checkConsistency } = require('../lib/outputGuard');
@@ -165,27 +166,40 @@ CONSISTENT NUMBERS: the [X]/[Y]/[Z]/[W] figures in overwhelm_meter.summary MUST 
 
 ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'BDS-Structure' });
-        if (!parsed.breathe && !parsed.do_first && !parsed.actions) {
-          return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
-        }
-        // Hero-stat counts are consumed by the meter UI — pin them to the actual
-        // array lengths rather than trusting model-side arithmetic (audit
-        // 2026-07-19 caught summary/counts/arrays giving three different numbers).
-        if (parsed.overwhelm_meter?.counts) {
-          parsed.overwhelm_meter.counts = {
-            actual_tasks: parsed.actions?.length ?? 0,
-            decisions: parsed.decisions?.length ?? 0,
-            not_actionable: (parsed.worries?.length ?? 0) + (parsed.feelings?.length ?? 0),
-            can_drop: parsed.can_drop?.length ?? 0,
-          };
-        }
-        await checkConsistency(parsed, { label: 'brain-dump-buddy', userLanguage: req.body?.userLanguage });
-        return res.json(parsed);
+        // Progressive (2026-10-18, lib/progressive.js): the sorted dump shows
+        // as soon as it is written; the consistency check runs after.
+        return await answer(req, res, {
+          label: 'brain-dump-buddy',
+          parts: [{ required: true,
+            run: async () => {
+              const out = await callClaudeWithRetry({
+                model: MODELS.SMART,
+                max_tokens: 6000,
+                messages: [{ role: 'user', content: prompt }]
+              }, { label: 'BDS-Structure' });
+              if (!out.breathe && !out.do_first && !out.actions) throw Object.assign(new Error('incomplete'), { userMessage: 'Could not process your brain dump. Please try again.' });
+              return out;
+            },
+            apply: (d, out) => Object.assign(d, out) }],
+          finish: (d) => {
+            const parsed = structuredClone(d);
+            // Hero-stat counts are consumed by the meter UI — pin them to the actual
+            // array lengths rather than trusting model-side arithmetic (audit
+            // 2026-07-19 caught summary/counts/arrays giving three different numbers).
+            if (parsed.overwhelm_meter?.counts) {
+              parsed.overwhelm_meter.counts = {
+                actual_tasks: parsed.actions?.length ?? 0,
+                decisions: parsed.decisions?.length ?? 0,
+                not_actionable: (parsed.worries?.length ?? 0) + (parsed.feelings?.length ?? 0),
+                can_drop: parsed.can_drop?.length ?? 0,
+              };
+            }
+            return parsed;
+          },
+          ready: d => Boolean(d.breathe || d.do_first || d.actions),
+          complete: d => Boolean(d.breathe || d.do_first || d.actions),
+          check: d => checkConsistency(d, { label: 'brain-dump-buddy', userLanguage: req.body?.userLanguage }),
+        });
       }
 
       // ────────────────────────────────────────────

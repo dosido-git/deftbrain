@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -138,17 +139,27 @@ Return ONLY valid JSON:
 
 Generate 1-2 rewrites that meaningfully improve the message for the most at-risk audiences while preserving the sender's intent and voice.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the verdict and what the message does show first; the readings and the rewrites are written alongside, handed them.
+    const ask = (content, tag) => callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }]
-    }, { label: 'context-collapse' });
-
-    if (!parsed.message_analysis && !parsed.rewrites) {
-      return res.status(500).json({ error: 'Could not analyze the message. Please try again.' });
-    }
-    res.json(parsed);
+      messages: [{ role: 'user', content: content }],
+    }, { label: tag });
+    // The readings and intent-vs-reality are one pass: written apart, the
+    // same insight came back in each (2026-10-18 blind comparison).
+    const PLAN = ['message_analysis', 'verdict'];
+    return await answer(req, res, {
+      label: 'context-collapse',
+      parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'context-collapse'), [
+      ['readings', 'intent_vs_reality'],
+      ['rewrites', 'platform_note', 'nuclear_scenarios'],
+    ],
+        (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `context-collapse-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+    });
   } catch (error) {
     console.error('Context Collapse error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

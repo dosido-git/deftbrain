@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { isSurging } = require('../lib/surge');
@@ -247,21 +248,61 @@ RULES:
 5. Set dominant honestly. When it is true the interface shows one answer and lists the rest as names only; claiming dominance for a middling guess turns a hedge into a false certainty.
 6. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // matches — name, confidence, why it fits, the trigger — show first; how
+    // to verify and find each, its fun fact, and related things are written
+    // alongside, handed the matches and kept in their order. The clue check
+    // runs after the answer is on screen.
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART, // FAST answered cacio e pepe 'with guanciale' 3 of 3 runs (2026-10-07)
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'tip-of-tongue-find' });
-
-    if (!parsed.matches || !parsed.matches.length) {
-      return res.status(500).json({ error: 'Could not find matching words. Please try again.' });
-    }
-    await clueCheck(parsed, [
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const LATER = ['how_to_verify', 'how_to_find', 'fun_fact'];
+    const dropLines = (txt, names) => txt.split('\n').filter(l => !names.some(n => l.trimStart().startsWith(`"${n}":`))).join('\n').replace(/,(\s*\n\s*\})/g, '$1');
+    const PLAN = ['category_detected', 'dominant', 'matches', 'if_none_match'];
+    const plan = ask(dropLines(onlyKeys(userPrompt, PLAN), LATER) + `\nTHIS PASS leaves out each match's ${LATER.join(', ')} — another pass writes them.`, 'tip-of-tongue-find');
+    plan.catch(() => {}); // the plan part reports its own failure
+    const merged = (d) => {
+      const { matchDetail, ...out } = structuredClone(d);
+      if (Array.isArray(out.matches) && Array.isArray(matchDetail)) {
+        out.matches = out.matches.map((m, k) => ({ ...m, ...Object.fromEntries(LATER.map(f => [f, m[f] ?? matchDetail[k]?.[f] ?? null])) }));
+      }
+      return out;
+    };
+    const clues = [
       `Description: ${description}`, notThis && `It is NOT: ${notThis}`,
       whenWhere && `When/where: ${whenWhere}`, extraClues && `Extra clues: ${extraClues}`,
-    ].filter(Boolean).join('\n'), userLanguage, 'tip-of-tongue-find');
-    res.json(parsed);
+    ].filter(Boolean).join('\n');
+    return await answer(req, res, {
+      label: 'tip-of-tongue',
+      parts: [
+        { required: true, run: () => plan, apply: (d, o) => { PLAN.forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
+        { run: async () => {
+            const p = await plan;
+            const names = (p?.matches || []).map(m => m?.name).filter(Boolean);
+            return ask(`${userPrompt.slice(0, userPrompt.indexOf('{'))}${planNote(p, ['matches'])}
+
+Return ONLY valid JSON:
+{ "match_details": [{ "name": "the match name, exactly as above", ${LATER.map(f => `"${f}": ${JSON.stringify((userPrompt.match(new RegExp(`"${f}": ("[^\n]*?")[,]?\n`)) || [])[1] || '""')}`).join(', ')} }] }
+One item per match above, in the same order (${names.join('; ')}).`, 'tip-of-tongue-details');
+          },
+          apply: (d, o) => { if (Array.isArray(o?.match_details)) d.matchDetail = o.match_details; } },
+        { run: async () => ask(onlyKeys(userPrompt, ['also_try']) + planNote(await plan, ['matches']), 'tip-of-tongue-also'),
+          apply: (d, o) => { if (o?.also_try !== undefined) d.also_try = o.also_try; } },
+      ],
+      finish: merged,
+      ready: d => Array.isArray(d.matches) && d.matches.length > 0,
+      complete: d => Array.isArray(d.matches) && d.matches.length > 0,
+      check: async (draft) => {
+        const d = merged(draft);
+        await clueCheck(d, clues, userLanguage, 'tip-of-tongue-find');
+        // Back into the draft from the new object: details merged, repairs included.
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, d);
+      },
+    });
 
   } catch (error) {
     console.error('Tip of Tongue error:', error);

@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTranslation } from '../i18n/useTranslation';
@@ -273,7 +274,7 @@ const EXAMPLES = [
 ];
 const LaundroMat = ({ tool }) => {
   const { t } = useTranslation();
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const c = {
     card:          isDark ? 'bg-zinc-800'     : 'bg-white',
@@ -317,6 +318,7 @@ const LaundroMat = ({ tool }) => {
   };
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
 
   // Tabs
@@ -587,16 +589,23 @@ const LaundroMat = ({ tool }) => {
 
   const getLoadAdvice = useCallback(async () => {
     if (!loadDesc.trim() && !labelImage) return;
-    setError(''); setAdviceResults(null);
+    setError(''); setAdviceResults(null); cancelProgressive(); setCheckStatus(null);
     try {
-      const res = await callToolEndpoint('laundro-mat', {
+      // Progressive (2026-10-18): the advice shows first; checked after.
+      let revealed = false;
+      const reveal = () => { if (!revealed) { revealed = true; setTimeout(() => revealSection(resultsRef.current), 100); } };
+      const res = await callToolEndpointProgressive('laundro-mat', {
         action: labelImage && !loadDesc.trim() ? 'label' : 'advise',
         loadDescription: loadDesc,
         machineType,
         imageBase64: labelImage || null,
+      }, {
+        onDraft: d => { setAdviceResults(d); setCheckStatus('checking'); reveal(); },
+        onChecked: (d, changed) => { setAdviceResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!res) return; // replaced by a newer run
       setAdviceResults(res);
-      setTimeout(() => revealSection(resultsRef.current), 100);
+      reveal();
     } catch (err) { setError(err.message || t('lmt_err_get_advice')); }
   }, [loadDesc, machineType, labelImage, callToolEndpoint, t]);
 
@@ -1020,6 +1029,7 @@ const LaundroMat = ({ tool }) => {
       const r = adviceResults;
       return (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-5">
+          {adviceResults && <CheckNote status={checkStatus} className={c.textMuted} />}
           {/* Assessment */}
           {r.load_assessment && (
             <div className={`p-4 rounded-xl border ${c.skyCard}`}>

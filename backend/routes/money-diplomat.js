@@ -1006,12 +1006,12 @@ Return ONLY valid JSON:
     // as it is written; the number and consistency checks run after.
     return await answer(req, res, {
       label: 'money-diplomat',
-      parts: [{ required: true, run: () => callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle the money side of a group meal. Specific words to say, not vague advice. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatDining' }), apply: (d, out) => Object.assign(d, out) }],
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatDining', maxTokens: 1500,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle the money side of a group meal. Specific words to say, not vague advice. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['pre_game', 'who_pays'],
+        groups: [['scenarios'], ['budget_moves', 'pro_tip']],
+      }),
       finish: d => validateResult(structuredClone(d)),
       ready: d => Boolean(d.pre_game),
       complete: d => Boolean(d.pre_game),
@@ -1459,18 +1459,22 @@ ARRAY BOUNDS: options 3-4, what_you_told_me at most 4, what_is_not_established a
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou lay out the practical options for who pays and what each one means in practice. You never decode what an option signals about anyone. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatDate' });
-
-    if (!parsed.options) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+    // Progressive (2026-10-18, lib/progressive.js): the options show first;
+    // what was and was not said, and what to say if it gets awkward, are
+    // written alongside, handed them. The consistency check runs after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatDate', maxTokens: 1800,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou lay out the practical options for who pays and what each one means in practice. You never decode what an option signals about anyone. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['options'],
+        groups: [['what_you_told_me', 'what_is_not_established', 'if_it_comes_up_awkwardly']],
+      }),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Array.isArray(d.options) && d.options.length > 0,
+      complete: d => Array.isArray(d.options) && d.options.length > 0,
+      check: d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatDate] Error:', error);

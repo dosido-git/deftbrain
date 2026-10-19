@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -90,7 +91,7 @@ const CATEGORY_CONFIG = {
 };
 
 const BrainDumpBuddy = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const textRef = useRef(null);
@@ -147,6 +148,7 @@ const BrainDumpBuddy = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'font-medium text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'font-medium text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Category color helper
   const catColors = (color) => {
@@ -360,14 +362,20 @@ const BrainDumpBuddy = ({ tool }) => {
     if (isListening) toggleVoice();
     setError(''); setResults(null); setCheckedItems({}); setDoFirstDone(false);
     setExpandedSections({}); setExcavateData({});
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('brain-dump-buddy', {
+      // Progressive (2026-10-18): the sort shows first; checked after.
+      const data = await callToolEndpointProgressive('brain-dump-buddy', {
         action: 'structure',
         rawThoughts: dump,
         context: context || null,
         carryForward: getUncheckedItems().length > 0 ? getUncheckedItems() : null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setView('results'); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setView('results');
     } catch (err) { setError(err.message || t('bdb_err_structure')); }
@@ -1026,7 +1034,7 @@ const BrainDumpBuddy = ({ tool }) => {
             </div>
           </div>
         <div className="max-w-xl mx-auto space-y-5">
-
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Emergency mode result */}
           {r.mode === 'emergency' && (r.breathe || r.one_task || r.one_truth) && (

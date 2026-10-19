@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -41,7 +42,7 @@ const EXAMPLES = [
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const TipOfTongue = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const resultsRef = useRef(null);
@@ -87,6 +88,7 @@ const TipOfTongue = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#6e8aaa] hover:text-[#85afd6] underline' : 'text-[#165b9a] hover:text-[#1e3a58] underline';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State (useState before usePersistentState — PF-11/PF-14) ─────
   const [showHistory, setShowHistory] = useState(false);
@@ -133,13 +135,19 @@ const TipOfTongue = ({ tool }) => {
   const identify = useCallback(async () => {
     if (!description.trim()) { setError(t('tot_err_describe')); return; }
     setError(''); setResults(null); setRefineMode(false); setMatchFeedback({});
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('tip-of-tongue', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('tip-of-tongue', {
         category, description: description.trim(),
         notThis: notThis.trim() || null, whenWhere: whenWhere.trim() || null,
         extraClues: extraClues.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       setExpandedMatch(0);
       const catEmoji = CATEGORIES.find(cat => cat.value === category)?.emoji || '❓';
@@ -157,7 +165,7 @@ const TipOfTongue = ({ tool }) => {
       // PF-25 exception: cap 10 (not 6) is deliberate — entries store full results objects, so a longer history is the intended tradeoff.
       setSessionHistory(prev => [entry, ...prev].slice(0, 10));
     } catch (err) { setError(err.message || t('tot_err_identify')); }
-  }, [category, description, notThis, whenWhere, extraClues, callToolEndpoint, setSessionHistory, setResults, userLocale, userCurrency, userRegion, t]);
+  }, [category, description, notThis, whenWhere, extraClues, callToolEndpoint, callToolEndpointProgressive, setSessionHistory, setResults, userLocale, userCurrency, userRegion, t]);
 
   const refine = useCallback(async () => {
     if (!results?.matches?.length) return;
@@ -195,11 +203,13 @@ const TipOfTongue = ({ tool }) => {
   const confBg   = (conf) => conf === 'high' ? c.highBg : conf === 'medium' ? c.medBg : c.lowBg;
   const confText = (conf) => conf === 'high' ? c.highText : conf === 'medium' ? c.medText : c.lowText;
 
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (results && resultsRef.current) {
+    if (hasResults && resultsRef.current) {
       setTimeout(() => revealSection(resultsRef.current), 200);
     }
-  }, [results]);
+  }, [hasResults]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -303,6 +313,7 @@ const TipOfTongue = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+<CheckNote status={checkStatus} className={c.textMuted} />
         {results.category_detected && (
           <p className={'text-xs font-medium ' + c.textMuted}>{t('tot_looking_for')} {results.category_detected}</p>
         )}

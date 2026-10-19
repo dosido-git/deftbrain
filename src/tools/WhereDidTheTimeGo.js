@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -46,7 +47,7 @@ const EXAMPLES = [
   },
 ];
 const WhereDidTheTimeGo = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   // Localized label for the currently-selected timeframe (id stays stable).
@@ -111,6 +112,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
   const [perceivedBreakdown, setPerceivedBreakdown] = useState('');
   const [timeframe, setTimeframe] = useState('today');
   const [results, setResults] = usePersistentState('wheredidthetimego-result-v2', null);
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   const [error, setError] = useState('');
   // Recent Sessions stores the full result (not a truncated preview: field) so
   // a click can restore the complete reconstruction and original input, and
@@ -123,14 +125,20 @@ const WhereDidTheTimeGo = ({ tool }) => {
     if (!dayDescription.trim()) return;
     setError('');
     setResults(null);
+    cancelProgressive(); setCheckStatus(null);
 
     try {
-      const res = await callToolEndpoint('where-did-the-time-go', {
+      // Progressive (2026-10-18): the day shows first; checked after.
+      const res = await callToolEndpointProgressive('where-did-the-time-go', {
         dayDescription: dayDescription.trim(),
         perceivedBreakdown: perceivedBreakdown.trim() || undefined,
         timeframe,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!res) return; // replaced by a newer run
       setResults(res);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
@@ -138,7 +146,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('wdttg_error'));
-    } }, [dayDescription, perceivedBreakdown, timeframe, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+    } }, [dayDescription, perceivedBreakdown, timeframe, callToolEndpointProgressive, cancelProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const handleReset = () => {
     setDayDescription('');
@@ -174,11 +182,13 @@ const WhereDidTheTimeGo = ({ tool }) => {
   }, [loading]);
 
   // ─── Scroll to results ───
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 250);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   // ─── Build copy text ───
   const buildFullText = useCallback(() => {
@@ -300,6 +310,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
         )}
 
         {/* Results */} {results && (<div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24 space-y-5">
+          <CheckNote status={checkStatus} className={c.textMuted} />
 
             {/* The day you described */} {results?.the_day_you_described?.length > 0 && (<div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2 mb-4`}>
