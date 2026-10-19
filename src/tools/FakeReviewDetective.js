@@ -365,29 +365,38 @@ const FakeReviewDetective = ({ tool }) => {
 
     const aiRevs = reviews.slice(0, 6), trunc = reviews.length > 20;
 
-    // Phase 1: Score
+    const reviewFields = r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, daysAgo: r.daysAgo, wordCount: r.wordCount, exclamationCount: r.exclamationCount, capsRatio: r.capsRatio, hasSpecificDetails: r.hasSpecificDetails, hasGenericPraise: r.hasGenericPraise, mentionsCompetitor: r.mentionsCompetitor });
+
+    // One review: its score is the whole answer.
+    if (reviews.length < 2) {
+      setPhase('scoring'); setScoreProgress(t('frd_scoring_n', { count: aiRevs.length }));
+      try {
+        const sd = await callToolEndpoint('fake-review-detective', {
+          action: 'score', reviews: aiRevs.map(reviewFields),
+          stats: aggStats, category: category || null, decision: decision || null, truncated: trunc, totalReviewCount: reviews.length, userLocale, userCurrency, userRegion,
+        });
+        setReviewScores(sd?.scores || []);
+      } catch (err) { setError(t('frd_err_scoring') + (err.message || '')); }
+      setPhase('done'); return;
+    }
+
+    // Speed (2026-10-19): one request. The backend scores the reviews (the
+    // cards show) and then writes the verdict on those scores; it used to be
+    // two calls back to back with nothing on screen for ~45s.
     setPhase('scoring'); setScoreProgress(t('frd_scoring_n', { count: aiRevs.length }));
-    let scores = null;
     try {
-      const sd = await callToolEndpoint('fake-review-detective', {
-        action: 'score', reviews: aiRevs.map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, daysAgo: r.daysAgo, wordCount: r.wordCount, exclamationCount: r.exclamationCount, capsRatio: r.capsRatio, hasSpecificDetails: r.hasSpecificDetails, hasGenericPraise: r.hasGenericPraise, mentionsCompetitor: r.mentionsCompetitor })),
-        stats: aggStats, category: category || null, decision: decision || null, truncated: trunc, totalReviewCount: reviews.length, userLocale, userCurrency, userRegion,
-      });
-      scores = sd?.scores || []; setReviewScores(scores);
-    } catch (err) { setError(t('frd_err_scoring') + (err.message || '')); setPhase('done'); return; }
-
-    if (reviews.length < 2) { setPhase('done'); return; }
-
-    // Phase 2: Analyze + Playbook
-    setPhase('analyzing'); setScoreProgress(t('frd_analyzing_patterns'));
-    try {
-      // Progressive (2026-10-18): the verdict shows first.
+      const show = d => {
+        if (d?.scores) setReviewScores(d.scores);
+        if (d?.quick_verdict) { setAnalysis(d); setScoreProgress(t('frd_analyzing_patterns')); }
+        else if (d?.scores) { setPhase('analyzing'); setScoreProgress(t('frd_analyzing_patterns')); }
+      };
       const ad = await callToolEndpointProgressive('fake-review-detective', {
-        action: 'analyze', reviews: aiRevs.map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, daysAgo: r.daysAgo, wordCount: r.wordCount, hasSpecificDetails: r.hasSpecificDetails, hasGenericPraise: r.hasGenericPraise, mentionsCompetitor: r.mentionsCompetitor })),
-        scores, stats: aggStats, category: category || null, decision: decision || null, userLocale, userCurrency, userRegion,
-      }, { onDraft: d => setAnalysis(d), onChecked: d => setAnalysis(d) });
+        action: 'analyze', reviews: aiRevs.map(reviewFields),
+        stats: aggStats, category: category || null, decision: decision || null, truncated: trunc, totalReviewCount: reviews.length, userLocale, userCurrency, userRegion,
+      }, { onDraft: show, onChecked: show });
       if (!ad) return; // replaced by a newer run
-      setAnalysis(ad);
+      show(ad);
+      const scores = ad.scores || [];
 
       // Save snapshot
       const snap = {

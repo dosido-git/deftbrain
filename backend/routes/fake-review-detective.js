@@ -35,21 +35,10 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { checkConsistency } = require('../lib/outputGuard');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted review phrases plainly or with single quotes, or it breaks the JSON.';
 
-router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { action } = req.body;
-
-  try {
-    switch (action) {
-
-      // ════════════════════════════════════════════════════════
-      // ACTION: SCORE — per-review authenticity scoring
-      // ════════════════════════════════════════════════════════
-      case 'score': {
-        const { reviews, stats, category, decision, truncated, totalReviewCount, userLanguage } = req.body;
-
-        if (!reviews || !reviews.length) {
-          return res.status(400).json({ error: 'No reviews provided' });
-        }
+// Each review rated on its own (authenticity score, verdict, flags). Used by
+// the score action and as the first part of analyze.
+async function scoreReviews(body) {
+        const { reviews, stats, category, decision, truncated, totalReviewCount, userLanguage } = body;
 
         const systemPrompt = `You are helping someone judge whether a set of reviews can be trusted enough to decide with. You will receive a batch of product reviews with pre-computed statistics, and you will rate each one.
 
@@ -57,14 +46,14 @@ REVIEWS ARE RARELY FAKE OR REAL. They are exaggerated, incentivised, repetitive,
 
 WRITE FOR SOMEONE DECIDING, NOT INVESTIGATING. Nobody opens this to become a review analyst. If they have said what they are trying to decide, the flags and the summary should serve THAT question. A review that reads as promotional matters differently to someone comparing two products than to someone checking whether a rating is inflated. ${NO_QUOTE_RULE}`;
 
-        const reviewList = reviews.map(r => {
+        const reviewListOf = (list) => list.map(r => {
           return `[Review #${r.index}]
 Rating: ${r.starRating || 'unknown'}/5 | Verified: ${r.isVerified ? 'YES' : 'NO'} | Posted: ${r.daysAgo !== null ? r.daysAgo + ' days ago' : 'unknown'}
 Words: ${r.wordCount} | Exclamations: ${r.exclamationCount} | Caps ratio: ${r.capsRatio} | Has specifics: ${r.hasSpecificDetails} | Generic praise: ${r.hasGenericPraise} | Mentions competitor: ${r.mentionsCompetitor}
 Text: "${r.rawText}"`;
         }).join('\n\n');
 
-        const userPrompt = `PRODUCT CATEGORY: ${category || 'not given — work it out from the reviews themselves'}
+        const userPromptOf = (list) => `PRODUCT CATEGORY: ${category || 'not given — work it out from the reviews themselves'}
 WHAT THE READER IS TRYING TO DECIDE: ${decision || 'not stated'}
 ${truncated ? `NOTE: Analyzing first 20 of ${totalReviewCount} reviews.\n` : ''}
 PRE-COMPUTED AGGREGATE STATS:
@@ -81,7 +70,7 @@ PRE-COMPUTED AGGREGATE STATS:
 - Specific detail reviews: ${stats.specificDetailCount}
 
 REVIEWS TO SCORE:
-${reviewList}
+${reviewListOf(list)}
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -99,12 +88,42 @@ Return ONLY valid JSON with this exact structure:
 
 Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (40-59), or "likely_genuine" (60-100).`;
 
-        const parsed = await callClaudeWithRetry({
+        // Speed (2026-10-19): each review is judged on its own, so they are
+        // scored two at a time in parallel — one 6-review call took ~20s.
+        const parsed = await scoreAll(reviews, (list) => callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 8000, // per-review array — scales with review count; sized for large imports/pastes to avoid mid-array truncation (the import->submit 500)
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-          messages: [{ role: 'user', content: userPrompt }],
-        }, { label: 'fake-review-detective' });
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(body.userLocale, body.userCurrency, body.userRegion),
+          messages: [{ role: 'user', content: userPromptOf(list) }],
+        }, { label: 'fake-review-detective' }));
+        return parsed;
+}
+
+// Reviews are judged one by one, so they are scored two at a time in parallel
+// and merged back in order (2026-10-19: one 6-review call took ~20s).
+async function scoreAll(reviews, run) {
+  const chunks = [];
+  for (let i = 0; i < reviews.length; i += 2) chunks.push(reviews.slice(i, i + 2));
+  const outs = await Promise.all(chunks.map(run));
+  const scores = outs.flatMap(o => (Array.isArray(o?.scores) ? o.scores : [])).sort((x, y) => x.index - y.index);
+  if (!scores.length) throw new Error('no scores');
+  return { scores };
+}
+
+router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { action } = req.body;
+
+  try {
+    switch (action) {
+
+      // ════════════════════════════════════════════════════════
+      // ACTION: SCORE — per-review authenticity scoring
+      // ════════════════════════════════════════════════════════
+      case 'score': {
+        if (!req.body.reviews || !req.body.reviews.length) {
+          return res.status(400).json({ error: 'No reviews provided' });
+        }
+        const parsed = await scoreReviews(req.body);
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
@@ -117,15 +136,23 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
       // ACTION: ANALYZE — cross-review pattern analysis + playbook
       // ════════════════════════════════════════════════════════
       case 'analyze': {
-        const { reviews, scores, stats, category, decision, userLanguage } = req.body;
+        const { reviews, stats, category, decision, userLanguage } = req.body;
 
-        if (!reviews || !scores) {
+        if (!reviews || !reviews.length) {
           return res.status(400).json({ error: 'Reviews and scores are required' });
         }
+        // Speed (2026-10-19): the page used to call score, wait for it and its
+        // check (~36s, nothing on screen), then call analyze. Sent without
+        // scores, analyze scores the reviews itself as its first part — the
+        // per-review cards show, then the verdict built on them — and one
+        // check reads both together after display.
+        const given = Array.isArray(req.body.scores) ? { scores: req.body.scores } : null;
+        const scoresP = given ? Promise.resolve(given) : scoreReviews(req.body);
+        scoresP.catch(() => {});
 
         const systemPrompt = `You are a review fraud analyst. You've received individual review scores and pre-computed statistics. Your job is to analyze PATTERNS across reviews and deliver a final assessment. ${NO_QUOTE_RULE}`;
 
-        const scoreSummary = scores.map(s =>
+        const scoreSummaryOf = (scores) => scores.map(s =>
           `Review #${s.index}: score=${s.authenticity_score}, verdict=${s.verdict}, flags=[${(s.red_flags || []).join('; ')}]`
         ).join('\n');
 
@@ -133,7 +160,7 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
           `#${r.index}: ${r.starRating || '?'}★ | ${r.isVerified ? 'Verified' : 'Unverified'} | ${r.daysAgo !== null ? r.daysAgo + 'd ago' : '?'} | ${r.wordCount}w | "${r.rawText.slice(0, 120)}${r.rawText.length > 120 ? '...' : ''}"`
         ).join('\n');
 
-        const userPrompt = `PRODUCT CATEGORY: ${category || 'not given — work it out from the reviews themselves'}
+        const promptOf = (scores) => `PRODUCT CATEGORY: ${category || 'not given — work it out from the reviews themselves'}
 WHAT THE READER IS TRYING TO DECIDE: ${decision || 'not stated'}
 
 PRE-COMPUTED STATS:
@@ -144,7 +171,7 @@ PRE-COMPUTED STATS:
 - Generic praise: ${stats.genericPraiseCount}, Specific details: ${stats.specificDetailCount}
 
 PER-REVIEW SCORES (from prior analysis):
-${scoreSummary}
+${scoreSummaryOf(scores)}
 
 REVIEW TEXTS:
 ${reviewSummary}
@@ -219,12 +246,15 @@ EXACTLY TWO tactics in playbook.tactics_detected — the two that show up most c
         const PLAN = ['quick_verdict', 'manipulation_detected', 'purchase_recommendation'];
         return await answer(req, res, {
           label: 'fake-review-detective',
-          parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'fake-review-detective-2'), [
-            ['genuine_consensus', 'sentiment_trajectory', 'category_comparison'],
-            ['playbook'],
-          ], (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `fake-review-detective-2-${i + 2}`)),
+          parts: [
+            ...(given ? [] : [{ required: true, run: () => scoresP, apply: (d, o) => { d.scores = o.scores; } }]),
+            ...planFirst(PLAN, async () => ask(onlyKeys(promptOf((await scoresP).scores), PLAN), 'fake-review-detective-2'), [
+              ['genuine_consensus', 'sentiment_trajectory', 'category_comparison'],
+              ['playbook'],
+            ], async (keys, i, plan) => ask(onlyKeys(promptOf((await scoresP).scores), keys) + planNote(plan, PLAN), `fake-review-detective-2-${i + 2}`)),
+          ],
           finish: d => structuredClone(d),
-          ready: d => Boolean(d.quick_verdict),
+          ready: d => Boolean(d.quick_verdict || d.scores?.length),
           complete: d => Boolean(d.quick_verdict),
           // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
           check: d => checkConsistency(d, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage }),
