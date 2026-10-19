@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useReducer, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { getToolById } from '../data/tools';
@@ -203,7 +204,7 @@ const CONVINCE_EXAMPLES = [
   { product: 'A season ticket', direction: 'against', context: 'I went to 9 of 19 home games last year on individual tickets.' },
 ];
 const BuyWise = ({ tool }) => {
-  const { callToolEndpoint, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -267,6 +268,7 @@ const BuyWise = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   // ── State: Views ──
   const [view, setView] = useState('form'); // form | results | walkthrough | sessionHistory | budget | calendar
   const [walkStep, setWalkStep] = useState(0);
@@ -447,13 +449,15 @@ const BuyWise = ({ tool }) => {
   // ── Build full copy text — assigned after useCallbacks below ──
 
   // ── Scroll to results ──
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => {
       revealSection(resultsRef.current);
     }, 100);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   // ── Keyboard shortcut (Ctrl/Cmd+Enter) ──
   useEffect(() => {
@@ -554,11 +558,17 @@ const BuyWise = ({ tool }) => {
     };
 
     // Balanced fan-out: a tiny decision pre-pass locks the verdict, then three
-    // weighted groups generate concurrently and merge into one response — much
-    // faster than one big call. On ANY failure, fall back to the single-shot
-    // /buy-wise call so the experience degrades to today's behaviour.
+    // weighted groups generate concurrently. Progressive (2026-10-18): the
+    // verdict shows as soon as it is decided and each group fills in as it
+    // lands; the number check runs after and the note says so. On ANY failure,
+    // fall back to the single-shot /buy-wise call.
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('buy-wise/fast', payload);
+      const data = await callToolEndpointProgressive('buy-wise/fast', payload, {
+        onDraft: d => { setResults(d); setView('results'); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+      });
+      if (data === null) return; // replaced by a newer run
       if (!data || !data.verdict) throw new Error('fast-empty');
       setResults(data);
       setView('results');
@@ -568,6 +578,7 @@ const BuyWise = ({ tool }) => {
       // fall through to the single-shot fallback below
     }
 
+    setCheckStatus(null);
     try {
       const data = await callToolEndpoint('buy-wise', payload);
       setResults(data);
@@ -576,7 +587,7 @@ const BuyWise = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('bw_err_analysis'));
     }
-  }, [product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, showCompare, comparisons, callToolEndpoint, setResults, setSessionHistory, userLanguage, userLocale, userCurrency, userRegion, t]);
+  }, [product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, showCompare, comparisons, callToolEndpoint, callToolEndpointProgressive, cancelProgressive, setResults, setSessionHistory, userLanguage, userLocale, userCurrency, userRegion, t]);
 
   // ── API: Follow-up ──
   const askFollowup = useCallback(async (question) => {
@@ -1099,6 +1110,7 @@ const BuyWise = ({ tool }) => {
 
     return (
       <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+        <CheckNote status={checkStatus} className={c.textMuted} />
         {/* Action bar */}
         <div className="flex items-center justify-end flex-wrap gap-2">
           <div className="flex gap-2 flex-wrap">

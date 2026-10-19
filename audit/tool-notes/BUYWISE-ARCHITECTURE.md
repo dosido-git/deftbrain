@@ -31,7 +31,7 @@ Treat this file as the guardrail.
   CHALLENGE THE PREMISE, ESTIMATES ARE ESTIMATES, **NO INVENTED LIMITS**
   (don't fabricate a budget/ceiling the user never gave), **FINANCING
   REALITY** (dealer reserve can make in-house financing discount *more*).
-- Frontend (`src/tools/BuyWise.js`) calls `/buy-wise/fast` as plain JSON.
+- Frontend (`src/tools/BuyWise.js`) calls `/buy-wise/fast` progressively (`callToolEndpointProgressive`), falling back to `/buy-wise` on any failure.
 
 ## Why these choices (do not silently reverse)
 
@@ -45,9 +45,18 @@ Treat this file as the guardrail.
   (e.g. a used-BMW price range that *contained* the real street price where
   Sonnet's ran ~$8K high), and in testing it was also *faster*. Worth the
   ~1.7× token cost. Don't downgrade to Sonnet without re-testing quality.
-- **No SSE streaming** — an earlier `/buy-wise/stream` (SSE, panels popping
-  in) was removed. It only improved *perceived* latency and added a frontend
-  reader + spinner for no real wall-clock gain. Don't reintroduce it.
+- **Progressive since 2026-10-18 (owner's call)** — `/buy-wise/fast` now
+  answers through `lib/progressive.js`: the decision pre-pass (verdict,
+  badges, `interpreted_as`) shows as soon as it lands (~7s after the price
+  lookup), the three groups fill in as each finishes, and the number check
+  runs after display under the page's "Double-checking…" note. Wall-clock is
+  unchanged (~75s); the reader stops staring at a spinner. The earlier
+  `/buy-wise/stream` was removed in 2026-07 for adding perceived speed only;
+  the owner chose perceived speed once the whole site worked this way.
+  Measured the same day: six writers instead of three cut the slowest writer
+  48s → 36s but cost ~$1 more per run (smaller sections ran longer in total),
+  and Sonnet is *slower* than Opus 4.8 here (~47 vs ~65 tokens/s) — neither
+  was kept.
 
 ## Grounding (web search) — TRIED AND REJECTED
 
