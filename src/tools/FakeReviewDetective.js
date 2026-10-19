@@ -321,35 +321,44 @@ const FakeReviewDetective = ({ tool }) => {
   const toggleCard = useCallback((idx) => setExpandedCards(prev => ({ ...prev, [idx]: !prev[idx] })), []);
 
 
-  // ─── URL EXTRACTION ───
-  const extractFromUrl = useCallback(async () => {
-    const url = productUrl.trim();
-    if (!url || !/^https?:\/\/.+/i.test(url)) { setError(t('frd_err_url')); return; }
-    setError(''); setPhase('extracting'); setScoreProgress(t('frd_fetching'));
+  // ─── IMPORT: a link, or a whole pasted page ───
+  // Returns the reviews in the ⭐ format the splitter reads, or null with the
+  // reason shown. Big retailers will not open their review pages to a server
+  // (sign-in walls, bot checks), so every failure ends in the same way out:
+  // copy the whole page and paste it, which this also handles.
+  const IMPORT_ERRORS = { signin: 'frd_err_signin', blocked: 'frd_err_blocked', none: 'frd_err_none', none_pasted: 'frd_err_none_pasted' };
+  const importReviews = useCallback(async ({ url, pageText }) => {
+    setError(''); setPhase('extracting'); setScoreProgress(url ? t('frd_fetching') : t('frd_picking_out'));
     try {
-      const data = await callToolEndpoint('fake-review-detective', { action: 'extract', url, userLocale, userCurrency, userRegion });
-      if (!data.reviews?.trim()) { setError(data.message || t('frd_err_no_reviews')); setPhase('input'); return; }
-      setReviewText(prev => prev ? prev + '\n\n' + data.reviews : data.reviews);
+      const data = await callToolEndpoint('fake-review-detective', { action: 'extract', ...(url ? { url } : { pageText }), userLocale, userCurrency, userRegion });
+      if (!data.reviews?.trim()) {
+        setError(t(IMPORT_ERRORS[data.code] || 'frd_err_none', { site: data.site || '' }));
+        setPhase('input'); setScoreProgress('');
+        if (url) document.getElementById('frd-reviews')?.focus();
+        return null;
+      }
+      setReviewText(data.reviews);
       if (data.productName) setProductName(data.productName);
       if (data.category && CATEGORIES.includes(data.category)) setCategory(data.category);
       // Auto-detect source from URL
-      if (!currentSource) {
+      if (url && !currentSource) {
         if (/amazon\./i.test(url)) setCurrentSource('Amazon');
         else if (/bestbuy\./i.test(url)) setCurrentSource('Best Buy');
         else if (/walmart\./i.test(url)) setCurrentSource('Walmart');
         else if (/target\./i.test(url)) setCurrentSource('Target');
         else if (/reddit\./i.test(url)) setCurrentSource('Reddit');
       }
-      setPhase('input'); setScoreProgress('');
-    } catch (err) { setError(err.message || t('frd_err_extract')); setPhase('input'); }
-  }, [productUrl, currentSource, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+      return data.reviews;
+    } catch (err) { setError(err.message || t('frd_err_extract')); setPhase('input'); setScoreProgress(''); return null; }
+  }, [currentSource, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   // ─── MAIN ANALYSIS ───
-  const runAnalysis = useCallback(async () => {
-    if (!reviewText.trim() || reviewText.trim().length < 100) { setError(t('frd_err_min_chars')); return; }
+  const runAnalysis = useCallback(async (override) => {
+    const text = typeof override === 'string' ? override : reviewText;
+    if (!text.trim() || text.trim().length < 100) { setError(t('frd_err_min_chars')); return; }
     setError(''); setPhase('parsing'); setReviewScores(null); setAnalysis(null); setExpandedCards({}); setShowAllReviews(false);
 
-    const chunks = splitIntoReviews(reviewText);
+    const chunks = splitIntoReviews(text);
     const reviews = chunks.map((ch, i) => parseReview(ch, i));
     const aggStats = computeAggregateStats(reviews);
     setParsedReviews(reviews); setStats(aggStats);
@@ -393,10 +402,25 @@ const FakeReviewDetective = ({ tool }) => {
         realRating: ad.genuine_consensus?.real_rating, manipulationType: ad.manipulation_detected?.type,
       };
       setSavedAnalyses(prev => [snap, ...prev].slice(0, 6));
-      if (currentSource) setSourceAnalyses(prev => [{ ...snap, sourceName: currentSource, preview: (currentSource || reviewText || '').slice(0, 40) }, ...prev].slice(0, 6));
+      if (currentSource) setSourceAnalyses(prev => [{ ...snap, sourceName: currentSource, preview: (currentSource || text || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(t('frd_err_analysis') + (err.message || '')); }
     setPhase('done');
   }, [reviewText, category, decision, productUrl, currentSource, callToolEndpoint, setSavedAnalyses, setSourceAnalyses, userLocale, userCurrency, userRegion, t]);
+
+  // One button for every way in: pasted reviews go straight to the analysis;
+  // a link, or a whole copied page (long, and not already one review per
+  // star line), has its reviews picked out first.
+  const handleDetect = useCallback(async () => {
+    const pasted = reviewText.trim(), url = productUrl.trim();
+    let text = pasted;
+    if (!pasted && url) {
+      if (!/^https?:\/\/.+/i.test(url)) { setError(t('frd_err_url')); return; }
+      text = await importReviews({ url });
+    } else if (pasted.length > 1500 && !/^\s*[⭐★]/m.test(pasted)) {
+      text = await importReviews({ pageText: pasted });
+    }
+    if (text) runAnalysis(text);
+  }, [reviewText, productUrl, importReviews, runAnalysis, t]);
 
   // ─── FINGERPRINT ───
 
@@ -464,10 +488,10 @@ const FakeReviewDetective = ({ tool }) => {
 
   const visible = showAllReviews ? sorted : sorted.slice(0, 5);
   const isRunning = ['extracting', 'parsing', 'scoring', 'analyzing'].includes(phase);
-  const canAnalyze = reviewText.trim().length >= 100 && !isRunning;
+  const canAnalyze = (reviewText.trim().length >= 100 || (!reviewText.trim() && /^https?:\/\/.+/i.test(productUrl.trim()))) && !isRunning;
 
   // ── Ref assignments (after isRunning is declared — avoids TDZ) ──
-  runAnalysisRef.current = runAnalysis;
+  runAnalysisRef.current = handleDetect;
   canAnalysisRef.current = canAnalyze;
   const confidence = stats ? sampleConfidence(stats.totalReviews) : null;
 
@@ -537,6 +561,17 @@ const FakeReviewDetective = ({ tool }) => {
         </div>
       )}
 
+      {/* LINK — the most likely thing a visitor has, so it comes first. */}
+      <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
+        <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-base font-bold ${c.text}`}>{t('frd_link_title')}</h3></div>
+        <div className="flex gap-2">
+          <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
+            <label htmlFor="frd-url" className="sr-only">{t('frd_url_a11y')}</label>
+            <input id="frd-url" type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
+        </div>
+        <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>{t('frd_link_note')}</p>
+      </div>
+
       {/* What are you deciding? — the question the visitor actually arrived
           with. It takes the slot the category selector used to occupy; the
           category is now inferred from the reviews rather than asked for. */}
@@ -570,7 +605,7 @@ const FakeReviewDetective = ({ tool }) => {
       <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
         <div className="flex items-center gap-3 mb-4">
           <div className={`p-2.5 rounded-lg ${isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]'}`}><span className="text-xl">🔍</span></div>
-          <div className="flex-1"><h2 className={`text-lg font-bold ${c.text}`}>{t('frd_paste_title')}</h2><p className={`text-[13px] ${c.textMuteded}`}>{t('frd_paste_sub')}</p></div>
+          <div className="flex-1"><h2 className={`text-lg font-bold ${c.text}`}>{t('frd_paste_title2')}</h2><p className={`text-[13px] ${c.textMuteded}`}>{t('frd_paste_sub2')}</p></div>
         </div>
 
         <div className="space-y-4">
@@ -578,13 +613,13 @@ const FakeReviewDetective = ({ tool }) => {
             <div className="flex items-center justify-between mb-1.5">
               <label className={`text-sm font-semibold ${c.textSecondary}`}>{t('frd_product_reviews')}</label>
             </div>
-            <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder={t('frd_review_ph')} className={`w-full p-4 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-sm`} rows={8} />
+            <textarea id="frd-reviews" value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder={t('frd_review_ph')} className={`w-full p-4 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-sm`} rows={8} />
             <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('frd_chars_note', { count: reviewText.length })}</p>
           </div>
 
 
           <div className="flex gap-3">
-            <button onClick={runAnalysis} disabled={!canAnalyze} title={t('frd_cmd_enter')} className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
+            <button onClick={handleDetect} disabled={!canAnalyze} title={t('frd_cmd_enter')} className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
               {isRunning ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span><span className="text-sm">{scoreProgress || t('frd_processing')}</span></> : <><span className="text-xl">{tool?.icon ?? '🔍'}</span> {t('frd_detect')}</>}
               {!isRunning && (
                 <kbd aria-hidden="true"
@@ -606,18 +641,6 @@ const FakeReviewDetective = ({ tool }) => {
           <div><p className="text-xs font-bold">{t('frd_sample')} {t(confidence.labelKey, { count: confidence.count })}</p><p className={`text-xs ${c.textSecondary}`}>{t(confidence.noteKey, { count: confidence.count })}</p></div>
         </div>
       )}
-
-      {/* URL EXTRACTION */}
-      <div data-print-form {...(analysis ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
-        <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-base font-bold ${c.text}`}>{t('frd_import_title2')}</h3><span className={`text-xs font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{t('frd_optional')}</span></div>
-        <div className="flex gap-2">
-          <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
-            <label htmlFor="frd-url" className="sr-only">{t('frd_url_a11y')}</label>
-            <input id="frd-url" type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
-          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSecondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🔍'}</span> ...</> : <><span className="text-xl">{tool?.icon ?? '🔍'}</span> {t('frd_extract')}</>}</button>
-        </div>
-        <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>{t('frd_url_note')}</p>
-      </div>
 
       {/* Public product demonstration. Content is shared with the prerenderer
           via tools.js. Placed at the bottom of the form (after everything

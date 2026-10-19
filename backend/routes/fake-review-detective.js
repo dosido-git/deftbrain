@@ -303,66 +303,91 @@ Return ONLY valid JSON:
       }
 
       // ════════════════════════════════════════════════════════
-      // ACTION: EXTRACT — fetch URL and extract reviews via AI
+      // ACTION: EXTRACT — pull the reviews out of a page, fetched from a URL
+      // or pasted whole by the visitor
       // ════════════════════════════════════════════════════════
+      // Big retailers will not hand their review pages to a server: Amazon
+      // sends anyone not signed in to a sign-in page, others answer with a bot
+      // check. We do not try to get around either. The visitor can see the
+      // page, so the way through is theirs: copy the whole page and paste it
+      // (pageText), and this pulls the reviews out of the clutter. Failures
+      // come back as a `code` the page turns into the right instruction.
       case 'extract': {
-        const { url, userLanguage } = req.body;
+        const { url, pageText, userLanguage } = req.body;
+        const fromPaste = typeof pageText === 'string' && pageText.trim().length > 0;
 
-        if (!url || !url.trim()) {
+        if (!fromPaste && (!url || !url.trim())) {
           return res.status(400).json({ error: 'URL is required' });
         }
 
-        let parsedUrl;
-        try {
-          parsedUrl = await assertPublicUrl(url.trim());
-        } catch (e) {
-          return res.status(400).json({ error: /not allowed/.test(e.message) ? 'That URL is not allowed.' : 'Please enter a valid public https:// URL' });
-        }
+        let html = '';
+        if (fromPaste) {
+          html = pageText.slice(0, 200_000).replace(/</g, ' ');
+        } else {
+          let parsedUrl;
+          try {
+            parsedUrl = await assertPublicUrl(url.trim());
+          } catch (e) {
+            return res.status(400).json({ error: /not allowed/.test(e.message) ? 'That URL is not allowed.' : 'Please enter a valid public https:// URL' });
+          }
 
-        let html;
-        try {
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 15000);
-          // redirect: 'manual' — follow at most a few hops, re-validating each
-          // target against the SSRF guard (a public URL can 302 to an internal one).
-          let current = parsedUrl.href, response = null;
-          for (let hop = 0; hop < 4; hop++) {
-            response = await fetch(current, {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-              },
-              signal: controller.signal, redirect: 'manual',
-            });
-            if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
-              current = new URL(response.headers.get('location'), current).href;
-              await assertPublicUrl(current); // throws → caught below
-              continue;
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 15000);
+            // redirect: 'manual' — follow at most a few hops, re-validating each
+            // target against the SSRF guard (a public URL can 302 to an internal one).
+            let current = parsedUrl.href, response = null;
+            for (let hop = 0; hop < 4; hop++) {
+              response = await fetch(current, {
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                  'Accept-Language': 'en-US,en;q=0.9',
+                },
+                signal: controller.signal, redirect: 'manual',
+              });
+              if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
+                current = new URL(response.headers.get('location'), current).href;
+                await assertPublicUrl(current); // throws → caught below
+                continue;
+              }
+              break;
             }
-            break;
-          }
-          clearTimeout(timeout);
-          if (!response.ok) throw new Error(`Page returned ${response.status} ${response.statusText}`);
-          // Cap body read so a huge/streaming response can't exhaust memory.
-          const reader = response.body?.getReader?.();
-          if (reader) {
-            const chunks = []; let total = 0;
-            for (;;) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              total += value.length;
-              if (total > 3_000_000) { reader.cancel(); break; } // 3MB cap
-              chunks.push(value);
+            clearTimeout(timeout);
+            if (/\/ap\/signin|\/ax\/claim|\/login|\/signin/i.test(current)) {
+              return res.json({ reviews: '', code: 'signin', site: new URL(current).hostname.replace(/^www\./, '') });
             }
-            html = Buffer.concat(chunks).toString('utf8');
-          } else {
-            html = (await response.text()).slice(0, 3_000_000);
+            // Amazon shows reviews only to signed-in shoppers and answers a
+            // server with a sign-in redirect or a bare 404/503.
+            if (!response.ok && /(^|\.)amazon\./i.test(new URL(current).hostname)) {
+              return res.json({ reviews: '', code: 'signin', site: 'Amazon' });
+            }
+            if (response.status === 403 || response.status === 429) return res.json({ reviews: '', code: 'blocked' });
+            if (!response.ok) throw new Error(`Page returned ${response.status} ${response.statusText}`);
+            // Cap body read so a huge/streaming response can't exhaust memory.
+            const reader = response.body?.getReader?.();
+            if (reader) {
+              const chunks = []; let total = 0;
+              for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                total += value.length;
+                if (total > 3_000_000) { reader.cancel(); break; } // 3MB cap
+                chunks.push(value);
+              }
+              html = Buffer.concat(chunks).toString('utf8');
+            } else {
+              html = (await response.text()).slice(0, 3_000_000);
+            }
+          } catch (fetchErr) {
+            if (/not allowed/.test(fetchErr.message)) return res.status(400).json({ error: 'That URL is not allowed.' });
+            if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Page took too long (15s timeout)' });
+            return res.json({ reviews: '', code: 'blocked' });
           }
-        } catch (fetchErr) {
-          if (/not allowed/.test(fetchErr.message)) return res.status(400).json({ error: 'That URL is not allowed.' });
-          if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Page took too long (15s timeout)' });
-          return res.status(502).json({ error: `Couldn't fetch: ${fetchErr.message}. Site may block automated requests.` });
+          // A bot check comes back as an ordinary 200 page.
+          if (/<title>[^<]*(robot or human|are you a human|access denied|attention required|just a moment)/i.test(html) || (/captcha/i.test(html.slice(0, 20000)) && !/review/i.test(html.slice(0, 200000).replace(/<script[\s\S]*?<\/script>/gi, '')))) {
+            return res.json({ reviews: '', code: 'blocked' });
+          }
         }
 
         // ── Step 1: Try JSON-LD structured data (richest source on many retail sites) ──
@@ -456,7 +481,7 @@ FORMAT RULES FOR EACH REVIEW BLOCK:
           try {
             message = await anthropic.messages.create({
           model: MODELS.SMART,
-          max_tokens: 1250,
+          max_tokens: 3000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });
@@ -470,8 +495,7 @@ FORMAT RULES FOR EACH REVIEW BLOCK:
         const text = message.content.find(b => b.type === 'text')?.text || '';
 
         if (text.includes('NO_REVIEWS_FOUND')) {
-          return res.json({ reviews: '', productName: null, category: null, reviewCount: 0,
-            message: 'No reviews found in the page source. Amazon and many retailers load reviews via JavaScript after the page loads — the server can only see the initial HTML. Copy and paste the reviews directly for reliable results.' });
+          return res.json({ reviews: '', productName: null, category: null, reviewCount: 0, code: fromPaste ? 'none_pasted' : 'none' });
         }
 
         const productMatch = text.match(/^PRODUCT:\s*(.+)$/m);
@@ -485,8 +509,7 @@ FORMAT RULES FOR EACH REVIEW BLOCK:
 
         // If no ⭐-formatted reviews survived, treat as no reviews found regardless of model wording
         if (!reviewText.includes('⭐')) {
-          return res.json({ reviews: '', productName: null, category: null, reviewCount: 0,
-            message: 'No reviews found in the page source. Reviews on this page likely load dynamically via JavaScript and aren\'t present in the initial HTML the server receives — copy and paste the reviews directly for reliable results.' });
+          return res.json({ reviews: '', productName: null, category: null, reviewCount: 0, code: fromPaste ? 'none_pasted' : 'none' });
         }
 
         return res.json({
