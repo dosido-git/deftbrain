@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { answer } = require('../lib/progressive');
+const { answer, noOverlap } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 
@@ -410,145 +410,166 @@ ${DECISION_SCHEMA}`, 'decision', 800);
     })();
     decisionP.catch(err => console.error('[buy-wise/fast] decision pre-pass failed:', err.message));
 
+    // Everything the groups need is built from the decision. The body keeps
+    // its original indentation: most of it is prompt text inside template
+    // literals, and re-indenting it would change what the model reads.
     const buildGroups = (decision) => {
-      // Pinning the resolved product here is what stops the three groups from each
-      // picking a different reading of an ambiguous name ("Canyon Bikestand" →
-      // repair stand in one panel, storage rack in another).
-      // Free second look: the pre-pass just spent 10-20s, and a search that
-      // missed the cold window has often landed inside it. The groups carry
-      // every volatile claim, so it is worth re-reading the cache before they
-      // are built. No wait, no cost.
-      const groundedForGroups = grounded || renderFactsBlock(groundedData(buyWiseFactsKey(factsArgs)));
+    // Pinning the resolved product here is what stops the three groups from each
+    // picking a different reading of an ambiguous name ("Canyon Bikestand" →
+    // repair stand in one panel, storage rack in another).
+    // Free second look: the pre-pass just spent 10-20s, and a search that
+    // missed the cold window has often landed inside it. The groups carry
+    // every volatile claim, so it is worth re-reading the cache before they
+    // are built. No wait, no cost.
+    const groundedForGroups = grounded || renderFactsBlock(groundedData(buyWiseFactsKey(factsArgs)));
 
-      const stance = `LOCKED DECISION — every section below MUST stay consistent with this; do NOT contradict it:
-  - Product being analyzed: ${decision.interpreted_as || product}
-  - Verdict: ${decision.verdict}
-  - Fair-price stance: ${decision.fair_price_badge}
-  - Timing stance: ${timingToday ? 'N/A (needed today)' : decision.timing_badge}`;
+    const stance = `LOCKED DECISION — every section below MUST stay consistent with this; do NOT contradict it:
+- Product being analyzed: ${decision.interpreted_as || product}
+- Verdict: ${decision.verdict}
+- Fair-price stance: ${decision.fair_price_badge}
+- Timing stance: ${timingToday ? 'N/A (needed today)' : decision.timing_badge}`;
 
-      const groupPrompt = (schema) => `${contextHeader}${groundedForGroups}
+    // T11 (audit/DEFECT-TYPES.md): the groups write apart, so each was
+    // re-telling the same recall and re-arguing the same price — four times
+    // above the fold (owner, 2026-10-18). Each group is told what the others
+    // carry (noOverlap), and the two topics that kept coming back get one
+    // owner each. Group schemas are read at call time, so this is a function.
+    const keysOf = (schema) => (schema.match(/^ {2}"([a-z_]+)":/gm) || []).map(k => k.trim().slice(1, -2));
+    const OWNERS = `ONE OWNER PER TOPIC — the reader sees every section on one page:
+- A recall, safety notice, discontinuation or supersession: say it ONCE — in verdict_summary if it changes the verdict (already written above), otherwise in "noticed". Every other section mentions it in at most a few words, or not at all. The verified-facts panel already lists it.
+- Whether the price is fair, and what the market price is: fair_price owns it. Other sections (bottom_line, total_cost, cheaper_alternative, timing) may name the conclusion in a clause but never repeat the comparison or the figures.
+- Whether a newer model exists or this one is superseded or discontinued: timing owns it (noticed, if timing is null). Elsewhere, a few words at most.
+- verify_before_buying, noticed and watch_out are three different jobs, all yours in one pass: verify_before_buying = checks they can settle before paying; noticed = a cost or risk they did not ask about; watch_out = surprises after they own it. One point goes in ONE of the three lists, never two.
+- verify_before_buying, noticed, watch_out and bottom_line add what is NOT already on the page. A check the verified block already settled is not a check; a gotcha already told above is not a gotcha. Fewer entries beat repeated ones.
 
-  ${stance}
+ALREADY ON THE PAGE, directly above every section — the reader has just read this, so never restate it; build on it:
+"${String(decision.verdict_summary || '').replace(/"/g, "'")}"`;
+    const groupPrompt = (schema, others) => `${contextHeader}${groundedForGroups}
 
-  Return ONLY valid JSON with EXACTLY these keys (set any that don't apply to null). No markdown, no preamble:
+${stance}
 
-  ${schema}`;
+${OWNERS}${noOverlap(others.flatMap(keysOf))}
 
-      // ── 2a) GROUP A — presentation (verdict-adjacent panels) ──
-      const GROUP_A = `{${isImpulse ? `
-    "impulse_check": {
-      "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific. — one sentence",
-      "what_else_could_you_do": "What else could this money buy? Be specific and vivid. — one sentence",
-      "already_own_something": "Could something they likely already own do this job? — one sentence",
-      "wait_recommendation": "Specific recommendation with timeframe. — one sentence"
-    },` : `
-    "impulse_check": null,`}${isGift ? `
-    "gift_analysis": {
-      "wow_factor": "1-10 rating with explanation. How impressive is this as a gift? — one sentence",
-      "practical_vs_fun": "Is this a practical gift or a fun one? Which does the recipient likely prefer? — one sentence",
-      "perceived_value": "Will the recipient think this cost more or less than it did? — one sentence",
-      "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
-      "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
-      "risk_level": "Start with exactly LOW, MEDIUM or HIGH, then an em dash, then one short sentence on the risk they will not like it"
-    },` : `
-    "gift_analysis": null,`}
-    "fair_price": {
-      "verdict_badge": "${decision.fair_price_badge}",
-      "analysis": "Judge the price THEY gave. Where the verified block has a current price, compare theirs against it and name the source in the sentence. Where it does not, judge what the price buys — what drives cost in this category and what they get for it — and say outright that the current market price could not be verified today rather than implying you know it. — 1-2 sentences",
-      "typical_range": "If the verified block has a current price, this is that figure or range with its source domain in the text. If it does not, say plainly that the current price could not be verified today — do NOT substitute a description of market tiers, which reads as knowledge and is not. null when they gave no price and nothing was verified. — short",
-      "where_to_find_cheaper": "The route most likely to beat this price for THIS kind of product, and how to tell whether it did — the KIND of place and what a good price there would look like (manufacturer refurbished stock, open-box at a large retailer, the end-of-model-year window, an enthusiast marketplace). Never claim what any seller is charging right now. — one sentence"
-    },${compProducts.length > 0 ? `
-    "comparison": {
-      "winner": "Just the winning product name, or the words It depends",
-      "analysis": "Where these two actually differ in use — the design and specification choices that separate them. Compare the products, not their owners: no claims about how long people keep them, how many regret them, or what buyers report. — 1-2 sentences",
-      "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
-      "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
-    },` : ''}
-    "where_to_buy": [
-      {"platform": "A KIND of place to look for this product — the manufacturer direct, a specialist retailer for the category, a large general retailer, the manufacturer's refurbished outlet, the used market. A category of seller, never a brand name and never a marketplace you are vouching for. Nothing else.", "why": "What that channel is good for with this product and what to watch for there — the tradeoff, not an endorsement. Nothing else."}
+Return ONLY valid JSON with EXACTLY these keys (set any that don't apply to null). No markdown, no preamble:
+
+${schema}`;
+
+    // ── 2a) GROUP A — presentation (verdict-adjacent panels) ──
+    const GROUP_A = `{${isImpulse ? `
+  "impulse_check": {
+    "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific. — one sentence",
+    "what_else_could_you_do": "What else could this money buy? Be specific and vivid. — one sentence",
+    "already_own_something": "Could something they likely already own do this job? — one sentence",
+    "wait_recommendation": "Specific recommendation with timeframe. — one sentence"
+  },` : `
+  "impulse_check": null,`}${isGift ? `
+  "gift_analysis": {
+    "wow_factor": "1-10 rating with explanation. How impressive is this as a gift? — one sentence",
+    "practical_vs_fun": "Is this a practical gift or a fun one? Which does the recipient likely prefer? — one sentence",
+    "perceived_value": "Will the recipient think this cost more or less than it did? — one sentence",
+    "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
+    "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
+    "risk_level": "Start with exactly LOW, MEDIUM or HIGH, then an em dash, then one short sentence on the risk they will not like it"
+  },` : `
+  "gift_analysis": null,`}
+  "fair_price": {
+    "verdict_badge": "${decision.fair_price_badge}",
+    "analysis": "Judge the price THEY gave. Where the verified block has a current price, compare theirs against it and name the source in the sentence. Where it does not, judge what the price buys — what drives cost in this category and what they get for it — and say outright that the current market price could not be verified today rather than implying you know it. — 1-2 sentences",
+    "typical_range": "If the verified block has a current price, this is that figure or range with its source domain in the text. If it does not, say plainly that the current price could not be verified today — do NOT substitute a description of market tiers, which reads as knowledge and is not. null when they gave no price and nothing was verified. — short",
+    "where_to_find_cheaper": "The route most likely to beat this price for THIS kind of product, and how to tell whether it did — the KIND of place and what a good price there would look like (manufacturer refurbished stock, open-box at a large retailer, the end-of-model-year window, an enthusiast marketplace). Never claim what any seller is charging right now. — one sentence"
+  },${compProducts.length > 0 ? `
+  "comparison": {
+    "winner": "Just the winning product name, or the words It depends",
+    "analysis": "Where these two actually differ in use — the design and specification choices that separate them. Compare the products, not their owners: no claims about how long people keep them, how many regret them, or what buyers report. — 1-2 sentences",
+    "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
+    "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
+  },` : ''}
+  "where_to_buy": [
+    {"platform": "A KIND of place to look for this product — the manufacturer direct, a specialist retailer for the category, a large general retailer, the manufacturer's refurbished outlet, the used market. A category of seller, never a brand name and never a marketplace you are vouching for. Nothing else.", "why": "What that channel is good for with this product and what to watch for there — the tradeoff, not an endorsement. Nothing else."}
+  ],
+  "followup_questions": [
+    "2-3 natural follow-up questions the user might want answered, phrased as the user would ask them (e.g., 'Is the base model enough or should I upgrade?', 'What accessories are actually worth buying?')"
+  ],
+  "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
+}`;
+
+    // ── 2b) GROUP B — cost (the token-heavy money panels) ──
+    const GROUP_B = `{
+  "total_cost": {
+    "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
+    "breakdown": [
+      {"item": "Purchase price. Nothing else.", "cost": "The price THEY supplied, exactly. If they supplied none, say that it depends on what they pay — never fill in a figure."},
+      {"item": "Essential accessory/consumable. Nothing else.", "cost": "What this adds, at the coarsest honest resolution and marked as an estimate — 'roughly the price of the item again over five years', 'tens per year, not hundreds', 'a small one-off'. A ${sym} figure ONLY where it is a well-known fixed price. Never a made-up range that looks researched."},
+      {"item": "Maintenance or replacement part. Nothing else.", "cost": "Same rule: how often and roughly how much relative to the purchase, not a precise sum."}
     ],
-    "followup_questions": [
-      "2-3 natural follow-up questions the user might want answered, phrased as the user would ask them (e.g., 'Is the base model enough or should I upgrade?', 'What accessories are actually worth buying?')"
-    ],
-    "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
-  }`;
+    "year_1_total": "A total ONLY when the buyer supplied the purchase price AND the additions are well-known fixed costs. Adding estimates together produces a precise-looking number built on guesses, which is the most convincing wrong thing this tool can print — null is the right answer whenever any part of it was estimated.",
+    "year_5_total": "Same rule, and null far more often. A five-year total carried to the currency unit is arithmetic performed on assumptions about how they will use it.",
+    "price_per_use": null
+  },
+  "cheaper_alternative": {
+    "suggestion": "The cheaper CONFIGURATION or specification that does most of the same job — one motor instead of two, laminate instead of solid core, the previous generation, the smaller size. Say what to look for and roughly how much less it tends to be as a share of the price they gave ('typically around two thirds'). No invented currency ranges, and no named product you are effectively pricing. — one sentence",
+    "tradeoffs": "What you give up with the cheaper option. Be honest. — one sentence",
+    "refurbished_tip": "Whether this kind of product commonly turns up refurbished or open-box and what the saving tends to be relative to new, as a rough share and never a figure. What to check on a refurbished one matters more than the discount. null if not applicable. — one sentence"
+  },
+  "used_refurb_deep_dive": {
+    "viable": true,
+    "where_to_buy_used": ["The KINDS of channel a used or refurbished one turns up in for this product — the manufacturer's own certified-refurbished programme, retailer open-box, the general resale market — with what each is good and bad for. Channels, not brand-name marketplaces you would be vouching for."],
+    "what_to_inspect": ["What to check when buying used — product-specific"],
+    "typical_used_price": "How much less a used one usually goes for as a SHARE of new for this category — 'used ones typically go for roughly half of new' — never a currency figure, because that is a market reading you did not take. null if this category has no stable pattern.",
+    "risk_assessment": "What specifically can be wrong with a used one of THIS product and how visible it is on inspection — the failure, not a grade. Never score the risk ('low-risk', 'safe', 'risky'): you cannot see the unit, the seller or the price. Describe what they would be taking on and let them weigh it. — 1-2 sentences",
+    "used_protections": ["What to require of ANY seller before paying for a used one — the protections that make a used purchase safe for this product, phrased as conditions to insist on: a working return window, a serial number you can check against warranty status, proof of purchase date, in-person testing of the parts that fail first. Do not name or rate specific platforms or sellers: which ones are trustworthy this month is not something you know."]
+  },
+  "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
+    "analysis": "Compare buying outright vs subscribing vs renting using prices the user supplied. If none were supplied, compare the cost structure without inventing current prices and put live-price checks in verify_before_buying. — 1-2 sentences",
+    "breakeven": "At what point does buying become cheaper? — one sentence",
+    "recommendation": "Clear recommendation based on their context. — one sentence"
+  }`},
+  "quality_tier": {
+    "recommended_tier": "Budget | Mid-Range | Premium",
+    "analysis": "Is this a category where spending more actually matters? Be specific. — 1-2 sentences",
+    "spend_vs_save": "One sentence summary."
+  }
+}`;
 
-      // ── 2b) GROUP B — cost (the token-heavy money panels) ──
-      const GROUP_B = `{
-    "verify_before_buying": ["Two to four things to check before paying, each one a specific question with the answer that would change the decision — 'ask whether the warranty transfers to a second owner; if it does not, the used saving is smaller than it looks'. This is where anything you could not look up belongs: current price, stock, live promotions, a seller's terms. Turn each one into something they can settle in a minute. Never a vague 'do your research'."],
-    "noticed": [
-      {
-        "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
-        "tool": "Exactly one of these English identifiers, copied verbatim and never translated — each is followed by what it actually does, since guessing from the name alone produces wrong descriptions (e.g. QuoteCheck checks a REPAIR quote, not a purchase price): FakeReviewDetective (spots fake or manipulated product reviews) or MarkupDetective (checks whether a price is marked up over what the item actually costs) or UpsellShield (preps you to decline in-store upsells and add-ons) or BillRescue (finds errors or overcharges on a bill) or QuoteCheck (checks what a REPAIR quote for an appliance or vehicle actually includes and whether it's fair — not for a purchase price) or MoneyDiplomat (helps navigate a money conversation with another person) or Giftology (helps pick a gift for someone hard to shop for) or ContractDecoder (explains a contract or terms you're about to sign)",
-        "why": "One short sentence on what that tool would do about it, grounded only in the actual function named above — never guess a tool's job from its name"
-      }
-    ],
-    "total_cost": {
-      "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
-      "breakdown": [
-        {"item": "Purchase price. Nothing else.", "cost": "The price THEY supplied, exactly. If they supplied none, say that it depends on what they pay — never fill in a figure."},
-        {"item": "Essential accessory/consumable. Nothing else.", "cost": "What this adds, at the coarsest honest resolution and marked as an estimate — 'roughly the price of the item again over five years', 'tens per year, not hundreds', 'a small one-off'. A ${sym} figure ONLY where it is a well-known fixed price. Never a made-up range that looks researched."},
-        {"item": "Maintenance or replacement part. Nothing else.", "cost": "Same rule: how often and roughly how much relative to the purchase, not a precise sum."}
-      ],
-      "year_1_total": "A total ONLY when the buyer supplied the purchase price AND the additions are well-known fixed costs. Adding estimates together produces a precise-looking number built on guesses, which is the most convincing wrong thing this tool can print — null is the right answer whenever any part of it was estimated.",
-      "year_5_total": "Same rule, and null far more often. A five-year total carried to the currency unit is arithmetic performed on assumptions about how they will use it.",
-      "price_per_use": null
-    },
-    "cheaper_alternative": {
-      "suggestion": "The cheaper CONFIGURATION or specification that does most of the same job — one motor instead of two, laminate instead of solid core, the previous generation, the smaller size. Say what to look for and roughly how much less it tends to be as a share of the price they gave ('typically around two thirds'). No invented currency ranges, and no named product you are effectively pricing. — one sentence",
-      "tradeoffs": "What you give up with the cheaper option. Be honest. — one sentence",
-      "refurbished_tip": "Whether this kind of product commonly turns up refurbished or open-box and what the saving tends to be relative to new, as a rough share and never a figure. What to check on a refurbished one matters more than the discount. null if not applicable. — one sentence"
-    },
-    "used_refurb_deep_dive": {
-      "viable": true,
-      "where_to_buy_used": ["The KINDS of channel a used or refurbished one turns up in for this product — the manufacturer's own certified-refurbished programme, retailer open-box, the general resale market — with what each is good and bad for. Channels, not brand-name marketplaces you would be vouching for."],
-      "what_to_inspect": ["What to check when buying used — product-specific"],
-      "typical_used_price": "How much less a used one usually goes for as a SHARE of new for this category — 'used ones typically go for roughly half of new' — never a currency figure, because that is a market reading you did not take. null if this category has no stable pattern.",
-      "risk_assessment": "What specifically can be wrong with a used one of THIS product and how visible it is on inspection — the failure, not a grade. Never score the risk ('low-risk', 'safe', 'risky'): you cannot see the unit, the seller or the price. Describe what they would be taking on and let them weigh it. — 1-2 sentences",
-      "used_protections": ["What to require of ANY seller before paying for a used one — the protections that make a used purchase safe for this product, phrased as conditions to insist on: a working return window, a serial number you can check against warranty status, proof of purchase date, in-person testing of the parts that fail first. Do not name or rate specific platforms or sellers: which ones are trustworthy this month is not something you know."]
-    },
-    "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
-      "analysis": "Compare buying outright vs subscribing vs renting using prices the user supplied. If none were supplied, compare the cost structure without inventing current prices and put live-price checks in verify_before_buying. — 1-2 sentences",
-      "breakeven": "At what point does buying become cheaper? — one sentence",
-      "recommendation": "Clear recommendation based on their context. — one sentence"
-    }`},
-    "quality_tier": {
-      "recommended_tier": "Budget | Mid-Range | Premium",
-      "analysis": "Is this a category where spending more actually matters? Be specific. — 1-2 sentences",
-      "spend_vs_save": "One sentence summary."
+    // ── 2c) GROUP C — risk & timing ──
+    const GROUP_C = `{
+  "timing": ${timingToday ? 'null' : `{
+    "verdict_badge": "${decision.timing_badge}",
+    "analysis": "Answer from the verified block first. If it says the model is current, superseded or discontinued, that is the timing answer — say which, name the source, and say what it means for buying now. If the block is silent on it, say plainly that you could not verify whether a newer generation is close, and send it to verify_before_buying. Never predict a release, never assert that nothing is coming, and never offer a general observation about product cycles in place of the answer you did not get. — 1-2 sentences",
+    "next_sale": "A recurring, durable pattern only — the sale season this category actually follows, said as a pattern and never as a dated promise. null when you know of no reliable pattern, which is the honest answer more often than not. Never invent a date, never attach a discount figure. — one sentence",
+    "price_cycle_note": "Does this product have a known price cycle? — one sentence"
+  }`},
+  "warranty_returns": {
+    "typical_warranty": "What length of warranty is normal for this KIND of product, said as a norm and not as this product's terms — and that the actual cover is on the listing and worth reading. Warranty terms vary by country, by seller and by year; you are not reading theirs. — one sentence",
+    "extended_worth_it": "Whether an extended warranty tends to be worth it for this category and what would make it worth it here — the failure this product actually has, and whether the plan covers that failure. Frame as what to check in the terms, not as a verdict on a plan you have not read. — one sentence",
+    "return_tips": "What to establish about the return window before paying — length, who pays return shipping, whether opened items are accepted, what a restocking fee would be. Never rank named retailers on their return policies: those change and you are not reading them. — one sentence",
+    "credit_card_protection": "That some cards extend manufacturer warranties or add purchase protection, and that it is worth checking THEIR card's benefits guide before paying — stated as something to check, never as something their card does. — one sentence"
+  },
+  "regret_predictor": {
+    "common_regrets": "What tends to disappoint about this KIND of product — the limitation people run into once it is in use, described as a property of the thing. Never as a survey finding: no 'the most common regret is', no 'most buyers wish', no counts or rankings of what owners felt. — one sentence",
+    "usage_reality": "What this product needs from someone in order to keep earning its place — the effort, space, routine or habit it assumes. Frame it as what the thing demands, never as what people are observed to do with it or how many abandon it. — one sentence",
+    "avoid_regret_tip": "One specific thing to check or consider before buying. — one sentence"
+  },
+  "verify_before_buying": ["Two to four things to check before paying, each one a specific question with the answer that would change the decision — 'ask whether the warranty transfers to a second owner; if it does not, the used saving is smaller than it looks'. This is where anything you could not look up belongs: current price, stock, live promotions, a seller's terms. Turn each one into something they can settle in a minute. Never a vague 'do your research'."],
+  "noticed": [
+    {
+      "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated — each is followed by what it actually does, since guessing from the name alone produces wrong descriptions (e.g. QuoteCheck checks a REPAIR quote, not a purchase price): FakeReviewDetective (spots fake or manipulated product reviews) or MarkupDetective (checks whether a price is marked up over what the item actually costs) or UpsellShield (preps you to decline in-store upsells and add-ons) or BillRescue (finds errors or overcharges on a bill) or QuoteCheck (checks what a REPAIR quote for an appliance or vehicle actually includes and whether it's fair — not for a purchase price) or MoneyDiplomat (helps navigate a money conversation with another person) or Giftology (helps pick a gift for someone hard to shop for) or ContractDecoder (explains a contract or terms you're about to sign)",
+      "why": "One short sentence on what that tool would do about it, grounded only in the actual function named above — never guess a tool's job from its name"
     }
-  }`;
-
-      // ── 2c) GROUP C — risk & timing ──
-      const GROUP_C = `{
-    "timing": ${timingToday ? 'null' : `{
-      "verdict_badge": "${decision.timing_badge}",
-      "analysis": "Answer from the verified block first. If it says the model is current, superseded or discontinued, that is the timing answer — say which, name the source, and say what it means for buying now. If the block is silent on it, say plainly that you could not verify whether a newer generation is close, and send it to verify_before_buying. Never predict a release, never assert that nothing is coming, and never offer a general observation about product cycles in place of the answer you did not get. — 1-2 sentences",
-      "next_sale": "A recurring, durable pattern only — the sale season this category actually follows, said as a pattern and never as a dated promise. null when you know of no reliable pattern, which is the honest answer more often than not. Never invent a date, never attach a discount figure. — one sentence",
-      "price_cycle_note": "Does this product have a known price cycle? — one sentence"
-    }`},
-    "warranty_returns": {
-      "typical_warranty": "What length of warranty is normal for this KIND of product, said as a norm and not as this product's terms — and that the actual cover is on the listing and worth reading. Warranty terms vary by country, by seller and by year; you are not reading theirs. — one sentence",
-      "extended_worth_it": "Whether an extended warranty tends to be worth it for this category and what would make it worth it here — the failure this product actually has, and whether the plan covers that failure. Frame as what to check in the terms, not as a verdict on a plan you have not read. — one sentence",
-      "return_tips": "What to establish about the return window before paying — length, who pays return shipping, whether opened items are accepted, what a restocking fee would be. Never rank named retailers on their return policies: those change and you are not reading them. — one sentence",
-      "credit_card_protection": "That some cards extend manufacturer warranties or add purchase protection, and that it is worth checking THEIR card's benefits guide before paying — stated as something to check, never as something their card does. — one sentence"
-    },
-    "regret_predictor": {
-      "common_regrets": "What tends to disappoint about this KIND of product — the limitation people run into once it is in use, described as a property of the thing. Never as a survey finding: no 'the most common regret is', no 'most buyers wish', no counts or rankings of what owners felt. — one sentence",
-      "usage_reality": "What this product needs from someone in order to keep earning its place — the effort, space, routine or habit it assumes. Frame it as what the thing demands, never as what people are observed to do with it or how many abandon it. — one sentence",
-      "avoid_regret_tip": "One specific thing to check or consider before buying. — one sentence"
-    },
-    "watch_out": [
-      "2-4 specific gotchas, hidden costs, or things that commonly surprise buyers."
-    ],
-    "negotiation": ${`null unless haggling is realistic. If applicable: {
-      "context": "Is negotiation realistic here? What's the typical margin? — 1-2 sentences",
-      "script": "Exact words to say to negotiate. — 2-4 sentences",
-      "leverage_points": ["Specific leverage points"]
-    }`}
-  }`;
-      return { groundedForGroups, groupPrompt, GROUP_A, GROUP_B, GROUP_C };
+  ],
+  "watch_out": [
+    "2-4 specific gotchas, hidden costs, or things that commonly surprise buyers."
+  ],
+  "negotiation": ${`null unless haggling is realistic. If applicable: {
+    "context": "Is negotiation realistic here? What's the typical margin? — 1-2 sentences",
+    "script": "Exact words to say to negotiate. — 2-4 sentences",
+    "leverage_points": ["Specific leverage points"]
+  }`}
+}`;
+    return { groundedForGroups, groupPrompt, GROUP_A, GROUP_B, GROUP_C };
     };
+
     let groundedSeen = '';
     const verifiedFor = () => (groundedSeen ? (stripCites(groundedData(buyWiseFactsKey(factsArgs))) || null) : null);
     const groupsP = decisionP.then(dec => { const g = buildGroups(dec); groundedSeen = g.groundedForGroups; return g; });
@@ -556,7 +577,11 @@ ${DECISION_SCHEMA}`, 'decision', 800);
 
     // ── 3) FAN OUT (concurrent): each group shows as it lands ──
     const groupPart = (pick, tag) => ({
-      run: async () => { const g = await groupsP; return callJson(g.groupPrompt(g[pick]), tag, 4000); },
+      run: async () => {
+        const g = await groupsP;
+        const others = ['GROUP_A', 'GROUP_B', 'GROUP_C'].filter(k => k !== pick).map(k => g[k]);
+        return callJson(g.groupPrompt(g[pick], others), tag, 4000);
+      },
       apply: (d, out) => { if (out && typeof out === 'object') Object.assign(d, out); },
     });
     const DECISION_KEYS = ['verdict', 'verdict_emoji', 'verdict_summary', 'product_category', 'interpreted_as'];
