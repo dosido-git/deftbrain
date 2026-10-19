@@ -3066,7 +3066,7 @@ const BuyWise = ({ tool }) => {
       {view === 'haul' && renderHaul()}
       {view === 'convince' && renderConvince()}
       {view === 'calendar' && renderCalendar()}
-      {view === 'history' && renderHistory()}
+      {view === 'sessionHistory' && renderHistory()}
     </div>
   );
 };
