@@ -404,7 +404,7 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
 
 Make the CORE DECISION only — the verdict and the two badges. Be decisive. Return ONLY valid JSON, no markdown, no preamble:
 
-${DECISION_SCHEMA}`, 'decision', 800);
+${DECISION_SCHEMA}`, 'decision', 1600);
       if (!d || !d.verdict) throw Object.assign(new Error('no verdict'), { userMessage: 'Could not analyze this purchase. Please try again.' });
       return d;
     })();
