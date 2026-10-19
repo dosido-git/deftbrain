@@ -577,59 +577,82 @@ Return ONLY valid JSON:
 }
 Write "rule" as the exact English word equal, itemised or custom whatever language the rest is in.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // awkward part, how to raise it and the tip show first; the options
+    // (handed them) and next time are written alongside. Code still owns
+    // every amount (step 3, run on each draft); the number and consistency
+    // checks run after the answer is on screen.
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 2000,
       system: withLanguage(MONEY_DIPLOMAT_V2 + FAIRNESS_RULE + '\n\nYou split a bill from the figures supplied. Where several allocations are defensible you show them and name the assumption behind each. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatSplit' });
-
-    if (!parsed.options) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-
-    // ── Step 3: code owns every amount ──
-    const tipPct = Number(ledger?.tip_pct_stated) || Number(parsed.tip_recommendation?.percentage) || 0;
-    const fig = ledger ? computeSplit(ledger, tipPct) : null;
-    if (fig) {
-      for (const opt of parsed.options) {
-        const rule = String(opt.rule || '').toLowerCase();
-        const why = new Map((opt.breakdown || []).map(b => [String(b.person || '').trim().toLowerCase(), b.reasoning || '']));
-        if (rule === 'equal' || rule === 'itemised' || rule === 'itemized') {
-          const table = rule === 'equal' ? fig.equal : fig.itemised;
-          opt.breakdown = fig.payers.map(n => ({ person: n, amount: money(table[n]), reasoning: why.get(n.toLowerCase()) || '' }));
-        } else if (Array.isArray(opt.breakdown) && opt.breakdown.length) {
-          // custom: keep the model's proportions, make them add up to the real total
-          const raw = opt.breakdown.map(b => Math.max(0, Number(String(b.amount).replace(/[^\d.-]/g, '')) || 0));
-          const scaled = apportion(Math.round(fig.grand_total * 100), raw.some(x => x > 0) ? raw : raw.map(() => 1));
-          opt.breakdown = opt.breakdown.map((b, i) => ({ ...b, amount: money(scaled[i] / 100) }));
+      messages: [{ role: 'user', content }]
+    }, { label });
+    const PLAN = ['the_awkward_part', 'how_to_bring_it_up', 'tip_recommendation'];
+    const amounts = (draft) => {
+      const parsed = structuredClone(draft);
+      if (!Array.isArray(parsed.options)) return parsed;
+      // ── Step 3: code owns every amount ──
+      const tipPct = Number(ledger?.tip_pct_stated) || Number(parsed.tip_recommendation?.percentage) || 0;
+      const fig = ledger ? computeSplit(ledger, tipPct) : null;
+      if (fig) {
+        for (const opt of parsed.options) {
+          const rule = String(opt.rule || '').toLowerCase();
+          const why = new Map((opt.breakdown || []).map(b => [String(b.person || '').trim().toLowerCase(), b.reasoning || '']));
+          if (rule === 'equal' || rule === 'itemised' || rule === 'itemized') {
+            const table = rule === 'equal' ? fig.equal : fig.itemised;
+            opt.breakdown = fig.payers.map(n => ({ person: n, amount: money(table[n]), reasoning: why.get(n.toLowerCase()) || '' }));
+          } else if (Array.isArray(opt.breakdown) && opt.breakdown.length) {
+            // custom: keep the model's proportions, make them add up to the real total
+            const raw = opt.breakdown.map(b => Math.max(0, Number(String(b.amount).replace(/[^\d.-]/g, '')) || 0));
+            const scaled = apportion(Math.round(fig.grand_total * 100), raw.some(x => x > 0) ? raw : raw.map(() => 1));
+            opt.breakdown = opt.breakdown.map((b, i) => ({ ...b, amount: money(scaled[i] / 100) }));
+          }
+          opt.total_with_tip = money(fig.grand_total);
+          delete opt.rule;
         }
-        opt.total_with_tip = money(fig.grand_total);
-        delete opt.rule;
+        if (parsed.tip_recommendation) {
+          parsed.tip_recommendation.percentage = fig.tip_pct;
+          parsed.tip_recommendation.total_tip = money(fig.tip);
+        }
       }
-      if (parsed.tip_recommendation) {
-        parsed.tip_recommendation.percentage = fig.tip_pct;
-        parsed.tip_recommendation.total_tip = money(fig.tip);
-      }
-    }
-    // Number and consistency checks run side by side (lib/bothChecks.js).
-    await bothChecks(parsed,
-      d => withNumberCheck(d, {
+      return parsed;
+    };
+    return await answer(req, res, {
       label: 'money-diplomat-split',
-      context: visitorContext(req.body) + (fig ? `\n\nCOMPUTED IN CODE (correct — take as given): grand total ${money(fig.grand_total)} = subtotal ${money(fig.subtotal)} + tax ${money(fig.tax)} + tip ${money(fig.tip)} (${fig.tip_pct}%); items listed ${money(fig.item_total)}; unaccounted ${money(fig.unassigned)}; equal share ${money(Object.values(fig.equal)[0])}; itemised: ${Object.entries(fig.itemised).map(([n, v]) => `${n} ${money(v)}`).join(', ')}.\n\nFINAL AMOUNTS SHOWN TO THE VISITOR (code set these, after rescaling any custom split to the real total — every explanation must match them): ${parsed.options.map(o => `${o.method || 'option'}: ${(o.breakdown || []).map(b => `${b.person} ${b.amount}`).join(', ')}`).join(' | ')}.` : ''),
-      // Amounts are code-owned when the ledger worked; check only the prose around them.
-      fields: fig ? [
-        ['the_awkward_part', parsed.the_awkward_part], ['recommended', parsed.recommended],
-        ['how_to_bring_it_up', parsed.how_to_bring_it_up], ['tip_recommendation.note', parsed.tip_recommendation?.note],
-        ...parsed.options.flatMap((o, i) => [[`options[${i}].best_for`, o.best_for], ...(o.breakdown || []).map((b, j) => [`options[${i}].breakdown[${j}].reasoning`, b.reasoning])]),
-      // Not only fields with digits: "Social Split" explained who pays more in
-      // words while code had rescaled the amounts underneath it (T2).
-      ].filter(([, v]) => typeof v === 'string' && v.trim()) : undefined,
-      userLanguage,
-    }),
-      d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
-      { label: 'money-diplomat' });
-    res.json(validateResult(parsed));
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'MoneyDiplomatSplit'), [
+        ['options', 'recommended'],
+        ['next_time'],
+      ], (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `MoneyDiplomatSplit-${i + 2}`)),
+      finish: d => validateResult(amounts(d)),
+      ready: d => Boolean(d.the_awkward_part),
+      complete: d => Array.isArray(d.options) && d.options.length > 0,
+      check: async (draft) => {
+        const parsed = amounts(draft);
+        // The same figures amounts() used: the tip it settled is in the answer now.
+        const fig = ledger ? computeSplit(ledger, Number(ledger?.tip_pct_stated) || Number(parsed.tip_recommendation?.percentage) || 0) : null;
+        // Number and consistency checks run side by side (lib/bothChecks.js).
+        await bothChecks(parsed,
+          d => withNumberCheck(d, {
+          label: 'money-diplomat-split',
+          context: visitorContext(req.body) + (fig ? `\n\nCOMPUTED IN CODE (correct — take as given): grand total ${money(fig.grand_total)} = subtotal ${money(fig.subtotal)} + tax ${money(fig.tax)} + tip ${money(fig.tip)} (${fig.tip_pct}%); items listed ${money(fig.item_total)}; unaccounted ${money(fig.unassigned)}; equal share ${money(Object.values(fig.equal)[0])}; itemised: ${Object.entries(fig.itemised).map(([n, v]) => `${n} ${money(v)}`).join(', ')}.\n\nFINAL AMOUNTS SHOWN TO THE VISITOR (code set these, after rescaling any custom split to the real total — every explanation must match them): ${parsed.options.map(o => `${o.method || 'option'}: ${(o.breakdown || []).map(b => `${b.person} ${b.amount}`).join(', ')}`).join(' | ')}.` : ''),
+          // Amounts are code-owned when the ledger worked; check only the prose around them.
+          fields: fig ? [
+            ['the_awkward_part', parsed.the_awkward_part], ['recommended', parsed.recommended],
+            ['how_to_bring_it_up', parsed.how_to_bring_it_up], ['tip_recommendation.note', parsed.tip_recommendation?.note],
+            ...parsed.options.flatMap((o, i) => [[`options[${i}].best_for`, o.best_for], ...(o.breakdown || []).map((b, j) => [`options[${i}].breakdown[${j}].reasoning`, b.reasoning])]),
+          // Not only fields with digits: "Social Split" explained who pays more in
+          // words while code had rescaled the amounts underneath it (T2).
+          ].filter(([, v]) => typeof v === 'string' && v.trim()) : undefined,
+          userLanguage,
+        }),
+          d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+          { label: 'money-diplomat' });
+        // Back into the draft from the new object: amounts set, repairs included.
+        Object.keys(draft).forEach(k => delete draft[k]);
+        Object.assign(draft, parsed);
+      },
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatSplit] Error:', error);

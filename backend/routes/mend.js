@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, NO_INVENTED_FACTS } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { checkAgainstSupplied } = require('../lib/factCheck');
@@ -147,17 +148,29 @@ SAY IT ONCE. The verdict, the reassurance, today's job, and the closing are four
 
 VOICE. Short sentences. No clinical register — not 'the injured party', not 'emotional labour', not 'accountability framework'. Write the way a friend who happens to know this well would say it out loud. The best lines in this tool sound like: 'Texting at 9pm after dinner ended is the floor, not a credit.' and 'You need to do it in a medium that matches the size of the hurt.' Aim there.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): what
+    // this needs and today's job show first; the why, the wording, and the
+    // follow-through are written alongside, handed it. The grounding check
+    // runs after the answer is on screen.
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'apology-calibrator' });
-    if (!parsed.level_name) {
-      return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
-    }
-    await groundMend(parsed, req.body, 'apology-calibrator');
-    res.json(parsed);
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const PLAN = ['appropriate_apology_level', 'level_name', 'level_emoji', 'why_this_level', 'todays_job'];
+    return await answer(req, res, {
+      label: 'apology-calibrator',
+      parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'apology-calibrator'), [
+        ['first_this_matters', 'why_it_landed'],
+        ['apology_templates'],
+        ['if_youre_over_apologizing', 'if_youre_under_apologizing', 'follow_up', 'roadmap', 'closing'],
+      ], (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `apology-calibrator-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.level_name),
+      complete: d => Boolean(d.level_name),
+      check: d => groundMend(d, req.body, 'apology-calibrator'),
+    });
 
   } catch (error) {
     console.error('ApologyCalibrator error:', error);

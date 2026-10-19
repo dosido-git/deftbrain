@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, keyGroups, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -475,16 +475,26 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // read on the audience and how to open show first; the hard questions
+    // and the closing moves are written alongside, handed them.
+    const PLAN = ['audience_profile', 'opening_strategy', 'concede_early'];
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueSmarterPrep' });
-    if (!parsed.audience_profile) {
-      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
-    }
-    res.json(parsed);
+      messages: [{ role: 'user', content }],
+    }, { label });
+    return await answer(req, res, {
+      label: 'argue-smarter-prep',
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'ArgueSmarterPrep'), [
+        ['hard_questions'],
+        ['closing_move', 'body_language_note', 'worst_case'],
+      ], (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `ArgueSmarterPrep-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.audience_profile),
+      complete: d => Boolean(d.audience_profile && Array.isArray(d.hard_questions) && d.hard_questions.length),
+    });
   } catch (error) {
     console.error('[ArgueSmarterPrep]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

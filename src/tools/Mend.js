@@ -169,7 +169,7 @@ const FollowUpInput = ({ repairId, c, t, addFollowUp }) => {
 
 const Mend = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading } = useClaudeAPI();
   const { t } = useTranslation();
 
   // ── Color config ──
@@ -299,7 +299,9 @@ const Mend = ({ tool }) => {
     if (!calForm.whatHappened.trim()) { setError(t('apc_err_describe_happened')); return; }
     setError(''); setCalResults(null);
     try {
-      const data = await callToolEndpoint('apology-calibrator', calForm);
+      // Progressive (2026-10-18): what this needs shows first.
+      const data = await callToolEndpointProgressive('apology-calibrator', calForm, { onDraft: d => setCalResults(d), onChecked: d => setCalResults(d) });
+      if (!data) return; // replaced by a newer run
       setCalResults(data);
       setCalWhatHappened(calForm.whatHappened);
       const newEntry = {
@@ -813,11 +815,13 @@ const Mend = ({ tool }) => {
   }, [loading]);
 
   // ── Scroll to results ──────────────────────────────────────
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const scrollTimer = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(scrollTimer);
-  }, [results]);
+  }, [hasResults]);
 
 
   const renderCalibrate = () => (

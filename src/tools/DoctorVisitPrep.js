@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import Caret from '../components/Caret';
 import AutoGrowTextarea from '../components/AutoGrowTextarea';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -107,7 +108,7 @@ function Sec({ icon, title, badge, open, onToggle, children, c }) {
 
 
 const DoctorVisitPrep = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -144,6 +145,7 @@ const DoctorVisitPrep = ({ tool }) => {
     : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
 
   // ── useState (all first per PF-14) ──
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   // FORM
   const [chiefConcern, setChiefConcern] = useState('');
   const [symptomDetails, setSymptomDetails] = useState('');
@@ -183,12 +185,13 @@ const DoctorVisitPrep = ({ tool }) => {
 
   const handleGenerate = async () => {
     if (!chiefConcern.trim()) { setError(t('dvp_err_chief')); return; }
-    setError(''); setResults(null);
+    setError(''); setResults(null); cancelProgressive(); setCheckStatus(null);
     const allMeds = currentMedications.trim()
       ? currentMedications.trim() + (activeMeds.length ? `\n\nAlso taking (from tracked list): ${activeMeds.map(m => m.name).join(', ')}` : '')
       : activeMeds.length ? activeMeds.map(m => m.name).join(', ') : null;
     try {
-      const data = await callToolEndpoint('doctor-visit-prep', {
+      // Progressive (2026-10-18): the opener shows first; checked after.
+      const data = await callToolEndpointProgressive('doctor-visit-prep', {
         chiefConcern: chiefConcern.trim(),
         symptomDetails: symptomDetails.trim() || null,
         durationText: durationText.trim() || null,
@@ -204,7 +207,11 @@ const DoctorVisitPrep = ({ tool }) => {
           ? activeMeds.map(m => ({ name: m.name, purpose: m.purpose, prescribedDate: m.prescribedDate }))
           : null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       // Open the most-actionable sections by default; collapse the rest
       setSecs(p => ({
@@ -388,11 +395,13 @@ const DoctorVisitPrep = ({ tool }) => {
   canSubmitRef.current = !loading && !!chiefConcern.trim();
 
   // ── PF-7: Scroll to results (with clearTimeout cleanup) ──
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const t = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(t);
-  }, [results]);
+  }, [hasResults]);
 
   // ── PF-6: Keyboard useEffect ──
   useEffect(() => {
@@ -680,6 +689,7 @@ const DoctorVisitPrep = ({ tool }) => {
       {/* ══════════ RESULTS ══════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-6">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {/* First thing on the page, because it changes how everything below
               it should be read. It used to be the last thing on the page.
               Framing, not a warning — so no ⚠️ and no amber. */}

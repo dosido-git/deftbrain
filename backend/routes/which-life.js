@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -111,58 +112,68 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: "Describe both paths you're considering." });
     }
 
-    const parsed = await callClaudeWithRetry(
-      buildPrompt({ pathA, pathB, aboutYou, whatsHard, timeframe }),
-      {
-        label: 'contrast-report',
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      }
-    );
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // decision as they framed it shows first; each imagined day and the
+    // things to notice are written alongside, handed it. The guard runs
+    // after the answer is on screen.
+    const prompt = buildPrompt({ pathA, pathB, aboutYou, whatsHard, timeframe });
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const ask = (content, label) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2500,
+      system,
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const PLAN = ['decision_framed', 'how_to_read'];
+    return await answer(req, res, {
+      label: 'contrast-report',
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'contrast-report'), [
+        // Both days in one pass, so each is written against the other.
+        ['path_a', 'path_b'], ['what_to_notice'],
+      ], (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `contrast-report-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.decision_framed),
+      complete: d => Boolean(d.path_a && d.path_b),
+      check: async (parsed) => {
+        // v2 guard. Everything after the narratives is in this list, and the
+        // narratives are not — which is now the whole shape of the response, since
+        // the two per-path interpretation fields were removed.
+        // they are imagined by design, and checking them would sand off the tool.
+        // Everything that draws a conclusion is checked, because the risk here is
+        // one direction only — a detail invented for a story reappearing as a
+        // finding about someone's life.
+        try {
+          const fields = [];
+          const push = (k, v) => { if (typeof v === 'string' && v.trim()) fields.push([k, v]); };
+          push('decision_framed', parsed.decision_framed);
+          push('how_to_read', parsed.how_to_read);
+          push('what_to_notice.the_tradeoff', parsed.what_to_notice?.the_tradeoff);
+          push('what_to_notice.watch_your_reaction', parsed.what_to_notice?.watch_your_reaction);
+          push('what_to_notice.a_question_to_sit_with', parsed.what_to_notice?.a_question_to_sit_with);
 
-    if (!parsed.path_a || !parsed.path_b) {
-      return res.status(500).json({ error: 'Could not generate the contrast report. Please try again.' });
-    }
-    // v2 guard. Everything after the narratives is in this list, and the
-    // narratives are not — which is now the whole shape of the response, since
-    // the two per-path interpretation fields were removed.
-    // they are imagined by design, and checking them would sand off the tool.
-    // Everything that draws a conclusion is checked, because the risk here is
-    // one direction only — a detail invented for a story reappearing as a
-    // finding about someone's life.
-    try {
-      const fields = [];
-      const push = (k, v) => { if (typeof v === 'string' && v.trim()) fields.push([k, v]); };
-      push('decision_framed', parsed.decision_framed);
-      push('how_to_read', parsed.how_to_read);
-      push('what_to_notice.the_tradeoff', parsed.what_to_notice?.the_tradeoff);
-      push('what_to_notice.watch_your_reaction', parsed.what_to_notice?.watch_your_reaction);
-      push('what_to_notice.a_question_to_sit_with', parsed.what_to_notice?.a_question_to_sit_with);
+          await runOutputGuard(parsed, {
+            label: 'contrast-report',
+            fields,
+            supplied: `PATH A: ${pathA}
+    PATH B: ${pathB}
+    WHAT MATTERS IN THIS DECISION (their words): ${aboutYou || '(not supplied)'}
+    WHAT PULLS THEM TOWARD EACH PATH (their words): ${whatsHard || '(not supplied)'}
+    TIMEFRAME: ${timeframe || '2 years'}
 
-      await runOutputGuard(parsed, {
-        label: 'contrast-report',
-        fields,
-        supplied: `PATH A: ${pathA}
-PATH B: ${pathB}
-WHAT MATTERS IN THIS DECISION (their words): ${aboutYou || '(not supplied)'}
-WHAT PULLS THEM TOWARD EACH PATH (their words): ${whatsHard || '(not supplied)'}
-TIMEFRAME: ${timeframe || '2 years'}
+    THE TWO NARRATIVES IN THIS RESPONSE ARE FICTION, WRITTEN BY THE GENERATOR, AND THEY ARE NOT EVIDENCE. Do not treat a detail from them as supplied. The test for every field above: if the visitor said "that part is not true", would the sentence still stand? If it collapses, it was built on the fiction and it is a violation.
 
-THE TWO NARRATIVES IN THIS RESPONSE ARE FICTION, WRITTEN BY THE GENERATOR, AND THEY ARE NOT EVIDENCE. Do not treat a detail from them as supplied. The test for every field above: if the visitor said "that part is not true", would the sentence still stand? If it collapses, it was built on the fiction and it is a violation.
-
-An uncertainty they stated must stay open. A motive they did not state may not be attributed. And nothing may tell them what their decision is really about — they named it.`,
-        promise: 'Two vivid imagined days, one per path, and observations traceable to what the visitor actually wrote.',
-        guard: router.outputGuard,
-        requiredNonEmpty: ['decision_framed'],
-        userLanguage,
-        locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      });
-    } catch (guardErr) {
-      console.error('[contrast-report] v2 guard skipped:', guardErr.message);
-    }
-
-    res.json(parsed);
+    An uncertainty they stated must stay open. A motive they did not state may not be attributed. And nothing may tell them what their decision is really about — they named it.`,
+            promise: 'Two vivid imagined days, one per path, and observations traceable to what the visitor actually wrote.',
+            guard: router.outputGuard,
+            requiredNonEmpty: ['decision_framed'],
+            userLanguage,
+            locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          });
+        } catch (guardErr) {
+          console.error('[contrast-report] v2 guard skipped:', guardErr.message);
+        }
+      },
+    });
 
   } catch (error) {
     console.error('ContrastReport error:', error);

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -214,18 +215,32 @@ TONE GUIDELINES:
 
 Return ONLY the JSON object.${lang}`;
 
-    const results = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // opener, the clinical description and the goal show first; the
+    // questions, what to mention and the checklist are written alongside,
+    // handed them. The consistency check runs after the answer is on screen.
+    const ask = (content, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'doctor-visit-prep' });
-
-    if (!results.opener || !Array.isArray(results.prioritized_questions)) {
-      return res.status(500).json({ error: 'Could not prepare your visit. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(results, { label: 'doctor-visit-prep', userLanguage: req.body?.userLanguage });
-    res.json(results);
+      max_tokens: 2500,
+      messages: [{ role: 'user', content }],
+    }, { label: tag });
+    // Red flags are in the first part: when to get help sooner is safety
+    // information, and written apart it once understated a kidney warning
+    // (2026-10-18 blind comparison).
+    const PLAN = ['opener', 'symptom_description_clinical', 'goal_for_the_visit', 'red_flag_symptoms_to_report'];
+    return await answer(req, res, {
+      label: 'doctor-visit-prep',
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'doctor-visit-prep'), [
+        ['prioritized_questions', 'questions_to_ask_if_medication_is_prescribed'],
+        ['things_to_mention_even_if_not_asked'],
+        ['pre_visit_checklist', 'what_to_bring', 'conversation_tips'],
+      ], (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `doctor-visit-prep-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.opener),
+      complete: d => Boolean(d.opener && Array.isArray(d.prioritized_questions)),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'doctor-visit-prep', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('Doctor Visit Prep error:', error);

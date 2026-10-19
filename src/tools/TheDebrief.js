@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -40,7 +41,7 @@ const TONES = [
 // MAIN
 // ════════════════════════════════════════════════════════════
 const TheDebrief = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -85,6 +86,7 @@ const TheDebrief = ({ tool }) => {
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const resultsRef = useRef(null);
 
@@ -118,12 +120,13 @@ const TheDebrief = ({ tool }) => {
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
 
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [hasResults]);
 
   const charCount = useMemo(() => {
     if (mode === 'series') return meetings.reduce((sum, m) => sum + (m.transcript?.length || 0), 0);
@@ -164,16 +167,21 @@ const TheDebrief = ({ tool }) => {
 
   // ── API ──
   const submit = useCallback(async () => {
-    setError(''); setResults(null); setExpandedSections({});
+    setError(''); setResults(null); setExpandedSections({}); cancelProgressive(); setCheckStatus(null);
     try {
       let data;
       if (mode === 'distill') {
         if (!transcript.trim()) { setError(t('td_err_paste')); return; }
-        data = await callToolEndpoint('the-debrief', {
+        // Progressive (2026-10-18): the summary shows first; checked after.
+        data = await callToolEndpointProgressive('the-debrief', {
           transcript: transcript.trim(), meetingType, attendees: attendees.trim() || null,
           context: context.trim() || null, focus: focus.trim() || null,
           userLocale, userCurrency, userRegion,
+        }, {
+          onDraft: d => { setResults(d); setCheckStatus('checking'); },
+          onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
         });
+        if (!data) return; // replaced by a newer run
       } else if (mode === 'followup') {
         if (!transcript.trim()) { setError(t('td_err_paste')); return; }
         data = await callToolEndpoint('the-debrief/followup', {
@@ -901,6 +909,7 @@ const TheDebrief = ({ tool }) => {
 
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           {mode === 'distill' && renderDistill()}
           {mode === 'followup' && renderFollowup()}
           {mode === 'series' && renderSeries()}

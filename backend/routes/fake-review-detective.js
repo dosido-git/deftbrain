@@ -28,6 +28,7 @@ async function assertPublicUrl(u) {
 }
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -204,17 +205,30 @@ Return ONLY valid JSON:
 
 EXACTLY TWO tactics in playbook.tactics_detected — the two that show up most clearly in THESE reviews, not the two most interesting in general. Five patterns is a course, and nobody opened this to become a review analyst; two are portable enough to use on a different product six months from now. Prefer how_to_spot lines that survive being remembered — a question the reader can ask of any review beats a named category they have to recall. Keep every string field to 1-2 sentences — be terse, no padding.`;
 
-        const parsed = await callClaudeWithRetry({
+        // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+        // verdict, what manipulation there is and the recommendation show
+        // first; what genuine reviewers say and the playbook are written
+        // alongside, handed them. The consistency check runs after display.
+        const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+        const ask = (content, label) => callClaudeWithRetry({
           model: MODELS.SMART,
-          max_tokens: 6000, // fixed-structure assessment + playbook array — headroom (was 4000) so a verbose German run can't truncate the step after scoring
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-          messages: [{ role: 'user', content: userPrompt }],
-        }, { label: 'fake-review-detective-2' });
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
-          return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
-        }
-        await checkConsistency(parsed, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage });
-        return res.json(parsed);
+          max_tokens: 3000,
+          system,
+          messages: [{ role: 'user', content }],
+        }, { label });
+        const PLAN = ['quick_verdict', 'manipulation_detected', 'purchase_recommendation'];
+        return await answer(req, res, {
+          label: 'fake-review-detective',
+          parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'fake-review-detective-2'), [
+            ['genuine_consensus', 'sentiment_trajectory', 'category_comparison'],
+            ['playbook'],
+          ], (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `fake-review-detective-2-${i + 2}`)),
+          finish: d => structuredClone(d),
+          ready: d => Boolean(d.quick_verdict),
+          complete: d => Boolean(d.quick_verdict),
+          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+          check: d => checkConsistency(d, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage }),
+        });
       }
 
       // ════════════════════════════════════════════════════════

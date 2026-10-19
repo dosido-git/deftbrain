@@ -230,7 +230,7 @@ const EXAMPLES = [
   },
 ];
 const FakeReviewDetective = ({ tool }) => {
-  const { callToolEndpoint, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -372,10 +372,12 @@ const FakeReviewDetective = ({ tool }) => {
     // Phase 2: Analyze + Playbook
     setPhase('analyzing'); setScoreProgress(t('frd_analyzing_patterns'));
     try {
-      const ad = await callToolEndpoint('fake-review-detective', {
+      // Progressive (2026-10-18): the verdict shows first.
+      const ad = await callToolEndpointProgressive('fake-review-detective', {
         action: 'analyze', reviews: aiRevs.map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, daysAgo: r.daysAgo, wordCount: r.wordCount, hasSpecificDetails: r.hasSpecificDetails, hasGenericPraise: r.hasGenericPraise, mentionsCompetitor: r.mentionsCompetitor })),
         scores, stats: aggStats, category: category || null, decision: decision || null, userLocale, userCurrency, userRegion,
-      });
+      }, { onDraft: d => setAnalysis(d), onChecked: d => setAnalysis(d) });
+      if (!ad) return; // replaced by a newer run
       setAnalysis(ad);
 
       // Save snapshot

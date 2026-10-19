@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -143,18 +144,30 @@ Return ONLY valid JSON:
 
 LIMITS (keep the response compact so it never gets cut off): at_risk AT MOST 5, decisions AT MOST 8, action_items AT MOST 12, open_questions AT MOST 6, parking_lot AT MOST 6, tensions AT MOST 5. can_still_change is one of the three exact English words and nothing else — the interface reads it as a value, so a translated or reworded one renders wrong. Keep each field to one sentence (the noted multi-sentence fields excepted). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): what
+    // the meeting was and what is at risk show first; the decisions, actions
+    // and the follow-up email (one pass, so the email matches them), and the
+    // open questions and tensions are written alongside, handed it. The
+    // consistency check runs after the answer is on screen.
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-debrief' });
-    if (!parsed.meeting_summary && !parsed.answer) {
-      return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'the-debrief', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const PLAN = ['meeting_summary', 'meeting_type_detected', 'duration_estimate', 'at_risk'];
+    return await answer(req, res, {
+      label: 'the-debrief',
+      parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'the-debrief'), [
+        ['decisions', 'action_items', 'follow_up_email'],
+        ['open_questions', 'parking_lot', 'tensions', 'meeting_health'],
+      ], (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `the-debrief-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.meeting_summary),
+      complete: d => Boolean(d.meeting_summary && d.action_items),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'the-debrief', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('The Debrief error:', error);

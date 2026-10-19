@@ -137,7 +137,7 @@ const parseDuration = (dur) => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const BrainStateDeejay = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -246,13 +246,15 @@ const BrainStateDeejay = ({ tool }) => {
   // ── Ref assignments placed after useCallbacks below to avoid TDZ ──
 
   // ── Scroll to results ──
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const t = setTimeout(() => {
       revealSection(resultsRef.current);
     }, 100);
     return () => clearTimeout(t);
-  }, [results]);
+  }, [hasResults]);
 
   // ── Keyboard shortcut (Ctrl/Cmd+Enter) ──
   useEffect(() => {
@@ -398,7 +400,8 @@ const BrainStateDeejay = ({ tool }) => {
     setError(''); setResults(null); setAdjustFeedback('');
     stopSession(); setRated(false);
     try {
-      const res = await callToolEndpoint('brainstate-deejay', {
+      // Progressive (2026-10-18): the read and the strategy show first.
+      const res = await callToolEndpointProgressive('brainstate-deejay', {
         currentState: getLabelFor(CURRENT_STATES, currentState),
         desiredState: getLabelFor(DESIRED_STATES, desiredState),
         taskContext: task ? getLabelFor(TASK_OPTIONS, task) : '',
@@ -407,14 +410,15 @@ const BrainStateDeejay = ({ tool }) => {
           musicTaste.trim()
         ].filter(Boolean).join('. '),
         sensitivities: sensitivities.map(s => getLabelFor(SENSITIVITY_OPTIONS, s)),
-      });
+      }, { onDraft: d => { setResults(d); setShowInputs(false); } });
+      if (!res) return; // replaced by a newer run
       setResults(res);
       setShowInputs(false);
       saveToHistory(res, getLabelFor(CURRENT_STATES, currentState), getLabelFor(DESIRED_STATES, desiredState));
     } catch (err) {
       setError(err.message || t('bsd_err_generate'));
     }
-  }, [currentState, desiredState, task, genres, musicTaste, sensitivities, callToolEndpoint, saveToHistory, stopSession, t]);
+  }, [currentState, desiredState, task, genres, musicTaste, sensitivities, callToolEndpointProgressive, saveToHistory, stopSession, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('BrainStateDeejay', EXAMPLES);

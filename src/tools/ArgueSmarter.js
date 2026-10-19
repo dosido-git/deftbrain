@@ -394,7 +394,8 @@ const ArgueSmarter = ({ tool }) => {
     if (!prepPosition.trim()) { setError(t('dm_err_prep')); return; }
     setError('');
     try {
-      const data = await callToolEndpoint('argue-better-prep', { position: prepPosition, audience: prepAudience, context: prepContext, stakes: prepStakes, userLocale, userCurrency, userRegion });
+      // Progressive (2026-10-18): the audience read shows first.
+      const data = await callToolEndpointProgressive('argue-better-prep', { position: prepPosition, audience: prepAudience, context: prepContext, stakes: prepStakes, userLocale, userCurrency, userRegion }, { onDraft: d => setPrepData(d) });
       if (data) setPrepData(data);
     } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -147,17 +148,26 @@ IMPORTANT RULES:
 Return ONLY the JSON object. No markdown fences, no preamble.
 Never place a double-quote (") character inside any JSON string value — write quoted phrases from the message and example responses plainly or with single quotes, or it breaks the JSON.`;
 
-    const parsed = await callClaudeWithRetry({
-model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'decoder-ring' });
-    if (!parsed.surface_reading) {
-      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
-    }
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-    await checkConsistency(parsed, { label: 'decoder-ring', userLanguage: req.body?.userLanguage });
-    res.json(parsed);
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the plain reading and the overall translation show first; the layers and the response options are written alongside, handed them. The consistency check runs after display.
+    const ask = (content, tag) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2500,
+      messages: [{ role: 'user', content: withLanguage(content, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: tag });
+    const PLAN = ['surface_reading', 'overall_translation', 'tone_rating'];
+    return await answer(req, res, {
+      label: 'decoder-ring',
+      parts: planFirst(PLAN, () => ask(onlyKeys(basePrompt, PLAN), 'decoder-ring'), [
+      ['decoded_layers', 'emotional_undercurrent', 'what_they_want', 'flags'],
+      ['response_strategies'],
+    ],
+        (keys, i, plan) => ask(onlyKeys(basePrompt, keys) + planNote(plan, PLAN), `decoder-ring-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.surface_reading),
+      complete: d => Boolean(d.surface_reading),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: d => checkConsistency(d, { label: 'decoder-ring', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('Decoder Ring error:', error);

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -257,35 +258,39 @@ router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, r
 
     const summaries = logs.slice(0, 60).map((log, i, arr) => buildLogSummary(log, i, arr.length)).join('\n\n');
     const prompt = `CHECK-INS:\n${summaries}\n\n${logArithmetic(logs)}\n\n${ANALYZE_SCHEMA}`;
-    const result = await callStructured({
-      prompt,
-      system: SYSTEM,
-      userLanguage,
-      userLocale,
-      label: 'crash-predictor-v2-analyze',
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // headline and the next step show first; the changes, patterns and
+    // comparisons are written alongside, handed them. The guard and the
+    // recount run after the answer is on screen. Arrays always exist in what
+    // is shown: the frontend maps over them.
+    const PLAN = ['headline', 'next_step'];
+    const ARRAYS = ['recent_changes', 'patterns_worth_noticing', 'not_enough_evidence_yet', 'compared_with_your_usual'];
+    const ask = (content, label) => callStructured({ prompt: content, system: SYSTEM, userLanguage, userLocale, label });
+    return await answer(req, res, {
+      label: 'crash-predictor-analyze',
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'crash-predictor-v2-analyze'), [
+        // Changes and patterns in one pass: written apart, each left a
+        // co-moving signal (sleep) to the other and neither named it.
+        ['recent_changes', 'patterns_worth_noticing'],
+        ['compared_with_your_usual', 'not_enough_evidence_yet'],
+      ], (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `crash-predictor-v2-analyze-${i + 2}`)),
+      finish: d => ({ ...structuredClone(d), ...Object.fromEntries(ARRAYS.map(k => [k, Array.isArray(d[k]) ? d[k] : []])) }),
+      ready: d => Boolean(d.headline),
+      complete: d => Boolean(d.headline && Array.isArray(d.recent_changes)),
+      // Fail-open: it wraps a working answer.
+      check: async (d) => {
+        try {
+          await guardResult(d, {
+            logs: logs.slice(0, 60),
+            label: 'crash-predictor-analyze',
+            promise: 'Compare the check-ins the visitor recorded and show what changed between them.',
+            userLanguage, userLocale,
+          });
+        } catch (guardErr) {
+          console.error('[crash-predictor] v2 guard skipped:', guardErr.message);
+        }
+      },
     });
-
-    // Shape check before anything else touches it: the frontend maps over these
-    // arrays, so a malformed response ships as a render crash rather than an
-    // error anyone can act on.
-    if (!result?.headline || !Array.isArray(result.recent_changes)) {
-      console.error('Before the Crash: unexpected analyze shape', Object.keys(result || {}));
-      return res.status(500).json({ error: 'Could not compare these check-ins.' });
-    }
-
-    // Fail-open: it wraps a working answer.
-    try {
-      await guardResult(result, {
-        logs: logs.slice(0, 60),
-        label: 'crash-predictor-analyze',
-        promise: 'Compare the check-ins the visitor recorded and show what changed between them.',
-        userLanguage, userLocale,
-      });
-    } catch (guardErr) {
-      console.error('[crash-predictor] v2 guard skipped:', guardErr.message);
-    }
-
-    res.json(result);
   } catch (error) {
     console.error('Before the Crash V2 analyze error:', error);
     res.status(500).json({ error: 'Could not compare these check-ins.' });

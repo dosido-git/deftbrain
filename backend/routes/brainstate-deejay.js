@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -125,19 +126,30 @@ Never place a double-quote (") character inside any JSON string value — write 
 Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
+    // read on where they are and the strategy show first; the playlist and
+    // the settings are written alongside, handed them.
+    const ask = (content, label) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'BrainstateDeejay' });
-    // Normalize: Claude occasionally returns playlist as a keyed object instead of array
-    if (parsed.playlist && !Array.isArray(parsed.playlist) && typeof parsed.playlist === 'object') {
-      parsed.playlist = Object.values(parsed.playlist);
-    }
-    if (!parsed.playlist || !Array.isArray(parsed.playlist) || parsed.playlist.length === 0) {
-      return res.status(500).json({ error: 'Could not create playlist. Please try again.' });
-    }
-    res.json(parsed);
+      max_tokens: 2500,
+      messages: [{ role: 'user', content }],
+    }, { label });
+    const PLAN = ['state_transition', 'playlist_strategy'];
+    return await answer(req, res, {
+      label: 'brainstate-deejay',
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'BrainstateDeejay'), [
+        ['playlist'],
+        ['audio_settings', 'alternative_playlists', 'why_this_may_help'],
+      ], (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `BrainstateDeejay-${i + 2}`)),
+      finish: (d) => {
+        const out = structuredClone(d);
+        // Normalize: Claude occasionally returns playlist as a keyed object instead of array
+        if (out.playlist && !Array.isArray(out.playlist) && typeof out.playlist === 'object') out.playlist = Object.values(out.playlist);
+        return out;
+      },
+      ready: d => Boolean(d.state_transition),
+      complete: d => Boolean(d.playlist && Object.values(d.playlist).length),
+    });
   } catch (error) {
     console.error('Brainstate Deejay error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.'});

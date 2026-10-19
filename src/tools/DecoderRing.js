@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -69,7 +70,7 @@ const TECHNIQUE_EMOJIS = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const DecoderRing = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -133,6 +134,7 @@ const DecoderRing = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Persistent
   const [showHistory, setShowHistory] = useState(false);
@@ -162,11 +164,13 @@ const DecoderRing = ({ tool }) => {
   const canSubmitRef = useRef(false);
 
   // Scroll to results
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (results && resultsRef.current) {
+    if (hasResults && resultsRef.current) {
       setTimeout(() => revealSection(resultsRef.current), 200);
     }
-  }, [results]);
+  }, [hasResults]);
 
   // ══════════════════════════════════════════
   // HANDLERS
@@ -174,22 +178,28 @@ const DecoderRing = ({ tool }) => {
   const decode = useCallback(async () => {
     if (!message.trim()) { setError(t('dr_err_paste')); return; }
     setError(''); setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     try {
-      const data = await callToolEndpoint('decoder-ring', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('decoder-ring', {
         message: message.trim(),
         source: source || null,
         relationship: relationship || null,
         additionalContext: additionalContext.trim() || null,
         whatsConfusing: whatsConfusing.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setResults(data);
       saveToHistory(data);
     } catch (err) {
       setError(err.message || t('dr_err_failed'));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message, source, relationship, additionalContext, whatsConfusing, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [message, source, relationship, additionalContext, whatsConfusing, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = () => {
     // Five, rotated: text, email, Slack, a dating app, and a landlord's
@@ -414,6 +424,7 @@ const DecoderRing = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+<CheckNote status={checkStatus} className={c.textMuted} />
         {/* Fixed copy. Someone arrives here already unsure whether they are
             overreacting; naming that is worth more than any single reading
             below it. */}

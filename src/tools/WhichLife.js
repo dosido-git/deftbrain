@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -70,7 +71,7 @@ const EXAMPLE_DECISIONS = [
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const WhichLife = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   // Localized label for a stored timeframe id (falls back to the raw id).
@@ -127,6 +128,7 @@ const WhichLife = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── Session state ───
   const [error,          setError]          = useState('');
@@ -152,10 +154,12 @@ const WhichLife = ({ tool }) => {
     if (!pathA.trim() || !pathB.trim()) return;
     setError('');
     setResults(null);
+    cancelProgressive(); setCheckStatus(null);
     setActiveNarrative('a');
 
     try {
-      const parsed = await callToolEndpoint('contrast-report', {
+      // Progressive (2026-10-17): the first part shows first; checked after.
+      const parsed = await callToolEndpointProgressive('contrast-report', {
         pathA: pathA.trim(),
         pathB: pathB.trim(),
         aboutYou: aboutYou.trim() || undefined,
@@ -164,7 +168,11 @@ const WhichLife = ({ tool }) => {
         userLocale,
         userCurrency,
         userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!parsed) return; // replaced by a newer run
 
       if (parsed) {
         setResults(parsed);
@@ -186,7 +194,7 @@ const WhichLife = ({ tool }) => {
       // with no result and no message (the bug that hid the stale-model 500).
       setError(err?.message || t('cr_error'));
     }
-  }, [pathA, pathB, aboutYou, whatsHard, timeframe, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [pathA, pathB, aboutYou, whatsHard, timeframe, callToolEndpointProgressive, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     // Steps through the set rather than re-rolling, and never re-offers the
@@ -241,12 +249,13 @@ const WhichLife = ({ tool }) => {
   useRegisterActions(buildFullText(), tool?.title || t('cr_default_title'));
 
   // ─── Scroll to results ───
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const t = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [hasResults]);
 
   // ─── Ctrl+Enter submit ───
   useEffect(() => {
@@ -469,6 +478,7 @@ const WhichLife = ({ tool }) => {
           ═══════════════════════════════════════════════════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-6">
+<CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Decision framed */}
           {results?.decision_framed && (
