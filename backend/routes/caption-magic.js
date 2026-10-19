@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
@@ -409,42 +410,49 @@ OUTPUT (JSON only):
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-    const out = await callClaudeWithRetry({
-      model: MODELS.FAST,
-      // 4000 was sized for six captions. The workshop writes twenty candidates
-      // above them — scratch paper, cheap, and the entire point.
-      max_tokens: 6000,
-      messages: [{ role: 'user', content: withLanguage(genPrompt, userLanguage) + locale }],
-    }, { label: 'CaptionMagicGenerate' });
-
-    if (!Array.isArray(out.captions)) {
-      return res.status(500).json({ error: 'Could not generate captions. Please try again.' });
-    }
-
-    // ── STAGE 3/4 — VALIDATE, THEN REPAIR WHAT FAILED ─────────────────
-    // Fail-open throughout. This is a safety net over a working answer, and a
-    // net that can drop the answer is worse than no net.
-    try {
-      await enforceEnvelope(out, envelope, { userLanguage, locale, context });
-    } catch (err) {
-      console.error('CaptionMagic validation skipped:', err.message);
-    }
-
-    // Scratch paper never leaves the building. Logged rather than silently
-    // dropped: "generate twenty and keep six" is exactly the kind of invisible
-    // instruction that gets quietly ignored, and a count is the only way to
-    // know whether the search happened or the model wrote six and moved on.
-    const searched = Array.isArray(out._candidates) ? out._candidates.length : 0;
-    console.log(`[caption-magic] workshop: ${searched} candidate(s) → 6`);
-    delete out._candidates;
-
-    normaliseCaptions(out);
-
-    // The whole envelope travels back. "Six more" and the nudges have to stay
-    // grounded in the same observation, and re-reading the image on every nudge
-    // would cost a vision call and could drift — the visitor would be playing
-    // with a photo the tool kept re-interpreting underneath them.
-    res.json({ ...out, envelope });
+    // Progressive (2026-10-18, lib/progressive.js): the captions show as soon
+    // as they are written; the envelope check and its repairs run after they
+    // are on screen, and the page says so.
+    return await answer(req, res, {
+      label: 'caption-magic',
+      parts: [{ required: true,
+        run: async () => {
+          const gen = await callClaudeWithRetry({
+            model: MODELS.FAST,
+            // 4000 was sized for six captions. The workshop writes twenty candidates
+            // above them — scratch paper, cheap, and the entire point.
+            max_tokens: 6000,
+            messages: [{ role: 'user', content: withLanguage(genPrompt, userLanguage) + locale }],
+          }, { label: 'CaptionMagicGenerate' });
+          if (!Array.isArray(gen.captions)) throw Object.assign(new Error('incomplete'), { userMessage: 'Could not generate captions. Please try again.' });
+          // Scratch paper never leaves the building. Logged rather than silently
+          // dropped: "generate twenty and keep six" is exactly the kind of invisible
+          // instruction that gets quietly ignored, and a count is the only way to
+          // know whether the search happened or the model wrote six and moved on.
+          const searched = Array.isArray(gen._candidates) ? gen._candidates.length : 0;
+          console.log(`[caption-magic] workshop: ${searched} candidate(s) → 6`);
+          delete gen._candidates;
+          return gen;
+        },
+        apply: (d, gen) => Object.assign(d, gen) }],
+      // The whole envelope travels back. "Six more" and the nudges have to stay
+      // grounded in the same observation, and re-reading the image on every nudge
+      // would cost a vision call and could drift — the visitor would be playing
+      // with a photo the tool kept re-interpreting underneath them.
+      finish: (d) => { const o = structuredClone(d); normaliseCaptions(o); return { ...o, envelope }; },
+      ready: d => Array.isArray(d.captions) && d.captions.length > 0,
+      complete: d => Array.isArray(d.captions) && d.captions.length > 0,
+      // ── STAGE 3/4 — VALIDATE, THEN REPAIR WHAT FAILED ─────────────────
+      // Fail-open throughout. This is a safety net over a working answer, and a
+      // net that can drop the answer is worse than no net.
+      check: async (d) => {
+        try {
+          await enforceEnvelope(d, envelope, { userLanguage, locale, context });
+        } catch (err) {
+          console.error('CaptionMagic validation skipped:', err.message);
+        }
+      },
+    });
 
   } catch (error) {
     console.error('CaptionMagic error:', error);

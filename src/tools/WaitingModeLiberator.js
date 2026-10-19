@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -237,7 +238,7 @@ const playChime = () => {
 };
 
 const WaitingModeLiberator = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -282,6 +283,7 @@ const WaitingModeLiberator = ({ tool }) => {
   };
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State: View ───
   // setup | active | launching | debrief | insights
@@ -498,7 +500,8 @@ const WaitingModeLiberator = ({ tool }) => {
       if (alarm > now && (!earliestPrepAlarm || alarm < earliestPrepAlarm)) {
         earliestPrepAlarm = alarm;
       } } try {
-      const data = await callToolEndpoint('waiting-mode-liberator', {
+      // Progressive (2026-10-18): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('waiting-mode-liberator', {
         action: 'liberate',
         events: sortedEvents.map(ev => {
           const totalPrep = (parseInt(ev.prepMinutes) || 0) + (parseInt(ev.travelMinutes) || 0);
@@ -509,6 +512,9 @@ const WaitingModeLiberator = ({ tool }) => {
         currentTime: formatTimeShort(now), userTasks: userTasks.trim(), energy, clockChecking, anxietyBefore,
         firstPrepAlarm: earliestPrepAlarm ? formatTimeShort(earliestPrepAlarm) : null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setView('active'); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
       setResults(data);
       setSessionHistory(prev => [{
@@ -1050,6 +1056,7 @@ const WaitingModeLiberator = ({ tool }) => {
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Results anchor */} <div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24" />
+{results && <CheckNote status={checkStatus} className={c.textMuted} />}
 
           {/* Hero countdown */} <div className={`${c.hero} border-2 rounded-2xl p-6 text-center shadow-lg`}>
             {showPrepAlert ? (<>

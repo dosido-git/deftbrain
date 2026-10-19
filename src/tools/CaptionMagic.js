@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
 import { CopyBtn } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -56,7 +57,7 @@ const NUDGE_OPTIONS = [
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const CaptionMagic = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -108,6 +109,7 @@ const CaptionMagic = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   // ── Persistent ──
 
   // ── Transient state ──
@@ -198,7 +200,8 @@ const CaptionMagic = ({ tool }) => {
     if (!imageBase64 && !imageDescription.trim()) { setError(t('cm_err_need_image')); return; }
     setError(''); setResults(null); setAdaptResults({}); setPickedIndex(null);
     try {
-      const data = await callToolEndpoint('caption-magic', {
+      // Progressive (2026-10-18): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('caption-magic', {
         imageBase64,
         imageDescription: imageDescription.trim() || null,
         platform,
@@ -206,13 +209,16 @@ const CaptionMagic = ({ tool }) => {
         captionLength,
         context: context.trim() || null,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
       setResults(data);
       saveToHistory(data);
     } catch (err) {
       setError(err.message || t('cm_err_generate'));
     }
-  }, [imageBase64, imageDescription, platform, captionLength, context, avoidMention, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [imageBase64, imageDescription, platform, captionLength, context, avoidMention, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t]);
 
   // API: Revise
   const reviseCaption = useCallback(async (text, index, direction) => {
@@ -324,13 +330,15 @@ const CaptionMagic = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || 'Caption Magic');
 
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => {
       revealSection(resultsRef.current);
     }, 100);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -506,6 +514,7 @@ const CaptionMagic = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
+{true && <CheckNote status={checkStatus} className={c.textMuted} />}
         {/* Results header */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className={`text-base font-bold ${c.text}`}>{t('cm_your_captions')}</h3>

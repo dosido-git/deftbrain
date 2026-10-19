@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -71,16 +72,25 @@ RECOGNITION, NOT DEMOLITION. The laugh you are after is "oh no, I actually wrote
 
 Generate 5-8 roast lines (gentle=5, medium=6, scorched=8, at most 8). Every line must reference SPECIFIC content — zero generic insults.`;
 
-    const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
-      max_tokens: 4000,
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the first impression shows first; the roasts (with the line to share, which comes from them) and the closer are written alongside, handed it.
+    const ask = (content, tag) => callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'roast-me' });
-    if (!Array.isArray(parsed.roasts) || !parsed.roasts.length) {
-      return res.status(500).json({ error: 'Could not generate the roast. Please try again.' });
-    }
-    res.json(parsed);
+      messages: [{ role: 'user', content: content }],
+    }, { label: tag });
+    const PLAN = ['content_type_detected', 'first_impression'];
+    return await answer(req, res, {
+      label: 'roast-me',
+      parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'roast-me'), [
+      ['roasts', 'share_line'],
+      ['summary_roast', 'one_nice_thing'],
+    ],
+        (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `roast-me-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.first_impression),
+      complete: d => Boolean(d.first_impression),
+    });
 
   } catch (error) {
     console.error('RoastMe error:', error);

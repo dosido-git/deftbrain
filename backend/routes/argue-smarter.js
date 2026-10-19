@@ -352,16 +352,25 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = await callClaudeWithRetry({
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the verdict shows first; the two reviews and the reflections are written alongside, handed it.
+    const ask = (content, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2000,
+      max_tokens: 1500,
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueSmarterAudienceJudge' });
-    if (!parsed.verdict) {
-      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
-    }
-    res.json(parsed);
+      messages: [{ role: 'user', content: content }],
+    }, { label: tag });
+    const PLAN = ['verdict'];
+    return await answer(req, res, {
+      label: 'ArgueSmarterAudienceJudge',
+      parts: planFirst(PLAN, () => ask(onlyKeys(prompt, PLAN), 'ArgueSmarterAudienceJudge'), [
+      ['side_a_review', 'side_b_review'],
+      ['audience_shift', 'what_would_have_convinced_me', 'emotional_vs_logical'],
+    ],
+        (keys, i, plan) => ask(onlyKeys(prompt, keys) + planNote(plan, PLAN), `ArgueSmarterAudienceJudge-${i + 2}`)),
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.verdict),
+      complete: d => Boolean(d.verdict),
+    });
   } catch (error) {
     console.error('[ArgueSmarterAudienceJudge]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

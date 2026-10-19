@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -149,18 +150,28 @@ Return ONLY valid JSON:
   "worst_case": "Safety net advice — one sentence"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'WML-Liberate' });
-        // total_free_minutes is numeric — 0 is a VALID answer (back-to-back events), so
-        // never truthiness-guard it. Key on always-present structural fields instead.
-        if (parsed.total_free_minutes == null && !parsed.windows && !parsed.events_summary) {
-          return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
-        }
-        await checkConsistency(parsed, { label: 'waiting-mode-liberator', userLanguage: req.body?.userLanguage });
-        return res.json(fixWindowMinutes(parsed));
+        // Progressive (2026-10-18, lib/progressive.js): the windows show as
+        // soon as they are written; the consistency check runs after.
+        return await answer(req, res, {
+          label: 'waiting-mode-liberator',
+          parts: [{ required: true,
+            run: async () => {
+              const out = await callClaudeWithRetry({
+                model: MODELS.SMART,
+                max_tokens: 4000,
+                messages: [{ role: 'user', content: prompt }]
+              }, { label: 'WML-Liberate' });
+              // total_free_minutes is numeric — 0 is a VALID answer (back-to-back events), so
+              // never truthiness-guard it. Key on always-present structural fields instead.
+              if (out.total_free_minutes == null && !out.windows && !out.events_summary) throw Object.assign(new Error('incomplete'), { userMessage: 'Could not analyze your wait time. Please try again.' });
+              return out;
+            },
+            apply: (d, out) => Object.assign(d, out) }],
+          finish: d => fixWindowMinutes(structuredClone(d)),
+          ready: d => d.total_free_minutes != null || Boolean(d.windows || d.events_summary),
+          complete: d => d.total_free_minutes != null || Boolean(d.windows || d.events_summary),
+          check: parsed => checkConsistency(parsed, { label: 'waiting-mode-liberator', userLanguage: req.body?.userLanguage }),
+        });
       }
 
       // ────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -71,7 +72,7 @@ const EXAMPLES = [
 ];
 
 const VelvetHammer = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -102,6 +103,7 @@ const VelvetHammer = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [relationship, setRelationship] = useState('colleague');
@@ -132,9 +134,13 @@ const VelvetHammer = ({ tool }) => {
     setError('');
     setResults(null);
     try {
-      const data = await callToolEndpoint('velvet-hammer', {
+      // Progressive (2026-10-18): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('velvet-hammer', {
         draft: draft.trim(), relationship, goal, power,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { setResults(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
       });
       setResults(data);
       // Full result, not a raw-draft preview: this is what lets a session
@@ -192,11 +198,13 @@ const VelvetHammer = ({ tool }) => {
   useRegisterActions(results ? buildAllText() : '', tool?.title);
 
   // ─── Scroll to results ───
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(results);
   useEffect(() => {
-    if (!results) return;
+    if (!hasResults) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [hasResults]);
 
   const toneColor = (tone) => {
     if (tone === 'clear') return isDark ? 'text-emerald-400' : 'text-emerald-600';
@@ -310,6 +318,7 @@ const VelvetHammer = ({ tool }) => {
       {results && (
         <div className="space-y-4">
           <div data-copy-results ref={resultsRef} data-results-anchor className="scroll-mt-24" />
+{results && <CheckNote status={checkStatus} className={c.textMuted} />}
 
           {results.core_message && (
             <div className={`${c.warning} border rounded-xl p-4`}>

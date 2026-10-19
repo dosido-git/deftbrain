@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -97,16 +98,25 @@ Generate conversation rescue material. Return ONLY valid JSON:
 
 Generate EXACTLY 5 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
 
-        const parsed = await callClaudeWithRetry({
+        // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the reframe and how to read the room show first; the conversation chains and the rest are written alongside, handed them.
+        const ask = (content, tag) => callClaudeWithRetry({
           model: MODELS.FAST,
-          max_tokens: 4000,
+          max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted speech or lines plainly or with single quotes, or it breaks the JSON.',
-          messages: [{ role: 'user', content: userPrompt }],
-        }, { label: 'awkward-silence-filler' });
-        if (!parsed.conversation_chains && !parsed.silence_reframe) {
-          return res.status(500).json({ error: 'Could not fill the silence. Please try again.' });
-        }
-        return res.json(parsed);
+          messages: [{ role: 'user', content }],
+        }, { label: tag });
+        const PLAN = ['silence_reframe', 'read_the_room'];
+        return await answer(req, res, {
+          label: 'awkward-silence-filler',
+          parts: planFirst(PLAN, () => ask(onlyKeys(userPrompt, PLAN), 'awkward-silence-filler'), [
+          ['conversation_chains'],
+          ['body_language', 'exit_strategies', 'what_not_to_say', 'encouragement'],
+        ],
+            (keys, i, plan) => ask(onlyKeys(userPrompt, keys) + planNote(plan, PLAN), `awkward-silence-filler-${i + 2}`)),
+          finish: d => structuredClone(d),
+          ready: d => Boolean(d.silence_reframe),
+          complete: d => Boolean(d.silence_reframe),
+        });
       }
       // no default
     }

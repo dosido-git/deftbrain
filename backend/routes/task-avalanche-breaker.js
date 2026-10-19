@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -404,21 +405,29 @@ Return ONLY valid JSON:
 after_that: 0 to 2 items, forming one coherent sequence with first_move — not a grab-bag of independently valid but unrelated next steps.
 Never use double-quote characters inside JSON string values.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2600,
-      system: withLanguage(CONTRACT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'TaskAvalancheBreakerV2' });
-
-    const result = validateResult(parsed);
-    if (!result) return res.status(500).json({ error: 'Could not find a useful first foothold. Please try again.' });
-
-    // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-
-    await checkConsistency(result, { label: 'task-avalanche-breaker', userLanguage: req.body?.userLanguage });
-
-    return res.json(result);
+    // Progressive (2026-10-18, lib/progressive.js): the first move shows as
+    // soon as it is written; the consistency check runs after.
+    return await answer(req, res, {
+      label: 'task-avalanche-breaker',
+      parts: [{ required: true,
+        run: async () => {
+          const parsed = await callClaudeWithRetry({
+            model: MODELS.SMART,
+            max_tokens: 2600,
+            system: withLanguage(CONTRACT, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+            messages: [{ role: 'user', content: prompt }],
+          }, { label: 'TaskAvalancheBreakerV2' });
+          const result = validateResult(parsed);
+          if (!result) throw Object.assign(new Error('incomplete'), { userMessage: 'Could not find a useful first foothold. Please try again.' });
+          return result;
+        },
+        apply: (d, out) => Object.assign(d, out) }],
+      finish: d => structuredClone(d),
+      ready: d => Boolean(d.first_move),
+      complete: d => Boolean(d.first_move),
+      // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+      check: result => checkConsistency(result, { label: 'task-avalanche-breaker', userLanguage: req.body?.userLanguage }),
+    });
   } catch (error) {
     console.error('TaskAvalancheBreaker v2 error:', error);
     return res.status(500).json({ error: 'Could not break that project down right now. Please try again.' });

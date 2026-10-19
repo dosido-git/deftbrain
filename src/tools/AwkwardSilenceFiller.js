@@ -48,7 +48,7 @@ const COMFORT_LEVELS = [
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const AwkwardSilenceFiller = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -166,7 +166,8 @@ const AwkwardSilenceFiller = ({ tool }) => {
     const context = getContext();
 
     try {
-      const data = await callToolEndpoint('awkward-silence-filler', {
+      // Progressive (2026-10-18): the first part shows first.
+      const data = await callToolEndpointProgressive('awkward-silence-filler', {
         action: 'full',
         context: context || 'general social situation',
         scenario,
@@ -174,7 +175,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
         comfort: comfort || 'nervous',
         landmines: landmines.trim() || null,
         userLocale, userCurrency, userRegion,
-      });
+      }, { onDraft: d => { setResults(d); } });
       setResults(data);
       setExpandedSections({});
 

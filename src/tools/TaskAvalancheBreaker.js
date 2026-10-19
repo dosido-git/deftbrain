@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -33,7 +34,7 @@ const EXAMPLES = [
 ];
 
 const TaskAvalancheBreaker = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpointProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -63,6 +64,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
   c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [project, setProject] = useState('');
   const [reasons, setReasons] = useState([]);
@@ -102,9 +104,13 @@ const TaskAvalancheBreaker = ({ tool }) => {
       return;
     }
     try {
-      const data = await callToolEndpoint('task-avalanche-breaker', {
+      // Progressive (2026-10-18): the first part shows first; checked after.
+      const data = await callToolEndpointProgressive('task-avalanche-breaker', {
         project: project.trim(),
         stuckReasons: reasons,
+      }, {
+        onDraft: d => { setResult(d); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResult(d); setCheckStatus(checkStatusFor(changed)); },
       });
       setResult(data);
       setShowSmaller(false);
@@ -112,7 +118,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
     } catch (e) {
       setError(e?.message || t('tab_error_generic'));
     }
-  }, [project, reasons, callToolEndpoint, t]);
+  }, [project, reasons, callToolEndpointProgressive, t]);
 
   // Cmd/Ctrl+Enter submits from anywhere on the form.
   useEffect(() => {
@@ -147,11 +153,13 @@ const TaskAvalancheBreaker = ({ tool }) => {
   // too (revealSection does both). Without this, focus stays wherever it
   // was on the button that just got disabled by `loading`, which the
   // browser blurs to <body> the instant a focused element is disabled.
+  // Once per answer, not on every progressive draft.
+  const hasResults = Boolean(result);
   useEffect(() => {
-    if (!result || !resultsRef.current) return;
+    if (!hasResults || !resultsRef.current) return;
     const timer = setTimeout(() => revealSection(resultsRef.current), 250);
     return () => clearTimeout(timer);
-  }, [result]);
+  }, [hasResults]);
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -226,6 +234,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
       {result && (
         <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+{true && <CheckNote status={checkStatus} className={c.textMuted} />}
           {result.project_read && (
             <section className={`border rounded-2xl p-4 ${c.cardAlt} ${c.border}`}>
               <div className={`text-sm ${c.textSecondary}`}>{result.project_read}</div>

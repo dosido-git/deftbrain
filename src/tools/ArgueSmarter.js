@@ -369,7 +369,8 @@ const ArgueSmarter = ({ tool }) => {
 
   const handleAudience = async () => {
     try {
-      const data = await callToolEndpoint('argue-better-audience-judge', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, userLocale, userCurrency, userRegion });
+      // Progressive (2026-10-18): the verdict shows first.
+      const data = await callToolEndpointProgressive('argue-better-audience-judge', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, userLocale, userCurrency, userRegion }, { onDraft: d => setAudienceData(d) });
       if (data) setAudienceData(data);
     } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };

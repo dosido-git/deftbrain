@@ -758,18 +758,21 @@ ARRAY BOUNDS: why_this_range 2-4.
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2000,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone settle on a gift amount they are comfortable with. There is no one correct amount, and you never claim to know what the recipient expects. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatGift' });
-
-    if (!parsed.range) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+    // Progressive (2026-10-18, lib/progressive.js): plan first, the rest
+    // written alongside; the consistency check runs after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatGift', maxTokens: 1500,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone settle on a gift amount they are comfortable with. There is no one correct amount, and you never claim to know what the recipient expects. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['range', 'why_this_range', 'budget_check'],
+        groups: [['social_context', 'if_you_want_to_spend_less', 'if_you_want_to_spend_more']],
+      }),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.range),
+      complete: d => Boolean(d.range),
+      check: d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatGift] Error:', error);
@@ -940,18 +943,21 @@ ARRAY BOUNDS: what_is_known at most 5, what_needs_clarifying at most 4, key_poin
 
 Return ONLY valid JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle a family money question practically. You work from what they told you and nothing else. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatFamily' });
-
-    if (!parsed.practical_issue) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+    // Progressive (2026-10-18, lib/progressive.js): plan first, the rest
+    // written alongside; the consistency check runs after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatFamily', maxTokens: 1500,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle a family money question practically. You work from what they told you and nothing else. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['practical_issue', 'recommendation'],
+        groups: [['what_is_known', 'what_needs_clarifying'], ['conversation']],
+      }),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.practical_issue),
+      complete: d => Boolean(d.practical_issue),
+      check: d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatFamily] Error:', error);
@@ -1278,18 +1284,21 @@ Return ONLY valid JSON:
   "the_unwritten_rule": "The thing nobody says out loud but everyone knows about workplace money in this type of situation — one sentence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2000,
-      system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle a money question at work, using only what they described about their workplace. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'MoneyDiplomatWork' });
-
-    if (!parsed.assessment) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
-    }
-    await checkConsistency(parsed, { label: 'money-diplomat', userLanguage: req.body?.userLanguage });
-    res.json(validateResult(parsed));
+    // Progressive (2026-10-18, lib/progressive.js): plan first, the rest
+    // written alongside; the consistency check runs after.
+    return await answer(req, res, {
+      label: 'money-diplomat',
+      parts: splitParts({
+        prompt, label: 'MoneyDiplomatWork', maxTokens: 1500,
+        system: withLanguage(MONEY_DIPLOMAT_V2 + '\n\nYou help someone handle a money question at work, using only what they described about their workplace. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        planKeys: ['assessment', 'recommendation'],
+        groups: [['if_opting_out', 'scripts'], ['the_unwritten_rule']],
+      }),
+      finish: d => validateResult(structuredClone(d)),
+      ready: d => Boolean(d.assessment),
+      complete: d => Boolean(d.assessment),
+      check: d => checkConsistency(d, { label: 'money-diplomat', userLanguage: req.body?.userLanguage }),
+    });
 
   } catch (error) {
     console.error('[MoneyDiplomatWork] Error:', error);

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { answer } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
@@ -147,30 +148,39 @@ RULES:
 8. BOUNDARY PRESERVATION CHECK: when a version states a request or boundary, it must be the SAME SCOPE as what the user described — a specific time, channel, or behavior stays specific; do not widen it into a general or absolute version (e.g. a complaint about late-night messages must not become a claim of being unavailable after hours generally, unless the user said that). Tone may change the wording, never the scope.
 9. RECENT SESSION LABEL: session_label must be a short, neutral, recognizable description of the issue — not a summary of the message, not a paraphrase of the anger. Do not reproduce insults, profanity, accusations, sensitive details, or emotionally charged wording from the user's draft. Describe the subject (what the disagreement is about), not the user's anger.`;
 
-    const data = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: userPrompt }],
-      system: withLanguage(systemPrompt, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-    }, { label: 'velvet-hammer' });
-
-    if (!data.variants?.length) {
-      return res.status(500).json({ error: 'Failed to generate message variants. Please try again.' });
-    }
-
-    await runOutputGuard(data, {
+    // Progressive (2026-10-18, lib/progressive.js): the three versions show
+    // as soon as they are written; the guard runs after they are on screen.
+    return await answer(req, res, {
       label: 'velvet-hammer',
-      fields: [['core_message', data.core_message], ...data.variants.map((v, i) => [`variants[${i}].message`, v?.message])]
-        .filter(([, v]) => typeof v === 'string' && v.trim()),
-      supplied: `THE USER'S OWN DRAFT (every fact, count, date and amount must match this):\n${draft.trim()}\n\nRecipient: ${relationshipMap[relationship] || 'someone'}. Goal: ${goalMap[goal] || 'address the situation'}. Power: ${powerMap[power] || 'roughly equal'}.`,
-      promise: 'The same message with the heat removed, in three tones, keeping every fact, amount and scope exactly as the user gave it.',
-      guard: router.outputGuard,
-      requiredNonEmpty: ['variants[0].message', 'variants[1].message', 'variants[2].message'],
-      userLanguage: req.body.userLanguage,
-      locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      parts: [{ required: true,
+        run: async () => {
+          const out = await callClaudeWithRetry({
+            model: MODELS.SMART,
+            max_tokens: 4000,
+            messages: [{ role: 'user', content: userPrompt }],
+            system: withLanguage(systemPrompt, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          }, { label: 'velvet-hammer' });
+          if (!out.variants?.length) throw Object.assign(new Error('incomplete'), { userMessage: 'Failed to generate message variants. Please try again.' });
+          return out;
+        },
+        apply: (d, out) => Object.assign(d, out) }],
+      finish: d => structuredClone(d),
+      ready: d => Array.isArray(d.variants) && d.variants.length > 0,
+      complete: d => Array.isArray(d.variants) && d.variants.length > 0,
+      check: async (data) => {
+        await runOutputGuard(data, {
+          label: 'velvet-hammer',
+          fields: [['core_message', data.core_message], ...data.variants.map((v, i) => [`variants[${i}].message`, v?.message])]
+            .filter(([, v]) => typeof v === 'string' && v.trim()),
+          supplied: `THE USER'S OWN DRAFT (every fact, count, date and amount must match this):\n${draft.trim()}\n\nRecipient: ${relationshipMap[relationship] || 'someone'}. Goal: ${goalMap[goal] || 'address the situation'}. Power: ${powerMap[power] || 'roughly equal'}.`,
+          promise: 'The same message with the heat removed, in three tones, keeping every fact, amount and scope exactly as the user gave it.',
+          guard: router.outputGuard,
+          requiredNonEmpty: ['variants[0].message', 'variants[1].message', 'variants[2].message'],
+          userLanguage: req.body.userLanguage,
+          locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        });
+      },
     });
-
-    return res.json(data);
 
   } catch (err) {
     console.error('velvet-hammer error:', err);
