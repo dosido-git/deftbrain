@@ -254,14 +254,14 @@ app.use('/api', (req, res, next) => {
 // Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
 const fs = require('fs');
 const TOOL_IDS = [
-  'AlternatePath','AnalogyEngine','ArgumentSimulator',
+  'AlternatePath','AnalogyEngine',
   'AwkwardSilenceFiller','BatchFlow','BeliefStressTest','BikeMedic',
   'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
   'BrainStateDeejay','BuyWise','CaptionMagic','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
   'BeforeTheCrash','ContractDecoder','ChaosPilot','CultureBriefing','DateNight',
   'ArgueSmarter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
-'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
+'DreamPatternSpotter','DriveHome','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','BeforeHello','GriefGuide','HecklerPrep','HistoryToday','ConceptCoach',
@@ -271,7 +271,7 @@ const TOOL_IDS = [
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','DocumentDetective',
   'SmallChangeBigDifference','PaperworkPath','PartyArchitect','PetBehaviorDecoder','PlainTalk',
   'PlantRescue','PlotHoleFinder','DecisionPrism','BreakMyPlan','ProcedureProbe','HeartOfTheMatter',
-'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','WhatsThatMean','SomeoneSaidItBetter',
+'RecipeChaosSolver','QuoteCheck','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt','WhatsThatMean','SomeoneSaidItBetter',
  'NotSoFast','SafeWalk','ScamRadar','PronounceItRight','TripRecon','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor',
   'TaskAvalancheBreaker','TheWholeStory','TheDebrief',
@@ -299,6 +299,8 @@ RETIRED_SLUGS.forEach(slug => {
 });
 
 // ── Legacy /tool/ route redirects ──
+// Express matches these paths case-insensitively, so '/PlotHole' also catches
+// /plothole and /PLOTHOLE; only kebab-case variants need entries of their own.
 const LEGACY_REDIRECTS = {
   // Crisis Prioritizer -> Chaos Pilot, renamed 2026-09-19: the OLD Chaos
   // Pilot (routine-disruption tool, unrelated function) is renamed to Rut
@@ -307,31 +309,22 @@ const LEGACY_REDIRECTS = {
   // audit/RENAMES.md for the full reasoning (owner call: keep the indexed
   // /ChaosPilot URL rather than 404/redirect it away).
   '/CrisisPrioritizer':        '/ChaosPilot',  // renamed 2026-09-19
-  '/crisisprioritizer':        '/ChaosPilot',
   '/crisis-prioritizer':       '/ChaosPilot',
   '/PlotHole':                 '/PlotHoleFinder',  // renamed 2026-09-06
-  '/plothole':                 '/PlotHoleFinder',
   '/plot-hole':                '/PlotHoleFinder',
   '/PlotTwist':                '/DecisionPrism',  // renamed 2026-09-06
-  '/plottwist':                '/DecisionPrism',
   '/plot-twist':               '/DecisionPrism',
   '/PreMortem':                '/BreakMyPlan',  // renamed 2026-09-07
-  '/premortem':                '/BreakMyPlan',
   '/pre-mortem':               '/BreakMyPlan',
   '/PetWeirdnessDecoder':      '/PetBehaviorDecoder',  // renamed 2026-09-06
-  '/petweirdnessdecoder':      '/PetBehaviorDecoder',
   '/pet-weirdness-decoder':    '/PetBehaviorDecoder',
   '/OnePercenter':             '/SmallChangeBigDifference',  // renamed 2026-09-05
-  '/onepercenter':             '/SmallChangeBigDifference',
   '/one-percenter':            '/SmallChangeBigDifference',
   '/MeetingHijackPreventer':   '/MeetingHijackStopper',  // renamed 2026-09-03
-  '/meetinghijackpreventer':   '/MeetingHijackStopper',
   '/meeting-hijack-preventer': '/MeetingHijackStopper',
   '/MeetingBSDetector':  '/JustifyMyMeeting',  // renamed 2026-09-02
-  '/meetingbsdetector':  '/JustifyMyMeeting',
   '/meeting-bs-detector': '/JustifyMyMeeting',
   '/LuckSurface': '/GetNoticed',   // renamed 2026-09-02
-  '/lucksurface': '/GetNoticed',
   '/luck-surface': '/GetNoticed',
   // Legacy /tool/ routes
  '/tool/renters-deposit-saver': '/RentersDepositSaver',
@@ -349,20 +342,14 @@ const LEGACY_REDIRECTS = {
   '/DopamineMenuBuilder':               '/PEP',
   '/MoneyMoves':                 '/MoneyDiplomat',
   '/NoiseCanceler':              '/DocumentDetective',
-  '/noisecanceler':              '/DocumentDetective',
   '/CutToTheChase':              '/DocumentDetective',
-  '/cuttothechase':              '/DocumentDetective',
   '/RoomReader':                 '/ReadTheRoom',
   '/GravityWell':                '/BeforeHello',
-  '/gravitywell':                '/BeforeHello',
   '/SensoryMinefieldMapper':     '/TripRecon',
-  '/sensoryminefieldmapper':     '/TripRecon',
   '/SensoryScout':               '/TripRecon',
-  '/sensoryscout':               '/TripRecon',
 
   // Idea Autopsy → Concept Coach, renamed 2026-08-31.
   '/IdeaAutopsy':                '/ConceptCoach',
-  '/ideaautopsy':                '/ConceptCoach',
   '/idea-autopsy':               '/ConceptCoach',
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
@@ -395,7 +382,6 @@ const LEGACY_REDIRECTS = {
   // Rescue, the closest live tool (Subscription Tamer's own cross-ref
   // target), rather than 404ing bookmarks and backlinks with no warning.
   '/SubscriptionTamer':          '/BillRescue',
-  '/subscriptiontamer':          '/BillRescue',
   '/subscription-tamer':         '/BillRescue',
   '/SubscriptionGuiltTrip':      '/BillRescue',
   '/subscription-guilt-trip':    '/BillRescue',
@@ -412,22 +398,18 @@ const LEGACY_REDIRECTS = {
   // Redirects to PEP, its established reciprocal cross-ref partner
   // (energy/overwhelm) rather than 404ing.
   '/SpiralStopper':              '/PEP',
-  '/spiralstopper':              '/PEP',
   '/spiral-stopper':             '/PEP',
 
   // JargonAssassin merged into PlainTalk, RutBuster into SmallChangeBigDifference
   // 2026-10-08 (owner, index review — overlapping tools; see audit/RENAMES.md).
   '/JargonAssassin':             '/PlainTalk',
-  '/jargonassassin':             '/PlainTalk',
   '/jargon-assassin':            '/PlainTalk',
   '/RutBuster':                  '/SmallChangeBigDifference',
-  '/rutbuster':                  '/SmallChangeBigDifference',
   '/rut-buster':                 '/SmallChangeBigDifference',
 
   // CrowdWisdom merged into DecisionPrism 2026-10-08 (owner, index review —
   // overlapping decision tools; see audit/RENAMES.md).
   '/CrowdWisdom':                '/DecisionPrism',
-  '/crowdwisdom':                '/DecisionPrism',
   '/crowd-wisdom':               '/DecisionPrism',
 
   // WardrobeChaosHelper retired 2026-09-14 (see audit/RENAMES.md) — hard
@@ -439,7 +421,6 @@ const LEGACY_REDIRECTS = {
   // overlap (per the RelatedLinks algorithm) and the closest live
   // "your clothes" tool, rather than 404ing bookmarks and backlinks.
   '/WardrobeChaosHelper':        '/LaundroMat',
-  '/wardrobechaoshelper':        '/LaundroMat',
   '/wardrobe-chaos-helper':      '/LaundroMat',
 
   // Merged tools — Recharge Radar folded into Social Battery Advisor (its
@@ -482,7 +463,6 @@ const LEGACY_REDIRECTS = {
   // decision) — visiting it 404s rather than forwarding, unlike Recall
   // above.
   '/Recall':                     '/HeartOfTheMatter',
-  '/recall':                     '/HeartOfTheMatter',
 
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
@@ -492,13 +472,7 @@ const LEGACY_REDIRECTS = {
   // the old id in TOOL_IDS would send /apologycalibrator to
   // /ApologyCalibrator and only then to /Mend.
   '/CrashPredictor':             '/BeforeTheCrash',
-  '/crashpredictor':             '/BeforeTheCrash',
   '/crash-predictor':            '/BeforeTheCrash',
-  '/apologycalibrator':          '/Mend',
-  '/rulebookbreaker':            '/NotSoFast',
-  '/hiddenpaths':                '/NotSoFast',
-  '/thealibi':                   '/TheWholeStory',
-  '/thegap':                     '/MissingLink',
   '/apology-calibrator':         '/Mend',
   '/say-it-right':               '/PronounceItRight',
   '/where-did-it-go':            '/WhereDidTheTimeGo',

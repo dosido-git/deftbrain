@@ -383,7 +383,6 @@ Return ONLY valid JSON:
               }
               break;
             }
-            clearTimeout(timeout);
             if (/\/ap\/signin|\/ax\/claim|\/login|\/signin/i.test(current)) {
               return res.json({ reviews: '', code: 'signin', site: new URL(current).hostname.replace(/^www\./, '') });
             }
@@ -409,6 +408,9 @@ Return ONLY valid JSON:
             } else {
               html = (await response.text()).slice(0, 3_000_000);
             }
+            // Cleared only now: the 15s limit covers reading the page too, or a
+            // server that trickles its body holds the request open indefinitely.
+            clearTimeout(timeout);
           } catch (fetchErr) {
             if (/not allowed/.test(fetchErr.message)) return res.status(400).json({ error: 'That URL is not allowed.' });
             if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Page took too long (15s timeout)' });

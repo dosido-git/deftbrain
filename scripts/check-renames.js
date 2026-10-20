@@ -49,9 +49,25 @@ function main() {
     process.exit(1);
   }
 
+  // server.js keeps its own copy of the catalog's tool ids (src/ is not
+  // deployed). A tool missing from it loses its case-insensitive redirect —
+  // QuoteCheck went unlisted for three months and /quotecheck answered 404.
+  const ids = s => [...s].sort().join(', ');
+  const srvIds = new Set((srv.match(/const TOOL_IDS = \[([\s\S]*?)\];/) || [, ''])[1].match(/'([^']+)'/g)?.map(x => x.slice(1, -1)) || []);
+  const catIds = new Set([...fs.readFileSync(path.join(ROOT, 'src', 'data', 'tools.js'), 'utf8').matchAll(/^\s*id:\s*"([^"]+)"/gm)].map(m => m[1]));
+  const unlisted = [...catIds].filter(i => !srvIds.has(i));
+  const stale = [...srvIds].filter(i => !catIds.has(i));
+  if (!srvIds.size || !catIds.size || unlisted.length || stale.length) {
+    console.error(`\n❌ renames: TOOL_IDS in backend/server.js does not match src/data/tools.js.`);
+    if (unlisted.length) console.error(`   Add: ${ids(unlisted)}`);
+    if (stale.length) console.error(`   Remove (no longer a tool id): ${ids(stale)}`);
+    if (!srvIds.size || !catIds.size) console.error('   Could not read one of the two lists — update this script, do not delete the gate.');
+    return 1;
+  }
+
   const missing = renames.filter(r => !redirected.has(r.from.toLowerCase()));
   if (missing.length === 0) {
-    console.log(`✅ renames: all ${renames.length} renamed slug(s) have a server-side 301.`);
+    console.log(`✅ renames: all ${renames.length} renamed slug(s) have a server-side 301; TOOL_IDS matches the catalog (${catIds.size}).`);
     return 0;
   }
 
@@ -59,11 +75,8 @@ function main() {
   missing.forEach(r => console.error(`   /${r.from}  →  should 301 to /${r.to}`));
   console.error(`\n   A client-side alias is not enough: crawlers get the server's 404 and`);
   console.error(`   never run the JS, so the old URL and its signal are lost.\n`);
-  console.error(`   Fix: add both cases to LEGACY_REDIRECTS in backend/server.js:`);
-  missing.forEach(r => {
-    console.error(`     '/${r.from}': '/${r.to}',`);
-    console.error(`     '/${r.from.toLowerCase()}': '/${r.to}',`);
-  });
+  console.error(`   Fix: add to LEGACY_REDIRECTS in backend/server.js (Express matches it in any case):`);
+  missing.forEach(r => console.error(`     '/${r.from}': '/${r.to}',`));
   console.error('');
   return 1;
 }

@@ -96,8 +96,37 @@ anthropic.messages.create = function (params, ...rest) {
     { type: 'text', text: stableText, ...(cached ? { cache_control: { type: 'ephemeral' } } : {}) },
     ...(volatileText ? [{ type: 'text', text: volatileText }] : []),
   ];
-  return _rawMessagesCreate({ ...clean, system }, ...rest);
+  const pending = _rawMessagesCreate({ ...clean, system }, ...rest);
+  if (!clean.stream) logUsage(pending, label, clean.model);
+  return pending;
 };
+
+// Per-call token usage into the metrics sink, keyed by ROUTE (the tool), which
+// the request scope carries (lib/outputStandard.js). Logged HERE, the one layer
+// every non-streaming call passes through, rather than in callClaudeWithRetry:
+// the routes that call create() directly were never counted, and below the
+// surge layer `model` is the one that actually answered, not the one asked for.
+// The SDK's promise is returned untouched; this only watches it.
+function logUsage(pending, label, model) {
+  const startedAt = Date.now();
+  pending.then(message => {
+    const u = (message && message.usage) || {};
+    logMetric('llm_usage', {
+      route: currentRoute(),
+      // Direct API hit (curl, a script, an audit-session verification step) vs.
+      // a real page load — see lib/requestClient.js. Recorded, never excluded.
+      testClient: currentIsTestClient(),
+      label: label || null,
+      model,
+      input: u.input_tokens || 0,
+      output: u.output_tokens || 0,
+      cache_read: u.cache_read_input_tokens || 0,
+      cache_write: u.cache_creation_input_tokens || 0,
+      ms: Date.now() - startedAt,
+      usd: estimateCostUSD(model, u),
+    });
+  }, () => {}).catch(() => { /* never let accounting break a request */ });
+}
 
 // ──────────────────────────────────────────────────────────────────────
 // Current-date injection (global).
@@ -425,7 +454,6 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     let message;
     try {
-      const startedAt = Date.now();
       message = await anthropic.messages.create(requestParams);
       noteApiOutcome(null);
       // Visible only once caching actually activates (see the create() override
@@ -434,28 +462,7 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       if (u.cache_read_input_tokens || u.cache_creation_input_tokens) {
         console.log(`[${label}] cache: wrote=${u.cache_creation_input_tokens || 0} read=${u.cache_read_input_tokens || 0} (in=${u.input_tokens || 0} out=${u.output_tokens || 0})`);
       }
-      // Per-call token usage into the metrics sink, keyed by ROUTE (the tool),
-      // which the request scope carries (lib/outputStandard.js) — `label` is
-      // free-form and can't be aggregated reliably. This is what makes
-      // "what does each tool cost per request" answerable from the dashboard
-      // instead of from grepping deploy logs. Best-effort like every metric.
-      try {
-        logMetric('llm_usage', {
-          route: currentRoute(),
-          // Direct API hit (curl, a script, an audit-session verification
-          // step) vs. a real page load — see lib/requestClient.js. Recorded,
-          // never excluded: the report still counts this cost, just labeled.
-          testClient: currentIsTestClient(),
-          label,
-          model: requestParams.model,
-          input: u.input_tokens || 0,
-          output: u.output_tokens || 0,
-          cache_read: u.cache_read_input_tokens || 0,
-          cache_write: u.cache_creation_input_tokens || 0,
-          ms: Date.now() - startedAt,
-          usd: estimateCostUSD(requestParams.model, u),
-        });
-      } catch (_) { /* never let accounting break a request */ }
+      // Token usage is logged by logUsage() in the create() wrapper above.
     } catch (err) {
       // API/network error (429, 5xx, overload) — transient, worth retrying.
       // A 401/403/credit-exhausted is not: it is recorded so /api/health can
