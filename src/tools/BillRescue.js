@@ -687,7 +687,6 @@ const BillRescue = ({ tool }) => {
     }
     if (r.recommendation?.headline) {
       out += `${t('br_my_recommendation')}: ${r.recommendation.headline}\n`;
-      (r.recommendation.steps || []).forEach(line => { out += `  ${line}\n`; });
       out += '\n';
     }
     if (r.todays_job?.action) {
@@ -1101,25 +1100,11 @@ const BillRescue = ({ tool }) => {
           </div>
         )}
 
-        {/* Three sentences, and they know exactly where they stand. */}
+        {/* One line. Today's job, right below, says what to do first. */}
         {r.recommendation?.headline && (
           <div className={`${c.highlightBg} border rounded-xl p-4`}>
             <p className="text-xs font-bold uppercase tracking-wide mb-1 opacity-80">{t('br_my_recommendation')}</p>
-            <p className={`text-base font-black ${c.text} mb-2`}>{r.recommendation.headline}</p>
-            {!r.todays_job?.action && r.recommendation.steps?.length > 0 && (
-              <ol className="space-y-1">
-                {r.recommendation.steps.map((line, i) => (
-                  <li key={i} className={`text-sm font-bold ${c.text}`}>{i + 1}. {line}</li>
-                ))}
-              </ol>
-            )}
-            {!r.todays_job?.action && r.recommendation.not_today?.length > 0 && (
-              <div className="mt-2 space-y-0.5">
-                {r.recommendation.not_today.map((x, i) => (
-                  <p key={i} className={`text-xs ${c.textMuteded}`}>✕ {x}</p>
-                ))}
-              </div>
-            )}
+            <p className={`text-base font-black ${c.text}`}>{r.recommendation.headline}</p>
           </div>
         )}
 

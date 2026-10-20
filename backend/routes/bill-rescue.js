@@ -295,9 +295,7 @@ Return ONLY valid JSON with ALL applicable sections:
   },
 
   "recommendation": {
-    "headline": "The single most important instruction, as an imperative — 'Do not pay this bill yet.' — 3-8 words",
-    "steps": ["Two or three imperatives, in order, six words or fewer each: 'Request an itemized bill.' 'Apply for financial assistance.' 'Negotiate only after you know the real balance.' No explanation — the reason lives in the step that follows it."],
-    "not_today": ["Two or three things NOT to do today, six words or fewer each: 'Don't make a payment today.' 'Don't discuss what you can afford.'"]
+    "headline": "The single most important instruction, as an imperative — 'Do not pay this bill yet.' — 3-8 words"
   },
 
   "todays_job": {
@@ -360,7 +358,7 @@ Return ONLY valid JSON with ALL applicable sections:
 
 Your response MUST contain ALL ${keysA.length} top-level keys — ${keysA.join(', ')} — and NO other keys.
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, money_you_might_not_owe ≤ 4, where_you_stand ≤ 3, recommendation.steps ≤ 3, not_today ≤ 3, not_yet ≤ 3, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, money_you_might_not_owe ≤ 4, where_you_stand ≤ 3, not_yet ≤ 3, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
 
 CONSISTENCY RULES (recompute before writing — numbers must reconcile):
 - total_potential_savings MUST equal the sum of the flagged_charges amounts.
