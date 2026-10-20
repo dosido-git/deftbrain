@@ -25,6 +25,11 @@ const backendUrl = () => {
 const BUSY_RETRIES = 2;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+// The visitor's time zone, so the server's "today" is their today, not UTC's.
+const userTimezone = (() => {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined; } catch (_) { return undefined; }
+})();
+
 export const useClaudeAPI = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -54,7 +59,7 @@ export const useClaudeAPI = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency })
+          body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency, userTimezone })
         });
         if (response.status !== 503 || attempt >= BUSY_RETRIES) break;
         const peek = await response.clone().json().catch(() => ({}));
@@ -128,7 +133,7 @@ export const useClaudeAPI = () => {
       const response = await fetch(`${backendUrl()}/api/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency }),
+        body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency, userTimezone }),
       });
 
       if (!response.ok) {
@@ -227,7 +232,7 @@ export const useClaudeAPI = () => {
         response = await fetch(`${backendUrl()}/api/${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...data, progressive: true, userLanguage, userLocale, userRegion, userCurrency }),
+          body: JSON.stringify({ ...data, progressive: true, userLanguage, userLocale, userRegion, userCurrency, userTimezone }),
           signal: ctrl.signal,
         });
         if (response.status !== 503 || attempt >= BUSY_RETRIES) break;
@@ -313,7 +318,7 @@ export const useClaudeAPI = () => {
     const response = await fetch(`${backendUrl()}/api/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency }),
+      body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency, userTimezone }),
     });
     const json = await response.json().catch(() => ({}));
     if (!response.ok) {

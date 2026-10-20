@@ -1013,14 +1013,21 @@ server.headersTimeout = 6000;
 
 // Graceful shutdown. Railway SIGTERMs the old container at each deploy cutover;
 // we must exit 0 BEFORE Railway's SIGKILL, or it emails a false "Deploy
-// Crashed!". Exit fast (2.5s backstop) rather than waiting on connection drain.
+// Crashed!". server.close() stops new connections and exits once the answers
+// already being written finish — a tool run takes 10-120s, and a 2.5s cutoff
+// dropped every one in flight at each deploy. The backstop follows Railway's
+// draining time (RAILWAY_DEPLOYMENT_DRAINING_SECONDS, set on the service) less
+// 5s, so we still exit before the SIGKILL; unset, it stays at 2.5s.
+const DRAIN_S = Number(process.env.RAILWAY_DEPLOYMENT_DRAINING_SECONDS) || 0;
+const SHUTDOWN_GRACE_MS = DRAIN_S > 10 ? (DRAIN_S - 5) * 1000 : 2500;
 let shuttingDown = false;
 function shutdown(signal) {
   if (shuttingDown) return;
   shuttingDown = true;
-  console.log(`${signal} received — shutting down gracefully (exit 0)`);
+  console.log(`${signal} received — waiting up to ${SHUTDOWN_GRACE_MS / 1000}s for answers in progress, then exit 0`);
   server.close(() => process.exit(0));
-  setTimeout(() => { console.log('shutdown grace elapsed — forcing exit 0'); process.exit(0); }, 2500).unref();
+  server.closeIdleConnections(); // idle keep-alive sockets would otherwise hold close() open
+  setTimeout(() => { console.log('shutdown grace elapsed — forcing exit 0'); process.exit(0); }, SHUTDOWN_GRACE_MS).unref();
 }
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT',  () => shutdown('SIGINT'));

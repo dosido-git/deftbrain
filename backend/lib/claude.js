@@ -4,7 +4,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { MODELS, ALL_MODELS } = require('./models');
 const { withEpistemics } = require('./epistemics');
-const { currentRoute, currentIsTestClient } = require('./outputStandard');
+const { currentRoute, currentIsTestClient, currentRequestBody } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
 const { withSurge, isSurging, noteUnclearInput } = require('./surge');
@@ -112,11 +112,21 @@ anthropic.messages.create = function (params, ...rest) {
 // block instead of the cached one — see that wrapper's comment. (Until
 // 2026-09-24 this prepended the date onto the system string here, which put
 // it inside the cached prefix and reset every route's cache once every 24h.)
+// "Today" is the visitor's date, not the server's: Railway runs in UTC, so
+// from 8pm in New York (5pm in California) a visitor was told it was tomorrow.
+// The browser sends its time zone as userTimezone (useClaudeAPI); a call with
+// none, or an unknown zone, keeps the server's date as before.
+function todayLine(timeZone) {
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  if (typeof timeZone === 'string' && timeZone) {
+    try { return new Date().toLocaleDateString('en-US', { ...opts, timeZone }); } catch (_) { /* unknown zone */ }
+  }
+  return new Date().toLocaleDateString('en-US', opts);
+}
+
 const _messagesCreate = anthropic.messages.create.bind(anthropic.messages);
 anthropic.messages.create = function (params, ...rest) {
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  });
+  const today = todayLine((currentRequestBody() || {}).userTimezone);
   const dateLine = `CURRENT DATE: Today is ${today}. Reason from this date as "now" — treat model years, product ages, prices, recency, availability, and any reference to "current"/"this year"/"new" accordingly. Do not assume an earlier year.`;
   return _messagesCreate({ ...params, __dateLine: dateLine }, ...rest);
 };
