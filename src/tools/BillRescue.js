@@ -51,13 +51,6 @@ const REASONS = [
 
 // One colour per verdict, so a 🟡 that means "still early" never looks like
 // a 🔴 that means "this is already on your credit file".
-// The ending names tomorrow's goal as well as today's. That is the first step
-// whose `when` is not today — not step 2, which may also be today.
-function nextAfterToday(steps) {
-  const rest = (steps || []).filter(s2 => !/today/i.test(s2.when || ''));
-  return rest.length ? (rest[0].title || rest[0].action) : null;
-}
-
 // Steps arrive with a when ("Today", "Tomorrow", "After step 3"). Group them
 // in first-seen order — chronological already, and sorting alphabetically
 // would put "After step 3" before "Today".
@@ -1113,14 +1106,14 @@ const BillRescue = ({ tool }) => {
           <div className={`${c.highlightBg} border rounded-xl p-4`}>
             <p className="text-xs font-bold uppercase tracking-wide mb-1 opacity-80">{t('br_my_recommendation')}</p>
             <p className={`text-base font-black ${c.text} mb-2`}>{r.recommendation.headline}</p>
-            {r.recommendation.steps?.length > 0 && (
+            {!r.todays_job?.action && r.recommendation.steps?.length > 0 && (
               <ol className="space-y-1">
                 {r.recommendation.steps.map((line, i) => (
                   <li key={i} className={`text-sm font-bold ${c.text}`}>{i + 1}. {line}</li>
                 ))}
               </ol>
             )}
-            {r.recommendation.not_today?.length > 0 && (
+            {!r.todays_job?.action && r.recommendation.not_today?.length > 0 && (
               <div className="mt-2 space-y-0.5">
                 {r.recommendation.not_today.map((x, i) => (
                   <p key={i} className={`text-xs ${c.textMuteded}`}>✕ {x}</p>
@@ -1166,6 +1159,45 @@ const BillRescue = ({ tool }) => {
             <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
           </div>
         )}
+
+            {/* A numbered list reads like a textbook; a timeline reads like a
+                week. Grouped by when, in the order the model gave them, so
+                "Today" is two items rather than five things all at once — and
+                the script waits behind a disclosure instead of tripling the
+                height of every step. */}
+            {r.action_steps?.length > 0 && (
+              <Section icon="🗺️" title={t('br_sec_roadmap')} defaultOpen c={c}>
+                <div className="space-y-4">
+                  {groupByWhen(r.action_steps).map(([when, steps]) => (
+                    <div key={when}>
+                      <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>
+                      <div className="space-y-2">
+                        {steps.map((step, i) => (
+                          <div key={i} className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
+                            <p className={`text-sm font-bold ${c.text}`}>✓ {step.title}</p>
+                            <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
+                            {step.script && (
+                              <details className="group mt-2">
+                                <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
+                                  {t('br_show_words')} <Caret groupOpen />
+                                </summary>
+                                <div className={`${c.card} border rounded-lg p-3 mt-1.5`}>
+                                  <p className={`text-xs ${c.text}`}>"{step.script}"</p>
+                                </div>
+                              </details>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {(r.bill_autopsy || r.money_you_might_not_owe?.length > 0 || r.know_your_rights?.length > 0 || r.what_they_wont_tell_you?.length > 0 || r.assistance_programs?.length > 0 || r.verified_sources?.length > 0) && (
+              <p className={`text-xs font-semibold uppercase tracking-wide pt-2 ${c.textMuted}`}>{t('br_grp_bill')}</p>
+            )}
 
             {/* Bill autopsy */}
             {r.bill_autopsy && (
@@ -1224,39 +1256,52 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* A numbered list reads like a textbook; a timeline reads like a
-                week. Grouped by when, in the order the model gave them, so
-                "Today" is two items rather than five things all at once — and
-                the script waits behind a disclosure instead of tripling the
-                height of every step. */}
-            {r.action_steps?.length > 0 && (
-              <Section icon="🗺️" title={t('br_sec_roadmap')} defaultOpen c={c}>
-                <div className="space-y-4">
-                  {groupByWhen(r.action_steps).map(([when, steps]) => (
-                    <div key={when}>
-                      <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>
-                      <div className="space-y-2">
-                        {steps.map((step, i) => (
-                          <div key={i} className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
-                            <p className={`text-sm font-bold ${c.text}`}>✓ {step.title}</p>
-                            <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
-                            {step.script && (
-                              <details className="group mt-2">
-                                <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
-                                  {t('br_show_words')} <Caret groupOpen />
-                                </summary>
-                                <div className={`${c.card} border rounded-lg p-3 mt-1.5`}>
-                                  <p className={`text-xs ${c.text}`}>"{step.script}"</p>
-                                </div>
-                              </details>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+            {/* Insider knowledge */}
+            {r.what_they_wont_tell_you?.length > 0 && (
+              <Section icon="🤫" title={t('br_sec_insider')} c={c}>
+                <div className="space-y-2">
+                  {r.what_they_wont_tell_you.map((secret, i) => (
+                    <div key={i} className={`${c.warning} border rounded-lg p-3`}>
+                      <p className="text-xs">💡 {secret}</p>
                     </div>
                   ))}
                 </div>
               </Section>
+            )}
+
+            {/* Assistance programs */}
+            {r.assistance_programs?.length > 0 && (
+              <Section icon="💚" title={t('br_sec_assistance')} c={c}>
+                <div className="space-y-2">
+                  {r.assistance_programs.map((prog, i) => (
+                    <div key={i} className={`${c.success} border rounded-lg p-3`}>
+                      <p className={`text-xs font-bold ${c.successFg}`}>{prog.program}</p>
+                      <p className="text-xs mt-1">{t('br_who_qualifies')}: {prog.who_qualifies}</p>
+                      <p className="text-xs">{t('br_how_to_apply')}: {prog.how_to_apply}</p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {/* Verified sources — real pages web_search actually visited for
+                the billing-protection law/programs above (lib/groundedFacts.js),
+                not a model-recalled domain name. Absent, not empty, when the
+                pre-pass didn't run or cited nothing — see bill-rescue.js. */}
+            {r.verified_sources?.length > 0 && (
+              <Section icon="🔎" title={t('br_verified_sources_header')} c={c}>
+                <div className="space-y-2">
+                  {r.verified_sources.map((src, i) => (
+                    <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
+                      {src.title} ↗
+                    </a>
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {(r.phone_script || r.payment_plan || r.escalation_ladder?.length > 0 || r.collections_defense || r.hardship_letter) && (
+              <p className={`text-xs font-semibold uppercase tracking-wide pt-2 ${c.textMuted}`}>{t('br_grp_contact')}</p>
             )}
 
             {/* Payment plan */}
@@ -1372,58 +1417,8 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* Insider knowledge */}
-            {r.what_they_wont_tell_you?.length > 0 && (
-              <Section icon="🤫" title={t('br_sec_insider')} c={c}>
-                <div className="space-y-2">
-                  {r.what_they_wont_tell_you.map((secret, i) => (
-                    <div key={i} className={`${c.warning} border rounded-lg p-3`}>
-                      <p className="text-xs">💡 {secret}</p>
-                    </div>
-                  ))}
-                </div>
-              </Section>
-            )}
-
-            {/* Assistance programs */}
-            {r.assistance_programs?.length > 0 && (
-              <Section icon="💚" title={t('br_sec_assistance')} c={c}>
-                <div className="space-y-2">
-                  {r.assistance_programs.map((prog, i) => (
-                    <div key={i} className={`${c.success} border rounded-lg p-3`}>
-                      <p className={`text-xs font-bold ${c.successFg}`}>{prog.program}</p>
-                      <p className="text-xs mt-1">{t('br_who_qualifies')}: {prog.who_qualifies}</p>
-                      <p className="text-xs">{t('br_how_to_apply')}: {prog.how_to_apply}</p>
-                    </div>
-                  ))}
-                </div>
-              </Section>
-            )}
-
-            {/* Verified sources — real pages web_search actually visited for
-                the billing-protection law/programs above (lib/groundedFacts.js),
-                not a model-recalled domain name. Absent, not empty, when the
-                pre-pass didn't run or cited nothing — see bill-rescue.js. */}
-            {r.verified_sources?.length > 0 && (
-              <Section icon="🔎" title={t('br_verified_sources_header')} c={c}>
-                <div className="space-y-2">
-                  {r.verified_sources.map((src, i) => (
-                    <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
-                      {src.title} ↗
-                    </a>
-                  ))}
-                </div>
-              </Section>
-            )}
-
-            {/* Worst case */}
-            {r.worst_case && (
-              <Section icon="⚠️" title={t('br_sec_worst_case')} c={c}>
-                <p className={`text-sm ${c.textSecondary}`}>{r.worst_case}</p>
-                {r.worst_case_reassurance && (
-                  <p className={`text-xs ${c.textMuteded} italic`}>💚 {r.worst_case_reassurance}</p>
-                )}
-              </Section>
+            {(r.follow_up || r.worst_case) && (
+              <p className={`text-xs font-semibold uppercase tracking-wide pt-2 ${c.textMuted}`}>{t('br_grp_later')}</p>
             )}
 
             {/* Follow-up */}
@@ -1450,6 +1445,29 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
+            {/* Worst case */}
+            {r.worst_case && (
+              <Section icon="⚠️" title={t('br_sec_worst_case')} c={c}>
+                <p className={`text-sm ${c.textSecondary}`}>{r.worst_case}</p>
+                {r.worst_case_reassurance && (
+                  <p className={`text-xs ${c.textMuteded} italic`}>💚 {r.worst_case_reassurance}</p>
+                )}
+              </Section>
+            )}
+
+            {/* ── The ending: one thing to leave with. It used to restate
+                today's job and the next step under three more "next"
+                headings; both are already the first things on the page. ── */}
+            {(r.todays_job?.action || r.recommendation?.headline) && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-sm font-bold ${c.text} mb-2`}>💚 {t('br_end_remember')}</p>
+                <p className={`text-xs ${c.text}`}>{t('br_end_remember_body')}</p>
+                {r.permission && (
+                  <p className={`text-sm ${c.textSecondary} mt-3 pt-3 border-t ${c.border}`}>{r.permission}</p>
+                )}
+              </div>
+            )}
+
             {/* ── What you might do next, named as actions rather than as the
                 screens they open. These were nine pills across the top of the
                 form, before the visitor had a bill analysed or any reason to
@@ -1471,39 +1489,6 @@ const BillRescue = ({ tool }) => {
                 ))}
               </div>
             </div>
-
-            {/* ── The ending. The old page's best sentence was buried in a
-                collapsed section; a bill is a negotiation, not a deadline, and
-                that is what a person should leave with. ── */}
-            {(r.todays_job?.action || r.recommendation?.headline) && (
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-sm font-bold ${c.text} mb-2`}>💚 {t('br_youre_set')}</p>
-                <dl className="space-y-1.5">
-                  {r.todays_job?.action && (
-                    <div>
-                      <dt className={`text-[13px] font-bold ${c.text}`}>{t('br_end_today')}</dt>
-                      <dd className={`text-xs ${c.text}`}>{r.todays_job.action}</dd>
-                    </div>
-                  )}
-                  {nextAfterToday(r.action_steps) && (
-                    <div>
-                      <dt className={`text-[13px] font-bold ${c.text}`}>{t('br_end_next')}</dt>
-                      <dd className={`text-xs ${c.text}`}>{nextAfterToday(r.action_steps)}</dd>
-                    </div>
-                  )}
-                  <div>
-                    <dt className={`text-[13px] font-bold ${c.text}`}>{t('br_end_remember')}</dt>
-                    <dd className={`text-xs ${c.text}`}>{t('br_end_remember_body')}</dd>
-                  </div>
-                </dl>
-                <p className={`text-xs ${c.textMuteded} mt-2`}>{t('br_end_comeback')}</p>
-                {/* Was a green card three sections earlier, where it read as one
-                    more panel. It is the last thing a person should hear. */}
-                {r.permission && (
-                  <p className={`text-sm ${c.textSecondary} mt-3 pt-3 border-t ${c.border}`}>{r.permission}</p>
-                )}
-              </div>
-            )}
 
             <p className={`text-xs ${c.textMuteded} text-center px-4`}>
               {t('br_disclaimer_general')}
