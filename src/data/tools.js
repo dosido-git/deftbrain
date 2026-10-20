@@ -1669,7 +1669,7 @@ export const tools = [
     ],
     disclaimer: "General information, not legal advice. Appeal rights and deadlines depend on your state and on whether your plan is insured or self-funded — your denial letter says which rules apply.",
   },
-  description: "We'll help you understand the appeals process, identify overlooked options, find the right escalation path, and prepare for conversations with the people who can actually make decisions.",
+  description: "Been told no by a company, agency, or institution? DeftBrain helps you find what usually goes unmentioned: exceptions that aren't advertised, how the appeal works, who can actually change the decision, and how to escalate if the first answer stands.",
   guide: {
       tips: [
         "The 'magic phrases' section is literal — use the exact wording provided",
@@ -4075,7 +4075,7 @@ export const tools = [
       },
     ],
   },
-  description: "Some stories are hard to tell. Share the real story—even the messy parts—and we'll help you explain it honestly and strategically.",
+  description: "Have a gap, a firing, or a messy chapter you'll need to explain? Share the real story, and DeftBrain helps you tell it honestly for the audience in front of you — what to lead with, what to leave out, and how to say it.",
   guide: {
     tips: [
       "The messier and more honest your input, the better the framing — don't self-censor",
@@ -4605,7 +4605,7 @@ export const tools = [
   icon: "✍️",
   categories: ['Career', 'Conversations'],
   headerColor: "#ccdfc4",
-  description: "You already know why this person deserves your recommendation. The difficult part is turning years of experience, impressions, and memories into a letter that does them justice.",
+  description: "A finished recommendation letter, built on specific evidence and written in your voice. Tell DeftBrain about the person and why they deserve it, and you'll have a letter that sounds like you wrote it with care.",
   exampleOutput: {
     title: "See what Ghost Writer gives you",
     expandLabel: "See the full real example results ↓",
@@ -5531,7 +5531,7 @@ tagline: "Work with the energy you have.",
     ],
     disclaimer: "Check every bullet against what actually happened before you use it — a résumé claim has to survive an interview question.",
   },
-  description: "Most people remember their mistakes more easily than their accomplishments. Tell DeftBrain what you've been working on, and we'll help you recognize, organize, and communicate the value you've already created.",
+  description: "Turn what you've done into a case for your review, a promotion, or a resume that undersells you. Tell DeftBrain what you've been working on, and it writes specific statements with real verbs and numbers, then builds the case around them.",
   crossRefs: ['DifficultTalkCoach', 'ColdOpenCraft'],
   guide: {
     tips: [
@@ -5627,7 +5627,7 @@ tagline: "Work with the energy you have.",
     ],
     disclaimer: "Border and security wait times vary by day and season; check the airport's own guidance before you leave the terminal.",
   },
-  description: "Your layover isn't just a block of time. It's a puzzle to solve. DeftBrain looks at your connection, subtracts everything that gets in the way, and tells you what remains. Then it builds a plan around the hours you actually have—not the hours you thought you had.",
+  description: "Find out whether your layover leaves time to get out of the airport — go, stay, or risky. DeftBrain takes your connection, subtracts transit, security, and buffer time, shows what's really left, and plans around those hours with a time to be back by.",
   guide: {
     tips: [
       "Use Compare when booking — the layover can make or break a trip",
@@ -6120,7 +6120,7 @@ tagline: "Work with the energy you have.",
     ],
     disclaimer: "General information, not legal advice. Contact details for a real company are worth confirming before you send anything.",
   },
-  description: "When a company ignores you, the problem isn't always the complaint. It's knowing what to do next. Tell DeftBrain what happened, and we'll build a step-by-step escalation plan — from your next email to regulatory complaints and executive outreach if necessary.",
+  description: "When a company stops answering your complaint, DeftBrain lays out how to escalate: the rules that may apply, the letters to send, and who to contact at each step — from your next email up to regulators and executives if it comes to that.",
   guide: {
     tips: [
       "The more specific your description, the stronger every stage of the campaign will be — include dates, amounts, names, reference numbers",
@@ -6167,7 +6167,7 @@ tagline: "Work with the energy you have.",
   icon: '🔍',
   categories: ['Learning'],
   headerColor: "#d4dde8",
-  description: "Most complex text isn't trying to confuse you — it was written for an audience that already shares a context you don't have. Paste anything and PlainTalk bridges the gap: plain-English translation plus a structural X-ray showing how the text is built — its argument, narrative, logic, or obligations — adapted automatically to what you're reading.",
+  description: "Plain English for anything you can read but can't quite follow. Paste it, and PlainTalk explains what it says, then shows how it's built — the argument, the logic, or the obligations — and what it leaves out.",
   exampleOutput: {
     title: "See what Plain Talk gives you",
     expandLabel: "See the full real example results ↓",
@@ -7518,7 +7518,7 @@ tagline: "Work with the energy you have.",
     ],
     disclaimer: "Explains what the notes say; it doesn't replace your doctor's or pharmacist's advice.",
   },
-  description: "Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain will translate them into plain English.",
+  description: "Understand what your doctor told you once you're home and the details have blurred. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain explains them in plain English — what matters most, and what to ask at your follow-up.",
   guide: {
     tips: [
       "The more detail you include, the more accurate the translation — paste the actual notes if possible",
@@ -7633,7 +7633,7 @@ tagline: "Work with the energy you have.",
   icon: "🏡",
   categories: ['Home & Daily Life', 'Money'],
   headerColor: "#c0d8b8",
-  description: "Leases are full of language most renters never question until something goes wrong. Upload your lease, and DeftBrain will flag unusual clauses, explain them in plain English, and help you spot problems before they become expensive surprises.",
+  description: "Before you sign a lease, find out which clauses could cost you. Upload or paste your lease, and DeftBrain flags unusual or unfair clauses, explains each one in plain English, and checks it against tenant law where you live.",
 
   // Public, reviewed demonstration. This is deliberately static: the React page
   // and scripts/prerender.js both render this same object, so visitors and
@@ -8272,7 +8272,7 @@ tagline: "Work with the energy you have.",
     ],
     disclaimer: "General information, not legal or financial advice. Credit-reporting and debt rules change; check the current rules where you live.",
   },
-  description: "That envelope, email, or collection notice doesn't have to ruin your week. Tell DeftBrain what's happening, and we'll help you turn an intimidating bill into a practical, step-by-step plan for understanding the bill, protecting your rights, reducing what you owe, and deciding what to do next.",
+  description: "See where you stand with a bill that's wrong, too big, or already late: how urgent it is, what you may not owe, and one thing to do today, with the words to say when you do it.",
   guide: {
     tips: [
       "Start with Quick Check for any charge you're unsure about — it takes 5 seconds",
@@ -8388,7 +8388,7 @@ tagline: "Work with the energy you have.",
       },
     ],
   },
-  description: "Not every mistake needs the same apology, and getting the size wrong in either direction makes it worse. Describe what happened and you'll find out what this actually needs — the words to say, the ones that make it worse, and one thing to do today. It corrects over-apologizing as readily as under-apologizing.",
+  description: "An apology that fits what actually happened — not bigger, not smaller. Describe it, and Mend weighs the harm against your share of it, then gives you words sized to fit, plus the ones that would make it worse. It catches over-apologizing as readily as under-apologizing.",
   guide: {
     tips: [
       "Small misses are far more common than people think — most interactions don't need an apology at all",
@@ -8721,7 +8721,7 @@ tagline: "Work with the energy you have.",
       },
     ],
   },
-  description: "Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Say what you're working on, pick a companion, and you're not alone anymore.",
+  description: "Hard to start, or stay on, a task when you're working alone? Say what you're working on, pick a companion, and it keeps you company until the timer ends, checking in along the way. That's body doubling: the focus that comes from someone else being in the room.",
   guide: {
     tips: [
       "Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Long Haul for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off",
