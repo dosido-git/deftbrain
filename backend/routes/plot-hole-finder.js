@@ -6,7 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 const { checkWorldFacts } = require('../lib/worldFacts');
-const { answer } = require('../lib/progressive');
+const { answer, onlyKeys } = require('../lib/progressive');
 
 // Story facts from a source, not from memory (2026-10-08). A Dark Knight Rises
 // run said Gordon chose not to deliver his speech (Bane reads it out) and that
@@ -371,6 +371,8 @@ ${NO_QUOTE_RULE}`;
 }`;
     const schemaLine = `Return ONLY valid JSON matching this exact shape:\n${FIND_SCHEMA}`;
     if (!prompt.includes(schemaLine)) throw new Error('plot-hole plan: answer template not found in prompt');
+    // The writing passes likewise see only their own keys of the template.
+    const sysFor = keys => withLanguage(onlyKeys(prompt, keys), userLanguage) + locale;
     const planSystem = withLanguage(prompt.replace(schemaLine, `THIS PASS ONLY DECIDES — later passes write the answer. Return ONLY valid JSON matching this exact shape:\n${PLAN_SHAPE}`), userLanguage) + locale;
 
     const synopsisPromise = plotSynopsis(title.trim(), mediaType).catch(() => null);
@@ -410,22 +412,22 @@ ${JSON.stringify({ overall_label: plan?.overall_label, focus_verdict: plan?.focu
         { required: true,
           run: () => ask(`${planText}
 
-THIS PASS writes only the verdict (other passes write the answer to the visitor's question, the findings and the closing sections at the same time). Return ONLY valid JSON with these keys from the schema: title_analyzed, overall_verdict (label = the plan's overall_label), swiss_cheese_rating, swiss_cheese_note.`, 'plot-hole-find-verdict', 1200),
+THIS PASS writes only the verdict (other passes write the answer to the visitor's question, the findings and the closing sections at the same time). Return ONLY valid JSON with these keys from the schema: title_analyzed, overall_verdict (label = the plan's overall_label), swiss_cheese_rating, swiss_cheese_note.`, 'plot-hole-find-verdict', 1200, sysFor(['title_analyzed', 'overall_verdict', 'swiss_cheese_rating', 'swiss_cheese_note'])),
           apply: (d, o) => { ['title_analyzed', 'overall_verdict', 'swiss_cheese_rating', 'swiss_cheese_note'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
         // Speed (2026-10-17): the focus answer is its own pass, so the verdict
         // shows under 15s.
         { run: () => (plan?.focus_verdict ? ask(`${planText}
 
-THIS PASS writes only focus_answer (verdict = the plan's focus_verdict). Other passes write the verdict, the findings and the closing sections at the same time. Return ONLY valid JSON: { "focus_answer": { every key of focus_answer in the schema } }`, 'plot-hole-find-focus', 1200) : Promise.resolve({ focus_answer: { show: false } })),
+THIS PASS writes only focus_answer (verdict = the plan's focus_verdict). Other passes write the verdict, the findings and the closing sections at the same time. Return ONLY valid JSON: { "focus_answer": { every key of focus_answer in the schema } }`, 'plot-hole-find-focus', 1200, sysFor(['focus_answer'])) : Promise.resolve({ focus_answer: { show: false } })),
           apply: (d, o) => { if (o?.focus_answer !== undefined) d.focus_answer = o.focus_answer; } },
         { run: () => ask(`${planText}
 
-THIS PASS writes only the closing sections (other passes write the verdict and the findings at the same time). Return ONLY valid JSON with these keys from the schema: strongest_case, hardest_question, what_the_story_gets_right, why_it_still_works. strongest_case.finding, when shown, is one of the planned finding names exactly.`, 'plot-hole-find-closing', 1500),
+THIS PASS writes only the closing sections (other passes write the verdict and the findings at the same time). Return ONLY valid JSON with these keys from the schema: strongest_case, hardest_question, what_the_story_gets_right, why_it_still_works. strongest_case.finding, when shown, is one of the planned finding names exactly.`, 'plot-hole-find-closing', 1500, sysFor(['strongest_case', 'hardest_question', 'what_the_story_gets_right', 'why_it_still_works'])),
           apply: (d, o) => { ['strongest_case', 'hardest_question', 'what_the_story_gets_right', 'why_it_still_works'].forEach(k => { if (o?.[k] !== undefined) d[k] = o[k]; }); } },
         ...planned.map((f, i) => ({
           run: () => ask(`${planText}
 
-THIS PASS writes ONE finding in full: "${f.name}". Keep its name, type, severity and verdict exactly as planned. Return ONLY valid JSON: { "finding": { one object with every key of a findings item in the schema } }`, 'plot-hole-find-finding', 1500),
+THIS PASS writes ONE finding in full: "${f.name}". Keep its name, type, severity and verdict exactly as planned. Return ONLY valid JSON: { "finding": { one object with every key of a findings item in the schema } }`, 'plot-hole-find-finding', 1500, sysFor(['findings'])),
           apply: (d, o) => {
             const got = o?.finding || (Array.isArray(o?.findings) ? o.findings[0] : null);
             if (got) slots[i] = { ...got, name: f.name, type: f.type || got.type, severity: f.severity ?? got.severity, verdict: f.verdict || got.verdict };

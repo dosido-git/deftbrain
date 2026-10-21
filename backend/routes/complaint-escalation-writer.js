@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer, noOverlap } = require('../lib/progressive');
+const { answer, noOverlap, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -347,7 +347,9 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
     // slowest of the three. Two passes now write disjoint halves of it.
     const ALL_STRATEGY = ['situation_assessment', 'legal_leverage', 'timeline', 'evidence_checklist', 'quick_tips', 'call_script'];
     const SIX = 'Your response MUST contain ALL SIX top-level keys — situation_assessment, legal_leverage, evidence_checklist, timeline, quick_tips, call_script — never omit any of them.';
-    const strategyFor = (keys) => promptStrategy.replace(SIX, `THIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Another pass writes the other keys of the schema below at the same time — return exactly these keys, never omit one, and leave the others out.`)
+    // onlyKeys: a half shown all six keys of the template sometimes writes all
+    // six and runs out of room (Plot Hole Finder, live, 2026-10-21).
+    const strategyFor = (keys) => onlyKeys(promptStrategy.replace(SIX, `THIS PASS writes ONLY these top-level keys: ${keys.join(', ')}. Another pass writes the other keys of the schema below at the same time — return exactly these keys, never omit one, and leave the others out.`), keys)
       + `\nReturn ONLY the keys ${keys.join(', ')}.` + noOverlap(['escalation_stages (the letters — each makes its own case to its own reader, so the guidance sections need not repeat it)', ...ALL_STRATEGY.filter(k => !keys.includes(k))]);
     const flattenTimeline = (parsed) => {
       // The UI renders each timeline value directly as text. If the model nests
