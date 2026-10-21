@@ -357,14 +357,28 @@ LIMITS: findings AT MOST 5 (usually 2-5; 1 is fine; 0 is fine — say so in over
 
 ${NO_QUOTE_RULE}`;
 
-    const systemPrompt = withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const systemPrompt = withLanguage(prompt, userLanguage) + locale;
+    // The plan pass must not see the whole answer template: with it in the
+    // system prompt the model sometimes wrote the full answer and hit the
+    // plan's 900-token ceiling (live 500, 2026-10-21). It gets the plan shape.
+    const enumOf = key => FIND_SCHEMA.match(new RegExp(`"${key}": "([^"]*)"`))[1];
+    const PLAN_SHAPE = `{
+  "title_analyzed": "",
+  "overall_label": "${enumOf('label')}",
+  "focus_verdict": "${enumOf('verdict')} — when the visitor supplied a question, else null",
+  "findings": [{ "name": "", "type": "${enumOf('type')}", "severity": "${enumOf('severity')}", "verdict": "${enumOf('verdict')}" }]
+}`;
+    const schemaLine = `Return ONLY valid JSON matching this exact shape:\n${FIND_SCHEMA}`;
+    if (!prompt.includes(schemaLine)) throw new Error('plot-hole plan: answer template not found in prompt');
+    const planSystem = withLanguage(prompt.replace(schemaLine, `THIS PASS ONLY DECIDES — later passes write the answer. Return ONLY valid JSON matching this exact shape:\n${PLAN_SHAPE}`), userLanguage) + locale;
 
     const synopsisPromise = plotSynopsis(title.trim(), mediaType).catch(() => null);
     const userTurn = `Find the plot holes in ${title.trim()}.`;
-    const ask = (extra, label, maxTokens) => callClaudeWithRetry({
+    const ask = (extra, label, maxTokens, system = systemPrompt) => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: maxTokens,
-      system: systemPrompt,
+      system,
       messages: [{ role: 'user', content: `${userTurn}\n\n${extra}\n\n${NO_QUOTE_RULE}` }],
     }, { label });
 
@@ -382,7 +396,7 @@ ${NO_QUOTE_RULE}`;
   "focus_verdict": "the focus_answer verdict when the visitor supplied a question, else null",
   "findings": [{ "name": "", "type": "", "severity": "", "verdict": "" }]
 }
-Use the exact enum values from the schema. findings AT MOST 5 (0 is fine). Names are short and specific.`, 'plot-hole-find-plan', 900);
+Use the exact enum values from the schema. findings AT MOST 5 (0 is fine). Names are short and specific.`, 'plot-hole-find-plan', 900, planSystem);
     const planned = (Array.isArray(plan?.findings) ? plan.findings : []).filter(f => f?.name).slice(0, 5);
     const planText = `THE PLAN (already decided — follow it exactly; never change a name, type, severity or verdict):
 ${JSON.stringify({ overall_label: plan?.overall_label, focus_verdict: plan?.focus_verdict ?? null, findings: planned })}`;
