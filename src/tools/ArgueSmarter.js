@@ -214,6 +214,10 @@ const ArgueSmarter = ({ tool }) => {
 
   // Persistent
   const [sessionHistory, setSessionHistory] = usePersistentState('debate-me-history', []);
+  // Unfinished debates, kept as you go so a reload never loses one. A debate
+  // leaves this list when it is finished and reviewed (it moves to the log).
+  const [drafts, setDrafts] = usePersistentState('debate-me-drafts', []);
+  const debateIdRef = useRef(null);
 
   // ── Refs ──
   const lastTurnRef = useRef(null);
@@ -263,6 +267,7 @@ const ArgueSmarter = ({ tool }) => {
   const handleOpen = async () => {
     if (!position.trim()) { setError(t('dm_err_position')); return; }
     setError(''); setCoachData(null); setShowCoach(false); setAudienceData(null); setArgMapData(null); setCheckStatus(null);
+    debateIdRef.current = String(Date.now());
     // Progressive (2026-10-16): the opening turn fills in as its parts land
     // and is double-checked after (CheckNote says so).
     const show = (data) => {
@@ -301,7 +306,7 @@ const ArgueSmarter = ({ tool }) => {
           ...(data.fallacy_traps?.length ? [{ speaker: 'system', text: t('dm_sys_rematch', { count: data.targeted_weaknesses?.length || 0 }), timestamp: now() }] : [])
         ]);
         setTurnCount(1); setHasSwitched(false); setCoachData(null); setAudienceData(null); setArgMapData(null);
-        setScorecardData(null); setMode('debate');
+        setScorecardData(null); setMode('debate'); debateIdRef.current = String(Date.now());
       }
     } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
@@ -364,6 +369,7 @@ const ArgueSmarter = ({ tool }) => {
       const data = await callToolEndpoint('argue-better-scorecard', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, challengeLevel: level, didSwitch: hasSwitched, format, userLocale, userCurrency, userRegion });
       if (data) {
         setScorecardData(data); setMode('scorecard');
+        setDrafts(prev => prev.filter(x => x.id !== debateIdRef.current));
         const fn = data.fallacies_used?.map(f => f.type) || [];
         setSessionHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6)); // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
       }
@@ -430,12 +436,28 @@ const ArgueSmarter = ({ tool }) => {
   };
 
   const startNew = () => {
+    debateIdRef.current = null;
     setMode('setup'); setPosition(''); setFormat('freeform');
     cancelProgressive(); setCheckStatus(null); setDebateHistory([]); setScorecardData(null); setAudienceData(null); setArgMapData(null);
     setCoachData(null); setShowCoach(false); setSourceData(null); setShowSource(false);
     setUserInput(''); setTurnCount(0); setHasSwitched(false); setError(''); setReplayIndex(null);
   };
   const handleReset = startNew;
+
+  useEffect(() => {
+    const id = debateIdRef.current;
+    if (!id || debateHistory.length < 2 || scorecardData) return;
+    const draft = { id, position, userSide, aiSide, coreTension, level, format, switched: hasSwitched, turns: turnCount, history: debateHistory, timestamp: now() };
+    setDrafts(prev => [draft, ...prev.filter(x => x.id !== id)].slice(0, 6));
+  }, [debateHistory, position, userSide, aiSide, coreTension, level, format, hasSwitched, turnCount, scorecardData, setDrafts]);
+
+  const continueDraft = (d) => {
+    cancelProgressive(); debateIdRef.current = d.id;
+    setPosition(d.position); setUserSide(d.userSide); setAiSide(d.aiSide); setCoreTension(d.coreTension);
+    setLevel(d.level); setFormat(d.format); setHasSwitched(d.switched); setTurnCount(d.turns); setDebateHistory(d.history);
+    setScorecardData(null); setCoachData(null); setShowCoach(false); setSourceData(null); setShowSource(false);
+    setAudienceData(null); setArgMapData(null); setCheckStatus(null); setUserInput(''); setError(''); setMode('debate');
+  };
 
   // ═══ TEXT BUILDER ═══
   const buildText = (h = debateHistory, sc = scorecardData) => {
@@ -753,9 +775,9 @@ const ArgueSmarter = ({ tool }) => {
               says what it is now. */}
           {debateHistory.filter(h => h.speaker !== 'system').length < 4 && (
             <p className={`text-[13px] ${c.textMuted} text-center`}>
-              {4 - debateHistory.filter(h => h.speaker !== 'system').length === 1
+              {Math.ceil((4 - debateHistory.filter(h => h.speaker !== 'system').length) / 2) === 1
                 ? t('dm_unlock_one')
-                : t('dm_unlock_many', { count: 4 - debateHistory.filter(h => h.speaker !== 'system').length })}
+                : t('dm_unlock_many', { count: Math.ceil((4 - debateHistory.filter(h => h.speaker !== 'system').length) / 2) })}
             </p>
           )}
         </div>
@@ -891,6 +913,22 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* AI disclaimer */}
       {/* ─── Log (footnote) ─── */}
+      {(mode === 'stats' || mode === 'replay') && drafts.length > 0 && (
+        <div data-print-hide className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <p className={`text-sm font-medium ${c.text}`}>⏸️ {t('dm_in_progress')}</p>
+          {drafts.map(d => (
+            <div key={d.id} className={`${c.cardAlt} rounded-lg p-3`}>
+              <p className={`text-sm font-bold ${c.text}`}>{d.userSide || d.position?.slice(0, 60)}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{t('dm_vs')} {d.aiSide} · {d.turns}{t('dm_replay_turns')} · {new Date(d.timestamp).toLocaleDateString()}</p>
+              <div className="flex gap-2 mt-2">
+                <button onClick={() => continueDraft(d)} className={`text-xs ${c.orangeText} font-bold`}>▶ {t('dm_continue')}</button>
+                <button onClick={() => setDrafts(prev => prev.filter(x => x.id !== d.id))} className={`text-[13px] ${c.textMuteded} ms-auto`}>🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {(mode === 'stats' || mode === 'replay') && sessionHistory.length > 0 && (
         <div data-print-hide className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
           <button onClick={() => setShowLog(!showLog)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium ${c.text}`}>
