@@ -399,14 +399,13 @@ function noteApiOutcome(err) {
 }
 
 // A single blip is not an outage; two in a row with no success between them is.
-// Also expires, so a resolved billing problem stops paging once traffic recovers
-// — and a long-idle service is not reported as down on the strength of an hour-old
-// failure nobody has retried.
-const API_BLOCK_TTL_MS = 10 * 60 * 1000;
+// Only a success clears it — no expiry. Every kind recorded here (billing, auth,
+// retired model) stays broken until someone fixes it; a 10-minute expiry turned
+// health green at 8:50 on 2026-10-22 while the spend cap blocked every call
+// for five more hours.
 function getApiBlock() {
   if (!_apiBlock) return null;
   if (_apiBlock.consecutive < 2) return null;
-  if (Date.now() - _apiBlock.at > API_BLOCK_TTL_MS) return null;
   return _apiBlock;
 }
 
