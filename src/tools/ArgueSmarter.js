@@ -216,7 +216,9 @@ const ArgueSmarter = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('debate-me-history', []);
 
   // ── Refs ──
-  const bottomRef = useRef(null);
+  const lastTurnRef = useRef(null);
+  const coachRef = useRef(null);
+  const sourceRef = useRef(null);
   const resultsRef = useRef(null);
   const handleRef = useRef(null);
   const canSubmitRef = useRef(false);
@@ -450,7 +452,11 @@ const ArgueSmarter = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || 'Argue Smarter');
 
-  useEffect(() => { revealSection(bottomRef.current); }, [debateHistory, loading, showCoach]);
+  // Each action shows its output from the top: a new turn (reply, Concede,
+  // Switch sides), the coach's notes, or the fact-check.
+  useEffect(() => { if (debateHistory.length) revealSection(lastTurnRef.current); }, [debateHistory.length]);
+  useEffect(() => { if (showCoach) revealSection(coachRef.current); }, [showCoach, coachData]);
+  useEffect(() => { if (showSource) revealSection(sourceRef.current); }, [showSource]);
   useEffect(() => { if (scorecardData) revealSection(resultsRef.current); }, [scorecardData]);
 
   // Keyboard: Cmd/Ctrl+Enter submits from setup
@@ -701,11 +707,11 @@ const ArgueSmarter = ({ tool }) => {
           </div>
         </div>
 
-        {debateHistory.map((turn, i) => <Turn key={i} turn={turn} />)}
+        {debateHistory.map((turn, i) => <div key={i} ref={i === debateHistory.length - 1 ? lastTurnRef : null} className="scroll-mt-24"><Turn turn={turn} /></div>)}
 
         {/* Coach */}
-        {showCoach && coachData && <div className={`${c.coachBub} border rounded-xl p-4 space-y-3`}>
-          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${c.coachLabel}`}>{t('dm_coach')}</span><button onClick={() => setShowCoach(false)} className={`text-[13px] ${c.textMuteded} ms-auto`}>✕</button></div>
+        {showCoach && coachData && <div ref={coachRef} className={`${c.coachBub} border rounded-xl p-4 space-y-3 scroll-mt-24`}>
+          <div className="flex items-center gap-2"><h3 className={`font-bold text-lg ${c.text}`}>🧑‍🏫 {t('dm_coach_btn')}</h3><button onClick={() => setShowCoach(false)} className={`text-[13px] ${c.textMuteded} ms-auto`}>✕</button></div>
           {coachData.encouragement && <p className={`text-sm ${c.textSecondary} italic`}>{coachData.encouragement}</p>}
           {coachData.angles?.map((a, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-medium ${c.text}`}>→ {a.approach}</p><p className={`text-xs ${c.textSecondary}`}>{a.why_effective}</p><p className={`text-xs ${c.orangeText} italic`}>{t('dm_coach_start')} "{a.example_opener}..."</p></div>)}
           {coachData.opponent_weakness && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs">🎯 <strong>{t('dm_coach_weakness')}</strong> {coachData.opponent_weakness}</p></div>}
@@ -714,8 +720,8 @@ const ArgueSmarter = ({ tool }) => {
         </div>}
 
         {/* Source Check */}
-        {showSource && <div className={`border-t ${c.border} pt-5 space-y-3`}>
-          <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 {t('dm_source_check')}</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
+        {showSource && <div ref={sourceRef} className={`border-t ${c.border} pt-5 space-y-3 scroll-mt-24`}>
+          <div className="flex items-center justify-between"><h3 className={`font-bold text-lg ${c.text}`}>🔍 {t('dm_factcheck')}</h3><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-[13px] ${c.textMuteded}`}>✕</button></div>
           {!sourceData && loading && <p className={`text-[13px] ${c.textMuteded}`}><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</p>}
           {sourceData && <div className="space-y-2">
           <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
@@ -729,7 +735,6 @@ const ArgueSmarter = ({ tool }) => {
           </div>}
         </div>}
 
-        <div ref={bottomRef}  className="scroll-mt-24"/>
 
         {/* Input */}
         <div data-print-hide className={`border-t ${c.border} pt-5 space-y-3`}>
@@ -740,8 +745,8 @@ const ArgueSmarter = ({ tool }) => {
             <button onClick={handleCoach} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🧑‍🏫 {t('dm_coach_btn')}</button>
             <button onClick={() => { const next = !showSource; setShowSource(next); if (next) handleSourceCheck(); else setSourceData(null); }} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🔍 {t('dm_factcheck')}</button>
             <button onClick={handleSwitch} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🔄 {t('dm_switch_sides')}</button>
-            <button onClick={handleScorecard} disabled={loading || debateHistory.length < 4} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📊 {t('dm_score_finish')}</button>
           </div>
+          <button onClick={handleScorecard} disabled={loading || debateHistory.length < 4} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📊 {t('dm_score_finish')}</button>
           {/* "2 more exchanges to unlock scoring" made the goal winning
               rather than understanding. The debrief still needs a couple of
               exchanges to have anything to say, so the line stays — it just
