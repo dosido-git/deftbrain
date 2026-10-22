@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Caret from '../components/Caret';
+import ToolTabs from '../components/ToolTabs';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
@@ -205,7 +206,7 @@ const ArgueSmarter = ({ tool }) => {
 
   // Highlight reel
   const [highlightData, setHighlightData] = useState(null);
-  const [showLog, setShowLog] = useState(false);
+  const [showLog, setShowLog] = useState(true);
   const [replayIndex, setReplayIndex] = useState(null);
   // Which saved debate is being re-run. `loading` alone dims every row's
   // rematch button, so the one you pressed is indistinguishable.
@@ -521,7 +522,24 @@ const ArgueSmarter = ({ tool }) => {
     </div>
   ));
 
-  // ═══ TAB BUTTON ═══
+  // ═══ TABS ═══
+  // Five tabs, Debate selected by default (ToolTabs, 2026-10-22). Setup, the
+  // conversation and its review all live under Debate; a saved debate's replay
+  // lives under Saved. Coming back to Debate returns to where you were in it.
+  const DEBATE_MODES = ['setup', 'debate', 'scorecard'];
+  const lastDebateRef = useRef('setup');
+  if (DEBATE_MODES.includes(mode)) lastDebateRef.current = mode;
+  const tabOf = (m) => (DEBATE_MODES.includes(m) ? 'debate' : m === 'replay' ? 'stats' : m);
+  const goTab = (id) => { setError(''); setMode(id === 'debate' ? lastDebateRef.current : id); };
+  const TABS = [
+    { id: 'debate', icon: '🥊', label: t('dm_tab_main'), tone: 'amber' },
+    { id: 'quick', icon: '⚡', label: t('dm_tab_quick'), tone: 'blue' },
+    { id: 'prep', icon: '🎯', label: t('dm_tab_prep'), tone: 'teal' },
+    { id: 'fallacy', icon: '🧩', label: t('dm_tab_fallacy'), tone: 'rose' },
+    { id: 'stats', icon: '📈', label: t('dm_tab_saved'), tone: 'green' },
+  ];
+
+  // Conversation / review switch inside the Debate tab.
   const Tab = ({ id, icon, label, count }) => <button onClick={() => { setMode(id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === id ? c.on : c.off}`}><span className="me-1">{icon}</span> {label}{count ? ` (${count})` : ''}</button>;
 
   // ═══ RESULTS (scorecard) ═══
@@ -621,28 +639,19 @@ const ArgueSmarter = ({ tool }) => {
             </div>
           </div>
         </div>
-        {/* ── The other ways in ──────────────────────────────────────────────
-            Five tabs used to sit above the position box: Quick, Prep, Fallacy
-            Gym and Stats are four answers to questions nobody has asked before
-            typing anything, and they made the front door read as a control
-            panel rather than a question. Hidden on setup, where the only thing
-            that matters is what you believe; they come back under the submit
-            button as things you might now want. The row still renders on every
-            other view, or there is no way back. */}
-        {mode !== 'setup' && (
-          <div className="pt-4 flex flex-wrap gap-1.5">
-            <Tab id="setup" icon="🥊" label={t('dm_tab_new')} />
-            <Tab id="quick" icon="⚡" label={t('dm_tab_quick')} />
-            <Tab id="prep" icon="🎯" label={t('dm_tab_prep')} />
-            <Tab id="fallacy" icon="🧩" label={t('dm_tab_fallacy')} />
-            {(mode === 'debate' || debateHistory.length > 0) && <Tab id="debate" icon="💬" label={t('dm_tab_debate', { count: turnCount })} />}
-            <Tab id="stats" icon="📈" label={t('dm_tab_stats')} />
-          </div>
-        )}
       </div>
 
+      <ToolTabs label={tool?.title || 'Argue Smarter'} active={tabOf(mode)} onChange={goTab} tabs={TABS}>
+      <div className="space-y-4">
+      {(mode === 'debate' || mode === 'scorecard') && scorecardData && (
+        <div data-print-hide className="flex flex-wrap gap-1.5">
+          <Tab id="debate" icon="💬" label={t('dm_tab_debate', { count: turnCount })} />
+          <Tab id="scorecard" icon="🔍" label={t('dm_scorecard')} />
+        </div>
+      )}
+
       {/* ═══ SETUP ═══ */}
-      {mode === 'setup' && <div data-print-form className={`border-t ${c.border} pt-5 space-y-5`}>
+      {mode === 'setup' && <div data-print-form className={`space-y-5`}>
         <div><h3 className={`font-bold text-lg ${c.text}`}>🥊 {t('dm_setup_heading')}</h3><p className={`text-sm ${c.textMuteded} mt-1`}>{t('dm_setup_sub')}</p></div>
         <div>
           <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
@@ -664,16 +673,6 @@ const ArgueSmarter = ({ tool }) => {
           )}
         </button>
 
-        {/* The other ways in, after the ask rather than before it */}
-        <div data-print-hide>
-          <p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_other_ways')}</p>
-          <div className="flex flex-wrap gap-1.5">
-            <Tab id="quick" icon="⚡" label={t('dm_tab_quick')} />
-            <Tab id="prep" icon="🎯" label={t('dm_tab_prep')} />
-            <Tab id="fallacy" icon="🧩" label={t('dm_tab_fallacy')} />
-            {sessionHistory?.length > 0 && <Tab id="stats" icon="📈" label={t('dm_tab_stats')} />}
-          </div>
-        </div>
         <p data-print-hide className={`text-[13px] ${c.textMuted}`}>
           {t('dm_setup_xref')}{' '}<a href="/BeliefStressTest" className={linkStyle}>🧪 {t('dm_belief_stress_test')}</a>{' '}
           {t('dm_setup_xref2')}
@@ -692,11 +691,12 @@ const ArgueSmarter = ({ tool }) => {
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.neutralBadge}`}>{t('dm_ai_side', { side: cAS })}</span>
                 {format !== 'freeform' && <span className={`text-xs px-2 py-0.5 rounded-full ${c.infoCard} border`}>{FORMATS.find(f => f.id === format)?.icon} {t(FORMATS.find(f => f.id === format)?.labelKey || 'dm_fmt_freeform')}</span>}
               </div>
-              {coreTension && <p className={`text-[13px] ${c.textMuteded} mt-1`}>{coreTension}</p>}
+              {coreTension && <div className="mt-1.5"><p className={`text-xs font-bold ${c.textMuted}`}>{t('dm_core_tension_label')}</p><p className={`text-[13px] ${c.textMuteded}`}>{coreTension}</p></div>}
             </div>
             <div className="flex items-center gap-2">
               <span className={`text-xs font-bold ${c.orangeText}`}>{t('dm_turn', { count: turnCount })}</span>
-              <div className="flex gap-0.5">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} title={t(lv.labelKey)} className={`px-2 h-7 rounded-lg text-xs font-semibold flex items-center gap-1 ${level === lv.id ? c.levelOn : c.levelOff}`}>{lv.icon} {t(lv.labelKey)}</button>)}</div>
+              <span className={`text-xs ${c.textMuted}`}>{t('dm_challenge')}:</span>
+              <div className="flex gap-0.5">{LEVELS.map(lv => <button key={lv.id} aria-pressed={level === lv.id} onClick={() => setLevel(lv.id)} title={t(lv.descKey)} className={`px-2 h-7 rounded-lg text-xs font-semibold flex items-center gap-1 ${level === lv.id ? c.levelOn : c.levelOff}`}>{lv.icon} {t(lv.labelKey)}</button>)}</div>
             </div>
           </div>
         </div>
@@ -767,7 +767,7 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ QUICK SPAR ═══ */}
       {mode === 'quick' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+        <div className={`space-y-4`}>
           <div className="flex items-center justify-between gap-3">
             <h3 className={`font-bold ${c.text}`}>⚡ {t('dm_quick_spar')}</h3>
             <button onClick={loadQuickExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
@@ -787,7 +787,7 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ PREP MODE ═══ */}
       {mode === 'prep' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+        <div className={`space-y-4`}>
           <div className="flex items-start justify-between gap-3">
             <div><h3 className={`font-bold ${c.text}`}>🎯 {t('dm_prep_heading')}</h3><p className={`text-sm ${c.textMuteded}`}>{t('dm_prep_sub')}</p></div>
             <button onClick={loadPrepExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
@@ -821,7 +821,7 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ FALLACY GYM ═══ */}
       {mode === 'fallacy' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+        <div className={`space-y-4`}>
           <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>🧩 {t('dm_fallacy_gym')}</h3>{ftStreak > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.success} border`}>🔥 {t('dm_streak', { count: ftStreak })}</span>}</div>
           <p className={`text-sm ${c.textMuteded}`}>{t('dm_fallacy_sub')}</p>
           <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_difficulty')}</p><div className="flex gap-2">{[['easy', 'dm_diff_easy'], ['medium', 'dm_diff_medium'], ['hard', 'dm_diff_hard']].map(([d, k]) => <button key={d} onClick={() => setFtDifficulty(d)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${ftDifficulty === d ? c.on : c.off}`}>{d === 'easy' ? '🟢' : d === 'medium' ? '🟡' : '🔴'} {t(k)}</button>)}</div></div>
@@ -851,9 +851,9 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* ═══ STATS ═══ */}
       {mode === 'stats' && (() => { const s = computeStats(); return <div className="space-y-4">
-        <div className={`border-t ${c.border} pt-5`}>
+        <div className={""}>
           <h3 className={`font-bold text-lg ${c.text} mb-4`}>📈 {t('dm_stats')}</h3>
-          {!s ? <p className={`text-sm ${c.textMuteded}`}>{t('dm_complete_first')}</p> : <div className="space-y-4">
+          {!s ? <div className="space-y-3"><p className={`text-sm ${c.textMuteded}`}>{t('dm_complete_first')}</p>{debateHistory.length >= 4 && <button onClick={handleScorecard} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📊 {t('dm_score_finish')}</button>}</div> : <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[[t('dm_stat_debates'), s.total, '🥊'], [t('dm_stat_avg'), s.avg + '/10', '🧠'], [t('dm_stat_best'), s.best + '/10', '⭐'], [t('dm_stat_turns'), s.tot, '💬']].map(([l, v, i]) => <div key={l} className={`${c.cardAlt} rounded-xl p-3 text-center`}><p className="text-lg">{i}</p><p className={`text-xl font-black ${c.text}`}>{v}</p><p className={`text-[13px] ${c.textMuteded}`}>{l}</p></div>)}</div>
             {s.trend && <div className={`${s.trend.dir === 'up' ? c.success : s.trend.dir === 'down' ? c.warning : c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{s.trend.dir === 'up' ? `📈 ${t('dm_improving')}` : s.trend.dir === 'down' ? `📉 ${t('dm_dipping')}` : `➡️ ${t('dm_steady')}`}</p><p className="text-xs mt-1">{t('dm_early_recent', { early: s.trend.early, recent: s.trend.recent })}</p></div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -886,7 +886,7 @@ const ArgueSmarter = ({ tool }) => {
 
       {/* AI disclaimer */}
       {/* ─── Log (footnote) ─── */}
-      {sessionHistory.length > 0 && (
+      {(mode === 'stats' || mode === 'replay') && sessionHistory.length > 0 && (
         <div data-print-hide className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
           <button onClick={() => setShowLog(!showLog)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium ${c.text}`}>
             <span>📜 {t('dm_debate_log', { count: sessionHistory.length })}</span>
@@ -949,6 +949,8 @@ const ArgueSmarter = ({ tool }) => {
           {t('dm_sim_disclaimer')}
         </p>
       )}
+      </div>
+      </ToolTabs>
     </div>
   );
 };
