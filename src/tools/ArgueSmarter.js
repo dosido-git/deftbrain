@@ -134,8 +134,6 @@ const ArgueSmarter = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Bespoke keys
-    on:            isDark ? 'bg-[#1f2530] border-[#7fb3e0] text-zinc-100' : 'bg-[#eef3f8] border-[#142a43] text-[#142a43]',
-    off:           isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-gray-400',
     formLabel:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentCard:    isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     infoCard:      isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
@@ -568,7 +566,7 @@ const ArgueSmarter = ({ tool }) => {
   ];
 
   // Conversation / review switch inside the Debate tab.
-  const Tab = ({ id, icon, label, count }) => <button onClick={() => { setMode(id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === id ? c.on : c.off}`}><span className="me-1">{icon}</span> {label}{count ? ` (${count})` : ''}</button>;
+  const Tab = ({ id, icon, label, count }) => <button onClick={() => { setMode(id); setError(''); }} aria-pressed={mode === id} className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${mode === id ? `font-bold ${c.levelOn}` : `font-medium ${c.levelOff}`}`}><span className="me-1">{icon}</span> {label}{count ? ` (${count})` : ''}</button>;
 
   // ═══ RESULTS (scorecard) ═══
   const renderResults = () => {
@@ -797,9 +795,11 @@ const ArgueSmarter = ({ tool }) => {
         <div className={`space-y-4`}>
           <div className="flex items-center justify-between gap-3">
             <h3 className={`font-bold ${c.text}`}>⚡ {t('dm_quick_spar')}</h3>
+          </div>
+          <div className="flex items-end justify-between gap-3 -mb-2">
+            <label className={`block text-[15px] font-semibold ${c.labelText}`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
             <button onClick={loadQuickExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
           </div>
-          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
           <textarea value={quickPosition} onChange={e => setQuickPosition(e.target.value)} placeholder={t('dm_quick_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(t(s.key))} className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary} border ${c.border}`}>{s.cat} {t(s.key).substring(0, 30)}...</button>)}</div>
           <button onClick={handleQuick} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_challenging')}</> : `⚡ ${t('dm_challenge_me')}`}</button>
@@ -817,13 +817,15 @@ const ArgueSmarter = ({ tool }) => {
         <div className={`space-y-4`}>
           <div className="flex items-start justify-between gap-3">
             <div><h3 className={`font-bold ${c.text}`}>🎯 {t('dm_prep_heading')}</h3><p className={`text-sm ${c.textMuteded}`}>{t('dm_prep_sub')}</p></div>
+          </div>
+          <div className="flex items-end justify-between gap-3 -mb-2">
+            <label className={`block text-[15px] font-semibold ${c.labelText}`}>{t('dm_prep_position_label')} <span className={c.required}>*</span></label>
             <button onClick={loadPrepExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
           </div>
-          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_prep_position_label')} <span className={c.required}>*</span></label>
           <textarea value={prepPosition} onChange={e => setPrepPosition(e.target.value)} placeholder={t('dm_prep_position_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepAudience} onChange={e => setPrepAudience(e.target.value)} placeholder={t('dm_prep_audience_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepContext} onChange={e => setPrepContext(e.target.value)} placeholder={t('dm_prep_context_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_prep_stakes')}</p><div className="flex gap-2">{[['low', 'dm_stake_low'], ['moderate', 'dm_stake_moderate'], ['high', 'dm_stake_high'], ['career-defining', 'dm_stake_career']].map(([s, k]) => <button key={s} onClick={() => setPrepStakes(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${prepStakes === s ? c.on : c.off}`}>{t(k)}</button>)}</div></div>
+          <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_prep_stakes')}</p><div className="flex gap-2">{[['low', 'dm_stake_low'], ['moderate', 'dm_stake_moderate'], ['high', 'dm_stake_high'], ['career-defining', 'dm_stake_career']].map(([s, k]) => <button key={s} onClick={() => setPrepStakes(s)} aria-pressed={prepStakes === s} className={`px-3 py-1.5 rounded-lg text-xs ${prepStakes === s ? `font-bold ${c.levelOn}` : `font-medium ${c.levelOff}`}`}>{t(k)}</button>)}</div></div>
           <button onClick={handlePrep} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '🥊'}</span> {t('dm_simulating')}</> : `🎯 ${t('dm_prep_me')}`}</button>
         </div>
         {prepData && <div className="space-y-4">
