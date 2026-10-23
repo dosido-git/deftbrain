@@ -8,6 +8,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { checkConsistency } = require('../lib/outputGuard');
 const { bothChecks } = require('../lib/bothChecks');
 const { progressive } = require('../lib/progressive');
+const { reviewAnalogies } = require('../lib/analogyCheck');
 // Fact-check pass (2026-10-02): a teaching tool can't ship a wrong number or
 // a false "misconception". Shared checker in lib/factCheck.js; here it also
 // checks facts (not only numbers) and may drop a myth that is actually true.
@@ -102,7 +103,10 @@ Analogies already shown (do not repeat their idea or domain): ${shown.map(a => S
 ` : '';
     // Three or more analogies are written by two calls at once, split by type
     // (each knows the other's types and domains, so they do not overlap).
-    const halves = TYPES.length >= 3 ? [TYPES.slice(0, Math.ceil(TYPES.length / 2)), TYPES.slice(Math.ceil(TYPES.length / 2))] : [TYPES];
+    // "Show more" writes its two analogies as two calls at once (2026-10-23):
+    // one call writing both took ~15s.
+    const halves = more ? TYPES.map(t => [t])
+      : TYPES.length >= 3 ? [TYPES.slice(0, Math.ceil(TYPES.length / 2)), TYPES.slice(Math.ceil(TYPES.length / 2))] : [TYPES];
     const analogyPrompt = (mine) => `${anchor}${header}
 
 ${more ? '' : 'Other passes write the rest of the explanation at the same time. '}THIS PASS writes exactly ${mine.length} ${mine.length === 1 ? 'analogy' : 'analogies'}, one of each type, each from its own domain:
@@ -135,7 +139,17 @@ ${TIP}
       model: MODELS.SMART, max_tokens: 2500, system,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label });
-    const runChecks = (draft) => bothChecks(draft,
+    // T12: a weak analogy is rewritten first, so the number and consistency
+    // checks then read the replacement.
+    const AKEYS = ['title', 'analogy', 'why_it_works', 'where_it_breaks'];
+    const pick = (o) => Object.fromEntries(AKEYS.filter(k => typeof o?.[k] === 'string').map(k => [k, o[k]]));
+    const improveAnalogies = async (draft) => {
+      const list = Array.isArray(draft.analogies) ? draft.analogies : [];
+      const fixes = await reviewAnalogies(list.map(a => ({ fields: pick(a) })),
+        { concept, audience: [audience, audienceInterests].filter(Boolean).join(' — interests: '), label: 'analogy-engine', userLanguage });
+      for (const f of fixes) if (typeof f.fields.analogy === 'string' && f.fields.analogy.trim()) list[f.index] = { ...list[f.index], ...pick(f.fields) };
+    };
+    const runChecks = async (draft) => { await improveAnalogies(draft); return bothChecks(draft,
       d => withNumberCheck(d, {
         label: 'analogy-engine',
         context: `Explain ${concept} to ${audience || 'a general adult'}.`,
@@ -146,12 +160,33 @@ ${TIP}
         userLanguage,
       }),
       d => checkConsistency(d, { label: 'analogy-engine', userLanguage }),
-      { label: 'analogy-engine' });
+      { label: 'analogy-engine' }); };
 
     // Progressive (2026-10-15, lib/progressive.js): the browser asks for it.
     // Small parts at once — the one-liner and key insight (~100 tokens, shown
     // in a few seconds), one call per analogy, and the rest — each sent as it
     // lands; the checks run after the answer is on screen.
+    // "Show more", progressive: each new analogy shows as it lands; the
+    // checks run after both are on screen.
+    if (req.body.progressive === true && more) {
+      const slots = new Array(TYPES.length).fill(null);
+      return await progressive(req, res, {
+        label: 'analogy-engine-more',
+        parts: TYPES.map((type, i) => ({
+          run: () => ask(analogyPrompt([type]), 'analogy-engine-more'),
+          apply: (d, o) => {
+            const a = (Array.isArray(o?.analogies) ? o.analogies : []).find(x => x && typeof x.analogy === 'string' && x.analogy.trim());
+            if (a) slots[i] = a;
+            d.analogies = slots.filter(Boolean);
+          },
+        })),
+        finish: d => ({ analogies: d.analogies || [] }),
+        ready: d => (d.analogies || []).length > 0,
+        complete: d => (d.analogies || []).length > 0,
+        check: runChecks,
+      });
+    }
+
     if (req.body.progressive === true && !more) {
       const corePrompt = `${header}
 

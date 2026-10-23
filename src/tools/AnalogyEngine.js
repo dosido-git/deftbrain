@@ -59,7 +59,7 @@ const EXAMPLE_PAIRS = [
 ];
 
 const AnalogyEngine = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -164,7 +164,10 @@ const AnalogyEngine = ({ tool }) => {
     setMoreLoading(true);
     setError('');
     try {
-      const data = await callToolEndpoint('analogy-engine', {
+      // Progressive (2026-10-23): each new analogy shows as it lands.
+      const base = results.analogies;
+      const add = d => { if (Array.isArray(d?.analogies) && d.analogies.length) setResults(prev => (prev ? { ...prev, analogies: [...base, ...d.analogies] } : prev)); };
+      const data = await callToolEndpointProgressive('analogy-engine', {
         concept: concept.trim() || results.concept_name,
         audience: audience.trim() || 'general adult',
         audienceInterests: audienceInterests.trim() || null,
@@ -174,10 +177,11 @@ const AnalogyEngine = ({ tool }) => {
         oneLiner: results.one_liner,
         keyInsight: results.the_key_insight,
         userLocale, userCurrency, userRegion,
+      }, {
+        onDraft: d => { add(d); setMoreLoading(false); },
+        onChecked: d => add(d),
       });
-      if (Array.isArray(data?.analogies) && data.analogies.length) {
-        setResults(prev => (prev ? { ...prev, analogies: [...(prev.analogies || []), ...data.analogies] } : prev));
-      }
+      add(data);
     } catch (err) {
       setError(err.message || t('ae_error'));
     } finally {

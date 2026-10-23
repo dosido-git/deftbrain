@@ -31,6 +31,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 | T10 | Too-vague input answered in words, shown as a generic error | `lib/claude.js` stops at a words-not-JSON reply; `lib/surge.js` middleware answers 422 `unclear_input`; `useClaudeAPI` shows `err_unclear_input` | **Built 2026-10-15**; every route | 0 |
 | T11 | Parts written apart drift (second-guess, overlap, thin coverage) | `lib/progressive.js` `planFirst` (one pass chooses the list or the claim, the rest build on it) + `planNote` (treat it as final) | **Built 2026-10-16**; progressive tools | 0 |
+| T12 | Decorative analogy (the effect in costume, no cause) | `lib/analogyCheck.js` `reviewAnalogies` (Sonnet: mechanism / familiar / maps; rewrites failures) | **Built 2026-10-23**; Analogy Engine | 1 (Missing Link) |
 
 ---
 
@@ -264,6 +265,19 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 | Ghost Writer — tips pass questioned the letters' pronouns | **fixed with shared fix** (`planNote` on the extras pass) |
 | Break My Plan — split prevention half thinner, missed a risk | **fixed with shared fix** (failure modes planned first, details filled by passes handed the list) |
 | Scam Radar, Money Diplomat (lend), Complaint Escalation — the same reason restated across sections written by separate passes (same-day blind comparison, 2026-10-17) | **shared fix built**: `onlyKeys` names the sections the other passes carry and asks for each point once (`noOverlap`); Complaint's strategy passes use it directly. Letters stay self-contained — each goes to a different reader |
+
+---
+
+## T12 — Decorative analogy
+
+**What goes wrong.** An analogy can be accurate and well written and still teach nothing: it re-describes the effect in a new setting and carries none of the cause. Live, 2026-10-23, Analogy Engine, inflation for a crossword fan: "the squares get a little smaller each year … inflation is just the name for those squares getting smaller." Nobody has seen crossword squares shrink, nothing in the scene says why they shrink, and the closing line restates the concept instead of mapping it.
+
+**Shared fix: built 2026-10-23.** `lib/analogyCheck.js` `reviewAnalogies(items, {concept, audience})` — one Sonnet pass tests each analogy: MECHANISM (the scene contains the same causal story), FAMILIAR (a scene the audience has really seen, as it really happens), MAPS (each element stands for a real part of the concept, named at the end). Failures are rewritten in the same type and domain; passes are left alone. Runs with the other checks, after the answer is on screen; fail-open.
+
+| Instance | Status |
+|---|---|
+| Analogy Engine — main answer and "Show more" | **fixed with shared fix** (runs before the number and consistency checks, so they read the replacement) |
+| Missing Link — `visual_or_analogy` in `/the-gap/dig` and the trace refresher | **open** — exposed; that endpoint answers in one piece, so the check would add its time before the answer shows |
 
 ---
 
