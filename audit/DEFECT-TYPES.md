@@ -150,6 +150,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | LazyWorkoutAdapter — "you mentioned stiff shoulders" | **fixed with shared fix** (check 10) |
 | TheRunthrough — Cut mode adds a sentence | **fixed with shared fix** (check 10) |
 | LeverageLogic — visitor's own assessment recast as "your employer indicated" | **fixed with shared fix** (check 10) |
+| Awkward Silence Filler — "talking to: boss, panicking", no setting chosen; the answer assumed an elevator (2026-10-23). Cause: the template's two examples were elevator scenes | **fixed with shared fix** (`checkConsistency` wired as the after-display check) + elevator examples removed + an explicit "no setting given" line |
 
 ---
 

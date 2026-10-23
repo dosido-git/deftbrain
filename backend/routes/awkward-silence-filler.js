@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
+const { checkConsistency } = require('../lib/outputGuard');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -26,7 +27,7 @@ router.post('/awkward-silence-filler', rateLimit(DEFAULT_LIMITS), async (req, re
         }
 
         const userPrompt = `I'm in an awkward silence RIGHT NOW.
-Context: ${context.trim()}
+Context: ${context.trim()}${/general social situation/i.test(context) ? ' (no setting given — do not assume a place)' : ''}
 Talking to: ${relationship || 'someone I don\'t know well'}
 
 Return ONLY valid JSON:
@@ -62,14 +63,14 @@ Return ONLY valid JSON:
 
         const userPrompt = `SITUATION:
 Context: ${context.trim()}
-${scenario ? `Scenario: ${scenario}` : ''}
+${scenario ? `Scenario: ${scenario}` : !/general social situation/i.test(context) ? '' : 'Setting: NOT GIVEN — do not assume a place (an elevator, a meeting, a party, a car). Write lines that work wherever they are.'}
 Talking to: ${relationship || 'acquaintance'}
 My comfort level: ${comfort || 'nervous'}
 ${landmines ? `AVOID THESE TOPICS: ${landmines}` : ''}
 
 Generate conversation rescue material. Return ONLY valid JSON:
 {
-  "silence_reframe": "A warm, specific reminder about why this particular silence might be okay. Not generic — tailored to the scenario. e.g., 'In elevators, nobody expects conversation. Standing quietly is literally the social norm here.' — one sentence",
+  "silence_reframe": "A warm, specific reminder about why this particular silence might be okay. Not generic — tailored to the scenario. — one sentence",
   "read_the_room": "How to tell if the other person wants to talk or prefers silence. Specific body language cues for this scenario. e.g., 'If they're looking at their phone or have earbuds in, they're signaling they don't want to chat. That's not about you.' — one sentence",
   "conversation_chains": [
     {
@@ -82,7 +83,7 @@ Generate conversation rescue material. Return ONLY valid JSON:
     }
   ],
   "body_language": [
-    "EXACTLY ONE specific non-verbal tip for this scenario — the single most useful one. Not generic ('make eye contact'), scenario-specific ('In an elevator, face the door like everyone else — turning to face them reads as confrontational')."
+    "EXACTLY ONE specific non-verbal tip for this scenario — the single most useful one. Not generic ('make eye contact'), specific to the situation they described."
   ],
   "exit_strategies": [
     {
@@ -116,6 +117,8 @@ Generate EXACTLY 5 conversation chains with a mix of risk levels. At least 2 sho
           finish: d => structuredClone(d),
           ready: d => Boolean(d.silence_reframe),
           complete: d => Boolean(d.silence_reframe),
+          // T4: a detail the visitor never gave (an elevator nobody mentioned, 2026-10-23).
+          check: d => checkConsistency(d, { label: 'awkward-silence-filler', userLanguage }),
         });
       }
       // no default
