@@ -81,6 +81,7 @@ const AnalogyEngine = ({ tool }) => {
     accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    btnReset:      isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-50 border border-zinc-400' : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-500',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
@@ -115,7 +116,11 @@ const AnalogyEngine = ({ tool }) => {
   const canSubmitRef = useRef(false);
 
   // ─── Handlers ───
+  // Each new answer is revealed once, when its first part lands — not again
+  // on every later part, check or "show more".
+  const revealedRef = useRef(true);
   const generate = async (example) => {
+    revealedRef.current = false;
     const conceptText = (example?.concept || concept).trim();
     const audienceText = (example?.audience || audience).trim();
     if (!conceptText) return;
@@ -243,8 +248,8 @@ const AnalogyEngine = ({ tool }) => {
 
   // ─── Scroll to results ───
   useEffect(() => {
-    if (!results || !resultsRef.current) return;
-    const timer = setTimeout(() => revealSection(resultsRef.current), 250);
+    if (!results || !resultsRef.current || revealedRef.current) return;
+    const timer = setTimeout(() => { revealedRef.current = true; revealSection(resultsRef.current); }, 250);
     return () => clearTimeout(timer);
   }, [results]);
 
@@ -295,7 +300,7 @@ const AnalogyEngine = ({ tool }) => {
           {(results || hasAnyInput) ? (
             <button
               onClick={handleReset}
-              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
+              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnReset}`}
             >↺ {t('start_over')}</button>
           ) : null}
         </div>

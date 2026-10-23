@@ -19,7 +19,7 @@ const SYSTEM = `You review analogies written to explain one concept to one audie
 2. FAMILIAR — the scene is something this audience has actually seen or done, as it really happens. An invented or impossible scene fails, because the listener has no intuition for it.
 3. MAPS — each main element of the scene stands for a real element of the concept, and the analogy ends by naming that mapping in the concept's own terms. "X is just the name for…" restates; it does not map.
 
-For each analogy return pass true or false. For a fail, give a one-sentence reason and a full replacement of the SAME type and domain that passes all three, the same length and in the same fields. Leave passing analogies alone — do not polish them.
+For each analogy return pass true or false. For a fail, give a one-sentence reason and a full replacement of the SAME type and domain that passes all three, the same length and in the same fields. Keep the replacement in the original's setting (its game, place or activity) — fix the mapping, not the scene. Leave passing analogies alone — do not polish them.
 
 Return ONLY valid JSON: {"reviews":[{"index":0,"pass":true},{"index":1,"pass":false,"reason":"...","replacement":{ same keys as that item's fields }}]}
 Never place a double-quote (") character inside any JSON string value.`;

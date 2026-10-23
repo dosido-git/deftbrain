@@ -88,17 +88,21 @@ DEPTH: ${depth || 'solid_understanding'}`;
     {
       "title": "Short catchy name for this analogy (e.g., 'The Library Card System') — 3-6 words",
       "type": "one of the types listed above, exactly",
-      "analogy": "The full analogy — 3-5 sentences. Written conversationally, as if explaining to the specific audience. Use their world.",
+      "analogy": "The full analogy — 3-5 sentences. Written conversationally, as if explaining to the specific audience, in the scene named for it.",
       "why_it_works": "One sentence on what makes this analogy effective for this audience.",
       "where_it_breaks": "One sentence on the limit of this analogy — what it doesn't capture.",
       "accuracy": "high | medium",
       "memorability": "high | medium"
     }
   ]`;
+    // The shown titles name the interests they used ("The Giant Minecraft
+    // Recipe Book"); left in, they pulled the new analogies back to them.
+    const maskInterests = (title) => String(audienceInterests || '').split(/,|;|\/|\band\b/i).map(x => x.trim().replace(/s$/i, '')).filter(w => w.length > 2)
+      .reduce((tt, w) => tt.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '…'), title);
     const anchor = more ? `THE EXPLANATION THE VISITOR ALREADY HAS (build on it, never contradict it):
 One-liner: ${String(req.body.oneLiner || '').slice(0, 400)}
 Key insight: ${String(req.body.keyInsight || '').slice(0, 400)}
-Analogies already shown (do not repeat their idea or domain): ${shown.map(a => String(a?.title || '').slice(0, 80)).join('; ')}
+Analogies already shown (do not repeat their idea or domain): ${shown.map(a => maskInterests(String(a?.title || '').slice(0, 80))).join('; ')}
 
 ` : '';
     // Three or more analogies are written by two calls at once, split by type
@@ -107,11 +111,27 @@ Analogies already shown (do not repeat their idea or domain): ${shown.map(a => S
     // one call writing both took ~15s.
     const halves = more ? TYPES.map(t => [t])
       : TYPES.length >= 3 ? [TYPES.slice(0, Math.ceil(TYPES.length / 2)), TYPES.slice(Math.ceil(TYPES.length / 2))] : [TYPES];
-    const analogyPrompt = (mine) => `${anchor}${header}
+    // Variety (2026-10-23): told only to "use their world", every analogy used
+    // it — 8 of 10 for an audience into Minecraft and dinosaurs. Each listed
+    // interest now gets at most one analogy per concept, assigned in code; the
+    // rest come from scenes anyone in the audience knows.
+    const INTERESTS = String(audienceInterests || '').split(/,|;|\/|\band\b/i).map(x => x.trim()).filter(Boolean).slice(0, 6);
+    const interestFor = (type) => INTERESTS[TYPES.indexOf(type) + (more ? shown.length : 0)] || null;
+    const slotLine = (type) => {
+      const it = interestFor(type);
+      return `- ${type}: drawn from ${ANALOGY_PLAN[type]}${INTERESTS.length ? (it ? ` — set it in their interest "${it}"` : ' — a scene anyone in this audience knows from everyday life') : ''}`;
+    };
+    // A pass sees only the interests assigned to its own analogies: shown the
+    // whole list it used one anyway (live test, 2026-10-23).
+    const headerFor = (mine) => {
+      const own = mine.map(interestFor).filter(Boolean);
+      return header.replace(/\nAUDIENCE INTERESTS\/WORLD: .*/, own.length ? `\nAUDIENCE INTERESTS/WORLD: ${own.join(', ')}` : '');
+    };
+    const analogyPrompt = (mine) => `${anchor}${headerFor(mine)}
 
 ${more ? '' : 'Other passes write the rest of the explanation at the same time. '}THIS PASS writes exactly ${mine.length} ${mine.length === 1 ? 'analogy' : 'analogies'}, one of each type, each from its own domain:
-${mine.map(t => `- ${t}: drawn from ${ANALOGY_PLAN[t]}`).join('\n')}
-Use the audience's world where it fits each domain.${TYPES.length > mine.length ? ` Another pass writes ${TYPES.filter(t => !mine.includes(t)).map(t => `${t} (${ANALOGY_PLAN[t]})`).join(', ')} — do not use those types or domains.` : ''}
+${mine.map(slotLine).join('\n')}
+${!INTERESTS.length ? "Use the audience's world where it fits each domain." : mine.some(interestFor) ? 'Use only the interest named for each analogy, and no other listed interest.' : 'This analogy stays inside the domain named for it, as anyone experiences it — no games, hobbies or interests, even ones the analogies already shown use.'}${TYPES.length > mine.length ? ` Another pass writes ${TYPES.filter(t => !mine.includes(t)).map(t => `${t} (${ANALOGY_PLAN[t]})`).join(', ')} — do not use those types or domains.` : ''}
 
 Return ONLY valid JSON:
 {
@@ -139,6 +159,18 @@ ${TIP}
       model: MODELS.SMART, max_tokens: 2500, system,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label });
+    // An analogy given no interest that uses one anyway (Minecraft is the
+    // model's default for a 12-year-old) is written again once, in code —
+    // wording alone held about half the time (live tests, 2026-10-23).
+    const stems = INTERESTS.map(w => w.toLowerCase().replace(/s$/, '')).filter(w => w.length > 2);
+    const usesInterest = (a) => { const txt = `${a?.title || ''} ${a?.analogy || ''}`.toLowerCase(); return stems.find(w => txt.includes(w)); };
+    const askSlot = async (type, label) => {
+      const out = await ask(analogyPrompt([type]), label);
+      const first = (Array.isArray(out?.analogies) ? out.analogies : [])[0];
+      const hit = !interestFor(type) && first && usesInterest(first);
+      if (!hit) return out;
+      return ask(`${analogyPrompt([type])}\n\nA first draft used "${hit}". Write a different analogy with no game, hobby or interest in it at all.`, `${label}-retry`).catch(() => out);
+    };
     // T12: a weak analogy is rewritten first, so the number and consistency
     // checks then read the replacement.
     const AKEYS = ['title', 'analogy', 'why_it_works', 'where_it_breaks'];
@@ -146,7 +178,7 @@ ${TIP}
     const improveAnalogies = async (draft) => {
       const list = Array.isArray(draft.analogies) ? draft.analogies : [];
       const fixes = await reviewAnalogies(list.map(a => ({ fields: pick(a) })),
-        { concept, audience: [audience, audienceInterests].filter(Boolean).join(' — interests: '), label: 'analogy-engine', userLanguage });
+        { concept, audience, label: 'analogy-engine', userLanguage });
       for (const f of fixes) if (typeof f.fields.analogy === 'string' && f.fields.analogy.trim()) list[f.index] = { ...list[f.index], ...pick(f.fields) };
     };
     const runChecks = async (draft) => { await improveAnalogies(draft); return bothChecks(draft,
@@ -173,7 +205,7 @@ ${TIP}
       return await progressive(req, res, {
         label: 'analogy-engine-more',
         parts: TYPES.map((type, i) => ({
-          run: () => ask(analogyPrompt([type]), 'analogy-engine-more'),
+          run: () => askSlot(type, 'analogy-engine-more'),
           apply: (d, o) => {
             const a = (Array.isArray(o?.analogies) ? o.analogies : []).find(x => x && typeof x.analogy === 'string' && x.analogy.trim());
             if (a) slots[i] = a;
@@ -214,7 +246,7 @@ ${TIP}
         { required: true, run: () => ask(corePrompt, 'analogy-engine-core'),
           apply: (d, o) => { d.concept_name = o?.concept_name; d.one_liner = o?.one_liner; d.the_key_insight = o?.the_key_insight; } },
         ...TYPES.map((type, i) => ({
-          run: () => ask(analogyPrompt([type]), 'analogy-engine-analogy'),
+          run: () => askSlot(type, 'analogy-engine-analogy'),
           apply: (d, o) => {
             const a = (Array.isArray(o?.analogies) ? o.analogies : []).find(x => x && typeof x.analogy === 'string' && x.analogy.trim());
             if (a) slots[i] = a;
@@ -243,10 +275,10 @@ ${TIP}
         model: MODELS.SMART, max_tokens: 2500, system,
         messages: [{ role: 'user', content: withLanguage(restPrompt, userLanguage) }],
       }, { label: 'analogy-engine-rest' }),
-      ...halves.map(mine => callClaudeWithRetry({
+      ...halves.map(mine => (mine.length === 1 ? askSlot(mine[0], more ? 'analogy-engine-more' : 'analogy-engine-analogies') : callClaudeWithRetry({
         model: MODELS.SMART, max_tokens: 2500, system,
         messages: [{ role: 'user', content: withLanguage(analogyPrompt(mine), userLanguage) }],
-      }, { label: more ? 'analogy-engine-more' : 'analogy-engine-analogies' })),
+      }, { label: more ? 'analogy-engine-more' : 'analogy-engine-analogies' }))),
     ]);
     const analogies = analogyParts.flatMap(p => (Array.isArray(p?.analogies) ? p.analogies : []))
       .filter(a => a && typeof a.analogy === 'string' && a.analogy.trim()).slice(0, TYPES.length);
