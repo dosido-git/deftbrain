@@ -4,6 +4,7 @@ import Caret from './Caret';
 import { CATEGORY_META } from '../data/categoryMeta';
 import homeSituations from '../data/homeSituations.json';
 import keepList from '../data/tools-keep-list.json';
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import './HomeIntro.css';
 
 // Theme variables from HomeTheme.css (light values unchanged; dark set added).
@@ -229,7 +230,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       <div className="db-home-hero-copy">
         <h1 id="home-title">Life doesn’t come with instructions.</h1>
         <p className="db-home-description">Interactive guidance for life’s awkward, confusing, and curious moments.</p>
-        <p className="db-home-reassurance">Free <span aria-hidden="true">·</span> No account needed <span aria-hidden="true">·</span> <a href="/privacy">Nothing you type is stored on our servers</a></p>
+        <p className="db-home-reassurance">{TOOL_COUNT_LABEL} free tools <span aria-hidden="true">·</span> No account needed <span aria-hidden="true">·</span> <a href="/privacy">Nothing you type is stored on our servers</a></p>
       </div>
       <div className="db-home-hero-art">
         <img src="/home-scenes/hero-everyday.jpg" alt="A lease, doctor-visit notes, and a difficult text conversation — everyday situations DeftBrain can help with" fetchpriority="high" />

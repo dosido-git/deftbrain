@@ -374,8 +374,9 @@ function getRelatedGuidesHTML(guides, n = 4) {
 // The homepage's static HTML had no <h1> (Bing Site Scan, 2026-10-04) — the
 // React hero has one, but React replaces #root on load. Same text as
 // HomeIntro.js's <h1 id="home-title"> plus its positioning line; keep in sync.
-const HOME_H1 = '<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">Life doesn’t come with instructions.</h1>'
-  + '<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">Interactive guidance for life’s awkward, confusing, and curious moments.</p>';
+const HOME_H1 = (countLabel) => '<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">Life doesn’t come with instructions.</h1>'
+  + '<p style="font-size:1.1rem;color:#475569;margin:0 0 .35rem">Interactive guidance for life’s awkward, confusing, and curious moments.</p>'
+  + `<p style="font-size:.95rem;color:#64748b;margin:0 0 1rem">${countLabel} free tools · No account needed</p>`;
 
 function getHomeStaticHTML(categories, tools) {
   const e = escapeHtml;
@@ -750,7 +751,7 @@ async function main() {
   // every tool is one more link away (2026-10-04).
   try {
     const homepageHtml = stripToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1}${getHomeStaticHTML(loadCategoryMeta(), tools)}</div>`));
+      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1(`${Math.floor(tools.length / 10) * 10}+`)}${getHomeStaticHTML(loadCategoryMeta(), tools)}</div>`));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage)');
     succeeded++;
