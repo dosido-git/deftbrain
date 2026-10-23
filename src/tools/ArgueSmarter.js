@@ -798,7 +798,7 @@ const ArgueSmarter = ({ tool }) => {
           </div>
           <div className="flex items-end justify-between gap-3 -mb-2">
             <label className={`block text-[15px] font-semibold ${c.labelText}`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
-            <button onClick={loadQuickExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
+            <button onClick={loadQuickExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="text-[13px] font-semibold px-3 py-1 rounded-full border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           <textarea value={quickPosition} onChange={e => setQuickPosition(e.target.value)} placeholder={t('dm_quick_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <div className="flex flex-wrap gap-1.5">{STARTERS.slice(0, 6).map((s, i) => <button key={i} onClick={() => setQuickPosition(t(s.key))} className={`text-xs px-2 py-1 rounded-lg ${c.btnSecondary} border ${c.border}`}>{s.cat} {t(s.key).substring(0, 30)}...</button>)}</div>
@@ -820,7 +820,7 @@ const ArgueSmarter = ({ tool }) => {
           </div>
           <div className="flex items-end justify-between gap-3 -mb-2">
             <label className={`block text-[15px] font-semibold ${c.labelText}`}>{t('dm_prep_position_label')} <span className={c.required}>*</span></label>
-            <button onClick={loadPrepExample} disabled={loading} className={`text-xs px-2.5 py-1 rounded-lg ${c.btnSecondary} border ${c.border} disabled:opacity-40 whitespace-nowrap`}>✨ {t('try_example')}</button>
+            <button onClick={loadPrepExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="text-[13px] font-semibold px-3 py-1 rounded-full border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           <textarea value={prepPosition} onChange={e => setPrepPosition(e.target.value)} placeholder={t('dm_prep_position_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={prepAudience} onChange={e => setPrepAudience(e.target.value)} placeholder={t('dm_prep_audience_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
