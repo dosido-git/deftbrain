@@ -162,8 +162,10 @@ const { THEME_MARKER } = require('./lib/themeSnippet');
     if (html.includes('googletagmanager.com') && !html.includes(GA_HOST_TEST)) {
       failures.push(`GA UNGUARDED: ${path.relative(ROOT, abs)} loads gtag without the gaSnippet.js host guard`);
     }
-    // Redirect stubs and fragments have no <head> to theme.
-    if (/<head[\s>]/i.test(html) && /<body[\s>]/i.test(html) && !THEME_MARKER.test(html)) {
+    // Redirect stubs and fragments have no <head> to theme. The flier is a
+    // printable sheet of paper (white on purpose, like its PDF), not a page.
+    const PRINT_SHEETS = ['flier.html'];
+    if (/<head[\s>]/i.test(html) && /<body[\s>]/i.test(html) && !THEME_MARKER.test(html) && !PRINT_SHEETS.includes(path.relative(BUILD, abs))) {
       failures.push(`NO THEME: ${path.relative(ROOT, abs)} lacks the themeSnippet.js dark-mode switch`);
     }
   }
