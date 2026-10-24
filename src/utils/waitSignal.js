@@ -26,6 +26,7 @@ function snapshot() {
     startedAt: active.length ? Math.min(...active.map(a => a.startedAt)) : 0,
     tool: latest ? latest.tool : null,
     summary: latest ? latest.summary : [],
+    progressive: latest ? latest.progressive : false,
   };
 }
 
@@ -34,7 +35,7 @@ function snapshot() {
 // Returns a one-shot `end(outcome)` so a caller can end its wait early (a
 // streaming call ends it on the first visible text) without double-counting.
 export function beginWait(meta = {}) {
-  const call = { id: ++seq, tool: meta.tool || null, summary: meta.summary || [], startedAt: Date.now() };
+  const call = { id: ++seq, tool: meta.tool || null, summary: meta.summary || [], progressive: Boolean(meta.progressive), startedAt: Date.now() };
   active.push(call);
   emit({ type: 'start', ...snapshot() });
   let ended = false;

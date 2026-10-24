@@ -224,7 +224,8 @@ export const useClaudeAPI = () => {
     setError(null);
     const _t0 = Date.now();
     track('tool_run', { tool: endpoint });
-    const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data) });
+    // An answer that arrives in parts: the wait note says so instead of a time.
+    const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data), progressive: true });
     let latest = null;
     try {
       let response;
