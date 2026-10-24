@@ -88,8 +88,6 @@ export default function AllToolsPage({ allTools = [] }) {
   // Matches the homepage's persistent nav search exactly (narrow-then-
   // expand on focus/content) — owner asked for the same box, same
   // location, same action, not just a similar-looking one.
-  const [searchFocused, setSearchFocused] = useState(false);
-  const searchRef = useRef(null);
 
 
   // Arriving from a link lower on another page (the home page's "Browse all
@@ -129,19 +127,6 @@ export default function AllToolsPage({ allTools = [] }) {
     return () => { document.body.classList.remove('db-sand-page'); };
   }, []);
 
-  // ⌘K focuses the search box — same shortcut the homepage's own copy of
-  // this box supports; the ⌘K badge inside it would be a lie otherwise.
-  useEffect(() => {
-    const handler = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        searchRef.current?.focus();
-        searchRef.current?.select();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, []);
 
   // query/category were only ever read from the URL once, via the useState
   // initializers above — a category chip or the search box updates the URL
@@ -240,7 +225,6 @@ export default function AllToolsPage({ allTools = [] }) {
     setParams(next, { replace: true });
   };
 
-  const submitSearch = e => { e.preventDefault(); syncUrl(query, category); };
   const chooseCategory = next => { setCategory(next); syncUrl(query, next); };
 
   return (
@@ -256,35 +240,10 @@ export default function AllToolsPage({ allTools = [] }) {
       />
 
       <section className="at-hero at-shell">
-        {/* Home + search share one row (owner asked for Home kept
-            left-justified but vertically aligned with the search box,
-            rather than sitting alone on its own line above everything).
-            The search box itself is a straight port of the homepage's
-            persistent nav search (DashBoard.js) — same 220->420px
-            narrow-then-expand behavior, same input/button sizing and
-            copy, same Escape-to-clear, same ⌘K shortcut — not a
-            similar-looking one built separately. It still filters this
-            page (query state already drives `visible` below) and still
-            syncs ?q= on submit; "same action" is about the box's own
-            behavior, not about leaving /tools. */}
+        {/* The search box moved to the site header (2026-10-23); its "All
+            matching tools" link still opens /tools?q=…, which filters below. */}
         <div className="at-hero-top-row">
           <Link to="/" className="at-home-link">← Home</Link>
-          <form className="at-nav-search" onSubmit={submitSearch}>
-            <div className="at-nav-search-field" style={{ width: (query || searchFocused) ? 420 : 220 }}>
-              <input
-                ref={searchRef}
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                onKeyDown={e => { if (e.key === 'Escape') { setQuery(''); e.currentTarget.blur(); } }}
-                placeholder="Describe what you’re dealing with…"
-                aria-label="What do you need help with?"
-              />
-              {!query && <span className="at-kbd">⌘K</span>}
-            </div>
-            <button type="submit" className="at-nav-search-btn">Search</button>
-          </form>
         </div>
         <h1>DeftBrain Toolbox</h1>
         {/* Styled like the homepage's own intro line ("DeftBrain is a

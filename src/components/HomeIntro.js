@@ -181,8 +181,6 @@ function ToolScramble({ allTools, onBrowse }) {
   );
 }
 
-// The finder is supplied by DashBoard so submitting, Escape, and the
-// keyboard shortcut keep using the existing search state and matching logic.
 // A plain click on a category opens the toolbox filtered to it; a modified
 // click (new tab/window) or a crawler follows the real href to the category
 // page, which lists the same tools (owner, 2026-10-04).
@@ -190,7 +188,7 @@ export function isPlainClick(e) {
   return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 }
 
-export default function HomeIntro({ allTools = [], onBrowse, finder }) {
+export default function HomeIntro({ allTools = [], onBrowse }) {
   const navigate = useNavigate();
   const byId = useMemo(() => new Map(allTools.map(tool => [tool.id, tool])), [allTools]);
   const categoryCounts = useMemo(() => {
@@ -225,7 +223,7 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
   // a redesign that reuses a section name ("hero", "closing") starts a clean
   // funnel instead of blending into the old page's. Change it when the page's
   // sections change.
-  return <main className="db-home" id="home-content" data-db-layout="home-2026-09-27">
+  return <main className="db-home" id="home-content" data-db-layout="home-2026-10-23">
     <section className="db-home-hero" aria-labelledby="home-title" data-db-section="hero">
       <div className="db-home-hero-copy">
         <h1 id="home-title">Life doesn’t come with instructions.</h1>
@@ -237,7 +235,6 @@ export default function HomeIntro({ allTools = [], onBrowse, finder }) {
       </div>
     </section>
 
-    <div data-db-section="finder">{finder}</div>
 
     <section className="db-home-section" aria-labelledby="home-situations-title" data-db-section="situations">
       <div className="db-home-section-heading">

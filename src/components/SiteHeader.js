@@ -94,6 +94,19 @@ export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency
           </details>
         </div>
       </div>
+      {/* The one search box on every page (2026-10-23) — same markup as
+          getSearchFormHTML() in src/seo/chrome.js; /search/deft-search.js
+          (loaded by public/index.html) mounts it and draws the results. */}
+      <div className="site-header-search">
+        <form className="ds-form" role="search" data-deft-search data-tools="4" data-guides="4" action="/tools">
+          <div className="ds-box">
+            <span aria-hidden="true">⌕</span>
+            <input className="ds-input" type="search" name="q" autoComplete="off" placeholder="Search"
+              role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" />
+          </div>
+          <div className="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden />
+        </form>
+      </div>
     </header>
   );
 }

@@ -153,9 +153,9 @@ function getSiteFooterBar(year = new Date().getFullYear()) {
 // matcher the React app uses). `tools`/`guides` = how many of each to show: a
 // guide page leans on tools (the reader already has a guide); a guide hub
 // leans on guides (the reader came to read) but still leads with a tool or two.
-function getSearchFormHTML({ tools = 3, guides = 6, placeholder = 'Search tools and guides…' } = {}) {
+function getSearchFormHTML({ tools = 4, guides = 4, placeholder = 'Search' } = {}) {
   return `<form class="ds-form" role="search" data-deft-search data-tools="${Number(tools)}" data-guides="${Number(guides)}" action="/tools">
-      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"></div>
       <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
     </form>
     <script src="/search/deft-search.js" defer></script>`;
@@ -190,6 +190,7 @@ function getSiteHeaderHTML() {
         </details>
       </div>
     </div>
+    <div class="site-header-search">${getSearchFormHTML()}</div>
   </header>
   <script>
   (function(){

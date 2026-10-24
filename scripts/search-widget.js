@@ -89,8 +89,26 @@ var CSS = [
   '.ds-more:hover{text-decoration:underline}',
   '.ds-note{padding:12px 16px;font-size:13px;color:var(--ink3,#6b6760)}',
   '.ds-rule{height:1px;background:var(--rule,#e0dbd2);margin:6px 0}',
-  '@media (max-width:640px){.ds-form{order:3;flex-basis:100%;max-width:none;margin:10px 0 0}}'
+  '@media (max-width:640px){.ds-form{order:3;flex-basis:100%;max-width:none;margin:10px 0 0}}',
+  // The site header's search row (2026-10-23): right-aligned under the menu.
+  '.site-header-search .ds-form{flex:none;width:100%;max-width:340px;margin:0;order:0}',
+  '@media (max-width:640px){.site-header-search .ds-form{max-width:none}}',
+  '.ds-start{font-weight:600}',
+  ':root[data-theme="dark"] .ds-box{background:#18181b;border-color:#52525b}',
+  ':root[data-theme="dark"] .ds-box span{color:#a8a29e}',
+  ':root[data-theme="dark"] .ds-input{color:#f4f4f5}',
+  ':root[data-theme="dark"] .ds-panel{background:#232326;border-color:#3f3f46;box-shadow:0 12px 32px rgba(0,0,0,.5)}',
+  ':root[data-theme="dark"] .ds-item{color:#e4e4e7}',
+  ':root[data-theme="dark"] .ds-item small,:root[data-theme="dark"] .ds-head,:root[data-theme="dark"] .ds-note{color:#a1a1aa}',
+  ':root[data-theme="dark"] .ds-item:hover,:root[data-theme="dark"] .ds-item:focus{background:#27272a}',
+  ':root[data-theme="dark"] .ds-more{color:#7fb3e0}',
+  ':root[data-theme="dark"] .ds-rule{background:#3f3f46}'
 ].join('\n');
+
+// A search written as a sentence ("my landlord won't return my deposit") gets
+// the home page's "where to start" answer — the same rule as isSentenceQuery
+// in src/components/SearchGuide.js.
+function isSentence(q) { return q.length >= 15 && q.split(/\s+/).length >= 4; }
 
 function injectCss() {
   if (document.getElementById('ds-css')) return;
@@ -103,10 +121,13 @@ function injectCss() {
 function renderPanel(res, query, toolLimit, guideLimit) {
   var q = encodeURIComponent(query);
   var out = [];
+  if (isSentence(query)) {
+    out.push('<a class="ds-item ds-start" href="/?q=' + q + '"><b>✨ Find the best place to start</b><small>A suggestion for your situation, with why it fits</small></a><div class="ds-rule"></div>');
+  }
   var tools = res.tools.slice(0, toolLimit);
   var guides = res.guides.slice(0, guideLimit);
   if (!tools.length && !guides.length) {
-    return '<div class="ds-note">Nothing matched those words. Try fewer, or different ones.</div>';
+    return out.join('') + '<div class="ds-note">Nothing matched those words. Try fewer, or different ones.</div>';
   }
   if (tools.length) {
     out.push('<div class="ds-head">Tools that can help</div>');
@@ -131,6 +152,8 @@ function renderPanel(res, query, toolLimit, guideLimit) {
 }
 
 function mount(form) {
+  if (form.getAttribute('data-ds-mounted')) return;
+  form.setAttribute('data-ds-mounted', '1');
   var input = form.querySelector('input');
   var panel = form.querySelector('.ds-panel');
   if (!input || !panel) return;
@@ -189,18 +212,22 @@ function mount(form) {
 
 window.DeftSearch = { search: search, loadTools: loadTools, loadGuides: loadGuides };
 
-function init() {
+function mountAll() {
   var forms = document.querySelectorAll('form[data-deft-search]');
-  if (!forms.length) return;
-  injectCss();
+  if (forms.length) injectCss();
   Array.prototype.forEach.call(forms, mount);
-  // ⌘K / Ctrl+K focuses the page's search box (the first one), as on the
-  // toolbox and the guides page.
-  var first = forms[0].querySelector('input');
+}
+
+function init() {
+  mountAll();
+  // React pages draw their header after this script runs, and again on every
+  // route change: mount each search form as it appears.
+  if (window.MutationObserver) new MutationObserver(mountAll).observe(document.body, { childList: true, subtree: true });
+  // ⌘K / Ctrl+K focuses the header's search box.
   document.addEventListener('keydown', function (e) {
-    if ((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k' && first) {
-      e.preventDefault(); first.focus(); first.select();
-    }
+    if (!((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k')) return;
+    var first = document.querySelector('form[data-deft-search] input');
+    if (first) { e.preventDefault(); first.focus(); first.select(); }
   });
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

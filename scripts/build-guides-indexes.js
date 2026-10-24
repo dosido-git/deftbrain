@@ -22,7 +22,7 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { getFooterHTML, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { categoriesFor } = require('./lib/toolCategories');
 const { buildGuideShelves } = require('./lib/guideShelves');
 const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
@@ -454,7 +454,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
 <body>
 
   ${getSiteHeaderHTML()}
-  ${search ? getPageSearchHTML({ tools: 2, guides: 8, placeholder: 'Search guides and tools…' }) : ''}`;
+`;
 }
 
 function renderFooter() {
@@ -682,16 +682,9 @@ ${guideListHtml(shelves[c.name].guides, '        ')}
   <main class="gh-page">
     <section class="gh-hero gh-shell">
       <h1>Guides for everyday life.</h1>
-      <form class="gh-hero-search" id="heroSearch" role="search">
-        <label for="q">What would you like to explore?</label>
-        <div class="gh-find">
-          <div class="gh-find-field">
-            <input id="q" autocomplete="off" placeholder="Try &ldquo;security deposit,&rdquo; &ldquo;medical bill,&rdquo; or &ldquo;talking to my boss&rdquo;&hellip;">
-            <span class="gh-kbd" id="qKbd" aria-hidden="true">⌘K</span>
-          </div>
-          <button type="submit">Search</button>
-        </div>
-      </form>
+      <!-- Searching happens in the site header (2026-10-23). Its "All matching
+           guides" link opens /guides?q=…, which still fills the results below. -->
+      <input id="q" type="hidden">
     </section>
 
     <section class="gh-results gh-shell" id="results" hidden aria-live="polite">
@@ -754,15 +747,9 @@ ${sectionsHtml}
         paint(arr,query,res.tools.slice(0,2));
       }).catch(()=>{if(mine===seq)plain();});
     }
-    let t;
-    const kbd=document.querySelector('#qKbd');
-    const syncKbd=()=>{kbd.hidden=!!q.value;};
-    q.addEventListener('input',()=>{syncKbd();clearTimeout(t);t=setTimeout(run,180);});
-    // ⌘K / Ctrl+K focuses the search, as on the toolbox; Esc clears it.
-    window.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();q.focus();q.select();}});
-    q.addEventListener('keydown',e=>{if(e.key==='Escape'){q.value='';syncKbd();run();q.blur();}});
-    document.querySelector('#heroSearch').onsubmit=e=>{e.preventDefault();run();results.scrollIntoView({behavior:'smooth',block:'start'});};
-    document.querySelector('#clearSearch').onclick=()=>{q.value='';syncKbd();run();q.focus();};
+
+    const syncKbd=()=>{};
+    document.querySelector('#clearSearch').onclick=()=>{q.value='';run();};
     // /guides?q=… (the "All matching guides" link in the guide pages' search)
     // opens the page already searched.
     const fromUrl=new URLSearchParams(location.search).get('q');

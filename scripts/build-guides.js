@@ -23,7 +23,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { getFooterHTML, getToolList, getSiteHeaderHTML, getPageSearchHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getToolList, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 
@@ -361,7 +361,7 @@ ${stepsJsonLd}
 
   ${getSiteHeaderHTML()}
 
-  ${getPageSearchHTML({ tools: 4, guides: 5 })}
+
 
   <main>
     <div class="container">

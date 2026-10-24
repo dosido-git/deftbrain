@@ -138,11 +138,6 @@ function saveToStorage(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
 
-// The focus-search shortcut accepts ⌘K or Ctrl K (see the keydown handler);
-// the visible hint names the one this device's keyboard actually has.
-const SHORTCUT_LABEL = typeof navigator !== 'undefined'
-  && /Mac|iPhone|iPad|iPod/i.test((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '')
-  ? '⌘K' : 'Ctrl K';
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -154,21 +149,8 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [showCatalog, setShowCatalog] = useState(false);
-  // Homepage finder — draft text only; nothing filters
-  // until submit, same submit-not-live pattern the old hero search used.
-  // Separate from `searchTerm` (the prop that actually drives filteredTools)
-  // so the homepage input isn't fighting the in-catalog SearchBox's own value
-  // when both could theoretically be visible.
-  const [navQuery, setNavQuery] = useState('');
-  const navSearchRef = useRef(null);
-  const submitNavSearch = useCallback((e) => {
-    e.preventDefault();
-    const q = navQuery.trim();
-    if (q) setSearchTerm(q);
-  }, [navQuery, setSearchTerm]);
   const [favorites, setFavorites]           = useState(() => loadFromStorage(STORAGE_KEYS.favorites));
   const [recents, setRecents]               = useState(() => loadFromStorage(STORAGE_KEYS.recents));
-  const searchRef     = useRef(null);
   const resultsRef    = useRef(null);
 
   // Browsing "all tools" moved to a real route (2026-09-22, /tools —
@@ -191,22 +173,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setSearchTerm]);
 
-  // ⌘K shortcut — focuses whichever search box is actually mounted.
-  // searchRef (compact in-catalog SearchBox) and navSearchRef (persistent
-  // homepage finder) are mutually exclusive in the DOM (same !isSearching
-  // && !showCatalog condition that shows/hides each), so only one of
-  // these two calls ever does anything; the other is a no-op on a null ref.
+  // Searching moved to the site header (2026-10-23); its "Find the best place
+  // to start" link opens /?q=…, which shows this page's results view.
   useEffect(() => {
-    const handler = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        searchRef.current?.focus();
-        searchRef.current?.select();
-        navSearchRef.current?.focus();
-        navSearchRef.current?.select();
-      }
-      if (e.key === 'Escape') setSearchTerm('');
-    };
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q && q.trim()) setSearchTerm(q.trim());
+  }, [setSearchTerm]);
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setSearchTerm(''); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [setSearchTerm]);
@@ -419,33 +393,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <div className="mt-4">
             <HomeIntro
               allTools={allTools}
-              finder={
-                <form onSubmit={submitNavSearch} className="db-home-finder" role="search" aria-label="Find a DeftBrain tool">
-                  <label htmlFor="home-tool-query">What would you like help with?</label>
-                  <div className="db-home-finder-controls">
-                    <div className="db-home-finder-field">
-                    <input
-                      id="home-tool-query"
-                      ref={navSearchRef}
-                      value={navQuery}
-                      onChange={e => setNavQuery(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Escape') { setNavQuery(''); e.currentTarget.blur(); } }}
-                      placeholder="E.g., a difficult talk, planning a date, detecting a scam, getting ready for a Dr.’s appt., making a decision."
-                      aria-describedby="home-tool-process"
-                      type="search"
-                      required
-                      aria-keyshortcuts="Meta+K Control+K"
-                    />
-                    {/* The ⌘K / Ctrl K shortcut (handler above) was invisible
-                        once the header search moved into the page. Shown on
-                        pointer devices only and until something is typed. */}
-                    {!navQuery && <kbd className="db-home-finder-kbd" aria-hidden="true">{SHORTCUT_LABEL}</kbd>}
-                    </div>
-                    <button type="submit">Search <span aria-hidden="true">→</span></button>
-                  </div>
-                  <p id="home-tool-process">Choose a tool <span aria-hidden="true">→</span> Answer a few questions <span aria-hidden="true">→</span> Get practical guidance</p>
-                </form>
-              }
               // A category slug is a real prerendered static file
               // (build/tools/{slug}/index.html, served by backend/server.js)
               // — not a React Router route, the same reason /guides, /about
@@ -473,9 +420,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             <span className="inline-block group-hover:-translate-x-1 transition-transform">←</span>
             <span>Back to home</span>
           </button>
-          <div className="flex flex-wrap items-center justify-end gap-2 min-w-0 max-w-full">
-            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          </div>
         </div>
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
@@ -737,85 +681,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 // ════════════════════════════════════════════════════════════
 // SORT BUTTON
 // ════════════════════════════════════════════════════════════
-// ════════════════════════════════════════════════════════════
-// COMPACT SEARCH BOX
-// ════════════════════════════════════════════════════════════
-function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) {
-  return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', minWidth: 0, flex: '1 1 auto', maxWidth: '100%' }}>
-      <span style={{
-        position: 'absolute', left: 7, fontSize: 11,
-        pointerEvents: 'none', color: CLR.warm500, lineHeight: 1,
-      }}>🔍</span>
-      <input
-        ref={searchRef}
-        type="text"
-        value={searchTerm}
-        onChange={e => { setSearchTerm(e.target.value); setActiveCategory('All'); }}
-        placeholder="Search tools"
-        style={{
-          paddingInlineStart: 22, paddingInlineEnd: searchTerm ? 22 : 36,
-          paddingTop: 5, paddingBottom: 5,
-          // Shrinks on a phone instead of pushing the page sideways (2026-10-05).
-          width: searchTerm ? 320 : 160, maxWidth: '100%', minWidth: 0,
-          border: `1.5px solid ${CLR.sand300}`,
-          borderRadius: 8,
-          background: CLR.surface,
-          color: CLR.warm800,
-          fontSize: 12,
-          fontWeight: 600,
-          fontFamily: 'inherit',
-          outline: 'none',
-          transition: 'width 0.2s, border-color 0.15s, box-shadow 0.15s',
-        }}
-        onKeyDown={e => {
-          if (e.key === 'Escape') {
-            setSearchTerm('');
-            e.target.style.width = '160px';
-            e.target.style.borderColor = CLR.sand300;
-            e.target.style.boxShadow = 'none';
-            e.target.blur();
-          }
-        }}
-        onFocus={e => {
-          e.target.style.width = '320px';
-          e.target.style.borderColor = CLR.gold500;
-          e.target.style.boxShadow = `0 0 0 2px ${CLR.gold100}`;
-        }}
-        onBlur={e => {
-          if (!searchTerm) e.target.style.width = '160px';
-          e.target.style.borderColor = CLR.sand300;
-          e.target.style.boxShadow = 'none';
-        }}
-      />
-      {searchTerm && (
-        <button
-          onClick={() => setSearchTerm('')}
-          style={{
-            position: 'absolute', right: 5,
-            background: 'none', border: 'none',
-            cursor: 'pointer', color: CLR.warm500,
-            fontSize: 10, lineHeight: 1, padding: 2,
-          }}
-        >✕</button>
-      )}
-      {!searchTerm && (
-        /* hidden on touch widths — there is no Command key on a phone */
-        <span className="hidden sm:inline-block" style={{
-          position: 'absolute', right: 7,
-          fontSize: 10, color: CLR.warm400,
-          background: CLR.sand100,
-          border: `1px solid ${CLR.sand200}`,
-          borderRadius: 4,
-          padding: '1px 4px',
-          pointerEvents: 'none',
-          fontWeight: 600,
-          letterSpacing: 0.2,
-        }}>⌘K</span>
-      )}
-    </div>
-  );
-}
 
 // ════════════════════════════════════════════════════════════
 // TOOL COLUMNS — two-column list that CANNOT split a card across the
