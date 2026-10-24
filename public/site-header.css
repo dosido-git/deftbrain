@@ -67,9 +67,16 @@ html { scroll-padding-top: calc(var(--site-header-h, 96px) + 12px); }
   .site-header--large .site-header-search { margin-top: -34px; }
 }
 .site-header-end { display: flex; align-items: center; justify-content: flex-end; gap: 20px; margin-inline-start: auto; }
-.site-header-nav { display: none; align-items: center; gap: 20px; font-size: 12px; font-weight: 600; color: var(--sh-ink); }
-.site-header-nav a, .site-header-nav button { color: inherit; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-underline-offset: 4px; }
-.site-header-nav a:hover, .site-header-nav button:hover { text-decoration: underline !important; }
+.site-header-nav { display: none; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--sh-ink); }
+.site-header-nav a, .site-header-nav button { color: inherit; background: none; border: 0; padding: 6px 10px; border-radius: 8px; font: inherit; cursor: pointer; text-underline-offset: 4px; transition: background-color .12s, transform .08s; }
+.site-header-nav a:hover, .site-header-nav button:hover { text-decoration: underline !important; background: var(--sh-hover); }
+/* Hover and click feedback (owner, 2026-10-24): a soft tint on hover, a
+   firmer one plus a slight press while the click is held; a clear ring for
+   keyboard focus; and the page you're on stays tinted. */
+.site-header-nav a:active, .site-header-nav button:active { background: var(--sh-line); transform: translateY(1px); }
+.site-header-nav a:focus-visible, .site-header-nav button:focus-visible { outline: 2px solid var(--sh-deft); outline-offset: 2px; }
+.site-header-nav a[aria-current="page"] { background: var(--sh-hover); }
+.site-header-menu nav > *:active { background: var(--sh-line); }
 
 .site-header-controls { display: flex; align-items: center; gap: 8px; }
 .site-header .site-header-theme { appearance: none; display: inline-flex; align-items: center; justify-content: center; height: 32px; min-height: 32px; min-width: 32px; width: auto; line-height: 1; padding: 0 8px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; font-size: 14px; cursor: pointer; }
