@@ -4,6 +4,7 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
+const { answer } = require('../lib/progressive');
 
 // The v2 output standard is applied automatically by the shared client wrapper
 // once router.outputStandard = 'v2' is declared below (see lib/outputStandard.js
@@ -309,27 +310,34 @@ Rules for the JSON:
 - response_help should usually be false unless the supplied context describes an interaction where a reply would help.
 - Do not add keys outside this schema.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2600,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'whats-that-mean' });
-
-    if (!parsed?.plain_meaning && !parsed?.ambiguity?.needs_context) {
-      return res.status(500).json({ error: 'Could not decode that phrase. Please try again.' });
-    }
-
-    await runOutputGuard(parsed, {
+    // Progressive (2026-10-24, lib/progressive.js): the answer shows as soon as
+    // it is written (~6s); the same output guard then runs after it is on
+    // screen instead of before (it added ~5s to every first view).
+    const decoded = (d) => Boolean(d.plain_meaning || d.ambiguity?.needs_context);
+    return await answer(req, res, {
       label: 'whats-that-mean',
-      fields: collectProseFields(parsed),
-      supplied: `PHRASE: ${phrase}\nCONTEXT: ${context || 'none supplied'}`,
-      promise: 'Identify what kind of expression the phrase is and explain what it means — plainly, and in the supplied context without inventing subtext, identity, origin, or currentness the visitor never gave.',
-      guard: router.outputGuard,
-      userLanguage,
+      parts: [{
+        required: true,
+        run: () => callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 2600,
+          system: withLanguage(SYSTEM_PROMPT, userLanguage),
+          messages: [{ role: 'user', content: userPrompt }],
+        }, { label: 'whats-that-mean' }),
+        apply: (d, o) => Object.assign(d, o),
+      }],
+      finish: d => structuredClone(d),
+      ready: decoded,
+      complete: decoded,
+      check: d => runOutputGuard(d, {
+        label: 'whats-that-mean',
+        fields: collectProseFields(d),
+        supplied: `PHRASE: ${phrase}\nCONTEXT: ${context || 'none supplied'}`,
+        promise: 'Identify what kind of expression the phrase is and explain what it means — plainly, and in the supplied context without inventing subtext, identity, origin, or currentness the visitor never gave.',
+        guard: router.outputGuard,
+        userLanguage,
+      }),
     });
-
-    res.json(parsed);
   } catch (error) {
     console.error('WhatsThatMean error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

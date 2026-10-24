@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
+import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -60,7 +61,7 @@ function firstNonEmpty(...values) {
 }
 
 const WhatsThatMean = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading, userLocale } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const resultsRef = useRef(null);
@@ -103,7 +104,8 @@ const WhatsThatMean = ({ tool }) => {
   const [showResponses, setShowResponses] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
   const [recentLog, setRecentLog] = usePersistentState(RECENT_KEY, []);
-  const [equivLanguage, setEquivLanguage] = useState('es');
+  const [equivLanguage, setEquivLanguage] = useState('');
+  const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   const [equivResult, setEquivResult] = useState(null);
   const [equivLoading, setEquivLoading] = useState(false);
   const [refineContext, setRefineContext] = useState('');
@@ -146,13 +148,25 @@ const WhatsThatMean = ({ tool }) => {
     }
     setError('');
     setEquivResult(null);
+    setEquivLanguage('');
+    setCheckStatus(null);
     const actualContext = overrideContext === null ? context.trim() : overrideContext.trim();
     try {
-      const data = await callToolEndpoint('whats-that-mean', {
+      // Progressive (2026-10-24): the answer shows as soon as it is written;
+      // the accuracy check runs after it is on screen (CheckNote says so).
+      let shown = false;
+      const data = await callToolEndpointProgressive('whats-that-mean', {
         phrase: phrase.trim(),
         context: actualContext,
         userLanguage: userLocale || 'en',
+      }, {
+        onDraft: d => {
+          setDecoded(d); setCheckStatus('checking');
+          if (!shown) { shown = true; setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80); }
+        },
+        onChecked: (d, changed) => { setDecoded(d); setCheckStatus(checkStatusFor(changed)); },
       });
+      if (!data) return; // replaced by a newer run
       setDecoded(data);
       setContext(actualContext);
       setShowMore(false);
@@ -167,11 +181,10 @@ const WhatsThatMean = ({ tool }) => {
         result: data,
         date: new Date().toISOString(),
       });
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
     } catch (e) {
       setError(e?.message || tr('syw_err_request', "What's That Mean? could not complete that request. Please try again."));
     }
-  }, [phrase, context, callToolEndpoint, userLocale, saveToRecentLog, tr]);
+  }, [phrase, context, callToolEndpointProgressive, userLocale, saveToRecentLog, tr]);
 
   // Keyboard shortcut (Cmd/Ctrl+Enter) — refs kept current every render.
   canSubmitRef.current = !!phrase.trim();
@@ -203,8 +216,8 @@ const WhatsThatMean = ({ tool }) => {
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
   }, []);
 
-  const runEquivalent = useCallback(async () => {
-    if (!decoded || !phrase.trim()) return;
+  const runEquivalent = useCallback(async (lang) => {
+    if (!decoded || !phrase.trim() || !lang) return;
     setEquivLoading(true);
     setEquivResult(null);
     setError('');
@@ -214,7 +227,7 @@ const WhatsThatMean = ({ tool }) => {
         plainMeaning: decoded.plain_meaning || '',
         contextualMeaning: decoded.contextual_meaning?.meaning || '',
         sourceContext: context.trim(),
-        targetLanguage: equivLanguage,
+        targetLanguage: lang,
         userLanguage: userLocale || 'en',
       });
       setEquivResult(data);
@@ -223,7 +236,7 @@ const WhatsThatMean = ({ tool }) => {
     } finally {
       setEquivLoading(false);
     }
-  }, [decoded, phrase, context, equivLanguage, callToolEndpoint, userLocale, tr]);
+  }, [decoded, phrase, context, callToolEndpoint, userLocale, tr]);
 
   const runRefinedContext = useCallback(() => {
     const merged = [context.trim(), refineContext.trim()].filter(Boolean).join('\n');
@@ -350,6 +363,7 @@ const WhatsThatMean = ({ tool }) => {
 
       {results && (
         <div ref={resultsRef} className="space-y-4 scroll-mt-24">
+          <CheckNote status={checkStatus} className={c.textMuted} />
           <div className={`border-t ${c.border} pt-5`}>
             <div className={`text-[15px] font-semibold ${c.labelText}`}>{tr('syw_what_they_said', 'What they said')}</div>
             <div className="text-xl sm:text-2xl font-bold mt-1">“{phrase}”</div>
@@ -444,12 +458,14 @@ const WhatsThatMean = ({ tool }) => {
                 <div className={`pt-3 border-t ${c.border}`}>
                   <div className="font-semibold">🌍 {tr('syw_equiv_title', 'Something similar in another language')}</div>
                   <div className="flex flex-col sm:flex-row gap-2 mt-2">
-                    <select value={equivLanguage} onChange={e => setEquivLanguage(e.target.value)} className={`rounded-lg border px-3 py-2 text-sm ${c.input}`}>
+                    {/* Choosing a language looks it up — no separate button (owner, 2026-10-24). */}
+                    <select value={equivLanguage} disabled={equivLoading} aria-label={tr('syw_equiv_title', 'Something similar in another language')}
+                      onChange={e => { setEquivLanguage(e.target.value); runEquivalent(e.target.value); }}
+                      className={`rounded-lg border px-3 py-2 text-sm ${c.input}`}>
+                      <option value="" disabled>{tr('syw_choose_language', 'Choose a language…')}</option>
                       {LANGUAGES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
                     </select>
-                    <button onClick={runEquivalent} disabled={equivLoading} className={`${c.btnSecondary} border rounded-lg px-4 py-2 text-sm font-bold disabled:opacity-40`}>
-                      {equivLoading ? tr('syw_working', 'Working…') : tr('syw_find_equiv', 'Find an equivalent')}
-                    </button>
+                    {equivLoading && <span className={`self-center text-sm ${c.textMuted}`}>{tr('syw_working', 'Working…')}</span>}
                   </div>
                   {equivResult && (
                     <div className={`${c.cardAlt} rounded-lg p-3 mt-3 text-sm`}>
