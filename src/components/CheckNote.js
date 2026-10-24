@@ -11,20 +11,33 @@
  */
 import React from 'react';
 import { useTranslation } from '../i18n/useTranslation';
+import { useTheme } from '../hooks/useTheme';
 
-export default function CheckNote({ status, className = '' }) {
+// A boxed status line, not a quiet one (owner, 2026-10-24): once the first
+// part shows, the submit button's spinner stops, and "Double-checking…" in
+// small grey text did not say whether the tool was finished. While working it
+// says so, with a spinner and what is still coming; when done, it says
+// "Finished". `className` (the tool's muted text class) is no longer needed
+// for the colors but is still accepted from the 89 callers.
+export default function CheckNote({ status }) {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   if (!status) return null;
-  const text = status === 'checking' ? t('check_pending') : status === 'fixed' ? t('check_fixed') : t('check_done');
+  const working = status === 'checking';
+  const text = working ? t('check_pending') : status === 'fixed' ? t('check_fixed') : status === 'finished' ? t('check_finished') : t('check_done');
+  const tone = working
+    ? (isDark ? 'bg-amber-900/25 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900')
+    : (isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800');
   return (
-    <p data-print-hide role="status" aria-live="polite" className={`text-xs ${className}`}>
-      {status === 'checking'
-        ? <span className="inline-block animate-pulse" aria-hidden="true">⋯ </span>
-        : <span aria-hidden="true">✓ </span>}
-      {text}
+    <p data-print-hide role="status" aria-live="polite" className={`flex items-start gap-2 border rounded-lg px-3 py-2 text-sm font-semibold ${tone}`}>
+      {working
+        ? <span aria-hidden="true" className="mt-[3px] inline-block w-3.5 h-3.5 flex-shrink-0 rounded-full border-2 border-current border-t-transparent animate-spin" />
+        : <span aria-hidden="true">✓</span>}
+      <span>{text}</span>
     </p>
   );
 }
 
 // Map a progressive call's onChecked(changed) to a CheckNote status.
-export const checkStatusFor = (changed) => (Array.isArray(changed) && changed.length ? 'fixed' : 'done');
+// null = the stream ended with no check (useClaudeAPI): finished, not "double-checked".
+export const checkStatusFor = (changed) => (changed === null ? 'finished' : Array.isArray(changed) && changed.length ? 'fixed' : 'done');

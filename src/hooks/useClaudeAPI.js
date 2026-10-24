@@ -227,6 +227,7 @@ export const useClaudeAPI = () => {
     // An answer that arrives in parts: the wait note says so instead of a time.
     const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data), progressive: true });
     let latest = null;
+    let gotChecked = false;
     try {
       let response;
       for (let attempt = 0; ; attempt++) {
@@ -285,11 +286,15 @@ export const useClaudeAPI = () => {
           }
           if (f.checked) {
             latest = f.checked;
+            gotChecked = true;
             onChecked?.(f.checked, Array.isArray(f.changed) ? f.changed : []);
           }
         }
       }
       if (!latest) throw new Error('No answer came back. Please try again.');
+      // A route with no check (or a skipped one) still finishes: tell the page,
+      // so its CheckNote says "Finished" instead of "Still working" forever.
+      if (!gotChecked) onChecked?.(latest, null);
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       return latest;
     } catch (err) {

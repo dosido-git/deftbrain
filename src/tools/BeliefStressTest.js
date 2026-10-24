@@ -41,6 +41,7 @@ const BeliefStressTest = ({ tool }) => {
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-[#7fb3e0] focus:ring-[#7fb3e0]/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#142a43] focus:ring-[#142a43]/15',
     btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    btnReset:      isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-50 border border-zinc-400' : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-500',
     border:        isDark ? 'border-zinc-700'  : 'border-gray-200',
     borderHover:   isDark ? 'hover:border-zinc-500' : 'hover:border-gray-400',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'  : 'bg-red-50 border-red-200 text-red-800',
@@ -99,16 +100,19 @@ const BeliefStressTest = ({ tool }) => {
     try {
       // Progressive (2026-10-16): the restated belief shows first, the rest
       // as it lands; checked after (CheckNote says so).
+      // What the visitor asked to test travels with the answer, so a saved or
+      // reopened result still says what it was about.
+      const _input = { belief: belief.trim(), context: context.trim() };
       const data = await callToolEndpointProgressive('belief-stress-test', {
         belief: belief.trim(),
         context: context.trim() || undefined,
         userLocale, userCurrency, userRegion,
       }, {
-        onDraft: d => { setResults(d); setCheckStatus('checking'); },
-        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+        onDraft: d => { setResults({ ...d, _input }); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults({ ...d, _input }); setCheckStatus(checkStatusFor(changed)); },
       });
       if (!data) return; // replaced by a newer run
-      setResults(data);
+      setResults({ ...data, _input });
       const newEntry = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -204,7 +208,7 @@ const BeliefStressTest = ({ tool }) => {
             </button>
           </div>
           {(results || belief.trim()) ? (
-            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+            <button onClick={handleReset} className={`${c.btnReset} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
               ↺ {t('start_over')}
             </button>
           ) : null}
@@ -293,6 +297,14 @@ const BeliefStressTest = ({ tool }) => {
         {results && (
           <div ref={revealRef} className="scroll-mt-24 space-y-4">
             <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
+
+            {results._input?.belief && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('wait_you_told_us')}</p>
+                <p className={`text-sm ${c.text}`}>“{results._input.belief}”</p>
+                {results._input.context && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{t('bst_context_label')}: {results._input.context}</p>}
+              </div>
+            )}
 
 
             {results.belief_as_understood && (
