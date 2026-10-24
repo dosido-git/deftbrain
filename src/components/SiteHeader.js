@@ -23,6 +23,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import LocaleSelectors from './LocaleSelectors';
 import SITE_NAV from '../data/siteNav.json';
+import { isPlainClick } from './HomeIntro';
 
 function Brand({ onBrandClick }) {
   const inner = (
@@ -41,8 +42,10 @@ function Brand({ onBrandClick }) {
 
 function NavItems({ onCategories, current }) {
   return SITE_NAV.links.map(link => {
+    // A real link that scrolls on the pages that have the picker — a button
+    // here missed the link styling some visitors' browsers add (underlines).
     if (link.key === 'categories' && onCategories) {
-      return <button key={link.href} type="button" onClick={onCategories}>{link.label}</button>;
+      return <a key={link.href} href={link.href} onClick={e => { if (isPlainClick(e)) { e.preventDefault(); onCategories(); } }}>{link.label}</a>;
     }
     const aria = current === link.href ? { 'aria-current': 'page' } : {};
     // Static pages (/guides, /about) are not routes: a full page load.
