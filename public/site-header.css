@@ -20,7 +20,7 @@ html { scroll-padding-top: calc(var(--site-header-h, 96px) + 12px); }
 
 .site-header { --sh-ink: #1e3a58; --sh-line: #e8e1d5; --sh-bg: #faf8f5; --sh-pop: #fffdf9; --sh-hover: #f0ebf7;
   --sh-deft: #165b9a; --sh-brain: #c8872e;
-  position: sticky; top: 0; z-index: 20; background: var(--sh-bg); border-bottom: 1px solid var(--sh-line);
+  position: sticky; top: 0; z-index: 45; /* above page sticky bars (the toolbox's category bar is 30) so search results stay in front; below dialogs */ background: var(--sh-bg); border-bottom: 1px solid var(--sh-line);
   font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; }
 :root[data-theme="dark"] .site-header { --sh-ink: #85afd6; --sh-line: #3f3f46; --sh-bg: #18181b; --sh-pop: #27272a; --sh-hover: #3f3f46;
   --sh-deft: #85afd6; --sh-brain: #d9a04e; }
