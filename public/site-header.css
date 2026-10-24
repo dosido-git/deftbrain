@@ -58,7 +58,7 @@ html { scroll-padding-top: calc(var(--site-header-h, 96px) + 12px); }
 
 /* The search row (2026-10-23): one box on every page, right-aligned under
    the menu. The box and its results panel are styled by /search/deft-search.js. */
-.site-header-search { max-width: 1200px; margin: 0 auto; padding: 0 16px 8px; display: flex; justify-content: flex-end; }
+.site-header-search { max-width: 1200px; margin: 0 auto; padding: 0 16px 14px; display: flex; justify-content: flex-end; }
 @media (min-width: 640px) { .site-header-search { padding-inline: 24px; } }
 /* Wide screens: the menu sits beside the tall brand mark, so the row under it
    is mostly empty — pull the search up to just below the menu. */

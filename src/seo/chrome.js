@@ -155,7 +155,7 @@ function getSiteFooterBar(year = new Date().getFullYear()) {
 // leans on guides (the reader came to read) but still leads with a tool or two.
 function getSearchFormHTML({ tools = 4, guides = 4, placeholder = 'Search' } = {}) {
   return `<form class="ds-form" role="search" data-deft-search data-tools="${Number(tools)}" data-guides="${Number(guides)}" action="/tools">
-      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel"></div>
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="${placeholder.replace(/"/g, '&quot;')}" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
       <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
     </form>
     <script src="/search/deft-search.js" defer></script>`;

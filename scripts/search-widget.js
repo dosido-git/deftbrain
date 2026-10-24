@@ -95,7 +95,7 @@ var CSS = [
   '@media (max-width:640px){.site-header-search .ds-form{max-width:none}}',
   // Compact in the header: about the height of its text (owner, 2026-10-24).
   '.site-header-search .ds-box{padding:0 10px;gap:6px}',
-  '.site-header-search .ds-input{padding:0;font-size:14px;line-height:18px;height:18px}',
+  '.site-header-search .ds-input{padding:3px 0;font-size:14px;line-height:20px;height:26px}',
   '.site-header-search .ds-box span{font-size:12px;line-height:1}',
   '.ds-start{font-weight:600}',
   ':root[data-theme="dark"] .ds-box{background:#18181b;border-color:#52525b}',
@@ -189,6 +189,8 @@ function mount(form) {
     if (input.value.trim() && panel.innerHTML) open();
   });
   var kbd = form.querySelector('.ds-kbd');
+  // Name the shortcut this keyboard has (⌘K on a Mac, Ctrl K elsewhere).
+  if (kbd && !/Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || '')) kbd.textContent = 'Ctrl K';
   function syncKbd() { if (kbd) kbd.hidden = !!input.value; }
   input.addEventListener('input', function () {
     syncKbd();

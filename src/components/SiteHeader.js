@@ -102,7 +102,8 @@ export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency
           <div className="ds-box">
             <span aria-hidden="true">⌕</span>
             <input className="ds-input" type="search" name="q" autoComplete="off" placeholder="Search"
-              role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" />
+              role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K" />
+            <span className="ds-kbd" aria-hidden="true">⌘K</span>
           </div>
           <div className="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden />
         </form>
