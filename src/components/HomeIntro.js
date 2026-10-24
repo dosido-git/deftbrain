@@ -88,7 +88,7 @@ function ToolScramble({ allTools, onBrowse }) {
           <div>
             <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore</div>
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
-            <p className="mt-1 text-sm max-w-md" style={{color:MUTED}}>A random handful of tools. Open any one, or scramble for another handful.</p>
+            <p className="mt-1 text-sm max-w-md" style={{color:MUTED}}>Some representative tools.</p>
           </div>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-sm font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Show other tools</button>
         </div>
