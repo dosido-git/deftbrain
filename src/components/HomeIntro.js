@@ -62,7 +62,7 @@ function ToolScramble({ allTools, onBrowse }) {
   const [seed, setSeed] = useState(0);
   // A small optional sampler; visitors can request another set explicitly.
   // The first set is the focus tools (2026-10-15) — the ones the site is
-  // asking search engines to notice; "Scramble more" mixes in the rest.
+  // asking search engines to notice; "Show other tools" mixes in the rest.
   // scripts/prerender.js puts this same first set in the static HTML.
   const shown = useMemo(() => {
     if (seed === 0) {
@@ -90,7 +90,7 @@ function ToolScramble({ allTools, onBrowse }) {
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
             <p className="mt-1 text-sm max-w-md" style={{color:MUTED}}>A random handful of tools. Open any one, or scramble for another handful.</p>
           </div>
-          <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-sm font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Scramble more</button>
+          <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-sm font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Show other tools</button>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-9 gap-y-7 py-6">
           {shown.map((t,i) => {
