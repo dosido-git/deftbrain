@@ -51,19 +51,19 @@
 
   <title>How DeftBrain Is Built | DeftBrain</title>
   <meta name="robots" content="noindex, follow">
-  <meta name="description" content="What DeftBrain is built with: React, Express on Node, Anthropic&#39;s Claude models, streamed answers, 13 languages, prebuilt static pages.">
+  <meta name="description" content="How DeftBrain is built: React and Node, Claude models, answers streamed in parts and checked after they show, 13 languages, prebuilt pages.">
   <link rel="canonical" href="https://deftbrain.com/built-with">
   <link rel="icon" href="/favicon.ico?v=2">
 
   <meta property="og:type"        content="website">
   <meta property="og:title"       content="How DeftBrain Is Built | DeftBrain">
-  <meta property="og:description" content="What DeftBrain is built with: React, Express on Node, Anthropic&#39;s Claude models, streamed answers, 13 languages, prebuilt static pages.">
+  <meta property="og:description" content="How DeftBrain is built: React and Node, Claude models, answers streamed in parts and checked after they show, 13 languages, prebuilt pages.">
   <meta property="og:url"         content="https://deftbrain.com/built-with">
   <meta property="og:site_name"   content="DeftBrain">
 
   <meta name="twitter:card"        content="summary">
   <meta name="twitter:title"       content="How DeftBrain Is Built | DeftBrain">
-  <meta name="twitter:description" content="What DeftBrain is built with: React, Express on Node, Anthropic&#39;s Claude models, streamed answers, 13 languages, prebuilt static pages.">
+  <meta name="twitter:description" content="How DeftBrain is built: React and Node, Claude models, answers streamed in parts and checked after they show, 13 languages, prebuilt pages.">
 
   <!-- Self-hosted fonts (no third-party request) — see public/fonts/ -->
   <link rel="stylesheet" href="/fonts/playfair-display/playfair-display.css">
@@ -213,60 +213,24 @@
     <div class="container prose">
 <h1>How DeftBrain is built</h1>
 
-<p><strong>Hello, Product Hunt.</strong> Thanks for stopping by. Most of DeftBrain is written for someone in the middle of something &mdash; a confusing bill, a hard conversation, a lease they&#39;re about to sign. This page is for the rest of you: the people who want to see what&#39;s under the hood. Here it is, plainly.</p>
+<p><strong>Hello, Product Hunt.</strong> Most of DeftBrain is written for someone in the middle of something &mdash; a confusing bill, a hard conversation, a lease they&#39;re about to sign. This page is for the people who want to see what&#39;s under the hood.</p>
 
-<h2>The short version</h2>
-<p>DeftBrain is a React single-page app with an Express/Node backend, hosted on Railway. Each of its 120+ guided experiences sends what the visitor tells it to Anthropic&#39;s Claude models through its own backend route, and the answer streams back to the page in parts, each one shown as soon as it&#39;s ready. The site runs in 13 languages, and every page is also prebuilt as static HTML, so search engines can read it without running the app.</p>
+<h2>TL;DR</h2>
+<p>A React single-page app with an Express/Node backend, hosted on Railway. Each of the 120+ tools sends its request to Anthropic&#39;s Claude models, and the answer streams back in parts as each one is ready. Everything is checked after it&#39;s on screen, the site runs in 13 languages, and every page is prebuilt as static HTML.</p>
 
-<h2>Frontend</h2>
+<h2>Stack</h2>
+<p>React + Tailwind &middot; Node / Express &middot; Claude via the Anthropic SDK (mostly Sonnet; Haiku and Opus for particular steps) &middot; Server-Sent Events &middot; Railway. Share images are drawn from code with satori and resvg.</p>
+
+<h2>What&#39;s interesting under the hood</h2>
 <ul>
-  <li>One React page per experience, built with Create React App.</li>
-  <li>Shared components for copy, print and share, and an error boundary around every experience, so one broken answer never blanks the page.</li>
-  <li>Light and dark themes throughout.</li>
-  <li>Tailwind, written with direction-neutral spacing, so the whole site mirrors correctly in Arabic.</li>
-</ul>
-
-<h2>Backend</h2>
-<ul>
-  <li>Express on Node, one route file per experience. A new file is picked up and mounted automatically.</li>
-  <li>Model choice lives in one place: mostly Claude Sonnet, with faster or deeper models for particular steps, each overridable by environment variable.</li>
-  <li>Calls retry on temporary errors and fail fast, with a clear error, when an answer would be cut off.</li>
-</ul>
-
-<h2>How an answer is made</h2>
-<ul>
-  <li><strong>Split and streamed.</strong> A long answer is divided into smaller requests that run at the same time, each writing only its own section. The first part usually appears within seconds; the rest arrive as they finish.</li>
-  <li><strong>Decided once.</strong> Where parts must agree &mdash; a verdict, a list of findings &mdash; a short first step decides it, and every later part follows that decision, so sections can&#39;t contradict each other.</li>
-  <li><strong>Checked after.</strong> Once the answer is on screen, separate checks look at its numbers, facts and internal consistency, and any correction is shown.</li>
-  <li><strong>Grounded where it matters.</strong> Some experiences look things up on the web first &mdash; rules, prices, programs &mdash; so their claims rest on real sources, which are listed.</li>
-</ul>
-
-<h2>Thirteen languages, four layers</h2>
-<ul>
-  <li>The answer is written in the visitor&#39;s language.</li>
-  <li>The reasoning fits their country &mdash; its rules, prices and customs.</li>
-  <li>Currency, numbers and dates are formatted the local way.</li>
-  <li>Every interface string is translated, and right-to-left languages are fully mirrored.</li>
-</ul>
-
-<h2>Readable without JavaScript</h2>
-<ul>
-  <li>Every experience and guide is prebuilt as a static page: what it&#39;s for, what you give it, what you get, frequently asked questions (with FAQ markup), and a real example run.</li>
-  <li>Sitemaps, plus <code>llms.txt</code> files for AI assistants.</li>
-</ul>
-
-<h2>Privacy by design</h2>
-<ul>
-  <li>No accounts and no sign-up.</li>
-  <li>What you type goes to our server, to Anthropic to prepare your result, and back to you. We don&#39;t store your input or your results.</li>
-  <li>Usage is counted by our own small event log, with no user IDs. The details are in the <a href="/privacy">privacy policy</a>.</li>
-</ul>
-
-<h2>How it stays reliable</h2>
-<ul>
-  <li>Every push runs a set of gates first: syntax and lint checks with zero warnings allowed, audits across the whole catalog, and checks that every language is complete.</li>
-  <li>Each experience has saved example answers. A change replays them for free; a change to what the experience asks the model triggers one real, paid run before it ships.</li>
-  <li>The example on each page is a real run, shown as it came back.</li>
+  <li><strong>Answers in parts.</strong> A long answer is split into several requests that run at the same time, each writing only its own section. The first part usually shows within seconds; the rest stream in as they finish.</li>
+  <li><strong>Decide first, then write.</strong> Where parts must agree &mdash; a verdict, a list of findings &mdash; one short step decides it, and every other part is handed that decision. Separately written sections can&#39;t contradict each other.</li>
+  <li><strong>Checked after it&#39;s on screen.</strong> Shared checks run once the answer is showing: numbers and facts, internal consistency, details the visitor never gave, and analogies that only restate the effect instead of explaining the cause. Any correction is shown, never made silently.</li>
+  <li><strong>Grounded where it matters.</strong> Tools that deal with rules, prices or programs look them up on the web first and list their sources.</li>
+  <li><strong>13 languages, four layers.</strong> The answer is written in the visitor&#39;s language, the reasoning fits their country, currency and dates are formatted locally, and every interface string is translated &mdash; right-to-left included.</li>
+  <li><strong>Readable without JavaScript.</strong> Every tool and guide is prebuilt as a static page &mdash; what it&#39;s for, a real example run, FAQs with FAQ markup &mdash; plus sitemaps and <code>llms.txt</code> for AI assistants.</li>
+  <li><strong>Strict gates before every push.</strong> Zero lint warnings, catalog-wide audits, translation completeness, and each tool&#39;s saved example answers replayed for free &mdash; or one live run whenever its instructions to the model change.</li>
+  <li><strong>Private by design.</strong> No accounts. What you type isn&#39;t stored on our servers; any history a tool keeps stays in your own browser. Details in the <a href="/privacy">privacy policy</a>.</li>
 </ul>
 
 <h2>Who builds it</h2>
