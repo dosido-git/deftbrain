@@ -93,6 +93,10 @@ var CSS = [
   // The site header's search row (2026-10-23): right-aligned under the menu.
   '.site-header-search .ds-form{flex:none;width:100%;max-width:340px;margin:0;order:0}',
   '@media (max-width:640px){.site-header-search .ds-form{max-width:none}}',
+  // Compact in the header: about the height of its text (owner, 2026-10-24).
+  '.site-header-search .ds-box{padding:0 10px;gap:6px}',
+  '.site-header-search .ds-input{padding:0;font-size:14px;line-height:18px;height:18px}',
+  '.site-header-search .ds-box span{font-size:12px;line-height:1}',
   '.ds-start{font-weight:600}',
   ':root[data-theme="dark"] .ds-box{background:#18181b;border-color:#52525b}',
   ':root[data-theme="dark"] .ds-box span{color:#a8a29e}',
