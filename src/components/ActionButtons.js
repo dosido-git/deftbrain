@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import { serializeResults } from '../utils/copyFromDom';
+import { useActionBar } from './ActionBarContext';
 
 /**
  * Shared action buttons for tool output: Copy, Share, Print.
@@ -393,3 +394,12 @@ export function textToPrintHtml(text) {
 
 const ActionButtons = { CopyBtn, ShareBtn, PrintBtn, ActionBar };
 export default ActionButtons;
+
+// The tool's registered copy/print/share actions (useRegisterActions), drawn
+// where the tool puts them — PROTOTYPE design shows them in the answer's own
+// header instead of the page's toolbar. Same single source as the toolbar.
+export const RegisteredActions = () => {
+  const { actions } = useActionBar();
+  if (!actions.content) return null;
+  return <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />;
+};

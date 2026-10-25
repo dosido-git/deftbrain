@@ -10,6 +10,8 @@ import FeedbackTap from './FeedbackTap';
 import { ensurePrintStyles } from './printStyles';
 import SiteHeader from './SiteHeader';
 import './ToolPageSiteStyle.css';
+import PublicProductDemo from './PublicProductDemo';
+import { schemeStyle, schemeCategory } from '../data/toolSchemes';
 
 // Site style (2026-09-27). Every tool page wears the home page's frame: its
 // header (SiteHeader — brand + definition, nav, locale controls, light/dark
@@ -98,6 +100,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const guide = detectedTool?.guide || { tips: [] };
   // Theme-aware classes
   const isDark = theme === 'dark';
+  // PROTOTYPE: category colour scheme (src/data/toolSchemes.js) — null for
+  // every tool not in the prototype, which then renders exactly as before.
+  const sv = schemeStyle(detectedTool, isDark);
 
   // Bookmark toast
   const [showBookmarkToast, setShowBookmarkToast] = useState(false);
@@ -143,7 +148,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
 
   return (
-    <div data-print-wrapper data-site-style="home" data-print-handout="" className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
+    <div data-print-wrapper data-site-style="home" data-print-handout="" style={sv || undefined} className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
       
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
@@ -154,7 +159,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
           No base row-gap on this grid (gap only applies at lg:, for the
           column split) — see 2026-09-14 note below for why. */}
-      <div data-print-grid className={`relative max-w-[1200px] px-4 sm:px-6 mx-auto pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0`}>
+      <div data-print-grid className={`relative max-w-[1200px] px-4 sm:px-6 pb-8 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 ${sv
+        ? 'mx-auto pt-4'
+        : 'mx-auto pt-0'}`}>
         {/* Locale controls — the trailing columns of row 1, beside the page
             header. They used to be absolutely positioned here, which meant row
             1 sized itself as if they did not exist: nothing stopped them
@@ -198,7 +205,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             through the grid-item boundary, which is the part that varied by
             engine (see note above). Same 8px at lg+ and below, so no
             responsive variant needed. */}
-        <div className="lg:col-start-1 lg:col-span-8 lg:row-start-1 mb-2">
+        {/* PROTOTYPE: header (here) and <main> below share the category's light
+            shade — one envelope around the tool; In a nutshell stays outside it. */}
+        <div className={`lg:col-start-1 lg:col-span-8 lg:row-start-1 ${sv ? 'rounded-t-[20px] border border-b-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pt-6 sm:pt-8' : 'mb-2'}`}>
 
           {/* Print-only header */}
           {/* Height matters here, not style. Measured 2026-08-31: this block was
@@ -220,7 +229,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             )}
           </div>
           {/* ── Header ── */}
-          <header data-print-hide className={`${colors.bg} pb-6 space-y-2`}>
+          <header data-print-hide className={`${sv ? '' : colors.bg} pb-6 space-y-2`}>
             {/* pt-4, not lg:pt-4 by accident: it exists to line up the category
                 pill's top with the locale selectors' when they share a row at
                 lg+ (both carry pt-4 for that reason — see the locale-selector
@@ -230,6 +239,31 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 the doubled-gap pattern already fixed twice tonight, just
                 from padding instead of a margin/grid-gap collision. Since
                 this is the shared wrapper, it was showing up on every tool. */}
+            {sv ? (
+              /* PROTOTYPE header: Category label, title with its icon after it,
+                 Bookmark, and the tagline in place of the description. */
+              <div className="space-y-1.5">
+                {/* Category on the left, Bookmark top right. */}
+                <div className="flex items-center justify-between gap-3 relative">
+                  <p className="text-sm text-[var(--sc-accent)]">Category: {schemeCategory(detectedTool)}</p>
+                  <button data-print-hide onClick={handleBookmarkHint}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--sc-accent)] text-[var(--sc-accent)] text-sm hover:bg-[var(--sc-field)]"
+                    aria-label="Bookmark this tool" title="Bookmark this tool">
+                    <span aria-hidden="true">🔖</span><span className="hidden sm:inline">Bookmark</span>
+                  </button>
+                  {showBookmarkToast && (
+                    <div className={`absolute end-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-100' : 'bg-white border-stone-200 text-stone-800'}`}>
+                      Press {isMac ? '⌘' : 'Ctrl'} + D to bookmark this tool
+                    </div>
+                  )}
+                </div>
+                {/* Icon inside the heading so it always follows the title on the same line. */}
+                <h1 className="tp-title" style={{ color: 'var(--sc-strong)' }}>{detectedTool?.title} <span aria-hidden="true" className="text-[0.7em] align-middle">{detectedTool?.icon}</span></h1>
+                <p className="text-[21px] leading-snug italic text-[var(--sc-strong)] max-w-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  {detectedTool?.tagline}
+                </p>
+              </div>
+            ) : (<>
             <div className={`flex items-center gap-3 ${colors.accent} mb-2 lg:pt-4`}>
               <span className={`text-[10px] font-medium uppercase tracking-widest border ${colors.accentBorder} px-3 py-1 rounded-full`}>
                 {detectedTool?.categories?.[0] || 'General'}
@@ -241,6 +275,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <p className={`${colors.textSecondary} max-w-2xl leading-relaxed whitespace-pre-line`}>
               {detectedTool?.description || 'Strategic intelligence tool'}
             </p>
+            </>)}
             {/* ── Localized "Any language works" signal — only renders for non-English browsers ── */}
             {i18n.language !== 'en' && (
               <p
@@ -260,7 +295,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               below it is now the wrapper div's own mb-2 (see above), not a
               cancelled grid gap on this descendant. Same reasoning as the
               2026-09-14 note on the locale-selector row. */}
-          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 gap-2 relative">
+          {!sv && <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 gap-2 relative">
             <div className="flex gap-2">
             <button
               onClick={handleBookmarkHint}
@@ -287,7 +322,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {actions.content && (
               <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />
             )}
-          </div>
+          </div>}
         </div>
 
         {/* Main Content Area */}
@@ -295,7 +330,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             grid's full 32px (main → sidebar breathing room below lg). Now
             that the grid carries no base gap, that has to be explicit here
             instead of inherited — see the 2026-09-14 note above. */}
-        <main data-print-main className="lg:col-span-8 mb-8 lg:mb-0">
+        <main data-print-main className={`lg:col-span-8 mb-8 lg:mb-0 ${sv ? 'rounded-b-[20px] border border-t-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pb-6 sm:pb-8' : ''}`}>
+          {sv ? (
+            /* PROTOTYPE: no outer card — the tool draws its own form and answer cards. */
+            <section data-print-section className="scroll-mt-24">{children}</section>
+          ) : (
           <section data-print-section className={`scroll-mt-24 border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
               // One flat card. The tool's color is a pale band the tool's own
               // intro draws across the card's top (see DoctorVisitPrep's
@@ -307,6 +346,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               {children}
             </div>
           </section>
+          )}
           {/* "Was this helpful?" — highest-signal validation instrument, on every
               tool page (not printed). Central here so all tools inherit it. */}
           <div data-print-hide className="max-w-2xl mx-auto px-4">
@@ -349,7 +389,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div> */}
 
           {/* ── Guide Sidebar ── */}
-          <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>
+          <div className={`${sv ? 'bg-[var(--nut-bg)] border-[var(--nut-line)]' : `${colors.surfaceAlt} ${colors.border}`} border rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>
             
             {/* Header */}
             {/* ── In a Nutshell ────────────────────────────────────────────
@@ -362,8 +402,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
                 Optional: tools with no primer skip this entirely. */}
             {tool?.primer && (
-              <div className={`-mt-2 mb-6 border-s-2 ${colors.accentBorder} ps-4`}>
-                <div className={`text-xs font-bold ${colors.accent} uppercase tracking-wide`}>
+              <div className={sv ? '-mt-1 mb-6' : `-mt-2 mb-6 border-s-2 ${colors.accentBorder} ps-4`}>
+                <div className={sv ? 'text-sm font-semibold text-[var(--nut-head)]' : `text-xs font-bold ${colors.accent} uppercase tracking-wide`}>
                   In a Nutshell
                 </div>
                 <dl className="space-y-2.5 mt-3">
@@ -371,8 +411,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     ['You get', tool.primer.get], ['The edge', tool.primer.edge]]
                     .filter(([, v]) => v).map(([label, value]) => (
                     <div key={label}>
-                      <dt className={`text-[10px] font-bold ${colors.accent} uppercase tracking-wide`}>{label}</dt>
-                      <dd className={`text-sm ${colors.textSecondary} leading-relaxed`}>{value}</dd>
+                      <dt className={`text-[10px] font-bold ${sv ? 'text-[var(--nut-label)]' : colors.accent} uppercase tracking-wide`}>{label}</dt>
+                      <dd className={`text-sm ${sv ? 'text-[var(--nut-text)]' : colors.textSecondary} leading-relaxed`}>{value}</dd>
                     </div>
                   ))}
                 </dl>
@@ -386,7 +426,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {guide.tips && guide.tips.length > 0 && (
               <details className="group mb-6">
                 <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
-                  <div className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase tracking-wide flex items-center gap-2`}>
+                  <div className={`text-xs font-bold ${sv ? 'text-[var(--nut-head)]' : isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase tracking-wide flex items-center gap-2`}>
                     Good to Know
                     <Caret groupOpen className="ms-auto" />
                   </div>
@@ -394,8 +434,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 <ul className="space-y-2 mt-3">
                   {guide.tips.map((tip, index) => (
                     <li key={index} className="flex gap-2">
-                      <span className={`${isDark ? 'text-yellow-400' : 'text-yellow-700'} mt-1 flex-shrink-0`}>•</span>
-                      <span className={`text-sm ${colors.textSecondary} leading-relaxed`}>
+                      <span className={`${sv ? 'text-[var(--nut-label)]' : isDark ? 'text-yellow-400' : 'text-yellow-700'} mt-1 flex-shrink-0`}>•</span>
+                      <span className={`text-sm ${sv ? 'text-[var(--nut-text)]' : colors.textSecondary} leading-relaxed`}>
                         {tip}
                       </span>
                     </li>
@@ -412,11 +452,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 field to fill in for the sake of it. */}
             {guide.beforeYouGo && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
+                <h4 className={`text-xs font-bold ${sv ? 'text-[var(--nut-head)]' : isDark ? 'text-emerald-400' : 'text-emerald-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
                   <span className="text-sm">✓</span>
                   Before You Go
                 </h4>
-                <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
+                <p className={`text-sm ${sv ? 'text-[var(--nut-text)]' : colors.textSecondary} leading-relaxed`}>
                   {guide.beforeYouGo}
                 </p>
               </div>
@@ -425,6 +465,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div>
         </aside>
       </div>
+      {/* PROTOTYPE: the sample answer sits outside the envelope, in the shared
+          nutshell colour — related to the tool, not part of it. */}
+      {sv && (
+        <div className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto">
+          <PublicProductDemo tool={detectedTool} variant="nutshell" />
+        </div>
+      )}
     </div>
   );
 };

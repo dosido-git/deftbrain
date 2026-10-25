@@ -22,6 +22,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
+import { PROTOTYPE_TOOLS, nutshellStyle } from '../data/toolSchemes';
 
 export default function ToolFaq() {
   const { pathname } = useLocation();
@@ -44,6 +45,24 @@ export default function ToolFaq() {
   };
 
   return (
+    PROTOTYPE_TOOLS.has(seg) ? (
+      // PROTOTYPE: outside the tool's envelope, in the shared nutshell colour.
+      <section data-print-hide style={nutshellStyle(isDark)} className="px-3 sm:px-4 mt-4">
+        <details className="max-w-[1200px] mx-auto rounded-2xl border border-[var(--nut-line)] bg-[var(--nut-bg)] px-5 py-4 group">
+          <summary className="cursor-pointer list-none flex items-center justify-between text-base font-black text-[var(--nut-head)] [&::-webkit-details-marker]:hidden">
+            Questions people ask <span className="text-sm font-bold text-[var(--nut-label)]">{faq.length} ▾</span>
+          </summary>
+          <dl className="space-y-5 mt-4">
+            {faq.map((f, i) => (
+              <div key={i}>
+                <dt className="text-sm font-bold text-[var(--nut-head)] mb-1">{f.q}</dt>
+                <dd className="text-sm leading-relaxed text-[var(--nut-text)]">{f.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      </section>
+    ) : (
     <section data-print-hide className={`${c.band} border-t ${c.border}`}>
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h2 className={`text-[11px] font-bold uppercase tracking-widest ${c.head} mb-5`}>
@@ -59,5 +78,6 @@ export default function ToolFaq() {
         </dl>
       </div>
     </section>
+    )
   );
 }

@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
+import { PROTOTYPE_TOOLS, nutshellStyle } from '../data/toolSchemes';
 
 // Fetch the guides manifest once, cached at module scope across navigations.
 let _cache = null;
@@ -81,6 +82,12 @@ function relatedTools(tool, all, n = 2) {
 export default function RelatedLinks() {
   const { pathname } = useLocation();
   const { isDark } = useTheme();
+  const c = {
+    bg: isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
+    head: isDark ? 'text-zinc-400' : 'text-[#6e675c]',
+    link: isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#165b9a] hover:text-[#1a2e44]',
+    border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
+  };
   const [guides, setGuides] = useState(_cache);
 
   useEffect(() => {
@@ -102,12 +109,7 @@ export default function RelatedLinks() {
   // with the Footer right below it.
   // head: zinc-400 / #6e675c (not zinc-500 / #8a8275) — the 11px section
   // headers need ≥4.5:1 contrast; the old pair sat at ~3.6:1 in both themes.
-  const c = {
-    bg: isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
-    head: isDark ? 'text-zinc-400' : 'text-[#6e675c]',
-    link: isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#165b9a] hover:text-[#1a2e44]',
-    border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
-  };
+  // (c moved above the first useState — PF-14.)
 
   const Block = ({ label, links, hub }) => (links.length === 0 ? null : (
     <nav className="mb-5" aria-label={label}>
@@ -166,10 +168,19 @@ export default function RelatedLinks() {
   return (
     // data-site-tail: omitted from a tool's printed handout (printStyles);
     // still prints everywhere else, per the note above.
+    PROTOTYPE_TOOLS.has(seg) ? (
+      // PROTOTYPE: outside the tool's envelope, in the shared nutshell colour.
+      <div data-site-tail style={nutshellStyle(isDark)} className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto mt-4 mb-6">
+        <div className="rounded-2xl border border-[var(--nut-line)] bg-[var(--nut-bg)] px-5 pt-5 [&_h2]:text-[var(--nut-head)] [&_a]:text-[var(--nut-label)]">
+          {body}
+        </div>
+      </div>
+    ) : (
     <div data-site-tail className={`${c.bg} border-t ${c.border} mt-2`}>
       <div className="max-w-5xl mx-auto px-5 pt-6">
         {body}
       </div>
     </div>
+    )
   );
 }

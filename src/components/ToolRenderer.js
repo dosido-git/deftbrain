@@ -8,6 +8,7 @@ import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 import PublicProductDemo from './PublicProductDemo';
+import { PROTOTYPE_TOOLS } from '../data/toolSchemes';
 
 // Renamed tools keep their old URL alive: old id → current id. A client-side
 // 301-equivalent so existing links, bookmarks, and search results don't break.
@@ -158,7 +159,8 @@ const ToolRenderer = ({ college }) => {
         <ToolErrorBoundary toolId={toolId}>
           <ToolComponent college={college} tool={toolData} />
         </ToolErrorBoundary>
-        {(STATIC_CONTENT_COHORT_2.has(toolId) || EXAMPLE_OUTPUT_TOOLS.has(toolId)) && <PublicProductDemo tool={toolData} />}
+        {/* PROTOTYPE tools render it outside the envelope (ToolPageWrapper). */}
+        {(STATIC_CONTENT_COHORT_2.has(toolId) || EXAMPLE_OUTPUT_TOOLS.has(toolId)) && !PROTOTYPE_TOOLS.has(toolId) && <PublicProductDemo tool={toolData} />}
       </Suspense>
       </div>
     </ToolPageWrapper>
