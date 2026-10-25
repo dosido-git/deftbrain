@@ -8363,7 +8363,7 @@ tagline: "Take command of your available energy",
   tagline: "Ways to lower, dispute or manage a bill you can't afford",
   tags: ['bill', 'medical bill', 'negotiate', 'reduce', 'lower', 'financial', 'debt', 'collections', 'late fee', 'overdue', 'dispute', 'hardship', 'credit', 'waive', 'fight', 'utilities', 'medical', 'rent', 'insurance', 'phone', 'scripts', 'letters'],
   icon: "🧾",
-  categories: ['Conversations', 'Home & Daily Life', 'Money'],
+  categories: ['Money', 'Home & Daily Life'],
   headerColor: "#c0d8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.

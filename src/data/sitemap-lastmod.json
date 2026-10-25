@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "a03f9b880850244cbf9f4bcb5d3924b917daf167",
+  "hash": "41fe0165beb13b548ea6be91a307e137881cafc1",
   "lastmod": "2026-10-25"
  },
  "static:about": {
@@ -28,7 +28,7 @@
   "lastmod": "2026-10-25"
  },
  "tool:BillRescue": {
-  "hash": "ab6a87f3c3f5382e5636159846ba8032e95274ef",
+  "hash": "6cee24aa01d8458ca1d1bd5d1bb5c262bffef3ec",
   "lastmod": "2026-10-25"
  },
  "tool:BragSheetBuilder": {
@@ -224,8 +224,8 @@
   "lastmod": "2026-10-08"
  },
  "category:conversations": {
-  "hash": "d2346b3cb87466db236f14b8a8b2cdf0dc850d87",
-  "lastmod": "2026-10-06"
+  "hash": "539e501393064d5ac12fc3d896a8bbab7f6af268",
+  "lastmod": "2026-10-25"
  },
  "category:learning": {
   "hash": "2beb556a8d37377794a92d87c51ae7cf03aa7b06",
