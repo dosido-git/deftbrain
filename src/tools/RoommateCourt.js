@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Caret from '../components/Caret';
+import ToolTabs from '../components/ToolTabs';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import CheckNote, { checkStatusFor } from '../components/CheckNote';
 import { useTheme } from '../hooks/useTheme';
@@ -155,8 +156,6 @@ const RoommateCourt = ({ tool }) => {
     cardAltCard:   isDark ? 'bg-zinc-700/40' : 'bg-slate-50',
     cardAltInset:  isDark ? 'bg-zinc-800/80' : 'bg-white',
     barColors:     ['bg-cyan-500', 'bg-amber-500', 'bg-emerald-500', 'bg-cyan-500', 'bg-red-500'],
-    tabActive:     isDark ? 'bg-[#2f6fb0] text-white border-[#7fb3e0]' : 'bg-[#142a43] text-white border-[#142a43]',
-    tabInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700' : 'bg-white text-gray-500 hover:text-gray-700 border-gray-200',
     verdictBg:     isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     verdictText:   isDark ? 'text-amber-200' : 'text-amber-900',
     deleteHover:   isDark ? 'hover:text-red-400 transition-colors' : 'hover:text-red-500 transition-colors',
@@ -945,30 +944,17 @@ const RoommateCourt = ({ tool }) => {
           </div>
         </div>
 
-        <div className="px-5 py-3 flex gap-1.5">
-          {[
-            { id: 'dispute', label: tr('rc_tab_dispute', 'Work It Out') },
-            { id: 'chores',  label: tr('rc_tab_chores', 'Chore Roulette'), badge: activeChoreCount },
-          ].map(tab => (
-            <button key={tab.id} onClick={() => { setActiveTab(tab.id); setError(''); }}
-              className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border
-                ${activeTab === tab.id ? c.tabActive : `${c.tabInactive}`}`}>
-              {tab.label}
-              {tab.badge > 0 && (
-                <span className={`ms-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-black
-                  ${activeTab === tab.id ? 'bg-white/20 text-white' : (isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>
-                  {tab.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
       </div>
 
-      {activeTab === 'dispute' && (
-        disputeResult ? renderDisputeResults() : renderDisputeForm()
-      )}
-      {activeTab === 'chores' && renderChoreTab()}
+      <ToolTabs label={tool?.title || 'Roommate Court'} active={activeTab} onChange={id => { setActiveTab(id); setError(''); }} tabs={[
+        { id: 'dispute', icon: '⚖️', label: tr('rc_tab_dispute', 'Work It Out'), tone: 'blue' },
+        { id: 'chores',  icon: '🎰', label: tr('rc_tab_chores', 'Chore Roulette'), tone: 'amber', badge: activeChoreCount },
+      ]}>
+        {activeTab === 'dispute' && (
+          disputeResult ? renderDisputeResults() : renderDisputeForm()
+        )}
+        {activeTab === 'chores' && renderChoreTab()}
+      </ToolTabs>
 
       {error && (
         <div className={`p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>

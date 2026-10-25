@@ -11,7 +11,7 @@
  *
  * Usage:
  *   <ToolTabs label="Ways to practise" active={tab} onChange={setTab} tabs={[
- *     { id: 'debate', icon: '🥊', label: 'Debate', tone: 'amber' }, …]}>
+ *     { id: 'debate', icon: '🥊', label: 'Debate', tone: 'amber', badge: 3 }, …]}>   // badge: optional count
  *     …the selected tab's content…
  *   </ToolTabs>
  *
@@ -68,6 +68,7 @@ export default function ToolTabs({ tabs, active, onChange, label, children }) {
                 ? { background: surface, borderColor: tl, borderTopWidth: 3, borderBottomWidth: 2, borderBottomColor: surface }
                 : { background: isDark ? tt.darkTint : tt.tint, borderColor: 'transparent', borderBottomWidth: 2, borderBottomColor: line }}>
               <span className="text-base sm:text-sm" aria-hidden="true">{tb.icon}</span><span>{tb.label}</span>
+              {tb.badge > 0 && <span className={`min-w-[1.25rem] h-5 px-1 rounded-full inline-flex items-center justify-center text-xs font-black ${isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-800'}`}>{tb.badge}</span>}
             </button>
           );
         })}
