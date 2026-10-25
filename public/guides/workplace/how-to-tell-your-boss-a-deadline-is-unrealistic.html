@@ -440,7 +440,7 @@
       function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; }, 6000);
     wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
       function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
-      function(d){ return d&&d.already ? 'You\u2019re already on the list. The Operator admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });
+      function(d){ return d&&d.already ? 'You\u2019re already on the list. Bruce admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });
   })();
   </script>
   <footer class="site-footer">

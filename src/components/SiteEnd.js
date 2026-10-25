@@ -72,7 +72,7 @@ export default function SiteEnd() {
     const { ok, d } = await post('/api/subscribe', { email, source: window.location.pathname });
     if (!ok) throw new Error(d.error || FAILED);
     return d.already
-      ? 'You’re already on the list. The Operator admires the enthusiasm.'
+      ? 'You’re already on the list. Bruce admires the enthusiasm.'
       : 'Check your inbox — confirm the email and you’re in.';
   };
   return (
