@@ -23,30 +23,28 @@ const MOTIVATIONS = [
   { value: 'curious',    icon: '👀', labelKey: 'ht_mot_curious' },
 ];
 
-// Five, rotated across all three motives (worried, decision, curious): a
-// wall falling faster than predicted, a pandemic's cultural afterlife, a
-// relative down a conspiracy rabbit hole, a decision-relevant historical
-// pattern, and whether a crisis's reforms actually held.
+// Five current events, rotated across all three motives (worried, decision,
+// curious) — this tool is for what is happening now, so no historical events.
 const EXAMPLES = [
   {
-  event: 'The fall of the Berlin Wall',
-  context: "Curious about parallels to modern political/cultural shifts — what made the wall come down faster than anyone predicted, and what dynamics from 1989 might be echoing now.",
+  event: 'AI data centers driving up electricity demand',
+  context: "Curious whether the AI building boom looks more like the railways or the 1990s fiber-optic bubble, and what happened to ordinary people's power bills the last time demand jumped like this.",
 },
   {
-  event: 'The 1918 influenza pandemic',
-  context: "Interested in what happened AFTER — how people went back to normal, what got remembered and what got quietly dropped, and why it left so little cultural trace compared to the war that overlapped it.",
+  event: "Countries raising tariffs on each other's goods",
+  context: "Making a decision — I run a small business that imports parts. Trying to judge whether tariff fights usually last for years or unwind quickly.",
 },
   {
-  event: 'The moon landing',
-  context: "Worried about a family member who has gone down a rabbit hole insisting it was faked. Want to understand the actual weight of evidence, not just be told to trust NASA.",
+  event: 'Measles coming back as vaccination rates fall',
+  context: "Worried about a family member who has stopped trusting vaccines. Want to understand how earlier vaccine scares played out, not just be told they're wrong.",
 },
   {
-  event: 'The fall of the Roman Empire',
-  context: "Making a decision — trying to figure out if 'societies collapse when they get too complacent' is actually a sound historical pattern or just a story people tell to feel smart about the present.",
+  event: 'Birth rates falling to record lows',
+  context: "Interested in whether any country has ever reversed a falling birth rate, and what actually worked.",
 },
   {
-  event: 'The 2008 financial crisis',
-  context: "Curious whether the reforms that followed actually fixed the underlying problem or just patched the specific mechanism that failed last time.",
+  event: 'Companies ordering staff back to the office',
+  context: "Deciding whether to take a fully remote job. Want to know whether past shifts in where people work stuck or snapped back.",
 },
 ];
 
@@ -117,16 +115,17 @@ const HistoryToday = ({ tool }) => {
     try {
       // Progressive (2026-10-15): the summary shows first, each parallel
       // fills in as it lands, and dates and facts are double-checked after.
+      const _input = { event: event.trim(), context: context.trim() };
       const data = await callToolEndpointProgressive('history-today', {
         event: event.trim(), context: context.trim() || null,
         motivation: motivation || null,
         userLanguage: navigator.language || 'en',
       }, {
-        onDraft: d => { setResults(d); setCheckStatus('checking'); },
-        onChecked: (d, changed) => { setResults(d); setCheckStatus(checkStatusFor(changed)); },
+        onDraft: d => { setResults({ ...d, _input }); setCheckStatus('checking'); },
+        onChecked: (d, changed) => { setResults({ ...d, _input }); setCheckStatus(checkStatusFor(changed)); },
       });
       if (!data) return; // replaced by a newer run
-      setResults(data);
+      setResults({ ...data, _input });
       setSavedSearches(prev => [{ event: event.trim(), date: new Date().toISOString(), parallels: data.parallels?.length || 0, preview: event.trim().slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('ht_err_parallels')); }
   };
@@ -361,6 +360,13 @@ const HistoryToday = ({ tool }) => {
       {results && (
         <div ref={resultsRef} className="scroll-mt-24 space-y-5">
           <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
+          {results._input?.event && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('wait_you_told_us')}</p>
+              <p className={`text-sm ${c.text}`}>“{results._input.event}”</p>
+              {results._input.context && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{t('ht_angle_label')}: {results._input.context}</p>}
+            </div>
+          )}
           {/* Premise / accuracy check — leads the results when the input is false/unverifiable/not-current */}
           {results.premise_check && results.premise_check.status !== 'sound' && results.premise_check.assessment && (
             <div className={`p-4 rounded-xl border flex items-start gap-3 ${results.premise_check.status === 'false_premise' ? c.danger : results.premise_check.status === 'unverifiable' ? c.warning : c.highlight}`}>
