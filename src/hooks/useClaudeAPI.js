@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
-import { beginWait, summarizeRequest, toolFromPath } from '../utils/waitSignal';
+import { beginWait, summarizeRequest, toolFromPath, setWaitSearching } from '../utils/waitSignal';
 import { signalBusy } from '../utils/busySignal';
 import { t } from '../i18n';
 
@@ -279,6 +279,7 @@ export const useClaudeAPI = () => {
           let f;
           try { f = JSON.parse(frame.slice(6)); } catch { continue; }
           if (f.error) throw new Error(f.error);
+          if (f.searching) setWaitSearching(f.searching);
           if (f.draft) {
             if (!latest) { endWait('ok'); signalBusy('clear'); setLoading(false); }
             latest = f.draft;

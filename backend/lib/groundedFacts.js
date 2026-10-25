@@ -64,8 +64,9 @@ function hydrate(file, { expired }) {
     const block = entry && typeof entry.block === 'string' ? entry.block : '';
     if (!block) continue;
     // A runtime entry keeps whatever life it had left; a seed entry is served
-    // once and then refreshed.
-    const expires = expired ? 0 : Number(entry.expires) || 0;
+    // once and then refreshed — unless it is `pinned` (evergreen example
+    // answers, scripts/warm-svn-examples.js), which never expires.
+    const expires = entry.pinned ? Infinity : expired ? 0 : Number(entry.expires) || 0;
     if (!expired && expires <= Date.now()) continue;
     cache.set(key, { block, data: entry.data || null, expires });
     n++;

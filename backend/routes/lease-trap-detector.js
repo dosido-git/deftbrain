@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer } = require('../lib/progressive');
+const { answer, whileSearching } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -440,7 +440,7 @@ ${criticalRules}`;
     // Grounded VERIFIED CURRENT TENANT LAW block is appended to ALL split
     // prompts; its override rule lives in the shared LEGAL RESEARCH REQUIREMENTS
     // text, which every prompt also carries.
-    const { block: verifiedLawBlock, cacheKey: tenantLawCacheKey } = await groundTenantLawFacts({ location, userLanguage });
+    const { block: verifiedLawBlock, cacheKey: tenantLawCacheKey } = await whileSearching(req, res, 'law', groundTenantLawFacts({ location, userLanguage }));
 
     // contentBlocks (optional PDF document block + instruction text) is shared by
     // every call; each call appends its own prompt as the final text block — same

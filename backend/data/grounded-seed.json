@@ -368,5 +368,1005 @@
     "block": "\n\nVERIFIED VENUES NEAR Washington DC — real places, confirmed open:\n- \"Death & Co\" (bar, $$$) — Cult New York cocktail bar now in DC, dim lighting and meticulously crafted spirit-forward drinks · Downtown / Penn Quarter\n- \"Jack Rose Dining Saloon\" (bar, $$) — Over 2,700 whiskeys on display across multiple levels with a rooftop terrace · Adams Morgan\n- \"Old Ebbitt Grill\" (dinner_casual, $$) — DC institution near the White House, classic American fare open late · Downtown\n- \"Seven Reasons\" (dinner_nice, $$$) — Upscale Latin-American cooking with serious cocktails, ideal date-night spot · 14th Street NW\n- \"9:30 Club\" (live_music, $$) — Legendary mid-size rock and indie venue, storied DC institution still booking nightly · U Street / Shaw\n- \"The Anthem\" (live_music, $$) — 6,000-seat waterfront concert hall bridging club and arena, major touring acts in summer 2026 · The Wharf, Southwest Waterfront\n- \"DC Comedy Loft\" (theatre, $$) — Dupont Circle comedy club hosting national headliners and rising stars most nights · Dupont Circle · closed Mon, Tue\n- \"Smithsonian National Museum of Natural History\" (gallery, free) — Free entry, open late on select evenings; the Hope Diamond and Ocean Hall are unmissable · National Mall\n- \"Lincoln Memorial\" (landmark, free) — Open 24 hours; dramatically lit after dark with reflecting pool views toward the Washington Monument · National Mall · closed Mon, Tue, Wed, Thu, Fri, Sat\n- \"Pinstripes Georgetown\" (sport_play, $$) — Upscale bowling and bocce venue with full Italian restaurant and craft cocktails · Georgetown\n- \"Punchbowl Social\" (games, $$) — Multi-floor venue with bowling, arcade games, and bar food at The Wharf · The Wharf, Southwest Waterfront\n- \"Bowlero Arlington\" (sport_play, $$) — 32 modern lanes plus arcade and sports bar, just across the Potomac · Arlington, VA\n- \"Capital Bikeshare\" (outdoors, $) — Dock-to-dock bike hire citywide; evening rides along the National Mall or Anacostia Riverwalk trail are well-lit and flat · Citywide — stations across DC\n- \"Georgetown Waterfront Park\" (outdoors, free) — Riverside walk and kayak/paddleboard hire point on the Potomac, beautiful at dusk · Georgetown · closed Mon, Tue, Wed, Thu, Fri, Sat\n- \"Nationals Park\" (sports_venue, $$) — Home of the Washington Nationals (MLB); also hosts Washington Spirit (NWSL) matches · Navy Yard / Capitol Riverfront\n- \"Capital One Arena\" (sports_venue, $$) — Downtown arena home to the Washington Capitals (NHL) and Washington Wizards (NBA) · Downtown / Chinatown\n\nVENUE RULE: for each stop, venue_name MUST be one of the names above, copied EXACTLY as written between the quotes. Do not shorten, expand, translate or re-style it. Build the evening from these places. Only if none of them can fill a stop, fall back to a descriptive venue type for that one stop.\nCLOSING DAYS ARE HARD CONSTRAINTS: never place a stop at a venue on a day it is marked closed. Choose another verified venue instead.",
     "savedAt": "2026-08-12T01:33:36.736Z",
     "location": "Washington DC"
+  },
+  "signal-research:example:1": {
+    "block": "\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked \"support\": \"secondary_only\" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n{\"researched_at\":\"2026-10-25T04:28:37.486Z\",\"claims\":[{\"claim\":\"Adults need 8 hours of sleep (vs. the evidence-based range being 7–9 hours, with 7–8 hours most favorably associated with health outcomes)\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"The National Sleep Foundation, after a comprehensive review of 133 meta-analyses, recommends 7–9 hours for adults aged 26–64 and 7–8 hours for adults 65+; a fixed target of 8 hours is not the recommended range.\",\"source_ids\":[\"S1\",\"S2\"]},{\"text\":\"An overview of systematic reviews found that 7–8 hours per day was the sleep duration most favorably associated with health outcomes across adults; sleeping longer than 8–9 hours was associated with a 39% absolute increase in mortality in one large meta-analysis.\",\"source_ids\":[\"S3\"]},{\"text\":\"A dose-response meta-analysis of 35 prospective cohort studies (1.5 million participants) found 7 hours/day associated with lowest all-cause mortality risk; 8 hours/day was already associated with a small but measurable increase in relative risk.\",\"source_ids\":[\"S4\"]},{\"text\":\"A 2025 10-year systematic review of NSF recommendations (133 meta-analyses) found that 77% of meta-analyses for adults were globally consistent with the 7–9 hour range, and noted that 6–10 hours may be appropriate for some individuals.\",\"source_ids\":[\"S5\"]}],\"limits\":[\"Most large studies are observational; causality between sleep duration and health outcomes cannot be firmly established from epidemiological data alone.\",\"Long sleep duration is a recognized marker of underlying illness, which may confound associations between >8 hours and elevated mortality risk.\",\"Individual variation exists: the NSF acknowledges that 6–10 hours may be appropriate for some adults, suggesting a single number target does not capture natural variability.\",\"Evidence quality ranged from low to high across health outcomes in the overview of reviews.\"]},{\"claim\":\"Polyphasic sleep is a viable or beneficial alternative to consolidated nighttime sleep\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"A National Sleep Foundation consensus panel reviewed 40,672 publications, retained 22 relevant papers, and found no evidence supporting benefits from polyphasic sleep schedules (excluding naps/siestas); the panel concluded such schedules are associated with adverse physical health, mental health, and performance outcomes.\",\"source_ids\":[\"S6\"]},{\"text\":\"The NSF panel found no studies demonstrating improvement in memory retention on a polyphasic schedule; multiple studies showed significant mood deterioration and worse performance on cognitive tasks including visual vigilance, psychomotor speed, and memory recall.\",\"source_ids\":[\"S6\"]},{\"text\":\"A controlled study of polyphasic sleep found strongly decreased growth hormone levels, attention lapses, and altered REM sleep neurophysiology; the dropout rate was 90%, indicating the schedule was largely intolerable even for highly motivated participants.\",\"source_ids\":[\"S7\"]}],\"limits\":[\"The evidence base for polyphasic sleep is sparse: the NSF review retained only 22 papers from over 40,000 screened, limiting confidence in any broad conclusion.\",\"The NSF review explicitly excluded nap and siesta schedules; biphasic sleep (one nighttime period plus a daytime nap) has a somewhat different and more favorable evidence profile than extreme multi-nap schedules.\",\"Most studies involve small samples, short durations, or lack controls, making it difficult to fully characterize effects.\",\"Historical and cultural practices of biphasic or siesta-inclusive sleep exist and are not equivalent to the extreme restriction schedules studied.\"]},{\"claim\":\"Using a phone before bed ruins sleep (via blue light exposure)\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"Blue light in the 460–500 nm wavelength range suppresses melatonin by signaling to intrinsically photosensitive retinal ganglion cells; a widely cited 2014 study found reading on a light-emitting device before bed delayed melatonin onset by approximately 1.5 hours and impaired next-morning alertness.\",\"source_ids\":[\"S8\"]},{\"text\":\"A 2025 Frontiers in Neurology systematic review and meta-analysis of 3 double-blind crossover RCTs found that blue-light blocking glasses showed non-significant reductions in sleep onset latency (MD = −4.86 min, p = 0.54) and non-significant increases in total sleep time, concluding current RCT evidence does not support significant effects for healthy adults.\",\"source_ids\":[\"S11\"]},{\"text\":\"A 2023 Cochrane systematic review of 17 RCTs (619 participants) concluded that blue-light filtering spectacles probably make no difference to sleep quality, and evidence for sleep outcomes was characterized as indeterminate.\",\"source_ids\":[\"S12\"]}],\"limits\":[\"The evidence that light in general (regardless of color/wavelength) suppresses melatonin and disrupts circadian timing is stronger than the evidence that blue wavelengths specifically are worse than other wavelengths at equivalent brightness.\",\"Screen use before bed involves multiple mechanisms beyond blue light—psychological arousal, engaging content, and deferred sleep timing—that are difficult to separate from the light exposure effect alone.\",\"Most experimental studies use controlled laboratory conditions (specific lux, distance, duration) that may not match typical real-world phone use.\",\"Blue-light blocking glasses may have more benefit for specific populations (shift workers, insomniacs, jet-lag sufferers) than for healthy adults, based on the available RCT evidence.\"]},{\"claim\":\"Sleep debt is real vs. you cannot catch up on lost sleep\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"A 2025 systematic review (published in Sleep and Breathing) found that weekend catch-up sleep provides partial short-term recovery—improving mood, reducing fatigue, and restoring some cognitive performance—but concluded it cannot fully offset the adverse effects of chronic sleep deprivation.\",\"source_ids\":[\"S13\"]}],\"limits\":[\"The recovery picture is outcome-dependent: subjective sleepiness and basic reaction time recover relatively quickly, while metabolic and higher-order cognitive outcomes recover more slowly and incompletely.\",\"The degree of recovery depends on severity and chronicity of the debt; a small acute deficit may be substantially reversed, while weeks of restriction appear to create effects that two days of extra sleep cannot repair.\",\"Sleeping in on weekends shifts circadian timing later, which can create 'social jet lag' that compounds Monday morning impairment—weekend catch-up may introduce its own cost.\",\"Most studies involve controlled sleep laboratory conditions or specific populations; generalizability to varied real-world patterns is limited.\"]}],\"sources\":[{\"id\":\"S1\",\"title\":\"National Sleep Foundation Reaffirms Landmark Sleep Duration Recommendations\",\"publisher\":\"National Sleep Foundation\",\"url\":\"https://www.thensf.org/sleep-duration-recommendations/\",\"date\":\"2026\",\"source_type\":\"professional_body\"},{\"id\":\"S2\",\"title\":\"National Sleep Foundation's updated sleep duration recommendations: final report\",\"publisher\":\"Sleep Health: Journal of the National Sleep Foundation / ScienceDirect\",\"url\":\"https://www.sciencedirect.com/science/article/abs/pii/S2352721815001606\",\"date\":\"2015\",\"source_type\":\"primary_study\"},{\"id\":\"S3\",\"title\":\"Sleep duration and health in adults: an overview of systematic reviews\",\"publisher\":\"Applied Physiology, Nutrition, and Metabolism / Canadian Science Publishing\",\"url\":\"https://cdnsciencepub.com/doi/10.1139/apnm-2020-0034\",\"date\":\"2020\",\"source_type\":\"systematic_review\"},{\"id\":\"S4\",\"title\":\"Nighttime sleep duration, 24-hour sleep duration and risk of all-cause mortality among adults: a meta-analysis of prospective cohort studies\",\"publisher\":\"Scientific Reports / Nature Publishing Group\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4761879/\",\"date\":\"2016-02-22\",\"source_type\":\"meta_analysis\"},{\"id\":\"S5\",\"title\":\"How much sleep do you need: A 10-year systematic review of National Sleep Foundation's sleep duration recommendations\",\"publisher\":\"Sleep Health: Journal of the National Sleep Foundation\",\"url\":\"https://www.sleephealthjournal.org/article/S2352-7218(26)00106-3/fulltext\",\"date\":\"2026\",\"source_type\":\"systematic_review\"},{\"id\":\"S6\",\"title\":\"Adverse impact of polyphasic sleep patterns in humans: Report of the National Sleep Foundation sleep timing and variability consensus panel\",\"publisher\":\"Sleep Health: Journal of the National Sleep Foundation / ScienceDirect\",\"url\":\"https://www.sciencedirect.com/science/article/pii/S2352721821000309\",\"date\":\"2021\",\"source_type\":\"professional_body\"},{\"id\":\"S7\",\"title\":\"Sustained polyphasic sleep restriction abolishes human growth hormone release\",\"publisher\":\"bioRxiv (preprint)\",\"url\":\"https://www.biorxiv.org/content/10.1101/2023.06.20.542775v1.full\",\"date\":\"2023-06-20\",\"source_type\":\"thesis_or_preprint\"},{\"id\":\"S8\",\"title\":\"Impacts of Blue Light Exposure From Electronic Devices on Circadian Rhythm and Sleep Disruption in Adolescent and Young Adult Students\",\"publisher\":\"Chronobiology in Medicine\",\"url\":\"https://www.chronobiologyinmedicine.org/journal/view.php?number=167&viewtype=pubreader\",\"date\":\"2024\",\"source_type\":\"primary_study\"},{\"id\":\"S11\",\"title\":\"Efficacy of blue-light blocking glasses on actigraphic sleep outcomes: a systematic review and meta-analysis of randomized controlled crossover trials\",\"publisher\":\"Frontiers in Neurology\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12668929/\",\"date\":\"2025-11-18\",\"source_type\":\"meta_analysis\"},{\"id\":\"S12\",\"title\":\"Blue-light filtering spectacles probably make no difference to eye strain, eye health or sleep quality\",\"publisher\":\"Cochrane Collaboration\",\"url\":\"https://www.cochrane.org/about-us/news/blue-light-filtering-spectacles-probably-make-no-difference-eye-strain-eye-health-or-sleep\",\"date\":\"2023-07-26\",\"source_type\":\"systematic_review\"},{\"id\":\"S13\",\"title\":\"Can weekend catch-up sleep repay the sleep debt? Balancing short-term relief with long-term risks\",\"publisher\":\"PubMed / Sleep and Breathing (Springer Nature)\",\"url\":\"https://pubmed.ncbi.nlm.nih.gov/41148489/\",\"date\":\"2025\",\"source_type\":\"systematic_review\"}]}",
+    "data": {
+      "researched_at": "2026-10-25T04:28:37.486Z",
+      "claims": [
+        {
+          "claim": "Adults need 8 hours of sleep (vs. the evidence-based range being 7–9 hours, with 7–8 hours most favorably associated with health outcomes)",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "The National Sleep Foundation, after a comprehensive review of 133 meta-analyses, recommends 7–9 hours for adults aged 26–64 and 7–8 hours for adults 65+; a fixed target of 8 hours is not the recommended range.",
+              "source_ids": [
+                "S1",
+                "S2"
+              ]
+            },
+            {
+              "text": "An overview of systematic reviews found that 7–8 hours per day was the sleep duration most favorably associated with health outcomes across adults; sleeping longer than 8–9 hours was associated with a 39% absolute increase in mortality in one large meta-analysis.",
+              "source_ids": [
+                "S3"
+              ]
+            },
+            {
+              "text": "A dose-response meta-analysis of 35 prospective cohort studies (1.5 million participants) found 7 hours/day associated with lowest all-cause mortality risk; 8 hours/day was already associated with a small but measurable increase in relative risk.",
+              "source_ids": [
+                "S4"
+              ]
+            },
+            {
+              "text": "A 2025 10-year systematic review of NSF recommendations (133 meta-analyses) found that 77% of meta-analyses for adults were globally consistent with the 7–9 hour range, and noted that 6–10 hours may be appropriate for some individuals.",
+              "source_ids": [
+                "S5"
+              ]
+            }
+          ],
+          "limits": [
+            "Most large studies are observational; causality between sleep duration and health outcomes cannot be firmly established from epidemiological data alone.",
+            "Long sleep duration is a recognized marker of underlying illness, which may confound associations between >8 hours and elevated mortality risk.",
+            "Individual variation exists: the NSF acknowledges that 6–10 hours may be appropriate for some adults, suggesting a single number target does not capture natural variability.",
+            "Evidence quality ranged from low to high across health outcomes in the overview of reviews."
+          ]
+        },
+        {
+          "claim": "Polyphasic sleep is a viable or beneficial alternative to consolidated nighttime sleep",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A National Sleep Foundation consensus panel reviewed 40,672 publications, retained 22 relevant papers, and found no evidence supporting benefits from polyphasic sleep schedules (excluding naps/siestas); the panel concluded such schedules are associated with adverse physical health, mental health, and performance outcomes.",
+              "source_ids": [
+                "S6"
+              ]
+            },
+            {
+              "text": "The NSF panel found no studies demonstrating improvement in memory retention on a polyphasic schedule; multiple studies showed significant mood deterioration and worse performance on cognitive tasks including visual vigilance, psychomotor speed, and memory recall.",
+              "source_ids": [
+                "S6"
+              ]
+            },
+            {
+              "text": "A controlled study of polyphasic sleep found strongly decreased growth hormone levels, attention lapses, and altered REM sleep neurophysiology; the dropout rate was 90%, indicating the schedule was largely intolerable even for highly motivated participants.",
+              "source_ids": [
+                "S7"
+              ]
+            }
+          ],
+          "limits": [
+            "The evidence base for polyphasic sleep is sparse: the NSF review retained only 22 papers from over 40,000 screened, limiting confidence in any broad conclusion.",
+            "The NSF review explicitly excluded nap and siesta schedules; biphasic sleep (one nighttime period plus a daytime nap) has a somewhat different and more favorable evidence profile than extreme multi-nap schedules.",
+            "Most studies involve small samples, short durations, or lack controls, making it difficult to fully characterize effects.",
+            "Historical and cultural practices of biphasic or siesta-inclusive sleep exist and are not equivalent to the extreme restriction schedules studied."
+          ]
+        },
+        {
+          "claim": "Using a phone before bed ruins sleep (via blue light exposure)",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "Blue light in the 460–500 nm wavelength range suppresses melatonin by signaling to intrinsically photosensitive retinal ganglion cells; a widely cited 2014 study found reading on a light-emitting device before bed delayed melatonin onset by approximately 1.5 hours and impaired next-morning alertness.",
+              "source_ids": [
+                "S8"
+              ]
+            },
+            {
+              "text": "A 2025 Frontiers in Neurology systematic review and meta-analysis of 3 double-blind crossover RCTs found that blue-light blocking glasses showed non-significant reductions in sleep onset latency (MD = −4.86 min, p = 0.54) and non-significant increases in total sleep time, concluding current RCT evidence does not support significant effects for healthy adults.",
+              "source_ids": [
+                "S11"
+              ]
+            },
+            {
+              "text": "A 2023 Cochrane systematic review of 17 RCTs (619 participants) concluded that blue-light filtering spectacles probably make no difference to sleep quality, and evidence for sleep outcomes was characterized as indeterminate.",
+              "source_ids": [
+                "S12"
+              ]
+            }
+          ],
+          "limits": [
+            "The evidence that light in general (regardless of color/wavelength) suppresses melatonin and disrupts circadian timing is stronger than the evidence that blue wavelengths specifically are worse than other wavelengths at equivalent brightness.",
+            "Screen use before bed involves multiple mechanisms beyond blue light—psychological arousal, engaging content, and deferred sleep timing—that are difficult to separate from the light exposure effect alone.",
+            "Most experimental studies use controlled laboratory conditions (specific lux, distance, duration) that may not match typical real-world phone use.",
+            "Blue-light blocking glasses may have more benefit for specific populations (shift workers, insomniacs, jet-lag sufferers) than for healthy adults, based on the available RCT evidence."
+          ]
+        },
+        {
+          "claim": "Sleep debt is real vs. you cannot catch up on lost sleep",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A 2025 systematic review (published in Sleep and Breathing) found that weekend catch-up sleep provides partial short-term recovery—improving mood, reducing fatigue, and restoring some cognitive performance—but concluded it cannot fully offset the adverse effects of chronic sleep deprivation.",
+              "source_ids": [
+                "S13"
+              ]
+            }
+          ],
+          "limits": [
+            "The recovery picture is outcome-dependent: subjective sleepiness and basic reaction time recover relatively quickly, while metabolic and higher-order cognitive outcomes recover more slowly and incompletely.",
+            "The degree of recovery depends on severity and chronicity of the debt; a small acute deficit may be substantially reversed, while weeks of restriction appear to create effects that two days of extra sleep cannot repair.",
+            "Sleeping in on weekends shifts circadian timing later, which can create 'social jet lag' that compounds Monday morning impairment—weekend catch-up may introduce its own cost.",
+            "Most studies involve controlled sleep laboratory conditions or specific populations; generalizability to varied real-world patterns is limited."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "S1",
+          "title": "National Sleep Foundation Reaffirms Landmark Sleep Duration Recommendations",
+          "publisher": "National Sleep Foundation",
+          "url": "https://www.thensf.org/sleep-duration-recommendations/",
+          "date": "2026",
+          "source_type": "professional_body"
+        },
+        {
+          "id": "S2",
+          "title": "National Sleep Foundation's updated sleep duration recommendations: final report",
+          "publisher": "Sleep Health: Journal of the National Sleep Foundation / ScienceDirect",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S2352721815001606",
+          "date": "2015",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S3",
+          "title": "Sleep duration and health in adults: an overview of systematic reviews",
+          "publisher": "Applied Physiology, Nutrition, and Metabolism / Canadian Science Publishing",
+          "url": "https://cdnsciencepub.com/doi/10.1139/apnm-2020-0034",
+          "date": "2020",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S4",
+          "title": "Nighttime sleep duration, 24-hour sleep duration and risk of all-cause mortality among adults: a meta-analysis of prospective cohort studies",
+          "publisher": "Scientific Reports / Nature Publishing Group",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4761879/",
+          "date": "2016-02-22",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S5",
+          "title": "How much sleep do you need: A 10-year systematic review of National Sleep Foundation's sleep duration recommendations",
+          "publisher": "Sleep Health: Journal of the National Sleep Foundation",
+          "url": "https://www.sleephealthjournal.org/article/S2352-7218(26)00106-3/fulltext",
+          "date": "2026",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S6",
+          "title": "Adverse impact of polyphasic sleep patterns in humans: Report of the National Sleep Foundation sleep timing and variability consensus panel",
+          "publisher": "Sleep Health: Journal of the National Sleep Foundation / ScienceDirect",
+          "url": "https://www.sciencedirect.com/science/article/pii/S2352721821000309",
+          "date": "2021",
+          "source_type": "professional_body"
+        },
+        {
+          "id": "S7",
+          "title": "Sustained polyphasic sleep restriction abolishes human growth hormone release",
+          "publisher": "bioRxiv (preprint)",
+          "url": "https://www.biorxiv.org/content/10.1101/2023.06.20.542775v1.full",
+          "date": "2023-06-20",
+          "source_type": "thesis_or_preprint"
+        },
+        {
+          "id": "S8",
+          "title": "Impacts of Blue Light Exposure From Electronic Devices on Circadian Rhythm and Sleep Disruption in Adolescent and Young Adult Students",
+          "publisher": "Chronobiology in Medicine",
+          "url": "https://www.chronobiologyinmedicine.org/journal/view.php?number=167&viewtype=pubreader",
+          "date": "2024",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S11",
+          "title": "Efficacy of blue-light blocking glasses on actigraphic sleep outcomes: a systematic review and meta-analysis of randomized controlled crossover trials",
+          "publisher": "Frontiers in Neurology",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12668929/",
+          "date": "2025-11-18",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S12",
+          "title": "Blue-light filtering spectacles probably make no difference to eye strain, eye health or sleep quality",
+          "publisher": "Cochrane Collaboration",
+          "url": "https://www.cochrane.org/about-us/news/blue-light-filtering-spectacles-probably-make-no-difference-eye-strain-eye-health-or-sleep",
+          "date": "2023-07-26",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S13",
+          "title": "Can weekend catch-up sleep repay the sleep debt? Balancing short-term relief with long-term risks",
+          "publisher": "PubMed / Sleep and Breathing (Springer Nature)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/41148489/",
+          "date": "2025",
+          "source_type": "systematic_review"
+        }
+      ]
+    },
+    "pinned": true,
+    "savedAt": "2026-10-25T04:28:37.486Z",
+    "topic": "Sleep optimization"
+  },
+  "signal-research:example:2": {
+    "block": "\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked \"support\": \"secondary_only\" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n{\"researched_at\":\"2026-10-25T04:30:25.195Z\",\"claims\":[{\"claim\":\"Calories in vs. calories out is all that matters for weight loss\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"Caloric restriction consistently produces weight loss in controlled trials; a systematic review of 11 RCTs (1,554 participants) found caloric restriction with total diet replacement resulted in greater than 12% weight loss in adults with type 2 diabetes.\",\"source_ids\":[\"S1\"]},{\"text\":\"A 2024 narrative review concluded that metabolic and hormonal adaptations — including changes in resting metabolic rate, hormonal profiles, and metabolic pathways — drive meaningful variability in weight outcomes beyond a simple calorie-counting model, motivating interest in precision nutrition approaches.\",\"source_ids\":[\"S2\"]}],\"limits\":[\"Energy balance (calories in vs. out) is a thermodynamic reality, but the 'calories out' side is not fixed — it changes in response to dieting, body composition shifts, and hormonal adaptations, making simple arithmetic predictions unreliable in practice.\",\"Calorie-label accuracy varies; one study found food products contained anywhere from 13% less to 61% more energy than stated on packaging, undermining precise calorie tracking.\",\"Most controlled-trial evidence on caloric restriction extends to two years or less; evidence for long-term weight-loss maintenance via calorie counting alone is limited.\",\"Whether macronutrient composition (beyond total calories) materially affects fat loss independently of energy balance remains actively debated in the literature.\"]},{\"claim\":\"Hormone balance matters more than calories for weight loss\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"Multiple hormones — including insulin, leptin, growth hormone, androgens, and cortisol — are associated with fat storage and energy expenditure; in obesity, an elevated insulin-to-growth-hormone ratio correlates negatively with energy expenditure and positively with fat accumulation.\",\"source_ids\":[\"S4\"]},{\"text\":\"A 2024 review found that dietary patterns can improve insulin resistance independently of weight loss, and that as little as 5% weight loss in women with obesity produced significant improvements in endocrine parameters including reduced free testosterone and improved insulin sensitivity.\",\"source_ids\":[\"S5\"]},{\"text\":\"Following caloric-restriction-based weight loss, leptin and insulin levels decrease consistently; however, findings on short-term appetite-regulating hormones are less consistent across studies.\",\"source_ids\":[\"S6\"]}],\"limits\":[\"The evidence establishes that hormones are involved in fat metabolism and that the relationship is bidirectional (hormonal imbalance can promote weight gain, and weight loss improves hormonal profiles), but the claim that hormone balance 'matters more' than energy intake has not been established by head-to-head comparative trials.\",\"The carbohydrate-insulin model — which posits that hormonal responses to macronutrients are the primary driver of obesity — remains contested; controlled feeding studies have not consistently shown that hormonal manipulation independent of calorie deficit produces greater fat loss.\",\"Most evidence is observational or mechanistic; randomized trials directly testing hormone-targeting interventions (outside of pharmacological GLP-1 treatments) against calorie restriction alone are limited.\"]},{\"claim\":\"Breakfast is essential for weight management\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"A 2020 systematic review and meta-analysis of 7 RCTs (425 participants, average duration 8.6 weeks) found that breakfast skipping was associated with a statistically significant, modest reduction in body weight (weighted mean difference −0.54 kg, 95% CI −1.05 to −0.03) compared with breakfast consumption.\",\"source_ids\":[\"S7\"]}],\"limits\":[\"Prospective (observational) studies have found inverse associations between habitual breakfast eating and weight gain, creating an apparent conflict with RCT findings; this discrepancy may reflect confounding in observational data.\",\"The RCT evidence base is small (7 trials, ~425 participants, average 8.6 weeks) and mostly conducted in the US and UK, limiting generalizability.\",\"Individual factors — exercise timing, hunger patterns, diet quality, and tendency to overeat at night — may determine whether breakfast is beneficial for a given person; no universal prescription is supported by the evidence.\"]},{\"claim\":\"Intermittent fasting (including breakfast-skipping patterns) is an effective weight loss strategy\",\"assessment\":\"mixed\",\"support\":\"secondary_only\",\"findings\":[{\"text\":\"A time-restricted feeding trial found both breakfast-skipping and earlier eating windows produced equivalent weight loss (~4% of baseline body weight), but metabolic benefits on fasting insulin and blood pressure were more pronounced when caloric intake was concentrated in the morning.\",\"source_ids\":[\"S8\"]},{\"text\":\"In a 12-month RCT (139 adults with obesity), adding an 8-hour eating window to daily calorie restriction did not produce greater weight loss than calorie restriction alone, suggesting time restriction may not confer weight loss benefits beyond calorie reduction.\",\"source_ids\":[\"S9\"]}],\"limits\":[\"Intermittent fasting protocols vary widely (16:8, 5:2, alternate-day fasting, etc.), making generalization across studies difficult.\",\"Whether any weight-loss benefit of intermittent fasting operates through calorie reduction, circadian metabolic effects, or hormonal changes remains unresolved.\",\"Long-term adherence and sustainability evidence is limited; most trials are short-term.\"]},{\"claim\":\"Ultra-processed food is fine in moderation (vs. it causes harm beyond its calories)\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"A 2020 systematic review of 20 epidemiological studies (334,114 participants) found high ultra-processed food (UPF) consumption was associated with increased risk of all-cause mortality, cardiovascular disease, hypertension, metabolic syndrome, overweight and obesity, depression, irritable bowel syndrome, and certain cancers.\",\"source_ids\":[\"S10\"]},{\"text\":\"A 2025 systematic review focused on adults aged 60 and older found the highest UPF consumption was associated with incident frailty, dyslipidemia, renal function decline, abdominal obesity, and worse cognitive performance.\",\"source_ids\":[\"S11\"]},{\"text\":\"A 2024 systematic review of randomized controlled trials found that interventions reducing UPF intake produced some benefits on body weight and dietary intake, but noted the certainty of evidence was low to moderate and the number of eligible RCTs was very small (4 trials, 455 participants).\",\"source_ids\":[\"S12\"]}],\"limits\":[\"Almost all UPF-health outcome evidence comes from observational studies (cohort and cross-sectional), which cannot establish causation; confounding by overall diet quality, socioeconomic status, and lifestyle is a persistent limitation.\",\"The NOVA classification system used to define 'ultra-processed' is broad and contested; not all foods classified as UPFs have equivalent nutritional profiles or health implications.\",\"The claim that UPFs are uniformly 'poison' is not supported — the evidence shows graded associations with higher intake, not a binary safe/unsafe threshold, and some associations (e.g., colorectal cancer, gestational diabetes) were not statistically significant.\",\"Whether harms attributed to UPFs operate through excess calories, nutrient displacement, specific additives, or other mechanisms is not yet resolved by the evidence.\"]}],\"sources\":[{\"id\":\"S1\",\"title\":\"Effectiveness of Calorie Restriction for Weight Loss in Type 2 Diabetes Mellitus: A Systematic Review\",\"publisher\":\"PMC / National Library of Medicine\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11875213/\",\"date\":\"2025\",\"source_type\":\"systematic_review\"},{\"id\":\"S2\",\"title\":\"Beyond Calories: Individual Metabolic and Hormonal Adaptations Driving Variability in Weight Management — A State-of-the-Art Narrative Review\",\"publisher\":\"International Journal of Molecular Sciences (MDPI)\",\"url\":\"https://pmc.ncbi.nlm.nih.gov/articles/PMC11676201/\",\"date\":\"2024-12-15\",\"source_type\":\"systematic_review\"},{\"id\":\"S4\",\"title\":\"Insulin and Growth Hormone Balance: Implications for Obesity\",\"publisher\":\"Trends in Endocrinology and Metabolism (ScienceDirect)\",\"url\":\"https://www.sciencedirect.com/science/article/abs/pii/S1043276020300825\",\"date\":\"2020\",\"source_type\":\"primary_study\"},{\"id\":\"S5\",\"title\":\"Obesity, Dietary Patterns, and Hormonal Balance Modulation: Gender-Specific Impacts\",\"publisher\":\"PMC / National Library of Medicine\",\"url\":\"https://pmc.ncbi.nlm.nih.gov/articles/PMC11174431/\",\"date\":\"2024\",\"source_type\":\"primary_study\"},{\"id\":\"S6\",\"title\":\"Levels of hormones regulating appetite and energy homeostasis in response to a 1.5-Year combined lifestyle intervention for obesity\",\"publisher\":\"PMC / National Library of Medicine\",\"url\":\"https://pmc.ncbi.nlm.nih.gov/articles/PMC9986487/\",\"date\":\"2023\",\"source_type\":\"primary_study\"},{\"id\":\"S7\",\"title\":\"Breakfast Skipping, Body Composition, and Cardiometabolic Risk: A Systematic Review and Meta-Analysis of Randomized Trials\",\"publisher\":\"Obesity (Wiley / The Obesity Society)\",\"url\":\"https://onlinelibrary.wiley.com/doi/full/10.1002/oby.22791\",\"date\":\"2020\",\"source_type\":\"meta_analysis\"},{\"id\":\"S8\",\"title\":\"Intermittent fasting: skip breakfast or eat dinner earlier?\",\"publisher\":\"Observatoire de la Prevention (Institut de Cardiologie de Montreal)\",\"url\":\"https://observatoireprevention.org/en/2024/10/18/intermittent-fasting-skip-breakfast-or-eat-dinner-earlier/\",\"date\":\"2024-10-18\",\"source_type\":\"high_quality_secondary\"},{\"id\":\"S9\",\"title\":\"Why Skipping Meals Does Not Speed Up Fat Loss: The Facts\",\"publisher\":\"INFS (Institute of Nutrition and Fitness Sciences)\",\"url\":\"https://infs.com/blogs/why-skipping-meals-does-not-speed-up-fat-loss-the-facts\",\"date\":\"2026-10\",\"source_type\":\"high_quality_secondary\"},{\"id\":\"S10\",\"title\":\"Consumption of ultra-processed foods and health outcomes: a systematic review of epidemiological studies\",\"publisher\":\"Nutrition Journal (BioMed Central)\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7441617/\",\"date\":\"2020-08-20\",\"source_type\":\"systematic_review\"},{\"id\":\"S11\",\"title\":\"Ultra-Processed Food Intakes and Health Outcomes in Adults Older Than 60 Years: A Systematic Review\",\"publisher\":\"Nutrition Reviews (Oxford University Press)\",\"url\":\"https://academic.oup.com/nutritionreviews/article/83/9/1711/7994368\",\"date\":\"2025-09\",\"source_type\":\"systematic_review\"},{\"id\":\"S12\",\"title\":\"Ultra-processed foods consumption and health-related outcomes: a systematic review of randomized controlled trials\",\"publisher\":\"Frontiers in Nutrition\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11233771/\",\"date\":\"2024-06-26\",\"source_type\":\"systematic_review\"}]}",
+    "data": {
+      "researched_at": "2026-10-25T04:30:25.195Z",
+      "claims": [
+        {
+          "claim": "Calories in vs. calories out is all that matters for weight loss",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "Caloric restriction consistently produces weight loss in controlled trials; a systematic review of 11 RCTs (1,554 participants) found caloric restriction with total diet replacement resulted in greater than 12% weight loss in adults with type 2 diabetes.",
+              "source_ids": [
+                "S1"
+              ]
+            },
+            {
+              "text": "A 2024 narrative review concluded that metabolic and hormonal adaptations — including changes in resting metabolic rate, hormonal profiles, and metabolic pathways — drive meaningful variability in weight outcomes beyond a simple calorie-counting model, motivating interest in precision nutrition approaches.",
+              "source_ids": [
+                "S2"
+              ]
+            }
+          ],
+          "limits": [
+            "Energy balance (calories in vs. out) is a thermodynamic reality, but the 'calories out' side is not fixed — it changes in response to dieting, body composition shifts, and hormonal adaptations, making simple arithmetic predictions unreliable in practice.",
+            "Calorie-label accuracy varies; one study found food products contained anywhere from 13% less to 61% more energy than stated on packaging, undermining precise calorie tracking.",
+            "Most controlled-trial evidence on caloric restriction extends to two years or less; evidence for long-term weight-loss maintenance via calorie counting alone is limited.",
+            "Whether macronutrient composition (beyond total calories) materially affects fat loss independently of energy balance remains actively debated in the literature."
+          ]
+        },
+        {
+          "claim": "Hormone balance matters more than calories for weight loss",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "Multiple hormones — including insulin, leptin, growth hormone, androgens, and cortisol — are associated with fat storage and energy expenditure; in obesity, an elevated insulin-to-growth-hormone ratio correlates negatively with energy expenditure and positively with fat accumulation.",
+              "source_ids": [
+                "S4"
+              ]
+            },
+            {
+              "text": "A 2024 review found that dietary patterns can improve insulin resistance independently of weight loss, and that as little as 5% weight loss in women with obesity produced significant improvements in endocrine parameters including reduced free testosterone and improved insulin sensitivity.",
+              "source_ids": [
+                "S5"
+              ]
+            },
+            {
+              "text": "Following caloric-restriction-based weight loss, leptin and insulin levels decrease consistently; however, findings on short-term appetite-regulating hormones are less consistent across studies.",
+              "source_ids": [
+                "S6"
+              ]
+            }
+          ],
+          "limits": [
+            "The evidence establishes that hormones are involved in fat metabolism and that the relationship is bidirectional (hormonal imbalance can promote weight gain, and weight loss improves hormonal profiles), but the claim that hormone balance 'matters more' than energy intake has not been established by head-to-head comparative trials.",
+            "The carbohydrate-insulin model — which posits that hormonal responses to macronutrients are the primary driver of obesity — remains contested; controlled feeding studies have not consistently shown that hormonal manipulation independent of calorie deficit produces greater fat loss.",
+            "Most evidence is observational or mechanistic; randomized trials directly testing hormone-targeting interventions (outside of pharmacological GLP-1 treatments) against calorie restriction alone are limited."
+          ]
+        },
+        {
+          "claim": "Breakfast is essential for weight management",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A 2020 systematic review and meta-analysis of 7 RCTs (425 participants, average duration 8.6 weeks) found that breakfast skipping was associated with a statistically significant, modest reduction in body weight (weighted mean difference −0.54 kg, 95% CI −1.05 to −0.03) compared with breakfast consumption.",
+              "source_ids": [
+                "S7"
+              ]
+            }
+          ],
+          "limits": [
+            "Prospective (observational) studies have found inverse associations between habitual breakfast eating and weight gain, creating an apparent conflict with RCT findings; this discrepancy may reflect confounding in observational data.",
+            "The RCT evidence base is small (7 trials, ~425 participants, average 8.6 weeks) and mostly conducted in the US and UK, limiting generalizability.",
+            "Individual factors — exercise timing, hunger patterns, diet quality, and tendency to overeat at night — may determine whether breakfast is beneficial for a given person; no universal prescription is supported by the evidence."
+          ]
+        },
+        {
+          "claim": "Intermittent fasting (including breakfast-skipping patterns) is an effective weight loss strategy",
+          "assessment": "mixed",
+          "support": "secondary_only",
+          "findings": [
+            {
+              "text": "A time-restricted feeding trial found both breakfast-skipping and earlier eating windows produced equivalent weight loss (~4% of baseline body weight), but metabolic benefits on fasting insulin and blood pressure were more pronounced when caloric intake was concentrated in the morning.",
+              "source_ids": [
+                "S8"
+              ]
+            },
+            {
+              "text": "In a 12-month RCT (139 adults with obesity), adding an 8-hour eating window to daily calorie restriction did not produce greater weight loss than calorie restriction alone, suggesting time restriction may not confer weight loss benefits beyond calorie reduction.",
+              "source_ids": [
+                "S9"
+              ]
+            }
+          ],
+          "limits": [
+            "Intermittent fasting protocols vary widely (16:8, 5:2, alternate-day fasting, etc.), making generalization across studies difficult.",
+            "Whether any weight-loss benefit of intermittent fasting operates through calorie reduction, circadian metabolic effects, or hormonal changes remains unresolved.",
+            "Long-term adherence and sustainability evidence is limited; most trials are short-term."
+          ]
+        },
+        {
+          "claim": "Ultra-processed food is fine in moderation (vs. it causes harm beyond its calories)",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A 2020 systematic review of 20 epidemiological studies (334,114 participants) found high ultra-processed food (UPF) consumption was associated with increased risk of all-cause mortality, cardiovascular disease, hypertension, metabolic syndrome, overweight and obesity, depression, irritable bowel syndrome, and certain cancers.",
+              "source_ids": [
+                "S10"
+              ]
+            },
+            {
+              "text": "A 2025 systematic review focused on adults aged 60 and older found the highest UPF consumption was associated with incident frailty, dyslipidemia, renal function decline, abdominal obesity, and worse cognitive performance.",
+              "source_ids": [
+                "S11"
+              ]
+            },
+            {
+              "text": "A 2024 systematic review of randomized controlled trials found that interventions reducing UPF intake produced some benefits on body weight and dietary intake, but noted the certainty of evidence was low to moderate and the number of eligible RCTs was very small (4 trials, 455 participants).",
+              "source_ids": [
+                "S12"
+              ]
+            }
+          ],
+          "limits": [
+            "Almost all UPF-health outcome evidence comes from observational studies (cohort and cross-sectional), which cannot establish causation; confounding by overall diet quality, socioeconomic status, and lifestyle is a persistent limitation.",
+            "The NOVA classification system used to define 'ultra-processed' is broad and contested; not all foods classified as UPFs have equivalent nutritional profiles or health implications.",
+            "The claim that UPFs are uniformly 'poison' is not supported — the evidence shows graded associations with higher intake, not a binary safe/unsafe threshold, and some associations (e.g., colorectal cancer, gestational diabetes) were not statistically significant.",
+            "Whether harms attributed to UPFs operate through excess calories, nutrient displacement, specific additives, or other mechanisms is not yet resolved by the evidence."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "S1",
+          "title": "Effectiveness of Calorie Restriction for Weight Loss in Type 2 Diabetes Mellitus: A Systematic Review",
+          "publisher": "PMC / National Library of Medicine",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11875213/",
+          "date": "2025",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S2",
+          "title": "Beyond Calories: Individual Metabolic and Hormonal Adaptations Driving Variability in Weight Management — A State-of-the-Art Narrative Review",
+          "publisher": "International Journal of Molecular Sciences (MDPI)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11676201/",
+          "date": "2024-12-15",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S4",
+          "title": "Insulin and Growth Hormone Balance: Implications for Obesity",
+          "publisher": "Trends in Endocrinology and Metabolism (ScienceDirect)",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S1043276020300825",
+          "date": "2020",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S5",
+          "title": "Obesity, Dietary Patterns, and Hormonal Balance Modulation: Gender-Specific Impacts",
+          "publisher": "PMC / National Library of Medicine",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11174431/",
+          "date": "2024",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S6",
+          "title": "Levels of hormones regulating appetite and energy homeostasis in response to a 1.5-Year combined lifestyle intervention for obesity",
+          "publisher": "PMC / National Library of Medicine",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9986487/",
+          "date": "2023",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S7",
+          "title": "Breakfast Skipping, Body Composition, and Cardiometabolic Risk: A Systematic Review and Meta-Analysis of Randomized Trials",
+          "publisher": "Obesity (Wiley / The Obesity Society)",
+          "url": "https://onlinelibrary.wiley.com/doi/full/10.1002/oby.22791",
+          "date": "2020",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S8",
+          "title": "Intermittent fasting: skip breakfast or eat dinner earlier?",
+          "publisher": "Observatoire de la Prevention (Institut de Cardiologie de Montreal)",
+          "url": "https://observatoireprevention.org/en/2024/10/18/intermittent-fasting-skip-breakfast-or-eat-dinner-earlier/",
+          "date": "2024-10-18",
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S9",
+          "title": "Why Skipping Meals Does Not Speed Up Fat Loss: The Facts",
+          "publisher": "INFS (Institute of Nutrition and Fitness Sciences)",
+          "url": "https://infs.com/blogs/why-skipping-meals-does-not-speed-up-fat-loss-the-facts",
+          "date": "2026-10",
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S10",
+          "title": "Consumption of ultra-processed foods and health outcomes: a systematic review of epidemiological studies",
+          "publisher": "Nutrition Journal (BioMed Central)",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7441617/",
+          "date": "2020-08-20",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S11",
+          "title": "Ultra-Processed Food Intakes and Health Outcomes in Adults Older Than 60 Years: A Systematic Review",
+          "publisher": "Nutrition Reviews (Oxford University Press)",
+          "url": "https://academic.oup.com/nutritionreviews/article/83/9/1711/7994368",
+          "date": "2025-09",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S12",
+          "title": "Ultra-processed foods consumption and health-related outcomes: a systematic review of randomized controlled trials",
+          "publisher": "Frontiers in Nutrition",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11233771/",
+          "date": "2024-06-26",
+          "source_type": "systematic_review"
+        }
+      ]
+    },
+    "pinned": true,
+    "savedAt": "2026-10-25T04:30:25.196Z",
+    "topic": "Nutrition and weight loss"
+  },
+  "signal-research:example:3": {
+    "block": "\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked \"support\": \"secondary_only\" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n{\"researched_at\":\"2026-10-25T04:45:13.931Z\",\"claims\":[{\"claim\":\"Follow your passion (passion is pre-existing and should guide career choice) vs. passion follows mastery (interests develop through skill-building)\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"A 2018 peer-reviewed study by O'Keefe, Dweck, and Walton in Psychological Science (5 experiments) found that people who hold a fixed theory of interest — believing passions are pre-formed and must be discovered — were more likely to lose interest in a topic when it became difficult, and were less open to interests outside their existing ones, compared with those who held a growth theory of interest.\",\"source_ids\":[\"S1\"]},{\"text\":\"The same study found that endorsing a fixed theory was associated with expecting boundless motivation once a passion is found, and not anticipating difficulties — a belief pattern that predicted dropping interests when challenge arose.\",\"source_ids\":[\"S1\"]}],\"limits\":[\"The O'Keefe et al. studies used primarily college-age, lab-based samples; how well the fixed-vs-growth theory of interest translates to real-world, long-term career outcomes is not fully established by those experiments alone.\",\"The two positions are not mutually exclusive: passion may both shape and be shaped by competence, making the causal direction genuinely contested in the research rather than settled.\",\"The longitudinal Forbes-cited study is described only secondhand in the search results; the full methodology and sample characteristics were not directly examined here.\",\"The claim that passion should be the primary career filter at the outset (before any skill has been built) is distinct from the claim that passion-aligned work is preferable once competence exists — research is more hostile to the former framing than the latter.\"]},{\"claim\":\"Job-hopping produces higher salary growth vs. loyalty to one employer pays off financially\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"ADP Pay Insights data (tracking more than 14.8 million private-sector paychecks) showed that in January 2026, job-changers saw 6.4% year-over-year pay growth versus 4.5% for job-stayers — a gap of 1.9 percentage points, the smallest recorded in ADP data going back to 2020.\",\"source_ids\":[\"S4\",\"S5\"]},{\"text\":\"ADP's August 2026 National Employment Report showed the switcher premium rebounding: gross pay for job-changers rose 7.3% year-over-year while gross pay for job-stayers rose 4.4% — indicating the premium is volatile month to month rather than stable.\",\"source_ids\":[\"S6\"]},{\"text\":\"During the 2021–2023 tight labor market, ADP data showed switching jobs meant earning 10 to 20 percentage points more in pay growth than staying; by 2025–2026, that gap had compressed substantially as hiring slowed, demonstrating that the switcher premium is strongly labor-market-cycle-dependent.\",\"source_ids\":[\"S5\"]},{\"text\":\"Payscale research using 310,872 salary profiles across five job titles found that pay increases with both experience and tenure within a company, but the relative advantage of switching versus staying varied by role and compensation structure — specifically, when internal pay is pegged to current compensation rather than market rate, employees gain more by leaving.\",\"source_ids\":[\"S10\"]}],\"limits\":[\"ADP and Atlanta Fed data measure the population of workers who switched vs. stayed, not a controlled comparison: workers who choose to switch may differ systematically (e.g., stronger outside options, higher performance) from those who stay, so the pay gap cannot be attributed entirely to the act of switching.\",\"The premium is sector-specific: ADP's August 2026 data identified leisure and hospitality as the only sector where job-changers' gross pay was lower than stayers', meaning blanket advice does not apply across industries.\",\"Non-salary outcomes — benefits vesting, pension accrual, institutional knowledge value, promotion velocity, and employer perception — are not captured in wage-growth data alone and may partially offset or amplify salary differences.\",\"The Bank of America report cited in Fortune noted that if low-hire, low-fire labor market conditions persist, the job-change premium could compress further — meaning forward-looking projections carry significant uncertainty.\"]},{\"claim\":\"An MBA is worth pursuing for career advancement and salary vs. skipping grad school is the better financial choice\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"The Financial Times Global MBA Ranking 2026 data, as cited by GMAC, shows that MBA graduates from the world's top 100 business schools enjoyed a 118% salary increase within three years of graduation — though this figure aggregates across schools of highly varying selectivity and pre-MBA salary levels.\",\"source_ids\":[\"S13\"]},{\"text\":\"GMAC reports the average total cost of a top U.S. MBA rose 12% since 2021, reaching approximately $243,267 by 2024, with top-ranked schools averaging $165,503 in tuition alone for a two-year program — meaning the opportunity cost calculation (including two years of forgone salary) is substantial and school-specific.\",\"source_ids\":[\"S13\"]},{\"text\":\"GMAC's 2025 Corporate Recruiters Survey found more than a third of employers planned to hire more newly minted MBAs in 2025 than in 2024, and 90% of global employers reported plans to hire MBA candidates — suggesting employer demand remains an active factor in the ROI calculation.\",\"source_ids\":[\"S13\"]}],\"limits\":[\"Salary figures reported by business schools are self-reported by graduates and subject to selection effects (e.g., graduates who find high-paying jobs may respond at higher rates), and do not control for pre-MBA salary, industry, or career trajectory without the degree.\",\"The ROI calculation depends heavily on three variables that differ sharply by individual: program cost, pre-MBA salary (opportunity cost), and post-MBA industry placement. There is no single universal break-even point.\",\"U.S. News data shows average salaries and bonuses for 2024 graduates generally decreased from the prior year, and the top-10-program average was down more than $3,200 — indicating some softening at the high end.\",\"The MBA vs. no-MBA comparison is not a controlled experiment: people who pursue MBAs differ in motivation, network access, and prior experience from those who do not, making causal attribution of salary gains to the degree itself uncertain.\"]}],\"sources\":[{\"id\":\"S1\",\"title\":\"Implicit Theories of Interest: Finding Your Passion or Developing It?\",\"publisher\":\"Psychological Science (Association for Psychological Science)\",\"url\":\"https://www.psychologicalscience.org/journals/psychological-science/0956797618780643/\",\"date\":\"2018-10-01\",\"source_type\":\"primary_study\"},{\"id\":\"S4\",\"title\":\"ADP Pay Insights — January 2026\",\"publisher\":\"ADP Research Institute\",\"url\":\"https://workforcereport.adp.com\",\"date\":\"2026-01\",\"source_type\":\"official_dataset\"},{\"id\":\"S5\",\"title\":\"Pay Trends to Watch in 2026\",\"publisher\":\"ADP Research Institute\",\"url\":\"https://www.adpresearch.com/main-street-macro/pay-trends-to-watch-in-2026\",\"date\":\"2026\",\"source_type\":\"official_dataset\"},{\"id\":\"S6\",\"title\":\"ADP National Employment Report: Private-Sector Employment Increased by 38,000 Jobs in August\",\"publisher\":\"ADP Research Institute\",\"url\":\"https://mediacenter.adp.com/2026-09-02-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-38,000-Jobs-in-August\",\"date\":\"2026-09-02\",\"source_type\":\"official_dataset\"},{\"id\":\"S10\",\"title\":\"Can You Quit Your Way to Higher Pay?\",\"publisher\":\"Payscale\",\"url\":\"https://www.payscale.com/research-and-insights/can-you-quit-your-way-to-higher-pay\",\"date\":null,\"source_type\":\"official_dataset\"},{\"id\":\"S13\",\"title\":\"Is Business School Worth It? — B-school outcomes: hiring, salaries, and employability\",\"publisher\":\"Graduate Management Admission Council (GMAC)\",\"url\":\"https://www.gmac.com/resources/learners/business-programs/student-experience-roi/is-business-school-worth-it\",\"date\":\"2026-10-09\",\"source_type\":\"professional_body\"}]}",
+    "data": {
+      "researched_at": "2026-10-25T04:45:13.931Z",
+      "claims": [
+        {
+          "claim": "Follow your passion (passion is pre-existing and should guide career choice) vs. passion follows mastery (interests develop through skill-building)",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A 2018 peer-reviewed study by O'Keefe, Dweck, and Walton in Psychological Science (5 experiments) found that people who hold a fixed theory of interest — believing passions are pre-formed and must be discovered — were more likely to lose interest in a topic when it became difficult, and were less open to interests outside their existing ones, compared with those who held a growth theory of interest.",
+              "source_ids": [
+                "S1"
+              ]
+            },
+            {
+              "text": "The same study found that endorsing a fixed theory was associated with expecting boundless motivation once a passion is found, and not anticipating difficulties — a belief pattern that predicted dropping interests when challenge arose.",
+              "source_ids": [
+                "S1"
+              ]
+            }
+          ],
+          "limits": [
+            "The O'Keefe et al. studies used primarily college-age, lab-based samples; how well the fixed-vs-growth theory of interest translates to real-world, long-term career outcomes is not fully established by those experiments alone.",
+            "The two positions are not mutually exclusive: passion may both shape and be shaped by competence, making the causal direction genuinely contested in the research rather than settled.",
+            "The longitudinal Forbes-cited study is described only secondhand in the search results; the full methodology and sample characteristics were not directly examined here.",
+            "The claim that passion should be the primary career filter at the outset (before any skill has been built) is distinct from the claim that passion-aligned work is preferable once competence exists — research is more hostile to the former framing than the latter."
+          ]
+        },
+        {
+          "claim": "Job-hopping produces higher salary growth vs. loyalty to one employer pays off financially",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "ADP Pay Insights data (tracking more than 14.8 million private-sector paychecks) showed that in January 2026, job-changers saw 6.4% year-over-year pay growth versus 4.5% for job-stayers — a gap of 1.9 percentage points, the smallest recorded in ADP data going back to 2020.",
+              "source_ids": [
+                "S4",
+                "S5"
+              ]
+            },
+            {
+              "text": "ADP's August 2026 National Employment Report showed the switcher premium rebounding: gross pay for job-changers rose 7.3% year-over-year while gross pay for job-stayers rose 4.4% — indicating the premium is volatile month to month rather than stable.",
+              "source_ids": [
+                "S6"
+              ]
+            },
+            {
+              "text": "During the 2021–2023 tight labor market, ADP data showed switching jobs meant earning 10 to 20 percentage points more in pay growth than staying; by 2025–2026, that gap had compressed substantially as hiring slowed, demonstrating that the switcher premium is strongly labor-market-cycle-dependent.",
+              "source_ids": [
+                "S5"
+              ]
+            },
+            {
+              "text": "Payscale research using 310,872 salary profiles across five job titles found that pay increases with both experience and tenure within a company, but the relative advantage of switching versus staying varied by role and compensation structure — specifically, when internal pay is pegged to current compensation rather than market rate, employees gain more by leaving.",
+              "source_ids": [
+                "S10"
+              ]
+            }
+          ],
+          "limits": [
+            "ADP and Atlanta Fed data measure the population of workers who switched vs. stayed, not a controlled comparison: workers who choose to switch may differ systematically (e.g., stronger outside options, higher performance) from those who stay, so the pay gap cannot be attributed entirely to the act of switching.",
+            "The premium is sector-specific: ADP's August 2026 data identified leisure and hospitality as the only sector where job-changers' gross pay was lower than stayers', meaning blanket advice does not apply across industries.",
+            "Non-salary outcomes — benefits vesting, pension accrual, institutional knowledge value, promotion velocity, and employer perception — are not captured in wage-growth data alone and may partially offset or amplify salary differences.",
+            "The Bank of America report cited in Fortune noted that if low-hire, low-fire labor market conditions persist, the job-change premium could compress further — meaning forward-looking projections carry significant uncertainty."
+          ]
+        },
+        {
+          "claim": "An MBA is worth pursuing for career advancement and salary vs. skipping grad school is the better financial choice",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "The Financial Times Global MBA Ranking 2026 data, as cited by GMAC, shows that MBA graduates from the world's top 100 business schools enjoyed a 118% salary increase within three years of graduation — though this figure aggregates across schools of highly varying selectivity and pre-MBA salary levels.",
+              "source_ids": [
+                "S13"
+              ]
+            },
+            {
+              "text": "GMAC reports the average total cost of a top U.S. MBA rose 12% since 2021, reaching approximately $243,267 by 2024, with top-ranked schools averaging $165,503 in tuition alone for a two-year program — meaning the opportunity cost calculation (including two years of forgone salary) is substantial and school-specific.",
+              "source_ids": [
+                "S13"
+              ]
+            },
+            {
+              "text": "GMAC's 2025 Corporate Recruiters Survey found more than a third of employers planned to hire more newly minted MBAs in 2025 than in 2024, and 90% of global employers reported plans to hire MBA candidates — suggesting employer demand remains an active factor in the ROI calculation.",
+              "source_ids": [
+                "S13"
+              ]
+            }
+          ],
+          "limits": [
+            "Salary figures reported by business schools are self-reported by graduates and subject to selection effects (e.g., graduates who find high-paying jobs may respond at higher rates), and do not control for pre-MBA salary, industry, or career trajectory without the degree.",
+            "The ROI calculation depends heavily on three variables that differ sharply by individual: program cost, pre-MBA salary (opportunity cost), and post-MBA industry placement. There is no single universal break-even point.",
+            "U.S. News data shows average salaries and bonuses for 2024 graduates generally decreased from the prior year, and the top-10-program average was down more than $3,200 — indicating some softening at the high end.",
+            "The MBA vs. no-MBA comparison is not a controlled experiment: people who pursue MBAs differ in motivation, network access, and prior experience from those who do not, making causal attribution of salary gains to the degree itself uncertain."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "S1",
+          "title": "Implicit Theories of Interest: Finding Your Passion or Developing It?",
+          "publisher": "Psychological Science (Association for Psychological Science)",
+          "url": "https://www.psychologicalscience.org/journals/psychological-science/0956797618780643/",
+          "date": "2018-10-01",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S4",
+          "title": "ADP Pay Insights — January 2026",
+          "publisher": "ADP Research Institute",
+          "url": "https://workforcereport.adp.com",
+          "date": "2026-01",
+          "source_type": "official_dataset"
+        },
+        {
+          "id": "S5",
+          "title": "Pay Trends to Watch in 2026",
+          "publisher": "ADP Research Institute",
+          "url": "https://www.adpresearch.com/main-street-macro/pay-trends-to-watch-in-2026",
+          "date": "2026",
+          "source_type": "official_dataset"
+        },
+        {
+          "id": "S6",
+          "title": "ADP National Employment Report: Private-Sector Employment Increased by 38,000 Jobs in August",
+          "publisher": "ADP Research Institute",
+          "url": "https://mediacenter.adp.com/2026-09-02-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-38,000-Jobs-in-August",
+          "date": "2026-09-02",
+          "source_type": "official_dataset"
+        },
+        {
+          "id": "S10",
+          "title": "Can You Quit Your Way to Higher Pay?",
+          "publisher": "Payscale",
+          "url": "https://www.payscale.com/research-and-insights/can-you-quit-your-way-to-higher-pay",
+          "date": null,
+          "source_type": "official_dataset"
+        },
+        {
+          "id": "S13",
+          "title": "Is Business School Worth It? — B-school outcomes: hiring, salaries, and employability",
+          "publisher": "Graduate Management Admission Council (GMAC)",
+          "url": "https://www.gmac.com/resources/learners/business-programs/student-experience-roi/is-business-school-worth-it",
+          "date": "2026-10-09",
+          "source_type": "professional_body"
+        }
+      ]
+    },
+    "pinned": true,
+    "savedAt": "2026-10-25T04:45:13.932Z",
+    "topic": "Career advice for young professionals"
+  },
+  "signal-research:example:4": {
+    "block": "\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked \"support\": \"secondary_only\" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n{\"researched_at\":\"2026-10-25T04:45:04.749Z\",\"claims\":[{\"claim\":\"Index funds always beat active management\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"In full-year 2025, 79% of active large-cap U.S. equity funds underperformed the S&P 500, the fourth-worst result in the 25-year history of SPIVA scorecards, and underperformance rates typically rose as time horizons lengthened across all categories.\",\"source_ids\":[\"S2\"]}],\"limits\":[\"The 'always' formulation is not supported: active managers have beaten benchmarks in specific categories (small-cap equities, certain bond categories) in particular years.\",\"SPIVA measures mutual funds net of fees; the fee drag is a structural headwind that conflates manager skill with cost — the two are not fully separable in this data.\",\"Persistence of outperformance is separately tracked and shown to be rare, meaning past active winners do not reliably predict future winners, but this is a separate (though related) claim.\",\"Results vary by geography and market segment; applying U.S. large-cap conclusions globally or across all asset classes is not warranted by the data.\"]},{\"claim\":\"Time in the market beats timing the market\",\"assessment\":\"supported\",\"support\":\"secondary_only\",\"findings\":[{\"text\":\"Schwab research found that investing immediately (no timing) trailed perfect market timing by only about 8% over 20 years, while capturing 92% of the gains of the theoretically best possible outcome — a gap of roughly $10,500 on a hypothetical starting investment.\",\"source_ids\":[\"S4\"]},{\"text\":\"Research from Schroders cited by Tribe Impact Capital found that missing only the 10 best market days over 35 years reduced total returns by approximately half, and the best-performing days tend to cluster around periods of high volatility — when timing-oriented investors are most likely to be out of the market.\",\"source_ids\":[\"S5\"]},{\"text\":\"Bank of America data cited by Tribe Impact Capital found that staying invested for 15 years reduced the likelihood of a negative return to 0% in historical U.S. equity data.\",\"source_ids\":[\"S5\"]}],\"limits\":[\"This claim is well-supported as a historical generalization but does not establish that future equity markets will continue to produce positive long-run returns.\",\"The claim is sometimes presented as absolute; it holds robustly for broadly diversified index portfolios but does not necessarily apply to individual securities or illiquid assets.\",\"Valuations at the time of entry can affect realized returns even for patient investors — high starting valuations have historically corresponded to lower subsequent long-run returns (see CAPE findings below), which is a legitimate tension with the 'just stay invested' framing.\",\"The Schwab study used a specific hypothetical and time period; different periods or parameters could produce different magnitudes.\"]},{\"claim\":\"Valuations matter for long-term returns (CAPE/Shiller PE as a predictor)\",\"assessment\":\"supported\",\"support\":\"primary\",\"findings\":[{\"text\":\"Research by Campbell and Shiller (1988) and subsequent studies across 16-17 international equity markets found a consistent negative relationship between the CAPE ratio and subsequent 10-to-20-year real stock returns: higher starting CAPE predicts lower subsequent returns.\",\"source_ids\":[\"S6\"]}],\"limits\":[\"CAPE predicts long-run averages (10–20 year horizons) with meaningful but imperfect accuracy; it is a poor timing tool for short- or medium-term market moves.\",\"High CAPE can persist for extended periods without a correction, as the post-2013 U.S. market demonstrated.\",\"Some researchers argue that changes in accounting standards, payout ratios, and the composition of the S&P 500 make historical CAPE comparisons imprecise; recent work (the component CAPE) attempts to address this.\",\"CAPE's predictive power internationally has been demonstrated, but structural breaks in some countries reduce its reliability in those markets.\"]},{\"claim\":\"Real estate vs. stocks: which produces better long-term returns\",\"assessment\":\"mixed\",\"support\":\"secondary_only\",\"findings\":[{\"text\":\"A large-scale study ('The Rate of Return on Everything, 1870–2015') covering 16 advanced economies found that residential real estate and equities produced near-identical inflation-adjusted total returns over 145 years: approximately 7.05% annually for real estate (including rental income) versus 6.89% for equities.\",\"source_ids\":[\"S10\"]},{\"text\":\"Over the 30-year period ending April 2025, Morningstar Direct data showed the S&P 500 annualized total return at 10.29%, versus 8.78% for real estate and 7.38% for gold.\",\"source_ids\":[\"S11\"]},{\"text\":\"From 1992 to 2024, the S&P 500 produced approximately 10.39% average annual nominal returns, while U.S. home price appreciation averaged roughly 5.5% — though this home-price figure excludes rental income and leverage effects.\",\"source_ids\":[\"S12\"]},{\"text\":\"REITs (which include rental income and are more comparable to total-return equity investing) have returned approximately 10–12% annually over the past 30 years according to NAREIT data, broadly competitive with the S&P 500.\",\"source_ids\":[\"S13\"]},{\"text\":\"Real estate exhibits lower day-to-day price volatility than stocks, and historical data shows stocks can deviate as much as 22% from their average annual return while housing deviates approximately 10%.\",\"source_ids\":[\"S10\"]}],\"limits\":[\"Direct comparisons are structurally difficult: stocks are measured as total return (price + dividends), while real estate is often measured as price appreciation only, excluding rental income, leverage effects, maintenance costs, transaction costs (~6% commissions), and taxes.\",\"Leverage in real estate can amplify returns substantially but also amplifies risk; comparisons that include leverage are not like-for-like with unleveraged equity investing.\",\"Geographic variation is substantial: real estate returns depend heavily on local market conditions, which are far more variable than broad equity index returns.\",\"Time period chosen dramatically affects the outcome: stocks decisively outperformed over the 10-year period ending ~2025, while the 145-year study shows near parity.\"]}],\"sources\":[{\"id\":\"S2\",\"title\":\"U.S. Persistence Scorecard Year-End 2025\",\"publisher\":\"S&P Global / S&P Dow Jones Indices (SPIVA)\",\"url\":\"https://www.spglobal.com/spdji/en/spiva/article/us-persistence-scorecard/\",\"date\":\"2026\",\"source_type\":\"official_dataset\"},{\"id\":\"S4\",\"title\":\"Don't Time the Market, Says Schwab — This Data Explains Why\",\"publisher\":\"Yahoo Finance / Charles Schwab research\",\"url\":\"https://finance.yahoo.com/news/forget-timing-market-schwab-research-110000932.html\",\"date\":null,\"source_type\":\"high_quality_secondary\"},{\"id\":\"S5\",\"title\":\"Time in the market beats timing the market: The importance of staying invested\",\"publisher\":\"Tribe Impact Capital\",\"url\":\"https://tribeimpactcapital.com/impact-hub/time-in-the-market-beats-timing-the-market/\",\"date\":null,\"source_type\":\"high_quality_secondary\"},{\"id\":\"S6\",\"title\":\"Predicting Stock Market Returns Using the Shiller CAPE — An Improvement Towards Traditional Value Indicators? (SSRN abstract)\",\"publisher\":\"SSRN (Norbert Keimling)\",\"url\":\"https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2736423\",\"date\":\"2016\",\"source_type\":\"thesis_or_preprint\"},{\"id\":\"S10\",\"title\":\"Real Estate vs. Stocks (What 145 Years of Returns Tells Us) — summarizing Jorda et al., 'The Rate of Return on Everything, 1870–2015,' Quarterly Journal of Economics 2019\",\"publisher\":\"BiggerPockets\",\"url\":\"https://www.biggerpockets.com/blog/real-estate-vs-stocks-performance\",\"date\":null,\"source_type\":\"high_quality_secondary\"},{\"id\":\"S11\",\"title\":\"Real estate and gold vs. stocks: Best long-term investment\",\"publisher\":\"CNBC\",\"url\":\"https://www.cnbc.com/2025/05/08/real-estate-and-gold-vs-stocks-best-long-term-investment.html\",\"date\":\"2025-05-08\",\"source_type\":\"high_quality_secondary\"},{\"id\":\"S12\",\"title\":\"Real Estate vs. S&P 500: Historical Returns, Risk, and Cost Comparison\",\"publisher\":\"Wealth Formula\",\"url\":\"https://www.wealthformula.com/blog/real-estate-vs-sp-500-historical-returns-risk-and-cost-comparison/\",\"date\":null,\"source_type\":\"high_quality_secondary\"},{\"id\":\"S13\",\"title\":\"Real Estate vs Stocks: Full Comparison\",\"publisher\":\"AskDoss\",\"url\":\"https://askdoss.com/real-estate-vs-stocks/\",\"date\":null,\"source_type\":\"high_quality_secondary\"}]}",
+    "data": {
+      "researched_at": "2026-10-25T04:45:04.749Z",
+      "claims": [
+        {
+          "claim": "Index funds always beat active management",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "In full-year 2025, 79% of active large-cap U.S. equity funds underperformed the S&P 500, the fourth-worst result in the 25-year history of SPIVA scorecards, and underperformance rates typically rose as time horizons lengthened across all categories.",
+              "source_ids": [
+                "S2"
+              ]
+            }
+          ],
+          "limits": [
+            "The 'always' formulation is not supported: active managers have beaten benchmarks in specific categories (small-cap equities, certain bond categories) in particular years.",
+            "SPIVA measures mutual funds net of fees; the fee drag is a structural headwind that conflates manager skill with cost — the two are not fully separable in this data.",
+            "Persistence of outperformance is separately tracked and shown to be rare, meaning past active winners do not reliably predict future winners, but this is a separate (though related) claim.",
+            "Results vary by geography and market segment; applying U.S. large-cap conclusions globally or across all asset classes is not warranted by the data."
+          ]
+        },
+        {
+          "claim": "Time in the market beats timing the market",
+          "assessment": "supported",
+          "support": "secondary_only",
+          "findings": [
+            {
+              "text": "Schwab research found that investing immediately (no timing) trailed perfect market timing by only about 8% over 20 years, while capturing 92% of the gains of the theoretically best possible outcome — a gap of roughly $10,500 on a hypothetical starting investment.",
+              "source_ids": [
+                "S4"
+              ]
+            },
+            {
+              "text": "Research from Schroders cited by Tribe Impact Capital found that missing only the 10 best market days over 35 years reduced total returns by approximately half, and the best-performing days tend to cluster around periods of high volatility — when timing-oriented investors are most likely to be out of the market.",
+              "source_ids": [
+                "S5"
+              ]
+            },
+            {
+              "text": "Bank of America data cited by Tribe Impact Capital found that staying invested for 15 years reduced the likelihood of a negative return to 0% in historical U.S. equity data.",
+              "source_ids": [
+                "S5"
+              ]
+            }
+          ],
+          "limits": [
+            "This claim is well-supported as a historical generalization but does not establish that future equity markets will continue to produce positive long-run returns.",
+            "The claim is sometimes presented as absolute; it holds robustly for broadly diversified index portfolios but does not necessarily apply to individual securities or illiquid assets.",
+            "Valuations at the time of entry can affect realized returns even for patient investors — high starting valuations have historically corresponded to lower subsequent long-run returns (see CAPE findings below), which is a legitimate tension with the 'just stay invested' framing.",
+            "The Schwab study used a specific hypothetical and time period; different periods or parameters could produce different magnitudes."
+          ]
+        },
+        {
+          "claim": "Valuations matter for long-term returns (CAPE/Shiller PE as a predictor)",
+          "assessment": "supported",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "Research by Campbell and Shiller (1988) and subsequent studies across 16-17 international equity markets found a consistent negative relationship between the CAPE ratio and subsequent 10-to-20-year real stock returns: higher starting CAPE predicts lower subsequent returns.",
+              "source_ids": [
+                "S6"
+              ]
+            }
+          ],
+          "limits": [
+            "CAPE predicts long-run averages (10–20 year horizons) with meaningful but imperfect accuracy; it is a poor timing tool for short- or medium-term market moves.",
+            "High CAPE can persist for extended periods without a correction, as the post-2013 U.S. market demonstrated.",
+            "Some researchers argue that changes in accounting standards, payout ratios, and the composition of the S&P 500 make historical CAPE comparisons imprecise; recent work (the component CAPE) attempts to address this.",
+            "CAPE's predictive power internationally has been demonstrated, but structural breaks in some countries reduce its reliability in those markets."
+          ]
+        },
+        {
+          "claim": "Real estate vs. stocks: which produces better long-term returns",
+          "assessment": "mixed",
+          "support": "secondary_only",
+          "findings": [
+            {
+              "text": "A large-scale study ('The Rate of Return on Everything, 1870–2015') covering 16 advanced economies found that residential real estate and equities produced near-identical inflation-adjusted total returns over 145 years: approximately 7.05% annually for real estate (including rental income) versus 6.89% for equities.",
+              "source_ids": [
+                "S10"
+              ]
+            },
+            {
+              "text": "Over the 30-year period ending April 2025, Morningstar Direct data showed the S&P 500 annualized total return at 10.29%, versus 8.78% for real estate and 7.38% for gold.",
+              "source_ids": [
+                "S11"
+              ]
+            },
+            {
+              "text": "From 1992 to 2024, the S&P 500 produced approximately 10.39% average annual nominal returns, while U.S. home price appreciation averaged roughly 5.5% — though this home-price figure excludes rental income and leverage effects.",
+              "source_ids": [
+                "S12"
+              ]
+            },
+            {
+              "text": "REITs (which include rental income and are more comparable to total-return equity investing) have returned approximately 10–12% annually over the past 30 years according to NAREIT data, broadly competitive with the S&P 500.",
+              "source_ids": [
+                "S13"
+              ]
+            },
+            {
+              "text": "Real estate exhibits lower day-to-day price volatility than stocks, and historical data shows stocks can deviate as much as 22% from their average annual return while housing deviates approximately 10%.",
+              "source_ids": [
+                "S10"
+              ]
+            }
+          ],
+          "limits": [
+            "Direct comparisons are structurally difficult: stocks are measured as total return (price + dividends), while real estate is often measured as price appreciation only, excluding rental income, leverage effects, maintenance costs, transaction costs (~6% commissions), and taxes.",
+            "Leverage in real estate can amplify returns substantially but also amplifies risk; comparisons that include leverage are not like-for-like with unleveraged equity investing.",
+            "Geographic variation is substantial: real estate returns depend heavily on local market conditions, which are far more variable than broad equity index returns.",
+            "Time period chosen dramatically affects the outcome: stocks decisively outperformed over the 10-year period ending ~2025, while the 145-year study shows near parity."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "S2",
+          "title": "U.S. Persistence Scorecard Year-End 2025",
+          "publisher": "S&P Global / S&P Dow Jones Indices (SPIVA)",
+          "url": "https://www.spglobal.com/spdji/en/spiva/article/us-persistence-scorecard/",
+          "date": "2026",
+          "source_type": "official_dataset"
+        },
+        {
+          "id": "S4",
+          "title": "Don't Time the Market, Says Schwab — This Data Explains Why",
+          "publisher": "Yahoo Finance / Charles Schwab research",
+          "url": "https://finance.yahoo.com/news/forget-timing-market-schwab-research-110000932.html",
+          "date": null,
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S5",
+          "title": "Time in the market beats timing the market: The importance of staying invested",
+          "publisher": "Tribe Impact Capital",
+          "url": "https://tribeimpactcapital.com/impact-hub/time-in-the-market-beats-timing-the-market/",
+          "date": null,
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S6",
+          "title": "Predicting Stock Market Returns Using the Shiller CAPE — An Improvement Towards Traditional Value Indicators? (SSRN abstract)",
+          "publisher": "SSRN (Norbert Keimling)",
+          "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2736423",
+          "date": "2016",
+          "source_type": "thesis_or_preprint"
+        },
+        {
+          "id": "S10",
+          "title": "Real Estate vs. Stocks (What 145 Years of Returns Tells Us) — summarizing Jorda et al., 'The Rate of Return on Everything, 1870–2015,' Quarterly Journal of Economics 2019",
+          "publisher": "BiggerPockets",
+          "url": "https://www.biggerpockets.com/blog/real-estate-vs-stocks-performance",
+          "date": null,
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S11",
+          "title": "Real estate and gold vs. stocks: Best long-term investment",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2025/05/08/real-estate-and-gold-vs-stocks-best-long-term-investment.html",
+          "date": "2025-05-08",
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S12",
+          "title": "Real Estate vs. S&P 500: Historical Returns, Risk, and Cost Comparison",
+          "publisher": "Wealth Formula",
+          "url": "https://www.wealthformula.com/blog/real-estate-vs-sp-500-historical-returns-risk-and-cost-comparison/",
+          "date": null,
+          "source_type": "high_quality_secondary"
+        },
+        {
+          "id": "S13",
+          "title": "Real Estate vs Stocks: Full Comparison",
+          "publisher": "AskDoss",
+          "url": "https://askdoss.com/real-estate-vs-stocks/",
+          "date": null,
+          "source_type": "high_quality_secondary"
+        }
+      ]
+    },
+    "pinned": true,
+    "savedAt": "2026-10-25T04:45:04.749Z",
+    "topic": "Investing strategies"
+  },
+  "signal-research:example:5": {
+    "block": "\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked \"support\": \"secondary_only\" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n{\"researched_at\":\"2026-10-25T04:28:50.637Z\",\"claims\":[{\"claim\":\"Screen time is uniformly harmful to children (destroying kids)\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"A 2024 JAMA Pediatrics systematic review and meta-analysis found that program viewing was negatively associated with cognitive and psychosocial outcomes, and age-inappropriate content was negatively associated with psychosocial outcomes — but effects varied substantially by content type and viewing context.\",\"source_ids\":[\"S1\"]},{\"text\":\"A 2024 JAMA Pediatrics cohort study of 15,965 kindergarten children found that children exposed to a higher proportion of educational programming had a lower risk for mental health problems under a given total screen time, while non-child-directed programs were associated with higher risk.\",\"source_ids\":[\"S2\"]},{\"text\":\"A 2025 primary study of Shanghai preschoolers found that noneducational, fast-paced, and animated content was negatively associated with early development scores, while the harmful signal was concentrated in those content types rather than screen time overall.\",\"source_ids\":[\"S3\"]},{\"text\":\"A 2024 Frontiers in Developmental Psychology scoping review of children aged 0–36 months found that for most developmental outcomes, a comparable amount of undesirable and non-significant associations was observed, and that child characteristics, context, and content type moderate associations — including the possibility of creating new learning opportunities.\",\"source_ids\":[\"S4\"]}],\"limits\":[\"Most research is observational; direction of causation is difficult to establish (children with developmental difficulties may consume more or different screen content).\",\"Research populations and content environments differ substantially across studies, limiting direct comparisons.\",\"The 'content type' distinction is well-supported for younger children (0–5); evidence for older school-age children and adolescents follows different patterns and is assessed separately in most reviews.\",\"Caregiver co-viewing and background television exposure during child routines are themselves associated with negative outcomes, independent of the child's own viewing — a factor often conflated in simple screen-time counts.\"]},{\"claim\":\"Tiger parenting produces superior child outcomes vs. free-range or more permissive approaches\",\"assessment\":\"overstated\",\"support\":\"primary\",\"findings\":[{\"text\":\"A longitudinal study tracking 444 Chinese-American families over eight years found that children with tiger parents had lower GPA than children with supportive parents; supportive parenting was associated with the highest GPA, best socio-emotional adjustment, least alienation, and strongest sense of family obligation.\",\"source_ids\":[\"S6\",\"S7\"]},{\"text\":\"Compared with supportive parenting, a tiger parenting profile was associated with lower GPA and educational attainment, more academic pressure, more depressive symptoms, and greater sense of alienation from parents.\",\"source_ids\":[\"S7\"]}],\"limits\":[\"Much of the tiger parenting research focuses on Chinese-American samples; generalizability to other ethnic and cultural groups is unclear, and parenting behaviors may carry different meaning across cultural contexts.\",\"The free-range parenting evidence base is thin on direct controlled studies; most positive claims rest on research about the harms of over-protective parenting rather than direct trials of free-range methods.\",\"The tiger vs. free-range framing is a popular dichotomy; empirical research more consistently compares authoritative, authoritarian, permissive, and supportive profiles rather than these branded categories directly.\",\"A 2024 longitudinal study found that tiger parenting predicted more anxiety and depressive symptoms among children with low inhibitory control, suggesting individual child characteristics moderate outcomes — not all children respond identically.\"]},{\"claim\":\"Homework helps children academically vs. homework is harmful\",\"assessment\":\"mixed\",\"support\":\"primary\",\"findings\":[{\"text\":\"A meta-analytic review found a small overall positive effect of homework on academic achievement (d = 0.229), with 64% of included studies showing positive effects; effect sizes were larger for secondary and university levels than for elementary school.\",\"source_ids\":[\"S10\"]},{\"text\":\"A separate meta-analysis using TIMSS data found that students spending a moderate amount of time on homework had higher academic achievement than those spending little time, and that the effect was significantly larger at the 8th-grade level than the 4th-grade level.\",\"source_ids\":[\"S11\"]},{\"text\":\"A 2026 meta-analysis of e-homework in K-12 found a significant positive effect on academic achievement (Hedges' g = 0.309), with the effect more pronounced on assignment scores than on exam scores, and moderated by subject domain and school level.\",\"source_ids\":[\"S12\"]},{\"text\":\"A meta-analysis of parental homework involvement using PISA data (180 effects) found that students who received more help with homework had lower academic achievement (d = 0.23), concluding that how help is given matters more than how much is given.\",\"source_ids\":[\"S13\"]},{\"text\":\"A three-level meta-analysis of 28 studies (378,222 participants) found an overall weak negative relationship between parental homework involvement and students' achievement (r = -0.064).\",\"source_ids\":[\"S14\"]}],\"limits\":[\"Effect sizes across meta-analyses are consistently small; homework's academic benefit is modest and varies substantially by grade level, subject, and homework type — with larger effects at secondary versus elementary levels.\",\"The claim that 'homework is harmful' is not well-supported by the academic achievement literature, but excess homework or poorly designed homework can be associated with stress and reduced well-being in children — an outcome dimension most achievement meta-analyses do not measure.\",\"Parental involvement in homework specifically shows a negative association with achievement, likely reflecting reverse causation (parents help more when children struggle), rather than indicating that parental help causes lower achievement.\",\"Most research measures homework quantity rather than quality; extension and practice homework types show stronger effects than other homework purposes, suggesting design matters.\"]}],\"sources\":[{\"id\":\"S1\",\"title\":\"Early Childhood Screen Use Contexts and Cognitive and Psychosocial Outcomes: A Systematic Review and Meta-analysis\",\"publisher\":\"JAMA Pediatrics\",\"url\":\"https://jamanetwork.com/journals/jamapediatrics/fullarticle/2821940\",\"date\":\"2024-10\",\"source_type\":\"meta_analysis\"},{\"id\":\"S2\",\"title\":\"Types of On-Screen Content and Mental Health in Kindergarten Children\",\"publisher\":\"JAMA Pediatrics\",\"url\":\"https://jamanetwork.com/journals/jamapediatrics/fullarticle/2812151\",\"date\":\"2023-12-04\",\"source_type\":\"primary_study\"},{\"id\":\"S3\",\"title\":\"Association of Screen Content With Early Development Among Preschoolers in Shanghai: 7-Day Monitoring Study With Auto Intelligent Technology\",\"publisher\":\"Journal of Medical Internet Research (via PMC)\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11928067/\",\"date\":\"2025-03-05\",\"source_type\":\"primary_study\"},{\"id\":\"S4\",\"title\":\"Screen on = development off? A systematic scoping review and a developmental psychology perspective on the effects of screen time on early childhood development\",\"publisher\":\"Frontiers in Developmental Psychology\",\"url\":\"https://www.frontiersin.org/journals/developmental-psychology/articles/10.3389/fdpys.2024.1439040/full\",\"date\":\"2024\",\"source_type\":\"systematic_review\"},{\"id\":\"S6\",\"title\":\"What is 'tiger' parenting? How does it affect children?\",\"publisher\":\"APA Division 7 (Developmental Psychology)\",\"url\":\"https://www.apadivisions.org/division-7/publications/newsletters/developmental/2013/07/tiger-parenting\",\"date\":\"2013-07\",\"source_type\":\"professional_body\"},{\"id\":\"S7\",\"title\":\"Tiger Parenting and its Influence on American High School Students\",\"publisher\":\"ResearchGate (primary study hosted)\",\"url\":\"https://www.researchgate.net/publication/374617132_Tiger_Parenting_and_its_Influence_on_American_High_School_Students\",\"date\":\"2023\",\"source_type\":\"primary_study\"},{\"id\":\"S10\",\"title\":\"Homework and academic achievement: A meta-analytic review of research\",\"publisher\":\"Issues in Educational Research (IIER)\",\"url\":\"https://www.iier.org.au/iier27/bas.pdf\",\"date\":\"2017\",\"source_type\":\"meta_analysis\"},{\"id\":\"S11\",\"title\":\"Time Spent on Homework and Academic Achievement: A Meta-analysis Study Related to Results of TIMSS\",\"publisher\":\"Psicologia Educativa (journals.copmadrid.org)\",\"url\":\"https://journals.copmadrid.org/psed/art/psed2021a30\",\"date\":\"2021\",\"source_type\":\"meta_analysis\"},{\"id\":\"S12\",\"title\":\"The effect of E-homework on K-12 students' academic achievements: a meta-analysis study\",\"publisher\":\"Frontiers in Psychology (via PMC)\",\"url\":\"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12901446/\",\"date\":\"2026-01-30\",\"source_type\":\"meta_analysis\"},{\"id\":\"S13\",\"title\":\"Should we Help our Children with Homework? A Meta-Analysis Using PISA Data\",\"publisher\":\"PubMed (primary study)\",\"url\":\"https://pubmed.ncbi.nlm.nih.gov/35048896\",\"date\":\"2022\",\"source_type\":\"meta_analysis\"},{\"id\":\"S14\",\"title\":\"Parental homework involvement and students' achievement: A three-level meta-analysis\",\"publisher\":\"Universidad de Oviedo institutional repository\",\"url\":\"https://portalinvestigacion.uniovi.es/documentos/662a9c55442b67790e19a604?lang=en\",\"date\":\"2024\",\"source_type\":\"meta_analysis\"}]}",
+    "data": {
+      "researched_at": "2026-10-25T04:28:50.637Z",
+      "claims": [
+        {
+          "claim": "Screen time is uniformly harmful to children (destroying kids)",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A 2024 JAMA Pediatrics systematic review and meta-analysis found that program viewing was negatively associated with cognitive and psychosocial outcomes, and age-inappropriate content was negatively associated with psychosocial outcomes — but effects varied substantially by content type and viewing context.",
+              "source_ids": [
+                "S1"
+              ]
+            },
+            {
+              "text": "A 2024 JAMA Pediatrics cohort study of 15,965 kindergarten children found that children exposed to a higher proportion of educational programming had a lower risk for mental health problems under a given total screen time, while non-child-directed programs were associated with higher risk.",
+              "source_ids": [
+                "S2"
+              ]
+            },
+            {
+              "text": "A 2025 primary study of Shanghai preschoolers found that noneducational, fast-paced, and animated content was negatively associated with early development scores, while the harmful signal was concentrated in those content types rather than screen time overall.",
+              "source_ids": [
+                "S3"
+              ]
+            },
+            {
+              "text": "A 2024 Frontiers in Developmental Psychology scoping review of children aged 0–36 months found that for most developmental outcomes, a comparable amount of undesirable and non-significant associations was observed, and that child characteristics, context, and content type moderate associations — including the possibility of creating new learning opportunities.",
+              "source_ids": [
+                "S4"
+              ]
+            }
+          ],
+          "limits": [
+            "Most research is observational; direction of causation is difficult to establish (children with developmental difficulties may consume more or different screen content).",
+            "Research populations and content environments differ substantially across studies, limiting direct comparisons.",
+            "The 'content type' distinction is well-supported for younger children (0–5); evidence for older school-age children and adolescents follows different patterns and is assessed separately in most reviews.",
+            "Caregiver co-viewing and background television exposure during child routines are themselves associated with negative outcomes, independent of the child's own viewing — a factor often conflated in simple screen-time counts."
+          ]
+        },
+        {
+          "claim": "Tiger parenting produces superior child outcomes vs. free-range or more permissive approaches",
+          "assessment": "overstated",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A longitudinal study tracking 444 Chinese-American families over eight years found that children with tiger parents had lower GPA than children with supportive parents; supportive parenting was associated with the highest GPA, best socio-emotional adjustment, least alienation, and strongest sense of family obligation.",
+              "source_ids": [
+                "S6",
+                "S7"
+              ]
+            },
+            {
+              "text": "Compared with supportive parenting, a tiger parenting profile was associated with lower GPA and educational attainment, more academic pressure, more depressive symptoms, and greater sense of alienation from parents.",
+              "source_ids": [
+                "S7"
+              ]
+            }
+          ],
+          "limits": [
+            "Much of the tiger parenting research focuses on Chinese-American samples; generalizability to other ethnic and cultural groups is unclear, and parenting behaviors may carry different meaning across cultural contexts.",
+            "The free-range parenting evidence base is thin on direct controlled studies; most positive claims rest on research about the harms of over-protective parenting rather than direct trials of free-range methods.",
+            "The tiger vs. free-range framing is a popular dichotomy; empirical research more consistently compares authoritative, authoritarian, permissive, and supportive profiles rather than these branded categories directly.",
+            "A 2024 longitudinal study found that tiger parenting predicted more anxiety and depressive symptoms among children with low inhibitory control, suggesting individual child characteristics moderate outcomes — not all children respond identically."
+          ]
+        },
+        {
+          "claim": "Homework helps children academically vs. homework is harmful",
+          "assessment": "mixed",
+          "support": "primary",
+          "findings": [
+            {
+              "text": "A meta-analytic review found a small overall positive effect of homework on academic achievement (d = 0.229), with 64% of included studies showing positive effects; effect sizes were larger for secondary and university levels than for elementary school.",
+              "source_ids": [
+                "S10"
+              ]
+            },
+            {
+              "text": "A separate meta-analysis using TIMSS data found that students spending a moderate amount of time on homework had higher academic achievement than those spending little time, and that the effect was significantly larger at the 8th-grade level than the 4th-grade level.",
+              "source_ids": [
+                "S11"
+              ]
+            },
+            {
+              "text": "A 2026 meta-analysis of e-homework in K-12 found a significant positive effect on academic achievement (Hedges' g = 0.309), with the effect more pronounced on assignment scores than on exam scores, and moderated by subject domain and school level.",
+              "source_ids": [
+                "S12"
+              ]
+            },
+            {
+              "text": "A meta-analysis of parental homework involvement using PISA data (180 effects) found that students who received more help with homework had lower academic achievement (d = 0.23), concluding that how help is given matters more than how much is given.",
+              "source_ids": [
+                "S13"
+              ]
+            },
+            {
+              "text": "A three-level meta-analysis of 28 studies (378,222 participants) found an overall weak negative relationship between parental homework involvement and students' achievement (r = -0.064).",
+              "source_ids": [
+                "S14"
+              ]
+            }
+          ],
+          "limits": [
+            "Effect sizes across meta-analyses are consistently small; homework's academic benefit is modest and varies substantially by grade level, subject, and homework type — with larger effects at secondary versus elementary levels.",
+            "The claim that 'homework is harmful' is not well-supported by the academic achievement literature, but excess homework or poorly designed homework can be associated with stress and reduced well-being in children — an outcome dimension most achievement meta-analyses do not measure.",
+            "Parental involvement in homework specifically shows a negative association with achievement, likely reflecting reverse causation (parents help more when children struggle), rather than indicating that parental help causes lower achievement.",
+            "Most research measures homework quantity rather than quality; extension and practice homework types show stronger effects than other homework purposes, suggesting design matters."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "S1",
+          "title": "Early Childhood Screen Use Contexts and Cognitive and Psychosocial Outcomes: A Systematic Review and Meta-analysis",
+          "publisher": "JAMA Pediatrics",
+          "url": "https://jamanetwork.com/journals/jamapediatrics/fullarticle/2821940",
+          "date": "2024-10",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S2",
+          "title": "Types of On-Screen Content and Mental Health in Kindergarten Children",
+          "publisher": "JAMA Pediatrics",
+          "url": "https://jamanetwork.com/journals/jamapediatrics/fullarticle/2812151",
+          "date": "2023-12-04",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S3",
+          "title": "Association of Screen Content With Early Development Among Preschoolers in Shanghai: 7-Day Monitoring Study With Auto Intelligent Technology",
+          "publisher": "Journal of Medical Internet Research (via PMC)",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11928067/",
+          "date": "2025-03-05",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S4",
+          "title": "Screen on = development off? A systematic scoping review and a developmental psychology perspective on the effects of screen time on early childhood development",
+          "publisher": "Frontiers in Developmental Psychology",
+          "url": "https://www.frontiersin.org/journals/developmental-psychology/articles/10.3389/fdpys.2024.1439040/full",
+          "date": "2024",
+          "source_type": "systematic_review"
+        },
+        {
+          "id": "S6",
+          "title": "What is 'tiger' parenting? How does it affect children?",
+          "publisher": "APA Division 7 (Developmental Psychology)",
+          "url": "https://www.apadivisions.org/division-7/publications/newsletters/developmental/2013/07/tiger-parenting",
+          "date": "2013-07",
+          "source_type": "professional_body"
+        },
+        {
+          "id": "S7",
+          "title": "Tiger Parenting and its Influence on American High School Students",
+          "publisher": "ResearchGate (primary study hosted)",
+          "url": "https://www.researchgate.net/publication/374617132_Tiger_Parenting_and_its_Influence_on_American_High_School_Students",
+          "date": "2023",
+          "source_type": "primary_study"
+        },
+        {
+          "id": "S10",
+          "title": "Homework and academic achievement: A meta-analytic review of research",
+          "publisher": "Issues in Educational Research (IIER)",
+          "url": "https://www.iier.org.au/iier27/bas.pdf",
+          "date": "2017",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S11",
+          "title": "Time Spent on Homework and Academic Achievement: A Meta-analysis Study Related to Results of TIMSS",
+          "publisher": "Psicologia Educativa (journals.copmadrid.org)",
+          "url": "https://journals.copmadrid.org/psed/art/psed2021a30",
+          "date": "2021",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S12",
+          "title": "The effect of E-homework on K-12 students' academic achievements: a meta-analysis study",
+          "publisher": "Frontiers in Psychology (via PMC)",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12901446/",
+          "date": "2026-01-30",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S13",
+          "title": "Should we Help our Children with Homework? A Meta-Analysis Using PISA Data",
+          "publisher": "PubMed (primary study)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/35048896",
+          "date": "2022",
+          "source_type": "meta_analysis"
+        },
+        {
+          "id": "S14",
+          "title": "Parental homework involvement and students' achievement: A three-level meta-analysis",
+          "publisher": "Universidad de Oviedo institutional repository",
+          "url": "https://portalinvestigacion.uniovi.es/documentos/662a9c55442b67790e19a604?lang=en",
+          "date": "2024",
+          "source_type": "meta_analysis"
+        }
+      ]
+    },
+    "pinned": true,
+    "savedAt": "2026-10-25T04:28:50.637Z",
+    "topic": "Parenting approaches"
   }
 }

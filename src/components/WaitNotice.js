@@ -137,12 +137,15 @@ export default function WaitNotice() {
 
   // 3. Waiting on this page.
   const estimate = TOOL_WAIT_SECONDS[wait.tool || here];
-  if (estimate !== undefined && estimate < QUICK_TOOL_S) return null;
+  if (estimate !== undefined && estimate < QUICK_TOOL_S && !wait.searching) return null;
   // Answers that arrive in parts: say so, not how long the whole thing took
   // before it was split — the first part usually shows well before that.
   const timed = estimate !== undefined && !wait.progressive;
   const overdue = timed && elapsed > estimate * 1500; // half again the usual
-  const first = wait.progressive ? t('wait_in_parts')
+  // A slow web lookup is running (the server said so): name it.
+  const searchLine = { law: 'wait_search_law', timeline: 'wait_search_timeline', specs: 'wait_search_specs', prices: 'wait_search_prices' }[wait.searching];
+  const first = searchLine ? t(searchLine)
+    : wait.progressive ? t('wait_in_parts')
     : !timed || overdue
     ? t(overdue ? 'wait_longer' : 'wait_still_working')
     : estimateLine(t, estimate);

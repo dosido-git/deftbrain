@@ -1,4 +1,5 @@
 const express = require('express');
+const { whileSearching } = require('../lib/progressive');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -289,7 +290,7 @@ Return ONLY valid JSON:
     // Published specs for the component area in question. Empty is fine and
     // common; the missing-specification rule below covers that case.
     const specsKey = bikeMedicFactsKey({ symptom, bikeProfile });
-    const specs = await bikeMedicFacts({ symptom, bikeProfile }).catch(() => '');
+    const specs = await whileSearching(req, res, 'specs', bikeMedicFacts({ symptom, bikeProfile }).catch(() => ''));
 
     let prompt;
     const bikeContext = bikeProfile

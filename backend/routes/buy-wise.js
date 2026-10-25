@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { answer, noOverlap } = require('../lib/progressive');
+const { answer, noOverlap, whileSearching } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 
@@ -357,7 +357,7 @@ router.post('/buy-wise/fast', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // Awaited before the decision pre-pass on purpose: the pre-pass locks the
     // fair-price stance that every group must then agree with, so it has to
     // see the verified price too. Warm or stale products cost nothing here.
-    const grounded = await buyWiseFacts(factsArgs).catch(() => '');
+    const grounded = await whileSearching(req, res, 'prices', buyWiseFacts(factsArgs).catch(() => ''));
 
     const contextHeader = `RESEARCH THIS PURCHASE:
 Product: ${product}

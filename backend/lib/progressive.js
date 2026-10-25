@@ -40,7 +40,7 @@ const skipChecks = (req) => req.headers?.['x-skip-checks'] === '1' && process.en
 async function progressive(req, res, { label, parts, ready = () => true, complete = () => true, check: checkFn = null, after = null, finish = d => d, heartbeat = false }) {
   const check = skipChecks(req) ? null : checkFn;
   const draft = {};
-  let open = false;
+  let open = res.headersSent; // whileSearching may have opened the stream already
   const openStream = () => {
     if (open) return;
     // no-transform: compression() would otherwise buffer the frames.
@@ -122,6 +122,39 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
   } finally {
     if (beat) clearInterval(beat);
   }
+}
+
+// whileSearching — a web lookup that runs BEFORE the first part (2026-10-25).
+// Cached lookups resolve at once and nothing changes. A cold one can take up
+// to a minute with nothing on screen, so after a moment the stream opens with
+// { searching: kind } and the page's wait note says what is being looked up
+// (wait_search_<kind>, src/i18n/locales/base.js). Only for progressive
+// callers; the one-JSON caller is unchanged.
+//   const facts = await whileSearching(req, res, 'law', lawFacts(location));
+const SEARCH_NOTICE_AFTER_MS = 1500;
+async function whileSearching(req, res, kind, promise) {
+  if (req.body?.progressive !== true) return promise;
+  let beat = null;
+  const timer = setTimeout(() => {
+    if (res.headersSent || res.writableEnded) return;
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+    res.write(`data: ${JSON.stringify({ searching: kind })}\n\n`);
+    beat = setInterval(() => { try { res.write(': ping\n\n'); } catch { /* gone */ } }, 10000);
+    // From here every reply travels as frames: a route's own res.json (an
+    // error, or a finished answer it built without answer()) becomes one.
+    res.json = (body) => {
+      const err = body && typeof body.error === 'string' ? body.error : null;
+      res.write(`data: ${JSON.stringify(err ? { error: err } : { draft: body })}\n\n`);
+      if (!err) res.write('data: {"done":true}\n\n');
+      res.end();
+      return res;
+    };
+  }, SEARCH_NOTICE_AFTER_MS);
+  try { return await promise; } finally { clearTimeout(timer); if (beat) clearInterval(beat); }
 }
 
 // answer — one route body for both callers (2026-10-15). A browser that asks
@@ -252,4 +285,4 @@ function planFirst(planKeys, runPlan, groups, runFollow) {
 // three blind comparisons on repetition).
 const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass and shown to the reader above your sections — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording), and do not restate what it already says: add what it does not.\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
 
-module.exports = { progressive, answer, keyGroups, onlyKeys, planFirst, planNote, takeKeys, noOverlap };
+module.exports = { progressive, answer, whileSearching, keyGroups, onlyKeys, planFirst, planNote, takeKeys, noOverlap };

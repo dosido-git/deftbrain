@@ -370,6 +370,7 @@ router.post('/signal-vs-noise/research', rateLimit(RESEARCH_POLL_LIMITS, 'svn-re
       conflictingAdvice: conflictingAdvice?.trim(),
       userContext: userContext?.trim(),
       region: req.body.userRegion,
+      exampleId: req.body.exampleId,
       coldWaitMs: 0,
       force: req.body.refresh === true,
     });
@@ -378,7 +379,7 @@ router.post('/signal-vs-noise/research', rateLimit(RESEARCH_POLL_LIMITS, 'svn-re
       // client would poll "pending" for its whole budget and only then learn
       // there was nothing coming. 200, not an error status — the poll itself
       // succeeded; it is the research that did not.
-      const state = researchState({ topic: topic.trim(), conflictingAdvice: conflictingAdvice?.trim() });
+      const state = researchState({ topic: topic.trim(), conflictingAdvice: conflictingAdvice?.trim(), exampleId: req.body.exampleId });
       if (state === 'failed') return res.json({ status: 'failed', code: 'research_unavailable', sources: [] });
       return res.status(202).json({ status: 'pending', sources: [] });
     }
@@ -390,6 +391,37 @@ router.post('/signal-vs-noise/research', rateLimit(RESEARCH_POLL_LIMITS, 'svn-re
     });
   } catch (error) {
     console.error('[SignalVsNoise/research]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ── While the search runs: what we're checking ──────────────────────────
+// A cold search takes ~60-100s with nothing to read (owner, 2026-10-25). One
+// fast call restates the question and splits out the claims in a few seconds.
+// It judges nothing — the packet hasn't landed — so it can't contradict the
+// answer that follows. The page treats any failure as "show nothing".
+router.post('/signal-vs-noise/checking', rateLimit(RESEARCH_POLL_LIMITS, 'svn-checking:'), async (req, res) => {
+  try {
+    const { topic, conflictingAdvice, userContext, userLanguage } = req.body;
+    if (!topic?.trim()) return res.status(400).json({ error: 'What topic are you trying to cut through?' });
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 600,
+      system: withLanguage(`You restate a question someone wants checked against evidence, before any research has been done. Never say or hint whether any claim is true, false, likely or popular — you have not seen the evidence yet. Plain words, no jargon. ${NO_QUOTE_RULE}`, userLanguage),
+      messages: [{ role: 'user', content: `${buildSupplied(topic.trim(), conflictingAdvice?.trim(), userContext?.trim())}
+
+Return ONLY valid JSON:
+{
+  "question": "the question being checked, in one plain sentence",
+  "claims": ["each distinct claim to check, neutrally worded, 2 to 4 of them"],
+  "evidence": "what kind of evidence could settle it, in one short sentence under 20 words (for example trials, official data, long-term studies)"
+}` }],
+    }, { label: 'signal-vs-noise/checking' });
+    const claims = (Array.isArray(parsed?.claims) ? parsed.claims : []).filter(x => typeof x === 'string' && x.trim()).slice(0, 4);
+    if (!parsed?.question || !claims.length) return res.status(502).json({ error: 'No preview.' });
+    res.json({ question: parsed.question, claims, evidence: typeof parsed.evidence === 'string' ? parsed.evidence : '' });
+  } catch (error) {
+    console.error('[SignalVsNoise/checking]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -408,6 +440,7 @@ router.post('/signal-vs-noise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       conflictingAdvice: conflictingAdvice?.trim(),
       userContext: userContext?.trim(),
       region: req.body.userRegion,
+      exampleId: req.body.exampleId,
       force: req.body.refresh === true,
     });
 

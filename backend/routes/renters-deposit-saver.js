@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, keyGroups, onlyKeys, whileSearching } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites, matchVerifiedSources } = require('../lib/groundedFacts');
@@ -106,7 +106,7 @@ router.post('/renters-deposit-saver/rights', rateLimit(DEFAULT_LIMITS), async (r
 
     // Grounded since 2026-10-07: this lookup used to answer from memory and
     // led California with the pre-2024 two-month cap.
-    const { block: depositLawBlock } = await groundDepositLawFacts({ location });
+    const { block: depositLawBlock } = await whileSearching(req, res, 'law', groundDepositLawFacts({ location }));
     const prompt = `You are an expert tenant rights advocate. Summarize security deposit rights for a renter in ${location}.
 ${depositLawBlock || '\nNo verified current-law block is available: for the deposit cap and the return deadline, say what the rule commonly is AND that it changes, and tell the renter to confirm the current figure locally. Never state a remembered cap as the current limit.'}
 

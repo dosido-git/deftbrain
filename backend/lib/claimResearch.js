@@ -9,7 +9,7 @@ const { groundedFacts, groundedData, groundedStatus, normalizeKeyPart } = requir
 
 const RESEARCH_TTL_MS = Number(process.env.SIGNAL_RESEARCH_TTL_MS || 24 * 60 * 60 * 1000);
 const COLD_WAIT_MS = Number(process.env.SIGNAL_RESEARCH_COLD_WAIT_MS || 60_000);
-const SEARCH_TIMEOUT_MS = Number(process.env.SIGNAL_RESEARCH_TIMEOUT_MS || 100_000);
+const SEARCH_TIMEOUT_MS = Number(process.env.SIGNAL_RESEARCH_TIMEOUT_MS || 150_000);
 const MAX_USES = Number(process.env.SIGNAL_RESEARCH_MAX_USES || 6);
 
 function compact(s, n = 240) {
@@ -88,7 +88,14 @@ function tierOf(src) {
   return TIER_BY_TYPE[src.source_type] || 4;
 }
 
-function researchKey({ topic, conflictingAdvice }) {
+// The page's five examples are translated, so one example arrives as 13
+// different strings. `exampleId` (1-5, sent only when the form still holds an
+// example unchanged) files them all under one key — the pinned seed entry
+// scripts/warm-svn-examples.js ships, so an example never waits on a search.
+const EXAMPLE_COUNT = 5;
+function researchKey({ topic, conflictingAdvice, exampleId }) {
+  const n = Number(exampleId);
+  if (Number.isInteger(n) && n >= 1 && n <= EXAMPLE_COUNT) return `signal-research:example:${n}`;
   return `signal-research:${normalizeKeyPart(compact(topic, 100))}:${normalizeKeyPart(compact(conflictingAdvice, 180))}`;
 }
 
@@ -176,8 +183,8 @@ function renderResearchBlock(packet) {
 // while the fetch it just started runs on in the background.
 // `force` = "check again with current sources": drop the cached packet for
 // this topic and research afresh (paying the cold path on purpose).
-async function claimResearch({ topic, conflictingAdvice, userContext, region, coldWaitMs = COLD_WAIT_MS, force = false }) {
-  const key = researchKey({ topic, conflictingAdvice });
+async function claimResearch({ topic, conflictingAdvice, userContext, region, exampleId, coldWaitMs = COLD_WAIT_MS, force = false }) {
+  const key = researchKey({ topic, conflictingAdvice, exampleId });
   const block = await groundedFacts({
     cacheKey: key,
     label: 'signal-vs-noise-research',
@@ -232,15 +239,20 @@ Return ONLY:
     },
   });
 
-  const packet = block ? cleanPacket(groundedData(key)) : null;
+  const stored = block ? groundedData(key) : null;
+  const packet = stored ? cleanPacket(stored) : null;
+  // cleanPacket stamps "now" (right for a fresh search, whose own date is
+  // unreliable); a cached packet keeps the stamp from when it was searched,
+  // or "Researched today" would show on a search from yesterday — or October.
+  if (packet && stored.researched_at) packet.researched_at = stored.researched_at;
   return { block: packet ? renderResearchBlock(packet) : '', packet, cacheKey: key };
 }
 
 // 'ready' | 'in_flight' | 'failed' | 'none' for the visitor's topic — see
 // groundedStatus. Lets the readiness endpoint say "failed" instead of
 // "pending" while the negative cache holds after a failed fetch.
-function researchState({ topic, conflictingAdvice }) {
-  return groundedStatus(researchKey({ topic, conflictingAdvice }));
+function researchState({ topic, conflictingAdvice, exampleId }) {
+  return groundedStatus(researchKey({ topic, conflictingAdvice, exampleId }));
 }
 
 module.exports = { claimResearch, researchState, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS, tierOf, EXPLAINER_HOST_HINTS };

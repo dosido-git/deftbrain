@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, keyGroups, onlyKeys, whileSearching } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
@@ -333,7 +333,7 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
 }`,
     };
 
-    const chronology = await chronologyFacts({ title, stoppedAt, mediaType }).catch(() => '');
+    const chronology = await whileSearching(req, res, 'timeline', chronologyFacts({ title, stoppedAt, mediaType }).catch(() => ''));
     const prompt = (mediaPrompts[mediaType] || mediaPrompts.show) + chronology;
 
     const systemPrompt = `Media return guide. Give people exactly the context they need to pick up where they left off — show, book, game, or sports — without spoiling anything ahead.

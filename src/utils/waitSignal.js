@@ -27,6 +27,7 @@ function snapshot() {
     tool: latest ? latest.tool : null,
     summary: latest ? latest.summary : [],
     progressive: latest ? latest.progressive : false,
+    searching: latest ? latest.searching || null : null,
   };
 }
 
@@ -45,6 +46,15 @@ export function beginWait(meta = {}) {
     active = active.filter(a => a.id !== call.id);
     emit({ type: 'end', ...snapshot(), outcome, endedTool: call.tool });
   };
+}
+
+// The server says a slow web lookup is running (lib/progressive.js
+// whileSearching); the wait note names it until the answer starts.
+export function setWaitSearching(kind) {
+  const latest = active[active.length - 1];
+  if (!latest) return;
+  latest.searching = kind;
+  emit({ type: 'status', ...snapshot() });
 }
 
 export function subscribeWait(fn) {

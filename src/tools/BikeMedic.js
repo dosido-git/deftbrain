@@ -902,7 +902,7 @@ const EXAMPLES = [
   { problem: 'custom', symptomKey: 'bmd_example_custom' },
 ];
 const BikeMedic = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t, i18n } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -1422,10 +1422,12 @@ const BikeMedic = ({ tool }) => {
         context: bikeProfile ? { bike_profile: bikeProfile } : undefined,
       };
       if (photoData) payload.photo = photoData;
-      const data = await callToolEndpoint('bike-medic', payload);
+      // Progressive only so a slow bike-specs lookup can say so in the wait note;
+      // the answer still arrives whole.
+      const data = await callToolEndpointProgressive('bike-medic', payload);
       setAiDiagnosis(data);
     } catch (err) { setAiError(err.message || t('bmd_err_ask_failed')); }
-  }, [customProblem, photoData, bikeProfile, callToolEndpoint, t]);
+  }, [customProblem, photoData, bikeProfile, callToolEndpoint, callToolEndpointProgressive, t]);
 
   const askFollowUp = async () => {
     if (!followUpText.trim()) return;
