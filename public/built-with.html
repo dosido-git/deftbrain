@@ -213,36 +213,26 @@
     <div class="container prose">
 <h1>How DeftBrain is built</h1>
 
-<p><strong>Hello, Product Hunt.</strong> Most of DeftBrain is written for someone in the middle of something &mdash; a confusing bill, a hard conversation, a lease they&#39;re about to sign. This page is for the people who want to see what&#39;s under the hood.</p>
-
 <h2>TL;DR</h2>
-<p>A React single-page app with an Express/Node backend, hosted on Railway. Each of the 120+ tools sends its request to Anthropic&#39;s Claude models, and the answer streams back in parts as each one is ready. Everything is checked after it&#39;s on screen, the site runs in 13 languages, and every page is prebuilt as static HTML.</p>
+<p>A React single-page app with an Express/Node backend, hosted on Railway. Each of 120+ tools sends input to Claude and the response streams back in parts as they are ready. Everything is checked after it&#39;s on screen. The site runs in 13 languages, and every page is prebuilt as static HTML.</p>
 
 <h2>Stack</h2>
 <p>React + Tailwind &middot; Node / Express &middot; Claude via the Anthropic SDK (mostly Sonnet; Haiku and Opus for particular steps) &middot; Server-Sent Events &middot; Railway. Share images are drawn from code with satori and resvg.</p>
 
-<h2>What&#39;s interesting under the hood</h2>
+<h2>Under the hood</h2>
 <ul>
-  <li><strong>Answers in parts.</strong> A long answer is split into several requests that run at the same time, each writing only its own section. The first part usually shows within seconds; the rest stream in as they finish.</li>
-  <li><strong>Decide first, then write.</strong> Where parts must agree &mdash; a verdict, a list of findings &mdash; one short step decides it, and every other part is handed that decision. Separately written sections can&#39;t contradict each other.</li>
-  <li><strong>Checked after it&#39;s on screen.</strong> Shared checks run once the answer is showing: numbers and facts, internal consistency, details the visitor never gave, and analogies that only restate the effect instead of explaining the cause. Any correction is shown, never made silently.</li>
-  <li><strong>Grounded where it matters.</strong> Tools that deal with rules, prices or programs look them up on the web first and list their sources.</li>
-  <li><strong>13 languages, four layers.</strong> The answer is written in the visitor&#39;s language, the reasoning fits their country, currency and dates are formatted locally, and every interface string is translated &mdash; right-to-left included.</li>
-  <li><strong>Readable without JavaScript.</strong> Every tool and guide is prebuilt as a static page &mdash; what it&#39;s for, a real example run, FAQs with FAQ markup &mdash; plus sitemaps and <code>llms.txt</code> for AI assistants.</li>
-  <li><strong>Strict gates before every push.</strong> Zero lint warnings, catalog-wide audits, translation completeness, and each tool&#39;s saved example answers replayed for free &mdash; or one live run whenever its instructions to the model change.</li>
-  <li><strong>Private by design.</strong> No accounts. What you type isn&#39;t stored on our servers; any history a tool keeps stays in your own browser. Details in the <a href="/privacy">privacy policy</a>.</li>
+  <li><strong>Output in parts.</strong> Long answers are split into several simultaneous requests, each writing its own section. First output usually shows within seconds; the rest stream to the page as they finish.</li>
+  <li><strong>Decide first, then write.</strong> Where parts must agree &mdash; a verdict or a list of findings, for example &mdash; one brief step decides it and the other requests are informed, so sections do not contradict each other. Shared checks run once all output is delivered.</li>
+  <li><strong>Grounded where it matters.</strong> Tools that deal with rules, prices, venues and the like perform web lookups and cite their sources.</li>
+  <li><strong>13 languages.</strong> Answers are available in 13 languages, with local currencies and customs.</li>
+  <li><strong>Prebuilt pages.</strong> Every tool and guide is prebuilt as a static page for search engines and AI assistants.</li>
+  <li><strong>Strict gates before every push.</strong> Zero lint warnings, catalog-wide audits and translation completeness are confirmed before anything ships.</li>
+  <li><strong>Private by design.</strong> No accounts. Nothing you type is stored on our servers; tool history remains in your browser. (See the <a href="/privacy">privacy policy</a>.)</li>
+  <li><strong>Built by &ldquo;Bruce&rdquo;</strong>, working primarily with Claude, with assistance from Gemini and ChatGPT.</li>
 </ul>
 
-<h2>Who builds it</h2>
-<p>One person, known here as <strong>"O"</strong>, The Operator, working with Claude Code as a development partner. No company, no investors, no advertisers.</p>
-
 <h2>Contact</h2>
-<p>Questions about the stack, or something you&#39;d build differently? <strong><a href="mailto:hello@deftbrain.com">hello@deftbrain.com</a></strong>. Or start with the <a href="/tools">tools</a> themselves.</p>
-
-<div class="signature" aria-label="Signed: O, The Operator">
-  <span class="signature-glyph">O</span>
-  <span class="signature-caption">The Operator &middot; Massachusetts, USA</span>
-</div>
+<p>Questions, comments or suggestions: email <a href="mailto:hello@deftbrain.com">hello@deftbrain.com</a>.</p>
 
     </div>
   </main>
