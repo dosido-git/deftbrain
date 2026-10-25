@@ -25,6 +25,7 @@
 const fs = require('fs');
 const path = require('path');
 const { buildGuideShelves } = require('./lib/guideShelves');
+const { categoriesForGuide } = require('./lib/guideCategories');
 const { categoriesFor } = require('./lib/toolCategories');
 
 const ROOT = path.join(__dirname, '..');
@@ -103,12 +104,12 @@ function main() {
       title: g.title,
       href: hrefOf(g),
       alt: others.map(hrefOf),
-      category: g.categoryLabel || g.category,
+      category: categoriesForGuide(g)[0], // its main tool category (2026-10-24)
       f: {
         title: g.title,
         description: g.deck || g.description || '',
         steps: (g.steps || []).map(s => s.name).join(' | '),
-        category: [g, ...others].map(c => c.categoryLabel || c.category).join(' | '),
+        category: categoriesForGuide(g).join(' | '),
         tool: g.cta ? [g.cta.toolName || toolNames[g.cta.toolId], g.cta.headline].filter(Boolean).join(' | ') : '',
       },
     }))

@@ -1,0 +1,1775 @@
+{
+ "_note": "Which of the 14 tool categories each guide belongs to: [main, optional second]. Keyed by guides/<folder>/<slug> — the folder stays the URL; this only decides where a guide is SHOWN. Assigned by hand from titles, 2026-10-24.",
+ "guides": {
+  "apologies/how-to-apologize-at-work-for-a-mistake-everyone-saw": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "apologies/how-to-apologize-for-ghosting-someone": [
+   "Conversations",
+   "Relationships"
+  ],
+  "apologies/how-to-apologize-to-your-partner-without-making-it-worse": [
+   "Conversations",
+   "Relationships"
+  ],
+  "apologies/how-to-apologize-when-you-really-screwed-up-at-work": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "apologies/the-difference-between-an-apology-and-an-explanation": [
+   "Conversations"
+  ],
+  "career/how-long-does-it-take-to-learn-data-analysis-for-a-career-change": [
+   "Career",
+   "Learning"
+  ],
+  "career/how-to-explain-a-layoff-gap": [
+   "Career"
+  ],
+  "career/how-to-talk-about-your-work-without-sounding-arrogant": [
+   "Career",
+   "Conversations"
+  ],
+  "career/how-to-transition-from-engineering-to-product-management": [
+   "Career"
+  ],
+  "career/how-to-write-resume-bullets-for-the-job-you-actually-did": [
+   "Career"
+  ],
+  "career/how-to-write-self-review-bullets-that-get-you-the-raise": [
+   "Career"
+  ],
+  "career/is-a-college-degree-still-worth-it": [
+   "Career",
+   "Decisions"
+  ],
+  "career/should-i-learn-ai-in-2026": [
+   "Career",
+   "Learning"
+  ],
+  "career/what-to-say-in-a-performance-review-when-you-cant-remember": [
+   "Career"
+  ],
+  "conversations/captions-for-solo-travel-photos": [
+   "Conversations",
+   "Just for Fun"
+  ],
+  "conversations/first-message-on-a-dating-app-that-actually-gets-a-reply": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/funny-captions-for-couples-photos": [
+   "Conversations",
+   "Just for Fun"
+  ],
+  "conversations/how-do-i-sound-to-people-who-dont-know-me": [
+   "Conversations",
+   "Self & Reflection"
+  ],
+  "conversations/how-to-ask-for-a-discount-without-seeming-cheap": [
+   "Conversations",
+   "Money"
+  ],
+  "conversations/how-to-ask-for-a-refund-and-actually-get-one": [
+   "Money",
+   "Conversations"
+  ],
+  "conversations/how-to-ask-for-an-upgrade": [
+   "Money",
+   "Conversations"
+  ],
+  "conversations/how-to-ask-your-boss-for-a-raise": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-be-the-friend-who-keeps-in-touch": [
+   "Relationships",
+   "Conversations"
+  ],
+  "conversations/how-to-caption-a-photo-when-you-dont-know-what-to-say": [
+   "Conversations",
+   "Just for Fun"
+  ],
+  "conversations/how-to-come-up-with-a-good-analogy-for-a-complex-idea": [
+   "Conversations",
+   "Learning"
+  ],
+  "conversations/how-to-de-escalate-a-fight-over-text": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-decode-a-cryptic-message-from-a-coworker": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "conversations/how-to-defend-a-position-without-getting-defensive": [
+   "Conversations",
+   "Decisions"
+  ],
+  "conversations/how-to-explain-ai-to-non-technical-people": [
+   "Conversations",
+   "Learning"
+  ],
+  "conversations/how-to-explain-inflation-to-a-kid": [
+   "Conversations",
+   "Learning"
+  ],
+  "conversations/how-to-explain-something-complicated-without-making-someone-feel-stupid": [
+   "Conversations",
+   "Learning"
+  ],
+  "conversations/how-to-explain-your-job-to-your-family-at-thanksgiving": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-figure-out-your-default-communication-tone": [
+   "Conversations",
+   "Self & Reflection"
+  ],
+  "conversations/how-to-get-a-fee-waived": [
+   "Money",
+   "Conversations"
+  ],
+  "conversations/how-to-get-back-on-someones-radar-without-being-weird": [
+   "Conversations",
+   "Career"
+  ],
+  "conversations/how-to-handle-rude-comments-from-family-at-holidays": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-keep-a-conversation-going-when-its-dying": [
+   "Conversations"
+  ],
+  "conversations/how-to-know-if-a-friendship-is-over-or-just-dormant": [
+   "Relationships"
+  ],
+  "conversations/how-to-know-if-you-sound-aggressive-without-meaning-to": [
+   "Conversations",
+   "Self & Reflection"
+  ],
+  "conversations/how-to-know-if-your-message-will-be-misinterpreted-before": [
+   "Conversations"
+  ],
+  "conversations/how-to-know-when-to-leave-a-party": [
+   "Conversations",
+   "Travel & Events"
+  ],
+  "conversations/how-to-maintain-friendships-as-an-adult": [
+   "Relationships"
+  ],
+  "conversations/how-to-make-small-talk-without-being-annoying": [
+   "Conversations"
+  ],
+  "conversations/how-to-message-someone-on-linkedin-you-dont-know": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-prep-for-a-meeting-where-youll-get-pushback": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "conversations/how-to-prepare-for-a-tough-question-you-cant-answer": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "conversations/how-to-reach-out-to-a-friend-youve-lost-touch-with": [
+   "Relationships",
+   "Conversations"
+  ],
+  "conversations/how-to-reach-out-to-someone-you-admire": [
+   "Conversations",
+   "Career"
+  ],
+  "conversations/how-to-read-a-room-before-walking-in": [
+   "Conversations"
+  ],
+  "conversations/how-to-rebuild-a-friendship-thats-gone-quiet-without-being-awkward": [
+   "Relationships"
+  ],
+  "conversations/how-to-reconnect-with-someone-before-you-ask-them-for-a-favor": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-reply-to-a-rude-email-without-stooping-to-their-level": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "conversations/how-to-respond-to-a-backhanded-compliment": [
+   "Conversations"
+  ],
+  "conversations/how-to-respond-to-a-mean-text-from-family": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-respond-to-a-passive-aggressive-text": [
+   "Conversations"
+  ],
+  "conversations/how-to-respond-to-an-angry-text-without-making-it-worse": [
+   "Conversations"
+  ],
+  "conversations/how-to-respond-to-youre-being-too-sensitive": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-respond-when-you-want-to-respond-but-shouldnt": [
+   "Conversations"
+  ],
+  "conversations/how-to-send-a-group-text-that-wont-be-misread": [
+   "Conversations"
+  ],
+  "conversations/how-to-set-a-boundary-over-text-without-being-rude": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-share-difficult-news-on-social-media": [
+   "Conversations"
+  ],
+  "conversations/how-to-spot-a-logical-fallacy-in-an-argument": [
+   "Learning",
+   "Conversations"
+  ],
+  "conversations/how-to-stay-close-to-a-friend-after-one-of-you-moves": [
+   "Relationships"
+  ],
+  "conversations/how-to-stay-top-of-mind-with-someone-you-barely-know": [
+   "Conversations",
+   "Career"
+  ],
+  "conversations/how-to-steelman-an-argument-you-disagree-with": [
+   "Decisions",
+   "Conversations"
+  ],
+  "conversations/how-to-tell-if-a-conversation-is-going-well-or-going-badly": [
+   "Conversations"
+  ],
+  "conversations/how-to-tell-if-a-text-is-passive-aggressive-or-just-short": [
+   "Conversations"
+  ],
+  "conversations/how-to-tell-if-someone-is-actually-mad-or-just-busy": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-tell-if-youre-being-included-or-politely-tolerated": [
+   "Relationships",
+   "Self & Reflection"
+  ],
+  "conversations/how-to-thank-someone-who-really-helped-you-when-you-struggled": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/how-to-turn-we-should-hang-out-into-actually-hanging-out": [
+   "Relationships"
+  ],
+  "conversations/how-to-walk-into-a-room-where-everyone-already-knows-each-other": [
+   "Conversations"
+  ],
+  "conversations/how-to-warm-up-a-cold-contact-over-weeks-not-minutes": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-belated-thank-you-note": [
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-cold-email-that-gets-a-response": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-linkedin-post-without-sounding-fake": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-linkedin-recommendation-that-doesnt-sound-generic": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-message-that-lands-the-same-way-for-boss-and-friend": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "conversations/how-to-write-a-recommendation-letter-for-a-coworker": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-recommendation-letter-when-you-dont-know-them-well": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-recommendation-letter": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-thank-you-email-after-an-interview": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-thank-you-note-for-a-wedding-gift": [
+   "Conversations"
+  ],
+  "conversations/how-to-write-a-thank-you-note-that-doesnt-sound-generic": [
+   "Conversations"
+  ],
+  "conversations/how-to-write-instagram-captions-that-get-engagement": [
+   "Conversations"
+  ],
+  "conversations/professional-instagram-caption-examples": [
+   "Conversations"
+  ],
+  "conversations/recommendation-letter-template-for-graduate-school": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/the-perfect-comeback-you-thought-of-three-hours-too-late": [
+   "Conversations",
+   "Just for Fun"
+  ],
+  "conversations/things-to-say-on-a-first-date-when-conversation-stalls": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/what-does-it-mean-when-someone-says-its-fine": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/what-they-actually-meant-by-we-need-to-talk": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/what-to-say-when-someone-interrupts-you-in-a-meeting": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "conversations/what-to-say-when-someone-is-being-defensive": [
+   "Conversations"
+  ],
+  "conversations/what-to-say-when-someone-is-gaslighting-you-over-text": [
+   "Conversations",
+   "Relationships"
+  ],
+  "conversations/what-to-say-when-theres-an-awkward-silence": [
+   "Conversations"
+  ],
+  "conversations/what-to-talk-about-with-someone-you-barely-know": [
+   "Conversations"
+  ],
+  "conversations/what-to-write-in-a-cold-pitch-when-you-have-no-credentials": [
+   "Career",
+   "Conversations"
+  ],
+  "conversations/why-do-people-misread-my-texts-as-rude": [
+   "Conversations",
+   "Self & Reflection"
+  ],
+  "conversations/why-does-my-writing-feel-cold-even-when-im-being-friendly": [
+   "Conversations",
+   "Self & Reflection"
+  ],
+  "conversations/why-your-closest-friendships-fade-even-when-nothing-went-wrong": [
+   "Relationships"
+  ],
+  "cooking/common-cooking-mistakes-and-how-to-fix-them": [
+   "Home & Daily Life"
+  ],
+  "cooking/how-to-cook-efficiently-when-you-have-limited-counter-space": [
+   "Home & Daily Life"
+  ],
+  "cooking/how-to-cook-for-a-dinner-party-without-losing-your-mind": [
+   "Home & Daily Life",
+   "Travel & Events"
+  ],
+  "cooking/how-to-cook-for-guests-with-different-dietary-needs": [
+   "Home & Daily Life"
+  ],
+  "cooking/how-to-halve-or-double-a-recipe": [
+   "Home & Daily Life"
+  ],
+  "cooking/how-to-plan-a-multi-course-meal": [
+   "Home & Daily Life",
+   "Travel & Events"
+  ],
+  "cooking/how-to-rescue-a-meal-thats-going-wrong": [
+   "Home & Daily Life"
+  ],
+  "cooking/how-to-time-a-meal-so-everythings-ready-at-once": [
+   "Home & Daily Life"
+  ],
+  "cooking/what-to-substitute-for-an-ingredient-youre-missing": [
+   "Home & Daily Life"
+  ],
+  "decisions/how-to-anticipate-the-strongest-argument-against-your-position": [
+   "Decisions",
+   "Conversations"
+  ],
+  "decisions/how-to-argue-better": [
+   "Conversations",
+   "Decisions"
+  ],
+  "decisions/how-to-argue-with-someone-whos-smarter-than-you": [
+   "Conversations",
+   "Decisions"
+  ],
+  "decisions/how-to-argue-without-getting-emotional": [
+   "Conversations",
+   "Decisions"
+  ],
+  "decisions/how-to-choose-between-two-good-options": [
+   "Decisions"
+  ],
+  "decisions/how-to-decide-what-to-eat-when-nothing-sounds-good": [
+   "Decisions",
+   "Home & Daily Life"
+  ],
+  "decisions/how-to-decide-when-your-gut-and-your-logic-disagree": [
+   "Decisions"
+  ],
+  "decisions/how-to-decide-whether-to-move-to-a-new-city": [
+   "Decisions"
+  ],
+  "decisions/how-to-evaluate-a-wellness-trend-before-buying-in": [
+   "Decisions",
+   "Health & Wellness"
+  ],
+  "decisions/how-to-know-if-youll-regret-saying-no-to-something": [
+   "Decisions",
+   "Self & Reflection"
+  ],
+  "decisions/how-to-know-if-youre-overthinking-a-decision": [
+   "Decisions"
+  ],
+  "decisions/how-to-know-if-youve-actually-won-an-argument": [
+   "Conversations",
+   "Decisions"
+  ],
+  "decisions/how-to-make-a-decision-when-everything-feels-equally-bad": [
+   "Decisions"
+  ],
+  "decisions/how-to-make-a-decision-when-you-dont-have-enough-information": [
+   "Decisions"
+  ],
+  "decisions/how-to-make-a-decision-when-you-have-to-commit-by-deadline": [
+   "Decisions"
+  ],
+  "decisions/how-to-make-a-hard-decision-when-you-keep-going-back-and-forth": [
+   "Decisions"
+  ],
+  "decisions/how-to-make-a-major-life-decision-without-regretting-it": [
+   "Decisions"
+  ],
+  "decisions/how-to-prepare-for-a-debate": [
+   "Conversations",
+   "Learning"
+  ],
+  "decisions/how-to-spot-a-logical-fallacy-in-real-time": [
+   "Learning",
+   "Decisions"
+  ],
+  "decisions/how-to-spot-wellness-marketing-dressed-as-science": [
+   "Decisions",
+   "Health & Wellness"
+  ],
+  "decisions/how-to-stop-decision-paralysis-when-youre-burned-out": [
+   "Decisions",
+   "Health & Wellness"
+  ],
+  "decisions/how-to-stop-second-guessing-yourself-after-you-decide": [
+   "Decisions",
+   "Self & Reflection"
+  ],
+  "decisions/how-to-tell-what-actually-works": [
+   "Learning",
+   "Decisions"
+  ],
+  "decisions/how-to-think-about-a-decision-when-both-paths-feel-right": [
+   "Decisions"
+  ],
+  "decisions/how-to-think-through-a-job-offer-when-youre-torn": [
+   "Decisions",
+   "Career"
+  ],
+  "decisions/is-this-health-claim-actually-backed-by-evidence": [
+   "Health & Wellness",
+   "Learning"
+  ],
+  "decisions/why-am-i-so-bad-at-making-small-decisions-when-im-tired": [
+   "Decisions",
+   "Self & Reflection"
+  ],
+  "decisions/why-does-every-expert-contradict-every-other-expert": [
+   "Learning"
+  ],
+  "health/how-to-describe-your-symptoms-to-a-doctor": [
+   "Health & Wellness"
+  ],
+  "health/how-to-get-a-second-opinion": [
+   "Health & Wellness"
+  ],
+  "health/how-to-get-your-concerns-taken-seriously-at-the-doctor": [
+   "Health & Wellness"
+  ],
+  "health/how-to-interpret-lab-results": [
+   "Health & Wellness"
+  ],
+  "health/how-to-prepare-for-a-doctors-appointment": [
+   "Health & Wellness"
+  ],
+  "health/how-to-push-back-when-a-doctor-isnt-listening": [
+   "Health & Wellness"
+  ],
+  "health/how-to-read-your-blood-test-results": [
+   "Health & Wellness"
+  ],
+  "health/how-to-understand-a-chronic-illness-diagnosis": [
+   "Health & Wellness"
+  ],
+  "health/how-to-understand-medical-jargon": [
+   "Health & Wellness"
+  ],
+  "health/how-to-understand-what-your-doctor-actually-said": [
+   "Health & Wellness"
+  ],
+  "health/questions-to-ask-before-a-medical-procedure": [
+   "Health & Wellness"
+  ],
+  "health/what-questions-to-ask-your-doctor": [
+   "Health & Wellness"
+  ],
+  "home/apartment-move-in-checklist": [
+   "Home & Daily Life"
+  ],
+  "home/automatic-renewal-clause-in-a-lease": [
+   "Home & Daily Life"
+  ],
+  "home/can-a-landlord-keep-your-security-deposit": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-break-a-lease-legally": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-do-a-rental-walkthrough-with-your-landlord": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-handle-pre-existing-damage-in-a-rental": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-negotiate-a-lease-before-signing": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-protect-your-security-deposit-before-you-even-move-in": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-read-a-lease-before-signing-it": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-revive-a-dying-plant": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-set-boundaries-with-a-roommate-without-making-it-weird": [
+   "Home & Daily Life",
+   "Relationships"
+  ],
+  "home/how-to-split-household-chores-fairly": [
+   "Home & Daily Life",
+   "Relationships"
+  ],
+  "home/how-to-talk-to-your-roommate-about-a-problem": [
+   "Home & Daily Life",
+   "Relationships"
+  ],
+  "home/how-to-tell-if-a-plant-is-overwatered-or-underwatered": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-tell-if-its-bugs-or-disease-on-your-plant": [
+   "Home & Daily Life"
+  ],
+  "home/how-to-write-a-move-in-condition-report": [
+   "Home & Daily Life"
+  ],
+  "home/red-flags-in-a-rental-lease": [
+   "Home & Daily Life"
+  ],
+  "home/what-to-do-when-you-and-your-roommate-arent-speaking": [
+   "Home & Daily Life",
+   "Relationships"
+  ],
+  "home/what-to-do-when-your-roommate-isnt-pulling-their-weight": [
+   "Home & Daily Life",
+   "Relationships"
+  ],
+  "home/what-to-look-for-in-an-apartment-lease": [
+   "Home & Daily Life"
+  ],
+  "home/what-to-photograph-when-moving-into-a-rental": [
+   "Home & Daily Life"
+  ],
+  "home/when-its-time-to-give-up-on-a-plant": [
+   "Home & Daily Life"
+  ],
+  "home/why-does-my-plant-have-brown-leaf-tips": [
+   "Home & Daily Life"
+  ],
+  "home/why-is-my-plant-turning-yellow": [
+   "Home & Daily Life"
+  ],
+  "learning/common-myths-most-people-still-believe": [
+   "Learning",
+   "Just for Fun"
+  ],
+  "learning/how-to-ask-a-question-when-you-dont-know-what-to-ask": [
+   "Learning"
+  ],
+  "learning/how-to-extract-the-important-parts-from-a-long-lecture": [
+   "Learning"
+  ],
+  "learning/how-to-fact-check-a-news-article-that-cites-a-study": [
+   "Learning"
+  ],
+  "learning/how-to-fact-check-something-you-read-online": [
+   "Learning"
+  ],
+  "learning/how-to-find-a-book-you-cant-remember-the-title-of": [
+   "Learning",
+   "Just for Fun"
+  ],
+  "learning/how-to-find-the-original-study-a-news-article-is-talking-about": [
+   "Learning"
+  ],
+  "learning/how-to-know-if-a-study-is-reliable": [
+   "Learning"
+  ],
+  "learning/how-to-know-whats-going-to-be-on-the-test": [
+   "Learning"
+  ],
+  "learning/how-to-learn-when-youve-fallen-behind-in-class": [
+   "Learning"
+  ],
+  "learning/how-to-politely-tell-someone-theyre-wrong-about-a-fact": [
+   "Conversations",
+   "Learning"
+  ],
+  "learning/how-to-read-a-research-paper-without-a-phd": [
+   "Learning"
+  ],
+  "learning/how-to-remember-a-word-thats-on-the-tip-of-your-tongue": [
+   "Learning"
+  ],
+  "learning/how-to-settle-an-argument-with-facts": [
+   "Learning",
+   "Conversations"
+  ],
+  "learning/how-to-spot-when-a-study-is-being-misrepresented": [
+   "Learning"
+  ],
+  "learning/how-to-study-when-you-have-hours-of-recorded-content": [
+   "Learning"
+  ],
+  "learning/how-to-take-notes-from-a-lecture-you-missed": [
+   "Learning"
+  ],
+  "learning/how-to-tell-the-difference-between-not-getting-it-and-almost-getting-it": [
+   "Learning"
+  ],
+  "learning/how-to-turn-a-transcript-into-a-study-guide": [
+   "Learning"
+  ],
+  "learning/how-to-understand-a-hard-concept-when-explanations-dont-click": [
+   "Learning"
+  ],
+  "learning/how-to-win-an-argument-with-facts-not-feelings": [
+   "Conversations",
+   "Learning"
+  ],
+  "learning/whats-that-movie-where-something-happens": [
+   "Just for Fun",
+   "Learning"
+  ],
+  "learning/whats-that-song-with-a-specific-vibe": [
+   "Just for Fun",
+   "Learning"
+  ],
+  "learning/why-does-the-word-disappear-when-youre-trying-to-remember-it": [
+   "Learning",
+   "Self & Reflection"
+  ],
+  "learning/why-is-this-topic-so-hard-to-understand": [
+   "Learning"
+  ],
+  "meetings/how-to-ask-if-a-meeting-can-be-canceled": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-bring-a-meeting-back-on-topic": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-deal-with-a-coworker-who-interrupts-everyone": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "meetings/how-to-facilitate-a-meeting-when-youre-not-the-boss": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-handle-pointless-meetings-without-ruining-your-career": [
+   "Work & Meetings",
+   "Career"
+  ],
+  "meetings/how-to-handle-someone-who-dominates-meetings": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "meetings/how-to-make-sure-quiet-people-speak-up-in-meetings": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-run-a-meeting-that-doesnt-go-off-the-rails": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-set-a-meeting-agenda-that-actually-works": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-suggest-making-a-meeting-async": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-tell-if-a-meeting-is-going-to-be-useful": [
+   "Work & Meetings"
+  ],
+  "meetings/how-to-track-action-items-so-things-actually-get-done": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "meetings/how-to-turn-a-long-meeting-transcript-into-a-clear-summary": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "meetings/how-to-write-meeting-notes-that-people-actually-read": [
+   "Work & Meetings"
+  ],
+  "meetings/should-this-be-a-meeting-or-an-email": [
+   "Work & Meetings"
+  ],
+  "meetings/the-difference-between-meeting-minutes-and-meeting-notes": [
+   "Work & Meetings"
+  ],
+  "meetings/what-to-do-when-your-manager-asks-what-did-we-decide": [
+   "Work & Meetings"
+  ],
+  "money/can-you-trust-verifiedpurchase-reviews": [
+   "Money"
+  ],
+  "money/how-much-does-coffee-actually-cost-to-make": [
+   "Money",
+   "Just for Fun"
+  ],
+  "money/how-much-to-tip-your-hairstylist": [
+   "Money",
+   "Conversations"
+  ],
+  "money/how-to-ask-a-friend-to-pay-you-back": [
+   "Money",
+   "Relationships"
+  ],
+  "money/how-to-avoid-buyers-remorse": [
+   "Money",
+   "Decisions"
+  ],
+  "money/how-to-cancel-a-subscription-that-wont-let-you-cancel": [
+   "Money"
+  ],
+  "money/how-to-cancel-cable-without-them-talking-you-out-of-it": [
+   "Money"
+  ],
+  "money/how-to-compare-two-similar-products-you-cant-decide-between": [
+   "Money",
+   "Decisions"
+  ],
+  "money/how-to-complain-to-a-state-attorney-general": [
+   "Money"
+  ],
+  "money/how-to-deal-with-a-retention-specialist": [
+   "Money",
+   "Conversations"
+  ],
+  "money/how-to-dispute-a-bill-you-dont-recognize": [
+   "Money"
+  ],
+  "money/how-to-do-a-credit-card-chargeback": [
+   "Money"
+  ],
+  "money/how-to-escalate-a-customer-service-complaint": [
+   "Money"
+  ],
+  "money/how-to-escalate-when-the-official-answer-is-no": [
+   "Money"
+  ],
+  "money/how-to-file-a-complaint-with-the-bbb": [
+   "Money"
+  ],
+  "money/how-to-get-a-hospital-bill-reduced": [
+   "Money",
+   "Health & Wellness"
+  ],
+  "money/how-to-get-a-medical-bill-reduced-when-they-say-its-final": [
+   "Money",
+   "Health & Wellness"
+  ],
+  "money/how-to-get-out-of-a-non-refundable-fee": [
+   "Money"
+  ],
+  "money/how-to-get-past-no-when-its-not-actually-final": [
+   "Money"
+  ],
+  "money/how-to-handle-a-venmo-request-thats-wrong": [
+   "Money",
+   "Relationships"
+  ],
+  "money/how-to-know-if-youre-getting-a-good-deal": [
+   "Money"
+  ],
+  "money/how-to-make-a-company-respond-when-theyre-ignoring-you": [
+   "Money"
+  ],
+  "money/how-to-negotiate-a-medical-bill": [
+   "Money",
+   "Health & Wellness"
+  ],
+  "money/how-to-negotiate-with-a-car-salesman": [
+   "Money"
+  ],
+  "money/how-to-push-back-on-bank-fees": [
+   "Money"
+  ],
+  "money/how-to-read-an-itemized-hospital-bill": [
+   "Money",
+   "Health & Wellness"
+  ],
+  "money/how-to-read-product-reviews-critically": [
+   "Money"
+  ],
+  "money/how-to-recognize-sales-manipulation-tactics": [
+   "Money"
+  ],
+  "money/how-to-research-a-big-purchase-before-buying": [
+   "Money",
+   "Decisions"
+  ],
+  "money/how-to-say-no-to-a-timeshare-presentation": [
+   "Money"
+  ],
+  "money/how-to-share-a-streaming-subscription-without-getting-kicked-off": [
+   "Money"
+  ],
+  "money/how-to-split-a-bill-fairly-when-you-ate-less": [
+   "Money",
+   "Relationships"
+  ],
+  "money/how-to-spot-a-bad-deal-that-looks-good": [
+   "Money"
+  ],
+  "money/how-to-spot-billing-errors-on-a-statement": [
+   "Money"
+  ],
+  "money/how-to-spot-fake-amazon-reviews": [
+   "Money"
+  ],
+  "money/how-to-talk-to-a-supervisor-and-actually-get-results": [
+   "Money",
+   "Conversations"
+  ],
+  "money/how-to-tell-if-a-bill-is-a-mistake-or-just-confusing": [
+   "Money"
+  ],
+  "money/how-to-tell-if-something-is-overpriced": [
+   "Money"
+  ],
+  "money/how-to-walk-away-from-a-high-pressure-sale": [
+   "Money"
+  ],
+  "money/how-to-write-a-formal-complaint-letter-to-a-company": [
+   "Money"
+  ],
+  "money/red-flags-in-product-reviews-that-mean-its-fake": [
+   "Money"
+  ],
+  "money/splitting-rent-with-different-room-sizes": [
+   "Money",
+   "Home & Daily Life"
+  ],
+  "money/what-to-do-when-customer-service-says-theres-nothing-they-can-do": [
+   "Money"
+  ],
+  "money/what-to-do-with-a-bill-you-cant-afford": [
+   "Money"
+  ],
+  "money/what-to-say-when-you-cant-afford-something-your-friends-are-doing": [
+   "Money",
+   "Relationships"
+  ],
+  "money/what-to-use-now-that-fakespot-is-gone": [
+   "Money"
+  ],
+  "money/why-are-wedding-venues-so-expensive": [
+   "Money",
+   "Travel & Events"
+  ],
+  "money/why-do-products-with-great-reviews-suck": [
+   "Money"
+  ],
+  "money/why-does-bottled-water-cost-so-much": [
+   "Money",
+   "Just for Fun"
+  ],
+  "money/why-does-everything-cost-so-much-more-than-it-used-to": [
+   "Money",
+   "Learning"
+  ],
+  "money/why-is-airport-food-so-expensive": [
+   "Money",
+   "Travel & Events"
+  ],
+  "pets/do-dogs-just-vomit-sometimes": [
+   "Home & Daily Life",
+   "Health & Wellness"
+  ],
+  "pets/how-do-i-know-if-my-dog-is-sick": [
+   "Home & Daily Life",
+   "Health & Wellness"
+  ],
+  "pets/is-my-dog-sick-or-just-tired": [
+   "Home & Daily Life",
+   "Health & Wellness"
+  ],
+  "pets/weird-cat-behaviors-explained": [
+   "Home & Daily Life",
+   "Health & Wellness"
+  ],
+  "pets/weird-dog-behaviors-explained": [
+   "Home & Daily Life",
+   "Health & Wellness"
+  ],
+  "pets/why-is-my-cat-throwing-up-undigested-food": [
+   "Home & Daily Life",
+   "Health & Wellness"
+  ],
+  "planning/how-to-find-the-holes-in-your-own-thinking-before-someone-else-does": [
+   "Decisions",
+   "Self & Reflection"
+  ],
+  "planning/how-to-know-if-your-business-idea-is-actually-going-to-work": [
+   "Decisions",
+   "Ideas & Imagination"
+  ],
+  "planning/how-to-plan-a-project-so-it-doesnt-fail-in-the-obvious-ways": [
+   "Decisions",
+   "Work & Meetings"
+  ],
+  "planning/how-to-pressure-test-a-plan-before-you-bet-money-on-it": [
+   "Decisions"
+  ],
+  "planning/the-questions-to-ask-before-starting-anything-that-costs-you-time": [
+   "Decisions",
+   "Tasks"
+  ],
+  "practical/cheap-date-ideas": [
+   "Relationships",
+   "Just for Fun"
+  ],
+  "practical/creative-date-ideas-for-couples-in-a-rut": [
+   "Relationships",
+   "Just for Fun"
+  ],
+  "practical/date-ideas-for-introverts": [
+   "Relationships",
+   "Just for Fun"
+  ],
+  "practical/date-night-ideas-at-home": [
+   "Relationships",
+   "Just for Fun"
+  ],
+  "practical/first-date-ideas-that-arent-dinner-and-a-movie": [
+   "Relationships",
+   "Just for Fun"
+  ],
+  "practical/free-things-to-do-near-me": [
+   "Just for Fun",
+   "Travel & Events"
+  ],
+  "practical/gift-ideas-for-someone-who-has-everything": [
+   "Relationships"
+  ],
+  "practical/hobbies-for-adults-who-dont-know-what-they-like": [
+   "Just for Fun"
+  ],
+  "practical/hobbies-for-introverts-that-dont-feel-forced": [
+   "Just for Fun"
+  ],
+  "practical/hobbies-that-dont-cost-a-lot-of-money": [
+   "Just for Fun",
+   "Money"
+  ],
+  "practical/hot-vs-cold-water-for-laundry-when-does-it-actually-matter": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-ask-someone-how-to-pronounce-their-name": [
+   "Conversations"
+  ],
+  "practical/how-to-build-outfits-from-what-you-already-own": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-catch-up-on-a-video-game-after-a-long-break-without-spoilers": [
+   "Just for Fun"
+  ],
+  "practical/how-to-do-laundry-properly-when-youve-been-winging-it": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-dress-for-unpredictable-weather": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-find-a-hobby-youll-actually-stick-with": [
+   "Just for Fun"
+  ],
+  "practical/how-to-find-the-right-gift-for-someone-you-barely-know": [
+   "Relationships"
+  ],
+  "practical/how-to-fix-a-flat-tire-on-the-trail": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-get-a-recap-of-a-show-without-spoilers": [
+   "Just for Fun"
+  ],
+  "practical/how-to-get-back-into-a-show-you-abandoned": [
+   "Just for Fun"
+  ],
+  "practical/how-to-get-dressed-when-you-cant-decide": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-get-red-wine-out-of-clothes": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-host-a-party-people-actually-remember": [
+   "Travel & Events",
+   "Relationships"
+  ],
+  "practical/how-to-host-a-party-when-you-dont-know-everyones-name": [
+   "Travel & Events",
+   "Relationships"
+  ],
+  "practical/how-to-know-if-a-show-is-worth-picking-back-up": [
+   "Just for Fun"
+  ],
+  "practical/how-to-make-a-regular-weekend-feel-like-a-small-vacation": [
+   "Just for Fun",
+   "Travel & Events"
+  ],
+  "practical/how-to-plan-a-birthday-party-for-an-adult": [
+   "Travel & Events",
+   "Relationships"
+  ],
+  "practical/how-to-pronounce-designer-brand-names": [
+   "Learning"
+  ],
+  "practical/how-to-pronounce-difficult-french-food-names": [
+   "Learning"
+  ],
+  "practical/how-to-pronounce-names-from-languages-you-dont-speak": [
+   "Conversations",
+   "Learning"
+  ],
+  "practical/how-to-pronounce-wine-names-without-sounding-pretentious": [
+   "Learning"
+  ],
+  "practical/how-to-remember-a-book-you-read-years-ago-without-rereading-it": [
+   "Just for Fun",
+   "Learning"
+  ],
+  "practical/how-to-tell-if-your-bike-needs-a-tune-up": [
+   "Home & Daily Life"
+  ],
+  "practical/how-to-wash-clothes-without-shrinking-them": [
+   "Home & Daily Life"
+  ],
+  "practical/icebreakers-that-dont-feel-forced": [
+   "Conversations",
+   "Travel & Events"
+  ],
+  "practical/lastminute-gift-ideas-that-dont-look-lastminute": [
+   "Relationships"
+  ],
+  "practical/new-hobbies-to-try": [
+   "Just for Fun"
+  ],
+  "practical/things-to-do-alone-that-arent-sad": [
+   "Just for Fun",
+   "Self & Reflection"
+  ],
+  "practical/things-to-do-this-weekend": [
+   "Just for Fun",
+   "Travel & Events"
+  ],
+  "practical/things-to-do-when-youve-already-done-all-the-touristy-stuff": [
+   "Travel & Events",
+   "Just for Fun"
+  ],
+  "practical/thoughtful-gifts-under-50-dollars-that-dont-feel-cheap": [
+   "Relationships",
+   "Money"
+  ],
+  "practical/what-those-laundry-symbols-actually-mean": [
+   "Home & Daily Life"
+  ],
+  "practical/what-to-check-before-a-long-ride": [
+   "Home & Daily Life"
+  ],
+  "practical/what-to-do-when-your-party-is-dying": [
+   "Travel & Events",
+   "Relationships"
+  ],
+  "practical/what-to-get-the-person-who-is-impossible-to-shop-for": [
+   "Relationships"
+  ],
+  "practical/why-do-my-bike-brakes-squeak": [
+   "Home & Daily Life"
+  ],
+  "practical/why-does-my-bike-make-a-clicking-noise-when-i-pedal": [
+   "Home & Daily Life"
+  ],
+  "practical/why-is-my-bike-chain-skipping": [
+   "Home & Daily Life"
+  ],
+  "presentations/how-to-answer-a-question-when-you-dont-know-the-answer": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "presentations/how-to-anticipate-questions-before-a-presentation": [
+   "Work & Meetings"
+  ],
+  "presentations/how-to-anticipate-the-hardest-questions-about-your-pitch": [
+   "Work & Meetings",
+   "Career"
+  ],
+  "presentations/how-to-cut-down-a-presentation-thats-too-long": [
+   "Work & Meetings"
+  ],
+  "presentations/how-to-handle-hostile-questions-in-a-presentation": [
+   "Work & Meetings"
+  ],
+  "presentations/how-to-prepare-for-a-presentation-in-a-week": [
+   "Work & Meetings"
+  ],
+  "presentations/how-to-prepare-for-qa-after-a-thesis-defense-dissertation": [
+   "Learning",
+   "Work & Meetings"
+  ],
+  "presentations/how-to-prepare-for-tough-interview-questions": [
+   "Career",
+   "Conversations"
+  ],
+  "presentations/how-to-recover-when-your-presentation-goes-off-the-rails": [
+   "Work & Meetings"
+  ],
+  "presentations/how-to-start-a-presentation-strong": [
+   "Work & Meetings"
+  ],
+  "speeches/how-to-give-a-toast-when-you-barely-know-the-person": [
+   "Conversations",
+   "Relationships"
+  ],
+  "speeches/how-to-write-a-maid-of-honor-speech-that-doesnt-bomb": [
+   "Conversations",
+   "Relationships"
+  ],
+  "speeches/how-to-write-a-retirement-speech-for-someone-you-actually-like": [
+   "Conversations",
+   "Work & Meetings"
+  ],
+  "speeches/the-best-man-speech-that-lands-without-trying-too-hard": [
+   "Conversations",
+   "Relationships"
+  ],
+  "speeches/wedding-toast-quotes-for-parents": [
+   "Conversations",
+   "Relationships"
+  ],
+  "speeches/what-to-say-at-a-memorial-service-when-youre-not-a-writer": [
+   "Conversations",
+   "Relationships"
+  ],
+  "travel/can-you-leave-the-airport-during-a-layover": [
+   "Travel & Events"
+  ],
+  "travel/how-to-handle-a-missed-connection-when-its-not-your-fault": [
+   "Travel & Events"
+  ],
+  "travel/how-to-know-if-youll-make-your-connection": [
+   "Travel & Events"
+  ],
+  "travel/how-to-sleep-in-an-airport-during-a-long-layover": [
+   "Travel & Events"
+  ],
+  "travel/is-a-60-minute-layover-enough": [
+   "Travel & Events"
+  ],
+  "travel/is-a-90-minute-layover-long-enough": [
+   "Travel & Events"
+  ],
+  "wellness/alternatives-to-coworking-spaces-if-you-work-from-home": [
+   "Work & Meetings"
+  ],
+  "wellness/best-ambient-sounds-for-studying": [
+   "Health & Wellness",
+   "Learning"
+  ],
+  "wellness/best-music-for-deep-focus": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/do-binaural-beats-actually-work-for-focus": [
+   "Health & Wellness"
+  ],
+  "wellness/early-warning-signs-of-burnout-most-people-miss": [
+   "Health & Wellness"
+  ],
+  "wellness/emotions-i-dont-have-a-word-for": [
+   "Self & Reflection"
+  ],
+  "wellness/how-to-batch-similar-tasks-to-save-time": [
+   "Tasks"
+  ],
+  "wellness/how-to-brain-dump-everything-in-your-head": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-break-down-an-overwhelming-project": [
+   "Tasks"
+  ],
+  "wellness/how-to-calm-your-nerves-before-an-interview": [
+   "Health & Wellness",
+   "Career"
+  ],
+  "wellness/how-to-clear-your-head-when-everything-feels-jumbled": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/how-to-describe-your-feelings-when-you-dont-have-the-words": [
+   "Self & Reflection",
+   "Conversations"
+  ],
+  "wellness/how-to-do-anything-when-you-cant-get-started": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-exercise-when-you-have-zero-motivation": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-figure-out-what-to-do-first-when-overwhelmed": [
+   "Tasks"
+  ],
+  "wellness/how-to-figure-out-where-your-time-actually-goes": [
+   "Tasks",
+   "Self & Reflection"
+  ],
+  "wellness/how-to-figure-out-which-friends-are-actually-draining-you": [
+   "Relationships",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-focus-when-working-alone": [
+   "Tasks"
+  ],
+  "wellness/how-to-function-on-the-day-of-an-interview-or-exam": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/how-to-get-anything-done-on-the-day-of-a-big-meeting": [
+   "Tasks",
+   "Work & Meetings"
+  ],
+  "wellness/how-to-get-things-done-when-you-have-no-energy": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/how-to-group-your-work-so-you-actually-finish-things": [
+   "Tasks"
+  ],
+  "wellness/how-to-interpret-your-own-dreams": [
+   "Self & Reflection",
+   "Just for Fun"
+  ],
+  "wellness/how-to-know-if-youre-an-introvert-or-just-low-on-energy": [
+   "Self & Reflection",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-know-if-youre-burned-out-or-just-tired": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-look-confident-when-youre-terrified": [
+   "Health & Wellness",
+   "Conversations"
+  ],
+  "wellness/how-to-make-a-project-feel-manageable": [
+   "Tasks"
+  ],
+  "wellness/how-to-make-solo-deep-work-less-lonely": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-move-forward-on-a-project-thats-been-stuck-for-months": [
+   "Tasks"
+  ],
+  "wellness/how-to-move-your-body-when-youre-sick-sore-or-hungover": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-organize-a-brain-dump-into-actual-tasks": [
+   "Tasks"
+  ],
+  "wellness/how-to-plan-around-lowenergy-days": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/how-to-plan-rest-before-you-need-it-not-after": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-plan-your-week-so-you-dont-crash-by-thursday": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/how-to-power-through-tasks-youve-been-avoiding": [
+   "Tasks"
+  ],
+  "wellness/how-to-prepare-mentally-for-a-hard-conversation": [
+   "Conversations",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-prioritize-when-everything-feels-urgent": [
+   "Tasks",
+   "Decisions"
+  ],
+  "wellness/how-to-push-through-vs-when-to-stop": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-recover-from-burnout-when-you-cant-take-time-off": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-remember-everything-you-need-to-do-without-losing-your-mind": [
+   "Tasks"
+  ],
+  "wellness/how-to-remember-your-dreams-better": [
+   "Self & Reflection"
+  ],
+  "wellness/how-to-schedule-a-week-so-youre-not-constantly-switching-gears": [
+   "Tasks"
+  ],
+  "wellness/how-to-schedule-downtime-when-you-dont-think-you-need-any": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-schedule-tasks-based-on-your-energy-levels": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-start-when-everything-feels-too-big": [
+   "Tasks"
+  ],
+  "wellness/how-to-stay-accountable-when-no-one-is-watching": [
+   "Tasks"
+  ],
+  "wellness/how-to-stay-active-on-a-really-busy-week": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-stop-context-switching-all-day": [
+   "Tasks"
+  ],
+  "wellness/how-to-stop-wasting-the-morning-before-an-afternoon-appointment": [
+   "Tasks"
+  ],
+  "wellness/how-to-stop-your-hands-from-shaking-before-a-presentation": [
+   "Health & Wellness",
+   "Work & Meetings"
+  ],
+  "wellness/how-to-tell-when-youre-about-to-burn-out-before-you-do": [
+   "Health & Wellness"
+  ],
+  "wellness/how-to-track-time-without-obsessing-over-it": [
+   "Tasks",
+   "Self & Reflection"
+  ],
+  "wellness/how-to-triage-your-todo-list-when-you-cant-think-straight": [
+   "Tasks"
+  ],
+  "wellness/how-to-use-music-to-switch-between-tasks": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/how-to-use-the-day-before-a-deadline-without-panicking-or-procrastinating": [
+   "Tasks"
+  ],
+  "wellness/how-to-work-alone-without-getting-distracted": [
+   "Tasks"
+  ],
+  "wellness/is-silence-actually-better-than-ambient-noise-for-focus": [
+   "Health & Wellness"
+  ],
+  "wellness/is-this-actually-urgent-or-am-i-panicking": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/music-that-actually-helps-you-work-vs-distracts-you": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/the-smallest-possible-first-step-for-writing-a-book": [
+   "Tasks",
+   "Ideas & Imagination"
+  ],
+  "wellness/the-smallest-workout-that-still-counts": [
+   "Health & Wellness"
+  ],
+  "wellness/what-does-it-mean-when-you-dream-about-someone-whos-died": [
+   "Self & Reflection",
+   "Health & Wellness"
+  ],
+  "wellness/what-is-body-doubling-and-does-it-actually-work": [
+   "Tasks"
+  ],
+  "wellness/what-music-to-listen-to-while-studying": [
+   "Learning",
+   "Health & Wellness"
+  ],
+  "wellness/what-to-do-when-you-have-too-much-to-do-and-you-freeze": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/what-to-do-when-your-mind-wont-stop-racing": [
+   "Health & Wellness"
+  ],
+  "wellness/what-to-do-when-your-todo-list-is-too-long-to-even-look-at": [
+   "Tasks"
+  ],
+  "wellness/what-to-do-when-youre-panicking-right-before-an-event": [
+   "Health & Wellness"
+  ],
+  "wellness/what-to-listen-to-when-you-cant-concentrate-in-a-noisy": [
+   "Health & Wellness"
+  ],
+  "wellness/what-to-listen-to-when-youre-tired-but-need-to-keep-working": [
+   "Health & Wellness",
+   "Tasks"
+  ],
+  "wellness/whats-the-best-background-noise-for-working": [
+   "Health & Wellness"
+  ],
+  "wellness/whats-the-difference-between-jealousy-and-envy": [
+   "Self & Reflection"
+  ],
+  "wellness/whats-the-feeling-you-get-when-you-finish-a-tv-series-you-loved": [
+   "Self & Reflection",
+   "Just for Fun"
+  ],
+  "wellness/whats-the-word-for-the-feeling-when-you-secretly-enjoy-someone-elses-failure": [
+   "Self & Reflection",
+   "Just for Fun"
+  ],
+  "wellness/white-noise-vs-brown-noise-vs-pink-noise": [
+   "Health & Wellness"
+  ],
+  "wellness/why-am-i-always-behind-even-when-im-working-all-day": [
+   "Tasks"
+  ],
+  "wellness/why-am-i-tired-all-the-time-even-when-i-sleep-enough": [
+   "Health & Wellness"
+  ],
+  "wellness/why-do-i-dream-about-people-i-havent-seen-in-years": [
+   "Self & Reflection"
+  ],
+  "wellness/why-do-i-feel-confusing-emotional-state": [
+   "Self & Reflection"
+  ],
+  "wellness/why-do-i-feel-confusing-emotional-states": [
+   "Self & Reflection"
+  ],
+  "wellness/why-do-i-keep-having-the-same-dream": [
+   "Self & Reflection"
+  ],
+  "wellness/why-does-it-feel-like-i-did-nothing-today": [
+   "Tasks",
+   "Self & Reflection"
+  ],
+  "wellness/why-does-multitasking-make-me-so-tired": [
+   "Tasks",
+   "Health & Wellness"
+  ],
+  "wellness/why-does-my-day-disappear-so-fast": [
+   "Tasks",
+   "Self & Reflection"
+  ],
+  "wellness/why-is-it-so-hard-to-name-what-im-feeling": [
+   "Self & Reflection"
+  ],
+  "wellness/why-scheduled-rest-never-feels-like-enough": [
+   "Health & Wellness"
+  ],
+  "wellness/why-you-cant-focus-before-something-stressful": [
+   "Health & Wellness"
+  ],
+  "wellness/why-you-feel-drained-after-every-social-event-even-when-you-enjoyed-it": [
+   "Health & Wellness",
+   "Self & Reflection"
+  ],
+  "wellness/why-you-keep-saying-yes-to-things-that-exhaust-you": [
+   "Self & Reflection",
+   "Health & Wellness"
+  ],
+  "wellness/why-your-energy-crashes-always-come-at-the-worst-time": [
+   "Health & Wellness"
+  ],
+  "wellness/workouts-you-can-do-when-youre-exhausted": [
+   "Health & Wellness"
+  ],
+  "workplace/common-naming-mistakes-that-kill-startups": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-brainstorm-names-that-arent-terrible": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-break-down-a-complicated-document-section-by-section": [
+   "Learning",
+   "Work & Meetings"
+  ],
+  "workplace/how-to-choose-between-two-job-offers": [
+   "Career",
+   "Decisions"
+  ],
+  "workplace/how-to-come-up-with-a-business-name": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-decide-between-multiple-side-projects": [
+   "Decisions"
+  ],
+  "workplace/how-to-figure-out-what-career-to-switch-to": [
+   "Career"
+  ],
+  "workplace/how-to-find-the-action-items-buried-in-a-long-document": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/how-to-handle-a-flood-of-emails-after-vacation": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/how-to-hold-someone-accountable-in-writing": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-identify-hidden-costs-in-a-service-agreement": [
+   "Money",
+   "Home & Daily Life"
+  ],
+  "workplace/how-to-identify-your-transferable-skills": [
+   "Career"
+  ],
+  "workplace/how-to-know-if-an-email-is-actually-urgent": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/how-to-know-if-an-opportunity-is-worth-the-time": [
+   "Decisions",
+   "Career"
+  ],
+  "workplace/how-to-know-if-your-business-name-is-forgettable": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-know-if-your-job-is-at-risk": [
+   "Career"
+  ],
+  "workplace/how-to-know-if-youre-ready-for-the-next-level": [
+   "Career"
+  ],
+  "workplace/how-to-know-what-emails-actually-need-a-response": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/how-to-make-the-case-for-your-promotion-in-writing": [
+   "Career"
+  ],
+  "workplace/how-to-manage-email-overload": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/how-to-name-a-startup-when-all-the-good-names-are-taken": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-politely-decline-a-meeting": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-push-back-on-an-unreasonable-email": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-push-back-on-your-boss-professionally": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-read-a-financial-report-like-an-expert": [
+   "Learning",
+   "Money"
+  ],
+  "workplace/how-to-read-a-job-offer-letter-employment-contract-before-signing": [
+   "Career"
+  ],
+  "workplace/how-to-read-a-long-policy-update-without-losing-your-mind": [
+   "Learning",
+   "Work & Meetings"
+  ],
+  "workplace/how-to-read-a-school-newsletter-hoa-notice-efficiently": [
+   "Home & Daily Life",
+   "Learning"
+  ],
+  "workplace/how-to-read-a-software-license-agreement-before-clicking-accept": [
+   "Home & Daily Life"
+  ],
+  "workplace/how-to-read-an-insurance-policy-you-actually-need": [
+   "Money",
+   "Home & Daily Life"
+  ],
+  "workplace/how-to-read-between-the-lines-of-a-performance-review": [
+   "Career",
+   "Work & Meetings"
+  ],
+  "workplace/how-to-respond-to-a-passive-aggressive-email": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-say-no-to-your-boss": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-see-the-real-structure-of-a-complex-document": [
+   "Learning"
+  ],
+  "workplace/how-to-skim-a-long-document-without-missing-the-important-parts": [
+   "Learning",
+   "Work & Meetings"
+  ],
+  "workplace/how-to-skim-a-long-email-and-not-miss-anything-important": [
+   "Work & Meetings"
+  ],
+  "workplace/how-to-spend-your-free-time-when-you-want-a-career-change": [
+   "Career"
+  ],
+  "workplace/how-to-spot-manipulative-clauses-in-any-contract": [
+   "Home & Daily Life",
+   "Money"
+  ],
+  "workplace/how-to-spot-the-highest-leverage-thing-you-could-be-doing": [
+   "Tasks",
+   "Career"
+  ],
+  "workplace/how-to-spot-whats-actually-changed-in-a-terms-of-service-update": [
+   "Home & Daily Life"
+  ],
+  "workplace/how-to-stop-email-anxiety": [
+   "Work & Meetings",
+   "Health & Wellness"
+  ],
+  "workplace/how-to-switch-careers-to-tech": [
+   "Career",
+   "Learning"
+  ],
+  "workplace/how-to-tell-if-a-name-is-too-similar-to-an-existing-brand": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-tell-what-a-document-is-actually-saying-vs-what-it": [
+   "Learning"
+  ],
+  "workplace/how-to-tell-your-boss-a-deadline-is-unrealistic": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-tell-your-boss-theyre-wrong": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/how-to-tell-your-manager-their-feedback-is-unfair": [
+   "Work & Meetings",
+   "Career"
+  ],
+  "workplace/how-to-test-a-business-name-before-committing": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-test-if-a-name-passes-the-drunk-test": [
+   "Ideas & Imagination"
+  ],
+  "workplace/how-to-translate-a-confusing-document-into-plain-language": [
+   "Learning"
+  ],
+  "workplace/how-to-triage-your-inbox-in-5-minutes": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/how-to-understand-a-document-written-in-academic-jargon": [
+   "Learning"
+  ],
+  "workplace/how-to-understand-a-document-written-in-jargon": [
+   "Learning"
+  ],
+  "workplace/how-to-write-a-professional-email-when-youre-furious": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/is-accounting-going-to-be-replaced-by-ai": [
+   "Career"
+  ],
+  "workplace/is-it-too-late-to-learn-coding": [
+   "Career",
+   "Learning"
+  ],
+  "workplace/the-email-you-write-at-11pm-vs-the-email-you-should-send": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/what-does-an-arbitration-clause-actually-mean-for-you": [
+   "Home & Daily Life",
+   "Money"
+  ],
+  "workplace/what-does-k-period-mean-in-a-text": [
+   "Conversations"
+  ],
+  "workplace/what-does-kindly-mean-in-an-email": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/what-does-lets-table-this-mean": [
+   "Work & Meetings"
+  ],
+  "workplace/what-does-lets-take-this-offline-mean": [
+   "Work & Meetings"
+  ],
+  "workplace/what-does-noted-mean-in-work-email": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/what-does-per-my-last-email-mean": [
+   "Work & Meetings",
+   "Conversations"
+  ],
+  "workplace/what-jobs-will-be-in-demand-in-5-years": [
+   "Career"
+  ],
+  "workplace/what-makes-a-name-memorable": [
+   "Ideas & Imagination"
+  ],
+  "workplace/what-skills-are-actually-futureproof": [
+   "Career",
+   "Learning"
+  ],
+  "workplace/what-skills-do-i-need-to-become-a-product-manager": [
+   "Career"
+  ],
+  "workplace/what-to-actually-pay-attention-to-in-a-benefits-packet": [
+   "Career",
+   "Money"
+  ],
+  "workplace/what-to-do-when-you-have-1000-unread-emails": [
+   "Work & Meetings",
+   "Tasks"
+  ],
+  "workplace/what-to-look-for-in-an-nda-before-signing": [
+   "Career"
+  ]
+ }
+}

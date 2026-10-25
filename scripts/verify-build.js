@@ -51,8 +51,10 @@ if (categories.length === 0) {
 }
 
 // --- 3. Per-category index pages --------------------------------------------
-for (const cat of categories) {
-  check(`guides/${cat}/index.html`, `${cat} index`);
+// One hub per tool category since 2026-10-24 (lib/guideCategories.js); the
+// guide folders above still hold the pages, but no longer have hubs.
+for (const hub of require('./lib/guideCategories').guideHubs()) {
+  check(`guides/${hub.slug}/index.html`, `${hub.name} hub`);
 }
 
 // --- 4. Per-spec guide pages ------------------------------------------------

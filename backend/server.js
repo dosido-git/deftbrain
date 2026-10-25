@@ -739,11 +739,14 @@ app.get('/guides/by-tool', (req, res) => {
 // Each /guides/{category} resolves to build/guides/{category}/index.html.
 // Listed explicitly (rather than wildcard) so unknown categories fall through
 // to a proper 404 instead of returning a misleading "OK" with empty content.
-const GUIDE_CATEGORIES = [
-  'apologies','career','conversations','cooking','decisions','health',
-  'home','learning','meetings','money','pets','planning','practical',
-  'presentations','speeches','travel','wellness','workplace'
-];
+// Since 2026-10-24 these are the 14 tool categories (scripts/lib/guideCategories.js).
+// Guides keep their folder URLs; only the hub pages moved. Old folder hubs
+// whose slug is not a tool category's 301 to the hub that took their guides.
+const { guideHubs, OLD_HUB_REDIRECTS } = require('../scripts/lib/guideCategories');
+Object.entries(OLD_HUB_REDIRECTS).forEach(([from, to]) => {
+  app.get(`/guides/${from}`, (req, res) => res.redirect(301, `/guides/${to}`));
+});
+const GUIDE_CATEGORIES = guideHubs().map(h => h.slug);
 GUIDE_CATEGORIES.forEach(cat => {
   app.get(`/guides/${cat}`, (req, res) => {
     sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', cat, 'index.html'));

@@ -25,6 +25,7 @@ const path = require('path');
 const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { categoriesFor } = require('./lib/toolCategories');
 const { buildGuideShelves } = require('./lib/guideShelves');
+const { categoriesForGuide, guideHubs } = require('./lib/guideCategories');
 const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
@@ -34,129 +35,8 @@ const SPECS_DIR  = path.join(ROOT, 'guides');
 const BUILD_DIR  = path.join(ROOT, 'build', 'guides');
 const BASE_URL   = 'https://deftbrain.com';
 
-// Category metadata — controls grouping order, editorial copy on
-// the by-category index, and the per-category page introductions.
-// Add/edit as new categories are introduced.
-const CATEGORY_META = {
-  workplace: {
-    name: 'Workplace',
-    desc: "Hard conversations, decoding the language of meetings, sending the email you mean to send.",
-    examples: "How to tell your boss they're wrong without burning anything down. What \"k.\" actually means in a text. The email you write at 11 PM versus the email you should send.",
-    group: 'work',
-  },
-  career: {
-    name: 'Career',
-    desc: "Self-reviews, promotion cases, the work of advocating for yourself professionally.",
-    examples: "Building the brag sheet you'll need at your next performance review. Making the promotion case when the work was real but quiet. Remembering what you actually did six months ago.",
-    group: 'work',
-  },
-  meetings: {
-    name: 'Meetings',
-    desc: "Notes that get read, action items that get done, decisions that stick.",
-    examples: "The difference between meeting minutes and meeting notes. Capturing decisions in a way that survives the next meeting. Running a debrief that actually changes the next project.",
-    group: 'work',
-  },
-  presentations: {
-    name: 'Presentations',
-    desc: "Decks that hold attention, talks that don't crater, the moments where you have to stand up and convince a room.",
-    examples: "Cutting a deck from forty slides to twelve. Opening a talk so the room doesn't reach for their phones. The five-minute version of the thing you have an hour to say.",
-    group: 'work',
-  },
-  learning: {
-    name: 'Learning',
-    desc: "Studying smarter, remembering more, and the metacognitive moves that separate effort from progress.",
-    examples: "Reading a textbook chapter so it actually sticks. Spaced repetition without the apps. Knowing when you've actually learned something versus when you just feel like you have.",
-    group: 'work',
-  },
-
-  home: {
-    name: 'Home',
-    desc: "Leases, landlords, the small print that becomes the year you actually live.",
-    examples: "How to read a lease before signing it. Red flags in a rental lease. Getting your security deposit back when the landlord doesn't want to give it back.",
-    group: 'practical',
-  },
-  health: {
-    name: 'Health',
-    desc: "Doctor's visits, lab results, diagnoses written in a language you didn't take in school.",
-    examples: "Preparing for a 15-minute appointment so it actually counts. Reading blood test results without panicking. Understanding what your doctor actually said after you nodded along.",
-    group: 'practical',
-  },
-  money: {
-    name: 'Money',
-    desc: "High-pressure sales, predatory fees, conversations where the other side has done this before and you haven't.",
-    examples: "Recognizing sales manipulation tactics before they work on you. Negotiating with a car salesman without getting played. Pushing back on bank fees and actually getting them refunded.",
-    group: 'practical',
-  },
-  travel: {
-    name: 'Travel',
-    desc: "Trip planning, packing, the small choices that determine whether a trip is good or just expensive.",
-    examples: "Packing for a week in a carry-on. Building an itinerary that doesn't fall apart on day three. The guidebook moves locals quietly avoid.",
-    group: 'practical',
-  },
-  cooking: {
-    name: 'Cooking',
-    desc: "Recipes, techniques, and the kitchen knowledge that turns adequate cooking into actual cooking.",
-    examples: "Why your sauce broke and how to save it. Reading a recipe to understand what's actually load-bearing. Cooking from what's already in your fridge.",
-    group: 'practical',
-  },
-  practical: {
-    name: 'Practical',
-    desc: "The everyday how-to questions — bike checks, pronunciations, gift ideas, all the small competencies of grown-up life.",
-    examples: "Pronouncing French food names. Knowing when your bike actually needs a tune-up. Gift ideas for the person who has everything.",
-    group: 'practical',
-  },
-
-  conversations: {
-    name: 'Conversations',
-    desc: "Comebacks, family dynamics, the hard verbal moments you'll be in again.",
-    examples: "How to respond when someone says you're being too sensitive. What to say when family asks invasive questions at holidays. The comebacks you'll wish you'd thought of, prepared in advance.",
-    group: 'personal',
-  },
-  apologies: {
-    name: 'Apologies',
-    desc: "Calibrating apologies to the actual harm, in the right register, without the hedging that undoes them.",
-    examples: "The difference between an apology and an explanation. Apologizing to a partner without making it worse. Apologizing professionally without overcommitting.",
-    group: 'personal',
-  },
-  speeches: {
-    name: 'Speeches',
-    desc: "Toasts and tributes for weddings, retirements, memorials — the moments where you have to speak and don't want to wing it.",
-    examples: "Writing a wedding toast that lands without being saccharine. Speaking at a retirement that does justice to the career. The memorial speech when you weren't sure you could speak at all.",
-    group: 'personal',
-  },
-  decisions: {
-    name: 'Decisions',
-    desc: "The hard calls — career moves, relationships, life-shaping choices where there's no obviously right answer.",
-    examples: "Knowing when to leave a job. Deciding whether to move. The pre-mortem on a decision you're already attached to.",
-    group: 'personal',
-  },
-  wellness: {
-    name: 'Wellness',
-    desc: "Mental and physical patterns — sleep, focus, the everyday signals your body and mind are sending that you're not always reading.",
-    examples: "Why you're so tired by 3pm. Reading early signs of burnout before it lands. The difference between needing a nap and needing a week.",
-    group: 'personal',
-  },
-
-  planning: {
-    name: 'Planning',
-    desc: "Pre-mortems, pressure-testing, finding holes in your own thinking before they find you.",
-    examples: "The questions to ask before starting anything that costs you time. Pressure-testing a plan you've already gotten attached to. The failure modes you're not currently looking at.",
-    group: 'other',
-  },
-  pets: {
-    name: 'Pets',
-    desc: "Decoding what your pet's behavior actually means.",
-    examples: "Why your dog is doing the thing. What a cat's pattern is telling you. When behavior is signal versus when it's just animal.",
-    group: 'other',
-  },
-};
-
-// Each CATEGORY_META entry still carries a `group` field (work/practical/
-// personal/other) — it grouped categories on the OLD homepage design, now
-// replaced by DOOR_GROUPS below. GROUP_ORDER/GROUP_LABELS (the only things
-// that ever read `.group`) were removed as dead code along with that design;
-// `.group` itself was left in place rather than editing all 18 entries to
-// strip a harmless, possibly-still-useful-someday field.
+// The 18 folder categories' own copy (CATEGORY_META) retired 2026-10-24:
+// hubs are the 14 tool categories, copy in lib/guideCategories.js.
 
 // ── Guides homepage (2026-10-05 rebuild) ────────────────────────────────────
 // Was: 6 "door" buttons that filtered a library further down, featured and
@@ -654,6 +534,7 @@ function renderGuidesHome(specs) {
       <section class="gh-cat" id="${escHtml(c.slug)}" aria-labelledby="gh-cat-${escHtml(c.slug)}">
         <div class="gh-cat-head">
           <h3 id="gh-cat-${escHtml(c.slug)}">${escHtml(c.emoji.trim())} ${escHtml(c.name)}</h3>
+          <a href="/guides/${escHtml(c.slug)}">All ${escHtml(c.name)} guides →</a>
           <a href="/tools/${escHtml(c.slug)}">${escHtml(c.name)} tools →</a>
         </div>
 ${guideListHtml(shelves[c.name].guides, '        ')}
@@ -791,7 +672,7 @@ ${group.items.map(g => {
           // Every guide has a real standalone page (all 552 are built and
           // served); the non-keep-list ones are noindexed rather than
           // redirected, so a link labelled as a guide leads to the guide.
-          const cat = escHtml(CATEGORY_META[g.category]?.name || g.category);
+          const cat = escHtml(categoriesForGuide(g)[0]);
           return `          <li><a href="/guides/${escHtml(g.category)}/${escHtml(g.slug)}">${escHtml(g.title)}</a><span class="cat-tag">${cat}</span></li>`;
         }).join('\n')}
         </ul>
@@ -920,11 +801,15 @@ function main() {
   fs.writeFileSync(path.join(BUILD_DIR, 'by-tool.html'), renderByTool(specs), 'utf8');
   console.log(`  ✓ build/guides/by-tool.html — by-tool view`);
 
-  // Per-category pages
+  // Per-category pages: one hub per tool category (2026-10-24), each listing
+  // the guides whose main or second category it is (lib/guideCategories.js).
+  // A guide filed in two folders is listed once.
   let catCount = 0;
-  for (const [catKey, meta] of Object.entries(CATEGORY_META)) {
-    const guidesInCat = specs.filter(s => s.category === catKey);
+  for (const hub of guideHubs()) {
+    const seen = new Set();
+    const guidesInCat = specs.filter(s => categoriesForGuide(s).includes(hub.name) && !seen.has(s.slug) && seen.add(s.slug));
     if (guidesInCat.length === 0) continue;
+    const catKey = hub.slug, meta = hub;
     const catDir = path.join(BUILD_DIR, catKey);
     fs.mkdirSync(catDir, { recursive: true });
     fs.writeFileSync(

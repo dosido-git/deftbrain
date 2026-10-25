@@ -30,13 +30,10 @@ const GUIDES_DIR = path.join(ROOT, 'build', 'guides');
 const OUTPUT     = path.join(ROOT, 'build', 'guides-sitemap.xml');
 const BASE_URL   = 'https://deftbrain.com';
 
-// Categories with hub pages at /guides/{category}.
-// Keep in sync with CATEGORY_META in scripts/build-guides-indexes.js.
-const CATEGORIES = [
-  'apologies','career','conversations','cooking','decisions','health',
-  'home','learning','meetings','money','pets','planning','practical',
-  'presentations','speeches','travel','wellness','workplace',
-];
+// Hub pages at /guides/{slug}: the 14 tool categories (2026-10-24).
+const { guideHubs, ASSIGNED } = require('./lib/guideCategories');
+const HUBS = guideHubs();
+const CATEGORIES = HUBS.map(h => h.slug);
 
 // Files to ignore when walking build/guides/.
 // index.html appears as the by-category landing page at build/guides/index.html
@@ -98,14 +95,15 @@ const sha = (str) => crypto.createHash('sha1').update(str).digest('hex');
 let hubState = {};
 try { hubState = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')); } catch { /* first run */ }
 
+// A hub changes when its list of guides or any of those guides' specs does.
 function hubContentHash(cat, generatorHash, keepData) {
-  const specDir = path.join(ROOT, 'guides', cat);
-  let specs = [];
-  if (fs.existsSync(specDir)) {
-    specs = fs.readdirSync(specDir).filter(f => f.endsWith('.js')).sort()
-      .map(f => `${f}:${sha(fs.readFileSync(path.join(specDir, f), 'utf8'))}`);
-  }
-  const keep = (keepData.keep && keepData.keep[cat] ? [...keepData.keep[cat]].sort() : []).join(',');
+  const name = HUBS.find(h => h.slug === cat).name;
+  const members = Object.entries(ASSIGNED).filter(([, cats]) => cats.includes(name)).map(([key]) => key).sort();
+  const specs = members.map(key => {
+    const file = path.join(ROOT, 'guides', `${key}.js`);
+    return `${key}:${fs.existsSync(file) ? sha(fs.readFileSync(file, 'utf8')) : ''}`;
+  });
+  const keep = members.filter(key => { const [f, s] = key.split('/'); return (keepData.keep?.[f] || []).includes(s); }).join(',');
   return sha([cat, generatorHash, keep, ...specs].join('|'));
 }
 

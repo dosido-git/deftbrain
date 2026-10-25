@@ -5,14 +5,8 @@
 // lists its tools, then a few related guides, so one subject has one place.
 //
 // Guides keep their own 18 folders and URLs (moving them would mean 500+
-// redirects); this only decides where they are SHOWN. A guide belongs to a
-// tool category two ways:
-//   - its folder maps there (FOLDER_TO_CATEGORY), and/or
-//   - the tool its call-to-action points at (spec.cta.toolId) is in it.
-// Both is the strongest match, the tool link alone next, the folder alone
-// last; then guides with their own page (guides/keep-list.json) before the
-// consolidated ones, then A–Z. The tool link is what gives Relationships and
-// Self & Reflection guides although no folder maps to them.
+// redirects); this only decides where they are SHOWN: each guide's main and
+// optional second category, from src/data/guide-categories.json.
 //
 // Consumed by scripts/build-search-assets.js (public/search/guide-shelves.json,
 // which src/components/AllToolsPage.js fetches) and
@@ -23,26 +17,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 
-const FOLDER_TO_CATEGORY = {
-  money: 'Money',
-  decisions: 'Decisions',
-  planning: 'Decisions',
-  home: 'Home & Daily Life',
-  practical: 'Home & Daily Life',
-  cooking: 'Home & Daily Life',
-  pets: 'Home & Daily Life',
-  travel: 'Travel & Events',
-  health: 'Health & Wellness',
-  wellness: 'Health & Wellness',
-  conversations: 'Conversations',
-  apologies: 'Conversations',
-  speeches: 'Conversations',
-  career: 'Career',
-  workplace: 'Work & Meetings',
-  meetings: 'Work & Meetings',
-  presentations: 'Work & Meetings',
-  learning: 'Learning',
-};
+const { categoriesForGuide } = require('./guideCategories');
 
 
 function loadSpecs() {
@@ -77,38 +52,30 @@ function hrefFor(spec) {
 }
 
 /**
- * { [toolCategoryName]: { guides: [{title, href}] } }, every matching guide in
- * order; the pages show the first few and put the rest behind a disclosure.
+ * { [toolCategoryName]: { guides: [{title, href}] } }, every guide in that
+ * category (src/data/guide-categories.json, via guideCategories.js): guides
+ * whose MAIN category it is first, then those filed there second; within
+ * each, guides with their own page (keep-list) first, then A–Z. Since
+ * 2026-10-24 — it used to match on the folder or ANY category of the linked
+ * tool, which put a tipping guide under Conversations.
  */
-function buildGuideShelves(tools, categoriesFor) {
+function buildGuideShelves() {
   const keepSet = loadKeepSet();
-  // A guide filed in two folders counts once: its copy with its own page first.
   const isKept = spec => keepSet.has(`${spec.category}/${spec.slug}`);
-  const specs = loadSpecs().sort((a, b) => isKept(b) - isKept(a));
-  const toolCats = new Map(tools.map(tool => [tool.id, categoriesFor(tool)]));
-  const names = new Set([...tools.flatMap(categoriesFor), ...Object.values(FOLDER_TO_CATEGORY)]);
   const strip = s => String(s).replace(/^(The|A|An)\s+/i, '');
-
   const shelves = {};
-  for (const name of names) {
-    const seen = new Set();
-    const ranked = [];
-    for (const spec of specs) {
-      if (seen.has(spec.slug)) continue; // same guide filed in two folders
-      const inFolder = FOLDER_TO_CATEGORY[spec.category] === name;
-      const viaTool = (toolCats.get(spec.cta && spec.cta.toolId) || []).includes(name);
-      if (!inFolder && !viaTool) continue;
-      seen.add(spec.slug);
-      const kept = keepSet.has(`${spec.category}/${spec.slug}`);
-      ranked.push({ spec, rank: inFolder && viaTool ? 0 : viaTool ? 1 : 2, kept });
-    }
-    ranked.sort((a, b) => a.rank - b.rank || (b.kept - a.kept) || strip(a.spec.title).localeCompare(strip(b.spec.title)));
-    if (!ranked.length) continue;
-    shelves[name] = {
-      guides: ranked.map(({ spec }) => ({ title: spec.title, href: hrefFor(spec) })),
-    };
+  const seen = new Set();
+  for (const spec of loadSpecs().sort((a, b) => isKept(b) - isKept(a))) {
+    if (seen.has(spec.slug)) continue; // same guide filed in two folders
+    seen.add(spec.slug);
+    categoriesForGuide(spec).forEach((name, rank) => {
+      (shelves[name] = shelves[name] || []).push({ spec, rank, kept: isKept(spec) });
+    });
   }
-  return shelves;
+  return Object.fromEntries(Object.entries(shelves).map(([name, list]) => {
+    list.sort((a, b) => a.rank - b.rank || (b.kept - a.kept) || strip(a.spec.title).localeCompare(strip(b.spec.title)));
+    return [name, { guides: list.map(({ spec }) => ({ title: spec.title, href: hrefFor(spec) })) }];
+  }));
 }
 
-module.exports = { buildGuideShelves, FOLDER_TO_CATEGORY };
+module.exports = { buildGuideShelves };

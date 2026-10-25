@@ -26,6 +26,9 @@ const { spawnSync } = require('child_process');
 const { getFooterHTML, getToolList, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
+// A guide's label and breadcrumb name its main tool category and link to that
+// hub (2026-10-24); its own URL keeps its folder.
+const { categoriesForGuide, hubSlugFor } = require('./lib/guideCategories');
 
 const LIVE_TOOL_IDS = new Set(getToolList().map(t => t.id));
 
@@ -153,6 +156,8 @@ const jsLit = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
 // pages mattered and the link graph said they did not. Same word, now carrying
 // the link it always implied. Do not turn it back into a <span>.
 function renderGuide(spec, siblings) {
+  const mainCat = categoriesForGuide(spec)[0];
+  const hubSlug = hubSlugFor(mainCat);
   // canonicalOverride: for a guide that exists at two URLs (same slug filed in
   // two categories) the twin points its canonical at the primary — Google
   // consolidates instead of seeing duplicate content.
@@ -273,7 +278,7 @@ function renderGuide(spec, siblings) {
 
   const relatedCards = picked
     .map(s => `        <a href="/guides/${s.category}/${s.slug}" class="related-card">
-          <div class="rel-cat">${esc(s.categoryLabel)}</div>
+          <div class="rel-cat">${esc(categoriesForGuide(s)[0])}</div>
           <div class="rel-title">${esc(s.navTitle)}</div>
         </a>`)
     .join('\n');
@@ -304,7 +309,7 @@ function renderGuide(spec, siblings) {
   <meta property="og:image:height" content="630">
   <meta property="article:published_time" content="${spec.published}">
   <meta property="article:modified_time"  content="${spec.modified}">
-  <meta property="article:section"        content="${esc(spec.categoryLabel)}">
+  <meta property="article:section"        content="${esc(mainCat)}">
 
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="${esc(metaTitle)}">
@@ -345,7 +350,7 @@ ${stepsJsonLd}
     "itemListElement": [
       {"@type":"ListItem","position":1,"name":"DeftBrain","item":"https://deftbrain.com"},
       {"@type":"ListItem","position":2,"name":"Guides","item":"https://deftbrain.com/guides"},
-      {"@type":"ListItem","position":3,"name":${jsonLd(spec.categoryLabel)},"item":"https://deftbrain.com/guides/${spec.category}"},
+      {"@type":"ListItem","position":3,"name":${jsonLd(mainCat)},"item":"https://deftbrain.com/guides/${hubSlug}"},
       {"@type":"ListItem","position":4,"name":${jsonLd(spec.shortTitle)}}
     ]
   }
@@ -368,7 +373,7 @@ ${stepsJsonLd}
 
       <!-- eyebrow: category name, linked to its hub (see note above renderGuide) -->
       <div class="eyebrow">
-        <a class="tag" href="/guides/${spec.category}">${esc(spec.categoryLabel)}</a>
+        <a class="tag" href="/guides/${hubSlug}">${esc(mainCat)}</a>
         <div class="eyebrow-rule"></div>
       </div>
 
