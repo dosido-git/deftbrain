@@ -1170,6 +1170,11 @@ const BillRescue = ({ tool }) => {
           </div>
         )}
 
+        {/* One brief acknowledgment, not a passage (owner, 2026-10-25). */}
+        {r.shame_to_action?.reframe && (
+          <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
+        )}
+
         {/* ── Today's only job. The most-loved thing in the old output was
             buried inside a paragraph about breathing; it is now the loudest
             instruction on the page, with the words to say it one tap away. ── */}
@@ -1186,8 +1191,8 @@ const BillRescue = ({ tool }) => {
               </div>
             )}
             {r.todays_job.script && (
-              <details className="group mt-3 keep-together">
-                <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} list-none [&::-webkit-details-marker]:hidden min-h-[28px]`}>
+              <details className="group mt-3">
+                <summary data-print-hide className={`cursor-pointer text-xs font-bold ${c.highlightText} list-none [&::-webkit-details-marker]:hidden min-h-[28px]`}>
                   📞 {t('br_show_words')} <Caret groupOpen />
                 </summary>
                 <div className="mt-2">
@@ -1202,10 +1207,6 @@ const BillRescue = ({ tool }) => {
 
         {/* The reframe stays — it is the difference between a tool and a
             person — but it is three lines now, not a wall before the answer. */}
-        {/* One brief acknowledgment, not a passage (owner, 2026-10-25). */}
-        {r.shame_to_action?.reframe && (
-          <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
-        )}
 
             <PartHeading>{t('br_sec_roadmap')}</PartHeading>
 
@@ -1223,14 +1224,14 @@ const BillRescue = ({ tool }) => {
                         {steps.map((step, i) => (
                           // The when-label rides with its first step, so on paper
                           // it can never end a page alone ("After that", 2026-10-25).
-                          <div key={i} className="keep-together">
-                          {i === 0 && <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>}
+                          <div key={i}>
                           <div className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
+                            {i === 0 && <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1`}>{when}</p>}
                             <p className={`text-sm font-bold ${c.text}`}>✓ {step.title}</p>
                             <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
                             {step.script && (
                               <details className="group mt-2">
-                                <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
+                                <summary data-print-hide className={`cursor-pointer text-xs font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
                                   {t('br_show_words')} <Caret groupOpen />
                                 </summary>
                                 <div className="mt-1.5">
@@ -1251,7 +1252,7 @@ const BillRescue = ({ tool }) => {
             )}
 
             {(r.phone_script || r.payment_plan || r.escalation_ladder?.length > 0 || r.collections_defense || r.hardship_letter) && (
-              <PartHeading>{t('br_grp_letters')}</PartHeading>
+              <PartHeading newPage>{t('br_grp_letters')}</PartHeading>
             )}
 
             {/* Collections defense */}
@@ -1364,7 +1365,7 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            <PartHeading>{t('br_grp_support')}</PartHeading>
+            <PartHeading newPage>{t('br_grp_support')}</PartHeading>
 
             {/* Was "Know Your Rights", which sounds like homework. It is money
                 they may not owe, and that is what it says now. */}
@@ -2618,8 +2619,10 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
 // it as the level above the sections inside it.
 // (An arrow with no return statement: the audit reads the file's last
 // top-level `return (` as the tool's main render.)
-const PartHeading = ({ children }) => (
-  <h2 className="keep-with-next pt-5 pb-1 text-lg font-bold text-[var(--sc-strong)] border-b border-[var(--sc-line)] print:break-after-avoid"
+// newPage: on paper the part starts a fresh page — Firefox stranded these
+// headings at the foot of a page, and a letter reads better from the top of one.
+const PartHeading = ({ children, newPage = false }) => (
+  <h2 className={`keep-with-next pt-5 pb-1 text-lg font-bold text-[var(--sc-strong)] border-b border-[var(--sc-line)] print:break-after-avoid ${newPage ? 'print:break-before-page' : ''}`}
     style={{ fontFamily: "'Source Serif 4', Georgia, serif", breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
     {children}
   </h2>

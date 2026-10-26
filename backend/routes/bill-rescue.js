@@ -232,7 +232,7 @@ Include your findings in the bill_autopsy section.` : ''}
 
 ONE SEQUENCE: todays_job and action_steps are THE order of actions. Nothing anywhere else may tell them to do something sooner, later, or contrary to it — if it says not to call yet, a phone script is for when THEY call or for a later step, and says so.
 
-LETTERS look like letters: real line breaks (\n) — date, sender and recipient address lines each on their own line, a blank line between paragraphs, numbered requests one per line, sign-off on its own lines. How to send it (certified mail, keep the receipt) is NEVER inside the letter text — say it in the step that uses it.
+LETTERS look like letters: real line breaks (\n) — date, sender and recipient address lines each on their own line, a blank line between paragraphs, numbered requests one per line, sign-off on its own lines. Nothing that is not part of the letter goes inside it — no notes, tips, headings like '--- LETTER ---', or how to send it (certified mail, keep the receipt); say those in the step that uses it.
 
 TONE: describe their situation plainly. Never state their feelings, motives or character as fact ("you felt", "because you were overwhelmed", "that's the turn"). Reassurance is one short sentence, once.
 

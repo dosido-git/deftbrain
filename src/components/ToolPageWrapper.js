@@ -153,7 +153,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
 
   return (
-    <div data-print-wrapper data-site-style="home" data-print-handout="" style={sv || undefined} className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
+    <div data-print-wrapper data-site-style="home" data-print-handout="" {...(sv ? { 'data-scheme': '' } : {})} style={sv || undefined} className={`min-h-screen ${colors.bg} ${colors.text} font-sans transition-colors duration-200${isDark ? ' tp-dark' : ''}`}>
       
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} />
 

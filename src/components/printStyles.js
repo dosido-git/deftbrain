@@ -295,8 +295,17 @@ export const PRINT_CSS = `
         [data-print-handout] .keep-with-next::after { content: ''; display: block; height: 160px; margin-bottom: -160px; }
         /* A short section (a letter, a script, a ladder) prints whole on one page. */
         [data-print-handout] .keep-together { break-inside: avoid !important; page-break-inside: avoid !important; }
-        [data-print-handout] [data-print-section] .rounded-lg,
         [data-print-handout] [data-print-section] li { break-inside: avoid !important; page-break-inside: avoid !important; }
+        /* Small cards stay whole — but not on category-colour pages, where a
+           roadmap step can carry a letter: kept whole, those left pages two-
+           thirds empty (owner, 2026-10-26). There only letters (LetterDoc) and
+           short sections marked keep-together stay whole. */
+        [data-print-handout]:not([data-scheme]) [data-print-section] .rounded-lg { break-inside: avoid !important; page-break-inside: avoid !important; }
+        /* Category-colour pages print without card fills or borders: less ink,
+           and no box edges running across a page break. A letter keeps its
+           page-like border; a roadmap step keeps its side line. */
+        [data-scheme] [data-print-section] [class*="rounded"]:not([data-letter]) { background: transparent !important; }
+        [data-scheme] [data-print-section] [class*="rounded"]:not([data-letter]):not([class*="border-s-"]) { border-color: transparent !important; }
         /* Collapsed sections still print. */
         [data-print-handout] [data-sec-body][hidden] { display: block !important; }
         /* Keep each label with what it labels. A heading never ends a page on
