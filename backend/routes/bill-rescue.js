@@ -1,22 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { withNumberCheck, visitorContext } = require('../lib/factCheck');
 const { checkStatement } = require('../lib/statementMath');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources, sourcesUsedIn } = require('../lib/groundedFacts');
 
 const { checkConsistency } = require('../lib/outputGuard');
 const { trimRepeats } = require('../lib/repeatCheck');
 
-// The answer's sections in the order the page shows them (src/tools/BillRescue.js
-// renderResults) — the repeat check keeps the first mention.
-const PAGE_ORDER = ['verdict', 'recommendation', 'todays_job', 'shame_to_action', 'action_steps',
+// The answer's sections in the order the page shows them — next step, roadmap,
+// letters and scripts, supporting information (src/tools/BillRescue.js
+// renderResults). The repeat check keeps the first mention.
+const PAGE_ORDER = ['verdict', 'todays_job', 'shame_to_action', 'action_steps',
+  'collections_defense', 'phone_script', 'payment_plan', 'escalation_ladder', 'hardship_letter',
   'money_you_might_not_owe', 'bill_autopsy', 'know_your_rights', 'what_they_wont_tell_you', 'assistance_programs',
-  'payment_plan', 'phone_script', 'escalation_ladder', 'collections_defense', 'hardship_letter',
-  'follow_up', 'worst_case', 'worst_case_reassurance', 'permission'];
+  'follow_up', 'worst_case'];
 // ════════════════════════════════════════════════════════════
 // SHARED: Bill-type-specific knowledge injections
 // ════════════════════════════════════════════════════════════
@@ -140,7 +141,7 @@ async function groundBillRescueFacts({ userRegion, userLocale, billType }) {
     cacheKey,
     label: 'bill-rescue-facts',
     userPrompt: `Verify with web_search, as of today, for region "${userRegion || userLocale || 'US'}" and bill type "${billType}":
-(1) the key consumer/patient billing-protection law (name + what it guarantees), (2) one or two REAL assistance programs (official name + how to reach them — only if you can verify they exist and serve this region). Skip anything you cannot verify.
+(1) the key consumer/patient billing-protection law (name + what it guarantees), (2) one or two REAL assistance programs (official name + how to reach them — only if you can verify they exist and serve this region). Everything must be about THIS bill type — no programme for a different kind of bill (a medical-bill charity for a credit-card debt). Skip anything you cannot verify.
 
 Return ONLY valid JSON:
 { "verified": [{ "kind": "law | program", "name": "Official name", "detail": "What it protects or offers — one sentence", "source": "ONE bare domain of the single page you actually verified this against — no list, no parenthetical. Prefer an official government/regulator domain when the search found one." }] }`,
@@ -152,7 +153,10 @@ Return ONLY valid JSON:
       if (!Array.isArray(cleanFacts.verified) || !cleanFacts.verified.length) return '';
       const block = `\n\nVERIFIED CURRENT FACTS (web-checked today):\n` +
         cleanFacts.verified.map(f => `- [${f.kind}] ${f.name}: ${f.detail} (source: ${f.source})`).join('\n');
-      return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults) } };
+      // facts: each verified fact with the page that backs it, so the answer
+      // can list only the sources it actually draws on (sourcesUsedIn).
+      const facts = cleanFacts.verified.map(f => ({ name: f.name, ...(matchVerifiedSources([f], searchResults)[0] || {}) })).filter(f => f.url);
+      return { block, data: { sources: matchVerifiedSources(cleanFacts.verified, searchResults), facts } };
     },
   });
   return { block, cacheKey };
@@ -213,7 +217,7 @@ ${isCollections ? `COLLECTIONS SITUATION — CRITICAL:
 This debt is in collections. This changes everything:
 - The user has specific legal rights (FDCPA in the US, similar laws elsewhere).
 - ALWAYS include a debt validation letter — collectors must prove they own the debt.
-- NEVER acknowledge the debt on the phone until it's validated in writing.
+- NEVER acknowledge the debt on the phone until it's validated in writing. Unopened letters from the collector: say to open and read them (one may start a legal deadline) as part of the first step — never "don't open them".
 - Pay-for-delete negotiation is possible — get it in writing before paying.
 - The statute of limitations may have expired — making a partial payment can RESTART it.
 - Include the collections_defense section with specific scripts and letters.` : ''}
@@ -224,6 +228,12 @@ ${hasBillImage ? `The user has uploaded a photo/screenshot of their bill. Examin
 - Charges that don't match the bill type
 - Any amounts that seem inflated
 Include your findings in the bill_autopsy section.` : ''}
+
+ONE SEQUENCE: todays_job and action_steps are THE order of actions. Nothing anywhere else may tell them to do something sooner, later, or contrary to it — if it says not to call yet, a phone script is for when THEY call or for a later step, and says so.
+
+LETTERS look like letters: real line breaks (\n) — date, sender and recipient address lines each on their own line, a blank line between paragraphs, numbered requests one per line, sign-off on its own lines. How to send it (certified mail, keep the receipt) is NEVER inside the letter text — say it in the step that uses it.
+
+TONE: describe their situation plainly. Never state their feelings, motives or character as fact ("you felt", "because you were overwhelmed", "that's the turn"). Reassurance is one short sentence, once.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
@@ -277,7 +287,7 @@ ${billBlock ? '\nTHE BILL ITSELF IS ATTACHED ABOVE. Read it and analyse it for o
 ${statementFindings.length ? `\nSTATEMENT ARITHMETIC — checked in code, exact (report every one of these in bill_autopsy, in the visitor's language, and treat the amount due as unverified until it is explained):\n- ${statementFindings.join('\n- ')}` : ''}`;
 
     const keysA = [
-      'verdict', 'recommendation', 'todays_job', 'shame_to_action',
+      'verdict', 'todays_job', 'shame_to_action',
       ...(hasBillText || billBlock ? ['bill_autopsy'] : []),
       'money_you_might_not_owe', 'action_steps', 'phone_script',
       ...(hasAfford || hasAmount ? ['payment_plan'] : []),
@@ -286,7 +296,7 @@ ${statementFindings.length ? `\nSTATEMENT ARITHMETIC — checked in code, exact 
     const keysB = [
       ...(isCollections ? ['collections_defense'] : []),
       'hardship_letter', 'know_your_rights', 'what_they_wont_tell_you', 'assistance_programs',
-      'worst_case', 'worst_case_reassurance', 'follow_up', 'permission',
+      'worst_case', 'follow_up',
     ];
 
     const userPromptA = `${situationBlock}
@@ -297,25 +307,19 @@ Return ONLY valid JSON with ALL applicable sections:
 {
   "verdict": {
     "status": "Exactly one of these and nothing else: FINE, SERIOUS_BUT_EARLY, URGENT, ALREADY_DAMAGED",
-    "emoji": "🟢|🟡|🔴|⚫",
-    "headline": "Where they stand, in the fewest words that are still true — 'Serious, but you're still early' — 3-7 words",
+    "headline": "The account's status, stated plainly — what it is and that there are options: 'In collections — you still have options', 'Past due, not yet in collections', 'Current, with charges worth checking'. Never open with a judgment word (damaged, bad, ruined, serious). 4-9 words",
     "where_you_stand": ["Two or three SHORT statements — eight to fourteen words each, no subordinate clauses. What is still true in their favour: credit not at risk yet, still dealing with the original creditor, nothing lost. State it flatly and confidently; do not explain the mechanism or cite how many days anything takes."]
-  },
-
-  "recommendation": {
-    "headline": "The single most important instruction, as an imperative — 'Do not pay this bill yet.' — 3-8 words"
   },
 
   "todays_job": {
     "action": "The ONE thing to do today, as an imperative — 'Request an itemized bill.' — 3-8 words",
     "why": "Why this first and not anything else — one sentence",
     "not_yet": ["Two or three things NOT to do today, each 2-5 words: 'Don't discuss payment.' 'Don't agree to anything.'"],
-    "script": "The exact words to say or write to get it done, copy-paste ready. null if today's job needs no words."
+    "script": "The exact words to say, or the complete letter to send, copy-paste ready (a letter follows the LETTERS rule). null if today's job needs no words."
   },
 
   "shame_to_action": {
-    "reframe": "Four or five SHORT lines, each its own sentence, no paragraph. Name the thing that happened to them, say plainly that it is not a failure, and end on picking it up now being the right move. Reassurance, not explanation — do not describe how the billing system works.",
-    "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it."
+    "reframe": "ONE short sentence that acknowledges the situation without judging it and without telling them how they feel or why they did anything — 'A bill in collections is common, and it can be sorted out from here.' Max 20 words."
   }${hasBillText || billBlock ? `,
 
   "bill_autopsy": {
@@ -340,7 +344,7 @@ Return ONLY valid JSON with ALL applicable sections:
     {
       "title": "The step as a checkable line — 'Request the itemized bill.' — 3-6 words",
       "action": "Specific action with exact instructions — not 'call them' but 'Call the number on your bill, press 2 for billing...'",
-      "script": "Exact words to say. Copy-paste ready. null if not a phone/message step. — 2-4 sentences",
+      "script": "Exact words to say, or the letter to send (LETTERS rule). Copy-paste ready. null if not a phone/message step. If an earlier step already gives this letter, null — do not write it twice.",
       "when": "EXACTLY one of these four strings and nothing else — Today, Tomorrow, This week, After that. Not a variation, not a qualifier, not a step number. Several steps may share one; that is the point."
     }
   ],
@@ -379,12 +383,13 @@ Return ONLY valid JSON with ALL applicable sections:
 {${isCollections ? `
   "collections_defense": {
     "overview": "Key rights with debt collectors. — 1-2 sentences",
-    "validation_letter": "Complete debt validation letter. Date, placeholders for collector name/address, account ref, FDCPA Section 809(b) language. Ready to send. — 2-4 sentences",
+    "validation_letter": "Complete debt validation letter (LETTERS rule): date, sender and collector address lines, account reference, the request with numbered items, sign-off. FDCPA Section 809(b) language. Ready to send. If todays_job or a roadmap step already gives this letter, write null — it is shown once.",
+    "how_to_send": "How to send it — certified mail, return receipt, keep a copy — one sentence, never inside the letter",
     "what_to_say_on_phone": "Exact sentence if collector calls. Short, firm, legally protective.",
     "never_do": ["3-4 things to NEVER do with collectors"]
   },
 ` : ''}
-  "hardship_letter": "COMPLETE letter ready to send. 150-250 words. Date, 'To Whom It May Concern', situation (${reasonText}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
+  "hardship_letter": "COMPLETE letter ready to send (LETTERS rule). 150-250 words. Date, 'To Whom It May Concern', situation (${reasonText}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
 
   "know_your_rights": [
     {"right": "A specific legal right that applies to THIS bill type, this amount and this overdue status. Name the statute, rule or programme where there is one, and only where you are sure of it.", "explanation": "What it means in plain language and how to use it — the sentence to say, or the thing to ask for. — 1-2 sentences"}
@@ -396,16 +401,13 @@ Return ONLY valid JSON with ALL applicable sections:
     {"program": "Specific program name", "who_qualifies": "Eligibility in plain language", "how_to_apply": "Exact steps — phone/website/location"}
   ],
 
-  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline.",
-  "worst_case_reassurance": "Why even the worst outcome is survivable. Warm, specific.",
+  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline. Plain facts, no reassurance paragraph.",
 
   "follow_up": {
     "document_this": "What to write down after the call: rep name, confirmation number, agreements.",
     "calendar_reminder": "Specific reminder to set with date.",
     "if_they_dont_follow_through": "What to do if the company doesn't honor the agreement."
-  },
-
-  "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation."
+  }
 }
 
 Your response MUST contain ALL ${keysB.length} top-level keys — ${keysB.join(', ')} — and NO other keys.
@@ -441,37 +443,45 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     const forKeys = (prompt, all, keys) => onlyKeys(prompt.replace(
       `Your response MUST contain ALL ${all.length} top-level keys — ${all.join(', ')} — and NO other keys.`,
       `Your response contains ONLY these top-level keys: ${keys.join(', ')}.`), keys);
-    const half = (prompt, all, tag, maxTokens) => (keys, i) => callClaudeWithRetry({
+    const ask = (prompt, all, keys, label, maxTokens, extra = '') => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: maxTokens,
       system,
-      messages: [{ role: 'user', content: contentFor(forKeys(prompt, all, keys)) }],
-    }, { label: `bill-rescue-${tag}${i + 1}` });
+      messages: [{ role: 'user', content: contentFor(forKeys(prompt, all, keys) + extra) }],
+    }, { label });
     const only = (all) => (groups) => groups.map(g => g.filter(k => all.includes(k))).filter(g => g.length);
-    const coreParts = keyGroups(only(keysA)([
-      ['verdict', 'recommendation', 'todays_job'],
-      ['shame_to_action', 'money_you_might_not_owe', 'bill_autopsy'],
-      ['action_steps', 'phone_script'],
-      ['payment_plan', 'escalation_ladder'],
-    ]), half(userPromptA, keysA, 'core', 3000));
-    const supportParts = keyGroups(only(keysB)([
-      ['hardship_letter', 'collections_defense'],
-      ['know_your_rights', 'what_they_wont_tell_you', 'assistance_programs'],
-      ['worst_case', 'worst_case_reassurance', 'follow_up', 'permission'],
-    ]), half(userPromptB, keysB, 'support', 3000)).map(p => ({ ...p, required: false }));
-    const verifiedSources = () => groundedData(billFactsCacheKey)?.sources;
+    // T11 (audit/DEFECT-TYPES.md), owner 2026-10-25: the opening said not to
+    // open the letters, the roadmap said open them first, the defense kit said
+    // send the validation letter first — passes written apart chose their own
+    // order. Now one pass decides where they stand, today's job and the whole
+    // roadmap; it shows first, and every other pass is handed it as final.
+    const PLAN = ['verdict', 'todays_job', 'action_steps'];
+    const SEQUENCE_NOTE = '\n\nTHE SEQUENCE in todays_job and action_steps above governs your sections: every instruction you give must fit it — same order, nothing it says not to do yet.';
+    const follow = [
+      ...only(keysA)([['shame_to_action', 'money_you_might_not_owe', 'bill_autopsy'], ['phone_script'], ['payment_plan', 'escalation_ladder']]),
+      ...only(keysB)([['collections_defense', 'hardship_letter'], ['know_your_rights', 'what_they_wont_tell_you', 'assistance_programs'], ['worst_case', 'follow_up']]),
+    ];
+    const parts = planFirst(PLAN,
+      () => ask(userPromptA, keysA, PLAN, 'bill-rescue-plan', 3500),
+      follow,
+      (keys, i, plan) => keysA.includes(keys[0])
+        ? ask(userPromptA, keysA, keys, `bill-rescue-core${i + 1}`, 3000, planNote(plan, PLAN) + SEQUENCE_NOTE)
+        : ask(userPromptB, keysB, keys, `bill-rescue-support${i + 1}`, 3000, planNote(plan, PLAN) + SEQUENCE_NOTE));
+    // Only the sources behind facts this answer actually uses; an older cache
+    // entry without per-fact links shows none rather than unrelated pages.
+    const verifiedSources = (d) => sourcesUsedIn(groundedData(billFactsCacheKey)?.facts, d);
     const shape = (d) => {
       const parsed = structuredClone(d);
       // The visitor watched a file upload. If it could not be used, the answer
       // has to say so rather than quietly arriving without an autopsy.
       if (hasBillImage && !billBlock) parsed.attachment_ignored = true;
       if (hasAmount) fixPlanMonths(parsed, amount);
-      const sources = verifiedSources();
+      const sources = verifiedSources(parsed);
       return { ...stripCites(parsed), ...(sources && sources.length ? { verified_sources: sources } : {}) };
     };
     return await answer(req, res, {
       label: 'bill-rescue',
-      parts: [...coreParts, ...supportParts],
+      parts,
       finish: shape,
       ready: d => Boolean(d.verdict),
       complete: d => Boolean(d.verdict),

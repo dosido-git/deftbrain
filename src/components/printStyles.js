@@ -282,6 +282,21 @@ export const PRINT_CSS = `
            open (ToolPageWrapper opens every <details> for the print). */
         [data-print-handout] summary > span[aria-hidden="true"]:last-child { display: none !important; }
         [data-print-handout] summary { list-style: none !important; }
+        /* A section's heading never ends a page alone (owner, 2026-10-25: the
+           Escalation Ladder heading was stranded at the foot of page six): its
+           first item stays with it, and a small card — a step, a rung, a right,
+           a letter — is never split across two pages. */
+        [data-print-handout] [data-sec-body] > :first-child { break-before: avoid !important; page-break-before: avoid !important; }
+        /* break-after: avoid alone is ignored by Chrome's page breaker. A heading
+           marked keep-with-next carries an invisible 160px tail that takes no
+           space on the page but must fit below it — so a heading with less than
+           that left moves to the next page with its first item. */
+        [data-print-handout] .keep-with-next { break-inside: avoid !important; page-break-inside: avoid !important; }
+        [data-print-handout] .keep-with-next::after { content: ''; display: block; height: 160px; margin-bottom: -160px; }
+        /* A short section (a letter, a script, a ladder) prints whole on one page. */
+        [data-print-handout] .keep-together { break-inside: avoid !important; page-break-inside: avoid !important; }
+        [data-print-handout] [data-print-section] .rounded-lg,
+        [data-print-handout] [data-print-section] li { break-inside: avoid !important; page-break-inside: avoid !important; }
         /* Collapsed sections still print. */
         [data-print-handout] [data-sec-body][hidden] { display: block !important; }
         /* Keep each label with what it labels. A heading never ends a page on
@@ -289,7 +304,7 @@ export const PRINT_CSS = `
            label, help text and controls) stays on one page. Needs the
            specificity to beat the break-inside: auto rule above, which exists
            so that LONG blocks still split instead of jumping to a fresh page. */
-        [data-print-handout] h3, [data-print-handout] h4, [data-print-handout] label,
+        [data-print-handout] h2, [data-print-handout] h3, [data-print-handout] h4, [data-print-handout] label,
         [data-print-handout] [data-print-heading],
         /* The site-style section pattern: a ruled block (border-t) whose first
            child is its label, often a <p>, not a heading element — so it

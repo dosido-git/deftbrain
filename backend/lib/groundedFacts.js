@@ -156,6 +156,25 @@ function attachSourceUrls(items, searchResults) {
   });
 }
 
+// "Checked against these sources" listed every page the search verified, even
+// one the answer never drew on — a Patient Advocate Foundation item under a
+// credit-card collections case (owner, 2026-10-25). Show a source only when
+// the answer uses the fact it supports: the fact's name, or its distinctive
+// words, appear in the answer. facts: [{ name, url, title }].
+function sourcesUsedIn(facts, draft) {
+  const text = JSON.stringify(draft || {}).toLowerCase();
+  const seen = new Set();
+  const out = [];
+  for (const f of facts || []) {
+    if (!f || !f.url || seen.has(f.url)) continue;
+    const name = String(f.name || '').toLowerCase();
+    const words = name.split(/[^\p{L}\p{N}]+/u).filter(w => w.length >= 5);
+    const used = (name && text.includes(name)) || (words.length >= 2 && words.every(w => text.includes(w)));
+    if (used) { seen.add(f.url); out.push({ url: f.url, title: f.title || f.name }); }
+  }
+  return out;
+}
+
 function findVerifiedSource(item, searchResults) {
   const hostnameOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
   const domainsIn = (s) => [...String(s || '').toLowerCase().matchAll(/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}/g)].map(m => m[0].replace(/^www\./, ''));
@@ -350,4 +369,4 @@ function groundedData(cacheKey) {
   return (hit && hit.data) || null;
 }
 
-module.exports = { groundedFacts, groundedData, groundedStatus, normalizeKeyPart, stripCites, matchVerifiedSources, attachSourceUrls };
+module.exports = { groundedFacts, groundedData, groundedStatus, normalizeKeyPart, stripCites, matchVerifiedSources, attachSourceUrls, sourcesUsedIn };

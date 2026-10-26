@@ -11,6 +11,7 @@ import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { RegisteredActions } from '../components/ActionButtons';
 import ToolTabs from '../components/ToolTabs';
+import LetterDoc, { isLetter } from '../components/LetterDoc';
 import { schemeStyle } from '../data/toolSchemes';
 
 // eslint-disable-next-line no-use-before-define
@@ -1149,14 +1150,15 @@ const BillRescue = ({ tool }) => {
           </div>
         )}
 
+            <PartHeading>{t('br_grp_next')}</PartHeading>
+
         {/* ── The verdict. Someone opening a bill is asking "am I in trouble?",
             not "which of these nine tools do I want". Everything below this
             supports a decision they have already been handed. ── */}
         {r.verdict && (
           <div className={`border-2 rounded-xl p-5 ${sv ? (['URGENT', 'ALREADY_DAMAGED'].includes(r.verdict.status) ? c.verdictAlert : c.verdictCalm) : VERDICT_TONE(r.verdict.status, c)}`}>
-            {/* Its own inline box with trailing room: Safari's print clipped the
-                big emoji to its left half inside a bare <p>. */}
-            <p className="text-3xl mb-1 leading-none"><span className="inline-block pe-1 py-0.5">{r.verdict.emoji}</span></p>
+            {/* No status symbol (owner, 2026-10-25): the black circle read as
+                ominous and its meaning was unclear. The headline says it. */}
             <p className="text-xl font-black">{r.verdict.headline}</p>
             {r.verdict.where_you_stand?.length > 0 && (
               <div className="mt-3 space-y-1">
@@ -1165,15 +1167,6 @@ const BillRescue = ({ tool }) => {
                 ))}
               </div>
             )}
-          </div>
-        )}
-
-        {/* One line. Today's job, right below, says what to do first. */}
-        {r.recommendation?.headline && (
-          <div className={`${c.highlightBg} border rounded-xl p-4`}>
-            {/* A colour, not opacity-80: Safari prints translucent text as a blurred image. */}
-            <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${sv ? c.accentTxt : c.textSecondary}`}>{t('br_my_recommendation')}</p>
-            <p className={`text-base font-black ${c.text}`}>{r.recommendation.headline}</p>
           </div>
         )}
 
@@ -1193,12 +1186,14 @@ const BillRescue = ({ tool }) => {
               </div>
             )}
             {r.todays_job.script && (
-              <details className="group mt-3">
+              <details className="group mt-3 keep-together">
                 <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} list-none [&::-webkit-details-marker]:hidden min-h-[28px]`}>
                   📞 {t('br_show_words')} <Caret groupOpen />
                 </summary>
-                <div className={`${c.quoteBg} rounded-lg p-3 mt-2`}>
-                  <p className={`text-xs ${c.text}`}>"{r.todays_job.script}"</p>
+                <div className="mt-2">
+                  {isLetter(r.todays_job.script)
+                    ? <LetterDoc text={r.todays_job.script} title={r.todays_job.action} />
+                    : <div className={`${c.quoteBg} rounded-lg p-3`}><p className={`text-xs ${c.text}`}>"{r.todays_job.script}"</p></div>}
                 </div>
               </details>
             )}
@@ -1207,12 +1202,12 @@ const BillRescue = ({ tool }) => {
 
         {/* The reframe stays — it is the difference between a tool and a
             person — but it is three lines now, not a wall before the answer. */}
+        {/* One brief acknowledgment, not a passage (owner, 2026-10-25). */}
         {r.shame_to_action?.reframe && (
-          <div className={`${c.highlightBg} border rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.text} mb-1`}>💚 {t('br_first_breath')}</p>
-            <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
-          </div>
+          <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
         )}
+
+            <PartHeading>{t('br_sec_roadmap')}</PartHeading>
 
             {/* A numbered list reads like a textbook; a timeline reads like a
                 week. Grouped by when, in the order the model gave them, so
@@ -1220,14 +1215,17 @@ const BillRescue = ({ tool }) => {
                 the script waits behind a disclosure instead of tripling the
                 height of every step. */}
             {r.action_steps?.length > 0 && (
-              <Section icon="🗺️" title={t('br_sec_roadmap')} defaultOpen c={c}>
+              <div>
                 <div className="space-y-4">
                   {groupByWhen(r.action_steps).map(([when, steps]) => (
                     <div key={when}>
-                      <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>
                       <div className="space-y-2">
                         {steps.map((step, i) => (
-                          <div key={i} className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
+                          // The when-label rides with its first step, so on paper
+                          // it can never end a page alone ("After that", 2026-10-25).
+                          <div key={i} className="keep-together">
+                          {i === 0 && <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>}
+                          <div className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
                             <p className={`text-sm font-bold ${c.text}`}>✓ {step.title}</p>
                             <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
                             {step.script && (
@@ -1235,13 +1233,119 @@ const BillRescue = ({ tool }) => {
                                 <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
                                   {t('br_show_words')} <Caret groupOpen />
                                 </summary>
-                                <div className={`${c.card} border rounded-lg p-3 mt-1.5`}>
-                                  <p className={`text-xs ${c.text}`}>"{step.script}"</p>
+                                <div className="mt-1.5">
+                                  {isLetter(step.script)
+                                    ? <LetterDoc text={step.script} title={step.title} />
+                                    : <div className={`${c.card} border rounded-lg p-3`}><p className={`text-xs ${c.text}`}>"{step.script}"</p></div>}
                                 </div>
                               </details>
                             )}
                           </div>
+                          </div>
                         ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(r.phone_script || r.payment_plan || r.escalation_ladder?.length > 0 || r.collections_defense || r.hardship_letter) && (
+              <PartHeading>{t('br_grp_letters')}</PartHeading>
+            )}
+
+            {/* Collections defense */}
+            {r.collections_defense && (
+              <Section icon="🛡️" title={t('br_sec_collections')} badge={t('br_badge_important')} badgeColor={c.danger} defaultOpen c={c}>
+                <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.overview}</p>
+                {r.collections_defense.validation_letter && (
+                  <div>
+                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_validation_letter')}:</p>
+                    <LetterDoc text={r.collections_defense.validation_letter} title={t('br_validation_letter')} note={r.collections_defense.how_to_send} />
+                  </div>
+                )}
+                {r.collections_defense.what_to_say_on_phone && (
+                  <div className={`${c.warning} border rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.warningFg} mb-1`}>{t('br_if_they_call')}:</p>
+                    <p className="text-xs">"{r.collections_defense.what_to_say_on_phone}"</p>
+                  </div>
+                )}
+                {r.collections_defense.never_do?.length > 0 && (
+                  <div>
+                    <p className={`text-xs font-bold ${c.dangerFg} uppercase mb-1`}>{t('br_never_do')}:</p>
+                    {r.collections_defense.never_do.map((item, i) => (
+                      <p key={i} className={`text-xs ${c.textSecondary}`}>🚫 {item}</p>
+                    ))}
+                  </div>
+                )}
+              </Section>
+            )}
+
+            {/* Phone script */}
+            {r.phone_script && (
+              <Section icon="📞" title={t('br_sec_phone_script')} keepTogether c={c}>
+                {r.phone_script.opening && (
+                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
+                    <p className={`text-xs ${c.text}`}>"{r.phone_script.opening}"</p>
+                    <div className="mt-1.5"></div>
+                  </div>
+                )}
+                {r.phone_script.key_phrases?.length > 0 && (
+                  <div>
+                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('br_magic_phrases')}:</p>
+                    {r.phone_script.key_phrases.map((phrase, i) => (
+                      <div key={i} className="flex items-center gap-2 mb-1">
+                        <p className={`flex-1 text-xs ${c.text}`}>• "{phrase}"</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {r.phone_script.if_they_say_no && (
+                  <div className={`${c.warning} border rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.warningFg} mb-1`}>{t('br_if_they_say_no')}:</p>
+                    <p className="text-xs">{r.phone_script.if_they_say_no}</p>
+                  </div>
+                )}
+              </Section>
+            )}
+
+            {/* Payment plan */}
+            {r.payment_plan && (
+              <Section icon="💵" title={t('br_sec_payment_plan')} keepTogether c={c}>
+                <p className={`text-sm ${c.textSecondary}`}>{r.payment_plan.strategy}</p>
+                {r.payment_plan.offer_amount && (
+                  <div className={`${c.success} border rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.successFg}`}>{t('br_offer')}: {r.payment_plan.offer_amount}</p>
+                    {r.payment_plan.they_will_counter && (
+                      <p className="text-xs mt-1">{t('br_theyll_counter')}: {r.payment_plan.they_will_counter}</p>
+                    )}
+                    {r.payment_plan.accept_up_to && (
+                      <p className="text-xs">{t('br_accept_up_to')}: {r.payment_plan.accept_up_to}</p>
+                    )}
+                  </div>
+                )}
+                {r.payment_plan.script && (
+                  <div className={`${c.quoteBg} rounded-lg p-3`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('br_propose_this')}:</p>
+                    <p className={`text-xs ${c.text}`}>"{r.payment_plan.script}"</p>
+                    <div className="mt-1.5"></div>
+                  </div>
+                )}
+              </Section>
+            )}
+
+            {/* Escalation ladder */}
+            {r.escalation_ladder?.length > 0 && (
+              <Section icon="📈" title={t('br_sec_escalation')} keepTogether c={c}>
+                <p className={`text-xs ${c.textMuteded} mb-2`}>{t('br_escalation_hint')}</p>
+                <div className="space-y-2">
+                  {r.escalation_ladder.map((level, i) => (
+                    <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${c.quoteBg}`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${c.escalationNum}`}>{i + 1}</div>
+                      <div>
+                        <p className={`text-xs font-bold ${c.text}`}>{level.who}</p>
+                        <p className={`text-xs ${c.textSecondary}`}>{level.what_to_say}</p>
                       </div>
                     </div>
                   ))}
@@ -1249,8 +1353,29 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {(r.bill_autopsy || r.money_you_might_not_owe?.length > 0 || r.know_your_rights?.length > 0 || r.what_they_wont_tell_you?.length > 0 || r.assistance_programs?.length > 0 || r.verified_sources?.length > 0) && (
-              <p className={`text-xs font-semibold uppercase tracking-wide pt-2 ${c.textMuted}`}>{t('br_grp_bill')}</p>
+            {/* Hardship letter */}
+            {r.hardship_letter && (
+              <Section icon="📝" title={t('br_sec_hardship')} keepTogether c={c}>
+                <p className={`text-xs ${c.textMuteded} mb-2`}>{t('br_hardship_hint')}</p>
+                <LetterDoc text={r.hardship_letter} title={t('br_sec_hardship')} />
+              </Section>
+            )}
+
+            <PartHeading>{t('br_grp_support')}</PartHeading>
+
+            {/* Was "Know Your Rights", which sounds like homework. It is money
+                they may not owe, and that is what it says now. */}
+            {r.money_you_might_not_owe?.length > 0 && (
+              <Section icon="💰" title={t('br_sec_money_not_owed')} defaultOpen c={c}>
+                <div className="space-y-2">
+                  {r.money_you_might_not_owe.map((right, i) => (
+                    <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
+                      <p className="text-xs font-bold">{right.emoji ? `${right.emoji} ` : ''}{right.right}</p>
+                      <p className="text-xs mt-1">{right.explanation}</p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
             )}
 
             {/* Bill autopsy */}
@@ -1279,21 +1404,6 @@ const BillRescue = ({ tool }) => {
                 {r.bill_autopsy.request_itemized && (
                   <p className={`text-xs ${c.textSecondary}`}>💡 {r.bill_autopsy.request_itemized}</p>
                 )}
-              </Section>
-            )}
-
-            {/* Was "Know Your Rights", which sounds like homework. It is money
-                they may not owe, and that is what it says now. */}
-            {r.money_you_might_not_owe?.length > 0 && (
-              <Section icon="💰" title={t('br_sec_money_not_owed')} defaultOpen c={c}>
-                <div className="space-y-2">
-                  {r.money_you_might_not_owe.map((right, i) => (
-                    <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
-                      <p className="text-xs font-bold">{right.emoji ? `${right.emoji} ` : ''}{right.right}</p>
-                      <p className="text-xs mt-1">{right.explanation}</p>
-                    </div>
-                  ))}
-                </div>
               </Section>
             )}
 
@@ -1338,143 +1448,6 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* Verified sources — real pages web_search actually visited for
-                the billing-protection law/programs above (lib/groundedFacts.js),
-                not a model-recalled domain name. Absent, not empty, when the
-                pre-pass didn't run or cited nothing — see bill-rescue.js. */}
-            {r.verified_sources?.length > 0 && (
-              <Section icon="🔎" title={t('br_verified_sources_header')} c={c}>
-                <div className="space-y-2">
-                  {r.verified_sources.map((src, i) => (
-                    <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
-                      {src.title} ↗
-                    </a>
-                  ))}
-                </div>
-              </Section>
-            )}
-
-            {(r.phone_script || r.payment_plan || r.escalation_ladder?.length > 0 || r.collections_defense || r.hardship_letter) && (
-              <p className={`text-xs font-semibold uppercase tracking-wide pt-2 ${c.textMuted}`}>{t('br_grp_contact')}</p>
-            )}
-
-            {/* Payment plan */}
-            {r.payment_plan && (
-              <Section icon="💵" title={t('br_sec_payment_plan')} c={c}>
-                <p className={`text-sm ${c.textSecondary}`}>{r.payment_plan.strategy}</p>
-                {r.payment_plan.offer_amount && (
-                  <div className={`${c.success} border rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.successFg}`}>{t('br_offer')}: {r.payment_plan.offer_amount}</p>
-                    {r.payment_plan.they_will_counter && (
-                      <p className="text-xs mt-1">{t('br_theyll_counter')}: {r.payment_plan.they_will_counter}</p>
-                    )}
-                    {r.payment_plan.accept_up_to && (
-                      <p className="text-xs">{t('br_accept_up_to')}: {r.payment_plan.accept_up_to}</p>
-                    )}
-                  </div>
-                )}
-                {r.payment_plan.script && (
-                  <div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('br_propose_this')}:</p>
-                    <p className={`text-xs ${c.text}`}>"{r.payment_plan.script}"</p>
-                    <div className="mt-1.5"></div>
-                  </div>
-                )}
-              </Section>
-            )}
-
-            {/* Phone script */}
-            {r.phone_script && (
-              <Section icon="📞" title={t('br_sec_phone_script')} c={c}>
-                {r.phone_script.opening && (
-                  <div className={`${c.quoteBg} rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
-                    <p className={`text-xs ${c.text}`}>"{r.phone_script.opening}"</p>
-                    <div className="mt-1.5"></div>
-                  </div>
-                )}
-                {r.phone_script.key_phrases?.length > 0 && (
-                  <div>
-                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1.5`}>{t('br_magic_phrases')}:</p>
-                    {r.phone_script.key_phrases.map((phrase, i) => (
-                      <div key={i} className="flex items-center gap-2 mb-1">
-                        <p className={`flex-1 text-xs ${c.text}`}>• "{phrase}"</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {r.phone_script.if_they_say_no && (
-                  <div className={`${c.warning} border rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.warningFg} mb-1`}>{t('br_if_they_say_no')}:</p>
-                    <p className="text-xs">{r.phone_script.if_they_say_no}</p>
-                  </div>
-                )}
-              </Section>
-            )}
-
-            {/* Escalation ladder */}
-            {r.escalation_ladder?.length > 0 && (
-              <Section icon="📈" title={t('br_sec_escalation')} c={c}>
-                <p className={`text-xs ${c.textMuteded} mb-2`}>{t('br_escalation_hint')}</p>
-                <div className="space-y-2">
-                  {r.escalation_ladder.map((level, i) => (
-                    <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${c.quoteBg}`}>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black ${c.escalationNum}`}>{i + 1}</div>
-                      <div>
-                        <p className={`text-xs font-bold ${c.text}`}>{level.who}</p>
-                        <p className={`text-xs ${c.textSecondary}`}>{level.what_to_say}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Section>
-            )}
-
-            {/* Collections defense */}
-            {r.collections_defense && (
-              <Section icon="🛡️" title={t('br_sec_collections')} badge={t('br_badge_important')} badgeColor={c.danger} defaultOpen c={c}>
-                <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.overview}</p>
-                {r.collections_defense.validation_letter && (
-                  <div>
-                    <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_validation_letter')}:</p>
-                    <div className={`${c.quoteBg} rounded-lg p-3 font-mono`}>
-                      <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.collections_defense.validation_letter}</p>
-                    </div>
-                    <div className="mt-1.5"></div>
-                  </div>
-                )}
-                {r.collections_defense.what_to_say_on_phone && (
-                  <div className={`${c.warning} border rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.warningFg} mb-1`}>{t('br_if_they_call')}:</p>
-                    <p className="text-xs">"{r.collections_defense.what_to_say_on_phone}"</p>
-                  </div>
-                )}
-                {r.collections_defense.never_do?.length > 0 && (
-                  <div>
-                    <p className={`text-xs font-bold ${c.dangerFg} uppercase mb-1`}>{t('br_never_do')}:</p>
-                    {r.collections_defense.never_do.map((item, i) => (
-                      <p key={i} className={`text-xs ${c.textSecondary}`}>🚫 {item}</p>
-                    ))}
-                  </div>
-                )}
-              </Section>
-            )}
-
-            {/* Hardship letter */}
-            {r.hardship_letter && (
-              <Section icon="📝" title={t('br_sec_hardship')} c={c}>
-                <p className={`text-xs ${c.textMuteded} mb-2`}>{t('br_hardship_hint')}</p>
-                <div className={`${c.quoteBg} rounded-lg p-4`}>
-                  <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.hardship_letter}</p>
-                </div>
-                <div className="mt-1.5"></div>
-              </Section>
-            )}
-
-            {(r.follow_up || r.worst_case) && (
-              <p className={`text-xs font-semibold uppercase tracking-wide pt-2 ${c.textMuted}`}>{t('br_grp_later')}</p>
-            )}
-
             {/* Follow-up */}
             {r.follow_up && (
               <Section icon="📅" title={t('br_sec_after_call')} c={c}>
@@ -1509,17 +1482,20 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* ── The ending: one thing to leave with. It used to restate
-                today's job and the next step under three more "next"
-                headings; both are already the first things on the page. ── */}
-            {(r.todays_job?.action || r.recommendation?.headline) && (
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-sm font-bold ${c.text} mb-2`}>💚 {t('br_end_remember')}</p>
-                <p className={`text-xs ${c.text}`}>{t('br_end_remember_body')}</p>
-                {r.permission && (
-                  <p className={`text-sm ${c.textSecondary} mt-3 pt-3 border-t ${c.border}`}>{r.permission}</p>
-                )}
-              </div>
+            {/* Verified sources — real pages web_search actually visited for
+                the billing-protection law/programs above (lib/groundedFacts.js),
+                not a model-recalled domain name. Absent, not empty, when the
+                pre-pass didn't run or cited nothing — see bill-rescue.js. */}
+            {r.verified_sources?.length > 0 && (
+              <Section icon="🔎" title={t('br_verified_sources_header')} c={c}>
+                <div className="space-y-2">
+                  {r.verified_sources.map((src, i) => (
+                    <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
+                      {src.title} ↗
+                    </a>
+                  ))}
+                </div>
+              </Section>
             )}
 
             {/* ── What you might do next, named as actions rather than as the
@@ -2608,13 +2584,16 @@ BillRescue.displayName = 'BillRescue';
 // SECTION COMPONENT (declared after BillRescue so PF-14's first-useState
 // scan lands inside the main component, not this helper)
 // ════════════════════════════════════════════════════════════
-function Section({ icon, title, badge, badgeColor, children, defaultOpen = false, c }) {
+function Section({ icon, title, badge, badgeColor, children, defaultOpen = false, keepTogether = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
   const ui = (
     // Site style: a heading over a rule, not a card (the page's tool card is
     // the box). Prints whether open or closed (data-print-heading /
     // data-sec-body, printStyles).
-    <div className={`border-t ${c.border}`}>
+    // keepTogether: a short section (a letter, a script, a ladder) prints whole
+    // on one page; the heading wrapper keeps any heading with its first item.
+    <div className={`border-t ${c.border} ${keepTogether ? 'keep-together' : ''}`}>
+      <div className="keep-with-next">
       <button data-print-heading onClick={() => setOpen(p => !p)}
         className="w-full py-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
@@ -2624,10 +2603,23 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
         </div>
         <span data-print-hide><Caret open={open} /></span>
       </button>
+      </div>
       <div data-sec-body hidden={!open} className="pb-5 space-y-3">{children}</div>
     </div>
   );
   return ui;
 }
+
+// One of the answer's four parts — next step, roadmap, letters and scripts,
+// supporting information (owner, 2026-10-25). An h2, so copy and print read
+// it as the level above the sections inside it.
+// (An arrow with no return statement: the audit reads the file's last
+// top-level `return (` as the tool's main render.)
+const PartHeading = ({ children }) => (
+  <h2 className="keep-with-next pt-5 pb-1 text-lg font-bold text-[var(--sc-strong)] border-b border-[var(--sc-line)] print:break-after-avoid"
+    style={{ fontFamily: "'Source Serif 4', Georgia, serif", breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
+    {children}
+  </h2>
+);
 
 export default BillRescue;

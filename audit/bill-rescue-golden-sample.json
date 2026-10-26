@@ -144,13 +144,11 @@
           }
         ],
         "worst_case": "If nothing is done: after 180 days most hospitals send accounts to collections. At 12 months post-service the debt becomes reportable and could drop your credit score 50–100 points. Medical debt in collections is removed from credit reports after 7 years. Wage garnishment from medical debt requires a court judgment — a process that typically takes 1–2 years and only occurs if you completely ignore legal notices. $2,400 is below many states' small claims thresholds, meaning a collector could pursue it in small claims court, but this is uncommon for balances that show any contact or payment history.",
-        "worst_case_reassurance": "Even if this bill sits, goes to collections, and eventually hits your credit report — that's a recoverable situation. A $2,400 medical collection is not a bankruptcy. Credit scores bounce back, medical debt carries less weight with modern scoring models (FICO 9 and VantageScore 4.0 already ignore paid medical collections), and debt collectors can still settle for less than the original amount, often 40–60 cents on the dollar, even years later. You are not trapped.",
         "follow_up": {
           "document_this": "After every call: write down the representative's full name, direct extension if given, the date and time of the call, any confirmation or reference number provided, and the exact terms of any agreement discussed — balance amount, monthly payment, due date, and when written confirmation will arrive.",
           "calendar_reminder": "Set a reminder for July 25, 2026: 'Check that payment plan agreement arrived in writing — call if not received.'",
           "if_they_dont_follow_through": "If the hospital fails to send the written agreement, charges late fees, or sends the account to collections despite your arrangement: call and reference your call log by date and rep name. If unresolved, file a complaint with your state Attorney General's consumer protection office and the Consumer Financial Protection Bureau at consumerfinance.gov/complaint — hospitals respond quickly to CFPB complaints."
-        },
-        "permission": "You are allowed to handle a $2,400 bill in imperfect, interrupted, anxious steps — making one call, stopping, regrouping, and calling again — because doing it messily still counts as doing it."
+        }
       }
     },
     {
@@ -285,13 +283,11 @@
           }
         ],
         "worst_case": "Ohne jegliche Reaktion: Das Krankenhaus stellt nach weiteren 2–4 Mahnungen (typischerweise nach 3–6 Monaten) einen Mahnbescheid über das Gericht aus. Nach Rechtskraft des Mahnbescheids kann Kontopfändung oder Lohnpfändung (bis zur Pfändungsfreigrenze nach § 850c ZPO) beantragt werden. Eine Eintragung bei der SCHUFA erfolgt erst nach einem rechtskräftigen Urteil oder Mahnbescheid — nicht automatisch durch die offene Rechnung. Die Verjährungsfrist beträgt 3 Jahre (Ende 2029 für eine Rechnung aus 2026).",
-        "worst_case_reassurance": "Selbst wenn es zu einem Mahnbescheid käme: Die Pfändungsfreigrenzen in Deutschland schützen ein Grundeinkommen — du würdest nie ohne Existenzminimum dastehen. Und ein Gerichtsverfahren dauert Monate, in denen du weiterhin verhandeln kannst. Du bist mit 2.400 Euro und 100 Euro monatlicher Rate genau in dem Bereich, in dem Krankenhäuser erfahrungsgemäß Ratenzahlungen bevorzugen — es ist günstiger für sie als ein langwieriges Inkassoverfahren.",
         "follow_up": {
           "document_this": "Name der Gesprächsperson, Datum und Uhrzeit des Anrufs, Inhalt der Vereinbarung (Ratenbetrag, Startdatum, Laufzeit), Referenz- oder Vorgangsnummer, und ob eine schriftliche Bestätigung zugesagt wurde.",
           "calendar_reminder": "Erinnerung für den 25. Juli 2026 setzen: 'Schriftliche Bestätigung der Ratenzahlungsvereinbarung vom Krankenhaus erhalten?' — falls nicht, erneut nachhaken.",
           "if_they_dont_follow_through": "Schriftlich per Einschreiben an die Patientenverwaltung erinnern und auf das dokumentierte Telefonat vom [Datum] mit [Name der Person] Bezug nehmen. Falls keine Reaktion innerhalb von 14 Tagen: Verbraucherzentrale oder Caritas-Schuldnerberatung einschalten, die können als neutrale Vermittler auftreten."
-        },
-        "permission": "Du musst dieses Gespräch nicht perfekt führen — es reicht, wenn du anrufst, auch wenn deine Stimme zittert, auch wenn du nicht alle Antworten kennst, auch wenn du nach einem Notfall noch erschöpft bist."
+        }
       }
     },
     {

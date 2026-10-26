@@ -71,7 +71,7 @@ function headingLevel(el) {
   const m = /^H([1-6])$/.exec(el.tagName);
   if (m) return Math.min(3, Number(m[1]));
   if (el.tagName === 'SUMMARY') return 2;
-  if (isSectionToggle(el)) return 2;
+  if (isSectionToggle(el)) return 3; // under a part heading (h2)
   const cls = (el.className || '').toString();
   if (/\buppercase\b/.test(cls) && /\bfont-(bold|black|semibold)\b/.test(cls)) return 3;
   return 0;
