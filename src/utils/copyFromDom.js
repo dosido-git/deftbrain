@@ -38,13 +38,19 @@ const SKIP_TAGS = new Set([
 
 const SKIP_ATTR = ['data-print-hide', 'data-copy-hide', 'aria-hidden'];
 
+// A section's toggle is a <button data-print-heading> holding the section's
+// title. Print shows it as a heading; so does copy (2026-10-25: Bill Rescue's
+// copy had every section's body under no title at all).
+const isSectionToggle = el => el.tagName === 'BUTTON' && el.hasAttribute('data-print-heading');
+
 function skipped(el) {
+  if (isSectionToggle(el)) return false;
   if (SKIP_TAGS.has(el.tagName)) return true;
   for (const a of SKIP_ATTR) if (el.getAttribute(a) === 'true' || el.hasAttribute(a)) return true;
-  // Collapsed <details> — on screen it is one line, so it copies as one line.
-  // The contents are genuinely not being shown and pasting them would be a
-  // different document from the one the person is looking at.
-  if (el.tagName === 'DETAILS' && !el.open) return true;
+  // Collapsed <details> and collapsed sections are NOT skipped (2026-10-25):
+  // copy matches print, which opens every one (ToolPageWrapper, printStyles).
+  // Skipping them cut Bill Rescue's copied plan to a third of its printout —
+  // the letters, scripts and assistance programs a person copies it for.
   // A block that is nothing but links is navigation — the "related tools" row
   // at the foot of a result. Structural rather than matching its heading,
   // which would have to be done in thirteen languages.
@@ -62,6 +68,7 @@ function headingLevel(el) {
   const m = /^H([1-6])$/.exec(el.tagName);
   if (m) return Math.min(3, Number(m[1]));
   if (el.tagName === 'SUMMARY') return 2;
+  if (isSectionToggle(el)) return 2;
   const cls = (el.className || '').toString();
   if (/\buppercase\b/.test(cls) && /\bfont-(bold|black|semibold)\b/.test(cls)) return 3;
   return 0;
@@ -76,12 +83,25 @@ function headingLevel(el) {
 function walk(el, out, depth) {
   if (!(el instanceof Element) || skipped(el)) return;
 
+  // A collapsed section body ([data-sec-body][hidden]) and a closed <details>'
+  // contents are display:none on screen but print, so they copy too.
   const style = typeof getComputedStyle === 'function' ? getComputedStyle(el) : null;
-  if (style && (style.display === 'none' || style.visibility === 'hidden')) return;
+  const collapsed = el.hasAttribute('data-sec-body') || (el.parentElement && el.parentElement.tagName === 'DETAILS');
+  if (style && !collapsed && (style.display === 'none' || style.visibility === 'hidden')) return;
 
   const h = headingLevel(el);
   if (h) {
-    const text = clean(el.textContent);
+    // Without the caret (▾/▲) a toggle carries next to its title.
+    // Leaf text joined with spaces ("🗺️" + "Your roadmap" are separate spans),
+    // without the caret (▾/▲) a toggle carries next to its title.
+    const leaves = [];
+    const collect = n => {
+      if (n.nodeType === 3) { leaves.push(n.textContent); return; }
+      if (n.nodeType !== 1 || n.hasAttribute('aria-hidden') || n.hasAttribute('data-print-hide')) return;
+      n.childNodes.forEach(collect);
+    };
+    el.childNodes.forEach(collect);
+    const text = clean(leaves.join(' '));
     if (text) out.push('', '#'.repeat(h) + ' ' + text, '');
     return;
   }
@@ -152,10 +172,14 @@ export function serializeResults(title) {
     if (line && EMOJI_ONLY.test(line)) continue;                 // "🔴", "\"\""
     if (/^[^\s].{0,28}:$/.test(line) && !lines[i + 1]) continue; // "Trade-off:" with nothing after
     // A heading with no body — the section rendered empty for this result.
+    // Followed by a heading of a DIFFERENT level it is not empty: it is a
+    // group label over its sections ("Checking the bill", "Your roadmap" →
+    // "Today"), and dropping it lost the plan's structure (2026-10-25).
     if (isHeading(line)) {
       let j = i + 1;
       while (j < lines.length && lines[j] === '') j++;
-      if (j >= lines.length || isHeading(lines[j])) continue;
+      const level = l => l.match(/^#+/)[0].length;
+      if (j >= lines.length || (isHeading(lines[j]) && level(lines[j]) === level(line))) continue;
     }
     // A bare one-word qualifier belongs to the line above it — but ONLY when
     // that line is itself a label. Without the punctuation test this happily

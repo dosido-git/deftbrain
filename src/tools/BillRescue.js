@@ -853,6 +853,21 @@ const BillRescue = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || 'Bill Rescue');
 
+  // ── A new view opens at the top of the tool ────────────────
+  // Triage, Quick Check, Call log and the rest are opened from links low in
+  // the page (under the form, under the answer). Without this the new view
+  // rendered while the window stayed where the link was — the visitor saw the
+  // bottom of Call log, or nothing they recognised (owner, 2026-10-25).
+  const toolTopRef = useRef(null);
+  const firstViewRef = useRef(true);
+  useEffect(() => {
+    if (firstViewRef.current) { firstViewRef.current = false; return; }
+    // After the new view has laid out: a smooth scroll started in the same
+    // frame as the swap was cancelled by the page height changing under it.
+    const tid = setTimeout(() => revealSection(toolTopRef.current, { frame: true }), 120);
+    return () => clearTimeout(tid);
+  }, [view]);
+
   // ── Scroll to results when ready ───────────────────────────
   useEffect(() => {
     if (results && resultsRef.current) {
@@ -2471,7 +2486,7 @@ const BillRescue = ({ tool }) => {
   );
 
   return (
-    <div className={`space-y-4 ${c.text}`}>
+    <div ref={toolTopRef} className={`space-y-4 scroll-mt-24 ${c.text}`}>
       {/* ── Tool header ── */}
       {/* Site style (2026-09-27): no card of its own. It bleeds to the edges
           of the page's tool card on a pale band of the tool's color (negative
