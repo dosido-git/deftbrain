@@ -37,7 +37,7 @@ const CONSISTENCY_CHECKS = `8. Two parts of the output that CONTRADICT each othe
 // "the night before" when the input only said she stayed late; a caption put
 // sand "on my face"; a workout "why" said "you mentioned stiff shoulders" when
 // it was the neck.
-const INVENTED_CHECK = `10. A DETAIL ABOUT THE VISITOR OR THEIR SITUATION THAT THEY NEVER GAVE: an event, time, place, person, feeling, body part, history or backstory stated as fact, or "you mentioned…" / "you said…" for something they did not say. Compare every such detail with what they typed. General advice, suggestions and clearly-marked examples are not details about them. Bracketed placeholders are never violations.`;
+const INVENTED_CHECK = `10. A DETAIL ABOUT THE VISITOR OR THEIR SITUATION THAT THEY NEVER GAVE: an event, time, place, person, feeling, body part, history or backstory stated as fact, or "you mentioned…" / "you said…" for something they did not say. Compare every such detail with what they typed. This includes a STATUS the input does not establish, stated as fact either way ("your landlord has not filed anything", "your credit is not affected yet") — it should say what they have not mentioned ("you haven't mentioned a court notice") — and, in a letter or script they will send, any claim in their own voice about what they have done or are doing ("I am applying for assistance") that they never said. General advice, suggestions and clearly-marked examples are not details about them. Bracketed placeholders are never violations.`;
 
 // The visitor's own settings, from the request body (lib/outputStandard.js
 // carries it per request). Long free text is already in `supplied`; what
@@ -422,7 +422,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
       idx = named;
     }
     const entry = allByField[idx];
-    if (!entry || typeof fix.value !== 'string') return;
+    if (!entry || typeof fix.value !== 'string' || namesAField(fix.value, draft)) return;
     setByPath(draft, entry[0], fix.value.trim());
   });
 
@@ -447,6 +447,20 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
 // Every string (and number) leaf of a response, as [[path, text]] — the field list a
 // whole-response check needs, without each route hand-listing its schema.
+// T6 (audit/DEFECT-TYPES.md): a rewrite that points at another section by its
+// JSON key — Bill Rescue's "Propose this" read "Use todays_job and
+// payment_plan.strategy" (owner, 2026-10-26). The reader sees headings, never
+// keys, so a repair that names one is refused and the field keeps its text.
+function namesAField(text, draft) {
+  const keys = new Set();
+  const walk = v => {
+    if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { if (k.includes('_')) keys.add(k); walk(x); }
+  };
+  walk(draft);
+  return (String(text).match(/\b[a-z]+(?:_[a-z]+)+\b/g) || []).some(w => keys.has(w));
+}
+
 function stringFields(obj, max = 60) {
   const out = [];
   const walk = (v, p) => {
@@ -514,4 +528,4 @@ async function checkConsistency(draft, { label, promise, userLanguage, locale = 
   }
 }
 
-module.exports = { runOutputGuard, checkConsistency, stringFields, suppliedText, V2_CHECKS, CONSISTENCY_CHECKS, VIOLATION_TYPES, visitorChoices };
+module.exports = { runOutputGuard, checkConsistency, stringFields, namesAField, suppliedText, V2_CHECKS, CONSISTENCY_CHECKS, VIOLATION_TYPES, visitorChoices };

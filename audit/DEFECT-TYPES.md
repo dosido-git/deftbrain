@@ -151,6 +151,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | TheRunthrough — Cut mode adds a sentence | **fixed with shared fix** (check 10) |
 | LeverageLogic — visitor's own assessment recast as "your employer indicated" | **fixed with shared fix** (check 10) |
 | Awkward Silence Filler — "talking to: boss, panicking", no setting chosen; the answer assumed an elevator (2026-10-23). Cause: the template's two examples were elevator scenes | **fixed with shared fix** (`checkConsistency` wired as the after-display check) + elevator examples removed + an explicit "no setting given" line |
+| Bill Rescue — "Your landlord has not filed anything" (input never said); hardship letter: "I am actively applying for assistance" (only recommended) (owner, 2026-10-26) | **fixed with shared fix** (check 10 now covers a status the input does not establish and claims in the visitor's own voice inside a letter or script) + prompt: where_you_stand only as far as the input shows; letter details they must supply in [brackets] |
 
 ---
 
@@ -197,6 +198,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | DateNight repair wrote "the confirmed notes describe…" | fixed per tool (repair wording) |
 | FutureProof — "INFERRED:" marker in prose | **fixed with shared fix** (reply filter strips prompt markers in every language; a bare enum value is kept) |
 | NameStorm Quick — "⚠️ null" under every name (nullable field filled with the word null) | **fixed with shared fix** (reply filter turns a null/undefined-only string into a real null in every language; drops it from arrays) |
+| Bill Rescue — "Propose this: Use todays_job and payment_plan.strategy": a repair pointed at sections by their JSON keys (owner, 2026-10-26) | **fixed with shared fix** (`outputGuard` `namesAField`: guard, repeat and certainty repairs that name a key are refused; `planNote` tells every later pass to refer to sections by what they say, never by key or step number) |
 | UpsellShield — "out-of-door price" | open, minor |
 
 ---
@@ -228,6 +230,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | ConceptCoach — example 3 stage/churn | fixed |
 | EmailUrgencyTriager — "Sept 12 instead of Oct 1" | **fixed** (dates computed from today, 13 languages) |
 | ReadTheRoom — "Work Happy Hour" type, offsite description | **fixed** (description now a happy hour, 13 languages) |
+| Bill Rescue — the printed "Before You Go" caveat (fixed per tool, `src/data/tools.js`) read "If a collector has the bill…" at the end of a landlord plan (owner, 2026-10-26) | **fixed** (caveat now holds for every bill; rule written beside the field: it prints on every answer, so it must hold for every answer — the other nine checked, all hold) |
 
 ---
 

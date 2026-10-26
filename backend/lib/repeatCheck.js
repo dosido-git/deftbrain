@@ -17,7 +17,7 @@
 //   await trimRepeats(parsed, { label: 'bill-rescue', userLanguage });
 const { callClaudeWithRetry, withLanguage } = require('./claude');
 const { MODELS } = require('./models');
-const { stringFields } = require('./outputGuard');
+const { stringFields, namesAField } = require('./outputGuard');
 const { NO_QUOTE_RULE } = require('./factCheck');
 
 const SYSTEM = `You edit one answer made of many sections, shown to the reader together in the order given. Find fields that REPEAT what an EARLIER field already says: the same advice, the same fact, the same warning, or a letter or script that is substantially the same as one given earlier.
@@ -72,7 +72,7 @@ async function trimRepeats(draft, { label, userLanguage, order } = {}) {
       const before = known.get(r?.path);
       const after = typeof r?.replacement === 'string' ? r.replacement.trim() : '';
       // Only ever shorter, never empty: this check removes, it does not write.
-      if (!before || !after || after.length >= before.length) continue;
+      if (!before || !after || after.length >= before.length || namesAField(after, draft)) continue;
       if (setPath(draft, r.path, after)) changed++;
     }
     if (changed) console.log(`[${label}-repeat-check] trimmed ${changed} repeated field(s)`);

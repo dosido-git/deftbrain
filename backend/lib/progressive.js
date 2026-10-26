@@ -283,6 +283,6 @@ function planFirst(planKeys, runPlan, groups, runFollow) {
 // questioned the pronouns they used. "Do not restate" — passes handed the
 // plan repeated its observations in their own sections (Leverage Logic lost
 // three blind comparisons on repetition).
-const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass and shown to the reader above your sections — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording), and do not restate what it already says: add what it does not.\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
+const planNote = (plan, keys) => `\n\nALREADY WRITTEN by another pass and shown to the reader above your sections — treat it as final. Build on it; never contradict, replace or question its choices (names, pronouns, facts, wording), and do not restate what it already says: add what it does not. The reader sees these as headed sections, never as keys: refer to them by what they say ('the letter above', 'once they accept the plan'), never by a key name or a step number.\n${JSON.stringify(Object.fromEntries(keys.map(k => [k, plan?.[k]])))}`;
 
 module.exports = { progressive, answer, whileSearching, keyGroups, onlyKeys, planFirst, planNote, takeKeys, noOverlap };

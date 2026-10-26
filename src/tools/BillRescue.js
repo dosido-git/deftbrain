@@ -770,6 +770,7 @@ const BillRescue = ({ tool }) => {
     }
     if (r.phone_script) {
       out += `📞 ${t('br_copy_phone_script')}:\n`;
+      if (r.phone_script.when_to_use) out += `${r.phone_script.when_to_use}\n`;
       if (r.phone_script.opening) out += `${t('br_copy_opening')}: "${r.phone_script.opening}"\n`;
       r.phone_script.key_phrases?.forEach(p => { out += `• "${p}"\n`; });
       if (r.phone_script.if_they_say_no) out += `${t('br_copy_if_no')}: ${r.phone_script.if_they_say_no}\n`;
@@ -811,7 +812,8 @@ const BillRescue = ({ tool }) => {
       r.assistance_programs.forEach(p => { out += `• ${p.program}: ${p.who_qualifies} — ${p.how_to_apply}\n`; });
       out += '\n';
     }
-    if (r.worst_case) out += `⚠️ ${t('br_copy_worst_case')}: ${r.worst_case}\n`;
+    if (Array.isArray(r.worst_case)) { out += `⚠️ ${t('br_copy_worst_case')}:\n`; r.worst_case.forEach(w => { out += `• ${w}\n`; }); }
+    else if (r.worst_case) out += `⚠️ ${t('br_copy_worst_case')}: ${r.worst_case}\n`;
     if (r.worst_case_reassurance) out += `💚 ${r.worst_case_reassurance}\n\n`;
     if (r.follow_up) {
       out += `📅 ${t('br_copy_follow_up')}:\n`;
@@ -1285,6 +1287,10 @@ const BillRescue = ({ tool }) => {
             {/* Phone script */}
             {r.phone_script && (
               <Section icon="📞" title={t('br_sec_phone_script')} keepTogether c={c}>
+                {/* A fallback to the written route, and says when (owner, 2026-10-26). */}
+                {r.phone_script.when_to_use && (
+                  <p className={`text-xs ${c.textSecondary}`}>{r.phone_script.when_to_use}</p>
+                )}
                 {r.phone_script.opening && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-xs font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
@@ -1479,7 +1485,14 @@ const BillRescue = ({ tool }) => {
             {/* Worst case */}
             {r.worst_case && (
               <Section icon="⚠️" title={t('br_sec_worst_case')} c={c}>
-                <p className={`text-sm ${c.textSecondary}`}>{r.worst_case}</p>
+                {/* A list since 2026-10-26; saved answers hold one paragraph. */}
+                {Array.isArray(r.worst_case) ? (
+                  <ul className={`text-sm ${c.textSecondary} list-disc ps-5 space-y-1`}>
+                    {r.worst_case.map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                ) : (
+                  <p className={`text-sm ${c.textSecondary}`}>{r.worst_case}</p>
+                )}
                 {r.worst_case_reassurance && (
                   <p className={`text-xs ${c.textMuteded} italic`}>💚 {r.worst_case_reassurance}</p>
                 )}

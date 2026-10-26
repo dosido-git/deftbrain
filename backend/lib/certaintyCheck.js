@@ -20,7 +20,7 @@
 //   await calibrateClaims(parsed, { label: 'bill-rescue', userLanguage });
 const { callClaudeWithRetry, withLanguage } = require('./claude');
 const { MODELS } = require('./models');
-const { stringFields } = require('./outputGuard');
+const { stringFields, namesAField } = require('./outputGuard');
 const { NO_QUOTE_RULE, setByPath } = require('./factCheck');
 
 const SYSTEM = `You review one finished answer for OVERREACH: places where it sounds more certain than anyone could be. Rewrite only those fields.
@@ -61,7 +61,7 @@ async function calibrateClaims(draft, { label, userLanguage } = {}) {
       const before = known.get(r?.path);
       const after = typeof r?.replacement === 'string' ? r.replacement.trim() : '';
       // A calibration, not a rewrite: never empty, never much longer or shorter.
-      if (!before || !after || after.length > before.length * 1.6 + 40 || after.length < before.length * 0.7) continue;
+      if (!before || !after || after.length > before.length * 1.6 + 40 || after.length < before.length * 0.7 || namesAField(after, draft)) continue;
       if (setByPath(draft, r.path, after)) changed++;
     }
     if (changed) console.log(`[${label}-certainty-check] calibrated ${changed} overreaching field(s)`);

@@ -7,6 +7,9 @@
  * (In a Nutshell: when / give / get / edge), seo*, faq, and guide:
  *   guide.tips        — the "Good to Know" list
  *   guide.beforeYouGo — optional; the one caveat to read before acting
+ *     It prints at the end of every answer, so it must hold for EVERY answer
+ *     the tool gives — never a caveat for one case ("If a collector has the bill…"
+ *     closed a landlord plan, owner 2026-10-26).
  * Only fields the page shows belong here (2026-10-08: overview, howToUse,
  * example and pitfalls removed — the page stopped showing them on 2026-08-09).
  */
@@ -8439,7 +8442,7 @@ tagline: "Take command of your available energy",
       "Log victories immediately — watching your savings total grow builds the habit",
       "The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit"
     ],
-    beforeYouGo: "If a collector has the bill, don't pay or agree the debt is yours until they've validated it in writing. On an old debt, even a small payment can restart the time limit for collecting it.",
+    beforeYouGo: "Get any agreement in writing before you pay. A promise made on the phone is hard to hold anyone to later.",
 
   },
   crossRefs: ['MoneyDiplomat', 'ChaosPilot'],

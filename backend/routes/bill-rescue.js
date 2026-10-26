@@ -230,7 +230,9 @@ ${hasBillImage ? `The user has uploaded a photo/screenshot of their bill. Examin
 - Any amounts that seem inflated
 Include your findings in the bill_autopsy section.` : ''}
 
-ONE SEQUENCE: todays_job and action_steps are THE order of actions. Nothing anywhere else may tell them to do something sooner, later, or contrary to it — if it says not to call yet, a phone script is for when THEY call or for a later step, and says so.
+ONE SEQUENCE: todays_job and action_steps are THE order of actions. Nothing anywhere else may tell them to do something sooner, later, or contrary to it — if it says not to call yet, a phone script is for when THEY call or for a later step, and says so. Writing is the main route whenever a record matters; a call is the fallback. The main path comes first and in the order it happens (send the proposal → they accept → confirm the agreement in writing → pay); what to do if they refuse or escalate comes after it. Refer to a step by what it does ('once they accept the plan'), never by a number.
+
+AMOUNTS: write every amount as the currency symbol and digits, no cents unless the bill shows cents — ${sym}825, ${sym}1,650 — never in words.
 
 LETTERS look like letters: real line breaks (\n) — date, sender and recipient address lines each on their own line, a blank line between paragraphs, numbered requests one per line, sign-off on its own lines. Nothing that is not part of the letter goes inside it — no notes, tips, headings like '--- LETTER ---', or how to send it (certified mail, keep the receipt); say those in the step that uses it.
 
@@ -309,7 +311,7 @@ Return ONLY valid JSON with ALL applicable sections:
   "verdict": {
     "status": "Exactly one of these and nothing else: FINE, SERIOUS_BUT_EARLY, URGENT, ALREADY_DAMAGED",
     "headline": "The account's status, stated plainly — what it is and that there are options: 'In collections — you still have options', 'Past due, not yet in collections', 'Current, with charges worth checking'. Never open with a judgment word (damaged, bad, ruined, serious). 4-9 words",
-    "where_you_stand": ["Two or three SHORT statements — eight to fourteen words each, no subordinate clauses. What is still true in their favour: credit not at risk yet, still dealing with the original creditor, nothing lost. State it flatly and confidently; do not explain the mechanism or cite how many days anything takes."]
+    "where_you_stand": ["Two or three SHORT statements — eight to fourteen words each, no subordinate clauses. What is still true in their favour, ONLY as far as their input shows it. Where it depends on something they have not said, say so: 'You haven't mentioned a court notice', not 'Nothing has been filed'. Do not explain the mechanism or cite how many days anything takes."]
   },
 
   "todays_job": {
@@ -352,7 +354,8 @@ Return ONLY valid JSON with ALL applicable sections:
 
   "phone_script": {
     "opening": "Exact first sentence when they answer. Include account reference.",
-    "key_phrases": ["3-5 magic phrases that unlock better treatment for this bill type."],
+    "when_to_use": "When to use this call, in one short sentence that fits THE SEQUENCE — 'If they call you, or if they have not replied in writing within a week.'",
+    "key_phrases": ["3-5 useful phrases that get better treatment for this bill type."],
     "if_they_say_no": "Exact response when they refuse. Who to escalate to and what to say."
   }${hasAfford || hasAmount ? `,
 
@@ -390,7 +393,7 @@ Return ONLY valid JSON with ALL applicable sections:
     "never_do": ["3-4 things to NEVER do with collectors"]
   },
 ` : ''}
-  "hardship_letter": "COMPLETE letter ready to send (LETTERS rule). 150-250 words. Date, 'To Whom It May Concern', situation (${reasonText}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
+  "hardship_letter": "COMPLETE letter ready to send (LETTERS rule). 150-250 words. Date, 'To Whom It May Concern', situation (${reasonText}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Only facts they gave: nothing in their voice about what they have done or are doing (applying for help, a new job) unless they said it — a detail they must supply goes in [brackets].",
 
   "know_your_rights": [
     {"right": "A specific legal right that applies to THIS bill type, this amount and this overdue status. Name the statute, rule or programme where there is one, and only where you are sure of it.", "explanation": "What it means in plain language and how to use it — the sentence to say, or the thing to ask for. — 1-2 sentences"}
@@ -402,10 +405,10 @@ Return ONLY valid JSON with ALL applicable sections:
     {"program": "Specific program name", "who_qualifies": "Eligibility in plain language", "how_to_apply": "Exact steps — phone/website/location"}
   ],
 
-  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline. Plain facts, no reassurance paragraph.",
+  "worst_case": ["Two or three separate consequences if nothing changes, one per item, each one short sentence — e.g. the next fee, the credit report, a court step. Realistic, not fear-mongering, no reassurance."],
 
   "follow_up": {
-    "document_this": "What to write down after the call: rep name, confirmation number, agreements.",
+    "document_this": "What to write down when you hear back, by letter or by phone: who, the date, what was agreed, any reference number.",
     "calendar_reminder": "Specific reminder to set with date.",
     "if_they_dont_follow_through": "What to do if the company doesn't honor the agreement."
   }
@@ -413,7 +416,7 @@ Return ONLY valid JSON with ALL applicable sections:
 
 Your response MUST contain ALL ${keysB.length} top-level keys — ${keysB.join(', ')} — and NO other keys.
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): know_your_rights ≤ 4, what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, never_do ≤ 4. A focused, fully-closed response beats a long truncated one.
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): know_your_rights ≤ 4, what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, never_do ≤ 4, worst_case ≤ 3. A focused, fully-closed response beats a long truncated one.
 
 CONSISTENCY RULES (recompute before writing — numbers must reconcile):
 - NEVER state a company phone number or email address that is not in the VERIFIED CURRENT FACTS block or the user's own bill — tell them to use the number printed on the bill instead.`;

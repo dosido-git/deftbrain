@@ -143,7 +143,11 @@
             "how_to_apply": "Apply at healthcare.gov or your state Medicaid office. When applying, request retroactive coverage and mention the ER visit date. If approved, the plan pays the bill directly."
           }
         ],
-        "worst_case": "If nothing is done: after 180 days most hospitals send accounts to collections. At 12 months post-service the debt becomes reportable and could drop your credit score 50–100 points. Medical debt in collections is removed from credit reports after 7 years. Wage garnishment from medical debt requires a court judgment — a process that typically takes 1–2 years and only occurs if you completely ignore legal notices. $2,400 is below many states' small claims thresholds, meaning a collector could pursue it in small claims court, but this is uncommon for balances that show any contact or payment history.",
+        "worst_case": [
+          "If nothing is done: after 180 days most hospitals send accounts to collections.",
+          "At 12 months post-service the debt becomes reportable and could drop your credit score 50–100 points.",
+          "Medical debt in collections is removed from credit reports after 7 years."
+        ],
         "follow_up": {
           "document_this": "After every call: write down the representative's full name, direct extension if given, the date and time of the call, any confirmation or reference number provided, and the exact terms of any agreement discussed — balance amount, monthly payment, due date, and when written confirmation will arrive.",
           "calendar_reminder": "Set a reminder for July 25, 2026: 'Check that payment plan agreement arrived in writing — call if not received.'",
@@ -282,7 +286,11 @@
             "how_to_apply": "Unter www.verbraucherzentrale.de Beratung zu Schulden und Inkasso buchen oder die Hotline der jeweiligen Landesverbraucherzentrale anrufen — Erstberatung ist in vielen Bundesländern kostenfrei."
           }
         ],
-        "worst_case": "Ohne jegliche Reaktion: Das Krankenhaus stellt nach weiteren 2–4 Mahnungen (typischerweise nach 3–6 Monaten) einen Mahnbescheid über das Gericht aus. Nach Rechtskraft des Mahnbescheids kann Kontopfändung oder Lohnpfändung (bis zur Pfändungsfreigrenze nach § 850c ZPO) beantragt werden. Eine Eintragung bei der SCHUFA erfolgt erst nach einem rechtskräftigen Urteil oder Mahnbescheid — nicht automatisch durch die offene Rechnung. Die Verjährungsfrist beträgt 3 Jahre (Ende 2029 für eine Rechnung aus 2026).",
+        "worst_case": [
+          "Ohne jegliche Reaktion: Das Krankenhaus stellt nach weiteren 2–4 Mahnungen (typischerweise nach 3–6 Monaten) einen Mahnbescheid über das Gericht aus.",
+          "Nach Rechtskraft des Mahnbescheids kann Kontopfändung oder Lohnpfändung (bis zur Pfändungsfreigrenze nach § 850c ZPO) beantragt werden.",
+          "Eine Eintragung bei der SCHUFA erfolgt erst nach einem rechtskräftigen Urteil oder Mahnbescheid — nicht automatisch durch die offene Rechnung."
+        ],
         "follow_up": {
           "document_this": "Name der Gesprächsperson, Datum und Uhrzeit des Anrufs, Inhalt der Vereinbarung (Ratenbetrag, Startdatum, Laufzeit), Referenz- oder Vorgangsnummer, und ob eine schriftliche Bestätigung zugesagt wurde.",
           "calendar_reminder": "Erinnerung für den 25. Juli 2026 setzen: 'Schriftliche Bestätigung der Ratenzahlungsvereinbarung vom Krankenhaus erhalten?' — falls nicht, erneut nachhaken.",

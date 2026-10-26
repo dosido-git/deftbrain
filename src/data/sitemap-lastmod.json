@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "a810a18554f16385679f17bd65cd983a0fdc9e76",
+  "hash": "03d5c1bffec0edb457a12a1eb15fcc3efc04269b",
   "lastmod": "2026-10-26"
  },
  "static:about": {
@@ -28,8 +28,8 @@
   "lastmod": "2026-10-25"
  },
  "tool:BillRescue": {
-  "hash": "6cee24aa01d8458ca1d1bd5d1bb5c262bffef3ec",
-  "lastmod": "2026-10-25"
+  "hash": "d6e490903388b6b56c0c82910186c0680644f244",
+  "lastmod": "2026-10-26"
  },
  "tool:BragSheetBuilder": {
   "hash": "0c6c8d44c64418da4f959a6aba5a9eed2ff9a628",
