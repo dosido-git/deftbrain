@@ -9,7 +9,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
-import { RegisteredActions } from '../components/ActionButtons';
+import { RegisteredActions, CopyBtn } from '../components/ActionButtons';
 import ToolTabs from '../components/ToolTabs';
 import LetterDoc, { isLetter } from '../components/LetterDoc';
 import { schemeStyle } from '../data/toolSchemes';
@@ -245,18 +245,23 @@ const BillRescue = ({ tool }) => {
     accentBadge:   'border border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
     // Cards inside the answer: the envelope shade (owner, 2026-10-25), one
     // step darker than the lightest-shade answer card they sit on.
-    card:          'bg-[var(--sc-envelope)]',
+    // Inside sections a card is spacing, not a box (owner, 2026-10-26): the
+    // answer card, the verdict, today's job and letters keep their boxes.
+    card:          'border-transparent !px-0',
     cardAlt:       'bg-[var(--sc-envelope)]',
     dropzone:      'border-[var(--sc-accent)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
-    quoteBg:       'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
-    success:       'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
-    warning:       'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    quoteBg:       'border-s-2 border-[var(--sc-line)] !rounded-none !py-1 !pe-0',
+    success:       'border-transparent !px-0 text-[var(--sc-strong)]',
+    warning:       'border-transparent !px-0 text-[var(--sc-strong)]',
     // Where you stand: the contrasting colour only when it is urgent or damage
     // is already done.
     verdictCalm:   'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     verdictAlert:  'bg-[var(--sc-envelope)] border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
   });
   const card = 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5';
+  // Choice chips: a finger-sized target (40px) even when they wrap on a phone;
+  // the chosen one is filled AND ticked, so it never depends on colour alone.
+  const chip = 'px-3 py-2 rounded-lg text-[13px] font-bold border min-h-[40px]';
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
@@ -295,6 +300,9 @@ const BillRescue = ({ tool }) => {
   const [billImageBase64, setBillImageBase64] = useState(null);
   const [compressingImage, setCompressingImage] = useState(false);
   const [results, setResults] = usePersistentState('billrescue-last-result', null);
+  // With an answer on screen the form folds away; "Edit details" brings it back.
+  const [editForm, setEditForm] = useState(false);
+  const formRef = useRef(null);
 
   // ── Triage ──
   const [triageBills, setTriageBills] = useState([
@@ -399,7 +407,7 @@ const BillRescue = ({ tool }) => {
   const analyze = useCallback(async () => {
     if (!billType) { setError(t('br_err_select_type')); return; }
     setError('');
-    setResults(null); setCheckStatus(null);
+    setResults(null); setCheckStatus(null); setEditForm(false);
     try {
       // Progressive (2026-10-16): where they stand shows first; checked after.
       const withInput = d => ({ ...d, _input: { billType, amount: amount || null, currency, details: details.trim() || null } });
@@ -688,6 +696,33 @@ const BillRescue = ({ tool }) => {
   // different verdicts. Letters: one seed per kind of letter people actually
   // send, two with the optional context filled.
   const loadExample = useCallback(() => {
+    // Several bills: three real-feeling weeks where the order is the question.
+    if (view === 'triage') {
+      const ex = pickExample('BillRescue:triage', [
+        { budget: '900',  bills: [{ type: 'rent', amount: '1400', overdue: '30_days', noteKey: 'br_tri_ex1_note' }, { type: 'credit_card', amount: '3200', overdue: 'current', note: '' }, { type: 'utilities', amount: '260', overdue: '60_days', note: '' }] },
+        { budget: '400',  bills: [{ type: 'medical', amount: '4800', overdue: 'collections', noteKey: 'br_tri_ex2_note' }, { type: 'phone_internet', amount: '180', overdue: '30_days', note: '' }, { type: 'auto', amount: '420', overdue: 'current', note: '' }] },
+        { budget: '650',  bills: [{ type: 'student_loans', amount: '310', overdue: '60_days', note: '' }, { type: 'insurance', amount: '240', overdue: '30_days', noteKey: 'br_tri_ex3_note' }, { type: 'credit_card', amount: '1900', overdue: '90_plus', note: '' }] },
+      ]);
+      setTriageBills(ex.bills.map(({ noteKey, ...b }) => ({ ...b, note: noteKey ? t(noteKey) : b.note })));
+      setTriageBudget(ex.budget);
+      setTriageResults(null);
+      setError('');
+      return;
+    }
+    // One charge: three lines people actually stop at on a bill.
+    if (view === 'quick') {
+      const ex = pickExample('BillRescue:quick', [
+        { chargeKey: 'br_qc_ex1', type: 'medical', amount: '1250' },
+        { chargeKey: 'br_qc_ex2', type: 'phone_internet', amount: '14' },
+        { chargeKey: 'br_qc_ex3', type: 'utilities', amount: '35' },
+      ]);
+      setQcCharge(t(ex.chargeKey));
+      setQcType(ex.type);
+      setQcAmount(ex.amount);
+      setQcResults(null);
+      setError('');
+      return;
+    }
     if (view === 'letters') {
       const ex = pickExample('BillRescue:letters', [
         { type: 'hardship',        billType: 'medical',        amount: '3800', situationKey: 'br_lt_ex1_situation' },
@@ -718,6 +753,7 @@ const BillRescue = ({ tool }) => {
     setReason(ex.reason);
     setDetails(t(ex.detailsKey));
     setError('');
+    setEditForm(true);
   }, [view, setBillType, t]);
 
   // ── Build text for copy/print ──
@@ -952,7 +988,7 @@ const BillRescue = ({ tool }) => {
       {/* The form: no box of its own (it sits right under the header band).
           On paper it prints only as a blank form; with a result, the result
           prints instead. */}
-      <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+      <div ref={formRef} data-print-form hidden={!!results && !editForm} {...(results ? { 'data-print-hide': '' } : {})}>
         {/* ── Tell me about the bill ── */}
         {/* PROTOTYPE: the question itself is the heading (group headings dropped). */}
         {!sv && <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_about')}</p>}
@@ -961,9 +997,8 @@ const BillRescue = ({ tool }) => {
           <div className="flex flex-wrap gap-1.5">
             {BILL_TYPES.map(bt => (
               <button aria-pressed={billType === bt.value} key={bt.value} onClick={() => setBillType(bt.value === billType ? '' : bt.value)}
-                className={`px-2.5 py-1.5 rounded-lg text-[13px] font-bold border min-h-[32px] ${
-                  billType === bt.value ? c.pillActive : c.pillInactive}`}>
-                {bt.emoji} {t(bt.tkey)}
+                className={`${chip} ${billType === bt.value ? c.pillActive : c.pillInactive}`}>
+                {billType === bt.value ? '✓' : bt.emoji} {t(bt.tkey)}
               </button>
             ))}
           </div>
@@ -987,9 +1022,8 @@ const BillRescue = ({ tool }) => {
           <div className="flex flex-wrap gap-1.5">
             {OVERDUE_STATUS.map(os => (
               <button aria-pressed={overdueStatus === os.value} key={os.value} onClick={() => setOverdueStatus(os.value === overdueStatus ? '' : os.value)}
-                className={`px-2.5 py-1 rounded-lg text-[13px] font-bold border min-h-[28px] ${
-                  overdueStatus === os.value ? c.pillActive : c.pillInactive}`}>
-                {os.emoji} {t(os.tkey)}
+                className={`${chip} ${overdueStatus === os.value ? c.pillActive : c.pillInactive}`}>
+                {overdueStatus === os.value ? '✓' : os.emoji} {t(os.tkey)}
               </button>
             ))}
           </div>
@@ -1006,9 +1040,8 @@ const BillRescue = ({ tool }) => {
           <div className="flex flex-wrap gap-1.5">
             {REASONS.map(re => (
               <button aria-pressed={reason.includes(re.value)} key={re.value} onClick={() => toggleReason(re.value)}
-                className={`px-2.5 py-1 rounded-lg text-[13px] font-bold border min-h-[28px] ${
-                  reason.includes(re.value) ? c.pillActive : c.pillInactive}`}>
-                {t(re.tkey)}
+                className={`${chip} ${reason.includes(re.value) ? c.pillActive : c.pillInactive}`}>
+                {reason.includes(re.value) && '✓ '}{t(re.tkey)}
               </button>
             ))}
           </div>
@@ -1181,9 +1214,11 @@ const BillRescue = ({ tool }) => {
             buried inside a paragraph about breathing; it is now the loudest
             instruction on the page, with the words to say it one tap away. ── */}
         {r.todays_job?.action && (
-          <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
+          // The one container that must win (owner, 2026-10-26): accent border,
+          // the biggest action line, and its words open beneath a rule.
+          <div className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
             <p className={`text-[13px] font-bold ${c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
-            <p className={`text-lg font-black ${c.text}`}>{r.todays_job.action}</p>
+            <p className={`text-xl font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
             {r.todays_job.not_yet?.length > 0 && (
               <div className="mt-3 space-y-0.5">
@@ -1193,16 +1228,15 @@ const BillRescue = ({ tool }) => {
               </div>
             )}
             {r.todays_job.script && (
-              <details className="group mt-3">
-                <summary data-print-hide className={`cursor-pointer text-xs font-bold ${c.highlightText} list-none [&::-webkit-details-marker]:hidden min-h-[28px]`}>
-                  📞 {t('br_show_words')} <Caret groupOpen />
-                </summary>
-                <div className="mt-2">
-                  {isLetter(r.todays_job.script)
-                    ? <LetterDoc text={r.todays_job.script} title={r.todays_job.action} />
-                    : <div className={`${c.quoteBg} rounded-lg p-3`}><p className={`text-xs ${c.text}`}>"{r.todays_job.script}"</p></div>}
-                </div>
-              </details>
+              // Open, not behind a disclosure: today's job is the one thing to do,
+              // and its words are part of it. The label fits a call, a letter or
+              // a form online alike.
+              <div className={`mt-4 pt-3 border-t ${c.border}`}>
+                <p className={`text-xs font-bold uppercase tracking-wide ${c.highlightText} mb-2`}>{t('br_words_to_use')}</p>
+                {isLetter(r.todays_job.script)
+                  ? <LetterDoc text={r.todays_job.script} title={r.todays_job.action} />
+                  : <ScriptText text={r.todays_job.script} c={c} t={t} />}
+              </div>
             )}
           </div>
         )}
@@ -1227,7 +1261,7 @@ const BillRescue = ({ tool }) => {
                           // The when-label rides with its first step, so on paper
                           // it can never end a page alone ("After that", 2026-10-25).
                           <div key={i}>
-                          <div className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
+                          <div className={sv ? `border-s-4 ${c.stepBorderL} ps-3 py-1` : `${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
                             {i === 0 && <p className={`text-xs font-bold ${c.highlightText} uppercase tracking-wide mb-1`}>{when}</p>}
                             <p className={`text-sm font-bold ${c.text}`}>✓ {step.title}</p>
                             <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
@@ -1239,7 +1273,7 @@ const BillRescue = ({ tool }) => {
                                 <div className="mt-1.5">
                                   {isLetter(step.script)
                                     ? <LetterDoc text={step.script} title={step.title} />
-                                    : <div className={`${c.card} border rounded-lg p-3`}><p className={`text-xs ${c.text}`}>"{step.script}"</p></div>}
+                                    : <ScriptText text={step.script} c={c} t={t} />}
                                 </div>
                               </details>
                             )}
@@ -1259,12 +1293,14 @@ const BillRescue = ({ tool }) => {
 
             {/* Collections defense */}
             {r.collections_defense && (
-              <Section icon="🛡️" title={t('br_sec_collections')} badge={t('br_badge_important')} badgeColor={c.danger} defaultOpen c={c}>
+              <Section icon="🛡️" title={t('br_sec_collections')} badge={t('br_badge_important')} badgeColor={c.danger} c={c}>
                 <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.overview}</p>
                 {r.collections_defense.validation_letter && (
                   <div>
                     <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>{t('br_validation_letter')}:</p>
-                    <LetterDoc text={r.collections_defense.validation_letter} title={t('br_validation_letter')} note={r.collections_defense.how_to_send} />
+                    {isLetter(r.collections_defense.validation_letter)
+                      ? <LetterDoc text={r.collections_defense.validation_letter} title={t('br_validation_letter')} note={r.collections_defense.how_to_send} />
+                      : <p className={`text-sm ${c.textSecondary}`}>{r.collections_defense.validation_letter}</p>}
                   </div>
                 )}
                 {r.collections_defense.what_to_say_on_phone && (
@@ -1294,8 +1330,7 @@ const BillRescue = ({ tool }) => {
                 {r.phone_script.opening && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-xs font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
-                    <p className={`text-xs ${c.text}`}>"{r.phone_script.opening}"</p>
-                    <div className="mt-1.5"></div>
+                    <ScriptText text={r.phone_script.opening} c={c} t={t} bare />
                   </div>
                 )}
                 {r.phone_script.key_phrases?.length > 0 && (
@@ -1338,8 +1373,7 @@ const BillRescue = ({ tool }) => {
                 {r.payment_plan.script && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('br_propose_this')}:</p>
-                    <p className={`text-xs ${c.text}`}>"{r.payment_plan.script}"</p>
-                    <div className="mt-1.5"></div>
+                    <ScriptText text={r.payment_plan.script} c={c} t={t} bare />
                   </div>
                 )}
               </Section>
@@ -1367,7 +1401,11 @@ const BillRescue = ({ tool }) => {
             {r.hardship_letter && (
               <Section icon="📝" title={t('br_sec_hardship')} keepTogether c={c}>
                 <p className={`text-xs ${c.textMuteded} mb-2`}>{t('br_hardship_hint')}</p>
-                <LetterDoc text={r.hardship_letter} title={t('br_sec_hardship')} />
+                {/* The repeat check can leave a pointer to the letter above in place of
+                    a second copy: that is a sentence, not a letter to print. */}
+                {isLetter(r.hardship_letter)
+                  ? <LetterDoc text={r.hardship_letter} title={t('br_sec_hardship')} />
+                  : <p className={`text-sm ${c.textSecondary}`}>{r.hardship_letter}</p>}
               </Section>
             )}
 
@@ -1376,10 +1414,10 @@ const BillRescue = ({ tool }) => {
             {/* Was "Know Your Rights", which sounds like homework. It is money
                 they may not owe, and that is what it says now. */}
             {r.money_you_might_not_owe?.length > 0 && (
-              <Section icon="💰" title={t('br_sec_money_not_owed')} defaultOpen c={c}>
+              <Section icon="💰" title={t('br_sec_money_not_owed')} c={c}>
                 <div className="space-y-2">
                   {r.money_you_might_not_owe.map((right, i) => (
-                    <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
+                    <div key={i} className={`${c.card} border rounded-lg p-3`}>
                       <p className="text-xs font-bold">{right.emoji ? `${right.emoji} ` : ''}{right.right}</p>
                       <p className="text-xs mt-1">{right.explanation}</p>
                     </div>
@@ -1393,7 +1431,7 @@ const BillRescue = ({ tool }) => {
               <Section icon="🔍" title={t('br_sec_autopsy')} badge={r.bill_autopsy.verdict} badgeColor={
                 r.bill_autopsy.verdict?.toLowerCase().includes('overcharg') || r.bill_autopsy.verdict?.toLowerCase().includes('flag') ? c.danger
                 : r.bill_autopsy.verdict?.toLowerCase().includes('fair') ? c.success : c.warning
-              } defaultOpen c={c}>
+              } c={c}>
                 <p className={`text-sm ${c.textSecondary}`}>{r.bill_autopsy.analysis}</p>
                 {r.bill_autopsy.total_potential_savings && (
                   <div className={`${c.success} border rounded-lg p-3`}>
@@ -1418,10 +1456,10 @@ const BillRescue = ({ tool }) => {
             )}
 
             {r.know_your_rights?.length > 0 && (
-              <Section icon="⚖️" title={t('br_sec_rights')} defaultOpen c={c}>
+              <Section icon="⚖️" title={t('br_sec_rights')} c={c}>
                 <div className="space-y-2">
                   {r.know_your_rights.map((right, i) => (
-                    <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
+                    <div key={i} className={`${c.card} border rounded-lg p-3`}>
                       <p className="text-xs font-bold">{right.right}</p>
                       <p className="text-xs mt-1">{right.explanation}</p>
                     </div>
@@ -1468,7 +1506,7 @@ const BillRescue = ({ tool }) => {
                   </div>
                 )}
                 {r.follow_up.calendar_reminder && (
-                  <div className={`${c.highlightBg} border rounded-lg p-3`}>
+                  <div className={`${c.card} border rounded-lg p-3`}>
                     <p className="text-xs">📅 {r.follow_up.calendar_reminder}</p>
                   </div>
                 )}
@@ -2553,10 +2591,22 @@ const BillRescue = ({ tool }) => {
                 <div data-print-hide className="flex items-center justify-between mb-4">
                   {/* Stays after an answer, as on every other tool (owner, 2026-10-26). */}
                   <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
-                  {startOverBtn}
+                  <div className="flex items-center gap-2">
+                    {/* The form folds away under an answer; this brings it back. */}
+                    {results && !editForm && (
+                      <button onClick={() => { setEditForm(true); setTimeout(() => revealSection(formRef.current), 120); }}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary}`}>{t('br_edit_details')}</button>
+                    )}
+                    {startOverBtn}
+                  </div>
                 </div>
                 {renderRescue()}
               </>
+            )}
+            {(view === 'triage' || view === 'quick') && (
+              <div data-print-hide className="mb-4">
+                <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
+              </div>
             )}
             {view === 'triage' && renderTriage()}
             {view === 'quick' && renderQuickCheck()}
@@ -2617,7 +2667,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
           <h3 className={`text-base font-bold ${c.sectionTitle}`}>{title}</h3>
           {badge && <span className={`text-xs font-black px-2 py-0.5 rounded ${badgeColor || c.highlightBg}`}>{badge}</span>}
         </div>
-        <span data-print-hide><Caret open={open} /></span>
+        <span data-print-hide className={c.accentTxt}><Caret open={open} /></span>
       </button>
       </div>
       <div data-sec-body hidden={!open} className="pb-5 space-y-3">{children}</div>
@@ -2641,3 +2691,15 @@ const PartHeading = ({ children, newPage = false }) => (
 );
 
 export default BillRescue;
+
+// A line or two to say or send, with its own Copy (owner, 2026-10-26): someone
+// who finds the words they need can use them at once. `bare` when the caller
+// already draws the box.
+// (An arrow with no return statement, like PartHeading: the audit reads the
+// file's last top-level `return (` as the tool's main render.)
+const ScriptText = ({ text, c, t, bare = false }) => (
+  <div className={bare ? '' : `${c.quoteBg} rounded-lg p-3`}>
+    <p className={`text-xs ${c.text}`}>"{text}"</p>
+    <div data-print-hide className="mt-1.5"><CopyBtn content={text} label={t('copy_text')} exact quiet /></div>
+  </div>
+);

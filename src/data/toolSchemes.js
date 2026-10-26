@@ -25,8 +25,9 @@ const SCHEMES = {
 // Brand gold — the "Brain" in the logo (owner's pick, 2026-10-25): In a
 // nutshell and the sample answer.
 const NUTSHELL = {
-  light: { bg: '#f8f0dd', line: '#e6d3a8', head: '#6b4c12', label: '#8a6419', text: '#3a2c10', ctl: '#fbf6ea' },
-  dark:  { bg: '#2b2414', line: '#5a4823', head: '#f0d9a3', label: '#d9b56a', text: '#eadfc6', ctl: '#352c18' },
+  // Paler since 2026-10-26: it drew the eye away from the tool (owner).
+  light: { bg: '#fcf8ef', line: '#efe3c6', head: '#6b4c12', label: '#8a6419', text: '#4a3c22', ctl: '#fdfaf3' },
+  dark:  { bg: '#241f14', line: '#4a3c20', head: '#f0d9a3', label: '#d9b56a', text: '#eadfc6', ctl: '#352c18' },
 };
 
 // Ink teal: related guides and tools, below the tool.

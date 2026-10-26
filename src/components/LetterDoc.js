@@ -14,6 +14,7 @@ import React from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import { PRINT_HEADER_LOGO, PRINT_FOOTER_BRAND } from '../utils/printBranding';
+import { CopyBtn } from './ActionButtons';
 
 // Text that is a letter rather than a line to say: it has its own lines, or
 // is long enough to be one.
@@ -46,10 +47,14 @@ export default function LetterDoc({ text, title, note }) {
         className={`rounded-lg border px-5 py-4 text-[13px] leading-relaxed whitespace-pre-line ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-100' : 'bg-white border-stone-200 text-stone-900'}`}>
         {text}
       </div>
-      <button data-print-hide type="button" onClick={() => printLetter(title, text)}
-        className={`text-xs font-semibold underline underline-offset-2 ${isDark ? 'text-zinc-300' : 'text-stone-600'}`}>
-        🖨️ {t('print_letter')}
-      </button>
+      {/* Copy is the letter alone — no DeftBrain lines inside something they send. */}
+      <div data-print-hide className="flex items-center gap-4">
+        <CopyBtn content={text} label={t('copy_text')} exact quiet />
+        <button type="button" onClick={() => printLetter(title, text)}
+          className={`text-xs font-semibold underline underline-offset-2 ${isDark ? 'text-zinc-300' : 'text-stone-600'}`}>
+          🖨️ {t('print_letter')}
+        </button>
+      </div>
     </div>
   );
 }

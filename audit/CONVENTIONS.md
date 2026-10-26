@@ -2379,6 +2379,8 @@ somebody makes rather than a door left open:
 - `S1.4h` still forbids an inline `<CopyBtn content={buildFullText()}>`
 - the inline button must be the shared `CopyBtn` from `../components/ActionButtons` — never a hand-rolled `copyToClipboard` (that is PF-2 and has no exemption at all)
 
+Also exempt (2026-10-26, owner): **BillRescue** — each script and letter is something to say or send on its own, so each has a `Copy text` (`exact`, no DeftBrain lines inside it).
+
 
 ---
 

@@ -23,6 +23,7 @@ import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import { PROTOTYPE_TOOLS, schemeStyle } from '../data/toolSchemes';
+import Caret from './Caret';
 
 export default function ToolFaq() {
   const { pathname } = useLocation();
@@ -50,7 +51,7 @@ export default function ToolFaq() {
       <section data-print-hide style={schemeStyle(tool, isDark) || undefined} className="px-3 sm:px-4 mt-4">
         <details className="max-w-[1200px] mx-auto rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 py-4 group">
           <summary className="cursor-pointer list-none flex items-center justify-between text-base font-black text-[var(--sc-strong)] [&::-webkit-details-marker]:hidden">
-            Questions people ask <span className="text-sm font-bold text-[var(--sc-accent)]">{faq.length} ▾</span>
+            Questions people ask <span className="text-sm font-bold text-[var(--sc-accent)]">{faq.length} <Caret groupOpen /></span>
           </summary>
           <dl className="space-y-5 mt-4">
             {faq.map((f, i) => (
