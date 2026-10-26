@@ -1323,6 +1323,9 @@ const BillRescue = ({ tool }) => {
                     {r.payment_plan.accept_up_to && (
                       <p className="text-xs">{t('br_accept_up_to')}: {r.payment_plan.accept_up_to}</p>
                     )}
+                    {/* The figures are the most authoritative-looking thing on the
+                        page and the least certain (owner's review, 2026-10-25). */}
+                    <p className="text-[11px] mt-2">{t('br_plan_caveat')}</p>
                   </div>
                 )}
                 {r.payment_plan.script && (

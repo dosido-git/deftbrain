@@ -10,6 +10,7 @@ const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources, sou
 
 const { checkConsistency } = require('../lib/outputGuard');
 const { trimRepeats } = require('../lib/repeatCheck');
+const { calibrateClaims } = require('../lib/certaintyCheck');
 
 // The answer's sections in the order the page shows them — next step, roadmap,
 // letters and scripts, supporting information (src/tools/BillRescue.js
@@ -493,6 +494,9 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
         // T11 (audit/DEFECT-TYPES.md): the same advice and letters repeated
         // across sections — kept once, later mentions point back to it.
         await trimRepeats(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage, order: PAGE_ORDER });
+        // T5: settlement targets as starting points with their basis; legal
+        // rules with their conditions (owner's review, 2026-10-25).
+        await calibrateClaims(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
       },
     });
 

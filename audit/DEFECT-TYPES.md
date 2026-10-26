@@ -24,7 +24,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T2 | Arithmetic, counts, totals | Compute in code; else the number check | 18 tools; 2026-10-09 sweep done | 0 |
 | T3 | Self-contradiction between fields | Consistency check (`outputGuard`, Sonnet) | **Built 2026-10-09**; 96 routes | 0 |
 | T4 | Details the visitor never said | Output guard, or `checkConsistency` check 10 (same call) | ~99 tools; 2026-10-09 | 0 |
-| T5 | Overreach (absolutes, legal/medical conclusions, false framing) | Facts-mode number check, guard terms | Partial | 2 |
+| T5 | Overreach (absolutes, legal/medical conclusions, false framing) | `lib/certaintyCheck.js` `calibrateClaims` (targets → starting points with basis; conditional rules name the condition); facts-mode number check, guard terms | **Shared check built 2026-10-25**; Bill Rescue | sweep open |
 | T6 | Locale and wording leaks | Reply filter (`voiceFix`: markers, "visitor", US spelling) | All tools | 1 minor |
 | T7 | A visitor's choice ignored | Same check, reads the form choices itself | **Built 2026-10-09**; 96 routes | 0 |
 | T8 | Built-in examples stale or inconsistent | `scripts/example-dates-audit.js` (Gate 13) + `exampleDate`/`dayMonthFromToday` | Built 2026-10-09 | 0 |
@@ -163,13 +163,15 @@ Some have their own checks (several are grounded or number-checked), but none ch
 - Directive certainty the charter rules out.
 
 **Shared fix.**
+- **`lib/certaintyCheck.js` `calibrateClaims(draft)` (2026-10-25).** One Sonnet pass after display lists every legal/medical/financial rule, target amount and prediction with the condition it depends on, then rewrites only the ones that leave the condition out: a target becomes a starting point with its basis, a conditional rule names its condition, an unsupportable claim becomes "may"/"check". Skips letters (text with line breaks); a rewrite must stay within 0.7×–1.6× the original length. ~$0.05 per answer.
 - The facts-mode number check flags absolutes and wrong mechanisms.
 - Guard terms cover the rest per tool.
-- Not yet a single shared rule set.
 
 | Instance | Status |
 |---|---|
 | BillRescue — "30–60% discount", "kidney stone visits qualify" | fixed |
+| BillRescue — precise settlement targets ("Offer $2,920. Accept up to $4,380.") and categorical legal claims ("they must stop collection activity", "you have no obligation to pay") read as authoritative (owner's review, 2026-10-25) | **fixed with shared fix** (`calibrateClaims` after the repeat check; live: the FDCPA pause now names the 30-day written-dispute condition, targets framed as starting points; plus an on-page caveat under the plan figures) |
+| **Sweep (open):** tools that state legal, medical or money rules — Lease Trap Detector, Contract Decoder, Renter's Deposit Saver, Ticket Tackler, Money Diplomat, Leverage Logic, Quote Check, Not So Fast!, Complaint Escalation Writer, Procedure Probe, Doctor Visit Translator, Paperwork Path | open |
 | DocumentDetective — "removes any argument" | fixed |
 | NameAudit — "likely trademark infringement" | fixed (rule in its update step) |
 | AnalogyEngine — "nothing capable of causing disease" | **fixed with shared fix** |
