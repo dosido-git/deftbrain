@@ -2551,9 +2551,8 @@ const BillRescue = ({ tool }) => {
             {view === 'rescue' && (
               <>
                 <div data-print-hide className="flex items-center justify-between mb-4">
-                  {!results ? (
-                    <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
-                  ) : <span />}
+                  {/* Stays after an answer, as on every other tool (owner, 2026-10-26). */}
+                  <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
                   {startOverBtn}
                 </div>
                 {renderRescue()}
