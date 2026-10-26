@@ -2547,7 +2547,7 @@ const BillRescue = ({ tool }) => {
       {view === 'rescue' && (sv ? (results ? (
         <div className={`${card} mt-2`}>
           <div className={`flex items-center justify-between gap-3 pb-3 mb-4 border-b ${c.border}`}>
-            <h2 className="text-xl text-[var(--sc-strong)]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>{t('br_your_plan')}</h2>
+            <h2 className="text-xl font-bold text-[var(--sc-strong)]" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('br_your_plan')}</h2>
             <div data-print-hide><RegisteredActions /></div>
           </div>
           {renderResults()}

@@ -23,6 +23,10 @@ import { schemeStyle, schemeCategory } from '../data/toolSchemes';
 // colored frame and standard printout are gone with the last opt-in list.
 
 // Inner component — has access to ActionBarContext
+// PROTOTYPE: the category-colour design sets its text in the device's own UI
+// font (San Francisco on Apple, Segoe on Windows) and its titles in Source Serif 4.
+const SYSTEM_SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
@@ -158,7 +162,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
           No base row-gap on this grid (gap only applies at lg:, for the
           column split) — see 2026-09-14 note below for why. */}
-      <div data-print-grid className={`relative max-w-[1200px] px-4 sm:px-6 pb-8 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 ${sv
+      <div data-print-grid style={sv ? { fontFamily: SYSTEM_SANS } : undefined} className={`relative max-w-[1200px] px-4 sm:px-6 pb-8 grid grid-cols-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 ${sv
         ? 'mx-auto pt-4'
         : 'mx-auto pt-0'}`}>
         {/* Locale controls — the trailing columns of row 1, beside the page
@@ -257,8 +261,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                   )}
                 </div>
                 {/* Icon inside the heading so it always follows the title on the same line. */}
-                <h1 className="tp-title" style={{ color: 'var(--sc-strong)' }}>{detectedTool?.title} <span aria-hidden="true" className="text-[0.7em] align-middle">{detectedTool?.icon}</span></h1>
-                <p className="text-[19px] leading-snug text-[var(--sc-strong)] max-w-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h1 className="tp-title" style={{ color: 'var(--sc-strong)', fontFamily: "'Source Serif 4', Georgia, serif" }}>{detectedTool?.title} <span aria-hidden="true" className="text-[0.7em] align-middle">{detectedTool?.icon}</span></h1>
+                <p className="text-[19px] leading-snug text-[var(--sc-strong)] max-w-2xl">
                   {detectedTool?.tagline}
                 </p>
               </div>
