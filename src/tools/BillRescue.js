@@ -233,23 +233,23 @@ const BillRescue = ({ tool }) => {
     border:        'border-[var(--sc-line)]',
     pillActive:    'border-[var(--sc-strong)] bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
     pillInactive:  'border-[var(--sc-accent)] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]',
-    highlightBg:   'bg-transparent border-[var(--sc-line)]',
+    highlightBg:   'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     highlightText: 'text-[var(--sc-strong)]',
     escalationNum: 'text-[var(--sc-accent)]',
     stepBorderL:   'border-s-[var(--sc-accent)]',
     accentBadge:   'border border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
-    // No coloured boxes inside the cards (owner, 2026-10-25): the cards are the
-    // lightest shade, and inner blocks are separated by a hairline only.
-    card:          'bg-transparent',
-    cardAlt:       'bg-transparent',
+    // Cards inside the answer: the envelope shade (owner, 2026-10-25), one
+    // step darker than the lightest-shade answer card they sit on.
+    card:          'bg-[var(--sc-envelope)]',
+    cardAlt:       'bg-[var(--sc-envelope)]',
     dropzone:      'border-[var(--sc-accent)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
-    quoteBg:       'bg-transparent border-[var(--sc-line)]',
-    success:       'bg-transparent border-[var(--sc-line)] text-[var(--sc-strong)]',
-    warning:       'bg-transparent border-[var(--sc-line)] text-[var(--sc-strong)]',
+    quoteBg:       'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    success:       'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    warning:       'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     // Where you stand: the contrasting colour only when it is urgent or damage
     // is already done.
-    verdictCalm:   'bg-transparent border-[var(--sc-line)] text-[var(--sc-strong)]',
-    verdictAlert:  'bg-transparent border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
+    verdictCalm:   'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    verdictAlert:  'bg-[var(--sc-envelope)] border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
   });
   const card = 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5';
   c.textMuteded = c.textMuted;

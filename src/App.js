@@ -18,6 +18,7 @@ import SharedVerdict from './components/SharedVerdict';
 import AllToolsPage from './components/AllToolsPage';
 import WaitNotice from './components/WaitNotice';
 import OrganizationsPage from './components/OrganizationsPage';
+import { SiteTailDemo } from './components/PublicProductDemo';
 
 export default function App() {
   const [college] = useState("");
@@ -57,6 +58,7 @@ export default function App() {
             <WaitNotice />
             <ToolFaq />
             <RelatedLinks />
+            <SiteTailDemo />
             <SiteEnd />
             <BusyNotice />
             <Footer />

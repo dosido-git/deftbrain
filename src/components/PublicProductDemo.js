@@ -1,5 +1,8 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { useLocation } from 'react-router-dom';
+import { getToolById } from '../data/tools';
+import { PROTOTYPE_TOOLS, nutshellStyle } from '../data/toolSchemes';
 
 // Public, reviewed demonstration shared with the static/prerendered tool page
 // through tools.js. Only tools with exampleOutput render anything here.
@@ -36,3 +39,17 @@ const PublicProductDemo = ({ tool, variant }) => {
   );
 };
 export default PublicProductDemo;
+
+// PROTOTYPE tools: the sample answer is there for search engines more than
+// visitors, so it sits last — after the FAQ and related links (App.js).
+export function SiteTailDemo() {
+  const { pathname } = useLocation();
+  const { isDark } = useTheme();
+  const id = pathname.replace(/^\/+/, '').split('/')[0];
+  if (!PROTOTYPE_TOOLS.has(id)) return null;
+  return (
+    <div style={nutshellStyle(isDark)} className="px-3 sm:px-4 mb-6">
+      <div className="max-w-[1200px] mx-auto"><PublicProductDemo tool={getToolById(id)} variant="nutshell" /></div>
+    </div>
+  );
+}

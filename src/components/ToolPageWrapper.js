@@ -10,7 +10,6 @@ import FeedbackTap from './FeedbackTap';
 import { ensurePrintStyles } from './printStyles';
 import SiteHeader from './SiteHeader';
 import './ToolPageSiteStyle.css';
-import PublicProductDemo from './PublicProductDemo';
 import { schemeStyle, schemeCategory } from '../data/toolSchemes';
 
 // Site style (2026-09-27). Every tool page wears the home page's frame: its
@@ -465,13 +464,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div>
         </aside>
       </div>
-      {/* PROTOTYPE: the sample answer sits outside the envelope, in the shared
-          nutshell colour — related to the tool, not part of it. */}
-      {sv && (
-        <div className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto">
-          <PublicProductDemo tool={detectedTool} variant="nutshell" />
-        </div>
-      )}
     </div>
   );
 };
