@@ -259,7 +259,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 </div>
                 {/* Icon inside the heading so it always follows the title on the same line. */}
                 <h1 className="tp-title" style={{ color: 'var(--sc-strong)' }}>{detectedTool?.title} <span aria-hidden="true" className="text-[0.7em] align-middle">{detectedTool?.icon}</span></h1>
-                <p className="text-[21px] leading-snug italic text-[var(--sc-strong)] max-w-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <p className="text-[19px] leading-snug text-[var(--sc-strong)] max-w-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                   {detectedTool?.tagline}
                 </p>
               </div>

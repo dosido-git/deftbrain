@@ -22,16 +22,28 @@ const SCHEMES = {
   },
 };
 
-// Warm clay (owner's pick, 2026-10-25).
+// Brand gold — the "Brain" in the logo (owner's pick, 2026-10-25): In a
+// nutshell and the sample answer.
 const NUTSHELL = {
-  light: { bg: '#f6e9e2', line: '#e3c6b6', head: '#6e3420', label: '#8f4b30', text: '#3b2219', ctl: '#fbf3ee' },
-  dark:  { bg: '#2c1d17', line: '#5c3a2c', head: '#f2c9b4', label: '#e0a283', text: '#ecdcd3', ctl: '#36241c' },
+  light: { bg: '#f8f0dd', line: '#e6d3a8', head: '#6b4c12', label: '#8a6419', text: '#3a2c10', ctl: '#fbf6ea' },
+  dark:  { bg: '#2b2414', line: '#5a4823', head: '#f0d9a3', label: '#d9b56a', text: '#eadfc6', ctl: '#352c18' },
+};
+
+// Ink teal: related guides and tools, below the tool.
+const RELATED = {
+  light: { bg: '#e3f0ef', line: '#bcdad7', head: '#123f3c', label: '#1f6661', text: '#16302e' },
+  dark:  { bg: '#142826', line: '#2f514e', head: '#bfe3df', label: '#7cc4bd', text: '#d6ecea' },
 };
 
 const toVars = (prefix, o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [`--${prefix}-${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}`, v]));
 
 export function nutshellStyle(isDark) {
   return toVars('nut', NUTSHELL[isDark ? 'dark' : 'light']);
+}
+
+// Related links use the --nut-* names too, with ink-teal values.
+export function relatedStyle(isDark) {
+  return toVars('nut', RELATED[isDark ? 'dark' : 'light']);
 }
 
 // The category whose colours a tool wears: its first category that has a

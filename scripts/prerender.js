@@ -334,8 +334,8 @@ function getToolHubsHTML(guides) {
   const links = cats
     .map(c => `<a href="/guides/${c}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(HUB_NAMES[c])} guides &rarr;</a>`)
     .join('\n        ');
-  return `<nav class="db-tool-hubs" aria-label="More guides like this" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">More guides like this</h2>
+  return `<nav class="db-tool-hubs" aria-label="Browse more guides" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Browse more guides</h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>

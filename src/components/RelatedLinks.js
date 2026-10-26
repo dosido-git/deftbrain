@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
-import { PROTOTYPE_TOOLS, nutshellStyle } from '../data/toolSchemes';
+import { PROTOTYPE_TOOLS, relatedStyle } from '../data/toolSchemes';
 
 // Fetch the guides manifest once, cached at module scope across navigations.
 let _cache = null;
@@ -131,7 +131,7 @@ export default function RelatedLinks() {
   // Category slugs are all single lowercase words, so the display name is just
   // the capitalised slug — no second copy of CATEGORY_META to drift.
   const hubName = (cat) => cat.charAt(0).toUpperCase() + cat.slice(1);
-  const hubLinks = (cats) => cats.map(cat => ({ href: `/guides/${cat}`, text: hubName(cat) }));
+  const hubLinks = (cats) => cats.map(cat => ({ href: `/guides/${cat}`, text: `${hubName(cat)} guides` }));
 
   let body = null;
 
@@ -158,7 +158,7 @@ export default function RelatedLinks() {
       <>
         <Block label="Related guides" links={relGuides} />
         <Block label="Related tools" links={relTools} />
-        {toolHubs.length > 0 && <Block label="More guides like this" links={toolHubs} />}
+        {toolHubs.length > 0 && <Block label="Browse more guides" links={toolHubs} />}
       </>
     );
   }
@@ -169,8 +169,8 @@ export default function RelatedLinks() {
     // data-site-tail: omitted from a tool's printed handout (printStyles);
     // still prints everywhere else, per the note above.
     PROTOTYPE_TOOLS.has(seg) ? (
-      // PROTOTYPE: outside the tool's envelope, in the shared nutshell colour.
-      <div data-site-tail style={nutshellStyle(isDark)} className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto mt-4 mb-6">
+      // PROTOTYPE: outside the tool's envelope, in ink teal.
+      <div data-site-tail style={relatedStyle(isDark)} className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto mt-4 mb-6">
         <div className="rounded-2xl border border-[var(--nut-line)] bg-[var(--nut-bg)] px-5 pt-5 [&_h2]:text-[var(--nut-head)] [&_a]:text-[var(--nut-label)]">
           {body}
         </div>

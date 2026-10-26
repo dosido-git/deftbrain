@@ -242,6 +242,7 @@ const BillRescue = ({ tool }) => {
     // lightest shade, and inner blocks are separated by a hairline only.
     card:          'bg-transparent',
     cardAlt:       'bg-transparent',
+    dropzone:      'border-[var(--sc-accent)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
     quoteBg:       'bg-transparent border-[var(--sc-line)]',
     success:       'bg-transparent border-[var(--sc-line)] text-[var(--sc-strong)]',
     warning:       'bg-transparent border-[var(--sc-line)] text-[var(--sc-strong)]',
@@ -931,9 +932,10 @@ const BillRescue = ({ tool }) => {
           prints instead. */}
       <div data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
         {/* ── Tell me about the bill ── */}
-        <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_about')}</p>
+        {/* PROTOTYPE: the question itself is the heading (group headings dropped). */}
+        {!sv && <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_about')}</p>}
         <div className="mb-5">
-          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type')} *</label>
+          <label className={`${sv ? 'text-base font-bold' : 'text-[15px] font-semibold'} ${c.labelText} block mb-1.5`}>{t('br_q_bill_type')} *</label>
           <div className="flex flex-wrap gap-1.5">
             {BILL_TYPES.map(bt => (
               <button aria-pressed={billType === bt.value} key={bt.value} onClick={() => setBillType(bt.value === billType ? '' : bt.value)}
@@ -946,10 +948,10 @@ const BillRescue = ({ tool }) => {
         </div>
 
         {/* ── How serious is it? — the two facts that set the verdict ── */}
-        <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_serious')}</p>
+        {!sv && <p className={`text-base font-bold ${c.text} mb-1.5`}>{t('br_sec_serious')}</p>}
         <div className="mb-3">
           <div>
-            <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_how_much')}</label>
+            <label className={`${sv ? 'text-base font-bold' : 'text-[13px] font-semibold'} ${c.labelText} block mb-1`}>{t('br_q_how_much')}</label>
             <div className="flex items-center gap-1">
               <span className={`text-xs font-bold ${c.textMuteded}`}>{currency}</span>
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0"
@@ -959,7 +961,7 @@ const BillRescue = ({ tool }) => {
         </div>
 
         <div className="mb-5">
-          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_how_late')}</label>
+          <label className={`${sv ? 'text-base font-bold' : 'text-[15px] font-semibold'} ${c.labelText} block mb-1.5`}>{t('br_q_how_late')}</label>
           <div className="flex flex-wrap gap-1.5">
             {OVERDUE_STATUS.map(os => (
               <button aria-pressed={overdueStatus === os.value} key={os.value} onClick={() => setOverdueStatus(os.value === overdueStatus ? '' : os.value)}
@@ -976,7 +978,7 @@ const BillRescue = ({ tool }) => {
             are true changes the advice — "I'm disputing the charges" and "I'm
             scared to deal with it" lead somewhere different. It used to be a
             single choice, so the tool only ever heard one of them. */}
-        <p className={`text-base font-bold ${c.text} mb-0.5`}>{t('br_sec_difficult')}</p>
+        <p className={`text-base font-bold ${sv ? c.labelText : c.text} mb-0.5`}>{t('br_sec_difficult')}</p>
         <p className={`text-[13px] ${c.textMuteded} mb-1.5`}>{t('br_q_why_hard_hint')}</p>
         <div className="mb-5">
           <div className="flex flex-wrap gap-1.5">
@@ -2460,7 +2462,7 @@ const BillRescue = ({ tool }) => {
   // One Start over button, placed in the header band (current design) or the
   // form card (PROTOTYPE).
   const startOverBtn = (
-    <button onClick={handleReset} className={sv ? `text-sm ${c.accentTxt} hover:underline underline-offset-4` : `${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+    <button onClick={handleReset} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary}` : `${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
       {sv ? '' : '↺ '}{t('start_over')}
     </button>
   );
@@ -2520,9 +2522,9 @@ const BillRescue = ({ tool }) => {
       {view === 'rescue' && (sv ? (
         /* PROTOTYPE: the form in its own card, the answer in another below it. */
         <div className={card}>
-          <div data-print-hide className="flex items-center justify-between -mt-2 mb-1">
+          <div data-print-hide className="flex items-center justify-between mb-4">
             {!results ? (
-              <button onClick={loadExample} disabled={loading} className={`text-sm font-semibold ${c.accentTxt} hover:underline underline-offset-4 disabled:opacity-40`}>✦ {t('try_example')}</button>
+              <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
             ) : <span />}
             {startOverBtn}
           </div>
