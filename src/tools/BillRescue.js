@@ -1134,7 +1134,9 @@ const BillRescue = ({ tool }) => {
             supports a decision they have already been handed. ── */}
         {r.verdict && (
           <div className={`border-2 rounded-xl p-5 ${sv ? (['URGENT', 'ALREADY_DAMAGED'].includes(r.verdict.status) ? c.verdictAlert : c.verdictCalm) : VERDICT_TONE(r.verdict.status, c)}`}>
-            <p className="text-3xl mb-1">{r.verdict.emoji}</p>
+            {/* Its own inline box with trailing room: Safari's print clipped the
+                big emoji to its left half inside a bare <p>. */}
+            <p className="text-3xl mb-1 leading-none"><span className="inline-block pe-1 py-0.5">{r.verdict.emoji}</span></p>
             <p className="text-xl font-black">{r.verdict.headline}</p>
             {r.verdict.where_you_stand?.length > 0 && (
               <div className="mt-3 space-y-1">
@@ -1149,7 +1151,8 @@ const BillRescue = ({ tool }) => {
         {/* One line. Today's job, right below, says what to do first. */}
         {r.recommendation?.headline && (
           <div className={`${c.highlightBg} border rounded-xl p-4`}>
-            <p className="text-xs font-bold uppercase tracking-wide mb-1 opacity-80">{t('br_my_recommendation')}</p>
+            {/* A colour, not opacity-80: Safari prints translucent text as a blurred image. */}
+            <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${sv ? c.accentTxt : c.textSecondary}`}>{t('br_my_recommendation')}</p>
             <p className={`text-base font-black ${c.text}`}>{r.recommendation.headline}</p>
           </div>
         )}
@@ -2521,7 +2524,7 @@ const BillRescue = ({ tool }) => {
 
       {view === 'rescue' && (sv ? (
         /* PROTOTYPE: the form in its own card, the answer in another below it. */
-        <div className={card}>
+        <div className={card} {...(results ? { 'data-print-hide': '' } : {})}>
           <div data-print-hide className="flex items-center justify-between mb-4">
             {!results ? (
               <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>

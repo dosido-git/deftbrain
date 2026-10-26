@@ -207,7 +207,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             responsive variant needed. */}
         {/* PROTOTYPE: header (here) and <main> below share the category's light
             shade — one envelope around the tool; In a nutshell stays outside it. */}
-        <div className={`lg:col-start-1 lg:col-span-8 lg:row-start-1 ${sv ? 'rounded-t-[20px] border border-b-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pt-6 sm:pt-8' : 'mb-2'}`}>
+        <div className={`lg:col-start-1 lg:col-span-8 lg:row-start-1 ${sv ? 'rounded-t-[20px] border border-b-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pt-6 sm:pt-8 print:bg-transparent print:border-0 print:p-0' : 'mb-2'}`}>
 
           {/* Print-only header */}
           {/* Height matters here, not style. Measured 2026-08-31: this block was
@@ -330,7 +330,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             grid's full 32px (main → sidebar breathing room below lg). Now
             that the grid carries no base gap, that has to be explicit here
             instead of inherited — see the 2026-09-14 note above. */}
-        <main data-print-main className={`lg:col-span-8 mb-8 lg:mb-0 ${sv ? 'rounded-b-[20px] border border-t-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pb-6 sm:pb-8' : ''}`}>
+        <main data-print-main className={`lg:col-span-8 mb-8 lg:mb-0 ${sv ? 'rounded-b-[20px] border border-t-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pb-6 sm:pb-8 print:bg-transparent print:border-0 print:p-0' : ''}`}>
           {sv ? (
             /* PROTOTYPE: no outer card — the tool draws its own form and answer cards. */
             <section data-print-section className="scroll-mt-24">{children}</section>
