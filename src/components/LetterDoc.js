@@ -44,7 +44,7 @@ export default function LetterDoc({ text, title, note }) {
       {/* No joined letters (fi, ff): copied from a PDF they came out as
           'veriHcation' and 'ocer' (Firefox, 2026-10-26). */}
       <div data-letter="" style={{ breakInside: 'avoid', pageBreakInside: 'avoid', fontFamily: "'Source Serif 4', Georgia, serif", fontVariantLigatures: 'none', orphans: 4, widows: 4 }}
-        className={`rounded-lg border px-5 py-4 text-[13px] leading-relaxed whitespace-pre-line ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-100' : 'bg-white border-stone-200 text-stone-900'}`}>
+        className={`rounded-lg border px-3 sm:px-5 py-4 text-[13px] leading-relaxed whitespace-pre-line ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-100' : 'bg-white border-stone-200 text-stone-900'}`}>
         {text}
       </div>
       {/* Copy is the letter alone — no DeftBrain lines inside something they send. */}

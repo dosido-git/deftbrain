@@ -1216,7 +1216,7 @@ const BillRescue = ({ tool }) => {
         {r.todays_job?.action && (
           // The one container that must win (owner, 2026-10-26): accent border,
           // the biggest action line, and its words open beneath a rule.
-          <div className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
+          <div className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
             <p className={`text-[13px] font-bold ${c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
             <p className={`text-xl font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
@@ -2516,7 +2516,7 @@ const BillRescue = ({ tool }) => {
   // One Start over button, placed in the header band (current design) or the
   // form card (PROTOTYPE).
   const startOverBtn = (
-    <button onClick={handleReset} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary}` : `${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+    <button onClick={handleReset} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${c.btnSecondary}` : `${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
       {sv ? '' : '↺ '}{t('start_over')}
     </button>
   );
@@ -2588,14 +2588,14 @@ const BillRescue = ({ tool }) => {
           ]}>
             {view === 'rescue' && (
               <>
-                <div data-print-hide className="flex items-center justify-between mb-4">
+                <div data-print-hide className="flex flex-wrap items-center justify-between gap-2 mb-4">
                   {/* Stays after an answer, as on every other tool (owner, 2026-10-26). */}
-                  <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
-                  <div className="flex items-center gap-2">
+                  <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
+                  <div className="flex items-center gap-2 ms-auto">
                     {/* The form folds away under an answer; this brings it back. */}
                     {results && !editForm && (
                       <button onClick={() => { setEditForm(true); setTimeout(() => revealSection(formRef.current), 120); }}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary}`}>{t('br_edit_details')}</button>
+                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${c.btnSecondary}`}>{t('br_edit_details')}</button>
                     )}
                     {startOverBtn}
                   </div>
@@ -2625,8 +2625,9 @@ const BillRescue = ({ tool }) => {
       )}
       {view === 'rescue' && (sv ? (results ? (
         <div className={`${card} mt-2`}>
-          <div className={`flex items-center justify-between gap-3 pb-3 mb-4 border-b ${c.border}`}>
-            <h2 className="text-xl font-bold text-[var(--sc-strong)]" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('br_your_plan')}</h2>
+          {/* Wraps on a phone: the title keeps its line, the actions drop below. */}
+          <div className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-3 mb-4 border-b ${c.border}`}>
+            <h2 className="text-xl font-bold text-[var(--sc-strong)] whitespace-nowrap" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('br_your_plan')}</h2>
             <div data-print-hide><RegisteredActions /></div>
           </div>
           {renderResults()}
