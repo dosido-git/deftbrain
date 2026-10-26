@@ -9,6 +9,14 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { trimRepeats } = require('../lib/repeatCheck');
+
+// The answer's sections in the order the page shows them (src/tools/BillRescue.js
+// renderResults) — the repeat check keeps the first mention.
+const PAGE_ORDER = ['verdict', 'recommendation', 'todays_job', 'shame_to_action', 'action_steps',
+  'money_you_might_not_owe', 'bill_autopsy', 'know_your_rights', 'what_they_wont_tell_you', 'assistance_programs',
+  'payment_plan', 'phone_script', 'escalation_ladder', 'collections_defense', 'hardship_letter',
+  'follow_up', 'worst_case', 'worst_case_reassurance', 'permission'];
 // ════════════════════════════════════════════════════════════
 // SHARED: Bill-type-specific knowledge injections
 // ════════════════════════════════════════════════════════════
@@ -472,6 +480,9 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
         if (hasAmount) fixPlanMonths(parsed, amount);
         // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
         await checkConsistency(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
+        // T11 (audit/DEFECT-TYPES.md): the same advice and letters repeated
+        // across sections — kept once, later mentions point back to it.
+        await trimRepeats(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage, order: PAGE_ORDER });
       },
     });
 

@@ -10,6 +10,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { RegisteredActions } from '../components/ActionButtons';
+import ToolTabs from '../components/ToolTabs';
 import { schemeStyle } from '../data/toolSchemes';
 
 // eslint-disable-next-line no-use-before-define
@@ -66,6 +67,9 @@ function groupByWhen(steps) {
   }
   return order.map(k => [k, bucket.get(k)]);
 }
+
+// The three ways into the tool, shown as tabs in the category-colour design.
+const ENTRY_VIEWS = ['rescue', 'triage', 'quick'];
 
 const VERDICT_TONE = (status, c) => ({
   FINE: c.success,
@@ -1068,16 +1072,17 @@ const BillRescue = ({ tool }) => {
         </div>
 
         <p className={`text-xs ${c.textMuteded} mb-1`}>{t('br_privacy')}</p>
-        <p className={`text-xs ${c.textMuteded} mb-1`}>
+        {/* PROTOTYPE: the tabs above say this; the links stay for the current design. */}
+        {!sv && <p className={`text-xs ${c.textMuteded} mb-1`}>
           {t('br_triage_hint_pre')}{' '}
           <button onClick={() => setView('triage')} className={linkStyle + ' text-xs'}>{t('br_triage_hint_link')}</button>{' '}
           {t('br_triage_hint_post')}
-        </p>
-        <p className={`text-xs ${c.textMuteded} mb-3`}>
+        </p>}
+        {!sv && <p className={`text-xs ${c.textMuteded} mb-3`}>
           {t('br_quick_hint_pre')}{' '}
           <button onClick={() => { setView('quick'); setError(''); }} className={linkStyle + ' text-xs'}>{t('br_quick_hint_link')}</button>{' '}
           {t('br_quick_hint_post')}
-        </p>
+        </p>}
 
         {/* Actions */}
         <div className="flex gap-2 flex-wrap">
@@ -1564,7 +1569,7 @@ const BillRescue = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderTriage = () => (
     <div className="space-y-4">
-      <div className={`border-t ${c.border} pt-5`}>
+      <div className={sv ? '' : `border-t ${c.border} pt-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-base font-black ${c.text}`}>📊 {t('br_triage_title')}</h2>
           <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('br_triage_subtitle')}</p>
@@ -1928,7 +1933,7 @@ const BillRescue = ({ tool }) => {
     };
     return (
       <div className="space-y-4">
-        <div className={`border-t ${c.border} pt-5`}>
+        <div className={sv ? '' : `border-t ${c.border} pt-5`}>
           <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ {t('br_quick_title')}</h3>
           <p className={`text-xs ${c.textMuteded} mb-4`}>{t('br_quick_subtitle')}</p>
 
@@ -2493,7 +2498,9 @@ const BillRescue = ({ tool }) => {
           margins = the wrapper's padding; the card clips the corners), the
           pale ground the "Try an example" pill was designed for (PF-17c).
           Holds the view tabs too. Screen only. */}
-      {sv ? (view !== 'rescue' && <div data-print-hide>{renderNav()}</div>) : (
+      {sv ? (!ENTRY_VIEWS.includes(view) && (
+        <button data-print-hide onClick={() => { setView('rescue'); setError(''); }} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary}`}>← {t('back')}</button>
+      )) : (
       <div
         data-print-hide
         className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-4"
@@ -2537,18 +2544,33 @@ const BillRescue = ({ tool }) => {
         </div>
       )}
 
-      {view === 'rescue' && (sv ? (
-        /* PROTOTYPE: the form in its own card, the answer in another below it. */
-        <div className={card} {...(results ? { 'data-print-hide': '' } : {})}>
-          <div data-print-hide className="flex items-center justify-between mb-4">
-            {!results ? (
-              <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
-            ) : <span />}
-            {startOverBtn}
-          </div>
-          {renderRescue()}
+      {sv ? (ENTRY_VIEWS.includes(view) && (
+        /* PROTOTYPE: three ways in, as tabs (owner, 2026-10-25) — one bill,
+           several bills, one charge. The after-plan tools (rehearse, letters,
+           tracker, log, calendar, wins) are reached from the plan itself. The
+           answer is its own card below. */
+        <div {...(view === 'rescue' && results ? { 'data-print-hide': '' } : {})}>
+          <ToolTabs label={tool?.title || 'Bill Rescue'} active={view} onChange={id => { setView(id); setError(''); }} tabs={[
+            { id: 'rescue', icon: '🧾', label: t('br_tab_one_bill'), tone: 'scheme' },
+            { id: 'triage', icon: '📊', label: t('br_tab_several'), tone: 'scheme' },
+            { id: 'quick',  icon: '⚡', label: t('br_tab_one_charge'), tone: 'scheme' },
+          ]}>
+            {view === 'rescue' && (
+              <>
+                <div data-print-hide className="flex items-center justify-between mb-4">
+                  {!results ? (
+                    <button onClick={loadExample} disabled={loading} className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('try_example')}</button>
+                  ) : <span />}
+                  {startOverBtn}
+                </div>
+                {renderRescue()}
+              </>
+            )}
+            {view === 'triage' && renderTriage()}
+            {view === 'quick' && renderQuickCheck()}
+          </ToolTabs>
         </div>
-      ) : renderRescue())}
+      )) : view === 'rescue' && renderRescue()}
       {/* A pointer to another tool, offered AFTER the ask rather than between
           the visitor and the form. Sitting above the inputs it read as a
           suggestion to leave before they had done anything. */}
@@ -2568,8 +2590,8 @@ const BillRescue = ({ tool }) => {
           {renderResults()}
         </div>
       ) : null) : renderResults())}
-      {view === 'quick' && renderQuickCheck()}
-      {view === 'triage' && renderTriage()}
+      {!sv && view === 'quick' && renderQuickCheck()}
+      {!sv && view === 'triage' && renderTriage()}
       {view === 'rehearse' && renderRehearsal()}
       {view === 'letters' && renderLetters()}
       {view === 'tracker' && renderTracker()}

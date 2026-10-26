@@ -30,7 +30,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T8 | Built-in examples stale or inconsistent | `scripts/example-dates-audit.js` (Gate 13) + `exampleDate`/`dayMonthFromToday` | Built 2026-10-09 | 0 |
 | T9 | Shared-code change breaks tools | `scripts/smoke-tools.js` (pre-push Gate 12) | **Built 2026-10-09**; 295 of 357 endpoints exercised | 0 |
 | T10 | Too-vague input answered in words, shown as a generic error | `lib/claude.js` stops at a words-not-JSON reply; `lib/surge.js` middleware answers 422 `unclear_input`; `useClaudeAPI` shows `err_unclear_input` | **Built 2026-10-15**; every route | 0 |
-| T11 | Parts written apart drift (second-guess, overlap, thin coverage) | `lib/progressive.js` `planFirst` (one pass chooses the list or the claim, the rest build on it) + `planNote` (treat it as final) | **Built 2026-10-16**; progressive tools | 0 |
+| T11 | Parts written apart drift (second-guess, overlap, thin coverage) | `lib/progressive.js` `planFirst` (one pass chooses the list or the claim, the rest build on it) + `planNote` (treat it as final); repeats that survive: `lib/repeatCheck.js` `trimRepeats` (after display) | **Built 2026-10-16**; repeat check 2026-10-25 on Bill Rescue | sweep open |
 | T12 | Decorative analogy (the effect in costume, no cause) | `lib/analogyCheck.js` `reviewAnalogies` (Sonnet: mechanism / familiar / maps; rewrites failures) | **Built 2026-10-23**; Analogy Engine | 1 (Missing Link) |
 
 ---
@@ -266,6 +266,8 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 | Ghost Writer — tips pass questioned the letters' pronouns | **fixed with shared fix** (`planNote` on the extras pass) |
 | Break My Plan — split prevention half thinner, missed a risk | **fixed with shared fix** (failure modes planned first, details filled by passes handed the list) |
 | Scam Radar, Money Diplomat (lend), Complaint Escalation — the same reason restated across sections written by separate passes (same-day blind comparison, 2026-10-17) | **shared fix built**: `onlyKeys` names the sections the other passes carry and asks for each point once (`noOverlap`); Complaint's strategy passes use it directly. Letters stay self-contained — each goes to a different reader |
+| Bill Rescue — debt in collections: "send a validation letter" in 7 sections and the letter itself written three times, worded differently (owner, 2026-10-25). `noOverlap` was already in every pass, so the prompt rule alone did not hold | **fixed with shared fix**: `lib/repeatCheck.js` `trimRepeats(draft, {order})` — one Sonnet pass after display reads prose fields in page order, shortens each later repeat to what it adds plus a pointer back (only ever shorter, never empty). Live: 8 fields trimmed, letter kept once; ~$0.05, ~30s in the check phase |
+| **Sweep (open):** every multi-pass progressive tool is exposed — wire `trimRepeats` with its page order and check one live case each | open |
 
 ---
 

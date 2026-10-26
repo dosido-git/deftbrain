@@ -25,6 +25,9 @@
  * yesterday, never worse.
  */
 
+import { getToolById } from '../data/tools';
+import { toolTagline } from './toolTagline';
+
 const clean = s => String(s).replace(/\s+/g, ' ').trim();
 
 // Elements that are controls or chrome, not content. Every tool's results
@@ -203,5 +206,32 @@ export function serializeResults(title) {
 
   const stamp = new Date().toLocaleDateString(undefined,
     { year: 'numeric', month: 'long', day: 'numeric' });
-  return `# ${title}\n_${stamp}_\n\n${lines.join('\n')}`;
+  // The tool's tagline under its name, as on the page (owner, 2026-10-25).
+  const tool = typeof window !== 'undefined' ? getToolById(window.location.pathname.replace(/^\/+/, '').split('/')[0]) : null;
+  const tagline = tool && tool.tagline ? `${toolTagline(tool.tagline)}\n` : '';
+  return `# ${title}\n${tagline}_${stamp}_\n\n${lines.join('\n')}`;
+}
+
+const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * The copied Markdown as simple HTML, for pasting where formatting survives
+ * (Mail, Notes, Docs): headings, list items, paragraphs, _italic_ lines.
+ * Every character is escaped — only the tags made here are markup.
+ */
+export function markdownToHtml(md) {
+  const out = [];
+  let inList = false;
+  for (const raw of String(md).split('\n')) {
+    const line = raw.trimEnd();
+    const li = /^- (.*)$/.exec(line);
+    if (!li && inList) { out.push('</ul>'); inList = false; }
+    const h = /^(#{1,3}) (.*)$/.exec(line);
+    if (h) out.push(`<h${h[1].length}>${esc(h[2])}</h${h[1].length}>`);
+    else if (li) { if (!inList) { out.push('<ul>'); inList = true; } out.push(`<li>${esc(li[1])}</li>`); }
+    else if (/^_(.+)_$/.test(line)) out.push(`<p><em>${esc(line.slice(1, -1))}</em></p>`);
+    else if (line) out.push(`<p>${esc(line)}</p>`);
+  }
+  if (inList) out.push('</ul>');
+  return out.join('\n');
 }
