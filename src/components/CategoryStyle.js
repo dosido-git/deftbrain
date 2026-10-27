@@ -64,14 +64,24 @@ export const FORM_PANEL = 'rounded-xl border-2 border-[var(--sc-accent)] bg-[var
 
 // The answer: one long card in the lightest shade, separate from the form,
 // headed by its name with Copy / Share / Print on the same row.
+export const ANSWER_CARD = 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5';
+
+// The answer card's heading row, for a tool whose answer is several sibling
+// blocks that one wrapper element holds (it adds ANSWER_CARD itself).
+export function AnswerHeader({ title }) {
+  return (
+    // Wraps on a phone: the title keeps its line, the actions drop below.
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-3 mb-4 border-b border-[var(--sc-line)]">
+      <h2 className="text-xl font-bold text-[var(--sc-strong)] whitespace-nowrap" style={{ fontFamily: SERIF }}>{title}</h2>
+      <div data-print-hide><RegisteredActions /></div>
+    </div>
+  );
+}
+
 export function AnswerCard({ title, children, className = '' }) {
   return (
-    <div className={`rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5 ${className}`}>
-      {/* Wraps on a phone: the title keeps its line, the actions drop below. */}
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-3 mb-4 border-b border-[var(--sc-line)]">
-        <h2 className="text-xl font-bold text-[var(--sc-strong)] whitespace-nowrap" style={{ fontFamily: SERIF }}>{title}</h2>
-        <div data-print-hide><RegisteredActions /></div>
-      </div>
+    <div className={`${ANSWER_CARD} ${className}`}>
+      <AnswerHeader title={title} />
       {children}
     </div>
   );
