@@ -78,7 +78,7 @@ const SignalVsNoise = ({ tool }) => {
     cardAlt:       'bg-[var(--sc-envelope)]',
     input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-accent)] focus:ring-[var(--sc-line)]',
     labelText:     'text-[var(--sc-strong)]',
-    required:      'text-[var(--sc-x-text)]',
+    required:      'text-[var(--sc-accent)]',
     accentTxt:     'text-[var(--sc-accent)]',
     btnPrimary:    'bg-[var(--sc-button)] hover:opacity-90 text-[var(--sc-button-text)]',
     btnIdle:       '!bg-transparent !border-2 !border-[var(--sc-accent)] !text-[var(--sc-accent)] cursor-not-allowed',
@@ -90,10 +90,10 @@ const SignalVsNoise = ({ tool }) => {
     signalText:    'text-[var(--sc-strong)]',
     debatedText:   'text-[var(--sc-strong)]',
   });
-  // Section headings in the dark shade; tags outlined in the contrast colour
-  // (Bill Rescue's accent badge), not amber, sky or emerald.
+  // Section headings in the dark shade; tags (they classify, they do not
+  // warn) outlined in the medium shade, not amber, sky, emerald or plum.
   const inkHead = sv ? 'text-[var(--sc-strong)]' : null;
-  const neutralTag = 'border-[var(--sc-x-line)] text-[var(--sc-x-text)]';
+  const neutralTag = 'border-[var(--sc-accent)] text-[var(--sc-accent)]';
   const plain = (str) => str;
   c.textMuteded = c.textMuted;
   c.label = c.labelText;

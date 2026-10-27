@@ -257,6 +257,13 @@ const BillRescue = ({ tool }) => {
     // is already done.
     verdictCalm:   'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     verdictAlert:  'bg-[var(--sc-envelope)] border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
+    // Text-colour rules (2026-10-26): no traffic-light colours on a category
+    // page. A key figure is dark, a small label medium, and a warning — the
+    // one job the contrasting colour has — in the contrast shade.
+    successFg:     'text-[var(--sc-strong)]',
+    warningFg:     'text-[var(--sc-accent)]',
+    dangerFg:      'text-[var(--sc-x-text)]',
+    danger:        'bg-[var(--sc-card)] border border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
   });
   const card = 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5';
   // Choice chips: a finger-sized target (40px) even when they wrap on a phone;
@@ -1217,7 +1224,7 @@ const BillRescue = ({ tool }) => {
           // The one container that must win (owner, 2026-10-26): accent border,
           // the biggest action line, and its words open beneath a rule.
           <div className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
-            <p className={`text-[13px] font-bold ${c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
+            <p className={`text-[13px] font-bold ${sv ? c.sectionTitle : c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
             <p className={`text-xl font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
             {r.todays_job.not_yet?.length > 0 && (
