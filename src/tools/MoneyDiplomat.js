@@ -6,6 +6,8 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { toolTagline } from '../utils/toolTagline';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { Badge } from '../components/Badge';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, AnswerCard, ToolTopRow } from '../components/CategoryStyle';
 import { useTranslation } from '../i18n/useTranslation';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 import { pickExample } from '../utils/exampleRotation';
@@ -512,11 +514,67 @@ const MoneyDiplomat = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
+    noteTxt:       isDark ? 'text-amber-300' : 'text-amber-700',
+    pickedBox:     isDark ? 'border-emerald-600 bg-emerald-900/10' : 'border-emerald-400 bg-emerald-50/50',
+    sayTxt:        isDark ? 'text-green-300' : 'text-green-700',
+    avoidTxt:      isDark ? 'text-red-300' : 'text-red-700',
+    quickFrame:    isDark ? 'border-sky-600' : 'border-sky-400',
+    quickOn:       isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white',
+    simFrame:      isDark ? 'border-red-600' : 'border-red-400',
+    simHead:       isDark ? 'bg-red-900/20' : 'bg-red-50',
+    simBtn:        isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white',
+    simPrompt:     isDark ? 'bg-red-900/15 border-red-700' : 'bg-red-50 border-red-200',
+    simTurn:       isDark ? 'bg-red-900/15' : 'bg-red-50',
+    simDone:       isDark ? 'bg-green-900/20 border-green-600' : 'bg-green-50 border-green-400',
+    trackFrame:    isDark ? 'border-amber-600' : 'border-amber-400',
+    trackHead:     isDark ? 'bg-amber-900/20' : 'bg-amber-50',
+    amountTxt:     isDark ? 'text-amber-400' : 'text-amber-600',
+    nudgeBtn:      isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200',
+    paidBtn:       isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800',
+    sitOn:         isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50',
+    sitHover:      'hover:border-emerald-300',
+    errTxt:        isDark ? 'text-red-400' : 'text-red-600',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): no traffic-light colours. The practice
+  // simulator, quick maths and IOU tracker are framed in the medium shade;
+  // only "avoid" lines, money owed and errors take the contrast colour.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    // Cards stay cards here: the answer and the side panels are stacks of them.
+    card:       'bg-[var(--sc-card)]',
+    // Gray-500 is 4.2:1 on the envelope shade; one step darker passes.
+    textMuted:  isDark ? 'text-zinc-400' : 'text-gray-600',
+    textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
+    success:    'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    warning:    'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    noteTxt:    'text-[var(--sc-accent)]',
+    pickedBox:  'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)]',
+    sayTxt:     'text-[var(--sc-strong)]',
+    avoidTxt:   'text-[var(--sc-x-text)]',
+    quickFrame: 'border-[var(--sc-accent)]',
+    quickOn:    'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+    simFrame:   'border-[var(--sc-accent)]',
+    simHead:    'bg-[var(--sc-envelope)]',
+    simBtn:     SCHEME_C.btnPrimary,
+    simPrompt:  'bg-[var(--sc-card)] border-[var(--sc-accent)]',
+    simTurn:    'bg-[var(--sc-envelope)]',
+    simDone:    'bg-[var(--sc-card)] border-[var(--sc-accent)]',
+    trackFrame: 'border-[var(--sc-accent)]',
+    trackHead:  'bg-[var(--sc-envelope)]',
+    amountTxt:  'text-[var(--sc-strong)]',
+    nudgeBtn:   SCHEME_C.btnSecondary,
+    paidBtn:    SCHEME_C.btnSecondary,
+    sitOn:      'border-2 border-[var(--sc-strong)] bg-[var(--sc-card)]',
+    sitHover:   'hover:border-[var(--sc-accent)]',
+    errTxt:     'text-[var(--sc-x-text)]',
+  });
+  const tick = (on) => (sv && on ? '✓ ' : '');
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [activeType, setActiveType] = useState(null);
@@ -834,7 +892,7 @@ const MoneyDiplomat = ({ tool }) => {
     // splits a tool file on the {renderResults()} call to tell "seen before
     // submitting" from "seen after". Rendering inline gave it nothing to split
     // on, so the post-result half could never pass however many links were there.
-    const renderResults = () => (
+    const renderResults = () => { const answer = (
       <div ref={revealRef} className="scroll-mt-24 space-y-4">
         <CheckNote status={checkStatus} className={c.textMuted} />
         <div className="flex items-center justify-between">
@@ -851,9 +909,9 @@ const MoneyDiplomat = ({ tool }) => {
         {activeType === 'tip' && results?.practical_answer && <GroundedResult mode="tip" results={results} c={c} t={t} />}
         {activeType === 'split' && results?.options && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
-            {results?.the_awkward_part && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_awkward_part}</p>}
+            {results?.the_awkward_part && <p className={`text-xs ${c.noteTxt} italic`}>😬 {results?.the_awkward_part}</p>}
             {results?.options?.map((opt, oi) => (
-              <div key={oi} className={`p-4 rounded-lg border ${oi === 0 ? (isDark ? 'border-emerald-600 bg-emerald-900/10' : 'border-emerald-400 bg-emerald-50/50') : `${c.border} ${c.cardAlt}`}`}>
+              <div key={oi} className={`p-4 rounded-lg border ${oi === 0 ? c.pickedBox : `${c.border} ${c.cardAlt}`}`}>
                 <div className="flex items-center justify-between mb-2">
                   <p className={`text-sm font-bold ${c.text}`}>{opt.method}</p>
                   <Badge c={c} type={opt.fairness_score >= 80 ? 'success' : 'warning'}>{t('md_res_fam_fair', { score: opt.fairness_score })}</Badge>
@@ -947,8 +1005,8 @@ const MoneyDiplomat = ({ tool }) => {
             {results?.scenarios?.map((s, i) => (
               <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
                 <p className={`font-bold ${c.text}`}>{t('md_res_din_if', { condition: s.if })}</p>
-                <p className={isDark ? 'text-green-300' : 'text-green-700'}>{t('md_res_din_say', { line: s.then })}</p>
-                <p className={isDark ? 'text-red-300' : 'text-red-700'}>{t('md_res_din_avoid', { line: s.avoid })}</p>
+                <p className={c.sayTxt}>{t('md_res_din_say', { line: s.then })}</p>
+                <p className={c.avoidTxt}>{t('md_res_din_avoid', { line: s.avoid })}</p>
               </div>
             ))}
             {results?.budget_moves && (
@@ -971,7 +1029,7 @@ const MoneyDiplomat = ({ tool }) => {
                   <p className={`text-sm font-bold ${c.text}`}>{s.person}</p>
                   <p className={`text-[13px] ${c.textMuteded}`}>{t('md_res_grp_paid_fair', { paid: s.paid_so_far, fair: s.fair_share })}</p>
                 </div>
-                <p className={`text-sm font-black ${s.owes_or_owed?.startsWith('+') ? (isDark ? 'text-red-300' : 'text-red-700') : (isDark ? 'text-green-300' : 'text-green-700')}`}>{s.owes_or_owed}</p>
+                <p className={`text-sm font-black ${s.owes_or_owed?.startsWith('+') ? (c.avoidTxt) : (c.sayTxt)}`}>{s.owes_or_owed}</p>
               </div>
             ))}
             {results?.simplification?.transactions?.length > 0 && (
@@ -1020,8 +1078,8 @@ const MoneyDiplomat = ({ tool }) => {
             {results?.scripts?.map((s, i) => (
               <div key={i} className={`p-2 rounded-lg ${c.cardAlt} text-xs`}>
                 <p className={`font-bold ${c.text}`}>{s.scenario}</p>
-                <p className={isDark ? 'text-green-300' : 'text-green-700'}>✅ "{s.say_this}"</p>
-                <p className={isDark ? 'text-red-300' : 'text-red-700'}>❌ "{s.not_this}"</p>
+                <p className={c.sayTxt}>✅ "{s.say_this}"</p>
+                <p className={c.avoidTxt}>❌ "{s.not_this}"</p>
               </div>
             ))}
             {results?.the_unwritten_rule && <p className={`text-xs ${c.text} italic`}>{t('md_res_work_unwritten', { rule: results?.the_unwritten_rule })}</p>}
@@ -1033,7 +1091,7 @@ const MoneyDiplomat = ({ tool }) => {
         {activeType === 'date' && results?.options && <GroundedResult mode="date" results={results} c={c} t={t} />}
         {activeType === 'subs' && results?.fair_split && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
-            {results?.the_wrinkle && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>😬 {results?.the_wrinkle}</p>}
+            {results?.the_wrinkle && <p className={`text-xs ${c.noteTxt} italic`}>😬 {results?.the_wrinkle}</p>}
             {results?.fair_split?.map((fs, i) => (
               <div key={i} className={`p-3 rounded-lg border ${c.border} flex items-center justify-between`}>
                 <div><p className={`text-sm font-bold ${c.text}`}>{fs.person}</p><p className={`text-[13px] ${c.textMuteded}`}>{fs.reasoning}</p></div>
@@ -1069,17 +1127,24 @@ const MoneyDiplomat = ({ tool }) => {
           </div>
         </div>
       </div>
-    );
+    ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; };
 
-  return (
-    <div className={`space-y-4 ${c.text}`}>
-
-      {/* ── Persistent Header ── */}
-      <div>
-        <div>
-          {/* Header — site style (2026-09-27): a pale band of the tool's color
-              bleeding to the card edges, the ground the "Try an example" pill was
-              made for (PF-17c). Screen only. */}
+  // The row above the form. With a category scheme the wrapper carries the
+  // tagline and the tool keeps one row: Try an example and the reset.
+  // PF-16: the tool's one reset, on the title row next to the page's <h1>,
+  // from the first keystroke. It used to be scoped to the practice simulator,
+  // so the main flow had no way back at all.
+  const renderHeaderRow = () => {
+    const resetBtn = canReset ? (
+      <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg ${sv ? 'text-sm font-bold' : 'text-xs font-semibold'} flex-shrink-0 whitespace-nowrap`}>
+        ↺ {t('md_start_over')}
+      </button>
+    ) : null;
+    if (sv) return <ToolTopRow onExample={loadExample} loading={loading}>{resetBtn}</ToolTopRow>;
+    // Header — site style (2026-09-27): a pale band of the tool's colour
+    // bleeding to the card edges, the ground the "Try an example" pill was
+    // made for (PF-17c). Screen only.
+    return (
           <div
             data-print-hide
             className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
@@ -1096,29 +1161,31 @@ const MoneyDiplomat = ({ tool }) => {
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first
-                  keystroke. It used to be scoped to the practice simulator, so
-                  the main flow — pick a scenario, type, get an answer — had no
-                  way back at all. */}
-              {canReset ? (
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                  ↺ {t('md_start_over')}
-                </button>
-              ) : null}
+              {resetBtn}
             </div>
           </div>
           </div>
+    );
+  };
+
+  return (
+    <div className={`space-y-4 ${c.text}`}>
+
+      {/* ── Persistent Header ── */}
+      <div>
+        <div>
+          {renderHeaderRow()}
         </div>
-        <div data-print-hide className="p-5 space-y-3">
+        <div data-print-hide className={sv ? 'space-y-3' : 'p-5 space-y-3'}>
           <div className="flex flex-wrap gap-2">
             <button aria-pressed={showTracker} onClick={() => setShowTracker(!showTracker)} className={`text-xs px-3 py-1 rounded-full border ${showTracker ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
-              {debts.filter(d => !d.settled).length > 0 ? t('md_pill_tracker_count', { count: debts.filter(d => !d.settled).length }) : t('md_pill_tracker')}
+              {tick(showTracker)}{debts.filter(d => !d.settled).length > 0 ? t('md_pill_tracker_count', { count: debts.filter(d => !d.settled).length }) : t('md_pill_tracker')}
             </button>
             <button aria-pressed={showSimulator} onClick={() => setShowSimulator(!showSimulator)} className={`text-xs px-3 py-1 rounded-full border ${showSimulator ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
-              {t('md_pill_practice')}
+              {tick(showSimulator)}{t('md_pill_practice')}
             </button>
             <button aria-pressed={quickMode} onClick={() => setQuickMode(!quickMode)} className={`text-xs px-3 py-1 rounded-full border ${quickMode ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
-              {t('md_pill_quick')}
+              {tick(quickMode)}{t('md_pill_quick')}
             </button>
 
             {/* Set Profile and Money Style are gone from the header. The first
@@ -1133,14 +1200,14 @@ const MoneyDiplomat = ({ tool }) => {
 
       {/* ─── QUICK MODE ─── */}
       {quickMode && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 border-2 ${isDark ? 'border-sky-600' : 'border-sky-400'}`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4 border-2 ${c.quickFrame}`}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">🧮</span>
             <p className={`text-sm font-bold ${c.text}`}>{t('md_quick_title')}</p>
             <div className="flex gap-1 ms-auto">
               {[{ id: 'tip', labelKey: 'md_quick_tab_tip' }, { id: 'split', labelKey: 'md_quick_tab_split' }].map(tab => (
                 <button key={tab.id} onClick={() => setQuickCalc(p => ({ ...p, type: tab.id }))}
-                  className={`text-xs px-2 py-0.5 rounded-full ${quickCalc.type === tab.id ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : `${c.cardAlt} ${c.text}`}`}>{t(tab.labelKey)}</button>
+                  className={`text-xs px-2 py-0.5 rounded-full ${quickCalc.type === tab.id ? c.quickOn : `${c.cardAlt} ${c.text}`}`}>{t(tab.labelKey)}</button>
               ))}
             </div>
           </div>
@@ -1156,7 +1223,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="flex items-center gap-1">
                   {[15, 18, 20, 25].map(p => (
                     <button key={p} onClick={() => setQuickCalc(prev => ({ ...prev, tipPct: p }))}
-                      className={`text-xs px-1.5 py-1 rounded ${quickCalc.tipPct === p ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : c.cardAlt}`}>{p}</button>
+                      className={`text-xs px-1.5 py-1 rounded ${quickCalc.tipPct === p ? c.quickOn : c.cardAlt}`}>{p}</button>
                   ))}
                 </div>
               </div>
@@ -1186,8 +1253,8 @@ const MoneyDiplomat = ({ tool }) => {
 
       {/* ─── SCENARIO SIMULATOR ─── */}
       {showSimulator && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${isDark ? 'border-red-600' : 'border-red-400'}`}>
-          <div className={`p-4 ${isDark ? 'bg-red-900/20' : 'bg-red-50'} border-b ${c.border}`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${c.simFrame}`}>
+          <div className={`p-4 ${c.simHead} border-b ${c.border}`}>
             <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🎭</span> {t('md_sim_title')}</h4>
             <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('md_sim_helper')}</p>
           </div>
@@ -1202,7 +1269,7 @@ const MoneyDiplomat = ({ tool }) => {
                   <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_who_label')}</label>
                   <input type="text" value={simOtherPerson} onChange={e => setSimOtherPerson(e.target.value)} placeholder={t('md_sim_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
-                <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
+                <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${c.simBtn} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                   {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> : <span>🎭</span>}
                   {t('md_sim_start')}
                 </button>
@@ -1212,7 +1279,7 @@ const MoneyDiplomat = ({ tool }) => {
             {/* Conversation sessionHistory */}
             {simHistory.map((h, i) => (
               <div key={i} className="space-y-2">
-                <div className={`p-3 rounded-lg ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}>
+                <div className={`p-3 rounded-lg ${c.simTurn}`}>
                   <p className={`text-xs ${c.text}`}>{t('md_sim_them', { line: h.them })}</p>
                 </div>
                 <div className={`p-3 rounded-lg ${c.cardAlt}`}>
@@ -1222,7 +1289,7 @@ const MoneyDiplomat = ({ tool }) => {
                   <div className={`p-2 rounded-lg border ${c.border} flex items-center gap-3`}>
                     <Badge c={c} type={h.eval.score >= 70 ? 'success' : h.eval.score >= 50 ? 'warning' : 'danger'}>{h.eval.score}/100</Badge>
                     <div className="flex-1">
-                      <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'}`}>✅ {h.eval.what_worked}</p>
+                      <p className={`text-xs ${c.sayTxt}`}>✅ {h.eval.what_worked}</p>
                       {h.eval.power_move && <p className={`text-xs ${c.textSecondary}`}>⚡ {h.eval.power_move}</p>}
                     </div>
                   </div>
@@ -1234,7 +1301,7 @@ const MoneyDiplomat = ({ tool }) => {
             {simPrompt && !simPrompt.resolved && (
               <div>
                 {simPrompt.scene && <p className={`text-[13px] ${c.textMuteded} italic mb-2`}>{simPrompt.scene}</p>}
-                <div className={`p-4 rounded-lg ${isDark ? 'bg-red-900/15 border-red-700' : 'bg-red-50 border-red-200'} border-2`}>
+                <div className={`p-4 rounded-lg ${c.simPrompt} border-2`}>
                   <div className="flex items-center gap-2 mb-1">
                     {simPrompt.their_emotion && <Badge c={c} type="info">{simPrompt.their_emotion}</Badge>}
                     {simPrompt.escalation_level && <Badge c={c} type={simPrompt.escalation_level === 'Escalating' ? 'danger' : simPrompt.escalation_level === 'De-escalating' ? 'success' : 'info'}>{simPrompt.escalation_level}</Badge>}
@@ -1247,7 +1314,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <textarea id="md-sim-response" value={simResponse} onChange={e => setSimResponse(e.target.value)} rows={2}
                   placeholder={t('md_sim_response_ph')} className={`w-full p-3 border rounded-xl outline-none text-sm resize-y mt-2 ${c.input}`} />
                 <div className="flex items-center gap-2 mt-2">
-                  <button onClick={handleSimRespond} disabled={simLoading || !simResponse.trim()} className={`${isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
+                  <button onClick={handleSimRespond} disabled={simLoading || !simResponse.trim()} className={`${c.simBtn} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                     {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> : <span>💬</span>}
                     {t('md_sim_respond')}
                   </button>
@@ -1255,7 +1322,7 @@ const MoneyDiplomat = ({ tool }) => {
               </div>
             )}
             {simPrompt?.resolved && (
-              <div className={`${isDark ? 'bg-green-900/20' : 'bg-green-50'} border-2 ${isDark ? 'border-green-600' : 'border-green-400'} rounded-lg p-4 text-center`}>
+              <div className={`${c.simDone} border-2 rounded-lg p-4 text-center`}>
                 <p className="text-lg">✅</p>
                 <p className={`text-sm font-bold ${c.text}`}>{t('md_sim_resolved')}</p>
                 <p className={`text-xs ${c.textSecondary} mt-1`}>{t('md_sim_avg_score', { score: Math.round(simHistory.reduce((s, h) => s + (h.eval?.score || 0), 0) / (simHistory.length || 1)), count: simHistory.length })}</p>
@@ -1270,8 +1337,8 @@ const MoneyDiplomat = ({ tool }) => {
 
       {/* ─── THEY OWE ME TRACKER ─── */}
       {showTracker && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${isDark ? 'border-amber-600' : 'border-amber-400'}`}>
-          <div className={`p-4 ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'} border-b ${c.border}`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden border-2 ${c.trackFrame}`}>
+          <div className={`p-4 ${c.trackHead} border-b ${c.border}`}>
             <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📒</span> {t('md_tracker_title')}</h4>
           </div>
           <div className="p-4 space-y-3">
@@ -1301,15 +1368,15 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className={`text-sm font-bold ${c.text}`}>{debt.person}</p>
-                    <p className={`text-sm font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{debt.amount}</p>
+                    <p className={`text-sm font-black ${c.amountTxt}`}>{debt.amount}</p>
                   </div>
                   <p className={`text-[13px] ${c.textMuteded}`}>{debt.context} · {debt.date} · {t('md_tracker_reminders', { count: debt.attempts || 0 })}</p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-amber-800/50 text-amber-200 hover:bg-amber-700' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'} transition-colors disabled:opacity-40`}>
+                  <button onClick={() => handleNudge(debt)} disabled={nudgeLoading} className={`text-xs px-2 py-1 rounded ${c.nudgeBtn} transition-colors disabled:opacity-40`}>
                     {nudgeLoading ? <><span className="animate-spin inline-block text-xl">{tool?.icon ?? '💵'}</span></> : '📨'} {t('md_tracker_nudge')}
                   </button>
-                  <button onClick={() => settleDebt(debt.id)} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-green-800/50 text-green-200' : 'bg-green-100 text-green-800'}`}>{t('md_tracker_paid')}</button>
+                  <button onClick={() => settleDebt(debt.id)} className={`text-xs px-2 py-1 rounded ${c.paidBtn}`}>{t('md_tracker_paid')}</button>
                   <button onClick={() => removeDebt(debt.id)} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-500'}`}>🗑️</button>
                 </div>
               </div>
@@ -1347,7 +1414,7 @@ const MoneyDiplomat = ({ tool }) => {
             {debts.filter(d => !d.settled).length > 0 && (
               <div className={`text-center pt-2 border-t ${c.border}`}>
                 <p className={`text-[13px] ${c.textMuteded}`}>{t('md_tracker_total_outstanding')}</p>
-                <p className={`text-lg font-black ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
+                <p className={`text-lg font-black ${c.amountTxt}`}>
                   {formatCurrency(debts.filter(d => !d.settled).reduce((sum, d) => sum + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0), userLocale, userCurrency)}
                 </p>
               </div>
@@ -1358,7 +1425,7 @@ const MoneyDiplomat = ({ tool }) => {
 
       {/* ─── Situation Picker ─── */}
       {!results && (
-        <div className={`border-t ${c.border} pt-5`}>
+        <div className={sv ? FORM_PANEL : `border-t ${c.border} pt-5`}>
           <p className={`text-xs font-bold ${c.textMuteded} mb-3`}>{t('md_picker_prompt')}</p>
           {SITUATION_GROUPS.map(grp => (
             <div key={grp.labelKey} className="mb-4 last:mb-0">
@@ -1367,10 +1434,10 @@ const MoneyDiplomat = ({ tool }) => {
                 {grp.ids.map(id => SITUATIONS.find(x => x.id === id)).filter(Boolean).map(sit => (
                   <button key={sit.id} onClick={() => { setActiveType(sit.id); setResults(null); setError(''); }}
                     className={`p-3 rounded-xl text-center transition-all border ${activeType === sit.id
-                      ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50')
-                      : `${c.border} ${c.card} hover:border-emerald-300`}`}>
+                      ? c.sitOn
+                      : `${c.border} ${c.card} ${c.sitHover}`}`}>
                     <span className="text-xl">{sit.icon}</span>
-                    <p className={`text-xs font-bold mt-1 ${activeType === sit.id ? c.textSecondary : c.text}`}>{t(sit.labelKey)}</p>
+                    <p className={`text-xs font-bold mt-1 ${activeType === sit.id ? c.textSecondary : c.text}`}>{tick(activeType === sit.id)}{t(sit.labelKey)}</p>
                     <p className={`text-[13px] ${c.textMuteded}`}>{t(sit.descKey)}</p>
                   </button>
                 ))}
@@ -1752,7 +1819,7 @@ const MoneyDiplomat = ({ tool }) => {
         </div>
       )}
 
-      {error && <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>⚠️ {error}</p>}
+      {error && <p className={`text-sm ${c.errTxt}`}>⚠️ {error}</p>}
 
       {/* ═══════════════ RESULTS ═══════════════ */}
       {results && renderResults()}
