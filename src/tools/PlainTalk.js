@@ -723,19 +723,6 @@ const PlainTalk = ({ tool }) => {
           </div>
         )}
 
-        {/* Results mode: type badge + actions below divider — real analyses only */}
-        {result && !result._compareOnly && result.detected_type && (
-          <div className="px-5 pb-5 pt-3">
-            <div className="flex flex-wrap items-center gap-3">
-              {/* What kind of text this was read as — it decides which
-                  analysis appears. Plain text, not a pill: it is not a control. */}
-              <p className={`text-[13px] ${c.textMuted}`}>
-                {TEXT_TYPES.find(tt => tt.id === result.detected_type)?.emoji || '📄'}{' '}
-                {t('plt_doc_type', { type: result.detected_type_label || result.detected_type })}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
         {/* ─── INPUT PHASE ─── */}
@@ -870,6 +857,15 @@ const PlainTalk = ({ tool }) => {
             <CheckNote status={checkStatus} className={c.textMuted} />
 
             {/* Reading Level Bar */}
+            {/* What kind of text this was read as — it decides which analysis
+                appears. First line of the answer (owner, 2026-10-27); plain
+                text, not a pill: it is not a control. */}
+            {result && !result._compareOnly && result.detected_type && (
+              <p className={`text-[13px] ${c.textMuted}`}>
+                {TEXT_TYPES.find(tt => tt.id === result.detected_type)?.emoji || '📄'}{' '}
+                {t('plt_doc_type', { type: result.detected_type_label || result.detected_type })}
+              </p>
+            )}
             <ReadingLevelBar level={result?.reading_level} />
 
             {/* Tab bar — hidden in compare mode, where it renders exactly one
