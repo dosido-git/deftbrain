@@ -1,0 +1,186 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Category Palette</title>
+<style>
+:root{--bg:#faf9f6;--ink:#1f2328;--mute:#5d646d}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1500px;margin:0 auto;padding:40px 24px 80px}
+h1{font:700 44px/1.1 "Source Serif 4",Georgia,serif;margin:0 0 8px}
+.lede{font-size:19px;color:var(--mute);max-width:900px;margin:0 0 12px}
+.notes{font-size:16px;color:var(--mute);max-width:900px;margin:0 0 36px;padding-left:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:28px}
+.card{background:#fff;border:1px solid #e6e3dc;border-radius:20px;padding:22px}
+.demo{border:1px solid;border-radius:16px;padding:22px}
+.cat{font-size:14px} .title{font:700 30px/1.2 "Source Serif 4",Georgia,serif;margin:4px 0 14px}
+.lab{font-weight:700;margin-bottom:6px}
+.box{border:1px solid;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.row{display:flex;gap:8px;margin-bottom:14px} .pill{border:1px solid;border-radius:8px;padding:8px 12px;font-weight:700;font-size:14px}
+.btn{color:#fff;font-weight:700;text-align:center;border-radius:12px;padding:14px}
+.meta h2{font:700 24px/1.2 "Source Serif 4",Georgia,serif;margin:18px 0 2px} .meta p{margin:0;color:var(--mute);font-size:14px}
+.sws{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.sw{display:flex;flex-direction:column;font-size:13px} .chip{height:84px;border-radius:12px;border:1px solid #0001;margin-bottom:6px}
+code{font-size:14px} small{color:var(--mute)}
+@media (max-width:520px){.grid{grid-template-columns:1fr} h1{font-size:32px} main{padding:24px 16px} .chip{height:60px}}
+</style></head><body><main>
+<h1>Category colours: four shades each</h1>
+<p class="lede">One muted hue per category, spread around the colour wheel, each in the four roles Bill Rescue's Money scheme uses. Money keeps its current olive. The medium shade is darkened until labels read at 4.5:1 or better on the panel; white text on the dark shade is 8.8:1 or better in every case.</p>
+<ul class="notes">
+<li><b>Three blues</b> (Conversations, Travel &amp; Events, Work &amp; Meetings) are separated by hue and strength: cerulean, sky, indigo. They are the closest pair-set; worth seeing side by side on real pages.</li>
+<li><b>Learning (ochre)</b> sits near the gold "In a nutshell" panel, and <b>Ideas (jade)</b> near the teal related-guides panel. On those pages the side panels may need their own neutral tint.</li>
+<li>Dark-mode versions are not shown; they follow the same rule as Money's (dark panel, light text shades).</li>
+</ul>
+<div class="grid"><section class="card">
+<div class="demo" style="background:#eef1e6;border-color:#5f715033">
+ <div class="cat" style="color:#5f7150">Category: Money</div>
+ <div class="title" style="color:#3d4a33">Money</div>
+ <div class="lab" style="color:#3d4a33">What's going on?</div>
+ <div class="box" style="background:#fafbf6;border-color:#5f715055;color:#5f7150">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#5f7150;color:#5f7150">Option</span><span class="pill on" style="background:#3d4a33;border-color:#3d4a33;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#3d4a33">Get my answer</div>
+</div>
+<div class="meta"><h2>Money</h2><p>Olive (current prototype) · labels on panel 4.6:1 · white on dark 9.4:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#fafbf6"></div><b>Lightest</b><code>#fafbf6</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#eef1e6"></div><b>Light</b><code>#eef1e6</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#5f7150"></div><b>Medium</b><code>#5f7150</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#3d4a33"></div><b>Dark</b><code>#3d4a33</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#e4eef4;border-color:#426b8033">
+ <div class="cat" style="color:#426b80">Category: Conversations</div>
+ <div class="title" style="color:#2a4451">Conversations</div>
+ <div class="lab" style="color:#2a4451">What's going on?</div>
+ <div class="box" style="background:#f6fafb;border-color:#426b8055;color:#426b80">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#426b80;color:#426b80">Option</span><span class="pill on" style="background:#2a4451;border-color:#2a4451;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#2a4451">Get my answer</div>
+</div>
+<div class="meta"><h2>Conversations</h2><p>Cerulean · labels on panel 4.9:1 · white on dark 10.3:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f6fafb"></div><b>Lightest</b><code>#f6fafb</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#e4eef4"></div><b>Light</b><code>#e4eef4</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#426b80"></div><b>Medium</b><code>#426b80</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#2a4451"></div><b>Dark</b><code>#2a4451</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#e6f2e9;border-color:#46725133">
+ <div class="cat" style="color:#467251">Category: Health & Wellness</div>
+ <div class="title" style="color:#2f4c36">Health & Wellness</div>
+ <div class="lab" style="color:#2f4c36">What's going on?</div>
+ <div class="box" style="background:#f6fbf8;border-color:#46725155;color:#467251">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#467251;color:#467251">Option</span><span class="pill on" style="background:#2f4c36;border-color:#2f4c36;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#2f4c36">Get my answer</div>
+</div>
+<div class="meta"><h2>Health & Wellness</h2><p>Fern · labels on panel 4.8:1 · white on dark 9.5:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f6fbf8"></div><b>Lightest</b><code>#f6fbf8</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#e6f2e9"></div><b>Light</b><code>#e6f2e9</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#467251"></div><b>Medium</b><code>#467251</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#2f4c36"></div><b>Dark</b><code>#2f4c36</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#f4e4e8;border-color:#80425133">
+ <div class="cat" style="color:#804251">Category: Relationships</div>
+ <div class="title" style="color:#512a33">Relationships</div>
+ <div class="lab" style="color:#512a33">What's going on?</div>
+ <div class="box" style="background:#fbf6f7;border-color:#80425155;color:#804251">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#804251;color:#804251">Option</span><span class="pill on" style="background:#512a33;border-color:#512a33;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#512a33">Get my answer</div>
+</div>
+<div class="meta"><h2>Relationships</h2><p>Rose · labels on panel 6.1:1 · white on dark 12.1:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#fbf6f7"></div><b>Lightest</b><code>#fbf6f7</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#f4e4e8"></div><b>Light</b><code>#f4e4e8</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#804251"></div><b>Medium</b><code>#804251</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#512a33"></div><b>Dark</b><code>#512a33</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#f4eae4;border-color:#8a563833">
+ <div class="cat" style="color:#8a5638">Category: Home & Daily Life</div>
+ <div class="title" style="color:#573623">Home & Daily Life</div>
+ <div class="lab" style="color:#573623">What's going on?</div>
+ <div class="box" style="background:#fbf8f6;border-color:#8a563855;color:#8a5638">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#8a5638;color:#8a5638">Option</span><span class="pill on" style="background:#573623;border-color:#573623;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#573623">Get my answer</div>
+</div>
+<div class="meta"><h2>Home & Daily Life</h2><p>Terracotta · labels on panel 5.1:1 · white on dark 10.7:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#fbf8f6"></div><b>Lightest</b><code>#fbf8f6</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#f4eae4"></div><b>Light</b><code>#f4eae4</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#8a5638"></div><b>Medium</b><code>#8a5638</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#573623"></div><b>Dark</b><code>#573623</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#eae6f2;border-color:#5b4a7833">
+ <div class="cat" style="color:#5b4a78">Category: Self & Reflection</div>
+ <div class="title" style="color:#392f4c">Self & Reflection</div>
+ <div class="lab" style="color:#392f4c">What's going on?</div>
+ <div class="box" style="background:#f8f6fb;border-color:#5b4a7855;color:#5b4a78">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#5b4a78;color:#5b4a78">Option</span><span class="pill on" style="background:#392f4c;border-color:#392f4c;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#392f4c">Get my answer</div>
+</div>
+<div class="meta"><h2>Self & Reflection</h2><p>Heather · labels on panel 6.3:1 · white on dark 12.5:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f8f6fb"></div><b>Lightest</b><code>#f8f6fb</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#eae6f2"></div><b>Light</b><code>#eae6f2</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#5b4a78"></div><b>Medium</b><code>#5b4a78</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#392f4c"></div><b>Dark</b><code>#392f4c</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#e8ebef;border-color:#575f6b33">
+ <div class="cat" style="color:#575f6b">Category: Decisions</div>
+ <div class="title" style="color:#373c43">Decisions</div>
+ <div class="lab" style="color:#373c43">What's going on?</div>
+ <div class="box" style="background:#f7f8fa;border-color:#575f6b55;color:#575f6b">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#575f6b;color:#575f6b">Option</span><span class="pill on" style="background:#373c43;border-color:#373c43;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#373c43">Get my answer</div>
+</div>
+<div class="meta"><h2>Decisions</h2><p>Graphite · labels on panel 5.4:1 · white on dark 11.1:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f7f8fa"></div><b>Lightest</b><code>#f7f8fa</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#e8ebef"></div><b>Light</b><code>#e8ebef</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#575f6b"></div><b>Medium</b><code>#575f6b</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#373c43"></div><b>Dark</b><code>#373c43</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#e5e7f3;border-color:#444c7e33">
+ <div class="cat" style="color:#444c7e">Category: Work & Meetings</div>
+ <div class="title" style="color:#2b3050">Work & Meetings</div>
+ <div class="lab" style="color:#2b3050">What's going on?</div>
+ <div class="box" style="background:#f6f7fb;border-color:#444c7e55;color:#444c7e">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#444c7e;color:#444c7e">Option</span><span class="pill on" style="background:#2b3050;border-color:#2b3050;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#2b3050">Get my answer</div>
+</div>
+<div class="meta"><h2>Work & Meetings</h2><p>Indigo · labels on panel 6.6:1 · white on dark 12.8:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f6f7fb"></div><b>Lightest</b><code>#f6f7fb</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#e5e7f3"></div><b>Light</b><code>#e5e7f3</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#444c7e"></div><b>Medium</b><code>#444c7e</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#2b3050"></div><b>Dark</b><code>#2b3050</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#f4efe4;border-color:#7a632e33">
+ <div class="cat" style="color:#7a632e">Category: Learning</div>
+ <div class="title" style="color:#594822">Learning</div>
+ <div class="lab" style="color:#594822">What's going on?</div>
+ <div class="box" style="background:#fbfaf6;border-color:#7a632e55;color:#7a632e">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#7a632e;color:#7a632e">Option</span><span class="pill on" style="background:#594822;border-color:#594822;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#594822">Get my answer</div>
+</div>
+<div class="meta"><h2>Learning</h2><p>Ochre · labels on panel 5.0:1 · white on dark 8.8:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#fbfaf6"></div><b>Lightest</b><code>#fbfaf6</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#f4efe4"></div><b>Light</b><code>#f4efe4</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#7a632e"></div><b>Medium</b><code>#7a632e</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#594822"></div><b>Dark</b><code>#594822</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#f4e6e4;border-color:#913d3033">
+ <div class="cat" style="color:#913d30">Category: Just for Fun</div>
+ <div class="title" style="color:#5c271f">Just for Fun</div>
+ <div class="lab" style="color:#5c271f">What's going on?</div>
+ <div class="box" style="background:#fbf7f6;border-color:#913d3055;color:#913d30">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#913d30;color:#913d30">Option</span><span class="pill on" style="background:#5c271f;border-color:#5c271f;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#5c271f">Get my answer</div>
+</div>
+<div class="meta"><h2>Just for Fun</h2><p>Coral · labels on panel 5.9:1 · white on dark 11.9:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#fbf7f6"></div><b>Lightest</b><code>#fbf7f6</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#f4e6e4"></div><b>Light</b><code>#f4e6e4</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#913d30"></div><b>Medium</b><code>#913d30</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#5c271f"></div><b>Dark</b><code>#5c271f</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#f0ece7;border-color:#70615133">
+ <div class="cat" style="color:#706151">Category: Career</div>
+ <div class="title" style="color:#473d33">Career</div>
+ <div class="lab" style="color:#473d33">What's going on?</div>
+ <div class="box" style="background:#faf9f7;border-color:#70615155;color:#706151">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#706151;color:#706151">Option</span><span class="pill on" style="background:#473d33;border-color:#473d33;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#473d33">Get my answer</div>
+</div>
+<div class="meta"><h2>Career</h2><p>Taupe · labels on panel 5.1:1 · white on dark 10.6:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#faf9f7"></div><b>Lightest</b><code>#faf9f7</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#f0ece7"></div><b>Light</b><code>#f0ece7</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#706151"></div><b>Medium</b><code>#706151</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#473d33"></div><b>Dark</b><code>#473d33</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#f1e7f1;border-color:#744e7433">
+ <div class="cat" style="color:#744e74">Category: Tasks</div>
+ <div class="title" style="color:#493149">Tasks</div>
+ <div class="lab" style="color:#493149">What's going on?</div>
+ <div class="box" style="background:#fbf7fb;border-color:#744e7455;color:#744e74">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#744e74;color:#744e74">Option</span><span class="pill on" style="background:#493149;border-color:#493149;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#493149">Get my answer</div>
+</div>
+<div class="meta"><h2>Tasks</h2><p>Plum · labels on panel 5.7:1 · white on dark 11.5:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#fbf7fb"></div><b>Lightest</b><code>#fbf7fb</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#f1e7f1"></div><b>Light</b><code>#f1e7f1</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#744e74"></div><b>Medium</b><code>#744e74</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#493149"></div><b>Dark</b><code>#493149</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#e4ebf4;border-color:#3a5e8833">
+ <div class="cat" style="color:#3a5e88">Category: Travel & Events</div>
+ <div class="title" style="color:#253c56">Travel & Events</div>
+ <div class="lab" style="color:#253c56">What's going on?</div>
+ <div class="box" style="background:#f6f8fb;border-color:#3a5e8855;color:#3a5e88">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#3a5e88;color:#3a5e88">Option</span><span class="pill on" style="background:#253c56;border-color:#253c56;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#253c56">Get my answer</div>
+</div>
+<div class="meta"><h2>Travel & Events</h2><p>Sky · labels on panel 5.6:1 · white on dark 11.3:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f6f8fb"></div><b>Lightest</b><code>#f6f8fb</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#e4ebf4"></div><b>Light</b><code>#e4ebf4</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#3a5e88"></div><b>Medium</b><code>#3a5e88</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#253c56"></div><b>Dark</b><code>#253c56</code><small>titles, filled buttons</small></div></div>
+</section><section class="card">
+<div class="demo" style="background:#e5f3f0;border-color:#3d716633">
+ <div class="cat" style="color:#3d7166">Category: Ideas & Imagination</div>
+ <div class="title" style="color:#2b5048">Ideas & Imagination</div>
+ <div class="lab" style="color:#2b5048">What's going on?</div>
+ <div class="box" style="background:#f6fbfa;border-color:#3d716655;color:#3d7166">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#3d7166;color:#3d7166">Option</span><span class="pill on" style="background:#2b5048;border-color:#2b5048;color:#fff">✓ Chosen</span></div>
+ <div class="btn" style="background:#2b5048">Get my answer</div>
+</div>
+<div class="meta"><h2>Ideas & Imagination</h2><p>Jade · labels on panel 4.9:1 · white on dark 9.0:1</p></div>
+<div class="sws"><div class="sw"><div class="chip" style="background:#f6fbfa"></div><b>Lightest</b><code>#f6fbfa</code><small>text boxes</small></div><div class="sw"><div class="chip" style="background:#e5f3f0"></div><b>Light</b><code>#e5f3f0</code><small>the panel</small></div><div class="sw"><div class="chip" style="background:#3d7166"></div><b>Medium</b><code>#3d7166</code><small>labels, outlines</small></div><div class="sw"><div class="chip" style="background:#2b5048"></div><b>Dark</b><code>#2b5048</code><small>titles, filled buttons</small></div></div>
+</section></div>
+</main></body></html>

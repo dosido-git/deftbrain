@@ -1,0 +1,265 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Category Palette v2</title>
+<style>
+:root{--bg:#faf9f6;--ink:#1f2328;--mute:#5d646d;--card:#fff;--rule:#e6e3dc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151617;--ink:#e8e8e6;--mute:#a3a7ab;--card:#1d1f20;--rule:#2d3032}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1500px;margin:0 auto;padding:40px 24px 80px}
+h1{font:700 44px/1.1 "Source Serif 4",Georgia,serif;margin:0 0 10px}
+.lede{font-size:19px;color:var(--mute);max-width:960px;margin:0 0 14px}
+ul{color:var(--mute);max-width:960px;padding-left:20px;margin:0 0 30px}
+h3{font:700 22px "Source Serif 4",Georgia,serif;margin:28px 0 10px}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:10px}
+.st div{height:74px;border-radius:12px} .st span{font-size:13px;color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(620px,1fr));gap:28px;margin-top:30px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:20px;padding:22px}
+.card h2{font:700 26px "Source Serif 4",Georgia,serif;margin:0 0 14px} .card h2 span{font-weight:400;color:var(--mute);font-size:20px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.demo{border:1px solid;border-radius:16px;padding:18px}
+.cat{font-size:13px} .title{font:700 24px/1.2 "Source Serif 4",Georgia,serif;margin:2px 0 12px}
+.lab{font-weight:700;margin-bottom:6px;font-size:15px}
+.box{border:1px solid;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:15px}
+.row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap} .pill{border:1px solid;border-radius:8px;padding:7px 11px;font-weight:700;font-size:13px}
+.btn{font-weight:700;text-align:center;border-radius:12px;padding:12px}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:16px 0 6px}
+.sws{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sw{display:flex;flex-direction:column;font-size:12px} .chip{height:56px;border-radius:10px;border:1px solid #8882;margin-bottom:4px}
+code{font-size:13px} small{color:var(--mute)} .chk{font-size:13px;color:var(--mute);margin:12px 0 0}
+@media (max-width:700px){.grid{grid-template-columns:1fr} .pair{grid-template-columns:1fr} .strip{grid-template-columns:repeat(2,1fr)} h1{font-size:32px} main{padding:24px 16px} .sws{grid-template-columns:repeat(3,1fr)}}
+</style></head><body><main>
+<h1>Category colours, v2</h1>
+<p class="lede">Fourteen calm colours, one per category, each with five shades for light mode and five for dark. Cool, clear greens and blues carry the "refreshing" side; warm tones stay soft. Text boxes stay white in light mode so it is always obvious where to type.</p>
+<ul>
+<li><b>Every pair can be told apart.</b> Checked by measured colour difference: label colours differ by at least 11.5 (light) and 8.6 (dark) on a scale where about 2 is just noticeable. Panels differ by at least 3.2.</li>
+<li><b>Every label is readable:</b> 4.6:1 or better on its panel, in both modes. Button text is 9.3:1 or better.</li>
+<li><b>Labels and titles never match:</b> the label shade is always clearly lighter than the title shade.</li>
+<li><b>One change elsewhere:</b> Learning (honey) is close to the gold "In a Nutshell" panel, and Ideas (lagoon) to the teal related-guides panel. With colour now carried by the category, both side panels would become plain white with a thin border.</li>
+</ul>
+<h3>All fourteen together: light</h3><div class="strip"><div class="st"><div style="background:#f1f5e7;border-bottom:10px solid #566436"></div><span>Money</span></div><div class="st"><div style="background:#e6f7e9;border-bottom:10px solid #347b41"></div><span>Health & Wellness</span></div><div class="st"><div style="background:#e6f7f3;border-bottom:10px solid #32796b"></div><span>Ideas & Imagination</span></div><div class="st"><div style="background:#e6f4f7;border-bottom:10px solid #34727f"></div><span>Travel & Events</span></div><div class="st"><div style="background:#e6eff7;border-bottom:10px solid #406d93"></div><span>Conversations</span></div><div class="st"><div style="background:#ebf0f1;border-bottom:10px solid #434a4c"></div><span>Work & Meetings</span></div><div class="st"><div style="background:#e6e8f7;border-bottom:10px solid #3d4896"></div><span>Decisions</span></div><div class="st"><div style="background:#eee9f4;border-bottom:10px solid #614e75"></div><span>Self & Reflection</span></div><div class="st"><div style="background:#f6e7f6;border-bottom:10px solid #8e498e"></div><span>Tasks</span></div><div class="st"><div style="background:#f7e6ec;border-bottom:10px solid #aa466a"></div><span>Relationships</span></div><div class="st"><div style="background:#f7e9e6;border-bottom:10px solid #9f5141"></div><span>Just for Fun</span></div><div class="st"><div style="background:#f6ede6;border-bottom:10px solid #62422d"></div><span>Home & Daily Life</span></div><div class="st"><div style="background:#f7f2e6;border-bottom:10px solid #725f33"></div><span>Learning</span></div><div class="st"><div style="background:#f1efeb;border-bottom:10px solid #6f6b63"></div><span>Career</span></div></div>
+<h3>All fourteen together: dark</h3><div class="strip"><div class="st"><div style="background:#262b1a;border-bottom:10px solid #bed095"></div><span>Money</span></div><div class="st"><div style="background:#1a2b1d;border-bottom:10px solid #90d59c"></div><span>Health & Wellness</span></div><div class="st"><div style="background:#1a2b28;border-bottom:10px solid #90d5c7"></div><span>Ideas & Imagination</span></div><div class="st"><div style="background:#1a282b;border-bottom:10px solid #90cad5"></div><span>Travel & Events</span></div><div class="st"><div style="background:#1a232b;border-bottom:10px solid #90b5d5"></div><span>Conversations</span></div><div class="st"><div style="background:#212324;border-bottom:10px solid #a8b8bd"></div><span>Work & Meetings</span></div><div class="st"><div style="background:#1a1c2b;border-bottom:10px solid #9098d5"></div><span>Decisions</span></div><div class="st"><div style="background:#221d28;border-bottom:10px solid #b29dc8"></div><span>Self & Reflection</span></div><div class="st"><div style="background:#2b1a2b;border-bottom:10px solid #d194d1"></div><span>Tasks</span></div><div class="st"><div style="background:#2b1a20;border-bottom:10px solid #d590a9"></div><span>Relationships</span></div><div class="st"><div style="background:#2b1d1a;border-bottom:10px solid #d59c90"></div><span>Just for Fun</span></div><div class="st"><div style="background:#2b211a;border-bottom:10px solid #d5ac90"></div><span>Home & Daily Life</span></div><div class="st"><div style="background:#2b261a;border-bottom:10px solid #d5c090"></div><span>Learning</span></div><div class="st"><div style="background:#242321;border-bottom:10px solid #bdb6a8"></div><span>Career</span></div></div>
+<div class="grid"><section class="card"><h2>Money <span>· Sage</span></h2>
+<div class="pair"><div class="demo" style="background:#f1f5e7;border-color:#d8e1c1">
+ <div class="cat" style="color:#566436">Category: Money</div>
+ <div class="title" style="color:#343c20">Light mode</div>
+ <div class="lab" style="color:#343c20">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#d8e1c1;color:#566436">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#566436;color:#566436">Option</span><span class="pill" style="background:#343c20;border-color:#343c20;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#343c20;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#262b1a;border-color:#464f30">
+ <div class="cat" style="color:#bed095">Category: Money</div>
+ <div class="title" style="color:#dce4c8">Dark mode</div>
+ <div class="lab" style="color:#dce4c8">What's going on?</div>
+ <div class="box" style="background:#1a1e10;border-color:#464f30;color:#bed095">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#bed095;color:#bed095">Option</span><span class="pill" style="background:#dce4c8;border-color:#dce4c8;color:#1a1e10">✓ Chosen</span></div>
+ <div class="btn" style="background:#dce4c8;color:#1a1e10">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f1f5e7"></div><code>#f1f5e7</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#d8e1c1"></div><code>#d8e1c1</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#566436"></div><code>#566436</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#343c20"></div><code>#343c20</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#1a1e10"></div><code>#1a1e10</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#262b1a"></div><code>#262b1a</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#464f30"></div><code>#464f30</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#bed095"></div><code>#bed095</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#dce4c8"></div><code>#dce4c8</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 5.8:1 light, 8.8:1 dark · button text 11.6:1 light, 12.9:1 dark</p></section><section class="card"><h2>Health & Wellness <span>· Leaf</span></h2>
+<div class="pair"><div class="demo" style="background:#e6f7e9;border-color:#bfe3c5">
+ <div class="cat" style="color:#347b41">Category: Health & Wellness</div>
+ <div class="title" style="color:#22502a">Light mode</div>
+ <div class="lab" style="color:#22502a">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#bfe3c5;color:#347b41">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#347b41;color:#347b41">Option</span><span class="pill" style="background:#22502a;border-color:#22502a;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#22502a;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#1a2b1d;border-color:#305035">
+ <div class="cat" style="color:#90d59c">Category: Health & Wellness</div>
+ <div class="title" style="color:#c4e9ca">Dark mode</div>
+ <div class="lab" style="color:#c4e9ca">What's going on?</div>
+ <div class="box" style="background:#101e13;border-color:#305035;color:#90d59c">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#90d59c;color:#90d59c">Option</span><span class="pill" style="background:#c4e9ca;border-color:#c4e9ca;color:#101e13">✓ Chosen</span></div>
+ <div class="btn" style="background:#c4e9ca;color:#101e13">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#e6f7e9"></div><code>#e6f7e9</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#bfe3c5"></div><code>#bfe3c5</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#347b41"></div><code>#347b41</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#22502a"></div><code>#22502a</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#101e13"></div><code>#101e13</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#1a2b1d"></div><code>#1a2b1d</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#305035"></div><code>#305035</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#90d59c"></div><code>#90d59c</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#c4e9ca"></div><code>#c4e9ca</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.6:1 light, 8.7:1 dark · button text 9.3:1 light, 13.0:1 dark</p></section><section class="card"><h2>Ideas & Imagination <span>· Lagoon</span></h2>
+<div class="pair"><div class="demo" style="background:#e6f7f3;border-color:#bfe3dc">
+ <div class="cat" style="color:#32796b">Category: Ideas & Imagination</div>
+ <div class="title" style="color:#204e44">Light mode</div>
+ <div class="lab" style="color:#204e44">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#bfe3dc;color:#32796b">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#32796b;color:#32796b">Option</span><span class="pill" style="background:#204e44;border-color:#204e44;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#204e44;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#1a2b28;border-color:#305049">
+ <div class="cat" style="color:#90d5c7">Category: Ideas & Imagination</div>
+ <div class="title" style="color:#c4e9e1">Dark mode</div>
+ <div class="lab" style="color:#c4e9e1">What's going on?</div>
+ <div class="box" style="background:#101e1b;border-color:#305049;color:#90d5c7">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#90d5c7;color:#90d5c7">Option</span><span class="pill" style="background:#c4e9e1;border-color:#c4e9e1;color:#101e1b">✓ Chosen</span></div>
+ <div class="btn" style="background:#c4e9e1;color:#101e1b">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#e6f7f3"></div><code>#e6f7f3</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#bfe3dc"></div><code>#bfe3dc</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#32796b"></div><code>#32796b</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#204e44"></div><code>#204e44</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#101e1b"></div><code>#101e1b</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#1a2b28"></div><code>#1a2b28</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#305049"></div><code>#305049</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#90d5c7"></div><code>#90d5c7</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#c4e9e1"></div><code>#c4e9e1</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.6:1 light, 8.8:1 dark · button text 9.4:1 light, 13.2:1 dark</p></section><section class="card"><h2>Travel & Events <span>· Sky</span></h2>
+<div class="pair"><div class="demo" style="background:#e6f4f7;border-color:#bfdde3">
+ <div class="cat" style="color:#34727f">Category: Travel & Events</div>
+ <div class="title" style="color:#224b53">Light mode</div>
+ <div class="lab" style="color:#224b53">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#bfdde3;color:#34727f">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#34727f;color:#34727f">Option</span><span class="pill" style="background:#224b53;border-color:#224b53;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#224b53;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#1a282b;border-color:#304a50">
+ <div class="cat" style="color:#90cad5">Category: Travel & Events</div>
+ <div class="title" style="color:#c4e3e9">Dark mode</div>
+ <div class="lab" style="color:#c4e3e9">What's going on?</div>
+ <div class="box" style="background:#101c1e;border-color:#304a50;color:#90cad5">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#90cad5;color:#90cad5">Option</span><span class="pill" style="background:#c4e3e9;border-color:#c4e3e9;color:#101c1e">✓ Chosen</span></div>
+ <div class="btn" style="background:#c4e3e9;color:#101c1e">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#e6f4f7"></div><code>#e6f4f7</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#bfdde3"></div><code>#bfdde3</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#34727f"></div><code>#34727f</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#224b53"></div><code>#224b53</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#101c1e"></div><code>#101c1e</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#1a282b"></div><code>#1a282b</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#304a50"></div><code>#304a50</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#90cad5"></div><code>#90cad5</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#c4e3e9"></div><code>#c4e3e9</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.8:1 light, 8.4:1 dark · button text 9.5:1 light, 12.9:1 dark</p></section><section class="card"><h2>Conversations <span>· Cornflower</span></h2>
+<div class="pair"><div class="demo" style="background:#e6eff7;border-color:#bfd2e3">
+ <div class="cat" style="color:#406d93">Category: Conversations</div>
+ <div class="title" style="color:#274259">Light mode</div>
+ <div class="lab" style="color:#274259">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#bfd2e3;color:#406d93">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#406d93;color:#406d93">Option</span><span class="pill" style="background:#274259;border-color:#274259;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#274259;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#1a232b;border-color:#304150">
+ <div class="cat" style="color:#90b5d5">Category: Conversations</div>
+ <div class="title" style="color:#c4d8e8">Dark mode</div>
+ <div class="lab" style="color:#c4d8e8">What's going on?</div>
+ <div class="box" style="background:#10171e;border-color:#304150;color:#90b5d5">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#90b5d5;color:#90b5d5">Option</span><span class="pill" style="background:#c4d8e8;border-color:#c4d8e8;color:#10171e">✓ Chosen</span></div>
+ <div class="btn" style="background:#c4d8e8;color:#10171e">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#e6eff7"></div><code>#e6eff7</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#bfd2e3"></div><code>#bfd2e3</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#406d93"></div><code>#406d93</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#274259"></div><code>#274259</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#10171e"></div><code>#10171e</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#1a232b"></div><code>#1a232b</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#304150"></div><code>#304150</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#90b5d5"></div><code>#90b5d5</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#c4d8e8"></div><code>#c4d8e8</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.7:1 light, 7.4:1 dark · button text 10.4:1 light, 12.3:1 dark</p></section><section class="card"><h2>Work & Meetings <span>· Slate</span></h2>
+<div class="pair"><div class="demo" style="background:#ebf0f1;border-color:#ccd4d6">
+ <div class="cat" style="color:#434a4c">Category: Work & Meetings</div>
+ <div class="title" style="color:#262a2b">Light mode</div>
+ <div class="lab" style="color:#262a2b">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#ccd4d6;color:#434a4c">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#434a4c;color:#434a4c">Option</span><span class="pill" style="background:#262a2b;border-color:#262a2b;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#262a2b;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#212324;border-color:#3d4143">
+ <div class="cat" style="color:#a8b8bd">Category: Work & Meetings</div>
+ <div class="title" style="color:#d2d9db">Dark mode</div>
+ <div class="lab" style="color:#d2d9db">What's going on?</div>
+ <div class="box" style="background:#161818;border-color:#3d4143;color:#a8b8bd">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#a8b8bd;color:#a8b8bd">Option</span><span class="pill" style="background:#d2d9db;border-color:#d2d9db;color:#161818">✓ Chosen</span></div>
+ <div class="btn" style="background:#d2d9db;color:#161818">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#ebf0f1"></div><code>#ebf0f1</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#ccd4d6"></div><code>#ccd4d6</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#434a4c"></div><code>#434a4c</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#262a2b"></div><code>#262a2b</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#161818"></div><code>#161818</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#212324"></div><code>#212324</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#3d4143"></div><code>#3d4143</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#a8b8bd"></div><code>#a8b8bd</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#d2d9db"></div><code>#d2d9db</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 7.9:1 light, 7.7:1 dark · button text 14.5:1 light, 12.5:1 dark</p></section><section class="card"><h2>Decisions <span>· Indigo</span></h2>
+<div class="pair"><div class="demo" style="background:#e6e8f7;border-color:#bfc3e3">
+ <div class="cat" style="color:#3d4896">Category: Decisions</div>
+ <div class="title" style="color:#252b5b">Light mode</div>
+ <div class="lab" style="color:#252b5b">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#bfc3e3;color:#3d4896">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#3d4896;color:#3d4896">Option</span><span class="pill" style="background:#252b5b;border-color:#252b5b;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#252b5b;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#1a1c2b;border-color:#303450">
+ <div class="cat" style="color:#9098d5">Category: Decisions</div>
+ <div class="title" style="color:#c4c8e9">Dark mode</div>
+ <div class="lab" style="color:#c4c8e9">What's going on?</div>
+ <div class="box" style="background:#10121e;border-color:#303450;color:#9098d5">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#9098d5;color:#9098d5">Option</span><span class="pill" style="background:#c4c8e9;border-color:#c4c8e9;color:#10121e">✓ Chosen</span></div>
+ <div class="btn" style="background:#c4c8e9;color:#10121e">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#e6e8f7"></div><code>#e6e8f7</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#bfc3e3"></div><code>#bfc3e3</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#3d4896"></div><code>#3d4896</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#252b5b"></div><code>#252b5b</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#10121e"></div><code>#10121e</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#1a1c2b"></div><code>#1a1c2b</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#303450"></div><code>#303450</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#9098d5"></div><code>#9098d5</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#c4c8e9"></div><code>#c4c8e9</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 6.7:1 light, 6.1:1 dark · button text 13.3:1 light, 11.3:1 dark</p></section><section class="card"><h2>Self & Reflection <span>· Lavender</span></h2>
+<div class="pair"><div class="demo" style="background:#eee9f4;border-color:#d1c6dd">
+ <div class="cat" style="color:#614e75">Category: Self & Reflection</div>
+ <div class="title" style="color:#3f334c">Light mode</div>
+ <div class="lab" style="color:#3f334c">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#d1c6dd;color:#614e75">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#614e75;color:#614e75">Option</span><span class="pill" style="background:#3f334c;border-color:#3f334c;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#3f334c;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#221d28;border-color:#3f364a">
+ <div class="cat" style="color:#b29dc8">Category: Self & Reflection</div>
+ <div class="title" style="color:#d6cce0">Dark mode</div>
+ <div class="lab" style="color:#d6cce0">What's going on?</div>
+ <div class="box" style="background:#17121c;border-color:#3f364a;color:#b29dc8">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#b29dc8;color:#b29dc8">Option</span><span class="pill" style="background:#d6cce0;border-color:#d6cce0;color:#17121c">✓ Chosen</span></div>
+ <div class="btn" style="background:#d6cce0;color:#17121c">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#eee9f4"></div><code>#eee9f4</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#d1c6dd"></div><code>#d1c6dd</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#614e75"></div><code>#614e75</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#3f334c"></div><code>#3f334c</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#17121c"></div><code>#17121c</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#221d28"></div><code>#221d28</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#3f364a"></div><code>#3f364a</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#b29dc8"></div><code>#b29dc8</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#d6cce0"></div><code>#d6cce0</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 6.2:1 light, 6.7:1 dark · button text 11.7:1 light, 11.9:1 dark</p></section><section class="card"><h2>Tasks <span>· Orchid</span></h2>
+<div class="pair"><div class="demo" style="background:#f6e7f6;border-color:#e2c0e2">
+ <div class="cat" style="color:#8e498e">Category: Tasks</div>
+ <div class="title" style="color:#542b54">Light mode</div>
+ <div class="lab" style="color:#542b54">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#e2c0e2;color:#8e498e">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#8e498e;color:#8e498e">Option</span><span class="pill" style="background:#542b54;border-color:#542b54;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#542b54;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#2b1a2b;border-color:#503050">
+ <div class="cat" style="color:#d194d1">Category: Tasks</div>
+ <div class="title" style="color:#e5c7e5">Dark mode</div>
+ <div class="lab" style="color:#e5c7e5">What's going on?</div>
+ <div class="box" style="background:#1e101e;border-color:#503050;color:#d194d1">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#d194d1;color:#d194d1">Option</span><span class="pill" style="background:#e5c7e5;border-color:#e5c7e5;color:#1e101e">✓ Chosen</span></div>
+ <div class="btn" style="background:#e5c7e5;color:#1e101e">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f6e7f6"></div><code>#f6e7f6</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#e2c0e2"></div><code>#e2c0e2</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#8e498e"></div><code>#8e498e</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#542b54"></div><code>#542b54</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#1e101e"></div><code>#1e101e</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#2b1a2b"></div><code>#2b1a2b</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#503050"></div><code>#503050</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#d194d1"></div><code>#d194d1</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#e5c7e5"></div><code>#e5c7e5</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 5.1:1 light, 6.9:1 dark · button text 11.3:1 light, 11.9:1 dark</p></section><section class="card"><h2>Relationships <span>· Rose</span></h2>
+<div class="pair"><div class="demo" style="background:#f7e6ec;border-color:#e3bfcc">
+ <div class="cat" style="color:#aa466a">Category: Relationships</div>
+ <div class="title" style="color:#5b2539">Light mode</div>
+ <div class="lab" style="color:#5b2539">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#e3bfcc;color:#aa466a">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#aa466a;color:#aa466a">Option</span><span class="pill" style="background:#5b2539;border-color:#5b2539;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#5b2539;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#2b1a20;border-color:#50303b">
+ <div class="cat" style="color:#d590a9">Category: Relationships</div>
+ <div class="title" style="color:#e9c4d1">Dark mode</div>
+ <div class="lab" style="color:#e9c4d1">What's going on?</div>
+ <div class="box" style="background:#1e1015;border-color:#50303b;color:#d590a9">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#d590a9;color:#d590a9">Option</span><span class="pill" style="background:#e9c4d1;border-color:#e9c4d1;color:#1e1015">✓ Chosen</span></div>
+ <div class="btn" style="background:#e9c4d1;color:#1e1015">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f7e6ec"></div><code>#f7e6ec</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#e3bfcc"></div><code>#e3bfcc</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#aa466a"></div><code>#aa466a</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#5b2539"></div><code>#5b2539</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#1e1015"></div><code>#1e1015</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#2b1a20"></div><code>#2b1a20</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#50303b"></div><code>#50303b</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#d590a9"></div><code>#d590a9</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#e9c4d1"></div><code>#e9c4d1</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.6:1 light, 6.6:1 dark · button text 11.9:1 light, 11.6:1 dark</p></section><section class="card"><h2>Just for Fun <span>· Coral</span></h2>
+<div class="pair"><div class="demo" style="background:#f7e9e6;border-color:#e3c5bf">
+ <div class="cat" style="color:#9f5141">Category: Just for Fun</div>
+ <div class="title" style="color:#5b2e25">Light mode</div>
+ <div class="lab" style="color:#5b2e25">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#e3c5bf;color:#9f5141">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#9f5141;color:#9f5141">Option</span><span class="pill" style="background:#5b2e25;border-color:#5b2e25;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#5b2e25;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#2b1d1a;border-color:#503530">
+ <div class="cat" style="color:#d59c90">Category: Just for Fun</div>
+ <div class="title" style="color:#e9cac4">Dark mode</div>
+ <div class="lab" style="color:#e9cac4">What's going on?</div>
+ <div class="box" style="background:#1e1210;border-color:#503530;color:#d59c90">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#d59c90;color:#d59c90">Option</span><span class="pill" style="background:#e9cac4;border-color:#e9cac4;color:#1e1210">✓ Chosen</span></div>
+ <div class="btn" style="background:#e9cac4;color:#1e1210">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f7e9e6"></div><code>#f7e9e6</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#e3c5bf"></div><code>#e3c5bf</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#9f5141"></div><code>#9f5141</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#5b2e25"></div><code>#5b2e25</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#1e1210"></div><code>#1e1210</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#2b1d1a"></div><code>#2b1d1a</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#503530"></div><code>#503530</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#d59c90"></div><code>#d59c90</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#e9cac4"></div><code>#e9cac4</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.8:1 light, 6.9:1 dark · button text 11.3:1 light, 11.9:1 dark</p></section><section class="card"><h2>Home & Daily Life <span>· Clay</span></h2>
+<div class="pair"><div class="demo" style="background:#f6ede6;border-color:#e3cdbf">
+ <div class="cat" style="color:#62422d">Category: Home & Daily Life</div>
+ <div class="title" style="color:#38261a">Light mode</div>
+ <div class="lab" style="color:#38261a">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#e3cdbf;color:#62422d">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#62422d;color:#62422d">Option</span><span class="pill" style="background:#38261a;border-color:#38261a;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#38261a;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#2b211a;border-color:#503d30">
+ <div class="cat" style="color:#d5ac90">Category: Home & Daily Life</div>
+ <div class="title" style="color:#e7d3c5">Dark mode</div>
+ <div class="lab" style="color:#e7d3c5">What's going on?</div>
+ <div class="box" style="background:#1e1610;border-color:#503d30;color:#d5ac90">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#d5ac90;color:#d5ac90">Option</span><span class="pill" style="background:#e7d3c5;border-color:#e7d3c5;color:#1e1610">✓ Chosen</span></div>
+ <div class="btn" style="background:#e7d3c5;color:#1e1610">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f6ede6"></div><code>#f6ede6</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#e3cdbf"></div><code>#e3cdbf</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#62422d"></div><code>#62422d</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#38261a"></div><code>#38261a</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#1e1610"></div><code>#1e1610</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#2b211a"></div><code>#2b211a</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#503d30"></div><code>#503d30</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#d5ac90"></div><code>#d5ac90</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#e7d3c5"></div><code>#e7d3c5</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 7.8:1 light, 7.6:1 dark · button text 14.4:1 light, 12.3:1 dark</p></section><section class="card"><h2>Learning <span>· Honey</span></h2>
+<div class="pair"><div class="demo" style="background:#f7f2e6;border-color:#e3d9bf">
+ <div class="cat" style="color:#725f33">Category: Learning</div>
+ <div class="title" style="color:#483c20">Light mode</div>
+ <div class="lab" style="color:#483c20">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#e3d9bf;color:#725f33">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#725f33;color:#725f33">Option</span><span class="pill" style="background:#483c20;border-color:#483c20;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#483c20;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#2b261a;border-color:#504630">
+ <div class="cat" style="color:#d5c090">Category: Learning</div>
+ <div class="title" style="color:#e8ddc5">Dark mode</div>
+ <div class="lab" style="color:#e8ddc5">What's going on?</div>
+ <div class="box" style="background:#1e1a10;border-color:#504630;color:#d5c090">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#d5c090;color:#d5c090">Option</span><span class="pill" style="background:#e8ddc5;border-color:#e8ddc5;color:#1e1a10">✓ Chosen</span></div>
+ <div class="btn" style="background:#e8ddc5;color:#1e1a10">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f7f2e6"></div><code>#f7f2e6</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#e3d9bf"></div><code>#e3d9bf</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#725f33"></div><code>#725f33</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#483c20"></div><code>#483c20</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#1e1a10"></div><code>#1e1a10</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#2b261a"></div><code>#2b261a</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#504630"></div><code>#504630</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#d5c090"></div><code>#d5c090</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#e8ddc5"></div><code>#e8ddc5</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 5.5:1 light, 8.4:1 dark · button text 10.8:1 light, 12.9:1 dark</p></section><section class="card"><h2>Career <span>· Driftwood</span></h2>
+<div class="pair"><div class="demo" style="background:#f1efeb;border-color:#d6d3cc">
+ <div class="cat" style="color:#6f6b63">Category: Career</div>
+ <div class="title" style="color:#44413c">Light mode</div>
+ <div class="lab" style="color:#44413c">What's going on?</div>
+ <div class="box" style="background:#ffffff;border-color:#d6d3cc;color:#6f6b63">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#6f6b63;color:#6f6b63">Option</span><span class="pill" style="background:#44413c;border-color:#44413c;color:#ffffff">✓ Chosen</span></div>
+ <div class="btn" style="background:#44413c;color:#ffffff">Get my answer</div></div><div class="demo" style="background:#242321;border-color:#43413d">
+ <div class="cat" style="color:#bdb6a8">Category: Career</div>
+ <div class="title" style="color:#dbd8d2">Dark mode</div>
+ <div class="lab" style="color:#dbd8d2">What's going on?</div>
+ <div class="box" style="background:#181716;border-color:#43413d;color:#bdb6a8">Type here…</div>
+ <div class="row"><span class="pill" style="border-color:#bdb6a8;color:#bdb6a8">Option</span><span class="pill" style="background:#dbd8d2;border-color:#dbd8d2;color:#181716">✓ Chosen</span></div>
+ <div class="btn" style="background:#dbd8d2;color:#181716">Get my answer</div></div></div>
+<div class="lbl">Light</div><div class="sws"><div class="sw"><div class="chip" style="background:#ffffff"></div><code>#ffffff</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#f1efeb"></div><code>#f1efeb</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#d6d3cc"></div><code>#d6d3cc</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#6f6b63"></div><code>#6f6b63</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#44413c"></div><code>#44413c</code><small>Titles, buttons</small></div></div>
+<div class="lbl">Dark</div><div class="sws"><div class="sw"><div class="chip" style="background:#181716"></div><code>#181716</code><small>Text box</small></div><div class="sw"><div class="chip" style="background:#242321"></div><code>#242321</code><small>Panel</small></div><div class="sw"><div class="chip" style="background:#43413d"></div><code>#43413d</code><small>Lines</small></div><div class="sw"><div class="chip" style="background:#bdb6a8"></div><code>#bdb6a8</code><small>Labels, outlines</small></div><div class="sw"><div class="chip" style="background:#dbd8d2"></div><code>#dbd8d2</code><small>Titles, buttons</small></div></div>
+<p class="chk">Labels on panel 4.6:1 light, 7.8:1 dark · button text 10.2:1 light, 12.6:1 dark</p></section></div>
+</main></body></html>

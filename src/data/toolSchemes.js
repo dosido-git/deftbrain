@@ -13,12 +13,18 @@
 // (bg-[var(--sc-field)] …) serves light and dark. Only tools in PROTOTYPE_TOOLS
 // get a scheme; everything else renders exactly as before.
 
-export const PROTOTYPE_TOOLS = new Set(['BillRescue']);
+export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise']);
 
 const SCHEMES = {
   Money: {
-    light: { field: '#fafbf6', envelope: '#eef1e6', line: '#d3dac4', card: '#ffffff', accent: '#5f7150', strong: '#3d4a33', onStrong: '#fafbf6', x: '#a23e5c', xText: '#7d2a44', xLine: '#e6bfcb' },
-    dark:  { field: '#1b2018', envelope: '#232a1f', line: '#3a4433', card: '#1a1e17', accent: '#a9bd95', strong: '#d3e0c3', onStrong: '#1b2018', x: '#e08aa5', xText: '#eba8bd', xLine: '#5e2c3c' },
+    light: { field: '#fafbf6', envelope: '#eef1e6', line: '#d3dac4', card: '#ffffff', accent: '#5f7150', strong: '#3d4a33', onStrong: '#fafbf6', button: '#3d4a33', buttonText: '#fafbf6', x: '#a23e5c', xText: '#7d2a44', xLine: '#e6bfcb' },
+    dark:  { field: '#1b2018', envelope: '#232a1f', line: '#3a4433', card: '#1a1e17', accent: '#a9bd95', strong: '#d3e0c3', onStrong: '#1b2018', button: '#d3e0c3', buttonText: '#1b2018', x: '#e08aa5', xText: '#eba8bd', xLine: '#5e2c3c' },
+  },
+  // Palette v3 (docs/design/category-palette-v3.html, 2026-10-26): Honey with
+  // a violet contrast, "Bright" family — a soft filled button with dark text.
+  Learning: {
+    light: { field: '#fcfaf5', envelope: '#f7f2e6', line: '#e3d9bf', card: '#ffffff', accent: '#725f33', strong: '#4d4123', onStrong: '#fcfaf5', button: '#dac99f', buttonText: '#43381e', x: '#7b68b1', xText: '#624e97', xLine: '#d9d1ec' },
+    dark:  { field: '#231e13', envelope: '#2b261a', line: '#504630', card: '#1e1a10', accent: '#d5c090', strong: '#ebe2cc', onStrong: '#1e1a10', button: '#d4c091', buttonText: '#352c18', x: '#8d7ac2', xText: '#9c8cca', xLine: '#3d3458' },
   },
 };
 
