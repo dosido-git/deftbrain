@@ -120,6 +120,8 @@ export const PartHeading = ({ children, newPage = false }) => (
 
 // Expand all / Collapse all: one control for every Section inside a group.
 const SectionsSignal = createContext(null);
+// For a tool's own collapsible section: { n, open } changes on each Expand all.
+export const useExpandAll = () => useContext(SectionsSignal);
 
 export function SectionGroup({ children }) {
   const [all, setAll] = useState({ n: 0, open: false });
