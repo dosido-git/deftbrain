@@ -2513,7 +2513,7 @@ Each category has four shades plus one contrast colour, exposed as CSS variables
 ### Structure
 
 1. **Envelope.** The light shade wraps the whole tool: header (category, title, tagline, Bookmark) and the form.
-2. **Form.** White text boxes; typed text in the medium shade. Choice chips outlined in the medium shade; the chosen one filled with the dark shade and ticked (✓). One main button, dark shade.
+2. **Form.** The form sits in its own panel in the lightest shade with a medium-shade border (Bill Rescue's tab panel), on the envelope. White text boxes; typed text in the medium shade. Choice chips outlined in the medium shade; the chosen one filled with the dark shade and ticked (✓). One main button, dark shade.
 3. **Answer card.** The answer is one long card in the lightest shade, below the form and separate from it, headed "Your plan" / "Your answer" (serif) with Copy / Share / Print on the same row.
 4. **On the card.** Content sits straight on the card. Parts are serif headings over a rule; sections are a heading over a rule and collapse. Open by default: only the immediate action and the roadmap — everything else starts closed, with an "Expand all" control.
 5. **Boxes only for what matters most.**

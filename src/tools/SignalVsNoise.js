@@ -444,7 +444,7 @@ const SignalVsNoise = ({ tool }) => {
 
         {/* Input */}
         {!results && (
-          <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className="space-y-4">
+          <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`space-y-4 ${sv ? 'rounded-xl border-2 border-[var(--sc-accent)] bg-[var(--sc-field)] p-3 sm:p-5' : ''}`}>
             {/* Header — site style (2026-09-27): a pale band of the tool's color
                 bleeding to the card edges, the ground the "Try an example" pill was
                 made for (PF-17c). Screen only. */}
