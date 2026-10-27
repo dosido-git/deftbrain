@@ -61,9 +61,6 @@ const SignalVsNoise = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     // Bespoke keys
-    signalBg:      isDark ? 'bg-emerald-900/20 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
-    signalText:    isDark ? 'text-emerald-300' : 'text-emerald-700',
-    debatedText:   isDark ? 'text-sky-300' : 'text-sky-700',
   };
   // PROTOTYPE (2026-10-26): the Learning category scheme, palette v3 — see
   // src/data/toolSchemes.js. Panel from the wrapper; text boxes and cards
@@ -76,9 +73,6 @@ const SignalVsNoise = ({ tool }) => {
     card:          'bg-transparent !border-x-0 !border-b-0 !rounded-none [&_.px-5]:!px-0',
     // The signal is the part that matters most, like Bill Rescue's
     // "Today's only job": a stronger border in the medium shade.
-    signalBg:      'bg-[var(--sc-card)] !border-2 border-[var(--sc-accent)]',
-    signalText:    'text-[var(--sc-strong)]',
-    debatedText:   'text-[var(--sc-strong)]',
   });
   // Section headings as on Bill Rescue: one size, dark shade, not small caps;
   // the caret in the medium shade.
