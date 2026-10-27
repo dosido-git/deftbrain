@@ -16,19 +16,17 @@
 export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise']);
 
 const SCHEMES = {
-  // Restrained, like Learning below (owner, 2026-10-26). `x` is kept for one
-  // job only: a real warning (an urgent or damaged status).
   Money: {
-    light: { field: '#fcfdf9', envelope: '#f3f5ee', line: '#e4e3db', edge: '#c9c6bc', card: '#ffffff', accent: '#6b655c', strong: '#3f4a2e', onStrong: '#ffffff', button: '#3f4a2e', buttonText: '#ffffff', x: '#9a4a3a', xText: '#8a3f31', xLine: '#e8cfc8', text: '#2b2824', muted: '#6b655c' },
-    dark:  { field: '#1c1e19', envelope: '#22251e', line: '#363a30', edge: '#4d5145', card: '#1c1e19', accent: '#a8a69c', strong: '#d5e0c4', onStrong: '#1c1e19', button: '#d5e0c4', buttonText: '#1c1e19', x: '#e0a093', xText: '#e8b3a8', xLine: '#5a342c', text: '#ece9e2', muted: '#a8a69c' },
+    light: { field: '#fafbf6', envelope: '#eef1e6', line: '#d3dac4', card: '#ffffff', accent: '#5f7150', strong: '#3d4a33', onStrong: '#fafbf6', button: '#3d4a33', buttonText: '#fafbf6', x: '#a23e5c', xText: '#7d2a44', xLine: '#e6bfcb' },
+    dark:  { field: '#1b2018', envelope: '#232a1f', line: '#3a4433', card: '#1a1e17', accent: '#a9bd95', strong: '#d3e0c3', onStrong: '#1b2018', button: '#d3e0c3', buttonText: '#1b2018', x: '#e08aa5', xText: '#eba8bd', xLine: '#5e2c3c' },
   },
   // Restrained (owner, 2026-10-26: "orderly, calming, elegant, understated
   // but distinct"): the category shows in three places only — a whisper tint
   // on the panel, the title and section rules, and the one main button. Every
   // other colour is a shared warm neutral (text, muted, line, accent).
   Learning: {
-    light: { field: '#fdfcf9', envelope: '#f8f4ea', line: '#e7e2d8', edge: '#cbc4b7', card: '#ffffff', accent: '#6b655c', strong: '#57471f', onStrong: '#ffffff', button: '#57471f', buttonText: '#ffffff', x: '#57471f', xText: '#57471f', xLine: '#e7e2d8', text: '#2b2824', muted: '#6b655c' },
-    dark:  { field: '#1f1c17', envelope: '#26221b', line: '#3b362e', edge: '#524b40', card: '#1f1c17', accent: '#aaa398', strong: '#e5d6b0', onStrong: '#1f1c17', button: '#e5d6b0', buttonText: '#1f1c17', x: '#e5d6b0', xText: '#e5d6b0', xLine: '#3b362e', text: '#ece8e1', muted: '#aaa398' },
+    light: { field: '#fdfcf9', envelope: '#f8f4ea', line: '#e7e2d8', card: '#ffffff', accent: '#6b655c', strong: '#57471f', onStrong: '#ffffff', button: '#57471f', buttonText: '#ffffff', x: '#57471f', xText: '#57471f', xLine: '#e7e2d8', text: '#2b2824', muted: '#6b655c' },
+    dark:  { field: '#1f1c17', envelope: '#26221b', line: '#3b362e', card: '#1f1c17', accent: '#aaa398', strong: '#e5d6b0', onStrong: '#1f1c17', button: '#e5d6b0', buttonText: '#1f1c17', x: '#e5d6b0', xText: '#e5d6b0', xLine: '#3b362e', text: '#ece8e1', muted: '#aaa398' },
   },
 };
 
