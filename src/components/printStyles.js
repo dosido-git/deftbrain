@@ -303,9 +303,11 @@ export const PRINT_CSS = `
         [data-print-handout]:not([data-scheme]) [data-print-section] .rounded-lg { break-inside: avoid !important; page-break-inside: avoid !important; }
         /* Category-colour pages print without card fills or borders: less ink,
            and no box edges running across a page break. A letter keeps its
-           page-like border; a roadmap step keeps its side line. */
+           page-like border; a roadmap step keeps its side line; the one key
+           box (data-keybox) keeps its outline, in black, and stays whole. */
         [data-scheme] [data-print-section] [class*="rounded"]:not([data-letter]) { background: transparent !important; }
-        [data-scheme] [data-print-section] [class*="rounded"]:not([data-letter]):not([class*="border-s-"]) { border-color: transparent !important; }
+        [data-scheme] [data-print-section] [class*="rounded"]:not([data-letter]):not([data-keybox]):not([class*="border-s-"]) { border-color: transparent !important; }
+        [data-scheme] [data-keybox] { border: 2px solid #111 !important; break-inside: avoid !important; page-break-inside: avoid !important; }
         /* Collapsed sections still print. */
         [data-print-handout] [data-sec-body][hidden] { display: block !important; }
         /* Keep each label with what it labels. A heading never ends a page on

@@ -91,7 +91,7 @@ export function AnswerCard({ title, children, className = '' }) {
 // the medium shade, its label in the dark shade. One per answer.
 export function KeyBox({ label, children, className = '' }) {
   return (
-    <div className={`border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5 ${className}`}>
+    <div data-keybox="" className={`border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5 ${className}`}>
       {label && <p className="text-[13px] font-bold text-[var(--sc-strong)] mb-1">{label}</p>}
       {children}
     </div>

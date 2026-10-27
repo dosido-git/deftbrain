@@ -1221,7 +1221,7 @@ const BillRescue = ({ tool }) => {
         {r.todays_job?.action && (
           // The one container that must win (owner, 2026-10-26): accent border,
           // the biggest action line, and its words open beneath a rule.
-          <div className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
+          <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
             <p className={`text-[13px] font-bold ${sv ? c.sectionTitle : c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
             <p className={`text-xl font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
