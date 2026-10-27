@@ -27,12 +27,12 @@ const SCHEMES = {
     light: { field: '#fdfbf4', envelope: '#f4eedd', line: '#e2d5b3', card: '#ffffff', accent: '#7a632c', strong: '#4c3d18', onStrong: '#fdfbf4', button: '#4c3d18', buttonText: '#fdfbf4', x: '#8a4a7a', xText: '#733d66', xLine: '#e4c8dc' },
     dark:  { field: '#211d13', envelope: '#2a2518', line: '#463d27', card: '#1d1a11', accent: '#d2bd8a', strong: '#ecdfbd', onStrong: '#211d13', button: '#ecdfbd', buttonText: '#211d13', x: '#d79ac6', xText: '#e2b2d5', xLine: '#553048' },
   },
-  // Relationships in red (owner, 2026-10-27: the first rose read too close to
-  // Money's dark green on the flier),
-  // deep teal as the one contrasting colour.
+  // Relationships in dusty rose (owner, 2026-10-27: the bright red read as an
+  // alert; rose was too close to Money's dark green on the flier), deep teal
+  // as the one contrasting colour.
   Relationships: {
-    light: { field: '#fff8f8', envelope: '#fcecec', line: '#f1c9cd', card: '#ffffff', accent: '#b0283f', strong: '#7e1426', onStrong: '#fff8f8', button: '#7e1426', buttonText: '#fff8f8', x: '#2c6a73', xText: '#225860', xLine: '#bcd9dc' },
-    dark:  { field: '#24151a', envelope: '#2f1a1f', line: '#55303a', card: '#1f1216', accent: '#f2909e', strong: '#ffd4da', onStrong: '#24151a', button: '#ffd4da', buttonText: '#24151a', x: '#7fc4cc', xText: '#a3d6dc', xLine: '#2e5257' },
+    light: { field: '#fcf8f9', envelope: '#f4ebee', line: '#e4d0d6', card: '#ffffff', accent: '#8a5164', strong: '#57303f', onStrong: '#fcf8f9', button: '#57303f', buttonText: '#fcf8f9', x: '#2c6a73', xText: '#225860', xLine: '#bcd9dc' },
+    dark:  { field: '#221a1d', envelope: '#2b2125', line: '#4a3940', card: '#1e1719', accent: '#d9a9b9', strong: '#f0dbe2', onStrong: '#221a1d', button: '#f0dbe2', buttonText: '#221a1d', x: '#7fc4cc', xText: '#a3d6dc', xLine: '#2e5257' },
   },
 };
 
