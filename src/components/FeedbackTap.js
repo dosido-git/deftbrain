@@ -13,7 +13,7 @@ import { useTranslation } from '../i18n/useTranslation';
  *
  * Usage:  <FeedbackTap tool="DoctorVisitTranslator" />
  */
-export default function FeedbackTap({ tool = 'unknown', className = '' }) {
+export default function FeedbackTap({ tool = 'unknown', className = '', scheme = false }) {
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const [choice, setChoice] = useState(null);   // null | 'yes' | 'no'
@@ -54,6 +54,15 @@ export default function FeedbackTap({ tool = 'unknown', className = '' }) {
     send:   isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     muted:  isDark ? 'text-zinc-500' : 'text-gray-400',
   };
+  // On a category-colour page the cool greys read blue against the warm
+  // panel (owner, 2026-10-26): take the page's own shades instead.
+  if (scheme) Object.assign(c, {
+    wrap:  'border-[var(--sc-line)] text-[var(--sc-accent)]',
+    btn:   'border-[var(--sc-line)] hover:bg-[var(--sc-field)] text-[var(--sc-strong)]',
+    input: 'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60',
+    send:  'bg-[var(--sc-strong)] hover:opacity-90 text-[var(--sc-on-strong)]',
+    muted: 'text-[var(--sc-accent)]',
+  });
 
   if (done) {
     return (

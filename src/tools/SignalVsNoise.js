@@ -845,8 +845,8 @@ const SignalVsNoise = ({ tool }) => {
           the second line is the claims actually investigated, the third is
           what the saved analysis contains — counts, never verdicts. */}
       {sessionHistory.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('svn_recent_checks')}</p>
+        <div className={sv ? 'bg-[var(--sc-field)] border-2 border-[var(--sc-line)] rounded-xl p-5' : `${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`${sv ? 'text-base font-bold text-[var(--sc-strong)]' : `text-xs font-bold ${c.textMuted}`} mb-2`}>{t('svn_recent_checks')}</p>
           <div className={`divide-y ${sv ? 'divide-[var(--sc-line)]' : isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
             {(showAllChecks ? sessionHistory : sessionHistory.slice(0, RECENT_VISIBLE)).map(e => {
               const stats = [

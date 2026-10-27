@@ -359,7 +359,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           {/* "Was this helpful?" — highest-signal validation instrument, on every
               tool page (not printed). Central here so all tools inherit it. */}
           <div data-print-hide className="max-w-2xl mx-auto px-4">
-            <FeedbackTap tool={detectedTool?.id || tool || toolId || 'unknown'} />
+            <FeedbackTap tool={detectedTool?.id || tool || toolId || 'unknown'} scheme={Boolean(sv)} />
           </div>
           {/* "Before You Go" on paper. The sidebar never prints, but this one
               caveat is the part a person needs AFTER they walk away with the
