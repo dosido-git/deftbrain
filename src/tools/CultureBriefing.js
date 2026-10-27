@@ -68,6 +68,11 @@ const EXAMPLES = [
 },
 ];
 
+// How strongly each item holds, from the source it rests on (set by the
+// backend, never by the writer): a rule, a courtesy, something that varies,
+// a thing to ask your host, or something a source says can cause offence.
+const STRENGTH = { required: 'cb_s_required', common: 'cb_s_common', varies: 'cb_s_varies', ask: 'cb_s_ask', offence: 'cb_s_offence' };
+
 function CultureBriefing({ tool }) {
   const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -103,8 +108,6 @@ function CultureBriefing({ tool }) {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
                           : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
-                          : 'bg-sky-50 border-sky-200 text-sky-800',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -116,7 +119,6 @@ function CultureBriefing({ tool }) {
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
     success:  'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-strong)]',
-    infoBox:  'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     warning:  'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     sectionHead: 'text-base font-bold text-[var(--sc-strong)]',
   });
@@ -214,21 +216,22 @@ function CultureBriefing({ tool }) {
     if (!results) return '';
     const lines = [`${t('cb_copy_header')} — ${results.destination?.toUpperCase()}`, ''];
     if (results.overview) lines.push(results.overview, '');
-    results.sections?.forEach(sec => {
-      lines.push(`\n${sec.icon ?? '•'} ${sec.title?.toUpperCase()}`);
-      sec.widely_observed?.forEach(x => lines.push(`  ✅ ${x}`));
-      sec.best_avoided?.forEach(x => lines.push(`  🚫 ${x}`));
-      sec.varies?.forEach(x => lines.push(`  🔀 ${x}`));
-      sec.check_locally?.forEach(x => lines.push(`  🔎 ${x}`));
-    });
-    if (results.practical_tips?.length) {
-      lines.push(`\n💡 ${t('cb_copy_practical_tips')}`);
-      results.practical_tips.forEach(tip => lines.push(`  • ${tip}`));
+    if (results.essentials?.length) {
+      lines.push(`${t('cb_essentials')}`);
+      results.essentials.forEach(e => lines.push(`  • ${e.point}`));
     }
-    if (results.missteps?.small_slips?.length || results.missteps?.higher_stakes?.length) {
-      lines.push(`\n⚖️ ${t('cb_missteps_title')}`);
-      results.missteps?.small_slips?.forEach(x => lines.push(`  🙆 ${x}`));
-      results.missteps?.higher_stakes?.forEach(x => lines.push(`  🚫 ${x}`));
+    results.for_your_needs?.forEach(n => lines.push(`\n${n.need}: ${n.plan}`));
+    results.sections?.forEach(sec => {
+      lines.push(`\n${sec.icon ?? '•'} ${sec.title}`);
+      (sec.items || []).forEach(it => lines.push(`  • ${it.text} (${t(STRENGTH[it.strength] || 'cb_s_common')})`));
+    });
+    if (results.small_slips?.length) {
+      lines.push(`\n${t('cb_small_slips_label')}`);
+      results.small_slips.forEach(x => lines.push(`  • ${x.slip} — ${x.recovery}`));
+    }
+    if (results.sources?.length) {
+      lines.push(`\n${t('cb_sources')}`);
+      results.sources.forEach(src => lines.push(`  ${src.id} ${src.publisher} — ${src.url}`));
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -254,6 +257,8 @@ function CultureBriefing({ tool }) {
   }, [loading]);
 
   const activeData = results?.sections?.find(s => s.id === activeSection);
+  // A briefing saved before the 2026-10-27 rebuild has a different shape.
+  useEffect(() => { if (results && !Array.isArray(results.essentials)) setResults(null); }, [results, setResults]);
 
   // The row above the form. With a category scheme the wrapper carries the
   // tagline and the tool keeps one row: Try an example and the reset
@@ -421,31 +426,62 @@ function CultureBriefing({ tool }) {
   );
 
   const renderResults = () => {
-    if (!results) return null;
+    // Saved briefings from before 2026-10-27 have no essentials; they are
+    // cleared on load (effect below), so render nothing for one meanwhile.
+    if (!results || !Array.isArray(results.essentials)) return null;
     const purposeMeta = TRIP_PURPOSES.find(tp => tp.id === results.tripPurpose);
+    const srcById = Object.fromEntries((results.sources || []).map(src => [src.id, src]));
+    const Refs = ({ ids }) => {
+      const srcs = [...new Set((ids || []).map(f => results.finding_sources?.[f]).filter(id => srcById[id]))];
+      return srcs.length ? <span className={`ms-1 text-[12px] ${c.textMuted}`}>{srcs.map(id => <a key={id} href={srcById[id].url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 me-1">{id}</a>)}</span> : null;
+    };
+    const tag = (strength) => (
+      <span className={`ms-2 text-[12px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap ${strength === 'offence' ? (sv ? 'border-[var(--sc-x-line)] text-[var(--sc-x-text)]' : c.danger) : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)]' : `${c.border} ${c.textMuted}`)}`}>
+        {t(STRENGTH[strength] || 'cb_s_common')}
+      </span>
+    );
+    const SectionBody = ({ sec }) => (
+      <ul className="space-y-2">
+        {(sec.items || []).map((it, i) => (
+          <li key={i} className={`text-sm leading-relaxed ${c.textSecondary}`}>{it.text}{tag(it.strength)}<Refs ids={it.finding_ids} /></li>
+        ))}
+      </ul>
+    );
 
     const answer = (
-      <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
+      <div className="scroll-mt-24 space-y-5" ref={resultsRef}>
         <CheckNote status={checkStatus} className={c.textMuted} />
 
-        {/* Header + overview — in the answer card its heading rule is enough. */}
-        <div className={sv ? '' : `border-t ${c.border} pt-5`}>
-          <div className="flex items-start justify-between gap-4 mb-3">
-            <div>
-              <p className={`text-2xl font-black ${c.text}`}>{results.destination}</p>
-              <p className={`text-sm ${c.textMuted}`}>
-                {purposeMeta?.icon} {purposeMeta ? t(purposeMeta.labelKey) : ''} {t('cb_briefing_suffix')}
-              </p>
-            </div>
-          </div>
-          {results.overview && <p className={`text-sm ${c.textSecondary}`}>{results.overview}</p>}
+        <div>
+          <p className={`text-2xl font-black ${c.text}`}>{results.destination}</p>
+          <p className={`text-sm ${c.textMuted}`}>{purposeMeta?.icon} {purposeMeta ? t(purposeMeta.labelKey) : ''} {t('cb_briefing_suffix')}</p>
+          {results.overview && <p className={`mt-2 text-sm ${c.textSecondary}`}>{results.overview}</p>}
         </div>
 
-        {results.confidence === 'low' && (
-          <div className={`text-xs ${c.warning} border rounded-lg px-3 py-2`}>ℹ️ {t('cb_confidence_low')}</div>
+        {/* What matters most — the answer's key box (owner's review,
+            2026-10-27: lead with the essentials, details after). */}
+        {results.essentials.length > 0 && (
+          <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
+            <p className={`${head} mb-2`}>{t('cb_essentials')}</p>
+            <ol className="space-y-2 list-decimal ps-5">
+              {results.essentials.map((e, i) => (
+                <li key={i} className={`text-sm leading-relaxed ${c.text}`}>{e.point}<Refs ids={e.finding_ids} /></li>
+              ))}
+            </ol>
+          </div>
         )}
 
-        {/* Section nav */}
+        {results.for_your_needs?.length > 0 && (
+          <div>
+            <p className={`${head} mb-2`}>{t('cb_for_your_needs')}</p>
+            <ul className="space-y-2">
+              {results.for_your_needs.map((n, i) => (
+                <li key={i} className={`text-sm leading-relaxed ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{n.need}:</span> {n.plan}<Refs ids={n.finding_ids} /></li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {results.sections?.length > 0 && (
           <div className={`border-t ${c.border} pt-5`}>
             <p data-print-hide className={`${head} mb-3`}>{t('cb_browse_topics')}</p>
@@ -457,107 +493,46 @@ function CultureBriefing({ tool }) {
                 </button>
               ))}
             </div>
-
-            {/* Active section detail (screen). On paper every topic prints,
-                one after another — a briefing is read away from the page. */}
             {activeData && (
-              <div data-print-hide className={`mt-4 pt-4 border-t ${c.border} space-y-3`}>
-                <p className={`text-sm font-bold ${c.text}`}>{activeData.icon} {activeData.title}</p>
-                {[
-                  ['widely_observed', '✅', c.success, 'cb_widely_observed'],
-                  ['best_avoided', '🚫', c.danger, 'cb_best_avoided'],
-                  ['varies', '🔀', c.infoBox, 'cb_varies'],
-                  ['check_locally', '🔎', c.warning, 'cb_check_locally'],
-                ].map(([key, icon, tone, labelKey]) => activeData[key]?.length > 0 && (
-                  <div key={key} className="space-y-1.5">
-                    <p className={`text-xs font-semibold ${c.textMuted}`}>{t(labelKey)}</p>
-                    {activeData[key].map((x, i) => (
-                      <div key={i} className={`text-sm ${tone} border rounded-lg px-3 py-2 flex gap-2`}>
-                        <span className="flex-shrink-0">{icon}</span><span>{x}</span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
+              <div data-print-hide className={`mt-4 pt-4 border-t ${c.border}`}>
+                <p className={`text-sm font-bold mb-2 ${c.text}`}>{activeData.icon} {activeData.title}</p>
+                <SectionBody sec={activeData} />
               </div>
             )}
+            {/* On paper every topic prints, one after another. */}
             <div className="hidden print:block">
-              {results.sections.map(sec => { const activeData = sec; return (
-                <div key={sec.id} className="mt-4 pt-4 border-t border-slate-200 space-y-3">
-                <p className={`text-sm font-bold ${c.text}`}>{activeData.icon} {activeData.title}</p>
-                  {[
-                    ['widely_observed', '✅', c.success, 'cb_widely_observed'],
-                    ['best_avoided', '🚫', c.danger, 'cb_best_avoided'],
-                    ['varies', '🔀', c.infoBox, 'cb_varies'],
-                    ['check_locally', '🔎', c.warning, 'cb_check_locally'],
-                  ].map(([key, icon, tone, labelKey]) => activeData[key]?.length > 0 && (
-                    <div key={key} className="space-y-1.5">
-                      <p className={`text-xs font-semibold ${c.textMuted}`}>{t(labelKey)}</p>
-                      {activeData[key].map((x, i) => (
-                        <div key={i} className={`text-sm ${tone} border rounded-lg px-3 py-2 flex gap-2`}>
-                          <span className="flex-shrink-0">{icon}</span><span>{x}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  </div>
-              ); })}
+              {results.sections.map(sec => (
+                <div key={sec.id} className="mt-4 keep-together">
+                  <p className={`text-sm font-bold mb-2 ${c.text}`}>{sec.icon} {sec.title}</p>
+                  <SectionBody sec={sec} />
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Insider tips */}
-        {results.practical_tips?.length > 0 && (
+        {results.small_slips?.length > 0 && (
           <div className={`border-t ${c.border} pt-5`}>
-            <p className={`${head} mb-3`}>💡 {t('cb_practical_tips')}</p>
+            <p className={`${head} mb-2`}>{t('cb_small_slips_label')}</p>
             <ul className="space-y-2">
-              {results.practical_tips.map((tip, i) => (
-                <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}>
-                  <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{tip}</span>
-                </li>
+              {results.small_slips.map((x, i) => (
+                <li key={i} className={`text-sm leading-relaxed ${c.textSecondary}`}>{x.slip} <span className={c.textMuted}>— {x.recovery}</span></li>
               ))}
             </ul>
           </div>
         )}
 
-        {(results.missteps?.small_slips?.length > 0 || results.missteps?.higher_stakes?.length > 0) && (
+        {results.sources?.length > 0 && (
           <div className={`border-t ${c.border} pt-5`}>
-            <p className={`${head} mb-3`}>⚖️ {t('cb_missteps_title')}</p>
-            {results.missteps?.small_slips?.length > 0 && (
-              <div className="mb-3">
-                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_small_slips_label')}</p>
-                <div className="space-y-1.5">
-                  {results.missteps.small_slips.map((x, i) => (
-                    <div key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2 flex gap-2`}><span className="flex-shrink-0">🙆</span><span>{x}</span></div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {results.missteps?.higher_stakes?.length > 0 && (
-              <div>
-                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_higher_stakes_label')}</p>
-                <div className="space-y-1.5">
-                  {results.missteps.higher_stakes.map((x, i) => (
-                    <div key={i} className={`text-sm ${c.danger} border rounded-lg px-3 py-2 flex gap-2`}><span className="flex-shrink-0">🚫</span><span>{x}</span></div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Must-know phrases */}
-        {results.key_phrases?.length > 0 && (
-          <div className={`border-t ${c.border} pt-5`}>
-            <p className={`${head} mb-3`}>💬 {t('cb_must_know_phrases')}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {results.key_phrases.map((p, i) => (
-                <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg px-3 py-2`}>
-                  <p className={`text-sm font-bold ${c.text}`}>{p.phrase}</p>
-                  <p className={`text-[13px] ${c.textMuted}`}>{p.meaning}</p>
-                  {p.pronunciation && <p className={`text-xs italic ${c.textMuted}`}>{p.pronunciation}</p>}
-                </div>
+            <p className={`${head} mb-2`}>{t('cb_sources')}</p>
+            <ul className="space-y-1">
+              {results.sources.map(src => (
+                <li key={src.id} className={`text-[13px] ${c.textMuted}`}>
+                  <span className="font-semibold me-1">{src.id}</span>
+                  <a href={src.url} target="_blank" rel="noopener noreferrer" className={linkStyle}>{src.publisher}</a>{src.date ? ` · ${src.date}` : ''}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
 
