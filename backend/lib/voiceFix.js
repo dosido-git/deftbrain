@@ -58,9 +58,9 @@ function internalWords(s) {
   if (typeof s !== 'string' || !/packet/i.test(s)) return s;
   return s
     .replace(/\b(?:the|this|our) (?:web )?(?:research )?packet's (\w+)/gi, (m, what) => `${/^T/.test(m) ? 'The' : 'the'} ${what} found here`)
-    .replace(/\b(?:the|this|our) (?:web )?research packet\b/gi, m => (/^T/.test(m) ? 'The evidence found here' : 'the evidence found here'))
-    .replace(/\b(?:the|this) packet\b/gi, m => (/^T/.test(m) ? 'The evidence found here' : 'the evidence found here'))
-    .replace(/\bresearch packet\b/gi, 'evidence found here');
+    .replace(/\b(?:the|this|our) (?:web )?research packet\b/gi, m => (/^T/.test(m) ? 'The research found here' : 'the research found here'))
+    .replace(/\b(?:the|this) packet\b/gi, m => (/^T/.test(m) ? 'The research found here' : 'the research found here'))
+    .replace(/\bresearch packet\b/gi, 'research found here');
 }
 
 // A nullable field the model filled with the WORD null (T6): Name Storm

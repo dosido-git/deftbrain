@@ -59,12 +59,14 @@ ${NO_QUOTE_RULE}`;
 // Prose only: labels, enums, ids and short chips stay as they are.
 const isProse = v => typeof v === 'string' && v.trim().split(/\s+/).length >= 5 && !/\n\s*\n/.test(v.trim());
 
-async function checkEvidenceFit(draft, { label, evidence, summary = [], userLanguage, skip = [] } = {}) {
+// skip: top-level keys left out; keep: a path pattern left out (the visitor's
+// own words, which are not a claim about the evidence).
+async function checkEvidenceFit(draft, { label, evidence, summary = [], userLanguage, skip = [], keep = null } = {}) {
   try {
     if (!draft || typeof draft !== 'object' || !evidence) return 0;
     const top = p => p.split(/[.[]/)[0];
     const fields = stringFields(draft, 200)
-      .filter(([p, v]) => isProse(v) && !skip.includes(top(p)));
+      .filter(([p, v]) => isProse(v) && !skip.includes(top(p)) && !(keep && keep.test(p)));
     if (!fields.length) return 0;
     const tag = p => (summary.includes(top(p)) ? ' (SUMMARY)' : '');
     const out = await callClaudeWithRetry({

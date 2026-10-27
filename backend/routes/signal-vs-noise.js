@@ -45,7 +45,7 @@ CORE RULES
 Every statement about what happens in the real world must be supported by one or more source IDs from the research packet. Do not supplement the packet from memory, even when you are confident the remembered fact is correct.
 
 2. SOURCE IDS ARE PROVENANCE, NOT DECORATION.
-Every Signal item and every Noise item must list the source IDs that support its empirical conclusion. Never invent an ID. If the packet does not support a conclusion, classify it as unresolved rather than filling the gap.
+Every claim assessment must list the source IDs that support its finding. Never invent an ID. If the packet does not support a conclusion, classify it as unresolved rather than filling the gap.
 
 3. DO NOT COUNT SOURCES AS VOTES.
 One strong systematic review may outweigh many weak articles. Source quality, directness, scope, recency where relevant, and agreement matter more than quantity.
@@ -63,7 +63,7 @@ Population or general evidence does not automatically answer what one visitor sh
 How the Noise Gets Made may explain general information distortions visible in the claims or research process, but may not accuse a person, company, industry, researcher, or group of deceptive motives without sourced evidence.
 
 8. MIXED / UNRESOLVED IS A SUCCESSFUL RESULT.
-Do not force every claim into Signal or Noise.
+Do not force every claim into supported or overstated.
 
 9. ANSWER FIRST; DO NOT REPEAT YOURSELF.
 Keep the main answer compact. Put limitations and sources close to the conclusions they qualify. Omit empty sections rather than padding them.
@@ -86,10 +86,10 @@ Do not make the conclusion stronger than the cited evidence. One trial → "A co
 Every cited source must materially support the sentence or field it is attached to. Do not attach a group of sources to a paragraph when only some of them support each material assertion; cite the ones that do.
 
 15. INTERNAL CONSISTENCY.
-Before rendering, compare Signal, Noise, Kernel of Truth, unresolved findings, and the Bottom Line. If two sections characterize the same evidence with different strength ("remains genuinely unresolved" here, "does not establish any harm" there, "no strong evidence it is neutral" elsewhere), reconcile them to the least-strong formulation both support — e.g. "the evidence presented here does not establish a safe or harmful threshold for moderate consumption" — and do not push farther in either direction.
+Before rendering, compare the verdict and every claim assessment. If two sections characterize the same evidence with different strength ("remains genuinely unresolved" here, "does not establish any harm" there, "no strong evidence it is neutral" elsewhere), reconcile them to the least-strong formulation both support — e.g. "the evidence presented here does not establish a safe or harmful threshold for moderate consumption" — and do not push farther in either direction.
 
 16. SUMMARY PROVENANCE.
-The Bottom Line may summarize the researched findings but may not strengthen, generalize, or combine them into a broader empirical proposition the packet did not establish. "The evidence consistently shows these factors interact" lumps four separate findings into one interaction claim nobody researched; the DeftBrain formulation is that a claim reducing the question to one variable deserves skepticism when the cited evidence does not establish that exclusivity.
+The verdict may summarize the researched findings but may not strengthen, generalize, or combine them into a broader empirical proposition the packet did not establish. "The evidence consistently shows these factors interact" lumps four separate findings into one interaction claim nobody researched; the DeftBrain formulation is that a claim reducing the question to one variable deserves skepticism when the cited evidence does not establish that exclusivity.
 
 FINAL CALIBRATION — evidence-to-conclusion matching
 
@@ -114,8 +114,8 @@ Before accepting each substantive sentence, ask: which specific source or source
 23. PRESERVE GOOD UNCERTAINTY.
 If the packet lacks the evidence a comparison needs, say so. Do not fill the gap from model knowledge, and do not let a neighbouring concept the search did find stand in for the one it did not.
 
-24. THE BOTTOM LINE OBEYS ALL OF THE ABOVE.
-The summary may be shorter than the body. It may not be stronger than the body.
+24. THE VERDICT OBEYS ALL OF THE ABOVE.
+The verdict may be shorter than the claim assessments. It may not be stronger than them.
 
 NORTH STAR:
 RESEARCH THE CLAIMS.
@@ -142,14 +142,14 @@ router.outputGuard = {
     'search_completeness_superlative_best_strongest_broadest_or_consistently_not_established_by_packet',
     'conclusion_stated_stronger_than_the_design_and_size_of_the_cited_evidence',
     'same_evidence_characterized_with_different_strength_across_sections',
-    'bottom_line_combines_or_generalizes_findings_into_a_proposition_the_packet_did_not_establish',
+    'verdict_combines_or_generalizes_findings_into_a_proposition_the_packet_did_not_establish',
     'secondary_explanatory_or_commercial_site_used_to_establish_a_conclusion_when_primary_sources_were_available',
     'comparative_claim_x_more_than_y_without_a_cited_comparison_of_x_and_y',
     'finding_scope_expanded_beyond_the_population_age_country_duration_or_condition_studied',
     'association_restated_as_causation_without_a_causal_design_in_the_cited_source',
     'strong_verdict_resting_on_a_thesis_preprint_magazine_or_explanatory_article',
     'proposition_not_fully_established_by_any_single_cited_source',
-    'bottom_line_stronger_than_the_body_it_summarizes',
+    'verdict_stronger_than_the_claim_assessments_it_summarizes',
   ],
   require: ['fulfills_tool_promise'],
 };
@@ -213,26 +213,23 @@ function sanitizeResult(parsed, packet) {
   parsed.researched_at = packet.researched_at || null;
   parsed.sources_examined = packet.sources;
 
-  // A Signal conclusion rests on at least one tier 1–3 source (review, primary
+  // A supported claim rests on at least one tier 1–3 source (review, primary
   // research, government/regulator, professional body). Secondary-only
   // support — a company blog, an explainer — is enough to flag a question,
   // never to establish an answer. The prompt says so; this makes it true.
   const strongIds = new Set((packet?.sources || []).filter(s => tierOf(s) <= 3).map(s => String(s.id).toUpperCase()));
-  parsed.the_signal ??= { items: [] };
-  parsed.the_signal.items = (Array.isArray(parsed.the_signal.items) ? parsed.the_signal.items : [])
-    .map(x => ({ ...x, source_ids: cleanIds(x?.source_ids, valid) }))
-    .filter(x => nonBlank(x?.claim) && nonBlank(x?.basis) && x.source_ids.some(id => strongIds.has(id)))
-    .slice(0, 4);
-
-  parsed.the_noise = (Array.isArray(parsed.the_noise) ? parsed.the_noise : [])
-    .map(x => ({ ...x, source_ids: cleanIds(x?.source_ids, valid) }))
-    .filter(x => nonBlank(x?.claim) && nonBlank(x?.what_the_evidence_supports_instead) && nonBlank(x?.what_went_wrong) && x.source_ids.length)
-    .slice(0, 5);
-
-  parsed.still_worth_verifying = (Array.isArray(parsed.still_worth_verifying) ? parsed.still_worth_verifying : [])
-    .map(x => ({ ...x, source_ids: cleanIds(x?.source_ids, valid) }))
-    .filter(x => nonBlank(x?.question))
-    .slice(0, 4);
+  const ASSESSMENTS = ['supported', 'overstated', 'mixed', 'unresolved'];
+  parsed.claims = (Array.isArray(parsed.claims) ? parsed.claims : [])
+    .map(x => {
+      const a = String(x?.assessment || '').toLowerCase().trim();
+      const item = { ...x, assessment: ASSESSMENTS.includes(a) ? a : 'unresolved', source_ids: cleanIds(x?.source_ids, valid) };
+      if (item.assessment === 'supported' && !item.source_ids.some(id => strongIds.has(id))) item.assessment = 'unresolved';
+      // "None" / "N/A" as text is no evidence and no limitation.
+      for (const k of ['evidence', 'limitation']) if (!nonBlank(item[k]) || /^\s*(none|n\/a|null|not applicable)\.?\s*$/i.test(item[k])) item[k] = null;
+      return item;
+    })
+    .filter(x => nonBlank(x?.claim) && nonBlank(x?.finding) && (x.source_ids.length || x.assessment === 'unresolved'))
+    .slice(0, 6);
 
   parsed.what_general_claims_cant_decide = (Array.isArray(parsed.what_general_claims_cant_decide) ? parsed.what_general_claims_cant_decide : [])
     .filter(nonBlank).slice(0, 3);
@@ -246,21 +243,13 @@ function sanitizeResult(parsed, packet) {
     .filter(x => nonBlank(x?.source_type) && nonBlank(x?.how_it_distorts) && nonBlank(x?.how_to_recognize_it))
     .slice(0, 3);
 
-  parsed.the_bottom_line ??= {};
-  for (const key of ['supported_takeaways', 'treat_skeptically', 'what_would_change_the_answer']) {
-    parsed.the_bottom_line[key] = (Array.isArray(parsed.the_bottom_line[key]) ? parsed.the_bottom_line[key] : [])
-      .filter(nonBlank).slice(0, 3);
-  }
-
   // Build a source subset from IDs that survived the result. If a source was
   // researched but never actually used, it does not appear in the UI.
   const used = new Set();
-  parsed.the_signal.items.forEach(x => x.source_ids.forEach(id => used.add(id)));
-  parsed.the_noise.forEach(x => x.source_ids.forEach(id => used.add(id)));
-  parsed.still_worth_verifying.forEach(x => x.source_ids.forEach(id => used.add(id)));
+  parsed.claims.forEach(x => x.source_ids.forEach(id => used.add(id)));
   // An ID named in the prose ("…(S9)") is used too, or the reader is sent to
   // a source the list leaves out (live run, 2026-10-27).
-  for (const m of JSON.stringify([parsed.framing, parsed.the_signal, parsed.the_noise, parsed.still_worth_verifying, parsed.the_bottom_line, parsed.what_general_claims_cant_decide]).matchAll(/\bS\d+\b/g)) if (valid.has(m[0])) used.add(m[0]);
+  for (const m of JSON.stringify([parsed.verdict, parsed.claims, parsed.what_general_claims_cant_decide]).matchAll(/\bS\d+\b/g)) if (valid.has(m[0])) used.add(m[0]);
   parsed.sources_examined = packet.sources.filter(s => used.has(String(s.id).toUpperCase()));
 
   return parsed;
@@ -311,23 +300,16 @@ function dropUnsourcedFigures(parsed, packet, typed) {
   const fix = (obj, keys) => { if (obj) for (const k of keys) if (typeof obj[k] === 'string') obj[k] = clean(obj[k]); };
   const fixList = (arr) => Array.isArray(arr) ? arr.map(clean) : arr;
 
-  if (typeof parsed.framing === 'string') parsed.framing = clean(parsed.framing);
-  (parsed.the_signal?.items || []).forEach(x => fix(x, ['claim', 'basis', 'limits']));
-  (parsed.the_noise || []).forEach(x => fix(x, ['what_the_evidence_supports_instead', 'what_went_wrong', 'kernel_of_truth']));
-  (parsed.still_worth_verifying || []).forEach(x => fix(x, ['why_it_matters', 'what_would_help']));
+  if (typeof parsed.verdict === 'string') parsed.verdict = clean(parsed.verdict);
+  (parsed.claims || []).forEach(x => fix(x, ['finding', 'evidence', 'limitation']));
   (parsed.sources_of_noise || []).forEach(x => fix(x, ['how_it_distorts', 'how_to_recognize_it']));
   parsed.what_general_claims_cant_decide = fixList(parsed.what_general_claims_cant_decide);
-  if (parsed.the_bottom_line) {
-    for (const key of ['supported_takeaways', 'treat_skeptically', 'what_would_change_the_answer']) {
-      parsed.the_bottom_line[key] = fixList(parsed.the_bottom_line[key]);
-    }
-  }
   if (dropped.length) console.log(`[signal-vs-noise] dropped ${dropped.length} sentence(s) with figures not in the research packet: ${dropped.join(', ')}`);
   return dropped.length;
 }
 
 // The order the page shows the answer (src/tools/SignalVsNoise.js).
-const PAGE_ORDER = ['topic_as_understood', 'framing', 'the_signal', 'the_noise', 'still_worth_verifying', 'what_general_claims_cant_decide', 'the_bottom_line', 'sources_of_noise'];
+const PAGE_ORDER = ['topic_as_understood', 'verdict', 'claims', 'what_general_claims_cant_decide', 'sources_of_noise'];
 
 // Sources numbered 1, 2, 3… in the order the reader meets them (owner's
 // review, 2026-10-27: S2, S4, S7 after unused ones were dropped). Display
@@ -365,18 +347,18 @@ function buildSupplied(topic, conflictingAdvice, userContext) {
 }
 
 // The three shared prompt parts each synthesis call gets: the packet, the
-// task, and the calibration rules. The two calls split the SCHEMA, not the
-// evidence — both read the same packet, so their halves cannot disagree
+// task, and the calibration rules. The passes split the SCHEMA, not the
+// evidence — all read the same packet, so their parts cannot disagree
 // about what was found, only about how to say it (rule 15 covers that).
 function synthesisPreamble(supplied, researchBlock) {
   return `${supplied}${researchBlock}
 
 TASK
 
-Synthesize the researched evidence into your part of a Signal vs. Noise result. Do not use outside facts that are absent from the WEB RESEARCH PACKET. Another writer is producing the other part from this same packet in parallel; write only the keys asked of you.
+Synthesize the researched evidence into your part of a Signal vs. Noise result. Do not use outside facts that are absent from the WEB RESEARCH PACKET. Other writers produce the other parts from this same packet in parallel; write only the keys asked of you.
 
 LENGTH — this is a screen, not a paper. Word caps are hard limits:
-framing 45; a claim 30; basis 60; limits 35; what_the_evidence_supports_instead 60; what_went_wrong 45; kernel_of_truth 35; any bottom-line bullet 40; question / why_it_matters / what_would_help 35 each; source_type / how_it_distorts / how_to_recognize_it 30 each.`;
+verdict 55; a claim 15; finding 45; evidence 25; limitation 30; a can't-decide item 30; source_type / how_it_distorts / how_to_recognize_it 30 each.`;
 }
 
 const SHARED_RULES = `- Analyze the visitor's actual claims; do not add adjacent controversies.
@@ -503,65 +485,31 @@ router.post('/signal-vs-noise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // 6000-token call took 50–80s; the halves run concurrently and each
     // produces well under half the tokens, so the wall-clock is roughly the
     // slower half. Keys never overlap, so the merge is a spread.
-    const signalPrompt = `${preamble}
-
-YOUR PART: what the evidence supports and where the visitor's claims outrun it.
+    // One answer, read top to bottom (owner, 2026-10-27): a short verdict,
+    // then one compact assessment per claim — its finding, the evidence and
+    // its main limitation together, said once. Replaces the Signal / Noise /
+    // Still worth verifying / Bottom Line sections, which repeated each
+    // qualification four times.
+    const prompt = `${preamble}
 
 Return ONLY valid JSON:
 {
   "topic_as_understood": "concise neutral description",
-  "framing": "1-2 sentences naming the central distinction that makes the conflict easier to understand",
-  "the_signal": {
-    "items": [
-      {
-        "claim": "carefully calibrated conclusion the researched evidence supports",
-        "basis": "plain-language explanation of why the evidence supports it — name the design and size where they matter (a controlled trial of 20 people; a 72-study meta-analysis)",
-        "limits": "important limit or null",
-        "source_ids": ["S1", "S2"]
-      }
-    ]
-  },
-  "the_noise": [
+  "verdict": "2-3 short sentences: across the claims, what holds up, what does not, and how sure the evidence lets anyone be — no stronger than the claim assessments",
+  "claims": [
     {
-      "claim": "visitor-supplied claim that outruns the evidence",
-      "noise_type": "marketing | methodology_problem | cherry_picked | outdated | oversimplified | too_broad | context_dependent | media_distortion | weak_evidence",
-      "noise_label": "short plain-language label",
-      "what_the_evidence_supports_instead": "narrower version actually supported",
-      "what_went_wrong": "exactly how the original wording exceeds the evidence",
-      "kernel_of_truth": "supported core worth preserving, resting on a packet finding cited in source_ids — or null",
-      "source_ids": ["S1", "S3"]
-    }
-  ]
-}
-
-RULES
-- Prefer 2-4 strong Signal/Noise conclusions total over exhaustive coverage.
-- A Signal item MUST cite source_ids, at least one of them a review, primary study, government/regulator source, or professional body — a claim the packet marks "support": "secondary_only" is never a Signal item (the other writer lists it under still_worth_verifying). A Noise item MUST cite source_ids supporting the narrower replacement and critique. Cite only the sources that materially support THAT item.
-${SHARED_RULES}`;
-
-    const restPrompt = `${preamble}
-
-YOUR PART: what remains open, what the general evidence cannot decide for one person, the bottom line, and how this kind of noise gets made.
-
-Return ONLY valid JSON:
-{
-  "still_worth_verifying": [
-    {
-      "question": "genuinely mixed or unresolved empirical question",
-      "why_it_matters": "why it matters to the visitor's claims",
-      "what_would_help": "what better evidence or definition would reduce the uncertainty",
-      "source_ids": ["S2"]
+      "claim": "one of the visitor's claims, in a few words, as they put it",
+      "assessment": "supported | overstated | mixed | unresolved",
+      "finding": "1-2 sentences: what the evidence shows about this claim, with its scope (who, when, which measure)",
+      "evidence": "the design, size and source in a phrase (a five-study series in Psychological Science, 2018; ADP payroll data on median annual base-pay growth, August 2026)",
+      "limitation": "the one limit that matters most for this claim, or null",
+      "source_ids": ["S1", "S2"]
     }
   ],
   "what_general_claims_cant_decide": [
     "person-specific question the general evidence cannot answer from the information supplied"
   ],
   "claim_labels": ["2-4 labels, each 1-3 words, naming the SUBJECT of each visitor claim analyzed — e.g. 'Screen time', 'Tiger parenting', 'Homework' — for the visitor's history list; a noun phrase, never a verdict"],
-  "the_bottom_line": {
-    "supported_takeaways": ["2-3 concise takeaways, each traceable to a specific packet finding — end each with its source IDs in square brackets, e.g. '… [S1, S4]'; the page renders them as source chips"],
-    "treat_skeptically": ["1-3 of the visitor's claims or framings that deserve skepticism, and why in a phrase — end with source IDs in square brackets where a source bears on it"],
-    "what_would_change_the_answer": ["0-3 evidence gaps that materially matter"]
-  },
   "sources_of_noise": [
     {
       "source_type": "general distortion mechanism visible in this topic",
@@ -572,20 +520,24 @@ Return ONLY valid JSON:
 }
 
 RULES
-- The Bottom Line summarizes what the PACKET establishes, at the packet's own strength — it may not strengthen, generalize, or combine findings into a broader proposition (rule 16). The Signal/Noise cards are being written from this same packet; do not assume anything beyond it.
-- still_worth_verifying may cite the sources showing disagreement or limits; if no source bears on it, omit it. A packet claim marked "support": "secondary_only" belongs here, stated as unresolved, with its sources and a note that only secondary sources were found.
-- sources_of_noise describes general mechanisms only — never a named actor's motive.
+- One claims item per claim the visitor raised (a "X vs. Y" pair is two claims when the evidence speaks to each side), at most 6. Follow the packet's own assessment of each claim unless a rule above requires a weaker one.
+- assessment is exactly one of the four English words shown, whatever language you write in.
+- supported needs a source that is a review, primary study, government/regulator source or professional body; a claim the packet marks "support": "secondary_only" is unresolved at most, and its limitation says only secondary sources were found.
+- Every item except an unresolved one cites the source_ids that support its finding; cite only those.
+- Each qualification appears once, in the claim it belongs to. The verdict names no figure the claims do not give.
+- what_general_claims_cant_decide is about the person's own situation, 0-3 items; do not restate the claims.
+- sources_of_noise describes general mechanisms only — never a named actor's motive; 0-3 items.
 ${SHARED_RULES}`;
 
-    // Progressive (2026-10-16, lib/progressive.js): the two synthesis calls
-    // are five section passes at once — the framing first. Source cleanup
+    // Progressive (2026-10-16, lib/progressive.js): three passes at once —
+    // the verdict first. Source cleanup
     // runs on every draft (finish), so an unsourced figure never shows even
     // briefly; the guard runs after the answer is on screen.
     const system = withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`;
-    const pass = (prompt, tag) => (keys, i) => callClaudeWithRetry({
-      model: MODELS.SMART, max_tokens: 2000, system,
+    const pass = (keys, i) => callClaudeWithRetry({
+      model: MODELS.SMART, max_tokens: keys.includes('claims') ? 4000 : 2000, system,
       messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
-    }, { label: `signal-vs-noise:synthesis-${tag}${i + 1}` });
+    }, { label: `signal-vs-noise:synthesis-${i + 1}` });
     const clean = (d) => {
       let parsed = sanitizeResult(structuredClone(d), research.packet);
       dropUnsourcedFigures(parsed, research.packet, supplied);
@@ -593,18 +545,15 @@ ${SHARED_RULES}`;
       softenCompletenessClaims(parsed);
       return renumberSources(parsed);
     };
-    const restParts = keyGroups([
-      ['still_worth_verifying', 'what_general_claims_cant_decide', 'claim_labels'],
-      ['the_bottom_line', 'sources_of_noise'],
-    ], pass(restPrompt, 'rest')).map(p => ({ ...p, required: false }));
     return await answer(req, res, {
       label: 'signal-vs-noise',
-      parts: [...keyGroups([['topic_as_understood', 'framing'], ['the_signal'], ['the_noise']], pass(signalPrompt, 'signal')), ...restParts],
+      parts: keyGroups([['topic_as_understood', 'verdict'], ['claims'], ['what_general_claims_cant_decide', 'claim_labels', 'sources_of_noise']], pass)
+        .map((p, i) => (i === 2 ? { ...p, required: false } : { ...p, required: true })),
       finish: clean,
-      ready: d => Boolean(d.framing),
+      ready: d => Boolean(d.verdict),
       complete: (d) => {
         const p = clean(d);
-        return Boolean(p?.framing && (p.the_signal?.items?.length || p.the_noise?.length || p.still_worth_verifying?.length));
+        return Boolean(p?.verdict && p.claims?.length);
       },
       check: async (d) => {
         await runOutputGuard(d, {
@@ -621,12 +570,13 @@ ${SHARED_RULES}`;
         await checkEvidenceFit(d, {
           label: 'signal-vs-noise',
           evidence: JSON.stringify(research.packet),
-          summary: ['framing', 'the_bottom_line', 'what_general_claims_cant_decide'],
+          summary: ['verdict', 'what_general_claims_cant_decide'],
           skip: ['topic_as_understood', 'claim_labels'],
+          keep: /\.claim$/, // the visitor's own claim, as they put it
           userLanguage,
         });
-        // T11: the same qualification under Signal, Noise, Still worth
-        // verifying and the Bottom Line — kept once, in page order.
+        // T11: a qualification repeated across claims and the verdict — kept
+        // once, in page order.
         await trimRepeats(d, { label: 'signal-vs-noise', userLanguage, order: PAGE_ORDER });
       },
     });
@@ -640,15 +590,14 @@ ${SHARED_RULES}`;
 if (require.main === module && process.argv.includes('--check')) {
   const assert = require('assert');
   const r = renumberSources({
-    the_signal: { items: [{ claim: 'x', source_ids: ['S4'] }] },
-    the_noise: [{ claim: 'y', source_ids: ['S2', 'S4'] }],
-    the_bottom_line: { supported_takeaways: ['z [S2, S4]', 'see (S4)'] },
+    verdict: 'see (S4)',
+    claims: [{ claim: 'x', source_ids: ['S4'] }, { claim: 'y', finding: 'z [S2, S4]', source_ids: ['S2', 'S4'] }],
     sources_examined: [{ id: 'S2', publisher: 'ADP' }, { id: 'S4', publisher: 'adp' }],
   });
-  assert.deepStrictEqual(r.the_signal.items[0].source_ids, ['S1']);
-  assert.deepStrictEqual(r.the_noise[0].source_ids, ['S2', 'S1']);
-  assert.strictEqual(r.the_bottom_line.supported_takeaways[0], 'z [S2, S1]');
-  assert.strictEqual(r.the_bottom_line.supported_takeaways[1], 'see (S1)');
+  assert.deepStrictEqual(r.claims[0].source_ids, ['S1']);
+  assert.deepStrictEqual(r.claims[1].source_ids, ['S2', 'S1']);
+  assert.strictEqual(r.claims[1].finding, 'z [S2, S1]');
+  assert.strictEqual(r.verdict, 'see (S1)');
   assert.deepStrictEqual(r.sources_examined.map(s => s.id), ['S1', 'S2']);
   assert.strictEqual(r.publisher_count, 1);
   console.log('signal-vs-noise ok');
