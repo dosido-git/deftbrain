@@ -2560,5 +2560,5 @@ follows these by default:
    the slowest single call bounds the wait. Signal vs. Noise, 2026-10-27:
    82s → first part 3.9s, all parts 12.8s, fully checked 25–31s.
 
-Open sweep: audit/SPEED-REPORT-2026-10-27.md lists the 60 routes whose
-answer step is still one long write (20–84s).
+Timings: audit/SPEED-REPORT-2026-10-27.md ranks routes by time to first part
+(local test runs, provisional until real Railway timings replace them).
