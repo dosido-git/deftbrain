@@ -47,7 +47,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   // off paper, and no CSS reliably opens one, so open them for the print and
   // put them back after. Only disclosures in the tool card that print at all.
   // The browser names a saved PDF after the page title, which is the search
-  // title ("Bill Rescue — Medical Bill Negotiation Help | DeftBrain"). For the
+  // title ("Bill Rescue — Help With a Bill You Can't Afford | DeftBrain"). For the
   // print it becomes "Bill Rescue – DeftBrain – 2026-10-27" (owner, 2026-10-27).
   const printName = useRef('');
   useEffect(() => {
