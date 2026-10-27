@@ -469,7 +469,7 @@ export const cultureBriefing = {
     cb_briefing_suffix: "ブリーフィング",
     cb_browse_topics: "トピックを見る",
     cb_essentials: "いちばん大事なこと",
-    cb_for_your_needs: "あなたの事情に合わせて",
+    cb_for_your_needs: "ご事情に合わせて",
     cb_s_required: "決まり",
     cb_s_common: "一般的なマナー",
     cb_s_varies: "場合による",
