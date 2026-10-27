@@ -70,7 +70,11 @@ const SignalVsNoise = ({ tool }) => {
     // Same roles as Bill Rescue: white text boxes with typed text in the
     // medium shade, labels and titles dark, cards a step lighter than the
     // panel, outline controls medium, the main button dark.
-    card:          'bg-[var(--sc-field)]',
+    // As on Bill Rescue: the whole answer is one long card in the lightest
+    // shade. Sections sit straight on it under a rule; only the parts that
+    // matter most get a box — the envelope shade, or white with a stronger
+    // border for the signal (Bill Rescue's "Today's only job").
+    card:          'bg-transparent !border-x-0 !border-b-0 !rounded-none [&_.px-5]:!px-0',
     cardAlt:       'bg-[var(--sc-envelope)]',
     input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-accent)] focus:ring-[var(--sc-line)]',
     labelText:     'text-[var(--sc-strong)]',
@@ -82,7 +86,7 @@ const SignalVsNoise = ({ tool }) => {
     border:        'border-[var(--sc-line)]',
     // The signal is the part that matters most, like Bill Rescue's
     // "Today's only job": a stronger border in the medium shade.
-    signalBg:      'bg-[var(--sc-envelope)] !border-2 border-[var(--sc-accent)]',
+    signalBg:      'bg-[var(--sc-card)] !border-2 border-[var(--sc-accent)]',
     signalText:    'text-[var(--sc-strong)]',
     debatedText:   'text-[var(--sc-strong)]',
   });
@@ -540,7 +544,7 @@ const SignalVsNoise = ({ tool }) => {
 
         {/* Results */}
         {results && (
-          <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+          <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-4 ${sv ? 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5' : ''}`}>
             {sv && (
               <div className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-3 border-b ${c.border}`}>
                 <h2 className="text-xl font-bold text-[var(--sc-strong)] whitespace-nowrap" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{t('your_answer')}</h2>
@@ -550,7 +554,7 @@ const SignalVsNoise = ({ tool }) => {
             <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
 
             {/* Topic + framing */}
-            <div className={`rounded-xl border ${c.border} p-5 ${c.card}`}>
+            <div className={sv ? 'rounded-xl border p-5 bg-[var(--sc-envelope)] border-[var(--sc-line)]' : `rounded-xl border ${c.border} p-5 ${c.card}`}>
               {/* PF-16's "one reset, on the title row" lived only in the
                   !results block above, which unmounts the instant results
                   exist — the tool had no way back to the input screen once
@@ -719,7 +723,7 @@ const SignalVsNoise = ({ tool }) => {
               const hasAny = bl?.supported_takeaways?.length || bl?.treat_skeptically?.length || bl?.what_would_change_the_answer?.length;
               if (!hasAny) return null;
               return (
-                <div className={`rounded-2xl border-2 p-5 space-y-3 ${sv ? 'border-[var(--sc-accent)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'}`}>
+                <div className={`rounded-2xl border-2 p-5 space-y-3 ${sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'}`}>
                   <p className={`text-xs font-black uppercase tracking-widest ${inkHead || (isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>{plain(t('svn_bottom_line'))}</p>
                   {bl.supported_takeaways?.length > 0 && (
                     <div>
