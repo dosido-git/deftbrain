@@ -47,7 +47,7 @@ const trustColor = (s, sv) => sv ? (s>=51?{bg:'var(--sc-strong)',ring:'var(--sc-
 const verdictLabel = (s, t) => s>=76?t('frd_vl_genuine'):s>=51?t('frd_vl_trustworthy'):s>=26?t('frd_vl_caution'):t('frd_vl_manipulated');
 const edgeColor = (s, sv) => sv ? (s>=60?'border-s-[var(--sc-strong)]':s>=40?'border-s-[var(--sc-accent)]':'border-s-[var(--sc-x)]') : s>=60?'border-s-emerald-500':s>=40?'border-s-amber-500':'border-s-red-500';
 const clusterRange = (cl, t) => cl.daysAgoStart === cl.daysAgoEnd ? t('frd_days_ago', { count: cl.daysAgoStart }) : t('frd_days_range', { from: cl.daysAgoStart, to: cl.daysAgoEnd });
-const badgeBg = (s, sv) => sv ? (s>=60?'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]':s>=40?'bg-[var(--sc-accent)] text-[var(--sc-on-strong)]':'bg-[var(--sc-x)] text-white') : s>=60?'bg-emerald-500 text-white':s>=40?'bg-amber-500 text-white':'bg-red-500 text-white';
+const badgeBg = (s, sv) => sv ? (s>=60?'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]':s>=40?'bg-[var(--sc-accent)] text-[var(--sc-on-strong)]':'bg-[var(--sc-x)] text-[var(--sc-on-strong)]') : s>=60?'bg-emerald-500 text-white':s>=40?'bg-amber-500 text-white':'bg-red-500 text-white';
 // Returns translation keys + count so callers resolve via t() (sample-size confidence).
 function sampleConfidence(n){if(n>=15)return{level:'high',labelKey:'frd_conf_high',color:'green',noteKey:'frd_conf_strong',count:n};if(n>=8)return{level:'medium',labelKey:'frd_conf_medium',color:'amber',noteKey:'frd_conf_n_reviews',count:n};if(n>=3)return{level:'low',labelKey:'frd_conf_low',color:'red',noteKey:'frd_conf_only_n',count:n};return{level:'very_low',labelKey:'frd_conf_very_low',color:'red',noteKey:'frd_conf_directional',count:n};}
 

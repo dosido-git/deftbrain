@@ -1159,7 +1159,7 @@ const DateNight = ({ tool }) => {
                 <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)}
                   className={`p-3 rounded-lg border text-start ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
                   <span className="text-xs font-bold">{t(dt.lk)}</span>
-                  <p className={`text-xs mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.textMuteded}`}>{t(dt.dk)}</p>
+                  <p className={`text-xs mt-0.5 ${dateType === dt.id ? (sv ? 'opacity-80' : 'text-white/70') : c.textMuteded}`}>{t(dt.dk)}</p>
                 </button>
               ))}
             </div>

@@ -577,7 +577,7 @@ const PlainTalk = ({ tool }) => {
               <span className={c.textMuteded}>{t('plt_original')}: {level.original}</span>
               <span className={c.textMuteded}>{t('plt_grade', { n: origGrade })}</span>
             </div>
-            <div className={`w-full h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
+            <div className={`w-full h-2 rounded-full ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}>
               <div className={`h-full rounded-full ${sv ? 'bg-[var(--sc-accent)]' : 'bg-red-400'} transition-all`}
                 style={{ width: `${Math.min(100, (origGrade / 20) * 100)}%` }} />
             </div>
@@ -588,7 +588,7 @@ const PlainTalk = ({ tool }) => {
               <span className={c.textMuteded}>{t('plt_translated')}: {level.translated}</span>
               <span className={c.textMuteded}>{t('plt_grade', { n: transGrade })}</span>
             </div>
-            <div className={`w-full h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
+            <div className={`w-full h-2 rounded-full ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}>
               <div className={`h-full rounded-full ${sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-400'} transition-all`}
                 style={{ width: `${Math.min(100, (transGrade / 20) * 100)}%` }} />
             </div>
@@ -620,7 +620,7 @@ const PlainTalk = ({ tool }) => {
                 {SAMPLE_TEXTS.map((sx, i) => (
                   <button key={i} onClick={() => applySample(sx)} disabled={loading}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all disabled:opacity-40 ${
-                      (sv ? 'border-[var(--sc-line)] text-zinc-600 hover:border-[var(--sc-strong)] hover:bg-[var(--sc-envelope)]' : isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]')
+                      (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-strong)] hover:bg-[var(--sc-envelope)]' : isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]')
                     }`}>
                     {sx.emoji} {t(sx.labelKey)}
                   </button>
@@ -658,7 +658,7 @@ const PlainTalk = ({ tool }) => {
                 {SAMPLE_TEXTS.map((sx, i) => (
                   <button key={i} onClick={() => applySample(sx)} disabled={loading}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all disabled:opacity-40 ${
-                      (sv ? 'border-[var(--sc-line)] text-zinc-600 hover:border-[var(--sc-strong)] hover:bg-[var(--sc-envelope)]' : isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]')
+                      (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-strong)] hover:bg-[var(--sc-envelope)]' : isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]')
                     }`}>
                     {sx.emoji} {t(sx.labelKey)}
                   </button>
@@ -698,7 +698,7 @@ const PlainTalk = ({ tool }) => {
                     aria-pressed={on}
                     className={`text-start px-4 py-3 rounded-xl border transition-all ${
                       on ? ((sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'))
-                         : ((sv ? 'border-[var(--sc-line)] hover:border-zinc-300' : isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300'))
+                         : ((sv ? 'border-[var(--sc-line)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300'))
                     }`}>
                     <span className={`block text-sm font-bold ${c.text}`}>{m.emoji} {t(m.labelKey)}</span>
                     <span className={`block text-xs mt-0.5 ${c.textMuteded}`}>{t(m.subKey)}</span>
@@ -781,7 +781,7 @@ const PlainTalk = ({ tool }) => {
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                         textType === tt.id
                           ? (sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
-                          : (sv ? 'border-[var(--sc-line)] text-zinc-500 hover:border-zinc-300' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
+                          : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
                       }`}>
                       <span>{tt.emoji}</span> {t(tt.labelKey)}
                     </button>
@@ -865,13 +865,13 @@ const PlainTalk = ({ tool }) => {
             {loading && (
               <div className="space-y-3 pt-1">
                 {[1, 0.7, 0.85, 0.6].map((w, i) => (
-                  <div key={i} className={`h-4 rounded-full animate-pulse ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}
+                  <div key={i} className={`h-4 rounded-full animate-pulse ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}
                     style={{ width: `${w * 100}%` }} />
                 ))}
-                <div className={`h-24 rounded-2xl animate-pulse mt-2 ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
+                <div className={`h-24 rounded-2xl animate-pulse mt-2 ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`} />
                 <div className="flex gap-2">
                   {[0.4, 0.3, 0.3].map((w, i) => (
-                    <div key={i} className={`h-8 rounded-xl animate-pulse ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}
+                    <div key={i} className={`h-8 rounded-xl animate-pulse ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}
                       style={{ width: `${w * 100}%` }} />
                   ))}
                 </div>
@@ -942,7 +942,7 @@ const PlainTalk = ({ tool }) => {
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>📌 {t('plt_key_takeaways')}</h4>
                     <div className="space-y-2">
                       {result.overview.key_takeaways.map((kt, i) => (
-                        <div key={i} className={`flex items-start gap-3 p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
+                        <div key={i} className={`flex items-start gap-3 p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/30' : 'bg-zinc-50')}`}>
                           <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                             (sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]')
                           }`}>{i + 1}</span>
@@ -1079,7 +1079,7 @@ const PlainTalk = ({ tool }) => {
                       <p className={`text-xs font-bold ${c.textMuteded}`}>📖 {t('plt_reading_progress')}</p>
                       <span className={`text-xs font-bold ${c.accentTxt}`}>{t('plt_sections_reviewed', { reviewed: reviewProgress.reviewed, total: reviewProgress.total })}</span>
                     </div>
-                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}>
                       <div className="h-full rounded-full bg-cyan-500 transition-all duration-500"
                         style={{ width: `${reviewProgress.percent}%` }} />
                     </div>
@@ -1117,7 +1117,7 @@ const PlainTalk = ({ tool }) => {
                     {(
                       <div data-sec-body hidden={!(showGlossary)} className="mt-3 space-y-2">
                         {result.jargon_glossary.map((j, i) => (
-                          <div key={i} className={`p-3 rounded-xl ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
+                          <div key={i} className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/30' : 'bg-zinc-50')}`}>
                             <span className={`text-sm font-bold ${c.accentTxt}`}>{j.term}</span>
                             <span className={`text-sm ${c.textSecondary}`}> — {j.definition}</span>
                           </div>
@@ -1145,7 +1145,7 @@ const PlainTalk = ({ tool }) => {
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧠 {t('plt_persuasion')}</h4>
                     <div className="space-y-2">
                       {result.structure.persuasion_techniques.map((tech, i) => (
-                        <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
+                        <div key={i} className={`flex items-start gap-2 p-2 rounded-lg ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/30' : 'bg-zinc-50')}`}>
                           <span className="text-sm">🎯</span>
                           <p className={`text-sm ${c.text}`}>{tech}</p>
                         </div>
@@ -1198,7 +1198,7 @@ const PlainTalk = ({ tool }) => {
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
                           sectionFilter === f.id
                             ? (sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
-                            : (sv ? 'border-[var(--sc-line)] text-zinc-500' : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500')
+                            : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)]' : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500')
                         }`}>
                         {f.label}
                       </button>
@@ -1226,7 +1226,7 @@ const PlainTalk = ({ tool }) => {
                             <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                               section.importance === 'high' ? ((sv ? 'bg-[var(--sc-card)] text-[var(--sc-x-text)]' : isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'))
                               : section.importance === 'medium' ? ((sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-accent)]' : isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700'))
-                              : (isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-zinc-200 text-zinc-600')
+                              : ((sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-accent)]' : isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-zinc-200 text-zinc-600'))
                             }`}>
                               {section.importance}
                             </span>
@@ -1261,7 +1261,7 @@ const PlainTalk = ({ tool }) => {
                                   className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all flex-shrink-0 ${
                                     isReviewed
                                       ? (sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-50 text-emerald-700')
-                                      : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600'
+                                      : (sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)]' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')
                                   }`}>
                                   {isReviewed ? `✅ ${t('plt_reviewed')}` : `☐ ${t('plt_mark_reviewed')}`}
                                 </button>
@@ -1329,7 +1329,7 @@ const PlainTalk = ({ tool }) => {
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
                           sectionFilter === f.id
                             ? (sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
-                            : (sv ? 'border-[var(--sc-line)] text-zinc-500' : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500')
+                            : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)]' : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500')
                         }`}>
                         {f.label}
                       </button>
@@ -1343,7 +1343,7 @@ const PlainTalk = ({ tool }) => {
                       return (
                         <div key={section.id} className={`rounded-xl border overflow-hidden ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
                           <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(section.id)}
-                            className={`w-full flex items-center gap-3 p-3 text-start ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
+                            className={`w-full flex items-center gap-3 p-3 text-start ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/30' : 'bg-zinc-50')}`}>
                             <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${imp.dot}`} />
                             <p className={`text-sm font-bold ${c.text} flex-1`}>
                               {section.title}
@@ -1353,7 +1353,7 @@ const PlainTalk = ({ tool }) => {
                           </button>
                           {(
                             <div data-sec-body hidden={!(isOpen)} className="grid grid-cols-1 md:grid-cols-2">
-                              <div className={`p-4 ${(sv ? 'bg-white border-e border-[var(--sc-line)]' : isDark ? 'bg-zinc-800 border-e border-zinc-700' : 'bg-white border-e border-zinc-200')}`}>
+                              <div className={`p-4 ${(sv ? 'bg-[var(--sc-card)] border-e border-[var(--sc-line)]' : isDark ? 'bg-zinc-800 border-e border-zinc-700' : 'bg-white border-e border-zinc-200')}`}>
                                 <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('plt_original')}</p>
                                 <p className={`text-xs leading-relaxed ${c.textSecondary}`}>{section.original}</p>
                               </div>
@@ -1458,7 +1458,7 @@ const PlainTalk = ({ tool }) => {
                                       onClick={() => setCompareQuestions(prev => on ? prev.filter(x => x !== q.id) : [...prev, q.id])}
                                       className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                         on ? ((sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]'))
-                                           : ((sv ? 'border-[var(--sc-line)] text-zinc-500 hover:border-zinc-300' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'))
+                                           : ((sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'))
                                       }`}>
                                       {on ? '☑' : '☐'} {t(q.labelKey)}
                                     </button>
@@ -1478,7 +1478,7 @@ const PlainTalk = ({ tool }) => {
                       className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
                         compareReady
                           ? `${c.btnPrimary} shadow-cyan-200 dark:shadow-cyan-900/40`
-                          : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                          : (sv ? SCHEME_C.btnIdle : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed')
                       }`}>
                       {compareLoading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🔍'}</span> {t('plt_comparing')}</> : `🔀 ${t('plt_compare')}`}
                     </button>
@@ -1638,7 +1638,7 @@ const PlainTalk = ({ tool }) => {
                 />
                 <button onClick={handleFollowUp} disabled={followUpLoading || !followUpQuestion.trim()}
                   className={`px-4 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${
-                    followUpQuestion.trim() ? c.btnPrimary : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                    followUpQuestion.trim() ? c.btnPrimary : (sv ? SCHEME_C.btnIdle : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed')
                   }`}>
                   {followUpLoading ? (tool?.icon ?? '🔍') : '→'}
                 </button>
@@ -1648,11 +1648,11 @@ const PlainTalk = ({ tool }) => {
               {followUpAnswers.length > 0 && (
                 <div className="mt-4 space-y-3">
                   {followUpAnswers.map((fu, i) => (
-                    <div key={i} className={`rounded-xl border p-4 ${(sv ? 'bg-zinc-50 border-[var(--sc-line)]' : isDark ? 'bg-zinc-700/20 border-zinc-600' : 'bg-zinc-50 border-zinc-200')}`}>
+                    <div key={i} className={`rounded-xl border p-4 ${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-zinc-700/20 border-zinc-600' : 'bg-zinc-50 border-zinc-200')}`}>
                       <p className={`text-xs font-bold ${c.accentTxt} mb-2`}>❓ {fu.question}</p>
                       <p className={`text-sm leading-relaxed ${c.text} mb-3`}>{fu.answer}</p>
                       {fu.key_quote && (
-                        <blockquote className={`text-xs italic ps-3 border-s-2 ${(sv ? 'border-[var(--sc-line)] text-zinc-500' : isDark ? 'border-[#7fb3e0] text-zinc-400' : 'border-[#d4dde8] text-zinc-500')}`}>
+                        <blockquote className={`text-xs italic ps-3 border-s-2 ${(sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)]' : isDark ? 'border-[#7fb3e0] text-zinc-400' : 'border-[#d4dde8] text-zinc-500')}`}>
                           "{fu.key_quote}"
                         </blockquote>
                       )}
@@ -1668,7 +1668,7 @@ const PlainTalk = ({ tool }) => {
                           {fu.follow_up_suggestions.map((s, j) => (
                             <button key={j} onClick={() => setFollowUpQuestion(s)}
                               className={`text-xs font-bold px-2.5 py-1 rounded-lg border transition-all ${
-                                (sv ? 'border-[var(--sc-line)] text-zinc-500 hover:border-[var(--sc-line)] hover:text-[var(--sc-strong)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-zinc-200 text-zinc-500 hover:border-[#d4dde8] hover:text-[#142a43]')
+                                (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-line)] hover:text-[var(--sc-strong)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-zinc-200 text-zinc-500 hover:border-[#d4dde8] hover:text-[#142a43]')
                               }`}>
                               {s}
                             </button>

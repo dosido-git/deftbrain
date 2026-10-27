@@ -27,20 +27,24 @@ import { useActionBar } from './ActionBarContext';
  */
 
 // ─── Shared styling ──────────────────────────────────────────
+// On a category-colour page (ToolPageWrapper sets data-scheme) the buttons
+// take the page's shades instead of grey and green.
+const ON_SCHEME = '[[data-scheme]_&]:border [[data-scheme]_&]:border-[var(--sc-line)] [[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:hover:bg-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
+
 function useButtonStyles() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   return {
     isDark,
-    base: isDark
+    base: (isDark
       ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100'
-      : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    success: isDark
+      : 'bg-gray-100 hover:bg-gray-200 text-gray-700') + ' ' + ON_SCHEME,
+    success: (isDark
       ? 'bg-green-900/40 text-green-300'
-      : 'bg-green-100 text-green-700',
+      : 'bg-green-100 text-green-700') + ' ' + ON_SCHEME,
     // The quiet variant has no fill, so its confirmation has to come from the
     // text colour rather than the background.
-    successText: isDark ? 'text-green-300' : 'text-green-700',
+    successText: (isDark ? 'text-green-300' : 'text-green-700') + ' [[data-scheme]_&]:text-[var(--sc-strong)]',
   };
 }
 
