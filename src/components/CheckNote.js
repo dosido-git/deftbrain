@@ -28,8 +28,14 @@ export default function CheckNote({ status }) {
   const tone = working
     ? (isDark ? 'bg-amber-900/25 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900')
     : (isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800');
+  // On a category-colour page (ToolPageWrapper sets data-scheme) the note
+  // takes the page's shades instead of amber / green (audit/CONVENTIONS.md
+  // "Category-colour pages": no traffic-light colours).
+  const scheme = working
+    ? '[[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-accent)] [[data-scheme]_&]:text-[var(--sc-strong)]'
+    : '[[data-scheme]_&]:bg-[var(--sc-card)] [[data-scheme]_&]:border-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
   return (
-    <p data-print-hide role="status" aria-live="polite" className={`flex items-start gap-2 border rounded-lg px-3 py-2 text-sm font-semibold ${tone}`}>
+    <p data-print-hide role="status" aria-live="polite" className={`flex items-start gap-2 border rounded-lg px-3 py-2 text-sm font-semibold ${tone} ${scheme}`}>
       {working
         ? <span aria-hidden="true" className="mt-[3px] inline-block w-3.5 h-3.5 flex-shrink-0 rounded-full border-2 border-current border-t-transparent animate-spin" />
         : <span aria-hidden="true">✓</span>}
