@@ -54,6 +54,7 @@ const UpsellShield = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     sectionTitle:  isDark ? 'text-zinc-50' : 'text-gray-900',
+    accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     // Tool-specific
     hookBg:        isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
     hookText:      isDark ? 'text-zinc-100' : 'text-[#142a43]',
