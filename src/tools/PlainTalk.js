@@ -51,8 +51,8 @@ const COMPARE_QUESTION_GROUPS = [
 const COMPARE_QUESTIONS = COMPARE_QUESTION_GROUPS.flatMap(g => g.items);
 
 const TABS = [
-  { id: 'overview', labelKey: 'plt_tab_overview', emoji: '📊' },
   { id: 'translation', labelKey: 'plt_tab_translation', emoji: '💬' },
+  { id: 'overview', labelKey: 'plt_tab_overview', emoji: '📊' },
   { id: 'xray', labelKey: 'plt_tab_xray', emoji: '🔬' },
   { id: 'sidebyside', labelKey: 'plt_tab_sidebyside', emoji: '↔️' },
   { id: 'compare', labelKey: 'plt_tab_compare', emoji: '🔀' },
@@ -147,7 +147,7 @@ const PlainTalk = ({ tool }) => {
   // browser — see handleFileUpload.
   const [pdfBase64, setPdfBase64] = useState(null);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('translation');
   const [compareOnly, setCompareOnly] = useState(false); // compare-mode sentinel — session-only, never persisted
   const [expandedSections, setExpandedSections] = useState({});
   const [followUpQuestion, setFollowUpQuestion] = useState('');
@@ -251,14 +251,14 @@ const PlainTalk = ({ tool }) => {
         focusQuestion: focusQuestion.trim() || null,
         userLocale, userCurrency, userRegion,
       }, {
-        onDraft: d => { setResult(d); setCheckStatus('checking'); if (!opened) { opened = true; setActiveTab('overview'); setExpandedSections({}); } },
+        onDraft: d => { setResult(d); setCheckStatus('checking'); if (!opened) { opened = true; setActiveTab('translation'); setExpandedSections({}); } },
         onChecked: (d, changed) => { setResult(d); setCheckStatus(checkStatusFor(changed)); },
       });
       if (!data) return; // replaced by a newer run
       setResult(data);
       // PF-25 exception: 40 is a preview-text length; history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (inputText || fileName || '').slice(0, 40) }, ...prev].slice(0, 6));
-      if (!opened) setActiveTab('overview');
+      if (!opened) setActiveTab('translation');
       const autoExpand = {};
       (data.sections || []).forEach(s => { if (s.importance === 'high') autoExpand[s.id] = true; });
       setExpandedSections(prev => (opened ? { ...autoExpand, ...prev } : autoExpand));
@@ -290,7 +290,7 @@ const PlainTalk = ({ tool }) => {
     cancelProgressive(); setCheckStatus(null);
     setInputText(''); setTextType('auto'); setFocusQuestion('');
     setFileName(''); setPdfBase64(null); setResult(null); setError(''); setCompareOnly(false);
-    setActiveTab('overview'); setExpandedSections({});
+    setActiveTab('translation'); setExpandedSections({});
     setFollowUpAnswers([]); setFollowUpQuestion('');
     setShowGlossary(false); setCompareTextA(''); setCompareTextB('');
     setCompareResult(null); setSectionFilter('all');
@@ -494,8 +494,7 @@ const PlainTalk = ({ tool }) => {
     const lines = [
       `📄 ${t('plt_copy_header')} — ${result.detected_type_label || result.detected_type}`,
       '',
-      `📊 ${t('plt_copy_reading_level')} ${result.reading_level?.original || '?'} → ${result.reading_level?.translated || '?'}`,
-      '',
+      ...(result.reading_level?.method ? [`📊 ${t('plt_reading_level')}: ${t('plt_grade', { n: Math.round(result.reading_level.original_grade) })} → ${t('plt_grade', { n: Math.round(result.reading_level.translated_grade) })}`, ''] : []),
       `═══ ${t('plt_copy_overview')} ═══`,
       result.overview?.one_sentence || '',
       '',
@@ -559,42 +558,16 @@ const PlainTalk = ({ tool }) => {
   // READING LEVEL BAR
   // ═══════════════════════════════════════
 
+  // Computed by the backend with a named formula (Flesch-Kincaid, English
+  // only) and labelled an estimate; older saved results carried a guess and
+  // show nothing (owner's review, 2026-10-27).
   const ReadingLevelBar = ({ level }) => {
-    if (!level) return null;
-    const origGrade = level.original_grade || 12;
-    const transGrade = level.translated_grade || 8;
+    if (!level?.method || level.original_grade == null || level.translated_grade == null) return null;
+    const grade = n => (n >= 18 ? '18+' : String(Math.round(n)));
     return (
-      <div className={`p-4 rounded-xl border ${c.warningBox}`}>
-        <div className="flex items-center justify-between mb-2">
-          <span className={`text-xs font-bold ${c.accentTxt}`}>📐 {t('plt_reading_level')}</span>
-          <span className={`text-xs font-bold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')}`}>
-            {t('plt_simplified_by', { count: origGrade - transGrade })}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <div className="flex justify-between text-xs mb-1">
-              <span className={c.textMuteded}>{t('plt_original')}: {level.original}</span>
-              <span className={c.textMuteded}>{t('plt_grade', { n: origGrade })}</span>
-            </div>
-            <div className={`w-full h-2 rounded-full ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}>
-              <div className={`h-full rounded-full ${sv ? 'bg-[var(--sc-accent)]' : 'bg-red-400'} transition-all`}
-                style={{ width: `${Math.min(100, (origGrade / 20) * 100)}%` }} />
-            </div>
-          </div>
-          <span className={`text-lg font-bold ${c.accentTxt}`}>→</span>
-          <div className="flex-1">
-            <div className="flex justify-between text-xs mb-1">
-              <span className={c.textMuteded}>{t('plt_translated')}: {level.translated}</span>
-              <span className={c.textMuteded}>{t('plt_grade', { n: transGrade })}</span>
-            </div>
-            <div className={`w-full h-2 rounded-full ${(sv ? 'bg-[var(--sc-line)]' : isDark ? 'bg-zinc-700' : 'bg-zinc-200')}`}>
-              <div className={`h-full rounded-full ${sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-400'} transition-all`}
-                style={{ width: `${Math.min(100, (transGrade / 20) * 100)}%` }} />
-            </div>
-          </div>
-        </div>
-      </div>
+      <p className={`text-[13px] ${c.textMuted}`}>
+        📐 {t('plt_reading_level')}: {t('plt_grade', { n: grade(level.original_grade) })} → {t('plt_grade', { n: grade(level.translated_grade) })}
+      </p>
     );
   };
 
@@ -754,11 +727,12 @@ const PlainTalk = ({ tool }) => {
         {result && !result._compareOnly && result.detected_type && (
           <div className="px-5 pb-5 pt-3">
             <div className="flex flex-wrap items-center gap-3">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${c.warningBox} ${c.accentTxt}`}>
+              {/* What kind of text this was read as — it decides which
+                  analysis appears. Plain text, not a pill: it is not a control. */}
+              <p className={`text-[13px] ${c.textMuted}`}>
                 {TEXT_TYPES.find(tt => tt.id === result.detected_type)?.emoji || '📄'}{' '}
-                {result.detected_type_label || result.detected_type}
-                {result.confidence && <span className={`ms-1 ${c.textMuteded}`}>· {t('plt_confidence', { level: result.confidence })}</span>}
-              </span>
+                {t('plt_doc_type', { type: result.detected_type_label || result.detected_type })}
+              </p>
             </div>
           </div>
         )}
@@ -920,6 +894,47 @@ const PlainTalk = ({ tool }) => {
               </p>
             )}
 
+            {/* ═══ TAB: FULL TRANSLATION ═══ */}
+            {result && (
+              <div data-sec-body hidden={activeTab !== 'translation'} className="space-y-4">
+                <p className="hidden print:block text-sm font-bold mt-4">{t(TABS.find(x => x.id === 'translation')?.labelKey)}</p>
+                <div className={`border-t ${c.border} pt-5`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className={`text-sm font-bold ${c.text}`}>💬 {t('plt_plain_translation')}</h4>
+                  </div>
+                  {/* Translation first (owner, 2026-10-27); while it is still
+                      being written, the one-line summary stands in. */}
+                  {result.overview?.one_sentence && <p className={`text-[15px] font-semibold mb-3 ${c.text}`}>{result.overview.one_sentence}</p>}
+                  <div className={`text-sm leading-relaxed ${c.text} whitespace-pre-line`}>
+                    {result.full_translation || (loading ? t('plt_translating') : t('plt_no_translation'))}
+                  </div>
+                </div>
+
+                {/* Jargon glossary */}
+                {result.jargon_glossary?.length > 0 && (
+                  <div className={`border-t ${c.border} pt-5`}>
+                    <button data-print-heading aria-expanded={!!(showGlossary)} onClick={() => setShowGlossary(!showGlossary)}
+                      className={`flex items-center justify-between w-full`}>
+                      <h4 className={`text-sm font-bold ${c.text}`}>
+                        📚 {t('plt_glossary', { count: result.jargon_glossary.length })}
+                      </h4>
+                      <span data-print-hide><Caret open={showGlossary} /></span>
+                    </button>
+                    {(
+                      <div data-sec-body hidden={!(showGlossary)} className="mt-3 space-y-2">
+                        {result.jargon_glossary.map((j, i) => (
+                          <div key={i} className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/30' : 'bg-zinc-50')}`}>
+                            <span className={`text-sm font-bold ${c.accentTxt}`}>{j.term}</span>
+                            <span className={`text-sm ${c.textSecondary}`}> — {j.definition}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ═══ TAB: OVERVIEW ═══ */}
             {result && (
               <div data-sec-body hidden={activeTab !== 'overview'} className="space-y-4">
@@ -1026,7 +1041,7 @@ const PlainTalk = ({ tool }) => {
                       ⚖️ {t('plt_deep_analysis')} {result.detected_type_label || result.detected_type}
                     </h4>
 
-                    {result.type_insights.power_analysis && (
+                    {result.type_insights.power_analysis && ['legal', 'financial', 'bureaucratic'].includes(result.detected_type) && (
                       <div className={`p-3 rounded-xl border ${c.highlight}`}>
                         <p className="text-xs font-bold mb-1">⚖️ {t('plt_power_analysis')}</p>
                         <p className="text-sm leading-relaxed">{result.type_insights.power_analysis}</p>
@@ -1055,7 +1070,7 @@ const PlainTalk = ({ tool }) => {
                       </div>
                     )}
 
-                    {result.type_insights.urgency && result.type_insights.urgency !== 'none' && (
+                    {['medium', 'high', 'critical'].includes(result.type_insights.urgency) && (
                       <div className={`flex items-center gap-2 p-3 rounded-xl border ${
                         result.type_insights.urgency === 'critical' ? c.danger
                           : result.type_insights.urgency === 'high' ? c.highlight
@@ -1085,44 +1100,6 @@ const PlainTalk = ({ tool }) => {
                     </div>
                     {annotationCount > 0 && (
                       <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>📝 {t('plt_notes_saved', { count: annotationCount })}</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ═══ TAB: FULL TRANSLATION ═══ */}
-            {result && (
-              <div data-sec-body hidden={activeTab !== 'translation'} className="space-y-4">
-                <p className="hidden print:block text-sm font-bold mt-4">{t(TABS.find(x => x.id === 'translation')?.labelKey)}</p>
-                <div className={`border-t ${c.border} pt-5`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className={`text-sm font-bold ${c.text}`}>💬 {t('plt_plain_translation')}</h4>
-                  </div>
-                  <div className={`text-sm leading-relaxed ${c.text} whitespace-pre-line`}>
-                    {result.full_translation || t('plt_no_translation')}
-                  </div>
-                </div>
-
-                {/* Jargon glossary */}
-                {result.jargon_glossary?.length > 0 && (
-                  <div className={`border-t ${c.border} pt-5`}>
-                    <button data-print-heading aria-expanded={!!(showGlossary)} onClick={() => setShowGlossary(!showGlossary)}
-                      className={`flex items-center justify-between w-full`}>
-                      <h4 className={`text-sm font-bold ${c.text}`}>
-                        📚 {t('plt_glossary', { count: result.jargon_glossary.length })}
-                      </h4>
-                      <span data-print-hide><Caret open={showGlossary} /></span>
-                    </button>
-                    {(
-                      <div data-sec-body hidden={!(showGlossary)} className="mt-3 space-y-2">
-                        {result.jargon_glossary.map((j, i) => (
-                          <div key={i} className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/30' : 'bg-zinc-50')}`}>
-                            <span className={`text-sm font-bold ${c.accentTxt}`}>{j.term}</span>
-                            <span className={`text-sm ${c.textSecondary}`}> — {j.definition}</span>
-                          </div>
-                        ))}
-                      </div>
                     )}
                   </div>
                 )}
@@ -1164,8 +1141,8 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Internal contradictions */}
                 {result.structure?.internal_contradictions?.length > 0 && (
-                  <div className={`p-4 rounded-2xl border ${c.danger}`}>
-                    <h4 className="text-sm font-bold mb-2">⚡ {t('plt_contradictions')}</h4>
+                  <div className={`p-4 rounded-2xl border ${c.highlight}`}>
+                    <h4 className="text-sm font-bold mb-2">❓ {t('plt_contradictions')}</h4>
                     <ul className="space-y-1.5">
                       {result.structure.internal_contradictions.map((ct, i) => (
                         <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
@@ -1701,7 +1678,7 @@ const PlainTalk = ({ tool }) => {
           </div>
         ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; })()}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={sv ? 'bg-[var(--sc-field)] border-2 border-[var(--sc-line)] rounded-xl p-5 mt-4' : `${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`${sv ? 'text-base font-bold text-[var(--sc-strong)]' : `text-xs font-bold ${c.textMuted}`} mb-2`}>📋 {t('plt_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('plt_session')}</span><span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div data-print-hide className={sv ? 'bg-[var(--sc-field)] border-2 border-[var(--sc-line)] rounded-xl p-5 mt-4' : `${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`${sv ? 'text-base font-bold text-[var(--sc-strong)]' : `text-xs font-bold ${c.textMuted}`} mb-2`}>📋 {t('plt_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('plt_session')}</span><span className={`text-[13px] ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

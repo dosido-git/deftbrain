@@ -42,6 +42,7 @@ A field does NOT fit when it:
 5. Treats what people believe about a thing as the thing itself.
 6. Sets kinds of evidence or methods against each other ("X, not Y") when nothing in the evidence says one cannot help.
 7. Is a SUMMARY field that is stronger, broader or more certain than what the evidence fields say about the same point.
+8. Restates the evidence with a different strength, scope or owner: "may have implications" made "should change"; "the authors find" made a fact about the world; a measured result made a general quality ("performs better on the tasks tested" made "gets smarter"); "abrupt" made "without warning"; "not detected" made "absent".
 
 Evidence marked as not found on its source page (figures_not_on_page) is not in the evidence.
 

@@ -7,6 +7,10 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
 const { checkConsistency } = require('../lib/outputGuard');
+const { allChecks } = require('../lib/bothChecks');
+const { calibrateClaims } = require('../lib/certaintyCheck');
+const { checkEvidenceFit } = require('../lib/evidenceFit');
+const { fleschKincaid } = require('../lib/readingLevel');
 // ═══════════════════════════════════════════════════════════════
 // MAIN ANALYSIS — plain-English translation + structural X-ray
 // ═══════════════════════════════════════════════════════════════
@@ -146,6 +150,7 @@ CRITICAL RULES:
 - For medical text: flag anything requiring patient action, consent implications, or risk disclosures.
 - For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations).
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
+- FIDELITY FIRST. You have only the text above, which may be an excerpt: say "this text does not explain…", never "the authors do not…" or "the paper lacks…". Keep the original's strength, scope and attribution — "the authors find" stays theirs, a measured result stays the thing measured ("performs better on the tasks tested", not "gets smarter"), "could have implications" never becomes "should", "abrupt" is not "without warning". Never state an author's motive or intent; describe possible effects on a reader. Use neutral wording ("using more computing power", not "throwing").
 - Be thorough but never pad — only include what's genuinely useful
 - LIMITS: at most 12 sections. Keep short fields to one concise sentence; section "original" and "translation" are the exception — they carry the actual document and must stay complete.
 - Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
@@ -172,19 +177,12 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 {
   "detected_type": "legal",
   "detected_type_label": "Legal / Contract",
-  "confidence": "high",
-  "reading_level": {
-    "original": "Graduate / Professional",
-    "original_grade": 16,
-    "translated": "8th Grade",
-    "translated_grade": 8
-  },
   "overview": {
     "one_sentence": "What this text IS in one plain sentence",
     "key_takeaways": ["Most important point 1", "Most important point 2", "Most important point 3"],
     "what_matters_to_you": "If the user asked a specific question, answer it directly here. Otherwise, explain what someone reading this text most needs to know about how it affects THEM personally.",
     "red_flags": ["Any concerning, unusual, or asymmetric provisions/claims"],
-    "action_items": ["Things the reader should DO based on this text"],
+    "action_items": ["Things the reader should DO based on this text — [] when the reader only needs to understand it"],
     "deadlines": ["Any time-sensitive dates, periods, or windows mentioned"]
   },
   "specialist_suggestion": {
@@ -194,12 +192,13 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 }
 
 CRITICAL RULES:
-- Your response MUST contain ALL 6 keys: detected_type, detected_type_label, confidence, reading_level, overview, specialist_suggestion.
+- Your response MUST contain ALL 4 keys: detected_type, detected_type_label, overview, specialist_suggestion.
 - "overview" is the part the reader acts on — put the real answer to their question in "what_matters_to_you".
 - If the text is literary/creative, adapt: "persuasion_techniques" becomes style/voice analysis
 - For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
 - For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations). "vs_standard" should compare clauses to typical industry practice. "negotiable_items" should list clauses commonly pushed back on.
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
+- FIDELITY FIRST. You have only the text above, which may be an excerpt: say "this text does not explain…", never "the authors do not…" or "the paper lacks…". Keep the original's strength, scope and attribution — "the authors find" stays theirs, a measured result stays the thing measured ("performs better on the tasks tested", not "gets smarter"), "could have implications" never becomes "should", "abrupt" is not "without warning". Never state an author's motive or intent; describe possible effects on a reader. Use neutral wording ("using more computing power", not "throwing").
 - Be thorough but never pad — only include what's genuinely useful
 - LIMITS: keep every short field to ONE concise sentence. This half no longer shares a token budget with the rest of the report, and without that discipline it runs long and truncates, which 500s the whole tool.
 - Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
@@ -222,17 +221,17 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 
 {
   "structure": {
-    "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
-    "persuasion_techniques": ["Any rhetorical, legal, or structural techniques used to influence the reader"],
-    "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language",
-    "internal_contradictions": ["Any places where the text contradicts itself or creates ambiguity"]
+    "architecture": "How the overall text is organized (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
+    "persuasion_techniques": ["Possible effects of the wording or structure on a reader — never a claim about what the author intended"],
+    "what_they_buried": "Something important that is easy to miss here (placed late, or in dense wording) — what deserves a closer look; never a claim it was hidden on purpose. null if nothing is",
+    "internal_contradictions": ["Open questions: places where this text leaves a relationship unexplained or ambiguous. Two statements are a contradiction only if they cannot both be true"]
   },
   "type_insights": {
     "type": "Matches detected_type — legal|medical|academic|financial|technical|literary|political|bureaucratic|scientific|general",
-    "power_analysis": "FOR LEGAL/FINANCIAL: Who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations. Note any asymmetries where one party has more rights or fewer obligations than the other. FOR MEDICAL: What is the urgency level — routine monitoring, needs action within weeks, or urgent? FOR ACADEMIC: What is the confidence level of the claims? FOR OTHER: null",
+    "power_analysis": "ONLY FOR LEGAL, FINANCIAL OR BUREAUCRATIC text: who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations, and any asymmetries. For any other kind of text: null",
     "vs_standard": "How does this compare to standard/typical documents of this type? What is unusually strict, generous, vague, or missing compared to what you'd normally see?",
     "negotiable_items": ["FOR LEGAL/FINANCIAL: Clauses that are commonly negotiated or pushed back on in this type of document"],
-    "urgency": "none|low|medium|high|critical — how quickly does the reader need to act?"
+    "urgency": "none|low|medium|high|critical — how quickly does the reader need to act? none when the text asks nothing of the reader"
   },
   "jargon_glossary": [
     { "term": "force majeure", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract" }
@@ -247,6 +246,7 @@ CRITICAL RULES:
 - For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
 - For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations). "vs_standard" should compare clauses to typical industry practice. "negotiable_items" should list clauses commonly pushed back on.
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
+- FIDELITY FIRST. You have only the text above, which may be an excerpt: say "this text does not explain…", never "the authors do not…" or "the paper lacks…". Keep the original's strength, scope and attribution — "the authors find" stays theirs, a measured result stays the thing measured ("performs better on the tasks tested", not "gets smarter"), "could have implications" never becomes "should", "abrupt" is not "without warning". Never state an author's motive or intent; describe possible effects on a reader. Use neutral wording ("using more computing power", not "throwing").
 - Be thorough but never pad — only include what's genuinely useful
 - LIMITS: keep every short field to ONE concise sentence. This half no longer shares a token budget with the rest of the report, and without that discipline it runs long and truncates, which 500s the whole tool.
 - Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
@@ -266,8 +266,8 @@ CRITICAL RULES:
         ]
       : [{ prompt: sectionsPrompt(trimmed, ''), tokens: 7500, label: 'plain-talk' }];
 
-    const ALL_SIX = 'Your response MUST contain ALL 6 keys: detected_type, detected_type_label, confidence, reading_level, overview, specialist_suggestion.';
-    const SUMMARY_FIRST = 'THIS PASS writes ONLY detected_type, detected_type_label, confidence, reading_level, and overview containing ONLY one_sentence and key_takeaways. Another pass writes the rest of overview and specialist_suggestion at the same time — leave them out.';
+    const ALL_SIX = 'Your response MUST contain ALL 4 keys: detected_type, detected_type_label, overview, specialist_suggestion.';
+    const SUMMARY_FIRST = 'THIS PASS writes ONLY detected_type, detected_type_label, and overview containing ONLY one_sentence and key_takeaways. Another pass writes the rest of overview and specialist_suggestion at the same time — leave them out.';
     const SUMMARY_REST = 'THIS PASS writes ONLY overview containing ONLY what_matters_to_you, red_flags, action_items and deadlines, plus specialist_suggestion. Another pass writes the type, reading level, one_sentence and key_takeaways at the same time — leave them out.';
     // The template itself is cut to the pass's fields: told "only" while
     // seeing the whole overview, the first pass wrote all of it and ran out
@@ -279,7 +279,7 @@ CRITICAL RULES:
       .join('\n')
       .replace(/,(\s*\n\s*\})/g, '$1');
     const summaryFor = (note) => (note === SUMMARY_FIRST
-      ? dropFields(onlyKeys(promptSummary, ['detected_type', 'detected_type_label', 'confidence', 'reading_level', 'overview']), ['what_matters_to_you', 'red_flags', 'action_items', 'deadlines'])
+      ? dropFields(onlyKeys(promptSummary, ['detected_type', 'detected_type_label', 'overview']), ['what_matters_to_you', 'red_flags', 'action_items', 'deadlines'])
       : dropFields(onlyKeys(promptSummary, ['overview', 'specialist_suggestion']), ['one_sentence', 'key_takeaways'])
     ).replace(ALL_SIX, note);
     // Progressive (2026-10-16, lib/progressive.js): the same concurrent
@@ -305,6 +305,12 @@ CRITICAL RULES:
       if (!parsed.full_translation && Array.isArray(parsed.sections)) {
         parsed.full_translation = parsed.sections.map(sec => sec.translation).filter(Boolean).join('\n\n');
       }
+      // Reading level by a named formula, English only (lib/readingLevel.js) —
+      // the model's own "Graduate → 8th grade" was a guess shown as a measure.
+      const english = !req.body.userLanguage || /^en/i.test(req.body.userLanguage);
+      const before = english && trimmed ? fleschKincaid(trimmed) : null;
+      const after = before !== null ? fleschKincaid(parsed.full_translation) : null;
+      parsed.reading_level = before !== null && after !== null ? { method: 'Flesch-Kincaid', original_grade: before, translated_grade: after } : null;
       return stripCites(parsed);
     };
     return await answer(req, res, {
@@ -337,8 +343,27 @@ CRITICAL RULES:
       complete: d => Boolean(d.detected_type),
       check: async (draft) => {
         const parsed = assemble(draft);
-        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(parsed, { label: 'plain-talk', userLanguage: req.body?.userLanguage });
+        // The verbatim originals are the source, never a check's to rewrite.
+        const originals = (parsed.sections || []).map(sec => sec?.original);
+        // Side by side (lib/bothChecks.js), owner's review 2026-10-27:
+        // T13 each translation and the overview against the original (strength,
+        // scope, attribution); T5 motives, false contradictions and universal
+        // rules; T3/T4/T7 contradictions, claims about the document beyond the
+        // text supplied, ignored choices.
+        await allChecks(parsed, [
+          ...(trimmed ? [x => checkEvidenceFit(x, {
+            label: 'plain-talk',
+            evidence: `THE ORIGINAL TEXT (possibly an excerpt):\n${trimmed}`,
+            summary: ['overview'],
+            skip: ['full_translation', 'detected_type', 'detected_type_label', 'specialist_suggestion', 'reading_level'],
+            keep: /\.original$/, // the verbatim source
+            userLanguage: req.body?.userLanguage,
+          })] : []),
+          // The analysis only: translations are checked against the original above.
+          x => calibrateClaims(x, { label: 'plain-talk', userLanguage: req.body?.userLanguage, skip: ['sections', 'full_translation', 'jargon_glossary', 'reading_level', 'detected_type', 'detected_type_label', 'specialist_suggestion'] }),
+          x => checkConsistency(x, { label: 'plain-talk', userLanguage: req.body?.userLanguage }),
+        ], { label: 'plain-talk' });
+        (parsed.sections || []).forEach((sec, i) => { if (sec && originals[i] !== undefined) sec.original = originals[i]; });
         // Back into the draft's shape; the check reads and writes the whole answer.
         const { sections, full_translation, ...rest } = parsed;
         let at = 0;

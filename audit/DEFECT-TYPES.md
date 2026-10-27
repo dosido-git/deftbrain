@@ -155,6 +155,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | Awkward Silence Filler — "talking to: boss, panicking", no setting chosen; the answer assumed an elevator (2026-10-23). Cause: the template's two examples were elevator scenes | **fixed with shared fix** (`checkConsistency` wired as the after-display check) + elevator examples removed + an explicit "no setting given" line |
 | Bill Rescue — "Your landlord has not filed anything" (input never said); hardship letter: "I am actively applying for assistance" (only recommended) (owner, 2026-10-26) | **fixed with shared fix** (check 10 now covers a status the input does not establish and claims in the visitor's own voice inside a letter or script) + prompt: where_you_stand only as far as the input shows; letter details they must supply in [brackets] |
 | MissingLink — a gap guessed from a topic name alone presented as observed ("You can follow the steps", "Nobody explicitly showed you"), "Medium confidence" (owner's review, 2026-10-27) | **fixed with shared fix** (`INVENTED_CHECK` covers what they were taught or can do and diagnoses from a topic alone; Missing Link frames the gap by how much was described — `basis` computed in code — and leads with a check that tests it) |
+| PlainTalk — a four-sentence excerpt judged as the whole paper ("the authors do not reconcile…", missing error bounds) (owner's review, 2026-10-27) | **fixed with shared fix** (`INVENTED_CHECK`: what a supplied document or its authors include, beyond the text given, said as "this excerpt does not…") |
 
 ---
 
@@ -183,6 +184,8 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | DecisionCoach — page promise "One answer. Not options." vs charter | **fixed** (owner decision 2026-10-09: "A clear recommendation, and what would change it", 13 languages) |
 | TicketTackler — the reverse: under-reach. The visitor's own account (sign hours, park time) read as "unknown", so the verdict hedged to NOT_ENOUGH_INFORMATION_YET (2026-10-16 blind comparison) | **fixed** (rule check gains `met_per_account` / `yes_per_account`: the account is evidence, stated conditionally, never a reason to withhold the verdict) |
 | MissingLink — technical rules stated as universal ("a fresh, independent copy", "if the argument is not shrinking the base case is never reached") | **fixed with shared fix** (`calibrateClaims` covers technical and scientific rules; wired into Missing Link) |
+| PlainTalk — motives stated as fact ("What They Buried", "designed to make it urgent", "we find" called a hedge) and "internal contradictions" that can both be true | **fixed with shared fix** (`calibrateClaims` rule 3: intent → possible effect on a reader; a contradiction that is not one → open question; `skip` option keeps it off faithful restatements) |
+| PlainTalk — model-guessed grade levels and an undefined "high confidence" shown as measurements | **fixed** (Flesch-Kincaid in code, `lib/readingLevel.js`, English only, labelled an estimate; confidence removed) |
 
 ---
 
@@ -320,6 +323,7 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 | SignalVsNoise — career advice review (owner, 2026-10-27), all items above | **fixed with shared fix** (fresh live run: growth not level, one measure, consistent dates, "five studies", no untested rule, sources S1–S5 in order; a run on the stored pre-fix research still showed "experiments" and "fixed passion or an undeveloped one" — the stored research refreshes itself on first use) |
 | Progressive (streamed) answers skipped the reply filter (`voiceFix`): "the visitor", prompt markers and US spelling were never fixed on 27 tools | **fixed** (`res.locals.fixBody`, applied to every frame in `lib/progressive.js`) |
 | **Sweep (open):** tools that state researched figures — BuyWise, Someone Said It Better (quote attribution), Plain Talk, Ticket Tackler, Plot Hole Finder, any `worldFacts` tool whose answer restates a finding | open |
+| PlainTalk — simplifications that changed strength, scope or owner ("get smarter", "without warning", "should change", "absent") | **fixed with shared fix** (`checkEvidenceFit` rule 8; Plain Talk checks each translation against the original; originals restored verbatim after checks). Live: most slips caught, not all — "basically absent" survived one run |
 
 ---
 
