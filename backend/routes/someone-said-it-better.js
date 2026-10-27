@@ -36,6 +36,9 @@ function validateResult(result, packet) {
     return {
       quote_id: q.id,
       role: ['different_way', 'another_angle', 'one_to_keep'].includes(p?.role) ? p.role : 'another_angle',
+      // Who or what it is for in this situation ("For the couple", "From a
+      // parent") — owner's review 2026-10-27: the role names were vague.
+      label: compact(p?.label, 40) || null,
       why_this_one: compact(p?.why_this_one, 650),
       quote: q,
     };
@@ -173,7 +176,10 @@ OTHER RULES:
 
 WHERE A QUOTE CAME FROM IS A FACT, AND ONLY THE PACKET HAS IT
 
-Any statement about a quotation's origin — the scene, the occasion, who said it to whom, when, where, or what was happening at the time — must be stated in that quote's work, date or context_note in the packet. If the packet does not say it, do not say it, even if you believe you know the work well. Recalled plot and history are where these explanations go wrong (a line from a play's final act described as "spoken at a wedding" because the play also contains one). When the packet is silent, interpret the words themselves.
+Any statement about a quotation's origin — the scene, the occasion, who said it to whom, when, where, or what was happening at the time — must be stated in that quote's source_passage (the text around it on its source page), work or date. context_note is the research pass's note, not a source; where it disagrees with source_passage, source_passage wins.
+Read each source_passage before choosing. If the words mean something different in their original setting from how they would read in this situation — a line about death, grief or ending a life offered for a job or a celebration — leave the quote out, or, if it still fits, say its original setting plainly.
+Explain the fit by what the passage itself emphasises, not by credit to the reader or anyone in their situation. Concrete over atmospheric: no phrases like "the sheer scale of that fact".
+A quote marked "excerpt": true is part of a longer sentence; never describe it as a complete statement. If the packet does not say it, do not say it, even if you believe you know the work well. Recalled plot and history are where these explanations go wrong (a line from a play's final act described as "spoken at a wedding" because the play also contains one). When the packet is silent, interpret the words themselves.
 - Return ONLY valid JSON.
 
 ${NO_QUOTE_RULE}`;
@@ -182,7 +188,7 @@ ${NO_QUOTE_RULE}`;
       ? `\n\nALREADY SHOWN FOR THIS SITUATION (the visitor asked for different words — prefer other quote_ids from the packet where a good fit exists; only repeat one of these if nothing else in the packet fits):\n${previousQuotes.map(t => `- "${t}"`).join('\n')}`
       : '';
 
-    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}${avoidBlock}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one sentence, addressed to the visitor as 'you' (never 'the visitor' in the third person), grounded only in what they said — used only as a fallback when their own words are too long to show in full",\n  "situation_label": "a short 3-6 word label for this situation, for a history list entry (e.g. \\"Retirement and what comes next\\", \\"A difficult decision\\") — describe the situation itself, never the visitor",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "why_this_one": "1-2 sentences interpreting the QUOTE and connecting it to facts the visitor actually supplied — never interpreting the visitor's feelings, growth, or what they are learning"\n    }\n  ]\n}`;
+    const prompt = `VISITOR'S SITUATION:\n${situation}\n\nWHAT WOULD HELP: ${need}\nDESIRED VOICE: ${voice}\n${research.block}${avoidBlock}\n\nChoose the best 2-3 quotes. Use each quote_id at most once.\n\nReturn ONLY:\n{\n  "situation_as_understood": "one sentence, addressed to the visitor as 'you' (never 'the visitor' in the third person), grounded only in what they said — used only as a fallback when their own words are too long to show in full",\n  "situation_label": "a short 3-6 word label for this situation, for a history list entry (e.g. \\"Retirement and what comes next\\", \\"A difficult decision\\") — describe the situation itself, never the visitor",\n  "picks": [\n    {\n      "quote_id": "Q1",\n      "role": "different_way | another_angle | one_to_keep",\n      "label": "2-4 words naming who or what this one is for in THIS situation — For the couple, From a parent, For appreciating the day",\n      "why_this_one": "1-2 sentences interpreting the QUOTE and connecting it to facts the visitor actually supplied — never interpreting the visitor's feelings, growth, or what they are learning"\n    }\n  ]\n}`;
 
     const raw = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -203,12 +209,13 @@ ${NO_QUOTE_RULE}`;
       try {
         const record = result.picks.map((p, i) => `QUOTE ${i}: "${p.quote.text}" — ${p.quote.author}`
           + `${p.quote.work ? `, ${p.quote.work}` : ''}${p.quote.date ? ` (${p.quote.date})` : ''}`
-          + `${p.quote.context_note ? `\n  Verified context: ${p.quote.context_note}` : '\n  Verified context: none recorded'}`).join('\n');
+          + `${p.quote.source_passage ? `\n  Text around it on its source page: ${p.quote.source_passage}` : '\n  Source page text: not available — nothing about its setting is established'}`).join('\n');
         await checkAgainstSupplied(result, {
           label: 'someone-said-it-better',
           supplied: `THE VISITOR'S SITUATION:\n${situation}\n\nTHE VERIFIED RECORD OF EACH QUOTATION (nothing else about these quotations is established):\n${record}`,
           fields: result.picks.map((p, i) => [`picks[${i}].why_this_one`, p.why_this_one]),
           lookFor: `- any statement about where a quotation came from — the scene, occasion, speaker, listener, date, place, or what was happening — that its verified record does not state
+- an explanation that contradicts or shifts the meaning the text around the quotation gives it (what the passage emphasises, or a darker original setting it leaves out)
 - any fact about the visitor's life, feelings, or history that their situation does not state`,
           repairNote: 'Keep the interpretation of the quotation\'s words and its connection to the visitor. Remove only the unsupported origin or visitor detail.',
           userLanguage: req.body.userLanguage,

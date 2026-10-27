@@ -408,16 +408,20 @@ const SomeoneSaidItBetter = ({ tool }) => {
     return t('ssib_role_another_angle');
   };
 
+  // A shortened quotation shows its cut (owner's review, 2026-10-27): the
+  // backend marks a quote that starts or stops mid-sentence on its page.
+  const quoteShown = (q) => (q?.excerpt ? `…${q.text.replace(/[.?!,;:]+$/, '')}…` : q?.text || '');
+
   const buildText = useCallback(() => {
     if (!results) return '';
     const lines = [`💬 ${tool?.title || t('ssib_title')}`, '', `${t('ssib_your_situation')}: ${situationDisplayFor(results)}`, ''];
     results.picks?.forEach((p) => {
-      lines.push(`— ${roleLabel(p.role)} —`);
-      lines.push(`"${p.quote.text}"`);
+      lines.push(`— ${p.label || roleLabel(p.role)} —`);
+      lines.push(`"${quoteShown(p.quote)}"${p.quote.excerpt ? ` (${t('ssib_excerpt')})` : ''}`);
       lines.push(`— ${p.quote.author}${p.quote.work ? `, ${p.quote.work}` : ''}`);
       lines.push('');
       lines.push(`${t('ssib_why_this_one')}: ${p.why_this_one}`);
-      lines.push(`${t('ssib_verify_link')}: ${p.quote.url}`);
+      lines.push(`${t('ssib_view_source')}: ${p.quote.url}`);
       lines.push('');
     });
     return lines.join('\n') + BRAND;
@@ -578,9 +582,9 @@ const SomeoneSaidItBetter = ({ tool }) => {
           {results.picks?.map((p) => {
             const kept = isKept(p.quote_id);
             return (
-              <div key={p.quote_id} className={`rounded-xl border p-6 ${c.quoteBg}`}>
+              <div key={p.quote_id} className={`keep-together rounded-xl border p-6 ${c.quoteBg}`}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className={`text-xs font-bold tracking-widest ${c.accentTxt}`}>{roleLabel(p.role)}</div>
+                  <div className={`text-xs font-bold tracking-widest ${c.accentTxt}`}>{p.label || roleLabel(p.role)}</div>
                   {currentFindId && (
                     <button onClick={() => toggleKeep(p)} aria-pressed={kept}
                       title={kept ? t('ssib_unkeep') : t('ssib_keep')}
@@ -589,7 +593,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                     </button>
                   )}
                 </div>
-                <blockquote className={`mt-4 text-xl font-medium leading-relaxed ${c.text}`}>"{p.quote.text}"</blockquote>
+                <blockquote className={`mt-4 text-xl font-medium leading-relaxed ${c.text}`}>"{quoteShown(p.quote)}"</blockquote>
                 <div className={`mt-3 ${c.textSecondary}`}>
                   — <strong>{p.quote.author}</strong>
                   {p.quote.work ? <> , <em>{p.quote.work}</em></> : null}
@@ -600,8 +604,16 @@ const SomeoneSaidItBetter = ({ tool }) => {
                   <p className={`mt-1 text-sm leading-relaxed ${c.textSecondary}`}>{p.why_this_one}</p>
                 </div>
                 <a href={p.quote.url} target="_blank" rel="noreferrer" className={`mt-5 inline-block text-sm ${linkStyle}`}>
-                  ↗ {t('ssib_verify_link')} · {p.quote.publisher || p.quote.source_title}
+                  ↗ {t('ssib_view_source')} · {p.quote.publisher || p.quote.source_title}
                 </a>
+                {/* What the page check established: the wording itself, or
+                    only the attribution (page unreadable); an excerpt says so. */}
+                {(p.quote.page_check || p.quote.excerpt) && (
+                  <p className={`mt-1 text-[13px] ${c.textMuted}`}>
+                    {[p.quote.page_check === 'wording' ? t('ssib_wording_checked') : p.quote.page_check === 'attribution' ? t('ssib_attribution_only') : null,
+                      p.quote.excerpt ? t('ssib_excerpt') : null].filter(Boolean).join(' · ')}
+                  </p>
+                )}
               </div>
             );
           })}
@@ -617,7 +629,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
           smaller second line, not the headline. Reopening restores the
           cached result at no API cost. */}
       {savedFinds.length > 0 && (
-        <div className={listBox}>
+        <div data-print-hide className={listBox}>
           <p className={`${listHead} mb-2`}>{t('ssib_recent_finds')}</p>
           <div className={`divide-y ${divide}`}>
             {(showAllFinds ? savedFinds : savedFinds.slice(0, FINDS_VISIBLE)).map(e => {
@@ -649,7 +661,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
       {/* Quotes I've Kept — a second, separate collection: words deliberately
           chosen to remember, independent of which situation surfaced them. */}
       {keptQuotes.length > 0 && (
-        <div className={listBox}>
+        <div data-print-hide className={listBox}>
           <p className={`${listHead} mb-2`}>❤️ {t('ssib_kept_title')}</p>
           <div className={`divide-y ${divide}`}>
             {(showAllKept ? keptQuotes : keptQuotes.slice(0, KEPT_VISIBLE)).map(k => (
@@ -660,7 +672,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                   {k.situationLabel && <p className={`text-[13px] mt-1 truncate ${c.textMuted}`}>{k.situationLabel}</p>}
                   {k.url && (
                     <a href={k.url} target="_blank" rel="noreferrer" className={`text-[13px] ${linkStyle}`}>
-                      ↗ {t('ssib_verify_link')}
+                      ↗ {t('ssib_view_source')}
                     </a>
                   )}
                 </div>

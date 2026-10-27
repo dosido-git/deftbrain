@@ -4,6 +4,7 @@
 
 const { groundedFacts, groundedData, groundedStatus, normalizeKeyPart } = require('./groundedFacts');
 const { NO_QUOTE_RULE } = require('./factCheck');
+const { checkSourceLink } = require('./publicUrl');
 
 const TTL_MS = Number(process.env.QUOTE_RESEARCH_TTL_MS || 30 * 24 * 60 * 60 * 1000);
 const COLD_WAIT_MS = Number(process.env.QUOTE_RESEARCH_COLD_WAIT_MS || 45_000);
@@ -56,6 +57,8 @@ function cleanPacket(raw, { log = false } = {}) {
       verification: q?.verification === 'primary' ? 'primary' : 'secondary',
       context_note,
       themes: (Array.isArray(q?.themes) ? q.themes : []).map(x => compact(x, 60)).filter(Boolean).slice(0, 6),
+      // Set by checkOnPage (below), never by the model.
+      ...(q?.page_check ? { page_check: q.page_check, excerpt: Boolean(q.excerpt), source_passage: compact(q.source_passage, 900) || null } : {}),
     };
   }).filter(Boolean).map((q, i) => ({ id: `Q${i + 1}`, ...q }));
   if (log) console.log(`[quoteResearch] ${quotes.length} of ${Array.isArray(raw.quotes) ? raw.quotes.length : 0} kept; dropped ${dropped.aggregator} aggregator, ${dropped.not_exact} not-exact, ${dropped.too_long} over 25 words, ${dropped.no_url} no text/URL`);
@@ -64,6 +67,69 @@ function cleanPacket(raw, { log = false } = {}) {
 
 function render(packet) {
   return `\n\nVERIFIED QUOTE PACKET — quotation wording and attribution may ONLY come from this packet. Do not alter quotation text, author, work, or source. If a candidate is not a good fit, omit it.\n${JSON.stringify(packet)}`;
+}
+
+// T13 (audit/DEFECT-TYPES.md), owner's review 2026-10-27: the research pass's
+// own notes are not verification. Our Town's Act III line was placed "at a
+// wedding" (the play has one earlier) and "Does anyone…" printed for "Do any
+// human beings…"; George Eliot's sentence was cut mid-way with a question
+// mark added; a Seneca line about ending one's life was offered for quitting
+// a job. Each quote's cited page is fetched (free, SSRF-guarded) and:
+//   - its wording is looked for on the page: found -> page_check 'wording';
+//     not found on a readable page -> dropped; unreadable -> 'attribution';
+//   - a quote that starts or stops mid-sentence on the page is an excerpt
+//     (shown with … and labelled);
+//   - the page text around it is kept as source_passage, the only context the
+//     matching stage and its check may use.
+// Once per cached packet; the main request waits at most 4s for it.
+const norm = t => String(t || '').toLowerCase().replace(/[‘’`´]/g, "'").replace(/[“”«»„]/g, '"').replace(/[–—]/g, '-').replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const SENTENCE_END = /[.!?;:]['"”’)\]]*\s*$/;
+
+function locate(quote, pageText) {
+  // Map each normalized character back to its place in the page text, so the
+  // match can be read in the original (punctuation included).
+  const map = []; let out = '';
+  const src = pageText.replace(/[‘’`´]/g, "'").replace(/[–—]/g, '-');
+  let lastSpace = true;
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i].toLowerCase();
+    if (/[a-z0-9']/.test(ch)) { out += ch; map.push(i); lastSpace = false; }
+    else if (!lastSpace) { out += ' '; map.push(i); lastSpace = true; }
+  }
+  const q = norm(quote);
+  const at = q.length > 12 ? out.indexOf(q) : -1;
+  if (at < 0) return null;
+  const start = map[at], end = map[at + q.length - 1] + 1;
+  const after = src.slice(end, end + 3);
+  const startsMid = !/(^|[.!?:;"”'“‘\n]\s*)$/.test(src.slice(0, start).slice(-4)) && !/^\s*$/.test(src.slice(0, start));
+  const endsMid = !SENTENCE_END.test(quote.trim()) && /^\s*[a-z,]/i.test(after) && !/^\s*["”’)]/.test(after);
+  return { start, end, excerpt: Boolean(startsMid || endsMid), passage: src.slice(Math.max(0, start - 450), Math.min(src.length, end + 450)).replace(/\s+/g, ' ').trim() };
+}
+
+async function checkOnPage(stored) {
+  if (!stored || stored.pages_checked || !Array.isArray(stored.quotes)) return;
+  if (stored.pages_checking) return stored.pages_checking;
+  stored.pages_checking = (async () => {
+    const pages = await Promise.all(stored.quotes.map(q => checkSourceLink(q.url, { timeoutMs: 5000 })));
+    let dropped = 0;
+    const kept = stored.quotes.filter((q, i) => {
+      const pg = pages[i];
+      if (pg.status === 'dead' || pg.status === 'moved') { dropped++; return false; }
+      if (pg.status !== 'ok' || !pg.text || pg.text.length < 400) { q.page_check = 'attribution'; return true; }
+      const hit = locate(q.text, pg.text);
+      if (!hit) { dropped++; return false; } // readable page, words not on it
+      q.page_check = 'wording';
+      q.excerpt = hit.excerpt;
+      q.source_passage = hit.passage;
+      return true;
+    });
+    // Never leave fewer than two: then the unconfirmed ones stay, labelled.
+    if (kept.length >= 2) stored.quotes = kept;
+    else stored.quotes.forEach(q => { if (!q.page_check) q.page_check = 'attribution'; });
+    console.log(`[quoteResearch] page check: ${stored.quotes.filter(q => q.page_check === 'wording').length} wording confirmed, ${stored.quotes.filter(q => q.excerpt).length} excerpt(s), ${dropped} dropped`);
+    stored.pages_checked = true;
+  })();
+  return stored.pages_checking;
 }
 
 // `coldWaitMs` overrides the default synchronous wait. The main route keeps
@@ -115,7 +181,9 @@ ${NO_QUOTE_RULE}`,
       return packet ? { block: render(packet), data: packet } : { block: '', data: null };
     },
   });
-  const packet = block ? cleanPacket(groundedData(cacheKey)) : null;
+  const stored = block ? groundedData(cacheKey) : null;
+  if (stored) await Promise.race([checkOnPage(stored), new Promise(r => setTimeout(r, 4000))]);
+  const packet = stored ? cleanPacket(stored) : null;
   return { packet, block: packet ? render(packet) : '', cacheKey };
 }
 
@@ -136,4 +204,15 @@ function quoteResearchEmpty({ situation, voice = 'any' }) {
   return groundedStatus(key) === 'failed';
 }
 
-module.exports = { quoteResearch, quoteResearchState, quoteResearchEmpty, cleanPacket };
+module.exports = { quoteResearch, quoteResearchState, quoteResearchEmpty, cleanPacket, locate };
+
+// Self-check: node backend/lib/quoteResearch.js --check
+if (require.main === module && process.argv.includes('--check')) {
+  const assert = require('assert');
+  const page = 'He said: "Do any human beings ever realize life while they live it?" Then silence. Love is the joy of being joined for life, to strengthen each other in all labour.';
+  assert.ok(locate('Do any human beings ever realize life while they live it?', page) && !locate('Do any human beings ever realize life while they live it?', page).excerpt);
+  assert.strictEqual(locate('Does anyone ever realize life while they live it?', page), null);
+  assert.strictEqual(locate('Love is the joy of being joined for life', page).excerpt, true);
+  console.log('quoteResearch ok');
+  process.exit(0);
+}
