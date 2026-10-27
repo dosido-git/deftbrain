@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { answer } = require('../lib/progressive');
@@ -240,8 +241,7 @@ At the end, run the two FINAL CHECK questions from the rules above against every
         // v2 guard (reviewed 2026-10-08 against lib/outputStandard.js — the prompt
         // already owns most of it: the visitor's own words, no productivity
         // verdicts, no causes they didn't state). Fail-open.
-        try {
-          await runOutputGuard(parsed, {
+        const guard = x => runOutputGuard(x, {
             label: 'where-did-the-time-go',
             fields: checkable,
             supplied: visitorContext(req.body),
@@ -249,16 +249,14 @@ At the end, run the two FINAL CHECK questions from the rules above against every
             guard: router.outputGuard,
             userLanguage,
           });
-        } catch (guardErr) {
-          console.log('[where-did-the-time-go] v2 guard skipped:', guardErr.message);
-        }
-        await withNumberCheck(parsed, {
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        await allChecks(parsed, [x => withNumberCheck(x, {
           label: 'where-did-the-time-go',
           fields: checkable,
           context: visitorContext(req.body),
           extraRules: 'Recompute every duration and every sum of hours from the times in the account. A total must equal the blocks it names.',
           userLanguage,
-        });
+        }), guard], { label: 'where-did-the-time-go' });
 
     
       },

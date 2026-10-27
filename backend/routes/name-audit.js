@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const dns = require('dns').promises;
@@ -684,9 +685,13 @@ ${NO_QUOTE_RULE}`;
       complete: d => Boolean(d.verdict),
       check: async (draft) => {
         validateResult(pinRating(pinVerdict(draft, 'verdict', 'MIXED')));
-        await applyExistingUses(draft, await usesPromise, { name: name.trim(), context, userLanguage });
-        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(draft, { label: 'name-audit', userLanguage: req.body?.userLanguage });
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        const uses = await usesPromise;
+        await allChecks(draft, [
+          x => applyExistingUses(x, uses, { name: name.trim(), context, userLanguage }),
+          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+          x => checkConsistency(x, { label: 'name-audit', userLanguage: req.body?.userLanguage }),
+        ], { label: 'name-audit' });
       },
     });
 

@@ -1,5 +1,6 @@
 // quote-check.js
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
@@ -317,15 +318,17 @@ CODES VS SENTENCES: the only ALL_CAPS values in this schema are the fields whose
       ready: d => VALID_VERDICTS.includes(d.verdict),
       complete: d => VALID_VERDICTS.includes(d.verdict),
       check: async (parsed) => {
-        await guardQuoteCheck(parsed, {
+        await allChecks(parsed, [
+          // The model does its own arithmetic_check on the quote; recompute it
+          // and every other figure before the visitor relies on it.
+          x => withNumberCheck(x, { label: 'quote-check', context: visitorContext(req.body), userLanguage }),
+          x => guardQuoteCheck(x, {
           typeName, itemDescription: itemDescription.trim(), whatWentWrong: whatWentWrong.trim(),
           whatTheyToldYou, quotedPrice, quotedBreakdown, secondQuotePrice, secondQuoteBreakdown,
           itemAge, hasFile: !!fileBlock, userLanguage, userLocale, userCurrency, userRegion,
-        });
+          }),
+        ], { label: 'quote-check' });
         tidy(parsed);
-        // The model does its own arithmetic_check on the quote; recompute it and
-        // every other figure before the visitor relies on it.
-        await withNumberCheck(parsed, { label: 'quote-check', context: visitorContext(req.body), userLanguage });
       },
     });
   } catch (error) {

@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
@@ -246,15 +247,15 @@ CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
       complete: d => Boolean(d.decision_made_for_you?.choice),
       check: async (draft) => {
         const parsed = enforceOutputState(draft);
-        await withNumberCheck(parsed, {
+        // Speed (2026-10-27): side by side (lib/bothChecks.js).
+        await allChecks(parsed, [x => withNumberCheck(x, {
           label: 'decision-coach',
           context: visitorContext(req.body) + (pay ? '\n\n' + pay.context : ''),
           extraRules: 'A sentence that says a gap narrows, widens, or barely changes is a numeric claim: check its direction and size against PAY FACTS when they are given.',
           userLanguage,
-        });
-        // enforceOutputState and guardResult both edit the draft in place (and
-        // return it), so there is nothing to copy back.
-        await guardResult(parsed, req.body, 'DecisionCoach1');
+        }), x => guardResult(x, req.body, 'DecisionCoach1')], { label: 'decision-coach' });
+        // enforceOutputState edits the draft in place (and returns it); allChecks
+        // merges into it, so there is nothing to copy back.
       },
     });
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }

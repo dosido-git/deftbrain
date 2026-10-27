@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
@@ -490,16 +491,21 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
       ready: d => Boolean(d.verdict),
       complete: d => Boolean(d.verdict),
       check: async (parsed) => {
-        await withNumberCheck(parsed, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage });
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        // Priority where two edit one field: numbers, then certainty, then
+        // repeats; the consistency check last (it re-reads what others fixed).
+        await allChecks(parsed, [
+          x => withNumberCheck(x, { label: 'bill-rescue', context: visitorContext(req.body), userLanguage }),
+          // T5: settlement targets as starting points with their basis; legal
+          // rules with their conditions (owner's review, 2026-10-25).
+          x => calibrateClaims(x, { label: 'bill-rescue', userLanguage: req.body?.userLanguage }),
+          // T11 (audit/DEFECT-TYPES.md): the same advice and letters repeated
+          // across sections — kept once, later mentions point back to it.
+          x => trimRepeats(x, { label: 'bill-rescue', userLanguage: req.body?.userLanguage, order: PAGE_ORDER }),
+          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+          x => checkConsistency(x, { label: 'bill-rescue', userLanguage: req.body?.userLanguage }),
+        ], { label: 'bill-rescue' });
         if (hasAmount) fixPlanMonths(parsed, amount);
-        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
-        // T11 (audit/DEFECT-TYPES.md): the same advice and letters repeated
-        // across sections — kept once, later mentions point back to it.
-        await trimRepeats(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage, order: PAGE_ORDER });
-        // T5: settlement targets as starting points with their basis; legal
-        // rules with their conditions (owner's review, 2026-10-25).
-        await calibrateClaims(parsed, { label: 'bill-rescue', userLanguage: req.body?.userLanguage });
       },
     });
 

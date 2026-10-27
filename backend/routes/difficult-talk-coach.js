@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
@@ -448,7 +449,8 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
       complete: d => Boolean(d.situation_reading || d.scripts),
       check: async (parsed) => {
         Object.assign(parsed, finish(parsed));
-        if (!isSurging()) {
+        const suppliedCheck = async (parsed) => {
+          if (isSurging()) return;
           const fields = [];
           const walk = (v, path) => {
             if (typeof v === 'string' && v.trim().length > 25) fields.push([path, v]);
@@ -473,9 +475,13 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
               userLanguage,
             });
           } catch (e) { console.error('difficult-talk-coach check:', e.message); }
-        }
+        };
         // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(parsed, { label: 'difficult-talk-coach', userLanguage: req.body?.userLanguage });
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        await allChecks(parsed, [
+          suppliedCheck,
+          x => checkConsistency(x, { label: 'difficult-talk-coach', userLanguage: req.body?.userLanguage }),
+        ], { label: 'difficult-talk-coach' });
         // Approach cards are rebuilt from their slots on every finish; keep
         // any correction the checks made to them.
         approaches.splice(0, approaches.length, { conversation_approaches: parsed.conversation_approaches }, ...new Array(APPROACH_ANGLES.length - 1).fill(null));

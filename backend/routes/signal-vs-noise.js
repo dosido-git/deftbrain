@@ -20,7 +20,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 const { claimResearch, researchState, tierOf } = require('../lib/claimResearch');
 const { checkEvidenceFit } = require('../lib/evidenceFit');
-const { trimRepeats } = require('../lib/repeatCheck');
+const { allChecks } = require('../lib/bothChecks');
 
 function collectProseFields(parsed) {
   const fields = [];
@@ -342,6 +342,23 @@ function renumberSources(parsed) {
   return parsed;
 }
 
+// The packet findings a chunk of the answer cites — its claims' source_ids
+// and any IDs named in its prose — so each parallel check reads only its own
+// evidence. A chunk citing nothing gets the whole packet.
+function evidenceFor(draft, fields, packet) {
+  const ids = new Set();
+  for (const [p, v] of fields) {
+    const m = p.match(/^claims\[(\d+)\]/);
+    if (m) (draft.claims?.[m[1]]?.source_ids || []).forEach(x => ids.add(String(x).toUpperCase()));
+    (String(v).match(/\bS\d+\b/g) || []).forEach(x => ids.add(x));
+  }
+  if (!ids.size) return JSON.stringify(packet);
+  const claims = packet.claims
+    .map(c => ({ ...c, findings: c.findings.filter(f => f.source_ids.some(id => ids.has(id))) }))
+    .filter(c => c.findings.length);
+  return JSON.stringify({ claims, sources: packet.sources.filter(s => ids.has(s.id)) });
+}
+
 function buildSupplied(topic, conflictingAdvice, userContext) {
   return `TOPIC:\n${topic.trim()}\n\n${conflictingAdvice?.trim() ? `CLAIMS / CONFLICTING ADVICE:\n${conflictingAdvice.trim()}\n\n` : ''}${userContext?.trim() ? `VISITOR-SUPPLIED CONTEXT:\n${userContext.trim()}\n\n` : ''}`;
 }
@@ -538,6 +555,25 @@ ${SHARED_RULES}`;
       model: MODELS.SMART, max_tokens: keys.includes('claims') ? 4000 : 2000, system,
       messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
     }, { label: `signal-vs-noise:synthesis-${i + 1}` });
+    // Speed (2026-10-27): the claim cards are the long write (29s in one
+    // pass). The researched claims go to parallel passes, two each; each pass
+    // writes the cards for its own claims and they are joined in order.
+    const researched = research.packet.claims || [];
+    const groups = [];
+    for (let i = 0; i < researched.length; i += 2) groups.push(researched.slice(i, i + 2));
+    const claimParts = (groups.length ? groups : [[]]).map((g, gi) => ({
+      required: gi === 0,
+      run: () => callClaudeWithRetry({
+        model: MODELS.SMART, max_tokens: 2000, system,
+        messages: [{ role: 'user', content: onlyKeys(prompt, ['claims']) + (g.length ? `\n\nTHIS PASS covers ONLY the visitor claims behind these researched claims; other passes cover the rest at the same time — at most 2 claims items:\n${JSON.stringify(g.map(c => c.claim))}` : '') }],
+      }, { label: `signal-vs-noise:synthesis-claims-${gi + 1}` }),
+      apply: (d, out) => {
+        // Hidden from the checks and the reply: they read `claims`.
+        if (!d.claimSlots) Object.defineProperty(d, 'claimSlots', { value: [], writable: true, enumerable: false });
+        d.claimSlots[gi] = Array.isArray(out?.claims) ? out.claims : [];
+        d.claims = d.claimSlots.flat().filter(Boolean);
+      },
+    }));
     const clean = (d) => {
       let parsed = sanitizeResult(structuredClone(d), research.packet);
       dropUnsourcedFigures(parsed, research.packet, supplied);
@@ -547,38 +583,43 @@ ${SHARED_RULES}`;
     };
     return await answer(req, res, {
       label: 'signal-vs-noise',
-      parts: keyGroups([['topic_as_understood', 'verdict'], ['claims'], ['what_general_claims_cant_decide', 'claim_labels', 'sources_of_noise']], pass)
-        .map((p, i) => (i === 2 ? { ...p, required: false } : { ...p, required: true })),
+      parts: [
+        ...keyGroups([['topic_as_understood', 'verdict']], pass),
+        ...claimParts,
+        ...keyGroups([['what_general_claims_cant_decide', 'claim_labels', 'sources_of_noise']], (keys) => pass(keys, 2)).map(p => ({ ...p, required: false })),
+      ],
       finish: clean,
       ready: d => Boolean(d.verdict),
       complete: (d) => {
         const p = clean(d);
         return Boolean(p?.verdict && p.claims?.length);
       },
-      check: async (d) => {
-        await runOutputGuard(d, {
-          label: 'signal-vs-noise',
-          fields: collectProseFields(d),
-          supplied: `${supplied}\nRESEARCH PACKET:\n${JSON.stringify(research.packet)}`,
-          promise: 'Research the visitor\'s competing claims, show what the retrieved evidence supports, distinguish overstatement from genuine uncertainty, and preserve source provenance.',
-          guard: router.outputGuard,
-          userLanguage,
-        });
+      // Speed (2026-10-27): the checks run side by side (lib/bothChecks.js
+      // allChecks), the source check in per-claim chunks against only the
+      // findings each claim cites. The sourced check wins where both edit a
+      // field; the guard re-reads what it corrected. No repeat check: the
+      // one-card-per-claim layout says each limitation once.
+      check: d => allChecks(d, [
         // T13 (audit/DEFECT-TYPES.md): every figure and conclusion read against
-        // its finding's measure, population and period; summaries no stronger
-        // than the evidence sections (owner's review, 2026-10-27).
-        await checkEvidenceFit(d, {
+        // its finding's measure, population and period; the verdict no
+        // stronger than the claims (owner's review, 2026-10-27).
+        x => checkEvidenceFit(x, {
           label: 'signal-vs-noise',
-          evidence: JSON.stringify(research.packet),
+          evidence: (fields) => evidenceFor(x, fields, research.packet),
           summary: ['verdict', 'what_general_claims_cant_decide'],
           skip: ['topic_as_understood', 'claim_labels'],
           keep: /\.claim$/, // the visitor's own claim, as they put it
           userLanguage,
-        });
-        // T11: a qualification repeated across claims and the verdict — kept
-        // once, in page order.
-        await trimRepeats(d, { label: 'signal-vs-noise', userLanguage, order: PAGE_ORDER });
-      },
+        }),
+        x => runOutputGuard(x, {
+          label: 'signal-vs-noise',
+          fields: collectProseFields(x),
+          supplied: `${supplied}\nRESEARCH PACKET:\n${JSON.stringify(research.packet)}`,
+          promise: 'Research the visitor\'s competing claims, show what the retrieved evidence supports, distinguish overstatement from genuine uncertainty, and preserve source provenance.',
+          guard: router.outputGuard,
+          userLanguage,
+        }),
+      ], { label: 'signal-vs-noise' }),
     });
   } catch (error) {
     console.error('[SignalVsNoise]', error);

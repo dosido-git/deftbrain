@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -441,7 +442,8 @@ THIS PASS writes ONE finding in full: "${f.name}". Keep its name, type, severity
         what_the_story_gets_right: d.what_the_story_gets_right, why_it_still_works: d.why_it_still_works }),
       ready: d => Boolean(d.overall_verdict),
       complete: d => Boolean(d.overall_verdict),
-      check: async (d) => {
+      check: async (d0) => {
+        const guard = async (d) => {
         // v2 guard (PF-39a). Fail-open: it wraps a working answer.
         try {
           const fields = [];
@@ -468,7 +470,11 @@ THIS PASS writes ONE finding in full: "${f.name}". Keep its name, type, severity
         } catch (guardErr) {
           console.log('[plot-hole-find] v2 guard skipped:', guardErr.message);
         }
-        await checkStoryClaims(d, await synopsisPromise, { title: title.trim(), userLanguage });
+        };
+        // Speed (2026-10-27): the story check and the guard side by side
+        // (lib/bothChecks.js); the sourced story check wins a shared field.
+        const synopsis = await synopsisPromise;
+        await allChecks(d0, [x => checkStoryClaims(x, synopsis, { title: title.trim(), userLanguage }), guard], { label: 'plot-hole-find' });
       },
     });
   } catch (error) {

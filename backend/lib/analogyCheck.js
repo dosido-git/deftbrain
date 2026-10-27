@@ -27,6 +27,12 @@ Never place a double-quote (") character inside any JSON string value.`;
 // items: [{ fields: { title, analogy, … } }] — the replacement uses the same keys.
 async function reviewAnalogies(items, { concept, audience, label = 'analogy', userLanguage } = {}) {
   if (!items.length) return [];
+  // Speed (2026-10-27): one analogy per call, all at once — the whole set in
+  // one call took 21s. Each review stands alone anyway.
+  if (items.length > 1) {
+    const outs = await Promise.all(items.map((it, i) => reviewAnalogies([it], { concept, audience, label: `${label}-${i + 1}`, userLanguage })));
+    return outs.flatMap((out, i) => out.map(r => ({ ...r, index: i })));
+  }
   const list = items.map((it, index) => ({ index, ...it.fields }));
   try {
     const out = await callClaudeWithRetry({

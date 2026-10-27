@@ -7,7 +7,7 @@ const { isSurging } = require('../lib/surge');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const { checkConsistency } = require('../lib/outputGuard');
-const { bothChecks } = require('../lib/bothChecks');
+const { allChecks } = require('../lib/bothChecks');
 const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 // Defense-in-depth strip of the model-generated diagram markup. The frontend
 // also runs DOMPurify; this ensures the API itself never emits <script>,
@@ -311,7 +311,8 @@ Return ONLY the JSON object.`;
         //      Text notes only — a PDF's text isn't available to the checker.
         //   2. Number check: doses, values and dates must agree everywhere.
         const notes = (doctorNotes || '').trim();
-        if (notes && !isSurging()) {
+        const suppliedCheck = async (results) => {
+          if (!notes || isSurging()) return;
           try {
             const fields = [];
             const add = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
@@ -332,13 +333,15 @@ Return ONLY the JSON object.`;
               userLanguage,
             });
           } catch (e) { console.error('doctor-visit-translator supplied-facts check:', e.message); }
-        }
+        };
         // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        // Number and consistency checks run side by side (lib/bothChecks.js).
-        await bothChecks(results,
+        // All three side by side (lib/bothChecks.js, speed 2026-10-27): the
+        // supplied-facts check wins a shared field, consistency last.
+        await allChecks(results, [
+          suppliedCheck,
           d => withNumberCheck(d, { label: 'doctor-visit-translator', context: notes.slice(0, 4000), userLanguage }),
           d => checkConsistency(d, { label: 'doctor-visit-translator', userLanguage: req.body?.userLanguage }),
-          { label: 'doctor-visit-translator' });
+        ], { label: 'doctor-visit-translator' });
       },
     });
 

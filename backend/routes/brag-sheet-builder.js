@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
@@ -256,9 +257,12 @@ Write every field with precision — no filler, no padding, no restating what wa
       complete: d => transformationsOf(d).length > 0,
       check: async (draft) => {
         const parsed = assemble(draft);
-        await groundBrag(parsed, req.body, 'brag-sheet-builder');
-        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(parsed, { label: 'brag-sheet-builder', userLanguage: req.body?.userLanguage });
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        await allChecks(parsed, [
+          x => groundBrag(x, req.body, 'brag-sheet-builder'),
+          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+          x => checkConsistency(x, { label: 'brag-sheet-builder', userLanguage: req.body?.userLanguage }),
+        ], { label: 'brag-sheet-builder' });
         // Back into the draft's shape, each rewrite in its own pass's slot.
         let at = 0;
         const rewrites = {};

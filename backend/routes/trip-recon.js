@@ -17,6 +17,7 @@
 // nearby "alternative places" by name with no search capability behind it.
 // See audit/tool-notes/SENSORYMINEFIELDMAPPER-NOTES.md for the full record.
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -507,22 +508,21 @@ ${knownInfo ? `WHAT THEY ALREADY KNOW ABOUT THE PLACE: ${knownInfo}\n` : ''}${sp
       ready: d => Boolean(d.summary),
       complete: d => Boolean(d.summary),
       check: async (parsed) => {
-        await runOutputGuard(parsed, {
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        // The world-facts check is sourced, so it wins a shared field.
+        await allChecks(parsed, [
+          x => checkWorldFacts(x, research, { label: 'trip-recon', fields: collectProseFields(x), subject: location, userLanguage }),
+          x => runOutputGuard(x, {
           label: 'trip-recon',
           fields: collectProseFields(parsed),
           supplied,
           promise: 'Help the visitor prepare for the sensory demands of a specific place using only what they supplied, plus general, clearly-labeled possibilities for that type of setting — never inventing crowd, noise, lighting, or layout facts about this specific place.',
           guard: router.outputGuard,
           userLanguage,
-        });
-        // Run AFTER the guard, not before: the guard mutates `parsed` in place,
-        // and its repair pass can blank out a flagged field instead of
-        // substituting it — despite being told not to. Cleaning first only
-        // catches blanks already in the raw model output, not ones the repair
-        // step introduces afterward. (Caught live during v2.1/v3.1 verification —
-        // don't move this back above runOutputGuard.) stripEmptyItems runs in
-        // finish, after both.
-        await checkWorldFacts(parsed, research, { label: 'trip-recon', fields: collectProseFields(parsed), subject: location, userLanguage });
+          }),
+        ], { label: 'trip-recon' });
+        // The guard's repair can blank a flagged field (caught live in v2.1/v3.1);
+        // stripEmptyItems runs in finish, after the merged checks.
       },
     });
   } catch (error) {

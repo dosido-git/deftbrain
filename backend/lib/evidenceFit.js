@@ -30,6 +30,7 @@ const { callClaudeWithRetry, withLanguage } = require('./claude');
 const { MODELS } = require('./models');
 const { stringFields, namesAField } = require('./outputGuard');
 const { NO_QUOTE_RULE, setByPath } = require('./factCheck');
+const { chunkByItem, runChunks } = require('./parallelChunks');
 
 const SYSTEM = `You check one finished answer against the evidence it was written from. Every figure and every conclusion must say what its source says — no more, and about the same people, period and measure.
 
@@ -51,7 +52,7 @@ Repair each field that does not fit:
 - same voice, about the same length or shorter, never empty, never an internal field name.
 Fields that fit are left alone. Correct statements are not hedged further.
 
-Work in two steps. First "items": every figure and every conclusion — [{"path":"...","says":"a few words","source_says":"the measure, population, period and comparison in the evidence, or 'not in the evidence'","fits":true|false,"rule":1-7 or null}]. Then "repairs": one per field with an item that does not fit.
+Work in two steps. First "items": every figure and every conclusion in the ANSWER FIELDS (not the read-only rest) — [{"path":"...","says":"a few words","source_says":"the measure, population, period and comparison in the evidence, or 'not in the evidence'","fits":true|false,"rule":1-7 or null}]. Keep each "says" and "source_says" under 12 words. Then "repairs": one per field with an item that does not fit.
 
 Return ONLY valid JSON: {"items":[...],"repairs":[{"path":"exact path from the list","replacement":"..."}]}
 ${NO_QUOTE_RULE}`;
@@ -59,8 +60,15 @@ ${NO_QUOTE_RULE}`;
 // Prose only: labels, enums, ids and short chips stay as they are.
 const isProse = v => typeof v === 'string' && v.trim().split(/\s+/).length >= 5 && !/\n\s*\n/.test(v.trim());
 
-// skip: top-level keys left out; keep: a path pattern left out (the visitor's
-// own words, which are not a claim about the evidence).
+// evidence: a string, or (fields) => string giving each chunk only the
+// evidence its fields cite. summary: top-level keys that may not be stronger
+// than the rest. skip: top-level keys left out; keep: a path pattern left out
+// (the visitor's own words, which are not a claim about the evidence).
+//
+// Speed (2026-10-27): one call over every field wrote ~3,300 tokens and took
+// 48s (p90 127s). The fields now go in parallel chunks, one per list item
+// (lib/parallelChunks.js); the summary fields get their own chunk, reading
+// the rest of the answer as context. Wait ≈ the slowest chunk.
 async function checkEvidenceFit(draft, { label, evidence, summary = [], userLanguage, skip = [], keep = null } = {}) {
   try {
     if (!draft || typeof draft !== 'object' || !evidence) return 0;
@@ -68,16 +76,20 @@ async function checkEvidenceFit(draft, { label, evidence, summary = [], userLang
     const fields = stringFields(draft, 200)
       .filter(([p, v]) => isProse(v) && !skip.includes(top(p)) && !(keep && keep.test(p)));
     if (!fields.length) return 0;
-    const tag = p => (summary.includes(top(p)) ? ' (SUMMARY)' : '');
-    const out = await callClaudeWithRetry({
+    const isSummary = ([p]) => summary.includes(top(p));
+    const body = fields.filter(f => !isSummary(f));
+    const chunks = [...chunkByItem(body, 5), fields.filter(isSummary)].filter(ch => ch.length);
+    const evidenceFor = ch => (typeof evidence === 'function' ? evidence(ch) : evidence);
+    const show = ch => ch.map(([p, v]) => `[${p}]${isSummary([p]) ? ' (SUMMARY)' : ''}\n${v}`).join('\n\n');
+    const outs = await runChunks(chunks, (ch, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 8000,
+      max_tokens: 3000,
       system: withLanguage(SYSTEM, userLanguage),
-      messages: [{ role: 'user', content: `EVIDENCE:\n${evidence}\n\nANSWER FIELDS:\n${fields.map(([p, v]) => `[${p}]${tag(p)}\n${v}`).join('\n\n')}` }],
-    }, { label: `${label}-evidence-fit` });
+      messages: [{ role: 'user', content: `EVIDENCE:\n${ch.every(isSummary) ? evidenceFor(fields) : evidenceFor(ch)}\n\n${ch.every(isSummary) && body.length ? `THE REST OF THE ANSWER (read only — compare the summary with it):\n${show(body)}\n\n` : ''}ANSWER FIELDS:\n${show(ch)}` }],
+    }, { label: `${label}-evidence-fit${chunks.length > 1 ? `-${i + 1}` : ''}` }));
     const known = new Map(fields);
     let changed = 0;
-    for (const r of Array.isArray(out?.repairs) ? out.repairs : []) {
+    for (const out of outs) for (const r of Array.isArray(out?.repairs) ? out.repairs : []) {
       const before = known.get(r?.path);
       const after = typeof r?.replacement === 'string' ? r.replacement.trim() : '';
       // A narrowing, not a rewrite: never empty, never much longer.

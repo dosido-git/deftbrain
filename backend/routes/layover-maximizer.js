@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
@@ -334,10 +335,13 @@ AT MOST 4 steps in best_plan, 4 food, 3 lounges, 5 pro_tips.`;
       check: async (parsed) => {
         // Before the code-computed clock times, which then overwrite whatever
         // the check touched there — subtraction stays in code.
-        await withNumberCheck(parsed, { label: 'layover-maximizer', context: visitorContext(req.body), userLanguage });
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        await allChecks(parsed, [
+          x => withNumberCheck(x, { label: 'layover-maximizer', context: visitorContext(req.body), userLanguage }),
+          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+          x => checkConsistency(x, { label: 'layover-maximizer', userLanguage: req.body?.userLanguage }),
+        ], { label: 'layover-maximizer' });
         clocks(parsed);
-        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(parsed, { label: 'layover-maximizer', userLanguage: req.body?.userLanguage });
       },
     });
 

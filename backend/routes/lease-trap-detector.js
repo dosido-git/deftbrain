@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const { answer, whileSearching } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
@@ -496,14 +497,16 @@ ${criticalRules}`;
         ready: d => Boolean(d.overall_assessment),
         complete: d => Boolean(d.overall_assessment),
         check: async (d) => {
-          // The number check and the consistency check run one after the
-          // other, as before; both are off the visitor's wait now.
-          await withNumberCheck(d, { label: 'lease-trap-detector', context: visitorContext(req.body), userLanguage });
-          // Re-pin after the number check: it rewrites numeric fields and must not
-          // be able to move the count off the list it counts.
+          // Speed (2026-10-27): the number check and the consistency check
+          // side by side (lib/bothChecks.js).
+          await allChecks(d, [
+            x => withNumberCheck(x, { label: 'lease-trap-detector', context: visitorContext(req.body), userLanguage }),
+            // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
+            x => checkConsistency(x, { label: 'lease-trap-detector', userLanguage: req.body?.userLanguage }),
+          ], { label: 'lease-trap-detector' });
+          // Re-pin after the checks: the number check rewrites numeric fields and
+          // must not be able to move the count off the list it counts.
           pinCount(d);
-          // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-          await checkConsistency(d, { label: 'lease-trap-detector', userLanguage: req.body?.userLanguage });
         },
       });
     } catch (err) {

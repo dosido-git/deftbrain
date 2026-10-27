@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router = express.Router();
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
@@ -532,7 +533,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       complete: d => Boolean(d.verdict),
       check: async (parsed) => {
         shape(parsed);
-        await withNumberCheck(parsed, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage });
+        const guard = async (parsed) => {
         const fields = [];
         const walk = (v, path) => {
           if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]);
@@ -550,6 +551,12 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
           userLanguage,
           locale,
         });
+        };
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        await allChecks(parsed, [
+          x => withNumberCheck(x, { label: 'justify-my-meeting', context: visitorContext(req.body), userLanguage }),
+          guard,
+        ], { label: 'justify-my-meeting' });
       },
     });
 

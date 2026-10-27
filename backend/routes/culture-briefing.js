@@ -1,4 +1,5 @@
 const express = require('express');
+const { allChecks } = require('../lib/bothChecks');
 const router  = express.Router();
 const { answer, onlyKeys } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
@@ -289,8 +290,11 @@ Rules:
       complete: d => Boolean(d.overview && d.sectionMap && Object.keys(d.sectionMap).length),
       check: async (draft) => {
         const parsed = assemble(draft);
-        await guardResult(parsed, req.body);
-        await checkWorldFacts(parsed, research, { label: 'culture-briefing', fields: stringFields(parsed).filter(([, v]) => v.length > 15), subject: destination, userLanguage });
+        // Speed (2026-10-27): independent checks side by side (lib/bothChecks.js).
+        await allChecks(parsed, [
+          x => checkWorldFacts(x, research, { label: 'culture-briefing', fields: stringFields(x).filter(([, v]) => v.length > 15), subject: destination, userLanguage }),
+          x => guardResult(x, req.body),
+        ], { label: 'culture-briefing' });
         // Back into the draft's shape, repairs included.
         const { sections, ...rest } = parsed;
         Object.keys(draft).forEach(k => delete draft[k]);

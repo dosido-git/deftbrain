@@ -678,6 +678,27 @@ def audit_file(filepath):
         )
 
     # ───────────────────────────────────────────────────────────────────────
+    # S10.1 · checks awaited one after another (speed, owner 2026-10-27)
+    # ───────────────────────────────────────────────────────────────────────
+    #
+    # Two shared checks awaited in sequence inside a `check:` block double the
+    # wait for nothing: they read the same draft and lib/bothChecks.js
+    # allChecks runs them side by side and merges by priority. Flags a check
+    # block with two or more top-level `await <sharedCheck>(` statements.
+    SHARED_CHECKS = r'(?:withNumberCheck|checkConsistency|runOutputGuard|checkWorldFacts|calibrateClaims|trimRepeats|checkEvidenceFit|checkAgainstSupplied|guardResult|checkStoryClaims|applyExistingUses|groundBrag|guardQuoteCheck)'
+    for m in re.finditer(r'check:\s*async\s*\([^)]*\)\s*=>\s*\{', no_comments):
+        depth, i = 1, m.end()
+        while i < len(no_comments) and depth:
+            ch = no_comments[i]
+            depth += (ch == '{') - (ch == '}')
+            i += 1
+        block = no_comments[m.end():i]
+        seq = re.findall(r'(?m)^\s*await\s+' + SHARED_CHECKS + r'\s*\(', block)
+        if len(seq) >= 2:
+            fails.append(f'S10.1: {len(seq)} shared checks awaited one after another in a check block — run them side by side with allChecks (lib/bothChecks.js)')
+            break
+
+    # ───────────────────────────────────────────────────────────────────────
     # S7.4f · res.json called with bare variable (no shape validation)
     # ───────────────────────────────────────────────────────────────────────
     #

@@ -22,6 +22,7 @@ const { callClaudeWithRetry, withLanguage } = require('./claude');
 const { MODELS } = require('./models');
 const { stringFields, namesAField } = require('./outputGuard');
 const { NO_QUOTE_RULE, setByPath } = require('./factCheck');
+const { chunkByItem, runChunks } = require('./parallelChunks');
 
 const SYSTEM = `You review one finished answer for OVERREACH: places where it sounds more certain than anyone could be. Rewrite only those fields.
 
@@ -49,15 +50,18 @@ async function calibrateClaims(draft, { label, userLanguage } = {}) {
     if (!draft || typeof draft !== 'object') return 0;
     const fields = stringFields(draft, 200).filter(([, v]) => isProse(v));
     if (!fields.length) return 0;
-    const out = await callClaudeWithRetry({
+    // Speed (2026-10-27): parallel chunks, one per list item — one call over
+    // every field took 29s (lib/parallelChunks.js).
+    const chunks = chunkByItem(fields, 5);
+    const outs = await runChunks(chunks, (ch, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
+      max_tokens: 3000,
       system: withLanguage(SYSTEM, userLanguage),
-      messages: [{ role: 'user', content: `FIELDS:\n${fields.map(([p, v]) => `[${p}]\n${v}`).join('\n\n')}` }],
-    }, { label: `${label}-certainty-check` });
+      messages: [{ role: 'user', content: `FIELDS:\n${ch.map(([p, v]) => `[${p}]\n${v}`).join('\n\n')}` }],
+    }, { label: `${label}-certainty-check${chunks.length > 1 ? `-${i + 1}` : ''}` }));
     const known = new Map(fields);
     let changed = 0;
-    for (const r of Array.isArray(out?.repairs) ? out.repairs : []) {
+    for (const r of outs.flatMap(out => (Array.isArray(out?.repairs) ? out.repairs : []))) {
       const before = known.get(r?.path);
       const after = typeof r?.replacement === 'string' ? r.replacement.trim() : '';
       // A calibration, not a rewrite: never empty, never much longer or shorter.

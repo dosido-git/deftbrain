@@ -2535,3 +2535,30 @@ Each category has four shades plus one contrast colour, exposed as CSS variables
 7. **Readable:** every coloured text ≥ 4.5:1 on what it sits on, in light and dark.
 
 In code: each tool maps its `c` keys to these variables inside `if (sv) Object.assign(c, {…})`, so the non-prototype branch stays untouched.
+
+## Speed defaults (owner, 2026-10-27: speed is primary)
+
+A visitor who waits 70–90s leaves and does not come back. A call's wait is set
+by how much it WRITES (~50 tokens/s), not by how much it reads, so every tool
+follows these by default:
+
+1. **Checks run side by side.** Independent checks on one draft go through
+   `allChecks` (lib/bothChecks.js), listed in priority order: sourced or
+   recomputed checks first, the consistency check last. Never two awaited
+   shared checks in a row — backend audit rule **S10.1** fails it.
+2. **No single call writes more than ~1,200 tokens.** A longer answer is
+   split into parallel parts (lib/progressive.js `keyGroups`, or one part per
+   list item when the list is known in advance — Signal vs. Noise writes one
+   pass per two researched claims). The first part is on screen in under 5s.
+3. **Long checks split per item.** A check that reads many items runs one
+   short call per item or chunk (lib/parallelChunks.js `chunkByItem` /
+   `runChunks`): evidence fit, certainty, analogy checks.
+4. **Nothing but the answer blocks the answer.** Background verification
+   (source links, page dates) waits at most 2.5s, then finishes in the
+   background and fixes the cache for the next request.
+5. **Measure, don't guess.** Read per-call `ms` from the METRIC log lines;
+   the slowest single call bounds the wait. Signal vs. Noise, 2026-10-27:
+   82s → first part 3.9s, all parts 12.8s, fully checked 25–31s.
+
+Open sweep: audit/SPEED-REPORT-2026-10-27.md lists the 60 routes whose
+answer step is still one long write (20–84s).

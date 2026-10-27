@@ -194,6 +194,12 @@ const hasFigure = (page, n) => new RegExp(`(?<![\\d.])${n.replace('.', '\\.')}(?
 // on it alone — unless that would leave nothing, when the packet is kept.
 async function verifySources(stored) {
   if (!stored || stored.links_checked || !Array.isArray(stored.sources)) return;
+  if (stored.links_checking) return stored.links_checking; // one check per packet, however many requests
+  stored.links_checking = verifyNow(stored);
+  return stored.links_checking;
+}
+
+async function verifyNow(stored) {
   const results = await Promise.all(stored.sources.map(s => checkSourceLink(s.url)));
   stored.sources.forEach((s, i) => { if (results[i].date) s.date = results[i].date; });
   // A finding's figures must be on a page it cites. The research pass wrote
@@ -295,7 +301,11 @@ Return ONLY:
   });
 
   const stored = block ? groundedData(key) : null;
-  if (stored) await verifySources(stored);
+  // Speed (2026-10-27): the page checks never hold up an answer for more than
+  // 2.5s. They carry on in the background and fix the cached packet in place,
+  // so the next request (and the readiness poll, which also lands here) gets
+  // the checked version.
+  if (stored) await Promise.race([verifySources(stored), new Promise(r => setTimeout(r, 2500))]);
   const packet = stored ? cleanPacket(stored) : null;
   // cleanPacket stamps "now" (right for a fresh search, whose own date is
   // unreliable); a cached packet keeps the stamp from when it was searched,
