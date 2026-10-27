@@ -26,6 +26,8 @@ For each repeat, write a replacement for the LATER field only:
 - keep everything it adds that the earlier field does not say;
 - point back to the earlier one in plain words for the rest ("Use the validation letter above.", "As above: don't pay before it is validated.");
 - never point by an internal field name, and never empty a field;
+- never open with a pointer phrase ("As above:", "As covered in…", "As established…") and then restate the point anyway: either keep only what is new, or one short clause pointing back;
+- an item in a closing summary list (takeaways, bottom line) stays a short plain statement of its point, with no pointer — a summary is allowed to summarize; only cut what it repeats in detail;
 - keep its form: a list item stays one item, a letter that adds nothing becomes one sentence pointing to the earlier letter.
 
 Not repeats: a letter or script addressed to a different person or for a different purpose; a short label or heading; a field that only restates the visitor's own situation.

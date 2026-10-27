@@ -12,6 +12,8 @@ const COLD_WAIT_MS = Number(process.env.SIGNAL_RESEARCH_COLD_WAIT_MS || 60_000);
 const SEARCH_TIMEOUT_MS = Number(process.env.SIGNAL_RESEARCH_TIMEOUT_MS || 150_000);
 const MAX_USES = Number(process.env.SIGNAL_RESEARCH_MAX_USES || 6);
 
+const { checkSourceLink } = require('./publicUrl');
+
 function compact(s, n = 240) {
   return String(s || '').trim().replace(/\s+/g, ' ').slice(0, n);
 }
@@ -118,6 +120,7 @@ function cleanPacket(raw) {
       url,
       date: compact(src?.date, 40) || null,
       source_type: compact(src?.source_type, 60) || 'other',
+      publisher_stake: (v => (v && v !== 'null' ? v : null))(compact(src?.publisher_stake, 160)),
     });
   }
 
@@ -134,7 +137,10 @@ function cleanPacket(raw) {
       // Source priority within one finding: stronger sources present → the
       // explanatory ones are not needed to establish it.
       if (ids.some(strong)) ids = ids.filter(strong);
-      return { text: compact(f?.text, 900), source_ids: ids };
+      const scope = {};
+      for (const k of ['measure', 'population', 'period', 'excerpt']) { const v = compact(f?.[k], 240); if (v && v !== 'null') scope[k] = v; }
+      if (Array.isArray(f?.figures_not_on_page) && f.figures_not_on_page.length) scope.figures_not_on_page = f.figures_not_on_page.slice(0, 6).map(x => compact(x, 20));
+      return { text: compact(f?.text, 900), ...scope, source_ids: ids };
     }).filter(f => f.text && f.source_ids.length);
     // …and within one claim: a finding resting on tier 4 alone is dropped
     // when a sibling finding has stronger support.
@@ -172,9 +178,51 @@ function cleanPacket(raw) {
   };
 }
 
+// Figures worth checking on a page: decimals and numbers above 12, not years.
+const normFig = f => { let x = f.replace(/[\s ]/g, ''); if (/^\d{1,3}([,.]\d{3})+$/.test(x)) x = x.replace(/[,.]/g, ''); else x = x.replace(',', '.'); return x.replace(/\.$/, ''); };
+const normText = t => t.replace(/(\d)[,.](\d{3})(?!\d)/g, '$1$2').replace(/(\d),(\d)/g, '$1.$2');
+function checkableFigures(text) {
+  return [...new Set((String(text || '').match(/\d+(?:[,.]\d+)*/g) || []).map(normFig))]
+    .filter(n => (/\./.test(n) || Number(n) > 12) && !/^(19|20)\d\d$/.test(n));
+}
+const hasFigure = (page, n) => new RegExp(`(?<![\\d.])${n.replace('.', '\\.')}(?![\\d]|\\.\\d)`).test(page);
+
+// T13 (audit/DEFECT-TYPES.md): a source must still lead to the page holding
+// its finding, dated as that page dates itself. Checked once per cached
+// packet (the flag lives on the cached object). A dead link or one that now
+// redirects to a home or section page is dropped, with the findings resting
+// on it alone — unless that would leave nothing, when the packet is kept.
+async function verifySources(stored) {
+  if (!stored || stored.links_checked || !Array.isArray(stored.sources)) return;
+  const results = await Promise.all(stored.sources.map(s => checkSourceLink(s.url)));
+  stored.sources.forEach((s, i) => { if (results[i].date) s.date = results[i].date; });
+  // A finding's figures must be on a page it cites. The research pass wrote
+  // "10 to 20 percentage points" that no cited page held (owner's review,
+  // 2026-10-27). Judged only when every cited page was read as text; a page
+  // that could not be read (blocked, PDF, script-rendered) proves nothing.
+  // Not dropped — a difference the pass computed is legitimately absent —
+  // but marked, and the synthesis and checks treat it as not established.
+  const textById = new Map(stored.sources.map((s, i) => [s.id, results[i].text && results[i].text.length > 3000 ? normText(results[i].text) : null]));
+  let unseen = 0;
+  for (const c of stored.claims || []) for (const f of c.findings || []) {
+    const pages = (f.source_ids || []).map(id => textById.get(id));
+    if (!pages.length || pages.some(p => !p)) continue;
+    const missing = checkableFigures(f.text).filter(n => !pages.some(p => hasFigure(p, n)));
+    if (missing.length) { f.figures_not_on_page = missing; unseen++; }
+  }
+  if (unseen) console.log(`[signal-vs-noise-research] ${unseen} finding(s) carry figures not found on their cited pages`);
+  const kept = stored.sources.filter((s, i) => !['dead', 'moved'].includes(results[i].status));
+  const dropped = stored.sources.length - kept.length;
+  if (dropped && cleanPacket({ ...stored, sources: kept })) {
+    stored.sources = kept;
+    console.log(`[signal-vs-noise-research] dropped ${dropped} source(s) whose link is dead or moved`);
+  }
+  stored.links_checked = true;
+}
+
 function renderResearchBlock(packet) {
   if (!packet) return '';
-  return `\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A claim marked "support": "secondary_only" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n${JSON.stringify(packet)}`;
+  return `\n\nWEB RESEARCH PACKET — these are the ONLY outside-world findings you may present as researched facts. Every empirical conclusion must cite one or more source IDs from this packet. If the packet does not establish something, say it remains unresolved. A finding's figures_not_on_page were not found on the page it cites: do not state those figures as findings. A claim marked "support": "secondary_only" rests on explanatory or commercial sources alone — it may be reported as worth verifying, or a Noise item may note that only secondary sources were found, but it is never a Signal conclusion.\n${JSON.stringify(packet)}`;
 }
 
 // `coldWaitMs` overrides the default cold wait. The main route keeps the
@@ -192,7 +240,7 @@ async function claimResearch({ topic, conflictingAdvice, userContext, region, ex
     coldWaitMs,
     force,
     timeoutMs: SEARCH_TIMEOUT_MS,
-    maxTokens: 6500,
+    maxTokens: 9000, // finding scope fields (2026-10-27) lengthen the packet
     maxUses: MAX_USES,
     system: `You are the research pre-pass for Signal vs. Noise. Use web search to investigate the visitor's ACTUAL competing claims. Prefer sources in this order when appropriate: systematic reviews/meta-analyses and primary research; government/public-health/regulatory sources; professional or standards bodies; official datasets; then high-quality secondary sources such as established news organizations or reference works. NEVER use blog platforms or user-generated content as a source — Medium, Substack, Blogspot, WordPress.com, Quora, Reddit, LinkedIn posts, YouTube, social media, or personal blogs on any domain — even when a post there summarizes research; go to the research it summarizes instead, or leave the point unresolved. Do not use commercial educational, coaching, fitness, nutrition-explainer, finance-explainer, advocacy, or general explanatory sites (Healthline, WebMD, Precision Nutrition, ACE, Examine, Investopedia, NerdWallet and their kind) to establish a conclusion when a primary study, review, government source, or professional body is available — and label such a site high_quality_secondary, never professional_body or primary_study. Label source_type by what the page actually is, not by how authoritative it sounds: a thesis, dissertation, preprint, working paper, or conference poster is thesis_or_preprint, not primary_study; a magazine, trade, or professional-publication article is magazine_or_trade; ResearchGate, SSRN, and arXiv are HOSTS — label the document, not the host. Do not use search-result snippets as evidence when a source page is available. Do not count sources as votes. Distinguish direct evidence from commentary. If credible sources disagree or evidence is thin, mark the claim mixed or unresolved. Never invent a source, title, URL, date, study result, or limitation. Return ONLY valid JSON. Never place a double-quote character inside any JSON string value.`,
     userPrompt: `Research the following topic with web_search as of today.
@@ -203,6 +251,8 @@ ${compact(topic, 1000)}
 ${conflictingAdvice ? `CLAIMS / CONFLICTING ADVICE:\n${compact(conflictingAdvice, 3000)}\n` : ''}
 ${userContext ? `VISITOR CONTEXT (use only to understand relevance; do not research or infer private facts):\n${compact(userContext, 1500)}\n` : ''}
 ${region ? `VISITOR REGION: ${compact(region, 120)}\n` : ''}
+
+Keep every finding's scope exactly as its source states it: the measure (a growth rate is not a level; base pay is not gross pay; median is not average), the population (a top-100 ranking is not all graduates), the period (a January report is not an August one), the design and count (five studies are not five experiments). Never merge figures from different measures, populations or periods into one finding. A figure you cannot find on a source page you visited does not go in. The source's date is the date the page itself shows — never the date you searched. official_dataset is a statistical release or dataset itself; a company's commentary, blog or summary of its own data is magazine_or_trade or high_quality_secondary. Each url is the specific page holding the finding, never a site's home or section page.
 
 Research only the claims actually raised or distinctions necessary to evaluate them. Aim for 2-4 strong sources per material claim, but fewer is correct when the evidence base does not support more. For health/science claims, prefer reviews, primary papers, government health agencies, and major professional bodies. For finance/economics, prefer regulators, official data, peer-reviewed research, and primary methodology documents. For law/policy, prefer statutes, regulators, courts, and government sources.
 
@@ -216,6 +266,10 @@ Return ONLY:
       "findings": [
         {
           "text": "one calibrated empirical finding actually supported by the cited sources",
+          "measure": "exactly what was measured, in the source's own terms (median annual base-pay growth; total cost of attendance; persistence after a difficult task) — or null",
+          "population": "who or what it covers (job-changers in US private payrolls; graduates of the FT's top 100 schools; undergraduate participants) — or null",
+          "period": "when the data is from, as the source states it (August 2026; within three years of graduating; 2021–2026) — or null",
+          "excerpt": "the source's own words for the key figure or result, under 30 words — or null",
           "source_ids": ["S1", "S2"]
         }
       ],
@@ -229,7 +283,8 @@ Return ONLY:
       "publisher": "publisher / journal / organization",
       "url": "full URL actually visited",
       "date": "publication/update date if visible, otherwise null",
-      "source_type": "systematic_review | meta_analysis | primary_study | government | regulator | professional_body | official_dataset | methodology | thesis_or_preprint | magazine_or_trade | high_quality_secondary | other"
+      "source_type": "systematic_review | meta_analysis | primary_study | government | regulator | professional_body | official_dataset | methodology | thesis_or_preprint | magazine_or_trade | high_quality_secondary | other",
+      "publisher_stake": "a few words when the publisher is a company, industry association or advocacy group with an interest in the conclusion (a graduate-business-school association on whether business school pays) — otherwise null"
     }
   ]
 }`,
@@ -240,6 +295,7 @@ Return ONLY:
   });
 
   const stored = block ? groundedData(key) : null;
+  if (stored) await verifySources(stored);
   const packet = stored ? cleanPacket(stored) : null;
   // cleanPacket stamps "now" (right for a fresh search, whose own date is
   // unreliable); a cached packet keeps the stamp from when it was searched,
@@ -255,4 +311,14 @@ function researchState({ topic, conflictingAdvice, exampleId }) {
   return groundedStatus(researchKey({ topic, conflictingAdvice, exampleId }));
 }
 
-module.exports = { claimResearch, researchState, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS, tierOf, EXPLAINER_HOST_HINTS };
+module.exports = { claimResearch, researchState, verifySources, cleanPacket, researchKey, isBlogPlatformUrl, BLOG_PLATFORM_HOSTS, tierOf, EXPLAINER_HOST_HINTS };
+
+// Self-check: node backend/lib/claimResearch.js --check
+if (require.main === module && process.argv.includes('--check')) {
+  const assert = require('assert');
+  assert.deepStrictEqual(checkableFigures('In 2022, 10 to 20 percentage points; 4.7% vs 3.0%; 310,872 profiles; 3 studies'), ['20', '4.7', '3.0', '310872']);
+  const page = normText('Job-changers saw 4.7% growth and stayers 3.0%, across 310,872 profiles.');
+  assert.ok(hasFigure(page, '4.7') && hasFigure(page, '310872') && !hasFigure(page, '20') && !hasFigure(page, '47'));
+  console.log('claimResearch ok');
+  process.exit(0);
+}

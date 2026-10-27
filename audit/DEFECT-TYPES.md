@@ -32,6 +32,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | T10 | Too-vague input answered in words, shown as a generic error | `lib/claude.js` stops at a words-not-JSON reply; `lib/surge.js` middleware answers 422 `unclear_input`; `useClaudeAPI` shows `err_unclear_input` | **Built 2026-10-15**; every route | 0 |
 | T11 | Parts written apart drift (second-guess, overlap, thin coverage) | `lib/progressive.js` `planFirst` (one pass chooses the list or the claim, the rest build on it) + `planNote` (treat it as final); repeats that survive: `lib/repeatCheck.js` `trimRepeats` (after display) | **Built 2026-10-16**; repeat check 2026-10-25 on Bill Rescue | sweep open |
 | T12 | Decorative analogy (the effect in costume, no cause) | `lib/analogyCheck.js` `reviewAnalogies` (Sonnet: mechanism / familiar / maps; rewrites failures) | **Built 2026-10-23**; Analogy Engine | 1 (Missing Link) |
+| T13 | Sourced claims drift from their sources (measure, population, period, design; rules the source never tested; summary stronger than the evidence; dead links, wrong dates, mislabelled or interested publishers) | `lib/evidenceFit.js` `checkEvidenceFit` (Sonnet, after display); `lib/publicUrl.js` `checkSourceLink` (link + page date, free); research findings carry measure/population/period/excerpt | **Built 2026-10-27**; Signal vs. Noise | sweep open |
 
 ---
 
@@ -286,6 +287,35 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 |---|---|
 | Analogy Engine — main answer and "Show more" | **fixed with shared fix** (runs before the number and consistency checks, so they read the replacement) |
 | Missing Link — `visual_or_analogy` in `/the-gap/dig` and the trace refresher | **open** — exposed; that endpoint answers in one piece, so the check would add its time before the answer shows |
+
+---
+
+## T13 — Sourced claims drift from their sources
+
+**What goes wrong.** Every figure is in the research, so the figure check passes — but the answer says something the source does not. Owner's review of Signal vs. Noise, 2026-10-27 (job-switching, passion, an MBA):
+- a pay-growth gap read as a pay level ("job-changers have outearned stayers"), and switching as its cause;
+- base-pay and gross-pay growth used interchangeably; a January finding labelled August;
+- a salary rise among graduates of the FT's top 100 schools read as MBA graduates in general;
+- a study of beliefs about interests turned into a competence-first career rule it never tested; "five studies" became "five experiments";
+- "often the faster path" in a kernel of truth with no source; "longitudinal studies, not experiments";
+- the summary sections firmer than the evidence sections, and the same qualification in five sections;
+- sources: a link redirecting to a general page, a page dated April listed as October, a company commentary labelled "official dataset", three ADP pages counted as three lines of evidence, an industry body's figure with no note of its interest.
+
+**Why prompts can't fix it.** Signal vs. Noise's prompt already had rules 13–24 against each of these. The research pass also summarised findings without their scope, so the synthesis could not keep what it was never given.
+
+**Shared fix.**
+- `lib/claimResearch.js`: each finding carries `measure`, `population`, `period`, `excerpt`; each source a `publisher_stake`; the page's own date; `official_dataset` defined; specific pages only.
+- `lib/publicUrl.js` `checkSourceLink`: drops a source whose link is dead, is a site's home page, or now redirects to a shallower page; takes the date the page shows. Free (plain fetch, SSRF-guarded), once per cached packet.
+- Same fetch: a finding's figures must appear on a page it cites (`figures_not_on_page`, `claimResearch.verifySources`); a marked figure is "not in the evidence" for the synthesis and `checkEvidenceFit`. On the stored career example it caught the "10 to 20 percentage points" claim, the moved Payscale link, the ADP home-page source and the GMAC date (April 15, not October 9).
+- `lib/evidenceFit.js` `checkEvidenceFit(draft, { evidence, summary })`: lists every figure and conclusion with what its source says (measure, population, period, comparison), repairs the ones that do not fit — narrowed, scope named, or the unsupported clause removed; SUMMARY fields may not be stronger than the evidence. ~$0.05–0.10 per answer.
+- Then `trimRepeats` (T11) in page order.
+- Display: sources numbered in reading order; "from N organizations" when fewer than the sources; a note on publishers with a stake.
+
+| Instance | Status |
+|---|---|
+| SignalVsNoise — career advice review (owner, 2026-10-27), all items above | **fixed with shared fix** (fresh live run: growth not level, one measure, consistent dates, "five studies", no untested rule, sources S1–S5 in order; a run on the stored pre-fix research still showed "experiments" and "fixed passion or an undeveloped one" — the stored research refreshes itself on first use) |
+| Progressive (streamed) answers skipped the reply filter (`voiceFix`): "the visitor", prompt markers and US spelling were never fixed on 27 tools | **fixed** (`res.locals.fixBody`, applied to every frame in `lib/progressive.js`) |
+| **Sweep (open):** tools that state researched figures — BuyWise, Someone Said It Better (quote attribution), Plain Talk, Ticket Tackler, Plot Hole Finder, any `worldFacts` tool whose answer restates a finding | open |
 
 ---
 

@@ -19,6 +19,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 const { claimResearch, researchState, tierOf } = require('../lib/claimResearch');
+const { checkEvidenceFit } = require('../lib/evidenceFit');
+const { trimRepeats } = require('../lib/repeatCheck');
 
 function collectProseFields(parsed) {
   const fields = [];
@@ -123,6 +125,7 @@ NAME THE NOISE.
 LEAVE GENUINE UNCERTAINTY INTACT.`;
 
 router.outputStandard = 'v2';
+router.renumberSources = (p) => renumberSources(p); // for the self-check below
 router.outputGuard = {
   prohibit: [
     'invented_source_or_source_id',
@@ -255,6 +258,9 @@ function sanitizeResult(parsed, packet) {
   parsed.the_signal.items.forEach(x => x.source_ids.forEach(id => used.add(id)));
   parsed.the_noise.forEach(x => x.source_ids.forEach(id => used.add(id)));
   parsed.still_worth_verifying.forEach(x => x.source_ids.forEach(id => used.add(id)));
+  // An ID named in the prose ("…(S9)") is used too, or the reader is sent to
+  // a source the list leaves out (live run, 2026-10-27).
+  for (const m of JSON.stringify([parsed.framing, parsed.the_signal, parsed.the_noise, parsed.still_worth_verifying, parsed.the_bottom_line, parsed.what_general_claims_cant_decide]).matchAll(/\bS\d+\b/g)) if (valid.has(m[0])) used.add(m[0]);
   parsed.sources_examined = packet.sources.filter(s => used.has(String(s.id).toUpperCase()));
 
   return parsed;
@@ -320,6 +326,40 @@ function dropUnsourcedFigures(parsed, packet, typed) {
   return dropped.length;
 }
 
+// The order the page shows the answer (src/tools/SignalVsNoise.js).
+const PAGE_ORDER = ['topic_as_understood', 'framing', 'the_signal', 'the_noise', 'still_worth_verifying', 'what_general_claims_cant_decide', 'the_bottom_line', 'sources_of_noise'];
+
+// Sources numbered 1, 2, 3… in the order the reader meets them (owner's
+// review, 2026-10-27: S2, S4, S7 after unused ones were dropped). Display
+// only — the checks read the draft, which keeps the packet's own IDs.
+function renumberSources(parsed) {
+  const order = [];
+  const meet = id => { if (id && !order.includes(id)) order.push(id); };
+  const scan = v => {
+    if (typeof v === 'string') (v.match(/\bS\d+\b/g) || []).forEach(meet);
+    else if (Array.isArray(v)) v.forEach(scan);
+    else if (v && typeof v === 'object') { (Array.isArray(v.source_ids) ? v.source_ids : []).forEach(meet); Object.entries(v).forEach(([k, x]) => k !== 'source_ids' && scan(x)); }
+  };
+  for (const k of PAGE_ORDER) scan(parsed[k]);
+  (parsed.sources_examined || []).forEach(s => meet(s.id));
+  const listed = new Set((parsed.sources_examined || []).map(s => s.id));
+  const map = new Map(order.filter(id => listed.has(id)).map((id, i) => [id, `S${i + 1}`]));
+  const re = id => map.get(id) || id;
+  const walk = v => {
+    if (typeof v === 'string') return v.replace(/\bS\d+\b/g, re);
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === 'object') { for (const k of Object.keys(v)) v[k] = k === 'source_ids' ? (v[k] || []).map(re) : walk(v[k]); return v; }
+    return v;
+  };
+  for (const k of PAGE_ORDER) parsed[k] = walk(parsed[k]);
+  parsed.sources_examined = (parsed.sources_examined || []).map(s => ({ ...s, id: re(s.id) }))
+    .sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
+  // How many separate organisations the sources come from: three ADP pages
+  // are one line of evidence, not three.
+  parsed.publisher_count = new Set(parsed.sources_examined.map(s => String(s.publisher || (() => { try { return new URL(s.url).hostname; } catch { return s.url; } })()).toLowerCase().replace(/^www\./, '').trim())).size;
+  return parsed;
+}
+
 function buildSupplied(topic, conflictingAdvice, userContext) {
   return `TOPIC:\n${topic.trim()}\n\n${conflictingAdvice?.trim() ? `CLAIMS / CONFLICTING ADVICE:\n${conflictingAdvice.trim()}\n\n` : ''}${userContext?.trim() ? `VISITOR-SUPPLIED CONTEXT:\n${userContext.trim()}\n\n` : ''}`;
 }
@@ -345,7 +385,11 @@ const SHARED_RULES = `- Analyze the visitor's actual claims; do not add adjacent
 - Do not turn correlation into causation unless the packet supports causation.
 - Do not call evidence consensus, settled, definitive, or proven unless the packet explicitly justifies that strength.
 - When evidence is mixed, say mixed. When unresolved, say unresolved.
-- Return [] rather than manufacturing content.`;
+- Return [] rather than manufacturing content.
+- Several sources from one publisher are one line of evidence, not several. When a publisher has a stake in the question (publisher_stake in the packet), say so where its figure is used.
+- Keep each finding's measure, population, period and design exactly as the packet gives them; never trade one for a related one (growth for level, base for gross, one month for another, a ranking's graduates for all graduates, studies for experiments).
+- A kernel of truth, caveat or aside is a claim like any other: it needs a source in the packet, or it goes.
+- Say each qualification once, where it applies; elsewhere refer to it in a few words rather than restating it.`;
 
 // Polling-friendly limit for the readiness endpoint: the client asks every
 // ~6s while a cold research fetch runs (up to ~4 minutes), which the
@@ -484,7 +528,7 @@ Return ONLY valid JSON:
       "noise_label": "short plain-language label",
       "what_the_evidence_supports_instead": "narrower version actually supported",
       "what_went_wrong": "exactly how the original wording exceeds the evidence",
-      "kernel_of_truth": "supported core worth preserving or null",
+      "kernel_of_truth": "supported core worth preserving, resting on a packet finding cited in source_ids — or null",
       "source_ids": ["S1", "S3"]
     }
   ]
@@ -547,7 +591,7 @@ ${SHARED_RULES}`;
       dropUnsourcedFigures(parsed, research.packet, supplied);
       parsed = sanitizeResult(parsed, research.packet);
       softenCompletenessClaims(parsed);
-      return parsed;
+      return renumberSources(parsed);
     };
     const restParts = keyGroups([
       ['still_worth_verifying', 'what_general_claims_cant_decide', 'claim_labels'],
@@ -562,19 +606,53 @@ ${SHARED_RULES}`;
         const p = clean(d);
         return Boolean(p?.framing && (p.the_signal?.items?.length || p.the_noise?.length || p.still_worth_verifying?.length));
       },
-      check: d => runOutputGuard(d, {
-        label: 'signal-vs-noise',
-        fields: collectProseFields(d),
-        supplied: `${supplied}\nRESEARCH PACKET:\n${JSON.stringify(research.packet)}`,
-        promise: 'Research the visitor\'s competing claims, show what the retrieved evidence supports, distinguish overstatement from genuine uncertainty, and preserve source provenance.',
-        guard: router.outputGuard,
-        userLanguage,
-      }),
+      check: async (d) => {
+        await runOutputGuard(d, {
+          label: 'signal-vs-noise',
+          fields: collectProseFields(d),
+          supplied: `${supplied}\nRESEARCH PACKET:\n${JSON.stringify(research.packet)}`,
+          promise: 'Research the visitor\'s competing claims, show what the retrieved evidence supports, distinguish overstatement from genuine uncertainty, and preserve source provenance.',
+          guard: router.outputGuard,
+          userLanguage,
+        });
+        // T13 (audit/DEFECT-TYPES.md): every figure and conclusion read against
+        // its finding's measure, population and period; summaries no stronger
+        // than the evidence sections (owner's review, 2026-10-27).
+        await checkEvidenceFit(d, {
+          label: 'signal-vs-noise',
+          evidence: JSON.stringify(research.packet),
+          summary: ['framing', 'the_bottom_line', 'what_general_claims_cant_decide'],
+          skip: ['topic_as_understood', 'claim_labels'],
+          userLanguage,
+        });
+        // T11: the same qualification under Signal, Noise, Still worth
+        // verifying and the Bottom Line — kept once, in page order.
+        await trimRepeats(d, { label: 'signal-vs-noise', userLanguage, order: PAGE_ORDER });
+      },
     });
   } catch (error) {
     console.error('[SignalVsNoise]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// Self-check: node backend/routes/signal-vs-noise.js --check
+if (require.main === module && process.argv.includes('--check')) {
+  const assert = require('assert');
+  const r = renumberSources({
+    the_signal: { items: [{ claim: 'x', source_ids: ['S4'] }] },
+    the_noise: [{ claim: 'y', source_ids: ['S2', 'S4'] }],
+    the_bottom_line: { supported_takeaways: ['z [S2, S4]', 'see (S4)'] },
+    sources_examined: [{ id: 'S2', publisher: 'ADP' }, { id: 'S4', publisher: 'adp' }],
+  });
+  assert.deepStrictEqual(r.the_signal.items[0].source_ids, ['S1']);
+  assert.deepStrictEqual(r.the_noise[0].source_ids, ['S2', 'S1']);
+  assert.strictEqual(r.the_bottom_line.supported_takeaways[0], 'z [S2, S1]');
+  assert.strictEqual(r.the_bottom_line.supported_takeaways[1], 'see (S1)');
+  assert.deepStrictEqual(r.sources_examined.map(s => s.id), ['S1', 'S2']);
+  assert.strictEqual(r.publisher_count, 1);
+  console.log('signal-vs-noise ok');
+  process.exit(0);
+}
 
 module.exports = router;

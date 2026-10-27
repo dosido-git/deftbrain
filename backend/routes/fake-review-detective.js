@@ -1,31 +1,8 @@
 const express = require('express');
 
-// SSRF guard: block requests to private / loopback / link-local / metadata
-// addresses. Applied to the user-supplied review URL AND re-checked per redirect.
-const dnsPromises = require('dns').promises;
-function isBlockedHost(hostname) {
-  const h = (hostname || '').toLowerCase();
-  if (h === 'localhost' || h.endsWith('.localhost') || h.endsWith('.internal') || h.endsWith('.local')) return true;
-  // literal IP checks (v4 + common v6)
-  const v4 = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-  if (v4) {
-    const [a,b] = [parseInt(v4[1],10), parseInt(v4[2],10)];
-    if (a===10 || a===127 || a===0 || (a===169&&b===254) || (a===172&&b>=16&&b<=31) || (a===192&&b===168) || a>=224) return true;
-  }
-  if (h === '::1' || h.startsWith('fc') || h.startsWith('fd') || h.startsWith('fe80') || h.startsWith('[::1]') || h.includes('169.254.169.254')) return true;
-  return false;
-}
-async function assertPublicUrl(u) {
-  const parsed = new URL(u);
-  if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Only http/https URLs are supported');
-  if (isBlockedHost(parsed.hostname)) throw new Error('That URL is not allowed');
-  // Resolve DNS and re-check — defeats hostnames that point at private IPs.
-  try {
-    const addrs = await dnsPromises.lookup(parsed.hostname, { all: true });
-    if (addrs.some(a => isBlockedHost(a.address))) throw new Error('That URL is not allowed');
-  } catch (e) { if (/not allowed/.test(e.message)) throw e; /* resolution failure handled downstream */ }
-  return parsed;
-}
+// SSRF guard (shared since 2026-10-27): applied to the user-supplied review
+// URL AND re-checked per redirect.
+const { assertPublicUrl } = require('../lib/publicUrl');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
@@ -124,7 +101,7 @@ router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res
           return res.status(400).json({ error: 'No reviews provided' });
         }
         const parsed = await scoreReviews(req.body);
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
+        if (!parsed || (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed))) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
@@ -325,7 +302,7 @@ Return ONLY valid JSON:
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-4' });
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
+        if (!parsed || (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed))) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         await checkConsistency(parsed, { label: 'fake-review-detective', userLanguage: req.body?.userLanguage });

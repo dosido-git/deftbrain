@@ -50,6 +50,19 @@ function stripMarkers(s) {
   return s.replace(MARKER_RE, (m, pre, first) => pre + first.toUpperCase());
 }
 
+// Prompt words for the tool's own machinery (T6): Signal vs. Noise told a
+// reader what "the research packet" held (owner's review, 2026-10-27). The
+// reader saw sources, not a packet. English only, and only when the visitor
+// did not use the word.
+function internalWords(s) {
+  if (typeof s !== 'string' || !/packet/i.test(s)) return s;
+  return s
+    .replace(/\b(?:the|this|our) (?:web )?(?:research )?packet's (\w+)/gi, (m, what) => `${/^T/.test(m) ? 'The' : 'the'} ${what} found here`)
+    .replace(/\b(?:the|this|our) (?:web )?research packet\b/gi, m => (/^T/.test(m) ? 'The evidence found here' : 'the evidence found here'))
+    .replace(/\b(?:the|this) packet\b/gi, m => (/^T/.test(m) ? 'The evidence found here' : 'the evidence found here'))
+    .replace(/\bresearch packet\b/gi, 'evidence found here');
+}
+
 // A nullable field the model filled with the WORD null (T6): Name Storm
 // printed "⚠️ null" under every name because the schema said "null if none"
 // and the model wrote the string. A string that is only null/undefined is
@@ -83,8 +96,9 @@ function voiceFixMiddleware(req, res, next) {
   const fixVisitor = english && !/visitor/i.test(typed);
   const fixSpelling = english && spelling.wantsUS(req.body);
   const keep = fixSpelling ? spelling.typedBritish(req.body) : null;
+  const fixInternal = english && !/packet/i.test(typed);
   const json = res.json.bind(res);
-  res.json = (body) => {
+  const fixBody = (body) => {
     if (res.statusCode < 400 && body && typeof body === 'object') {
       const visitor = { n: 0 };
       const spelt = { n: 0 };
@@ -93,6 +107,7 @@ function voiceFixMiddleware(req, res, next) {
         let out = s;
         { const f = stripMarkers(out); if (f !== out) marked.n++; out = f; }
         if (fixVisitor) { const f = fixText(out); if (f !== out) visitor.n++; out = f; }
+        if (fixInternal) { const f = internalWords(out); if (f !== out) marked.n++; out = f; }
         if (fixSpelling) { const f = spelling.fixText(out, keep); if (f !== out) spelt.n++; out = f; }
         return out;
       };
@@ -102,11 +117,15 @@ function voiceFixMiddleware(req, res, next) {
       if (nulls.n) console.log(`[voiceFix] ${req.path}: ${nulls.n} field(s) said "null" as text — made empty`);
       if (visitor.n) console.log(`[voiceFix] ${req.path}: ${visitor.n} field(s) said "visitor" — rewritten to "you"`);
       if (spelt.n) console.log(`[voiceFix] ${req.path}: ${spelt.n} field(s) had British spelling — made US`);
-      if (marked.n) console.log(`[voiceFix] ${req.path}: ${marked.n} field(s) carried a prompt marker (INFERRED: …) — removed`);
+      if (marked.n) console.log(`[voiceFix] ${req.path}: ${marked.n} field(s) carried a prompt marker or internal word — removed`);
     }
-    return json(body);
+    return body;
   };
+  // Streamed (progressive) answers bypass res.json; lib/progressive.js
+  // passes each frame through this instead.
+  res.locals.fixBody = fixBody;
+  res.json = (body) => json(fixBody(body));
   next();
 }
 
-module.exports = { voiceFixMiddleware, fixText, stripMarkers, dropNullWords };
+module.exports = { voiceFixMiddleware, fixText, stripMarkers, dropNullWords, internalWords };

@@ -552,14 +552,14 @@ const SignalVsNoise = ({ tool }) => {
                   from both states now. */}
               <div className="flex items-start justify-between gap-3 mb-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('svn_analyzing')}</p>
+                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{busy ? t('svn_analyzing') : t('svn_topic_label')}</p>
                   {results?.analysis_mode === 'verified_research' && (
                     <>
                       <span className={`text-[13px] font-bold px-1.5 py-0.5 rounded border ${sv ? 'border-[var(--sc-accent)] text-[var(--sc-accent)]' : isDark ? 'border-emerald-700 text-emerald-300' : 'border-emerald-300 text-emerald-700'}`}>
                         {t('svn_mode_research')}
                       </span>
                       <span className={`text-[13px] ${c.textMuted}`}>
-                        {t('svn_sources_checked', { n: results?.sources_examined?.length || 0 })}
+                        {t('svn_sources_checked', { n: results?.sources_examined?.length || 0 })}{results?.publisher_count > 0 && results.publisher_count < (results?.sources_examined?.length || 0) ? ` ${t('svn_from_orgs', { m: results.publisher_count })}` : ''}
                       </span>
                       {/* Research date, always — and a way to re-run against today's
                           sources when this isn't today's research. Reopening a saved
@@ -800,6 +800,7 @@ const SignalVsNoise = ({ tool }) => {
                           <p className={`text-[13px] ${c.textMuted}`}>
                             {[src.publisher, src.date, src.source_type?.replaceAll('_', ' ')].filter(Boolean).join(' · ')}
                           </p>
+                          {src.publisher_stake && <p className={`text-[13px] ${c.textMuted}`}>{t('svn_stake_note')}</p>}
                         </div>
                       </div>
                     ))}
@@ -826,7 +827,7 @@ const SignalVsNoise = ({ tool }) => {
           the second line is the claims actually investigated, the third is
           what the saved analysis contains — counts, never verdicts. */}
       {sessionHistory.length > 0 && (
-        <div className={sv ? 'bg-[var(--sc-field)] border-2 border-[var(--sc-line)] rounded-xl p-5' : `${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        <div data-print-hide className={sv ? 'bg-[var(--sc-field)] border-2 border-[var(--sc-line)] rounded-xl p-5' : `${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`${sv ? 'text-base font-bold text-[var(--sc-strong)]' : `text-xs font-bold ${c.textMuted}`} mb-2`}>{t('svn_recent_checks')}</p>
           <div className={`divide-y ${sv ? 'divide-[var(--sc-line)]' : isDark ? 'divide-zinc-700' : 'divide-gray-200'}`}>
             {(showAllChecks ? sessionHistory : sessionHistory.slice(0, RECENT_VISIBLE)).map(e => {

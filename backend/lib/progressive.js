@@ -51,9 +51,12 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
     res.flushHeaders();
     open = true;
   };
+  // The reply filter (lib/voiceFix.js) wraps res.json; streamed frames go
+  // through it here, or "the visitor" and prompt markers reach the page.
+  const fixBody = res.locals?.fixBody || (x => x);
   const send = (frame) => {
     openStream();
-    res.write(`data: ${JSON.stringify(frame)}\n\n`);
+    res.write(`data: ${JSON.stringify(fixBody(frame))}\n\n`);
   };
   const t0 = Date.now();
   let firstAt = 0;
@@ -148,7 +151,7 @@ async function whileSearching(req, res, kind, promise) {
     // error, or a finished answer it built without answer()) becomes one.
     res.json = (body) => {
       const err = body && typeof body.error === 'string' ? body.error : null;
-      res.write(`data: ${JSON.stringify(err ? { error: err } : { draft: body })}\n\n`);
+      res.write(`data: ${JSON.stringify(err ? { error: err } : { draft: (res.locals?.fixBody || (x => x))(body) })}\n\n`);
       if (!err) res.write('data: {"done":true}\n\n');
       res.end();
       return res;
