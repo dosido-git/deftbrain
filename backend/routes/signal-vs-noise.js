@@ -551,10 +551,11 @@ ${SHARED_RULES}`;
     // runs on every draft (finish), so an unsourced figure never shows even
     // briefly; the guard runs after the answer is on screen.
     const system = withLanguage(PERSONALITY, userLanguage) + locale + `\n\n${NO_QUOTE_RULE}`;
-    const pass = (keys, i) => callClaudeWithRetry({
+    // `extra` narrows a pass (the claim passes name their claims); `tag` labels it.
+    const pass = (keys, i, extra = '') => callClaudeWithRetry({
       model: MODELS.SMART, max_tokens: keys.includes('claims') ? 4000 : 2000, system,
-      messages: [{ role: 'user', content: onlyKeys(prompt, keys) }],
-    }, { label: `signal-vs-noise:synthesis-${i + 1}` });
+      messages: [{ role: 'user', content: onlyKeys(prompt, keys) + extra }],
+    }, { label: `signal-vs-noise:synthesis-${typeof i === 'number' ? i + 1 : i}` });
     // Speed (2026-10-27): the claim cards are the long write (29s in one
     // pass). The researched claims go to parallel passes, two each; each pass
     // writes the cards for its own claims and they are joined in order.
@@ -563,10 +564,7 @@ ${SHARED_RULES}`;
     for (let i = 0; i < researched.length; i += 2) groups.push(researched.slice(i, i + 2));
     const claimParts = (groups.length ? groups : [[]]).map((g, gi) => ({
       required: gi === 0,
-      run: () => callClaudeWithRetry({
-        model: MODELS.SMART, max_tokens: 2000, system,
-        messages: [{ role: 'user', content: onlyKeys(prompt, ['claims']) + (g.length ? `\n\nTHIS PASS covers ONLY the visitor claims behind these researched claims; other passes cover the rest at the same time — at most 2 claims items:\n${JSON.stringify(g.map(c => c.claim))}` : '') }],
-      }, { label: `signal-vs-noise:synthesis-claims-${gi + 1}` }),
+      run: () => pass(['claims'], `claims-${gi + 1}`, g.length ? `\n\nTHIS PASS covers ONLY the visitor claims behind these researched claims; other passes cover the rest at the same time — at most 2 claims items:\n${JSON.stringify(g.map(c => c.claim))}` : ''),
       apply: (d, out) => {
         // Hidden from the checks and the reply: they read `claims`.
         if (!d.claimSlots) Object.defineProperty(d, 'claimSlots', { value: [], writable: true, enumerable: false });
