@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Caret from './Caret';
 import { ActionBarProvider, useActionBar } from './ActionBarContext';
 import { ActionBar } from './ActionButtons';
@@ -46,15 +46,27 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   // Handout printing: a closed <details> keeps its content
   // off paper, and no CSS reliably opens one, so open them for the print and
   // put them back after. Only disclosures in the tool card that print at all.
+  // The browser names a saved PDF after the page title, which is the search
+  // title ("Bill Rescue — Medical Bill Negotiation Help | DeftBrain"). For the
+  // print it becomes "Bill Rescue – DeftBrain – 2026-10-27" (owner, 2026-10-27).
+  const printName = useRef('');
   useEffect(() => {
     const opened = [];
+    let pageTitle = '';
     const before = () => {
+      if (printName.current) {
+        pageTitle = document.title;
+        document.title = `${printName.current} – DeftBrain – ${new Date().toLocaleDateString('en-CA')}`;
+      }
       document.querySelectorAll('[data-print-handout] [data-print-section] details:not([open])').forEach(d => {
         if (d.closest('[data-print-hide]')) return;
         d.open = true; opened.push(d);
       });
     };
-    const after = () => { while (opened.length) opened.pop().open = false; };
+    const after = () => {
+      while (opened.length) opened.pop().open = false;
+      if (pageTitle) { document.title = pageTitle; pageTitle = ''; }
+    };
     window.addEventListener('beforeprint', before);
     window.addEventListener('afterprint', after);
     return () => { window.removeEventListener('beforeprint', before); window.removeEventListener('afterprint', after); };
@@ -107,6 +119,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const isDark = theme === 'dark';
   // PROTOTYPE: category colour scheme (src/data/toolSchemes.js) — null for
   // every tool not in the prototype, which then renders exactly as before.
+  printName.current = detectedTool?.title || '';
   const sv = schemeStyle(detectedTool, isDark);
 
   // Bookmark toast
