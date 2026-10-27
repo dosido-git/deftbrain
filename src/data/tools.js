@@ -1626,7 +1626,7 @@ export const tools = [
   tagline: "You don't have to take \"No\" for an answer",
   tags: ['complaint', 'escalate', 'insurance', 'landlord', 'hoa', 'customer service', 'dispute', 'refund', 'bureaucracy', 'rights', 'exception', 'escalation', 'appeal'],
   icon: "🚪",
-  categories: ['Decisions', 'Home & Daily Life', 'Learning', 'Money'],
+  categories: ['Conversations', 'Home & Daily Life', 'Learning', 'Money'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "Discovered – not indexed" page real substance.
@@ -4621,7 +4621,7 @@ export const tools = [
   tagline: "Explore the cooking possibilities with what's available",
   tags: ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner', 'meal prep', 'fridge', 'dietary', 'substitute', 'swap'],
   icon: "🍳",
-  categories: ['Decisions', 'Home & Daily Life'],
+  categories: ['Home & Daily Life'],
   headerColor: "#d4dde8",
   description: "Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.",
   exampleOutput: {
@@ -7953,7 +7953,7 @@ tagline: "Take command of your available energy",
   tagline: "Notice which friendships are fading before they're gone",
   tags: ["stay in touch", "losing touch", "friendship drift", "reconnect with friend", "reach out after a long time", "what to say to a friend", "keep in touch", "friendship reminder", "contact reminder", "contact rhythm", "forgot to text", "awkward reconnect", "maintain friendships", "relationship maintenance", "time blindness friendship", "who should i reach out to"],
   icon: "💛",
-  categories: ['Decisions', 'Relationships'],
+  categories: ['Relationships'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).

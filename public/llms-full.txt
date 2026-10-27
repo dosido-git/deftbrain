@@ -164,6 +164,29 @@ Before you sign a lease, find out which clauses could cost you. Upload or paste 
 
 **Before you go.** Check the lease before you sign. Once it's signed, even a clause the law won't enforce can take a fight to remove.
 
+### Mise en Place
+
+URL: https://deftbrain.com/MiseEnPlace
+Tagline: Explore the cooking possibilities with what's available
+Categories: Home & Daily Life
+
+Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.
+
+**When.** There's food in the fridge and no plan.
+
+**You give.** What you have, or a photo. Your time, skill level and dietary needs.
+
+**You get.** A meal plus the order of operations — what to start first, what to do while it cooks.
+
+**The edge.** Sequencing, not recipes. The hard part of home cooking is what to do when, and that's what it plans.
+
+**Good to know.**
+
+- Fridge photos work surprisingly well — AI identifies ingredients visually
+- The parallel task suggestions are the real value — they cut total time significantly
+- Critical timing flags (⏰) are steps where you MUST pay attention or risk ruining the dish
+- Leftovers strategy prevents food waste by transforming extras into a different meal
+
 ### Paperwork Path
 
 URL: https://deftbrain.com/PaperworkPath
@@ -484,6 +507,33 @@ Tell DeftBrain where you are, what you want to spend, and what kind of night you
 - Want a different feel? Choose more relaxed, more romantic or more adventurous and reimagine the evening — no need to start over.
 
 **Before you go.** Hours, prices and availability can change. Confirm the details and make reservations where needed.
+
+### Friendship Fade Alerter
+
+URL: https://deftbrain.com/FriendshipFadeAlerter
+Tagline: Notice which friendships are fading before they're gone
+Categories: Relationships
+
+Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.
+
+**When.** You keep meaning to reach out and months go by.
+
+**You give.** The people who matter, how often you'd like to be in touch, and when you last were.
+
+**You get.** Who's fading, and something specific to say to each.
+
+**The edge.** Built for time-blindness. It notices the drift you can't feel, because three months doesn't feel like three months.
+
+**Good to know.**
+
+- ADD EVERYONE WHO MATTERS - not just close friends, but also family, mentors, acquaintances you value. The tool tracks them all.
+- BE HONEST about ideal frequencies - don't set 'weekly' because you think you should. Set realistic: if you realistically talk every 6 weeks, set 'Monthly' or create custom.
+- CONTEXT NOTES are powerful - 'loves hiking, ask about new trail', 'mom struggling with aging parents', 'we always talk about sci-fi books'. Helps generate better starters.
+- USE conversation starters even if they feel scripted - they're designed to sound natural and remove the 'what do I say' paralysis.
+- DON'T feel guilty about using the tool - needing help with time awareness is valid, maintaining friendships matters more than doing it 'naturally'.
+- SNOOZE during genuinely busy times (exams, work crunch, mental health crisis) - relationships can wait, guilt can't pile up.
+- CELEBRATE successes - reconnection counter shows you ARE maintaining relationships.
+- Quick message templates ('thinking of you!') for super low-friction contact when overwhelmed.
 
 ### Giftology
 
@@ -2068,6 +2118,29 @@ Pre-game toolkit for interviews, presentations, hard conversations, dates, and m
 - For medical appointments, add your specific concern (getting bad news, not being heard) — generic prep misses the point
 - Run Prep mode 24 hours before, not 5 minutes before — give yourself time to actually absorb the plan
 
+### Not So Fast!
+
+URL: https://deftbrain.com/NotSoFast
+Tagline: You don't have to take "No" for an answer
+Categories: Conversations, Home & Daily Life, Learning, Money
+
+Been told no by a company, agency, or institution? DeftBrain helps you find what usually goes unmentioned: exceptions that aren't advertised, how the appeal works, who can actually change the decision, and how to escalate if the first answer stands.
+
+**When.** You've been told no by a company, agency, or institution.
+
+**You give.** The system you're up against, the problem, and the outcome you want.
+
+**You get.** The exceptions that exist but aren't advertised, the phrases that route your call differently, the regulator that actually investigates, and the escalation ladder.
+
+**The edge.** Every formal system has an informal architecture. This maps that one, not the published policy.
+
+**Good to know.**
+
+- The 'magic phrases' section is literal — use the exact wording provided
+- The regulatory angle works even if the complaint goes nowhere — it signals seriousness
+- The win-likelihood assessment tells you if this battle is worth the time investment
+- Pair with MagicMouth to script the actual phone calls
+
 ### Read the Room
 
 URL: https://deftbrain.com/ReadTheRoom
@@ -2742,79 +2815,6 @@ Stuck between choices? Describe the decision, your options, and what matters to 
 - Decision Prism only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it
 - The 'Still Stuck' exercises (coin-flip reaction, future-self exercise, smallest step) are genuinely effective — try them
 - Use the comparison matrix to have structured conversations with people you trust
-
-### Friendship Fade Alerter
-
-URL: https://deftbrain.com/FriendshipFadeAlerter
-Tagline: Notice which friendships are fading before they're gone
-Categories: Decisions, Relationships
-
-Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.
-
-**When.** You keep meaning to reach out and months go by.
-
-**You give.** The people who matter, how often you'd like to be in touch, and when you last were.
-
-**You get.** Who's fading, and something specific to say to each.
-
-**The edge.** Built for time-blindness. It notices the drift you can't feel, because three months doesn't feel like three months.
-
-**Good to know.**
-
-- ADD EVERYONE WHO MATTERS - not just close friends, but also family, mentors, acquaintances you value. The tool tracks them all.
-- BE HONEST about ideal frequencies - don't set 'weekly' because you think you should. Set realistic: if you realistically talk every 6 weeks, set 'Monthly' or create custom.
-- CONTEXT NOTES are powerful - 'loves hiking, ask about new trail', 'mom struggling with aging parents', 'we always talk about sci-fi books'. Helps generate better starters.
-- USE conversation starters even if they feel scripted - they're designed to sound natural and remove the 'what do I say' paralysis.
-- DON'T feel guilty about using the tool - needing help with time awareness is valid, maintaining friendships matters more than doing it 'naturally'.
-- SNOOZE during genuinely busy times (exams, work crunch, mental health crisis) - relationships can wait, guilt can't pile up.
-- CELEBRATE successes - reconnection counter shows you ARE maintaining relationships.
-- Quick message templates ('thinking of you!') for super low-friction contact when overwhelmed.
-
-### Mise en Place
-
-URL: https://deftbrain.com/MiseEnPlace
-Tagline: Explore the cooking possibilities with what's available
-Categories: Decisions, Home & Daily Life
-
-Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.
-
-**When.** There's food in the fridge and no plan.
-
-**You give.** What you have, or a photo. Your time, skill level and dietary needs.
-
-**You get.** A meal plus the order of operations — what to start first, what to do while it cooks.
-
-**The edge.** Sequencing, not recipes. The hard part of home cooking is what to do when, and that's what it plans.
-
-**Good to know.**
-
-- Fridge photos work surprisingly well — AI identifies ingredients visually
-- The parallel task suggestions are the real value — they cut total time significantly
-- Critical timing flags (⏰) are steps where you MUST pay attention or risk ruining the dish
-- Leftovers strategy prevents food waste by transforming extras into a different meal
-
-### Not So Fast!
-
-URL: https://deftbrain.com/NotSoFast
-Tagline: You don't have to take "No" for an answer
-Categories: Decisions, Home & Daily Life, Learning, Money
-
-Been told no by a company, agency, or institution? DeftBrain helps you find what usually goes unmentioned: exceptions that aren't advertised, how the appeal works, who can actually change the decision, and how to escalate if the first answer stands.
-
-**When.** You've been told no by a company, agency, or institution.
-
-**You give.** The system you're up against, the problem, and the outcome you want.
-
-**You get.** The exceptions that exist but aren't advertised, the phrases that route your call differently, the regulator that actually investigates, and the escalation ladder.
-
-**The edge.** Every formal system has an informal architecture. This maps that one, not the published policy.
-
-**Good to know.**
-
-- The 'magic phrases' section is literal — use the exact wording provided
-- The regulatory angle works even if the complaint goes nowhere — it signals seriousness
-- The win-likelihood assessment tells you if this battle is worth the time investment
-- Pair with MagicMouth to script the actual phone calls
 
 ### Small Change, Big Difference
 

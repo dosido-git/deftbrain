@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "6cf1d9797f93ef74d28aee3b635141a60fc46389",
+  "hash": "1272106aff26e4f6e02e259cfab5c9c754c26e62",
   "lastmod": "2026-10-27"
  },
  "static:about": {
@@ -100,7 +100,7 @@
   "lastmod": "2026-10-27"
  },
  "tool:MiseEnPlace": {
-  "hash": "da3f58eed0022ef07d194aa3f16d353635db5b03",
+  "hash": "7ad0ed65abef2656600c34fd8e43c61dfe4cbba5",
   "lastmod": "2026-10-27"
  },
  "tool:NameStorm": {
@@ -168,8 +168,8 @@
   "lastmod": "2026-08-19"
  },
  "tool:NotSoFast": {
-  "hash": "faea721124db3540831e38637e3f14a075175722",
-  "lastmod": "2026-10-25"
+  "hash": "9b91c840e99be01d0410d7011a520d1769e5a40e",
+  "lastmod": "2026-10-27"
  },
  "tool:TheWholeStory": {
   "hash": "b7385961f48036465400077f12b61c1ceaa8572b",
@@ -224,7 +224,7 @@
   "lastmod": "2026-10-08"
  },
  "category:conversations": {
-  "hash": "9832076f6865f448f21b347db2a64cc25f11d7ae",
+  "hash": "5ee76335324423d6176e59065cb0de32715c40e5",
   "lastmod": "2026-10-27"
  },
  "category:learning": {
@@ -244,7 +244,7 @@
   "lastmod": "2026-10-08"
  },
  "category:decisions": {
-  "hash": "4a18a9be324e70c3af78d17aa9447764d6a19702",
+  "hash": "f88a99a5a6737472135f0aa27488f0b077be9e08",
   "lastmod": "2026-10-27"
  },
  "category:tasks": {
@@ -548,7 +548,7 @@
   "lastmod": "2026-10-27"
  },
  "tool:FriendshipFadeAlerter": {
-  "hash": "5efe5d29b044e27b5f7ee8bbca9b7fad085d6743",
+  "hash": "5d62704eec97f5db9fb64a0d57934d5a3bc3ff35",
   "lastmod": "2026-10-27"
  },
  "tool:TripRecon": {

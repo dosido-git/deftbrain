@@ -16,6 +16,7 @@
 - [Final Wish](https://deftbrain.com/FinalWish): Proactively organize your end-of-life wishes and messages to loved ones
 - [LaundroMat](https://deftbrain.com/LaundroMat): What to wash, how to wash it, and what to do when things go wrong
 - [Lease Trap Detector](https://deftbrain.com/LeaseTrapDetector): Find predatory clauses hiding in your lease
+- [Mise en Place](https://deftbrain.com/MiseEnPlace): Explore the cooking possibilities with what's available
 - [Paperwork Path](https://deftbrain.com/PaperworkPath): Marriage, inheritance, moving, having a baby: the documents that matter!
 - [Plant Rescue](https://deftbrain.com/PlantRescue): Figure out what's wrong with your plant and how to save it
 - [Recipe Chaos Solver](https://deftbrain.com/RecipeChaosSolver): Rescue a recipe gone wrong and look like a pro!
@@ -35,6 +36,7 @@
 ## Relationships
 
 - [Date Night](https://deftbrain.com/DateNight): Plan a special evening without hours of searching
+- [Friendship Fade Alerter](https://deftbrain.com/FriendshipFadeAlerter): Notice which friendships are fading before they're gone
 - [Giftology](https://deftbrain.com/Giftology): The perfect gift for the hardest person to shop for.
 - [Party Architect](https://deftbrain.com/PartyArchitect): Host events people actually remember.
 
@@ -114,6 +116,7 @@
 - [Magic Mouth (M²)](https://deftbrain.com/MagicMouth): Ask for the unlikely—and get it!
 - [Mend](https://deftbrain.com/Mend): Match your apology to the actual harm caused
 - [Nerve Check](https://deftbrain.com/NerveCheck): Preparation toolkit for interviews, presentations, hard conversations, dates, and more
+- [Not So Fast!](https://deftbrain.com/NotSoFast): You don't have to take "No" for an answer
 - [Read the Room](https://deftbrain.com/ReadTheRoom): Recognize and navigate social interactions with aplomb
 - [The Final Word](https://deftbrain.com/TheFinalWord): Arguments settled. Facts checked. No appeals.
 - [Toast Writer](https://deftbrain.com/ToastWriter): Toasts, speeches, and tributes that sound like you.
@@ -152,9 +155,6 @@
 - [Break My Plan?](https://deftbrain.com/BreakMyPlan): Find the weak spots in your plan before they find you.
 - [Decision Coach](https://deftbrain.com/DecisionCoach): Get unstuck on a choice you keep going back and forth on
 - [Decision Prism](https://deftbrain.com/DecisionPrism): See a tough decision from every angle
-- [Friendship Fade Alerter](https://deftbrain.com/FriendshipFadeAlerter): Notice which friendships are fading before they're gone
-- [Mise en Place](https://deftbrain.com/MiseEnPlace): Explore the cooking possibilities with what's available
-- [Not So Fast!](https://deftbrain.com/NotSoFast): You don't have to take "No" for an answer
 - [Small Change, Big Difference](https://deftbrain.com/SmallChangeBigDifference): Review your routines and identify obstacles
 - [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? See what kind of case you actually have.
 - [Which Life?](https://deftbrain.com/WhichLife): Feel both futures before you choose.
