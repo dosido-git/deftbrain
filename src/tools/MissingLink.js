@@ -462,7 +462,7 @@ const MissingLink = ({ tool }) => {
         {/* Likely gap */}
         {gap && (
           // The likely gap is the answer's key box on a category page.
-          <div className={'p-5 rounded-2xl border-2 ' + (sv ? 'bg-[var(--sc-card)] border-[var(--sc-accent)]' : c.gapHigh)}>
+          <div data-keybox="" className={'p-5 rounded-2xl border-2 ' + (sv ? 'bg-[var(--sc-card)] border-[var(--sc-accent)]' : c.gapHigh)}>
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">🎯</span>
               <div>

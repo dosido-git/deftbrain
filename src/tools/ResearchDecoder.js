@@ -730,7 +730,7 @@ const ResearchDecoder = ({ tool }) => {
         {decodeResult && (() => { const r = decodeResult; const answer = (
           <div className="space-y-4">
             <CheckNote status={checkStatus} className={c.textMuted} />
-            <div className={`${c.warningBox} border rounded-xl p-5 space-y-3`}>
+            <div data-keybox="" className={`${c.warningBox} border rounded-xl p-5 space-y-3`}>
               <h3 className={`font-bold ${c.accentTxt} text-sm`}>📌 {t('rd_the_finding')}</h3>
               <p className={`text-lg font-semibold ${c.text}`}>{r.finding}</p>
               {r.source_scope && <BasedOnBadge scope={r.source_scope} />}
@@ -860,7 +860,7 @@ const ResearchDecoder = ({ tool }) => {
               </div>
             )}
             {r.what_it_got_right?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">✅ {t('rd_got_right')}</h3>{r.what_it_got_right.map((g, i) => <p key={i} className="text-sm mt-1">• {g}</p>)}</div>}
-            {r.more_accurate_version && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>📝 {t('rd_more_accurate')}</h3><p className={`text-sm ${c.text} mt-1`}>{r.more_accurate_version}</p></div>}
+            {r.more_accurate_version && <div data-keybox="" className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>📝 {t('rd_more_accurate')}</h3><p className={`text-sm ${c.text} mt-1`}>{r.more_accurate_version}</p></div>}
           </div>
         ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; })()}
       </>}

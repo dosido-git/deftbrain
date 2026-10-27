@@ -750,7 +750,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div data-copy-results ref={resultsRef} className="space-y-4">
           {/* Fixed copy. Everything below is scores and flags; this is the
               reason any of it is worth reading. */}
-          <div className={sv ? 'bg-[var(--sc-card)] border-2 border-[var(--sc-accent)] rounded-xl p-5 space-y-2' : `${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+          <div data-keybox="" className={sv ? 'bg-[var(--sc-card)] border-2 border-[var(--sc-accent)] rounded-xl p-5 space-y-2' : `${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
             <p className={`text-sm font-bold ${c.text}`}>💚 {t('frd_first_matters')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{t('frd_fm_1')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{t('frd_fm_2')}</p>
