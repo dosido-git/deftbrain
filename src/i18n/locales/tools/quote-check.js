@@ -91,7 +91,7 @@ export const quoteCheck = {
     qc_verdict_SPECIFIC_CONCERNS_FOUND: "SPECIFIC CONCERNS FOUND",
     qc_verdict_NOT_ENOUGH_INFORMATION: "NOT ENOUGH INFORMATION",
 
-    qc_summary_heading: "What the Quote Includes",
+    qc_summary_heading: "What the quote includes",
     qc_summary_diagnosis: "Diagnosis",
     qc_summary_work: "Proposed work",
     qc_summary_parts: "Parts",
@@ -105,21 +105,21 @@ export const quoteCheck = {
     qc_itemization_LUMP_SUM: "Lump sum",
     qc_itemization_UNCLEAR: "Unclear",
 
-    qc_document_check_heading: "Document Check",
+    qc_document_check_heading: "Document check",
     qc_you_said: "You said:",
     qc_document_says: "The document shows:",
 
-    qc_arithmetic_heading: "Does the Math Work?",
+    qc_arithmetic_heading: "Does the math work?",
     qc_calculated: "Calculated:",
     qc_quoted: "Quoted:",
 
-    qc_concerns_heading: "Specific Concerns",
+    qc_concerns_heading: "Specific concerns",
     qc_concerns_none: "No specific problems are visible in the information you provided.",
     qc_concerns_none_caveat: "That doesn't establish that the price is fair.",
 
-    qc_unknowns_heading: "What the Quote Doesn't Tell You",
+    qc_unknowns_heading: "What the quote doesn't tell you",
 
-    qc_second_quote_heading: "Second Quote",
+    qc_second_quote_heading: "Second quote",
     qc_vs: "vs",
     qc_difference: "difference",
     qc_scope_comparable: "Scope comparable",
@@ -127,18 +127,18 @@ export const quoteCheck = {
     qc_scope_NO: "No",
     qc_scope_UNKNOWN: "Unknown",
 
-    qc_replace_heading: "Repair vs. Replace",
+    qc_replace_heading: "Repair vs. replace",
 
-    qc_script_heading: "What to Say",
+    qc_script_heading: "What to say",
 
-    qc_questions_heading: "Questions to Ask Before You Approve",
+    qc_questions_heading: "Questions to ask before you approve",
 
-    qc_second_opinion_heading: "Second Opinion?",
+    qc_second_opinion_heading: "Second opinion?",
     qc_second_opinion_WORTH_CONSIDERING: "Worth considering",
     qc_second_opinion_MAY_NOT_ADD_MUCH: "May not add much",
     qc_second_opinion_NOT_ENOUGH_TO_TELL: "Not enough to tell",
 
-    qc_safety_heading: "Safety First",
+    qc_safety_heading: "Safety first",
 
     qc_related: "Related tools",
     qc_leverage: "Leverage Logic",
