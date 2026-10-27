@@ -434,6 +434,30 @@ Find out whether your layover leaves time to get out of the airport — go, stay
 
 **Before you go.** Before leaving the airport, check the entry rules for your passport on an official government site. This plan assumes you're allowed out.
 
+### Micro-Adventure Mapper
+
+URL: https://deftbrain.com/MicroAdventureMapper
+Tagline: Turn a free hour into a small adventure
+Categories: Travel & Events
+
+Got an hour or two and want to do something different? Tell us where you are, how much time you have, what sounds good, and how you're getting around. Micro-Adventure Mapper builds a small local outing that fits the time, budget, and constraints you actually have.
+
+**When.** You have a free hour or two and no plan for it.
+
+**You give.** Where you are, how long you have, what sounds good, and how you are getting around.
+
+**You get.** A small local outing built around those constraints — a few stops, a route, and what to check before you leave.
+
+**The edge.** It names the type of place to look for rather than inventing a venue it cannot currently see, so the plan survives a closed door.
+
+**Good to know.**
+
+- Specific itineraries remove 'I don't know what to do' barrier
+- Most micro-adventures are free or nearly free - cost isn't a barrier
+- 2-3 hours is perfect for maintaining novelty without exhaustion
+- Photography theme works anywhere - transforms familiar into exploration
+- The 'pro tip' section adds insider knowledge that makes it feel special
+
 ## Relationships
 
 ### Date Night
@@ -585,6 +609,27 @@ Five stars doesn't always mean five-star quality. Paste reviews or import them f
 - The Genuine Consensus section is the most actionable — it tells you what the product actually is based on reviews you can trust
 - Try the example reviews to see the tool in action before pasting your own
 
+### Markup Detective
+
+URL: https://deftbrain.com/MarkupDetective
+Tagline: Why does this cost that? Follow the money.
+Categories: Money
+
+Ever wonder why a $5 coffee costs $5 or hospital aspirin costs $25? Describe any product or service, and Markup Detective will show you where the money goes and why the price may be much higher than you expected.
+
+**When.** Something costs more than it should and you want to know why.
+
+**You give.** The product or service, and the price you saw.
+
+**You get.** Where your money actually goes — materials, labor, brand premium, pure margin — and the pricing psychology in play.
+
+**Good to know.**
+
+- Adding the specific price and context gets more precise breakdowns
+- The pricing-practice section explains how the industry actually sets its prices
+- The comparison shows what the same thing usually costs away from this particular venue or channel
+- Save money tips are specific to each item, not generic advice
+
 ### Money Diplomat
 
 URL: https://deftbrain.com/MoneyDiplomat
@@ -734,7 +779,7 @@ Turn what you've done into a case for your review, a promotion, or a resume that
 
 URL: https://deftbrain.com/CaptionMagic
 Tagline: Find the words that fit the photo.
-Categories: Career and Business, Conversations, Just for Fun
+Categories: Career and Business, Conversations, Ideas & Diversions
 
 A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.
 
@@ -987,7 +1032,7 @@ The deepest name analysis you can get without hiring a naming agency. Stress-tes
 
 URL: https://deftbrain.com/NameStorm
 Tagline: Name anything. Know it works before you commit.
-Categories: Career and Business, Ideas & Imagination
+Categories: Career and Business, Ideas & Diversions
 
 Names are deceptively hard. They need to sound right, fit your audience, be easy to remember, and still feel right six months from now. Describe what you're naming, and DeftBrain will help you find a name that works before you commit.
 
@@ -1011,7 +1056,7 @@ Names are deceptively hard. They need to sound right, fit your audience, be easy
 
 URL: https://deftbrain.com/RoastMe
 Tagline: Submit your profile, resume, email, tweet, etc. and get an honest (and funny) assessment
-Categories: Career and Business, Just for Fun
+Categories: Career and Business, Ideas & Diversions
 
 Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched. Every roast line targets specific content you submitted — zero generic insults. DeftBrain detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.
 
@@ -1700,7 +1745,7 @@ The right explanation doesn't begin with the subject. It begins with the listene
 
 URL: https://deftbrain.com/ArgueSmarter
 Tagline: Test your ideas against the strongest criticism you can find
-Categories: Conversations, Just for Fun, Learning
+Categories: Conversations, Ideas & Diversions, Learning
 
 The strongest arguments are usually the ones we haven't heard yet. State your position and you'll get the strongest case against it — not to prove you wrong, but to help you think more clearly.
 
@@ -1746,7 +1791,7 @@ Not every silence needs rescuing. But when it does, we'll help you find somethin
 
 URL: https://deftbrain.com/ComebackCooker
 Tagline: The comeback you wish you'd said, ready for next time
-Categories: Conversations, Just for Fun, Relationships
+Categories: Conversations, Ideas & Diversions, Relationships
 
 Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.
 
@@ -2375,13 +2420,36 @@ Tell us what you're facing in your own words. Someone Said It Better discovers d
 - 'Surprise me' as the need and 'Unexpected' as the voice together tend to produce the least predictable, most memorable results
 - Every quote links to the actual source page — worth clicking, especially for anything you plan to repeat or share
 
-## Just for Fun
+## Ideas & Diversions
+
+### Alternate Path
+
+URL: https://deftbrain.com/AlternatePath
+Tagline: What if history went differently?
+Categories: Ideas & Diversions
+
+One small change can rewrite centuries. Name the moment you'd change, and follow what happens next — politics, technology, culture, ordinary life — for fifty years or five hundred.
+
+**When.** You want to know whether one moment in history actually changed anything.
+
+**You give.** A historical event, and the one detail you'd change.
+
+**You get.** A plausible alternate timeline, each consequence cascading into the next.
+
+**The edge.** It explores what might have happened if history changed, rather than what did happen or what you should do.
+
+**Good to know.**
+
+- Specific pivots produce richer timelines — 'What if Napoleon won at Waterloo' beats 'What if France was different'
+- Try small changes for surprising big consequences
+- Modern events work too — not just ancient history
+- The fun is in the unexpected second- and third-order effects
 
 ### Belief Stress Test
 
 URL: https://deftbrain.com/BeliefStressTest
 Tagline: Test your beliefs: where they hold, where they break
-Categories: Just for Fun, Learning
+Categories: Ideas & Diversions, Learning
 
 Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.
 
@@ -2403,7 +2471,7 @@ Pressure-tests the guiding beliefs you live by across multiple dimensions: histo
 
 URL: https://deftbrain.com/Bookmark
 Tagline: Catch up on a book, a show, a sports match or a season without spoilers
-Categories: Just for Fun
+Categories: Ideas & Diversions
 
 Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.
 
@@ -2427,7 +2495,7 @@ Coming back to a book, show, game, or sports season after time away? Tell Bookma
 
 URL: https://deftbrain.com/BrainRoulette
 Tagline: A custom random rabbit hole to learn something new
-Categories: Just for Fun, Learning
+Categories: Ideas & Diversions, Learning
 
 Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.
 
@@ -2448,11 +2516,31 @@ Follow your curiosity somewhere unexpected. Choose a few things that interest yo
 - Your spin streak tracks consecutive sessions — see how long you can keep it going
 - The AI remembers what you've already seen and won't repeat topics
 
+### Fan Theory
+
+URL: https://deftbrain.com/FanTheory
+Tagline: Wild but defensible fan theories about anything
+Categories: Ideas & Diversions
+
+Create a wild but defensible fan theory about any movie, show, book, or game—or put your own theory to the test.
+
+**When.** You've finished it and want to keep thinking about it.
+
+**You give.** The title, and a direction if you have one.
+
+**You get.** A theory that cites actual plot details as evidence and holds together internally.
+
+**Good to know.**
+
+- Hit 'Different Theory' to get a completely different angle on the same title
+- The Grade mode gives honest ratings — most theories are 2-4 plausibility and that's fine
+- Try grading famous fan theories to see how they hold up
+
 ### History Today
 
 URL: https://deftbrain.com/HistoryToday
 Tagline: Identify historical parallels to modern events
-Categories: Just for Fun, Learning
+Categories: Ideas & Diversions, Learning
 
 Today's headlines rarely happen for the first time. Enter a current event, and DeftBrain will find historical situations that unfolded for similar reasons — including where the comparison succeeds and where it fails.
 
@@ -2473,56 +2561,11 @@ Today's headlines rarely happen for the first time. Enter a current event, and D
 - The Counter-Example is the intellectual honesty check. If similar conditions sometimes produce different outcomes, you can't be certain of the prediction.
 - Try the same event with different angles to see multiple facets.
 
-### Markup Detective
-
-URL: https://deftbrain.com/MarkupDetective
-Tagline: Why does this cost that? Follow the money.
-Categories: Just for Fun, Money
-
-Ever wonder why a $5 coffee costs $5 or hospital aspirin costs $25? Describe any product or service, and Markup Detective will show you where the money goes and why the price may be much higher than you expected.
-
-**When.** Something costs more than it should and you want to know why.
-
-**You give.** The product or service, and the price you saw.
-
-**You get.** Where your money actually goes — materials, labor, brand premium, pure margin — and the pricing psychology in play.
-
-**Good to know.**
-
-- Adding the specific price and context gets more precise breakdowns
-- The pricing-practice section explains how the industry actually sets its prices
-- The comparison shows what the same thing usually costs away from this particular venue or channel
-- Save money tips are specific to each item, not generic advice
-
-### Micro-Adventure Mapper
-
-URL: https://deftbrain.com/MicroAdventureMapper
-Tagline: Turn a free hour into a small adventure
-Categories: Just for Fun, Travel & Events
-
-Got an hour or two and want to do something different? Tell us where you are, how much time you have, what sounds good, and how you're getting around. Micro-Adventure Mapper builds a small local outing that fits the time, budget, and constraints you actually have.
-
-**When.** You have a free hour or two and no plan for it.
-
-**You give.** Where you are, how long you have, what sounds good, and how you are getting around.
-
-**You get.** A small local outing built around those constraints — a few stops, a route, and what to check before you leave.
-
-**The edge.** It names the type of place to look for rather than inventing a venue it cannot currently see, so the plan survives a closed door.
-
-**Good to know.**
-
-- Specific itineraries remove 'I don't know what to do' barrier
-- Most micro-adventures are free or nearly free - cost isn't a barrier
-- 2-3 hours is perfect for maintaining novelty without exhaustion
-- Photography theme works anywhere - transforms familiar into exploration
-- The 'pro tip' section adds insider knowledge that makes it feel special
-
 ### Plot Hole Finder
 
 URL: https://deftbrain.com/PlotHoleFinder
 Tagline: Find where the story stops adding up
-Categories: Just for Fun
+Categories: Ideas & Diversions
 
 Name a movie, show, book, or game. Plot Hole Finder looks for places where the story's own rules, timeline, character knowledge, or cause-and-effect stop adding up—and separates genuine holes from things the story actually explains.
 
@@ -2544,7 +2587,7 @@ Name a movie, show, book, or game. Plot Hole Finder looks for places where the s
 
 URL: https://deftbrain.com/SixDegreesOfMe
 Tagline: Discover the surprising threads that connect your experiences
-Categories: Just for Fun
+Categories: Ideas & Diversions
 
 Find the hidden connections between seemingly unrelated parts of your life.
 Your favorite movie and your career. Your childhood hobby and your closest friendship.
@@ -2565,11 +2608,31 @@ The chain is always there. You just can't see it yet.
 - Share chains with friends -- they'll see connections in your life you missed
 - This is great for self-reflection, journaling prompts, and 'how did I get here' moments
 
+### Time Warp
+
+URL: https://deftbrain.com/TimeWarp
+Tagline: Collide anything modern with any historical period.
+Categories: Ideas & Diversions
+
+What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.
+
+**When.** You want something funny, not a history lesson.
+
+**You give.** A modern thing and a historical period.
+
+**You get.** A playful collision, a short reflection on what it reveals, and a next collision to try.
+
+**Good to know.**
+
+- The more specific your modern thing, the funnier the result
+- 'Same Combo, Different Warp' reruns the pairing for a fresh take
+- 'One More?' teases the next collision worth trying
+
 ### Tip of Tongue
 
 URL: https://deftbrain.com/TipOfTongue
 Tagline: Describe anything half-remembered and DeftBrain will help you recall
-Categories: Just for Fun
+Categories: Ideas & Diversions
 
 You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.
 
@@ -2588,76 +2651,11 @@ You know the thing — you can almost see it, taste it, hear it — but you can'
 - When and where you encountered it can be especially useful — a coffee shop, TV episode, vacation, store, or approximate year.
 - If one result is close, say so. Knowing what almost fits often reveals which direction to search next.
 
-## Ideas & Imagination
-
-### Alternate Path
-
-URL: https://deftbrain.com/AlternatePath
-Tagline: What if history went differently?
-Categories: Ideas & Imagination
-
-One small change can rewrite centuries. Name the moment you'd change, and follow what happens next — politics, technology, culture, ordinary life — for fifty years or five hundred.
-
-**When.** You want to know whether one moment in history actually changed anything.
-
-**You give.** A historical event, and the one detail you'd change.
-
-**You get.** A plausible alternate timeline, each consequence cascading into the next.
-
-**The edge.** It explores what might have happened if history changed, rather than what did happen or what you should do.
-
-**Good to know.**
-
-- Specific pivots produce richer timelines — 'What if Napoleon won at Waterloo' beats 'What if France was different'
-- Try small changes for surprising big consequences
-- Modern events work too — not just ancient history
-- The fun is in the unexpected second- and third-order effects
-
-### Fan Theory
-
-URL: https://deftbrain.com/FanTheory
-Tagline: Wild but defensible fan theories about anything
-Categories: Ideas & Imagination
-
-Create a wild but defensible fan theory about any movie, show, book, or game—or put your own theory to the test.
-
-**When.** You've finished it and want to keep thinking about it.
-
-**You give.** The title, and a direction if you have one.
-
-**You get.** A theory that cites actual plot details as evidence and holds together internally.
-
-**Good to know.**
-
-- Hit 'Different Theory' to get a completely different angle on the same title
-- The Grade mode gives honest ratings — most theories are 2-4 plausibility and that's fine
-- Try grading famous fan theories to see how they hold up
-
-### Time Warp
-
-URL: https://deftbrain.com/TimeWarp
-Tagline: Collide anything modern with any historical period.
-Categories: Ideas & Imagination, Just for Fun
-
-What happens when something from today lands in a world that was never ready for it? Time Warp collides the present with the past to reveal just how strange both of them really are.
-
-**When.** You want something funny, not a history lesson.
-
-**You give.** A modern thing and a historical period.
-
-**You get.** A playful collision, a short reflection on what it reveals, and a next collision to try.
-
-**Good to know.**
-
-- The more specific your modern thing, the funnier the result
-- 'Same Combo, Different Warp' reruns the pairing for a fresh take
-- 'One More?' teases the next collision worth trying
-
 ### Wrong Answers Only
 
 URL: https://deftbrain.com/WrongAnswersOnly
 Tagline: Ask anything — get a confidently, beautifully wrong answer
-Categories: Ideas & Imagination, Just for Fun
+Categories: Ideas & Diversions
 
 Ask a real question. Get an impressively wrong answer, delivered with total confidence. There is a button for the real answer afterwards, if you want it.
 
@@ -2726,7 +2724,7 @@ Makes the decision for you when you're too stuck to choose. Applies your constra
 
 URL: https://deftbrain.com/DecisionPrism
 Tagline: See a tough decision from every angle
-Categories: Decisions, Ideas & Imagination
+Categories: Decisions, Ideas & Diversions
 
 Stuck between choices? Describe the decision, your options, and what matters to you. Decision Prism looks at the tradeoffs from several useful angles, shows what each choice could cost or preserve, and helps you see what you still need to know before deciding.
 
@@ -2869,7 +2867,7 @@ A ticket isn't automatically worth fighting—or paying. Ticket Tackler helps yo
 
 URL: https://deftbrain.com/WhichLife
 Tagline: Feel both futures before you choose.
-Categories: Decisions, Ideas & Imagination
+Categories: Decisions, Ideas & Diversions
 
 Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.
 

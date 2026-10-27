@@ -1053,7 +1053,7 @@ export const tools = [
   tagline: "Why does this cost that? Follow the money.",
   tags: ['markup', 'pricing', 'cost', 'price breakdown', 'product', 'overpriced', 'why so expensive'],
   icon: "🏷️",
-  categories: ['Just for Fun', 'Money'],
+  categories: ['Money'],
   headerColor: "#c0d8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -1403,7 +1403,7 @@ export const tools = [
   tagline: "Test your beliefs: where they hold, where they break",
   tags: ['belief', 'critical thinking', 'philosophy', 'assumptions', 'test', 'logic', 'values', 'worldview', 'self-awareness', 'bias', 'edge case'],
   icon: "🔬",
-  categories: ['Just for Fun', 'Learning'],
+  categories: ['Ideas & Diversions', 'Learning'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -2789,7 +2789,7 @@ export const tools = [
 
   icon: "💭",
 
-  categories: ['Just for Fun'],
+  categories: ['Ideas & Diversions'],
 
   headerColor: "#d4dde8",
 
@@ -3150,7 +3150,7 @@ export const tools = [
   tagline: "Feel both futures before you choose.",
   tags: ['decision', 'two paths', 'compare choices', 'life decision', 'life choice', 'choose between two options', 'stay or leave', 'move or stay', 'career decision', 'relationship decision', 'future', 'future self', 'day in the life', 'decision simulation', 'imagine both options', 'tradeoff', 'pros and cons', 'what if'],
   icon: "🔮",
-  categories: ['Decisions', 'Ideas & Imagination'],
+  categories: ['Decisions', 'Ideas & Diversions'],
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.",
   exampleOutput: {
@@ -3218,7 +3218,7 @@ export const tools = [
   tagline: "The comeback you wish you'd said, ready for next time",
   tags: ["comeback", "comeback ideas", "what to say", "witty response", "clever response", "clapback", "awkward comment", "intrusive question", "replay conversation", "cathartic", "petty", "dignified response", "high road", "sharp response", "roast", "regret"],
   icon: "🍳",
-  categories: ['Conversations', 'Just for Fun', 'Relationships'],
+  categories: ['Conversations', 'Ideas & Diversions', 'Relationships'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -3293,7 +3293,7 @@ export const tools = [
   tagline: "What if history went differently?",
   tags: ['alternate history', 'what if history', 'alternate timeline', 'counterfactual history', 'historical what if', 'historical thought experiment'],
   icon: "🌀",
-  categories: ['Ideas & Imagination'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -3395,7 +3395,7 @@ export const tools = [
   tagline: "Find where the story stops adding up",
   tags: ['plot hole', 'plot holes', 'plot hole finder', 'story logic', 'movie logic', 'show logic', 'book plot', 'game story', 'continuity error', 'continuity', 'timeline contradiction', 'rule contradiction', 'story inconsistency', 'unexplained gap', 'plot convenience', 'character decision', 'fiction analysis', 'find plot holes'],
   icon: "🕳️",
-  categories: ['Just for Fun'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-09, after claim-by-claim web search made its story facts reliable.
@@ -3464,7 +3464,7 @@ export const tools = [
   tagline: "Wild but defensible fan theories about anything",
   tags: ['fan theory', 'fan theories', 'theory generator', 'movie fan theory', 'tv fan theory', 'book fan theory', 'game fan theory', 'plot theory', 'hidden meaning', 'plot twist', 'secret villain', 'shared universe', 'timeline theory', 'simulation theory', 'fiction analysis', 'story evidence', 'grade my theory'],
   icon: "🧵",
-  categories: ['Ideas & Imagination'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -3534,7 +3534,7 @@ export const tools = [
   tagline: "Submit your profile, resume, email, tweet, etc. and get an honest (and funny) assessment",
   tags: ['roast', 'funny', 'comedy', 'humor', 'joke', 'resume', 'dating', 'linkedin', 'burn', 'fun'],
   icon: "🔥",
-  categories: ['Career and Business', 'Just for Fun'],
+  categories: ['Career and Business', 'Ideas & Diversions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -3621,7 +3621,7 @@ export const tools = [
   tagline: "Collide anything modern with any historical period.",
   tags: ['history', 'time', 'historical', 'modern', 'funny', 'ancient', 'medieval', 'comedy', 'fun'],
   icon: "⏰",
-  categories: ['Ideas & Imagination', 'Just for Fun'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -3687,7 +3687,7 @@ export const tools = [
   tagline: "Ask anything — get a confidently, beautifully wrong answer",
   tags: ['wrong', 'funny', 'trivia', 'quiz', 'comedy', 'fake', 'humor', 'absurd', 'fun'],
   icon: "🙃",
-  categories: ['Ideas & Imagination', 'Just for Fun'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -4372,7 +4372,7 @@ export const tools = [
   tagline: "Catch up on a book, a show, a sports match or a season without spoilers",
   tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'catch-up', 'tv', 'season', 'remember', 'forgotten', 'series', 'chapter', 'binge', 'rewatch', 'pick up', 'return', 'summary', 'plot', 'characters', 'episode', 'where was i'],
   icon: "🔖",
-  categories: ['Just for Fun'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -4536,7 +4536,7 @@ export const tools = [
   tagline: "See a tough decision from every angle",
   tags: ['decision', 'decision analysis', 'hard decision', 'stuck deciding', 'choose between options', 'compare choices', 'tradeoffs', 'opportunity cost', 'reversibility', 'values', 'what matters most', 'decision frameworks', 'pros cons', 'regret', 'uncertainty', 'career decision', 'life decision', 'dilemma'],
   icon: "🔀",
-  categories: ['Decisions', 'Ideas & Imagination'],
+  categories: ['Decisions', 'Ideas & Diversions'],
   headerColor: "#f5e0c0",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -4814,7 +4814,7 @@ export const tools = [
   tagline: "Find the words that fit the photo.",
   tags: ["caption", "photo caption", "image caption", "caption ideas", "social media", "instagram", "linkedin", "twitter", "tiktok", "facebook", "threads", "funny caption", "clever caption", "playful caption", "dry humor", "hashtags", "alt text", "photo context"],
   icon: "📸",
-  categories: ['Career and Business', 'Conversations', 'Just for Fun'],
+  categories: ['Career and Business', 'Conversations', 'Ideas & Diversions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -5104,7 +5104,7 @@ tagline: "Take command of your available energy",
   tagline: "Test your ideas against the strongest criticism you can find",
   tags: ['debate', 'argue', 'logic', 'steelman', 'critical thinking', 'opinion', 'persuade', 'fallacy', 'rhetoric'],
   icon: "🥊",
-  categories: ['Conversations', 'Just for Fun', 'Learning'],
+  categories: ['Conversations', 'Ideas & Diversions', 'Learning'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "Discovered – not indexed" page real substance.
@@ -5502,7 +5502,7 @@ tagline: "Take command of your available energy",
   tagline: "Identify historical parallels to modern events",
   tags: ['history', 'current events', 'parallels', 'context', 'analysis', 'pattern', 'news'],
   icon: "📰",
-  categories: ['Just for Fun', 'Learning'],
+  categories: ['Ideas & Diversions', 'Learning'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -5936,7 +5936,7 @@ tagline: "Take command of your available energy",
   tagline: "Name anything. Know it works before you commit.",
   tags: ['name', 'brand', 'brainstorm', 'business', 'product', 'startup'],
   icon: "⚡",
-  categories: ['Career and Business', 'Ideas & Imagination'],
+  categories: ['Career and Business', 'Ideas & Diversions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -6615,7 +6615,7 @@ tagline: "Take command of your available energy",
   tagline: "Discover the surprising threads that connect your experiences",
   tags: ['connection', 'network', 'path', 'introduction', 'reach', 'who knows who'],
   icon: "🔗",
-  categories: ['Just for Fun'],
+  categories: ['Ideas & Diversions'],
   headerColor: "#d4dde8",
   description: "Find the hidden connections between seemingly unrelated parts of your life.\nYour favorite movie and your career. Your childhood hobby and your closest friendship.\n\nThe chain is always there. You just can't see it yet.",
   exampleOutput: {
@@ -6682,7 +6682,7 @@ tagline: "Take command of your available energy",
   tagline: "A custom random rabbit hole to learn something new",
   tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
-  categories: ['Just for Fun', 'Learning'],
+  categories: ['Ideas & Diversions', 'Learning'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -8579,7 +8579,7 @@ tagline: "Take command of your available energy",
   tagline: "Turn a free hour into a small adventure",
   tags: ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
   icon: "🗺️",
-  categories: ['Just for Fun', 'Travel & Events'],
+  categories: ['Travel & Events'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).

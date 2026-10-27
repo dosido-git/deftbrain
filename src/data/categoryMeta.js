@@ -47,12 +47,11 @@ export const CATEGORY_META = [
   { name: 'Learning',            emoji: '🔬', tag: 'go deep!', sub: 'research · learning · knowledge', slug: 'learning',
     example: 'I’m stuck on a concept and don’t know why.',
     desc: "Research, concepts that aren't clicking, and making sense of something unfamiliar." },
-  { name: 'Just for Fun',        emoji: '🧩', tag: 'diversions', sub: 'fun · curiosity · play', slug: 'just-for-fun',
+  // Just for Fun renamed and Ideas & Imagination merged in (owner, 2026-10-27);
+  // the slug stays 'just-for-fun' so its address does not change.
+  { name: 'Ideas & Diversions',  emoji: '🧩', tag: 'diversions', sub: 'ideas · imagination · play', slug: 'just-for-fun',
     example: 'I know it. I just can’t remember it.',
-    desc: "Curiosity, wordplay, and tools that exist because they're genuinely fun to use." },
-  { name: 'Ideas & Imagination', emoji: '✨', tag: 'what if?', sub: 'imagination · creativity', slug: 'ideas-imagination',
-    example: 'I can only see the road not taken in hindsight.',
-    desc: "Naming things, exploring what-ifs, and stress-testing an idea before you commit to it." },
+    desc: "Naming things, testing an idea, hobbies, shows and games, and small adventures worth a detour." },
   { name: 'Decisions',           emoji: '🧭', tag: 'veer', sub: 'decisions · direction · choices', slug: 'decisions',
     example: 'I’m about to buy something big.',
     desc: "The hard calls — job offers, big purchases, plans that might not survive contact with reality." },

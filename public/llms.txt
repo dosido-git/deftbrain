@@ -30,6 +30,7 @@
 - [Culture Briefing](https://deftbrain.com/CultureBriefing): Know before you go — cultural intelligence for any destination
 - [Drive Home](https://deftbrain.com/DriveHome): Evaluate your options before deciding to drive.
 - [Layover Maximizer](https://deftbrain.com/LayoverMaximizer): Turn dead time into a memorable part of your trip
+- [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): Turn a free hour into a small adventure
 
 ## Relationships
 
@@ -42,6 +43,7 @@
 - [Bill Rescue](https://deftbrain.com/BillRescue): Ways to lower, dispute or manage a bill you can't afford
 - [Buy Wise](https://deftbrain.com/BuyWise): Investigate a potential purchase before you commit
 - [Fake Review Detective](https://deftbrain.com/FakeReviewDetective): Spot fake reviews before you get burned
+- [Markup Detective](https://deftbrain.com/MarkupDetective): Why does this cost that? Follow the money.
 - [Money Diplomat](https://deftbrain.com/MoneyDiplomat): The right number for every money moment — tips, splits, gifts, salary
 - [Quote Check](https://deftbrain.com/QuoteCheck): Know what you're paying for before you approve the repair.
 - [Scam Radar](https://deftbrain.com/ScamRadar): Spot the warning signs before you click, pay, or reply.
@@ -131,23 +133,18 @@
 - [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): Are commonly known "facts" really true?
 - [Someone Said It Better](https://deftbrain.com/SomeoneSaidItBetter): Find a quote that says what you mean
 
-## Just for Fun
+## Ideas & Diversions
 
+- [Alternate Path](https://deftbrain.com/AlternatePath): What if history went differently?
 - [Belief Stress Test](https://deftbrain.com/BeliefStressTest): Test your beliefs: where they hold, where they break
 - [Bookmark](https://deftbrain.com/Bookmark): Catch up on a book, a show, a sports match or a season without spoilers
 - [Brain Roulette](https://deftbrain.com/BrainRoulette): A custom random rabbit hole to learn something new
+- [Fan Theory](https://deftbrain.com/FanTheory): Wild but defensible fan theories about anything
 - [History Today](https://deftbrain.com/HistoryToday): Identify historical parallels to modern events
-- [Markup Detective](https://deftbrain.com/MarkupDetective): Why does this cost that? Follow the money.
-- [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): Turn a free hour into a small adventure
 - [Plot Hole Finder](https://deftbrain.com/PlotHoleFinder): Find where the story stops adding up
 - [Six Degrees of Me](https://deftbrain.com/SixDegreesOfMe): Discover the surprising threads that connect your experiences
-- [Tip of Tongue](https://deftbrain.com/TipOfTongue): Describe anything half-remembered and DeftBrain will help you recall
-
-## Ideas & Imagination
-
-- [Alternate Path](https://deftbrain.com/AlternatePath): What if history went differently?
-- [Fan Theory](https://deftbrain.com/FanTheory): Wild but defensible fan theories about anything
 - [Time Warp](https://deftbrain.com/TimeWarp): Collide anything modern with any historical period.
+- [Tip of Tongue](https://deftbrain.com/TipOfTongue): Describe anything half-remembered and DeftBrain will help you recall
 - [Wrong Answers Only](https://deftbrain.com/WrongAnswersOnly): Ask anything — get a confidently, beautifully wrong answer
 
 ## Decisions

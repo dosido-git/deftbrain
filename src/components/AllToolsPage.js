@@ -14,14 +14,14 @@ import './AllToolsPage.css';
 const LEGACY_MAP = {
   Academic:['Learning'], Communication:['Conversations'], 'Daily Life':['Home & Daily Life'],
   Health:['Health & Wellness'], 'Mind & Energy':['Health & Wellness'], Money:['Money'],
-  Productivity:['Home & Daily Life'], Detour:['Just for Fun'], Body:['Health & Wellness'], Life:['Home & Daily Life'],
+  Productivity:['Home & Daily Life'], Detour:['Ideas & Diversions'], Body:['Health & Wellness'], Life:['Home & Daily Life'],
   Lifestyle:['Home & Daily Life'], Finance:['Money'], 'Consumer Rights':['Money'],
   'Mental Health':['Health & Wellness'], 'Health & Wellness':['Health & Wellness'],
   'Neurodivergent Support':['Health & Wellness'], Social:['Relationships'], 'Social Skills':['Relationships'],
   Career:['Career and Business'], Strategic:['Decisions'], Goals:['Home & Daily Life'],
   'Focus & Productivity':['Health & Wellness'], 'Document Analysis':['Learning'],
   'Conflict Resolution':['Conversations'], 'Content Creation':['Conversations'], Work:['Career and Business'],
-  Creative:['Ideas & Imagination'], Thinking:['Just for Fun'], 'Brain Games':['Just for Fun'],
+  Creative:['Ideas & Diversions'], Thinking:['Ideas & Diversions'], 'Brain Games':['Ideas & Diversions'],
   wellness:['Health & Wellness'], Intercourse:['Conversations'], 'Read the Room':['Relationships'],
 };
 
