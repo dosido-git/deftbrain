@@ -28,13 +28,13 @@ const SYSTEM = `You review one finished answer for OVERREACH: places where it so
 
 Overreach is:
 1. A precise target or prediction stated as what will happen or what to do — an amount to offer or accept, a percentage a company "will" agree to, a timeline that depends on someone else. Rewrite it as a starting point with its basis and a plain note that the outcome varies ("A common opening offer is around 40%, because collectors often buy debts for far less; what they accept varies.").
-2. A legal, medical or financial rule stated as always true when it holds only under conditions — a deadline, who it applies to, which jurisdiction, what must be done first. Keep the point and name the condition in a few words ("Under the US FDCPA, if you dispute in writing within 30 days of their first notice, they must pause collection until they verify the debt.").
+2. A legal, medical, financial, technical or scientific rule stated as always true when it holds only under conditions or in the typical case (a boiling point that depends on pressure; a "copy" that is really a new reference to shared data) — a deadline, who it applies to, which jurisdiction, what must be done first. Keep the point and name the condition in a few words ("Under the US FDCPA, if you dispute in writing within 30 days of their first notice, they must pause collection until they verify the debt.").
 3. A claim the answer cannot support — what a specific company will do, what a court will decide. Say "may", or say what to check and with whom.
 
 Not overreach — leave alone: an instruction to the reader ("Send the letter by certified mail"), a rule that really is unconditional, an amount the reader gave, a fact stated with its condition already.
 Keep each rewrite about the same length, in the same voice, and keep the point. Never empty a field. Apostrophes (') are fine.
 
-Work in two steps. First "claims": every legal, medical or financial rule, every target amount or percentage, and every prediction about what someone will do — [{"path":"...","claim":"a few words","condition":"the condition or basis it depends on, or 'none — unconditional'","ok":true|false}]. A rule with a deadline, a jurisdiction or a prerequisite that the text leaves out is not ok. Then "repairs": one per claim that is not ok.
+Work in two steps. First "claims": every legal, medical, financial, technical or scientific rule, every target amount or percentage, and every prediction about what someone will do — [{"path":"...","claim":"a few words","condition":"the condition or basis it depends on, or 'none — unconditional'","ok":true|false}]. A rule with a deadline, a jurisdiction or a prerequisite that the text leaves out is not ok. Then "repairs": one per claim that is not ok.
 
 Return ONLY valid JSON: {"claims":[...],"repairs":[{"path":"exact path from the list","replacement":"..."}]}  — repairs empty if every claim is ok.
 ${NO_QUOTE_RULE}`;

@@ -36,32 +36,6 @@ const MissingLink = ({ tool }) => {
     { concept: t('tg_ex5'), subject: 'Statistics', level: 'undergrad' },
   ];
 
-  const GAP_TYPE_LABELS = {
-    conceptual: t('tg_gt_conceptual'),
-    procedural: t('tg_gt_procedural'),
-    definitional: t('tg_gt_definitional'),
-    notational: t('tg_gt_notational'),
-  };
-  // The four types are a finding, not a menu. Nobody arrives thinking "I suspect
-  // a procedural deficit" — they arrive thinking "I don't get integration by
-  // parts". So the taxonomy earns its keep only after the trace, as one line
-  // that tells you which kind of stuck you were.
-  // The diagnosis is the MOST LIKELY gap traced from a handful of words, and how
-  // sure that is swings hard on how much the reader told us. Saying so is the
-  // difference between a reading and a verdict.
-  const CONFIDENCE = {
-    High:   { key: 'tg_conf_high',   tone: 'successTxt' },
-    Medium: { key: 'tg_conf_medium', tone: 'warningTxt' },
-    Low:    { key: 'tg_conf_low',    tone: 'textMuted' },
-  };
-
-  const GAP_TYPE_WHY = {
-    conceptual: t('tg_gt_conceptual_why'),
-    procedural: t('tg_gt_procedural_why'),
-    definitional: t('tg_gt_definitional_why'),
-    notational: t('tg_gt_notational_why'),
-  };
-
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -73,8 +47,6 @@ const MissingLink = ({ tool }) => {
     btnPrimary:    isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0] text-white' : 'bg-[#142a43] hover:bg-[#234568] text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
     // meaning "ready"; the border and label carry the visibility. Important
     // modifiers because tools carry their own border/text utilities on the
@@ -98,16 +70,10 @@ const MissingLink = ({ tool }) => {
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific extras
-    badge:         isDark ? 'bg-[#1f2530] text-[#a9cdef]' : 'bg-[#eef3f8] text-[#142a43]',
     tipBg:         isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     tipText:       isDark ? 'text-amber-300' : 'text-amber-800',
     histBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
     gapHigh:       isDark ? 'bg-red-900/20 border-red-700/50' : 'bg-red-50 border-red-300',
-    gapHighText:   isDark ? 'text-red-300' : 'text-red-700',
-    gapMed:        isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-300',
-    gapMedText:    isDark ? 'text-amber-300' : 'text-amber-700',
-    gapLow:        isDark ? 'bg-emerald-900/20 border-emerald-700/30' : 'bg-emerald-50 border-emerald-300',
-    gapLowText:    isDark ? 'text-emerald-300' : 'text-emerald-700',
   };
   // Category colours (audit/CONVENTIONS.md "Category-colour pages"). Gap
   // likelihood reads contrast (high) / dark (medium) / medium shade (low)
@@ -123,11 +89,6 @@ const MissingLink = ({ tool }) => {
     tipText:     'text-[var(--sc-strong)]',
     histBg:      'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     gapHigh:     'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
-    gapHighText: 'text-[var(--sc-x-text)]',
-    gapMed:      'bg-[var(--sc-card)] border-[var(--sc-accent)]',
-    gapMedText:  'text-[var(--sc-strong)]',
-    gapLow:      'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
-    gapLowText:  'text-[var(--sc-accent)]',
   });
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -146,13 +107,13 @@ const MissingLink = ({ tool }) => {
   const [digFocus, setDigFocus] = useState(null);
   const [digTarget, setDigTarget] = useState(null);
   const [error, setError] = useState('');
-  const [expandedNodes, setExpandedNodes] = useState({});
-  const [showAlternatives, setShowAlternatives] = useState(false);
-  const [showPlan, setShowPlan] = useState(true);
+  // Which check answers are open, and the prerequisite list (owner's review,
+  // 2026-10-27: the answer leads with the check; the list is optional detail).
+  const [openAnswers, setOpenAnswers] = useState({});
+  const [showChain, setShowChain] = useState(false);
 
   // useRef
   const resultsRef = useRef(null);
-  const altRef = useRef(null);
   const visualRef = useRef(null);
   const exampleRef = useRef(null);
 
@@ -185,7 +146,7 @@ const MissingLink = ({ tool }) => {
 
   const trace = useCallback(async () => {
     if (!concept.trim()) { setError(t('tg_err_no_concept')); return; }
-    setError(''); setResults(null); setDigResults(null); setDigTarget(null); setExpandedNodes({});
+    setError(''); setResults(null); setDigResults(null); setDigTarget(null); setOpenAnswers({}); setShowChain(false);
     cancelProgressive();
     try {
       // Progressive (2026-10-18): the diagnosis shows first.
@@ -222,7 +183,7 @@ const MissingLink = ({ tool }) => {
 
   const handleReset = useCallback(() => {
     setConcept(''); setSubject(''); setWhatIKnow(''); setWhereItBroke('');
-    setResults(null); setDigResults(null); setDigTarget(null); setError(''); setExpandedNodes({});
+    setResults(null); setDigResults(null); setDigTarget(null); setError(''); setOpenAnswers({}); setShowChain(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults]);
 
@@ -233,34 +194,26 @@ const MissingLink = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults]);
 
-  const toggleNode = useCallback((idx) => setExpandedNodes(prev => ({ ...prev, [idx]: !prev[idx] })), []);
 
-  const gapStyle = (likelihood) => {
-    if (likelihood === 'high') return { bg: c.gapHigh, text: c.gapHighText, emoji: '🔴' };
-    if (likelihood === 'medium') return { bg: c.gapMed, text: c.gapMedText, emoji: '🟡' };
-    return { bg: c.gapLow, text: c.gapLowText, emoji: '🟢' };
-  };
 
   const buildCopy = useCallback(() => {
     if (!results) return '';
-    const GAP_LABELS = {
-      conceptual: t('tg_gt_conceptual'),
-      procedural: t('tg_gt_procedural'),
-      definitional: t('tg_gt_definitional'),
-      notational: t('tg_gt_notational'),
-    };
     const lines = [t('tg_copy_title'), '', `${t('tg_copy_struggling')} ${concept}`, ''];
-    if (results?.chain_visualization) lines.push(results?.chain_visualization, '');
-    if (results?.likely_gap) {
-      lines.push(`${t('tg_copy_likely_gap')} ${results?.likely_gap?.concept}`);
-      lines.push(`${t('tg_copy_type')} ${GAP_LABELS[results?.likely_gap?.gap_type] || results?.likely_gap?.gap_type}`);
-      lines.push('', results?.likely_gap?.refresher?.core_idea || '');
+    const gap = results?.likely_gap;
+    if (gap) {
+      lines.push(`${t(results?.basis === 'described' ? 'tg_most_likely' : 'tg_check_first')}: ${gap.concept}`);
+      if (gap.why_check_this || gap.why_this_one) lines.push(gap.why_check_this || gap.why_this_one);
     }
-    if (results?.study_plan) {
-      lines.push('', t('tg_copy_study_plan'));
-      lines.push('1. ' + results?.study_plan?.step_1);
-      lines.push('2. ' + results?.study_plan?.step_2);
-      lines.push('3. ' + results?.study_plan?.step_3);
+    const check = results?.check;
+    if (check?.example) {
+      lines.push('', t('tg_check_title'), check.example, '');
+      (check.questions || []).forEach((q, i) => lines.push(`${i + 1}. ${q.question}`, `   → ${q.answer}`));
+    }
+    const lesson = gap?.refresher;
+    if (lesson) {
+      lines.push('', t('tg_the_idea'), lesson.core_idea || '');
+      const practice = lesson.practice;
+      if (practice) lines.push('', typeof practice === 'string' ? practice : `${practice.task}\n${t('tg_how_to_check')} ${practice.how_to_check || ''}`);
     }
     lines.push('', BRAND);
     return lines.join('\n');
@@ -387,148 +340,81 @@ const MissingLink = ({ tool }) => {
     if (!results) return null;
     const chain = results?.prerequisite_chain || [];
     const gap = results?.likely_gap;
+    const check = results?.check;
+    const lesson = gap?.refresher;
+    const practice = lesson?.practice;
+    const described = results?.basis === 'described';
+    const head = sv ? 'text-base font-bold text-[var(--sc-strong)]' : 'text-xs font-bold uppercase ' + c.textMuted;
 
-    // With a category scheme the answer sits in the shared answer card.
+    // Owner's review, 2026-10-27: a place to check (tentative unless they
+    // described how they are stuck), one concrete check with a supplied
+    // example, a short explanation, one practice task, then the optional
+    // prerequisite list.
     const answer = (
-      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
-        {/* Analysis */}
-        {results?.concept_analysis && (
-          <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
-            <p className={'text-xs font-bold ' + c.tipText + ' uppercase mb-1'}>{t('tg_why_confusing_pre')}{results?._concept || concept || results?.prerequisite_chain?.slice(-1)[0]?.concept || ''}{t('tg_why_confusing_post')}</p>
-            <p className={'text-sm ' + c.text}>{results?.concept_analysis}</p>
-          </div>
-        )}
-
-        {/* Chain visualization */}
-        {results?.chain_visualization && (
-          <div className={'p-4 rounded-xl ' + c.cardAlt + ' text-center'}>
-            <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>{t('tg_chain_title')}</p>
-            <p className={'text-sm font-mono ' + c.text + ' break-words'}>{results?.chain_visualization}</p>
-          </div>
-        )}
-
-        {/* Chain nodes */}
-        <div className="space-y-2">
-          <p className={'text-xs font-bold ' + c.textMuted + ' uppercase'}>{t('tg_prereqs_title')}</p>
-          {chain.map((node, idx) => {
-            const gs = gapStyle(node.gap_likelihood);
-            const expanded = expandedNodes[idx];
-            return (
-              <div key={idx} className={'rounded-xl border-2 overflow-hidden transition-all ' + gs.bg}>
-                <button data-print-heading aria-expanded={!!expanded} onClick={() => toggleNode(idx)} className="w-full text-start p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex flex-col items-center">
-                      {/* No status-dot emoji in an answer on a category page. */}
-                      {!sv && <span className="text-base">{gs.emoji}</span>}
-                      <span className={'text-xs font-bold ' + gs.text}>{t('tg_level_short')}{node.level_in_chain}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={'text-sm font-bold ' + c.text}>{node.concept}</p>
-                      <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{node.why_needed}</p>
-                    </div>
-                    <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>
-                      {node.gap_likelihood} {t('tg_risk_suffix')}
-                    </span>
-                  </div>
-                </button>
-                {/* Collapsed on screen; printed open, so the quick tests travel. */}
-                {(
-                  <div data-sec-body hidden={!expanded} className={'px-4 pb-4 border-t ' + c.border}>
-                    <div className={'mt-3 p-3 rounded-lg ' + c.cardAlt}>
-                      <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>{t('tg_quick_test')}</p>
-                      <p className={'text-sm ' + c.text + ' italic'}>{node.quick_test}</p>
-                    </div>
-                    <div data-print-hide className="flex gap-1.5 mt-3">
-                      <button onClick={() => dig(node.concept, 'failed')}
-                        className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive + (sv ? ' hover:border-[var(--sc-strong)]' : ' hover:border-red-400')}>
-                        {t('tg_cant_answer')}
-                      </button>
-                      <button onClick={() => dig(node.concept, 'unsure')}
-                        className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive + (sv ? ' hover:border-[var(--sc-strong)]' : ' hover:border-amber-500')}>
-                        {t('tg_unsure')}
-                      </button>
-                      <button onClick={() => dig(node.concept, 'passed')}
-                        className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive + (sv ? ' hover:border-[var(--sc-strong)]' : ' hover:border-emerald-500')}>
-                        {t('tg_got_it')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Likely gap */}
+      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5 mt-4">
         {gap && (
-          // The likely gap is the answer's key box on a category page.
           <div data-keybox="" className={'p-5 rounded-2xl border-2 ' + (sv ? 'bg-[var(--sc-card)] border-[var(--sc-accent)]' : c.gapHigh)}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🎯</span>
-              <div>
-                {results?.subject_detected && (
-                  <p className={'text-[13px] font-bold mb-0.5 ' + c.textMuted}>
-                    {t('tg_subject_detected', { val: results.subject_detected })}
-                  </p>
-                )}
-                <p className={'text-base font-bold ' + c.text}>{t('tg_likely_gap')} {gap.concept}</p>
-                {GAP_TYPE_LABELS[gap.gap_type] && (
-                  <p className={'text-xs font-bold mt-0.5 ' + c.text}>
-                    ✓ {t('tg_gap_identified')}: {GAP_TYPE_LABELS[gap.gap_type]}
-                  </p>
-                )}
-                <p className={'text-xs ' + c.textSecondary}>{GAP_TYPE_WHY[gap.gap_type] || gap.gap_type_explanation}</p>
-              </div>
-            </div>
-            <p className={'text-xs ' + c.textSecondary + ' mb-3'}>{gap.why_this_one}</p>
+            <p className={'text-[13px] font-bold mb-1 ' + (sv ? 'text-[var(--sc-strong)]' : c.textMuted)}>🎯 {t(described ? 'tg_most_likely' : 'tg_check_first')}</p>
+            <p className={'text-lg font-bold ' + c.text}>{gap.concept}</p>
+            {(gap.why_check_this || gap.why_this_one) && <p className={'text-sm mt-1 ' + c.textSecondary}>{gap.why_check_this || gap.why_this_one}</p>}
+            <p className={'text-[13px] mt-2 ' + c.textMuted}>{t(described ? 'tg_basis_described' : 'tg_basis_topic')}</p>
+          </div>
+        )}
 
-            {CONFIDENCE[gap.confidence] && (
-              <div className={'rounded-xl border p-3 mb-3 ' + c.card}>
-                <p className={'text-xs font-bold ' + c[CONFIDENCE[gap.confidence].tone]}>
-                  {t('tg_confidence', { val: t(CONFIDENCE[gap.confidence].key) })}
-                </p>
-                {gap.confidence_reasons?.length > 0 && (
-                  <>
-                    <p className={'text-[13px] font-bold mt-2 mb-1 ' + c.textMuted}>{t('tg_confidence_why')}</p>
-                    <ul className="space-y-1">
-                      {gap.confidence_reasons.map((r, i) => (
-                        <li key={i} className={'text-xs leading-relaxed ' + c.textSecondary + ' flex gap-2'}>
-                          <span className={c.textMuted} aria-hidden="true">•</span>
-                          <span>{typeof r === 'string' ? r : r?.reason}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Refresher */}
-            {gap.refresher && (
-              <div className={'rounded-xl border ' + c.card + ' p-4 space-y-3'}>
-                <div>
-                  <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{t('tg_quick_refresher')}</p>
-                  <p className={'text-sm ' + c.text}>{gap.refresher.core_idea}</p>
-                </div>
-                {gap.refresher.common_confusion && (
-                  <div className={'p-3 rounded-lg ' + c.warningBox}>
-                    <p className={'text-xs font-bold ' + c.warningTxt}>{t('tg_common_confusion')} {gap.refresher.common_confusion}</p>
+        {check?.example && (
+          <div>
+            <p className={head + ' mb-1'}>{t('tg_check_title')}</p>
+            <p className={'text-[13px] mb-2 ' + c.textMuted}>{t('tg_check_intro')}</p>
+            <pre className={'text-[13px] leading-relaxed font-mono whitespace-pre-wrap break-words rounded-lg border p-3 ' + c.cardAlt + ' ' + c.border}>{check.example}</pre>
+            <ol className="mt-3 space-y-3">
+              {(check.questions || []).map((q, i) => (
+                <li key={i} className="keep-together">
+                  <p className={'text-sm font-semibold ' + c.text}>{i + 1}. {q.question}</p>
+                  <button data-print-hide aria-expanded={!!openAnswers[i]} onClick={() => setOpenAnswers(p => ({ ...p, [i]: !p[i] }))}
+                    className={'mt-1 text-xs font-bold flex items-center gap-1 ' + linkStyle}>
+                    {t('tg_show_answer')} <Caret open={!!openAnswers[i]} />
+                  </button>
+                  {/* Printed open: the sheet carries its own answer key. */}
+                  <div data-sec-body hidden={!openAnswers[i]} className={'mt-1 text-sm ' + c.textSecondary}>
+                    <p>{q.answer}</p>
+                    {q.if_missed && <p className={'text-[13px] mt-1 ' + c.textMuted}><span className="font-semibold">{t('tg_if_missed')}</span> {q.if_missed}</p>}
                   </div>
-                )}
-                {gap.refresher.practice && (
-                  <div className={'p-3 rounded-lg ' + c.cardAlt}>
-                    <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>{t('tg_practice')}</p>
-                    <p className={'text-xs ' + c.text}>{gap.refresher.practice}</p>
-                  </div>
-                )}
-                {gap.refresher.time_estimate && (
-                  <p className={'text-xs ' + c.tipText}>{t('tg_time_to_fill')} {gap.refresher.time_estimate}</p>
-                )}
-              </div>
-            )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
+        {lesson && (
+          <div className="space-y-3">
+            <p className={head}>{t('tg_the_idea')}</p>
+            {lesson.core_idea && <p className={'text-sm leading-relaxed ' + c.text}>{lesson.core_idea}</p>}
+            {lesson.common_confusion && (
+              <p className={'text-[13px] ' + c.textSecondary}><span className="font-semibold">{t('tg_common_confusion')}</span> {lesson.common_confusion}</p>
+            )}
+          </div>
+        )}
+
+        {practice && (
+          <div className="keep-together">
+            <p className={head + ' mb-1'}>{t('tg_practice')}</p>
+            {typeof practice === 'string'
+              ? <p className={'text-sm ' + c.text}>{practice}</p>
+              : <>
+                  <p className={'text-sm ' + c.text}>{practice.task}</p>
+                  {practice.how_to_check && <p className={'text-[13px] mt-1 ' + c.textSecondary}><span className="font-semibold">{t('tg_how_to_check')}</span> {practice.how_to_check}</p>}
+                </>}
+          </div>
+        )}
+
+        {results?.encouragement && (
+          <p className={'keep-together text-sm ' + c.textSecondary}>{results.encouragement}</p>
+        )}
+
+        {gap && (
+          <div data-print-hide>
             <button onClick={() => setShowDeeper(v => !v)} aria-expanded={showDeeper}
-              className={'mt-3 flex items-center gap-1.5 text-xs font-bold ' + linkStyle}>
+              className={'flex items-center gap-1.5 text-xs font-bold ' + linkStyle}>
               {t('tg_still_stuck')} <Caret open={showDeeper} />
             </button>
             {showDeeper && (
@@ -545,12 +431,6 @@ const MissingLink = ({ tool }) => {
                   className={'w-full py-2.5 rounded-xl text-xs font-bold text-start px-3 border block ' + c.cardAlt}>
                   {t('tg_stuck_analogy')}
                 </a>
-                {results?.if_thats_not_it?.length > 0 && (
-                  <button onClick={() => { setShowAlternatives(true); setTimeout(() => revealSection(altRef.current, { block: 'center' }), 60); }}
-                    className={'w-full py-2.5 rounded-xl text-xs font-bold text-start px-3 border ' + c.cardAlt}>
-                    {t('tg_stuck_different')}
-                  </button>
-                )}
                 <button onClick={() => dig(gap.concept, 'failed')}
                   className={'w-full mt-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
                   <span>⛓️</span> {t('tg_deep_dive_btn')}
@@ -560,66 +440,39 @@ const MissingLink = ({ tool }) => {
           </div>
         )}
 
-        {/* Forward connection */}
-        {results?.forward_connection && (
-          <div className={'p-4 rounded-xl border ' + c.successBox}>
-            <p className={'text-xs font-bold ' + c.successTxt + ' mb-1'}>{t('tg_connects_back_pre')} {concept}</p>
-            <p className={'text-sm ' + c.successTxt}>{results?.forward_connection}</p>
-          </div>
-        )}
-
-        {/* Study plan */}
-        {results?.study_plan && (
-          <div className={c.card + ' border rounded-xl overflow-hidden'}>
-            <button onClick={() => setShowPlan(!showPlan)} className="w-full flex items-center justify-between p-4 hover:opacity-80">
-              <div className="flex items-center gap-2">
-                <span>📋</span>
-                <span className={'text-sm font-semibold ' + c.text}>{t('tg_study_plan')}</span>
-                {results?.study_plan?.total_time && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⏱️ {results?.study_plan?.total_time}</span>}
-              </div>
-              <Caret open={showPlan} />
+        {/* The prerequisite list: optional detail, in the order worth checking. */}
+        {chain.length > 0 && (
+          <div className={'border-t ' + c.border}>
+            <button data-print-heading aria-expanded={showChain} onClick={() => setShowChain(v => !v)}
+              className="w-full py-4 flex items-center justify-between text-start min-h-[44px]">
+              <span className={head}>{t('tg_other_checks')}</span>
+              <span data-print-hide className={sv ? 'text-[var(--sc-accent)]' : ''}><Caret open={showChain} /></span>
             </button>
-            {showPlan && (
-              <div className={'px-4 pb-4 border-t ' + c.border + ' space-y-2 mt-3'}>
-                {['step_1', 'step_2', 'step_3'].map((key, i) => results?.study_plan?.[key] && (
-                  <div key={key} className={'p-3 rounded-lg ' + c.cardAlt + ' flex items-start gap-3'}>
-                    <span className={'text-xs font-black ' + c.tipText}>{i + 1}</span>
-                    <p className={'text-xs ' + c.text}>{results?.study_plan?.[key]}</p>
+            <div data-sec-body hidden={!showChain} className="pb-4 space-y-3">
+              {chain.map((node, idx) => (
+                <div key={idx} className={'keep-together p-4 rounded-xl border ' + c.border}>
+                  <p className={'text-sm font-bold ' + c.text}>{idx + 1}. {node.concept}</p>
+                  <p className={'text-xs mt-0.5 ' + c.textSecondary}>{node.why_needed}</p>
+                  {node.quick_test && (
+                    <p className={'text-[13px] mt-2 ' + c.text}><span className="font-semibold">{t('tg_quick_test')}</span> {node.quick_test}</p>
+                  )}
+                  <div data-print-hide className="flex gap-1.5 mt-3">
+                    <button onClick={() => dig(node.concept, 'failed')}
+                      className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive}>
+                      {t('tg_cant_answer')}
+                    </button>
+                    <button onClick={() => dig(node.concept, 'unsure')}
+                      className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive}>
+                      {t('tg_unsure')}
+                    </button>
+                    <button onClick={() => dig(node.concept, 'passed')}
+                      className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive}>
+                      {t('tg_got_it')}
+                    </button>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Alternatives */}
-        {results?.if_thats_not_it?.length > 0 && (
-          <div ref={altRef} className="scroll-mt-24">
-            <button onClick={() => setShowAlternatives(!showAlternatives)}
-              className={'w-full flex items-center gap-2 p-3 rounded-xl ' + c.cardAlt + ' border hover:opacity-80'}>
-              <span>🤔</span>
-              <span className={'text-xs font-bold ' + c.text + ' flex-1'}>{t('tg_alt_not_gap')}</span>
-              <Caret open={showAlternatives} />
-            </button>
-            {showAlternatives && (
-              <div className="mt-2 space-y-2">
-                {results?.if_thats_not_it?.map((alt, i) => (
-                  <div key={i} className={'p-3 rounded-lg border ' + c.cardAlt}>
-                    <p className={'text-xs font-bold ' + c.text}>{alt.alternative_gap}</p>
-                    <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{t('tg_alt_symptom')} {alt.symptom}</p>
-                    <button onClick={() => dig(alt.alternative_gap, 'failed')}
-                      className={'mt-2 text-xs font-bold ' + linkStyle}>{t('tg_alt_dig')}</button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Encouragement */}
-        {results?.encouragement && (
-          <div className={'p-4 rounded-xl border ' + c.successBox}>
-            <p className={'text-sm ' + c.successTxt}>💚 {results?.encouragement}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

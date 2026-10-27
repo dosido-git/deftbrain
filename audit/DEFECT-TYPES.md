@@ -128,6 +128,7 @@ Instances marked *fixed* were fixed per tool (before this file existed) unless t
 | SocialBatteryAdvisor — "differed sharply" / "align rather than contrast" | **fixed with shared fix** (both sides rewritten to match the logs) |
 | LeverageLogic — explanation reverses which way an exception cuts | **wired to shared fix** (not reproduced; real run also caught an ignored urgency/relationship choice) |
 | DateNight — a repair left "every night" beside "Thu–Sat" | **fixed with shared fix** (claim removed from both) |
+| MissingLink — an analogy that changes direction partway (new calls on top, later waiting for the one below); then a repair that made a correct picture wrong, primed by the check's own recursion example (2026-10-27) | **fixed with shared fix** (consistency check 8 covers a field contradicting itself, with a neutral example and "work the picture through before flagging") |
 
 ---
 
@@ -153,6 +154,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | LeverageLogic — visitor's own assessment recast as "your employer indicated" | **fixed with shared fix** (check 10) |
 | Awkward Silence Filler — "talking to: boss, panicking", no setting chosen; the answer assumed an elevator (2026-10-23). Cause: the template's two examples were elevator scenes | **fixed with shared fix** (`checkConsistency` wired as the after-display check) + elevator examples removed + an explicit "no setting given" line |
 | Bill Rescue — "Your landlord has not filed anything" (input never said); hardship letter: "I am actively applying for assistance" (only recommended) (owner, 2026-10-26) | **fixed with shared fix** (check 10 now covers a status the input does not establish and claims in the visitor's own voice inside a letter or script) + prompt: where_you_stand only as far as the input shows; letter details they must supply in [brackets] |
+| MissingLink — a gap guessed from a topic name alone presented as observed ("You can follow the steps", "Nobody explicitly showed you"), "Medium confidence" (owner's review, 2026-10-27) | **fixed with shared fix** (`INVENTED_CHECK` covers what they were taught or can do and diagnoses from a topic alone; Missing Link frames the gap by how much was described — `basis` computed in code — and leads with a check that tests it) |
 
 ---
 
@@ -180,6 +182,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | BreakMyPlan — opens with an imagined failure story | **fixed** (owner decision 2026-10-09: story no longer shown; results open with the assumption to test first) |
 | DecisionCoach — page promise "One answer. Not options." vs charter | **fixed** (owner decision 2026-10-09: "A clear recommendation, and what would change it", 13 languages) |
 | TicketTackler — the reverse: under-reach. The visitor's own account (sign hours, park time) read as "unknown", so the verdict hedged to NOT_ENOUGH_INFORMATION_YET (2026-10-16 blind comparison) | **fixed** (rule check gains `met_per_account` / `yes_per_account`: the account is evidence, stated conditionally, never a reason to withhold the verdict) |
+| MissingLink — technical rules stated as universal ("a fresh, independent copy", "if the argument is not shrinking the base case is never reached") | **fixed with shared fix** (`calibrateClaims` covers technical and scientific rules; wired into Missing Link) |
 
 ---
 
@@ -201,6 +204,7 @@ Some have their own checks (several are grounded or number-checked), but none ch
 | NameStorm Quick — "⚠️ null" under every name (nullable field filled with the word null) | **fixed with shared fix** (reply filter turns a null/undefined-only string into a real null in every language; drops it from arrays) |
 | Bill Rescue — "Propose this: Use todays_job and payment_plan.strategy": a repair pointed at sections by their JSON keys (owner, 2026-10-26) | **fixed with shared fix** (`outputGuard` `namesAField`: guard, repeat and certainty repairs that name a key are refused; `planNote` tells every later pass to refer to sections by what they say, never by key or step number) |
 | UpsellShield — "out-of-door price" | open, minor |
+| MissingLink — "described in likely_gap": an answer's own field name in its prose; progressive answers also skipped the reply filter on 27 tools | **fixed with shared fix** (`voiceFix.stripFieldNames`, every reply and every streamed frame) |
 
 ---
 

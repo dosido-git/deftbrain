@@ -3,6 +3,9 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry, NO_INVENTED_FACTS } = require('../lib/claude');
 const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const { MODELS } = require('../lib/models');
+const { allChecks } = require('../lib/bothChecks');
+const { calibrateClaims } = require('../lib/certaintyCheck');
+const { checkConsistency } = require('../lib/outputGuard');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // A frequency claim reads as a proven one. "The single most common reason" and
@@ -58,6 +61,9 @@ ${NO_INVENTED_FACTS}`;
       : level === 'self_taught' ? 'Student is self-taught — gaps may be more scattered and fundamental.'
       : 'Student is at the undergraduate level.';
 
+    // How much they told us decides how the gap is framed (owner's review,
+    // 2026-10-27): a topic name alone gives a place to check, not a diagnosis.
+    const described = Boolean(whatIKnow?.trim() || whereItBroke?.trim());
     const userPrompt = `STRUGGLING WITH: "${concept}"
 ${subject ? `SUBJECT/COURSE (given by the reader — use it): ${subject}` : 'SUBJECT/COURSE: not given — work it out from the concept itself and report it in subject_detected.'}
 ${whatIKnow ? `WHAT I DO UNDERSTAND: ${whatIKnow}` : ''}
@@ -66,67 +72,59 @@ LEVEL: ${levelNote}
 
 Trace back to find the gap. ${FREQUENCY_RULE}
 
+WHAT YOU KNOW ABOUT THIS PERSON. ${described ? 'Only what they wrote above.' : 'Only the topic name — nothing about how they are stuck.'} You have not seen them work, so the gap you name is a place to CHECK FIRST, not a finding about them. Never say what they can or cannot do, what they were or were not taught, or how their confusion feels, unless they wrote it. The check below is how they find out whether you picked the right place.
+
 Return ONLY valid JSON:
 
 {
   "concept_analysis": "1-2 sentences: what this concept actually requires you to understand, and why it's commonly confusing.",
 
+  "subject_detected": "The field this concept belongs to, in one or two words — Calculus, Molecular biology, Statistics. Echo back the reader's own subject if they gave one.",
+
+  "likely_gap": {
+    "concept": "The prerequisite worth checking first",
+    "gap_type": "EXACTLY one of these four English words, never translated: conceptual | procedural | definitional | notational",
+    "why_check_this": "1-2 sentences: why this is a useful place to check first for this topic — conditional, never a claim about what this person does or lacks"
+  },
+
+  "check": {
+    "example": "A tiny worked example the questions refer to, in the subject's own notation: at most 12 lines of code, a short worked problem, or a short passage. Line breaks allowed.",
+    "questions": [
+      {
+        "question": "One question about the example that a person with this prerequisite answers easily — about the example, never 'Can you explain…'",
+        "answer": "The correct answer, 1-2 sentences",
+        "if_missed": "Which gap a wrong answer points to, in a few words"
+      }
+    ]
+  },
+
+  "refresher": {
+    "core_idea": "The key idea explained simply — 3-5 sentences, an actual mini-lesson tied to the example. If you use a picture or analogy, keep its positions and directions the same throughout.",
+    "common_confusion": "The specific misconception that usually causes this gap",
+    "practice": {
+      "task": "ONE short exercise",
+      "how_to_check": "How they can tell they got it right"
+    }
+  },
+
   "prerequisite_chain": [
     {
       "concept": "Prerequisite concept name",
-      "why_needed": "Why you need this to understand the target concept",
-      "quick_test": "A simple question or task that reveals if they have this prerequisite. Phrased as 'Can you...' or 'Do you know...'",
-      "gap_likelihood": "high | medium | low",
+      "why_needed": "One sentence: why you need this to understand the target concept",
+      "quick_test": "One short concrete question that reveals whether they have this prerequisite — a question to answer, never 'Can you…' or 'Do you know…'",
       "level_in_chain": 1
     }
   ],
 
-  "subject_detected": "The field this concept belongs to, in one or two words — Calculus, Molecular biology, Statistics. Echo back the reader's own subject if they gave one.",
-
-  "likely_gap": {
-    "concept": "The prerequisite most likely to be the gap",
-    "gap_type": "EXACTLY one of these four English words, never translated: conceptual | procedural | definitional | notational",
-    "gap_type_explanation": "What type of gap this is and what that means for how to fix it",
-    "why_this_one": "Why this is likely the gap — what symptoms point here",
-    "confidence": "EXACTLY one of these three English words, never translated, never anything else: High | Medium | Low",
-    "confidence_reasons": [
-      "One short line for why this diagnosis is as sure as it is — 2-4 of them. Draw on: how directly the prerequisite feeds the target concept, what their own description of being stuck points to, and how common this gap is for this topic. Be honest downward: if they gave only a concept name and no description, that is a real reason confidence is not High, and saying so is more useful than sounding certain."
-    ],
-    "refresher": {
-      "core_idea": "The key idea explained simply and clearly — 3-5 sentences max. This should be an actual mini-lesson, not a pointer to go read something.",
-      "common_confusion": "The specific misconception that usually causes this gap",
-      "practice": "1-2 specific exercises or tasks to confirm understanding",
-      "time_estimate": "How long it takes to fill this gap: '10 minutes', '1 hour', '1-2 study sessions'"
-    }
-  },
-
-  "chain_visualization": "A text-based chain showing the dependency path, e.g., 'Functions → Limits → Derivatives → Integration' with an arrow pointing to the likely gap",
-
-  "forward_connection": "How filling the gap connects back to the original concept they're struggling with — make the 'aha' moment visible",
-
-  "if_thats_not_it": [
-    {
-      "alternative_gap": "Another possible gap if the main one isn't it",
-      "symptom": "What would indicate this is the real gap instead"
-    }
-  ],
-
-  "study_plan": {
-    "step_1": "Fill the gap: specific action",
-    "step_2": "Verify the gap is filled: specific test",
-    "step_3": "Return to original concept: what to try",
-    "total_time": "Estimated total time to get unstuck"
-  },
-
-  "encouragement": "Genuine, specific encouragement — not generic 'you can do it'. Something that normalizes having this specific gap."
+  "encouragement": "One sentence that normalizes getting stuck on this topic — never a claim about why this person is stuck or how they were taught."
 }
 
-The prerequisite_chain should have 3-6 items, ordered from most foundational (level 1) to the target concept. Mark the most likely gap with high gap_likelihood. Provide AT MOST 2 if_thats_not_it items. gap_likelihood MUST stay one of the exact English keys high|medium|low regardless of the response language (it is a code value the UI switches on, not display text). Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
+check.questions: 2-3, each testing ONE distinct thing that would point to a different gap (for recursion, stopping is not the same question as how a result gets back). prerequisite_chain: 3-4 items in the order worth checking, most foundational first. No time estimates anywhere. State technical rules with the conditions they need: a typical case is not a universal rule. Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
-    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the
-    // diagnosis — what the concept needs and the likely gap — shows first;
-    // the mini-lesson for that gap, the prerequisite chain and the plan are
-    // written alongside, handed it, so they all point at the same gap.
+    // Progressive, plan first (2026-10-18, lib/progressive.js, T11): the gap
+    // to check shows first; the check, the lesson and the prerequisite list
+    // are written alongside, handed it, so they all point at the same gap.
+    // Speed (2026-10-27): each pass writes one short part.
     const system = withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
@@ -134,36 +132,39 @@ The prerequisite_chain should have 3-6 items, ordered from most foundational (le
       system,
       messages: [{ role: 'user', content }],
     }, { label: tag });
-    const REFRESHER = /\n {4}"refresher": \{[\s\S]*?\n {4}\}/;
     const PLAN = ['concept_analysis', 'subject_detected', 'likely_gap'];
-    const planPrompt = onlyKeys(userPrompt, PLAN).replace(REFRESHER, '').replace(/("confidence_reasons": \[[\s\S]*?\n {4}\]),/, '$1')
-      + '\nTHIS PASS leaves out likely_gap.refresher — another pass writes the mini-lesson for the gap you name.';
-    const refresherPrompt = (plan) => `${userPrompt.slice(0, userPrompt.indexOf('Return ONLY valid JSON:'))}${planNote(plan, PLAN)}
-
-Return ONLY valid JSON:
-{
-  "refresher": ${((userPrompt.match(/"refresher": (\{[\s\S]*?\n {4}\})/) || [])[1] || '{}')}
-}
-THIS PASS writes ONLY the refresher — the mini-lesson for exactly the likely gap above.`;
-    const plan = call(planPrompt, 1500, 'the-gap-trace');
+    const plan = call(onlyKeys(userPrompt, PLAN), 800, 'the-gap-trace');
     plan.catch(() => {}); // the plan part reports its own failure
     return await answer(req, res, {
       label: 'the-gap',
       parts: [
         ...planFirst(PLAN, () => plan, [
-          ['prerequisite_chain', 'chain_visualization'],
-          ['forward_connection', 'if_thats_not_it', 'study_plan', 'encouragement'],
-        ], (keys, i, p) => call(onlyKeys(userPrompt, keys) + planNote(p, PLAN), 2000, `the-gap-trace-${i + 2}`)),
-        { run: async () => call(refresherPrompt(await plan), 1500, 'the-gap-refresher'),
-          apply: (d, o) => { if (o?.refresher) d.refresher = o.refresher; } },
+          ['check'],
+          ['refresher'],
+        ], (keys, i, p) => call(onlyKeys(userPrompt, keys) + planNote(p, PLAN), 1500, `the-gap-trace-${i + 2}`)),
+        // The prerequisite list does not depend on which gap is picked, so it
+        // starts at once instead of waiting for the plan (speed, 2026-10-27).
+        { run: () => call(onlyKeys(userPrompt, ['prerequisite_chain', 'encouragement']), 1200, 'the-gap-trace-4'),
+          apply: (d, o) => { if (o?.prerequisite_chain) d.prerequisite_chain = o.prerequisite_chain; if (o?.encouragement) d.encouragement = o.encouragement; } },
       ],
       finish: d => {
         const { refresher, ...out } = structuredClone(d);
+        // The lesson travels inside likely_gap, where saved results and the
+        // dig endpoint expect it.
         if (out.likely_gap && refresher) out.likely_gap = { ...out.likely_gap, refresher };
+        out.basis = described ? 'described' : 'topic_only';
+        if (out.check && !Array.isArray(out.check.questions)) out.check.questions = [];
         return out;
       },
       ready: d => Boolean(d.concept_analysis && d.likely_gap),
       complete: d => Boolean(d.concept_analysis && d.likely_gap),
+      // T3/T4/T5 (audit/DEFECT-TYPES.md), side by side (lib/bothChecks.js):
+      // technical rules with their conditions; then contradictions (an analogy
+      // that changes direction) and details about the person they never gave.
+      check: d => allChecks(d, [
+        x => calibrateClaims(x, { label: 'the-gap', userLanguage }),
+        x => checkConsistency(x, { label: 'the-gap', userLanguage }),
+      ], { label: 'the-gap' }),
     });
 
   } catch (error) {

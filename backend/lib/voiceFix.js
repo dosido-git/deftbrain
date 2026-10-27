@@ -63,6 +63,28 @@ function internalWords(s) {
     .replace(/\bresearch packet\b/gi, 'research found here');
 }
 
+// The answer's own field names in its prose (T6): Missing Link wrote "the
+// mechanism described in likely_gap" (owner's review, 2026-10-27). Prompts
+// say never to; this is the code side. Only snake_case names that are keys of
+// this very reply are touched, in any language: "in likely_gap" becomes
+// "above", a bare one "the part above".
+function collectKeys(v, out = new Set()) {
+  if (Array.isArray(v)) v.forEach(x => collectKeys(x, out));
+  else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { if (/^[a-z]+(?:_[a-z0-9]+)+$/.test(k)) out.add(k); collectKeys(x, out); }
+  return out;
+}
+function stripFieldNames(s, keys) {
+  if (typeof s !== 'string' || !keys.size || !s.includes('_')) return s;
+  let out = s;
+  for (const k of keys) {
+    if (!out.includes(k)) continue;
+    out = out
+      .replace(new RegExp(`\\b(?:in|under|see|from)\\s+(?:the\\s+)?${k}(?:\\s+(?:section|field|part))?\\b`, 'g'), 'above')
+      .replace(new RegExp(`\\b(?:the\\s+)?${k}(?:\\s+(?:section|field|part))?\\b`, 'g'), 'the part above');
+  }
+  return out;
+}
+
 // A nullable field the model filled with the WORD null (T6): Name Storm
 // printed "⚠️ null" under every name because the schema said "null if none"
 // and the model wrote the string. A string that is only null/undefined is
@@ -106,11 +128,13 @@ function voiceFixMiddleware(req, res, next) {
       const fix = (s) => {
         let out = s;
         { const f = stripMarkers(out); if (f !== out) marked.n++; out = f; }
+        { const f = stripFieldNames(out, keys); if (f !== out) marked.n++; out = f; }
         if (fixVisitor) { const f = fixText(out); if (f !== out) visitor.n++; out = f; }
         if (fixInternal) { const f = internalWords(out); if (f !== out) marked.n++; out = f; }
         if (fixSpelling) { const f = spelling.fixText(out, keep); if (f !== out) spelt.n++; out = f; }
         return out;
       };
+      const keys = collectKeys(body);
       const nulls = { n: 0 };
       try { body = dropNullWords(body, nulls); } catch (_) { /* never break a reply */ }
       try { body = mapStrings(body, fix); } catch (_) { /* never break a reply */ }
@@ -128,4 +152,4 @@ function voiceFixMiddleware(req, res, next) {
   next();
 }
 
-module.exports = { voiceFixMiddleware, fixText, stripMarkers, dropNullWords, internalWords };
+module.exports = { voiceFixMiddleware, fixText, stripMarkers, dropNullWords, internalWords, stripFieldNames, collectKeys };
