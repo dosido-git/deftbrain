@@ -19,7 +19,7 @@ This file carries the substance behind https://deftbrain.com/llms.txt: what each
 ### Bike Medic
 
 URL: https://deftbrain.com/BikeMedic
-Tagline: Figure out what's wrong with your bike — and what to do next.
+Tagline: Figure out what's wrong with your bike and how to fix it
 Categories: Home & Daily Life
 
 Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.
@@ -41,7 +41,7 @@ Something wrong with your bike? Describe what you notice—or choose the part th
 
 URL: https://deftbrain.com/ContractDecoder
 Tagline: Understand what you're agreeing to before you sign.
-Categories: Home & Daily Life, Money, Work & Meetings
+Categories: Home & Daily Life, Money, Career and Business
 
 Paste a contract — or upload the file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.
 
@@ -65,7 +65,7 @@ Paste a contract — or upload the file — and get a plain-English breakdown of
 ### Final Wish
 
 URL: https://deftbrain.com/FinalWish
-Tagline: Organize what matters. Say what needs to be said.
+Tagline: Proactively organize your end-of-life wishes and messages to loved ones
 Categories: Home & Daily Life, Relationships, Self & Reflection
 
 One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.
@@ -142,7 +142,7 @@ Before you sign a lease, find out which clauses could cost you. Upload or paste 
 ### Paperwork Path
 
 URL: https://deftbrain.com/PaperworkPath
-Tagline: The documents you need — and the order to handle them
+Tagline: Marriage, inheritance, moving, having a baby: the documents that matter!
 Categories: Home & Daily Life, Money
 
 Pick a life event — moving, a new baby, a new job, marriage, divorce, a loss, buying a home, retiring — and Paperwork Path gives you the documents to gather, why each matters and where to get it, plus the order to handle everything so a later step never gets blocked by one you skipped. Requirements vary by location, so it flags what to confirm for your jurisdiction.
@@ -164,7 +164,7 @@ Pick a life event — moving, a new baby, a new job, marriage, divorce, a loss, 
 ### Plant Rescue
 
 URL: https://deftbrain.com/PlantRescue
-Tagline: Figure out what's wrong—and what to do next
+Tagline: Figure out what's wrong with your plant and how to save it
 Categories: Home & Daily Life
 
 Something wrong with your plant? Upload a photo or describe what you're seeing and Plant Rescue helps you narrow down what may be happening, decide what to check next, and make a practical rescue plan.
@@ -188,7 +188,7 @@ Something wrong with your plant? Upload a photo or describe what you're seeing a
 ### Recipe Chaos Solver
 
 URL: https://deftbrain.com/RecipeChaosSolver
-Tagline: When the recipe stops going according to plan.
+Tagline: Rescue a recipe gone wrong and look like a pro!
 Categories: Home & Daily Life
 
 Something going wrong in the kitchen? Tell us what you're making, what happened, and what you have on hand. Recipe Chaos Solver helps you recover the dish, replace missing ingredients, fix the flavor, check a recipe before you start, or scale it without creating a new problem.
@@ -237,7 +237,7 @@ Don't get charged later for damage that was already there. Walk through your apa
 ### Roommate Court
 
 URL: https://deftbrain.com/RoommateCourt
-Tagline: Work it out without making it worse.
+Tagline: Settle roommate issues fairly and amicably
 Categories: Home & Daily Life, Relationships
 
 Roommate problem? Tell Roommate Court what's happening and what each side says. It helps you separate the facts from the disagreement, figure out what might actually resolve it, and gives you words to start the conversation. Or use Chore Roulette to divide household chores and rotate the load over time.
@@ -261,7 +261,7 @@ Roommate problem? Tell Roommate Court what's happening and what each side says. 
 ### Safe Walk
 
 URL: https://deftbrain.com/SafeWalk
-Tagline: A little preparation before you head out.
+Tagline: A safety plan for walking somewhere alone
 Categories: Home & Daily Life
 
 Walking somewhere alone? Tell Safe Walk where you're going, when, and anything you already know about the route. It helps you think through the walk before you leave, make a simple check-in plan, and keep useful tools close while you're on the way.
@@ -362,6 +362,54 @@ A practical cultural briefing before you travel — greetings, taboos, dining, d
 - Insider tips are the real value: things most travelers discover the hard way after an embarrassing moment
 - Works across all 12 DeftBrain languages — get your briefing in your native language
 
+### Date Night
+
+URL: https://deftbrain.com/DateNight
+Tagline: Plan a special evening without hours of searching
+Categories: Relationships, Travel & Events
+
+Tell DeftBrain where you are, what you want to spend, and what kind of night you're hoping for. You'll get a complete plan—including where to go, when to go, what it should cost, and what to do if plans change.
+
+**When.** 'I dunno, what do you want to do?'
+
+**You give.** Your budget, the vibe, and where you are.
+
+**You get.** A full evening with a timeline, per-stop costs, and a buffer so you don't overshoot.
+
+**The edge.** It plans to a hard budget with the buffer built in, so the plan survives contact with the bill.
+
+**Good to know.**
+
+- First date? We'll favour places where conversation comes easily and you can comfortably wrap things up.
+- Staying in? We'll account for delivery fees and tips.
+- Don't want a repeat? Tell us what you did last time.
+- Want a different feel? Choose more relaxed, more romantic or more adventurous and reimagine the evening — no need to start over.
+
+**Before you go.** Hours, prices and availability can change. Confirm the details and make reservations where needed.
+
+### Giftology
+
+URL: https://deftbrain.com/Giftology
+Tagline: The perfect gift for the hardest person to shop for.
+Categories: Relationships
+
+Tell us a little about who you're shopping for. Giftology turns what you know about them into thoughtful gift ideas—with help choosing, finding, and making each one feel personal.
+
+**When.** Someone impossible to shop for, and a date approaching.
+
+**You give.** Everything you know about them — interests, quirks, offhand remarks. Occasion, budget, deadline.
+
+**You get.** Ideas with the reasoning chain from a specific detail about them to a specific gift.
+
+**The edge.** The reasoning is the product. It connects things you already knew but hadn't put together.
+
+**Good to know.**
+
+- The more specific you are about the person, the more personal the gift ideas get
+- Mention things they've said offhand — 'she once mentioned wanting to learn pottery' is gold
+- The card message is the secret weapon — it makes any gift feel intentional
+- Use the wildcard when you want to surprise someone who's hard to shop for
+
 ### Party Architect
 
 URL: https://deftbrain.com/PartyArchitect
@@ -387,30 +435,56 @@ Hosting a gathering and want it to not be boring? Describe the guest list, space
 
 ## Money
 
-### Date Night
+### Bill Rescue
 
-URL: https://deftbrain.com/DateNight
-Tagline: Plan an evening that feels special—without spending hours figuring it out.
-Categories: Money, Relationships, Travel & Events
+URL: https://deftbrain.com/BillRescue
+Tagline: Ways to lower, dispute or manage a bill you can't afford
+Categories: Money, Home & Daily Life
 
-Tell DeftBrain where you are, what you want to spend, and what kind of night you're hoping for. You'll get a complete plan—including where to go, when to go, what it should cost, and what to do if plans change.
+See where you stand with a bill that's wrong, too big, or already late: how urgent it is, what you may not owe, and one thing to do today, with the words to say when you do it.
 
-**When.** 'I dunno, what do you want to do?'
+**When.** A bill arrives that's wrong, larger than it should be, or already late.
 
-**You give.** Your budget, the vibe, and where you are.
+**You give.** What kind of bill, how much, and how far behind you are.
 
-**You get.** A full evening with a timeline, per-stop costs, and a buffer so you don't overshoot.
+**You get.** Where you stand, one thing to do today, and the words to say when you do it.
 
-**The edge.** It plans to a hard budget with the buffer built in, so the plan survives contact with the bill.
+**The edge.** It answers the question you actually have — am I in trouble — before it hands you anything to read. Then one job for today, and nothing else until that's done.
 
 **Good to know.**
 
-- First date? We'll favour places where conversation comes easily and you can comfortably wrap things up.
-- Staying in? We'll account for delivery fees and tips.
-- Don't want a repeat? Tell us what you did last time.
-- Want a different feel? Choose more relaxed, more romantic or more adventurous and reimagine the evening — no need to start over.
+- Start with Quick Check for any charge you're unsure about — it takes 5 seconds
+- Use Rehearsal on Hard Mode before big calls — if you can handle the worst-case rep, the real one feels easy
+- Save your plan BEFORE making the call so you can reference scripts during the conversation
+- Log victories immediately — watching your savings total grow builds the habit
+- The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit
 
-**Before you go.** Hours, prices and availability can change. Confirm the details and make reservations where needed.
+**Before you go.** Get any agreement in writing before you pay. A promise made on the phone is hard to hold anyone to later.
+
+### Buy Wise
+
+URL: https://deftbrain.com/BuyWise
+Tagline: Investigate a potential purchase before you commit
+Categories: Money, Decisions, Tasks
+
+Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.
+
+**When.** Something's in the cart and you're not sure.
+
+**You give.** What you're buying. The price you've seen helps.
+
+**You get.** Whether the price is fair, buy now or wait, the true cost including consumables, and what actually goes wrong with it.
+
+**The edge.** Total cost of ownership, not sticker price — the cheap printer with expensive ink is the whole point.
+
+**Good to know.**
+
+- The Total Cost of Ownership often reveals the real price — a cheap printer needs expensive ink
+- Impulse check mode is genuinely useful — it asks questions you're avoiding
+- Comparison mode works best when you specify your priority so it can weight the recommendation
+- The negotiation scripts only appear when haggling is realistic — cars, furniture, services, rent
+- Adding context ('replacing old one', 'gift', 'bake once a month') dramatically improves the advice
+- Timing advice includes sale calendars — waiting 3 weeks can save 30%
 
 ### Fake Review Detective
 
@@ -437,28 +511,28 @@ Five stars doesn't always mean five-star quality. Paste reviews or import them f
 - The Genuine Consensus section is the most actionable — it tells you what the product actually is based on reviews you can trust
 - Try the example reviews to see the tool in action before pasting your own
 
-### Giftology
+### Money Diplomat
 
-URL: https://deftbrain.com/Giftology
-Tagline: The perfect gift for the hardest person to shop for.
-Categories: Money, Relationships
+URL: https://deftbrain.com/MoneyDiplomat
+Tagline: The right number for every money moment — tips, splits, gifts, salary
+Categories: Money, Conversations, Relationships
 
-Tell us a little about who you're shopping for. Giftology turns what you know about them into thoughtful gift ideas—with help choosing, finding, and making each one feel personal.
+Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.
 
-**When.** Someone impossible to shop for, and a date approaching.
+**When.** A money moment with a social edge — a tip, a split, a gift, a salary number.
 
-**You give.** Everything you know about them — interests, quirks, offhand remarks. Occasion, budget, deadline.
+**You give.** The situation type and the details. A saved profile sharpens everything.
 
-**You get.** Ideas with the reasoning chain from a specific detail about them to a specific gift.
+**You get.** The right number, plus the words to say and how to handle the awkwardness.
 
-**The edge.** The reasoning is the product. It connects things you already knew but hadn't put together.
+**The edge.** It handles the etiquette as well as the arithmetic. Knowing the number isn't the hard part.
 
 **Good to know.**
 
-- The more specific you are about the person, the more personal the gift ideas get
-- Mention things they've said offhand — 'she once mentioned wanting to learn pottery' is gold
-- The card message is the secret weapon — it makes any gift feel intentional
-- Use the wildcard when you want to surprise someone who's hard to shop for
+- Set your profile once and forget it — every situation response will automatically factor in your budget comfort level and cultural norms without you re-explaining each time
+- Use Quick Math mode for the 60% of situations that just need fast arithmetic — save the AI-powered mode for socially complex scenarios where you need scripts and strategy
+- The Practice simulator is especially valuable before salary negotiations and family money conversations — rehearsing with AI builds real confidence for the actual conversation
+- Check Trends periodically to spot patterns — if you're constantly in 'lending' situations with the same person, the data makes it easier to set a boundary
 
 ### Quote Check
 
@@ -511,7 +585,7 @@ Paste a suspicious email, text, DM, phone script, invoice, or message. Scam Rada
 ### Upsell Shield
 
 URL: https://deftbrain.com/UpsellShield
-Tagline: Walk in knowing what matters—and what you'll say.
+Tagline: Prepare yourself to withstand a sales pitch
 Categories: Money
 
 Sometimes it's hard to keep track of what you wanted in the first place once you're in the room. Upsell Shield helps you go in with your priorities clear, recognize the moments that tend to pull people off course, and know what to say when the conversation starts drifting from your plan.
@@ -531,13 +605,13 @@ Sometimes it's hard to keep track of what you wanted in the first place once you
 - Questions Worth Asking are for getting real information, not for sounding sophisticated
 - Works for any high-pressure situation, not just cars
 
-## Career
+## Career and Business
 
 ### Before Hello
 
 URL: https://deftbrain.com/BeforeHello
-Tagline: Become worth knowing before you ask to be known.
-Categories: Career, Relationships
+Tagline: Get on someone's radar before you ask them for anything
+Categories: Career and Business, Relationships
 
 Want to connect with someone in your professional world, but don't want to show up as a stranger with an ask? Build a practical plan to become more visible, relevant, and useful first—then recognize when there's a genuine reason to reach out.
 
@@ -559,8 +633,8 @@ Want to connect with someone in your professional world, but don't want to show 
 ### Brag Sheet Builder
 
 URL: https://deftbrain.com/BragSheetBuilder
-Tagline: Remember your work. Recognize your strengths. Tell your story with confidence.
-Categories: Career, Work & Meetings
+Tagline: Turn your accomplishments into wins for reviews and raises
+Categories: Career and Business
 
 Turn what you've done into a case for your review, a promotion, or a resume that undersells you. Tell DeftBrain what you've been working on, and it writes specific statements with real verbs and numbers, then builds the case around them.
 
@@ -586,7 +660,7 @@ Turn what you've done into a case for your review, a promotion, or a resume that
 
 URL: https://deftbrain.com/CaptionMagic
 Tagline: Find the words that fit the photo.
-Categories: Career, Conversations, Just for Fun
+Categories: Career and Business, Conversations, Just for Fun
 
 A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.
 
@@ -609,7 +683,7 @@ A good photo doesn’t always come with the right words. Share the image, and te
 
 URL: https://deftbrain.com/ColdOpenCraft
 Tagline: Make the first message easier to send — and easier to answer.
-Categories: Career, Conversations
+Categories: Career and Business, Conversations
 
 Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you three ready-to-send ways to begin — each opening differently and asking for something different — plus a follow-up for when nobody replies.
 
@@ -630,7 +704,7 @@ Reaching out to someone you don’t know can make even a simple message feel awk
 
 URL: https://deftbrain.com/ConceptCoach
 Tagline: Stress-test your business idea before you invest time or money
-Categories: Career, Decisions
+Categories: Career and Business, Decisions
 
 Describe your business idea and Concept Coach will challenge it, surface weak assumptions, point out genuine strengths, and help you figure out what to test before you commit more time or money.
 
@@ -654,8 +728,8 @@ Describe your business idea and Concept Coach will challenge it, surface weak as
 ### Future Proof
 
 URL: https://deftbrain.com/FutureProof
-Tagline: Stress-test a career, skill, technology, investment or long-term bet — before you go all in
-Categories: Career, Decisions
+Tagline: Stress-test a career, a major decision or long-term bet before you commit
+Categories: Career and Business, Decisions
 
 Stress-test a career, skill, technology, investment, or long-term bet. See what's working for it, what's working against it, what could change, and what you can do now without betting everything on one forecast. Choose a 1, 3, 5 or 10 year horizon; get tailwinds, headwinds, three conditional scenarios, and one low-regret action.
 
@@ -678,7 +752,7 @@ Stress-test a career, skill, technology, investment, or long-term bet. See what'
 
 URL: https://deftbrain.com/GetNoticed
 Tagline: Widen the circle of people who know what you do
-Categories: Career, Relationships
+Categories: Career and Business, Relationships
 
 Want more opportunities to be seen? Describe how your work, interests, and relationships put you in contact with new people and ideas. Get Noticed suggests practical ways to become more visible and create more opportunities for meaningful connections.
 
@@ -700,8 +774,8 @@ Want more opportunities to be seen? Describe how your work, interests, and relat
 ### Ghost Writer
 
 URL: https://deftbrain.com/GhostWriter
-Tagline: You know why they deserve it. This helps you say it.
-Categories: Career, Conversations
+Tagline: Your writing advisor for recommendation letters.
+Categories: Career and Business, Conversations
 
 A finished recommendation letter, built on specific evidence and written in your voice. Tell DeftBrain about the person and why they deserve it, and you'll have a letter that sounds like you wrote it with care.
 
@@ -718,11 +792,58 @@ A finished recommendation letter, built on specific evidence and written in your
 - The Refine button lets you adjust tone, length, or add specific details after generation
 - Power Phrases section shows which lines carry the most persuasive weight — keep those
 
+### Heckler Prep
+
+URL: https://deftbrain.com/HecklerPrep
+Tagline: Prepare for the hardest questions before your talk or presentation
+Categories: Career and Business
+
+About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.
+
+**When.** Before a pitch or presentation with a skeptical room.
+
+**You give.** What you're proposing and who's in the audience.
+
+**You get.** The hardest questions that audience will actually ask, with strong answers.
+
+**The edge.** It writes real challenges, not softballs — which is the only kind worth rehearsing.
+
+**Good to know.**
+
+- The questions get harder as the list goes on — if you can handle #10, you're ready
+- The 'what this tests' line tells you what the question is really about, so you answer that rather than the words
+- Practice answering out loud, not just reading the model answers
+- The bail-out strategies are for genuine unknowns — don't fake answers
+
+### Justify My Meeting
+
+URL: https://deftbrain.com/JustifyMyMeeting
+Tagline: Evaluate the necessity of a meeting
+Categories: Career and Business
+
+Have a meeting coming up? Paste the invite or describe what happens. Justify My Meeting looks at the goal of the meeting and whether having everyone there at the same time is the best use of everyone’s time. Then it tells you whether to keep it, shorten it, fix it, or replace it with something better.
+
+**When.** A meeting is on the calendar and you are not sure it deserves to be.
+
+**You give.** The invite, or a description of what actually happens. Duration and headcount if you know them.
+
+**You get.** A verdict — keep it, shorten it, fix it, or make it async — with the reasoning, what would change the verdict, and what to send. Then an agenda if it should happen, or the message if it should not.
+
+**The edge.** It weighs whether being in the room at the same time is what the goal actually needs, instead of grading the meeting on vibes.
+
+**Good to know.**
+
+- Describe what actually happens, not what the invite claims — that is where the answer usually lives
+- Duration and headcount are optional, but supplying them is what makes the time footprint real rather than guessed
+- 'Anything else that matters?' is where context belongs — who is not invited, what was already decided, who is not speaking to whom
+- A NOT ENOUGH TO TELL verdict is a real answer: it tells you what is missing rather than guessing
+- Some meetings genuinely earn their hour. A tool that never says 'keep it' would not be worth consulting.
+
 ### Leverage Logic
 
 URL: https://deftbrain.com/LeverageLogic
 Tagline: Know where you stand before you negotiate
-Categories: Career, Decisions, Money
+Categories: Career and Business, Decisions, Money
 
 Facing a negotiation? Describe the situation, what you want, and anything you think gives you leverage. Leverage Logic helps you see where each side has room to move, what you may be assuming, and how to make your case without giving away more than you need to.
 
@@ -741,11 +862,34 @@ Facing a negotiation? Describe the situation, what you want, and anything you th
 - If a piece of leverage has no established fact under it, it is an assumption wearing a suit
 - Am I ready? gives you a verdict and what it turns on, not a score
 
+### Meeting Hijack Stopper
+
+URL: https://deftbrain.com/MeetingHijackStopper
+Tagline: A plan for the meeting—and the moments that could derail it.
+Categories: Career and Business
+
+Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.
+
+**When.** You are running a meeting and want it to actually reach the thing it was called for.
+
+**You give.** What needs to happen by the end, how long you have, and roughly who is there.
+
+**You get.** An agenda built around that outcome, words to say when it drifts, and a short list for before people leave. Then a timer to run it by, and a follow-up written from what you actually captured.
+
+**The edge.** It writes the sentence you would have to improvise in the room — the redirect, the widening, the close — and it builds the plan around your stated outcome instead of a template.
+
+**Good to know.**
+
+- Describe the outcome, not the topic. 'Decide which two proposals advance' produces a usable agenda; 'discuss the proposals' produces a meeting about proposals
+- The scripts are the point. Read them once before you go in — improvising a redirect while someone is mid-sentence is the hard part
+- Leaving a field blank is a real answer. If you do not know who decides, say so, and the plan will treat that as the first thing to settle
+- The follow-up is generated after the meeting from what you captured. Anything you leave blank stays out of it rather than becoming a placeholder
+
 ### Name Audit
 
 URL: https://deftbrain.com/NameAudit
 Tagline: Stress-test any name before you commit
-Categories: Career, Decisions
+Categories: Career and Business, Decisions
 
 The deepest name analysis you can get without hiring a naming agency. Stress-tests any name across 12 dimensions: phonetics, memorability (including the drunk test), global language scan for unintended meanings, visual analysis, radio test, SEO, competitive landscape, longevity, and emotional resonance. Includes live domain and social handle availability checks. Also has a head-to-head Compare mode for choosing between finalists.
 
@@ -769,7 +913,7 @@ The deepest name analysis you can get without hiring a naming agency. Stress-tes
 
 URL: https://deftbrain.com/NameStorm
 Tagline: Name anything. Know it works before you commit.
-Categories: Career, Ideas & Imagination
+Categories: Career and Business, Ideas & Imagination
 
 Names are deceptively hard. They need to sound right, fit your audience, be easy to remember, and still feel right six months from now. Describe what you're naming, and DeftBrain will help you find a name that works before you commit.
 
@@ -792,8 +936,8 @@ Names are deceptively hard. They need to sound right, fit your audience, be easy
 ### Roast Me
 
 URL: https://deftbrain.com/RoastMe
-Tagline: Find the clichés, buzzwords, humblebrags, and cringeworthy phrases you stopped noticing long ago.
-Categories: Career, Just for Fun
+Tagline: Submit your profile, resume, email, tweet, etc. and get an honest (and funny) assessment
+Categories: Career and Business, Just for Fun
 
 Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched. Every roast line targets specific content you submitted — zero generic insults. DeftBrain detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.
 
@@ -812,8 +956,8 @@ Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and g
 ### Skill Gap Map
 
 URL: https://deftbrain.com/SkillGapMap
-Tagline: See what carries over. Find what to build next.
-Categories: Career, Decisions
+Tagline: What skills do you need to improve or enhance for a new role?
+Categories: Career and Business, Decisions
 
 Thinking about a career move? Skill Gap Map starts with what your own experience actually demonstrates, then shows possible connections and gaps worth checking against the roles or job postings you're considering.
 
@@ -833,11 +977,34 @@ Thinking about a career move? Skill Gap Map starts with what your own experience
 - Descriptions of your own supplied experience can be confident; descriptions of an unsourced target role should stay conditional
 - Optional deeper sections are secondary — the first screen should still tell you what carries over, what to check, and what to do next
 
+### The Debrief
+
+URL: https://deftbrain.com/TheDebrief
+Tagline: The meeting ended. Now figure out what actually happened.
+Categories: Career and Business, Tasks
+
+What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.
+
+**When.** The meeting ended and nobody wrote anything down.
+
+**You give.** The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Spot Patterns.
+
+**You get.** Decisions, action items with owners, open questions, and drafted follow-up messages.
+
+**Good to know.**
+
+- Meeting type matters — a standup extraction focuses on blockers while a planning extraction focuses on ownership and timelines
+- UNASSIGNED action items are flagged in red — these are the ones that fall through the cracks if you don't fix them
+- The 'Tensions Detected' section is diplomatically worded but honest — use it to address things that got swept under the rug
+- Follow Up mode's 'Boss Update' is a 3-5 sentence upward summary — perfect for keeping your manager in the loop without forwarding the full transcript
+- Series mode catches the real meeting anti-patterns: topics that keep resurfacing, action items that 'disappeared', and decisions that get revisited
+- Individual nudges include urgency ratings and recommended channel (email vs. Slack vs. text) — send the urgent ones immediately
+
 ### The Run-Through
 
 URL: https://deftbrain.com/TheRunthrough
 Tagline: Presentation coach in your pocket.
-Categories: Career, Work & Meetings
+Categories: Career and Business
 
 A presentation can look ready on the page and still stumble in the room. The Run-Through helps you find what to cut, what to prepare for, and what needs a stronger landing — before you're standing in front of an audience.
 
@@ -858,7 +1025,7 @@ A presentation can look ready on the page and still stumble in the room. The Run
 
 URL: https://deftbrain.com/TheWholeStory
 Tagline: Frame your real story for any audience — honest but strategic
-Categories: Career, Conversations
+Categories: Career and Business, Conversations
 
 Have a gap, a firing, or a messy chapter you'll need to explain? Share the real story, and DeftBrain helps you tell it honestly for the audience in front of you — what to lead with, what to leave out, and how to say it.
 
@@ -878,85 +1045,13 @@ Have a gap, a firing, or a messy chapter you'll need to explain? Share the real 
 - Body language tips are tailored to your specific situation and audience, not generic advice
 - Try the same story with different audiences to see how framing shifts — it's eye-opening
 
-## Work & Meetings
-
-### Heckler Prep
-
-URL: https://deftbrain.com/HecklerPrep
-Tagline: Anticipate the hardest questions before they land.
-Categories: Work & Meetings
-
-About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.
-
-**When.** Before a pitch or presentation with a skeptical room.
-
-**You give.** What you're proposing and who's in the audience.
-
-**You get.** The hardest questions that audience will actually ask, with strong answers.
-
-**The edge.** It writes real challenges, not softballs — which is the only kind worth rehearsing.
-
-**Good to know.**
-
-- The questions get harder as the list goes on — if you can handle #10, you're ready
-- The 'what this tests' line tells you what the question is really about, so you answer that rather than the words
-- Practice answering out loud, not just reading the model answers
-- The bail-out strategies are for genuine unknowns — don't fake answers
-
-### Justify My Meeting
-
-URL: https://deftbrain.com/JustifyMyMeeting
-Tagline: Is a meeting justified?
-Categories: Work & Meetings
-
-Have a meeting coming up? Paste the invite or describe what happens. Justify My Meeting looks at the goal of the meeting and whether having everyone there at the same time is the best use of everyone’s time. Then it tells you whether to keep it, shorten it, fix it, or replace it with something better.
-
-**When.** A meeting is on the calendar and you are not sure it deserves to be.
-
-**You give.** The invite, or a description of what actually happens. Duration and headcount if you know them.
-
-**You get.** A verdict — keep it, shorten it, fix it, or make it async — with the reasoning, what would change the verdict, and what to send. Then an agenda if it should happen, or the message if it should not.
-
-**The edge.** It weighs whether being in the room at the same time is what the goal actually needs, instead of grading the meeting on vibes.
-
-**Good to know.**
-
-- Describe what actually happens, not what the invite claims — that is where the answer usually lives
-- Duration and headcount are optional, but supplying them is what makes the time footprint real rather than guessed
-- 'Anything else that matters?' is where context belongs — who is not invited, what was already decided, who is not speaking to whom
-- A NOT ENOUGH TO TELL verdict is a real answer: it tells you what is missing rather than guessing
-- Some meetings genuinely earn their hour. A tool that never says 'keep it' would not be worth consulting.
-
-### Meeting Hijack Stopper
-
-URL: https://deftbrain.com/MeetingHijackStopper
-Tagline: A plan for the meeting—and the moments that could derail it.
-Categories: Work & Meetings
-
-Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.
-
-**When.** You are running a meeting and want it to actually reach the thing it was called for.
-
-**You give.** What needs to happen by the end, how long you have, and roughly who is there.
-
-**You get.** An agenda built around that outcome, words to say when it drifts, and a short list for before people leave. Then a timer to run it by, and a follow-up written from what you actually captured.
-
-**The edge.** It writes the sentence you would have to improvise in the room — the redirect, the widening, the close — and it builds the plan around your stated outcome instead of a template.
-
-**Good to know.**
-
-- Describe the outcome, not the topic. 'Decide which two proposals advance' produces a usable agenda; 'discuss the proposals' produces a meeting about proposals
-- The scripts are the point. Read them once before you go in — improvising a redirect while someone is mid-sentence is the hard part
-- Leaving a field blank is a real answer. If you do not know who decides, say so, and the plan will treat that as the first thing to settle
-- The follow-up is generated after the meeting from what you captured. Anything you leave blank stays out of it rather than becoming a placeholder
-
 ## Health & Wellness
 
 ### Before the Crash
 
 URL: https://deftbrain.com/BeforeTheCrash
 Tagline: Learn what tends to happen before you run out of steam
-Categories: Health & Wellness, Self & Reflection, Work & Meetings
+Categories: Health & Wellness, Self & Reflection, Career and Business
 
 Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.
 
@@ -1148,7 +1243,7 @@ Turn an open-ended task into a clear stopping point, work toward one concrete re
 ### Focus Sound Architect
 
 URL: https://deftbrain.com/FocusSoundArchitect
-Tagline: Build a background your attention can live with.
+Tagline: Customized background sounds to help you focus
 Categories: Health & Wellness
 
 Sometimes the problem isn't your focus. It's what your ears have to deal with. Focus Sound Architect builds an adjustable background that can mask distractions, soften an uncomfortable space, or simply give you something better to work alongside.
@@ -1292,7 +1387,7 @@ Describe a feeling you can't quite name — that weird mix of emotions, the thin
 ### PEP — Personal Energy Planner
 
 URL: https://deftbrain.com/PEP
-Tagline: Work with the energy you have.
+Tagline: Take command of your available energy
 Categories: Health & Wellness, Self & Reflection
 
 Low on energy and not sure what to do with it? Tell PEP how much you have in you right now. Get something that fits. Try it. Tell PEP how it went. PEP uses your own history to make better suggestions next time.
@@ -1340,7 +1435,7 @@ Not sure what to make of something your pet is doing? Describe what you're seein
 ### Procedure Probe
 
 URL: https://deftbrain.com/ProcedureProbe
-Tagline: Be an informed patient before you say yes.
+Tagline: Deep-dive into a medical procedure before you decide
 Categories: Health & Wellness, Home & Daily Life, Money
 
 A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.
@@ -1435,7 +1530,7 @@ Stuck on a project that feels too big to start? Task Avalanche Breaker finds one
 ### Trip Recon
 
 URL: https://deftbrain.com/TripRecon
-Tagline: Prepare for the sensory parts of going somewhere.
+Tagline: Know unpleasant realities before you go
 Categories: Health & Wellness, Self & Reflection, Travel & Events
 
 Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise hard to handle? Tell Trip Recon what matters to you and what you already know. It helps you prepare for possibilities, ask for what you need, and make a backup plan without inventing conditions at the place.
@@ -1460,7 +1555,7 @@ Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise h
 
 URL: https://deftbrain.com/VirtualBodyDouble
 Tagline: Work together. Even when you're working alone.
-Categories: Health & Wellness, Tasks, Work & Meetings
+Categories: Health & Wellness, Tasks, Career and Business
 
 Hard to start, or stay on, a task when you're working alone? Say what you're working on, pick a companion, and it keeps you company until the timer ends, checking in along the way. That's body doubling: the focus that comes from someone else being in the room.
 
@@ -1482,7 +1577,7 @@ Hard to start, or stay on, a task when you're working alone? Say what you're wor
 ### Waiting Mode Liberator
 
 URL: https://deftbrain.com/WaitingModeLiberator
-Tagline: Break free when upcoming events freeze your day
+Tagline: Be productive during unavoidable waiting times
 Categories: Health & Wellness, Tasks
 
 Got a thing later and can't start anything? That frozen feeling is real. This tool shows you how much free time you actually have, helps you decide what to do with it, and lets you stop thinking about the appointment until it's time.
@@ -1554,8 +1649,8 @@ The strongest arguments are usually the ones we haven't heard yet. State your po
 ### Awkward Silence Filler
 
 URL: https://deftbrain.com/AwkwardSilenceFiller
-Tagline: Context-appropriate conversation rescues on demand
-Categories: Conversations, Relationships, Work & Meetings
+Tagline: Context-appropriate things to say when a conversation stalls
+Categories: Conversations, Relationships, Career and Business
 
 Not every silence needs rescuing. But when it does, we'll help you find something natural to say.
 
@@ -1573,36 +1668,10 @@ Not every silence needs rescuing. But when it does, we'll help you find somethin
 - What NOT to say prevents common mistakes for each setting
 - Some silences are fine - you don't need to fill every pause
 
-### Bill Rescue
-
-URL: https://deftbrain.com/BillRescue
-Tagline: A bill isn't a verdict. It's a puzzle to solve.
-Categories: Conversations, Home & Daily Life, Money
-
-See where you stand with a bill that's wrong, too big, or already late: how urgent it is, what you may not owe, and one thing to do today, with the words to say when you do it.
-
-**When.** A bill arrives that's wrong, larger than it should be, or already late.
-
-**You give.** What kind of bill, how much, and how far behind you are.
-
-**You get.** Where you stand, one thing to do today, and the words to say when you do it.
-
-**The edge.** It answers the question you actually have — am I in trouble — before it hands you anything to read. Then one job for today, and nothing else until that's done.
-
-**Good to know.**
-
-- Start with Quick Check for any charge you're unsure about — it takes 5 seconds
-- Use Rehearsal on Hard Mode before big calls — if you can handle the worst-case rep, the real one feels easy
-- Save your plan BEFORE making the call so you can reference scripts during the conversation
-- Log victories immediately — watching your savings total grow builds the habit
-- The Letters tab covers 7 types — most people don't know they can request a goodwill adjustment to fix their credit
-
-**Before you go.** If a collector has the bill, don't pay or agree the debt is yours until they've validated it in writing. On an old debt, even a small payment can restart the time limit for collecting it.
-
 ### Comeback Cooker
 
 URL: https://deftbrain.com/ComebackCooker
-Tagline: For the response that arrived three hours too late.
+Tagline: The comeback you wish you'd said, ready for next time
 Categories: Conversations, Just for Fun, Relationships
 
 Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.
@@ -1649,7 +1718,7 @@ When a company stops answering your complaint, DeftBrain lays out how to escalat
 ### Conflict Coach
 
 URL: https://deftbrain.com/ConflictCoach
-Tagline: Respond to the message — not the heat of the moment.
+Tagline: Reply to a heated message without making it worse
 Categories: Conversations, Relationships
 
 A tense message can make the first reply feel urgent. Paste what you received, tell us the relationship and what you want the response to accomplish, and Conflict Coach lays out several ways to answer so you can choose deliberately before you send anything.
@@ -1696,7 +1765,7 @@ A message doesn't mean the same thing to everyone who reads it. Tell DeftBrain w
 ### Decoder Ring
 
 URL: https://deftbrain.com/DecoderRing
-Tagline: Explore what might be happening beneath the words
+Tagline: What a confusing message might really mean
 Categories: Conversations, Relationships
 
 Confusing messages rarely come with a translation. Paste a message and DeftBrain will help you separate what was said from what may have been meant.
@@ -1765,7 +1834,7 @@ Understand what your doctor told you once you're home and the details have blurr
 
 URL: https://deftbrain.com/EmailUrgencyTriager
 Tagline: Find out what actually needs a reply today
-Categories: Conversations, Tasks, Work & Meetings
+Categories: Conversations, Tasks, Career and Business
 
 Analyze email urgency and cut through inbox anxiety. Find out what actually needs a response today vs what can wait.
 
@@ -1812,34 +1881,10 @@ Tell us who you want to thank and what they did. Get a few natural ways to say i
 - Use the delivery suggestions! The AI recommends the best method (text, email, handwritten card) and timing based on your context. A post-interview thank-you should go out within 24 hours, but a friend who helped you move can get a card a few days later.
 - Save the personalization tips — they're gold. They suggest specific details you could add to make the message even more meaningful, like mentioning how their help affected you or what you learned from them.
 
-### Heart of the Matter
-
-URL: https://deftbrain.com/HeartOfTheMatter
-Tagline: Find what matters in something long.
-Categories: Conversations, Learning
-
-Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes — text, a PDF, or an audio recording. Heart of the Matter finds the ideas doing the most work, breaks down what to understand, or connects themes across multiple pieces.
-
-**When.** An hour of material where maybe ten minutes actually matters.
-
-**You give.** The transcript or text — paste it, or upload a text file, PDF, or audio recording. Pick Distill, Understand, or Connect.
-
-**You get.** The ideas doing the most work — as ranked notes, a plainer breakdown of what to understand, or themes across sources.
-
-**The edge.** Everything content-specific stays grounded in what you supplied — it won't predict an exam, guess a professor's intent, or add outside facts to fill a gap.
-
-**Good to know.**
-
-- Auto-captions are fine — Heart of the Matter handles imperfect transcription (typos, missed words) well
-- The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times — only when the material actually says them
-- Distill's point types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point
-- Connect mode shines across sources — paste or upload 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them
-- An uploaded PDF or audio file is read in as text before anything else happens — if the extracted text looks off, you can edit it directly before running a mode
-
 ### Magic Mouth (M²)
 
 URL: https://deftbrain.com/MagicMouth
-Tagline: The art of the ask.
+Tagline: Ask for the unlikely—and get it!
 Categories: Conversations, Money
 
 Tell it what you want — a refund, an upgrade, a free donut, a waived fee, a table at a full restaurant. AI reads the situation, finds your best angle, writes the exact script, and coaches the delivery. Charm, not fraud.
@@ -1881,33 +1926,10 @@ An apology that fits what actually happened — not bigger, not smaller. Describ
 - Over-apologizing trains people to expect apologies for normal interactions
 - Under-apologizing (level 3 when you need 4-5) damages relationships
 
-### Money Diplomat
-
-URL: https://deftbrain.com/MoneyDiplomat
-Tagline: The right number for every money moment — tips, splits, gifts, salary
-Categories: Conversations, Money, Relationships
-
-Navigate every awkward money situation with confidence. 18 scenario types covering tips, bill splits, Venmo requests, lending, dating, gifts, roommates, salary negotiation, inheritance, group travel, subscriptions, affordability checks, cultural money norms, charity, weddings, family, and coworker collections. Plus 5 bonus modes: instant tip/split calculator, debt tracker with AI nudge messages, conversation practice simulator, usage trends with charts, and a persistent profile so you never re-explain your budget or culture.
-
-**When.** A money moment with a social edge — a tip, a split, a gift, a salary number.
-
-**You give.** The situation type and the details. A saved profile sharpens everything.
-
-**You get.** The right number, plus the words to say and how to handle the awkwardness.
-
-**The edge.** It handles the etiquette as well as the arithmetic. Knowing the number isn't the hard part.
-
-**Good to know.**
-
-- Set your profile once and forget it — every situation response will automatically factor in your budget comfort level and cultural norms without you re-explaining each time
-- Use Quick Math mode for the 60% of situations that just need fast arithmetic — save the AI-powered mode for socially complex scenarios where you need scripts and strategy
-- The Practice simulator is especially valuable before salary negotiations and family money conversations — rehearsing with AI builds real confidence for the actual conversation
-- Check Trends periodically to spot patterns — if you're constantly in 'lending' situations with the same person, the data makes it easier to set a boundary
-
 ### Nerve Check
 
 URL: https://deftbrain.com/NerveCheck
-Tagline: Real confidence for scary moments.
+Tagline: Preparation toolkit for interviews, presentations, hard conversations, dates, and more
 Categories: Conversations, Health & Wellness, Self & Reflection
 
 Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.
@@ -1927,34 +1949,10 @@ Pre-game toolkit for interviews, presentations, hard conversations, dates, and m
 - For medical appointments, add your specific concern (getting bad news, not being heard) — generic prep misses the point
 - Run Prep mode 24 hours before, not 5 minutes before — give yourself time to actually absorb the plan
 
-### Pronounce It Right
-
-URL: https://deftbrain.com/PronounceItRight
-Tagline: Know how to say it before you have to.
-Categories: Conversations, Learning
-
-Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you how to say it, where the stress goes, and how to make unfamiliar sounds — with guidance adapted to the language you already speak. When the spelling alone can't settle a reading (a name especially), it says so instead of guessing.
-
-**When.** Before you have to say it out loud in front of someone.
-
-**You give.** The word, its category, and your native language.
-
-**You get.** A phonetic guide built from sounds you already have, plus what to avoid.
-
-**The edge.** It calibrates to your native language — the hard part of a word is different for a Spanish speaker than a Mandarin one.
-
-**Good to know.**
-
-- Your native language selection matters — a Spanish speaker needs different guidance than a Korean speaker for the same word.
-- For a person's name, the guide gives the common reading when one exists plus a respectful script for confirming it — spelling alone can't tell you how someone says their own name.
-- When a reading could go more than one way, the guide says so and explains what context would settle it, instead of picking one and hoping.
-- IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result.
-- 'Hear it' speaks the exact IPA transcription shown above, not a guess from the raw spelling — so it only appears when the guide was confident enough to produce genuine IPA, and it's a convenience, not proof of the correct reading.
-
 ### Read the Room
 
 URL: https://deftbrain.com/ReadTheRoom
-Tagline: Know what to say when you're not sure what to do.
+Tagline: Recognize and navigate social interactions with aplomb
 Categories: Conversations, Relationships
 
 Not sure what to say, how to join in, or what an interaction might have meant? Read the Room helps you prepare for social situations, find words in the moment, recover from awkward moments, and make sense of what happened afterward — without pretending it can read anyone's mind.
@@ -2021,7 +2019,7 @@ You know the stories. You know what the person means to you. Toast Writer helps 
 ### Truth Bomb
 
 URL: https://deftbrain.com/TruthBomb
-Tagline: Get clear on the thing you haven't said.
+Tagline: Consider the benefits of opening up about something you've been hiding
 Categories: Conversations, Relationships, Self & Reflection
 
 Some things get harder the longer they go unsaid. Truth Bomb helps you separate what you know from what you're assuming, understand what speaking — or staying silent — would actually change, and decide what you want to do next.
@@ -2045,7 +2043,7 @@ Some things get harder the longer they go unsaid. Truth Bomb helps you separate 
 
 URL: https://deftbrain.com/VelvetHammer
 Tagline: Say the hard thing without losing the point.
-Categories: Conversations, Relationships, Work & Meetings
+Categories: Conversations, Relationships, Career and Business
 
 Sometimes the message you need to send starts out angrier than you want it to land. Velvet Hammer helps you keep what matters, lose what doesn't, and say it in a way the other person can actually hear.
 
@@ -2091,8 +2089,8 @@ How you write leaves impressions you may not notice yourself. Paste some message
 ### What's That Mean?
 
 URL: https://deftbrain.com/WhatsThatMean
-Tagline: What did they really mean.
-Categories: Conversations, Learning, Work & Meetings
+Tagline: Explains idioms, slang, jargon, metaphors, euphemisms, regional expressions, cultural references and more.
+Categories: Conversations, Learning, Career and Business
 
 Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence around it. What's That Mean? tells you whether it's an idiom, slang, jargon, metaphor, euphemism, regional expression, workplace phrase, cultural reference, proverb, or something literal, then explains what it means in plain language and in your context.
 
@@ -2112,6 +2110,30 @@ Heard or read a phrase that doesn't make sense? Enter it—or paste the sentence
 - The cross-language equivalent is honest when nothing tidy exists — it won't invent an idiom just to give you a neat answer
 
 ## Learning
+
+### Heart of the Matter
+
+URL: https://deftbrain.com/HeartOfTheMatter
+Tagline: Find what matters in something long.
+Categories: Learning, Conversations
+
+Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes — text, a PDF, or an audio recording. Heart of the Matter finds the ideas doing the most work, breaks down what to understand, or connects themes across multiple pieces.
+
+**When.** An hour of material where maybe ten minutes actually matters.
+
+**You give.** The transcript or text — paste it, or upload a text file, PDF, or audio recording. Pick Distill, Understand, or Connect.
+
+**You get.** The ideas doing the most work — as ranked notes, a plainer breakdown of what to understand, or themes across sources.
+
+**The edge.** Everything content-specific stays grounded in what you supplied — it won't predict an exam, guess a professor's intent, or add outside facts to fill a gap.
+
+**Good to know.**
+
+- Auto-captions are fine — Heart of the Matter handles imperfect transcription (typos, missed words) well
+- The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times — only when the material actually says them
+- Distill's point types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point
+- Connect mode shines across sources — paste or upload 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them
+- An uploaded PDF or audio file is read in as text before anything else happens — if the extracted text looks off, you can edit it directly before running a mode
 
 ### Missing Link
 
@@ -2141,7 +2163,7 @@ Name the concept you're stuck on. Missing Link traces backwards through everythi
 ### Plain Talk
 
 URL: https://deftbrain.com/PlainTalk
-Tagline: See through any text — plain language plus structural X-ray
+Tagline: Explains any text—and its structure—in plain language
 Categories: Learning
 
 Plain English for anything you can read but can't quite follow. Paste it, and PlainTalk explains what it says, then shows how it's built — the argument, the logic, or the obligations — and what it leaves out.
@@ -2161,6 +2183,30 @@ Plain English for anything you can read but can't quite follow. Paste it, and Pl
 - For very long documents, paste the most important sections rather than the entire text
 - The X-Ray view is especially powerful for legal and financial documents where structure matters
 - If PlainTalk suggests a specialist tool, that tool provides domain-specific analysis PlainTalk intentionally doesn't attempt
+
+### Pronounce It Right
+
+URL: https://deftbrain.com/PronounceItRight
+Tagline: Know how to say it before you have to.
+Categories: Learning
+
+Type a name, food, place, brand, word, or phrase. Pronounce It Right shows you how to say it, where the stress goes, and how to make unfamiliar sounds — with guidance adapted to the language you already speak. When the spelling alone can't settle a reading (a name especially), it says so instead of guessing.
+
+**When.** Before you have to say it out loud in front of someone.
+
+**You give.** The word, its category, and your native language.
+
+**You get.** A phonetic guide built from sounds you already have, plus what to avoid.
+
+**The edge.** It calibrates to your native language — the hard part of a word is different for a Spanish speaker than a Mandarin one.
+
+**Good to know.**
+
+- Your native language selection matters — a Spanish speaker needs different guidance than a Korean speaker for the same word.
+- For a person's name, the guide gives the common reading when one exists plus a respectful script for confirming it — spelling alone can't tell you how someone says their own name.
+- When a reading could go more than one way, the guide says so and explains what context would settle it, instead of picking one and hoping.
+- IPA notation is hidden by default but available if you read it — tap 'Show IPA' in the result.
+- 'Hear it' speaks the exact IPA transcription shown above, not a guess from the raw spelling — so it only appears when the guide was confident enough to produce genuine IPA, and it's a convenience, not proof of the correct reading.
 
 ### Research Decoder
 
@@ -2188,7 +2234,7 @@ Paste an abstract, excerpt, or research paper. Research Decoder explains what th
 ### Signal vs. Noise
 
 URL: https://deftbrain.com/SignalVsNoise
-Tagline: Find what holds up — and what doesn't.
+Tagline: Are commonly known "facts" really true?
 Categories: Learning
 
 Conflicting claims everywhere? Signal vs. Noise researches the question first, then shows what the checked sources actually support, what is overstated or mixed, and what is still unresolved — with the sources behind each conclusion.
@@ -2212,7 +2258,7 @@ Conflicting claims everywhere? Signal vs. Noise researches the question first, t
 ### Someone Said It Better
 
 URL: https://deftbrain.com/SomeoneSaidItBetter
-Tagline: The words you needed, already said.
+Tagline: Find a quote that says what you mean
 Categories: Learning, Self & Reflection
 
 Tell us what you're facing in your own words. Someone Said It Better discovers documented real quotations that fit the moment — words of wisdom, comfort, perspective, wit, or hard-earned truth from people who found a way to say it better.
@@ -2237,7 +2283,7 @@ Tell us what you're facing in your own words. Someone Said It Better discovers d
 ### Belief Stress Test
 
 URL: https://deftbrain.com/BeliefStressTest
-Tagline: Your guiding beliefs, pressure-tested. Where they hold. Where they break.
+Tagline: Test your beliefs: where they hold, where they break
 Categories: Just for Fun, Learning, Self & Reflection
 
 Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.
@@ -2259,7 +2305,7 @@ Pressure-tests the guiding beliefs you live by across multiple dimensions: histo
 ### Bookmark
 
 URL: https://deftbrain.com/Bookmark
-Tagline: Pick up where you left off — without spoilers
+Tagline: Catch up on a book, a show, a sports match or a season without spoilers
 Categories: Just for Fun
 
 Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.
@@ -2283,7 +2329,7 @@ Coming back to a book, show, game, or sports season after time away? Tell Bookma
 ### Brain Roulette
 
 URL: https://deftbrain.com/BrainRoulette
-Tagline: Follow your curiosity somewhere unexpected.
+Tagline: A custom random rabbit hole to learn something new
 Categories: Just for Fun, Learning
 
 Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.
@@ -2308,7 +2354,7 @@ Follow your curiosity somewhere unexpected. Choose a few things that interest yo
 ### History Today
 
 URL: https://deftbrain.com/HistoryToday
-Tagline: Find the structural historical parallel — not the obvious one
+Tagline: Identify historical parallels to modern events
 Categories: Just for Fun, Learning
 
 Today's headlines rarely happen for the first time. Enter a current event, and DeftBrain will find historical situations that unfolded for similar reasons — including where the comparison succeeds and where it fails.
@@ -2425,7 +2471,7 @@ The chain is always there. You just can't see it yet.
 ### Tip of Tongue
 
 URL: https://deftbrain.com/TipOfTongue
-Tagline: Describe it from memory — DeftBrain will figure out what it is.
+Tagline: Describe anything half-remembered and DeftBrain will help you recall
 Categories: Just for Fun
 
 You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.
@@ -2561,7 +2607,7 @@ Ask a real question. Get an impressively wrong answer, delivered with total conf
 
 URL: https://deftbrain.com/BreakMyPlan
 Tagline: Find the weak spots in your plan before they find you.
-Categories: Decisions, Work & Meetings
+Categories: Decisions, Career and Business
 
 Have a plan you're about to put into action? Describe it and Break My Plan? will work backward from an imagined failure to find the weak assumptions, warning signs, and failure paths worth thinking about now — while you can still do something about them.
 
@@ -2580,35 +2626,10 @@ Have a plan you're about to put into action? Describe it and Break My Plan? will
 - Use the Assumptions Autopsy to build a pre-launch checklist
 - Run this on plans you're most excited about — excitement is when blind spots are largest
 
-### Buy Wise
-
-URL: https://deftbrain.com/BuyWise
-Tagline: Make the purchase with your eyes open.
-Categories: Decisions, Money, Tasks
-
-Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.
-
-**When.** Something's in the cart and you're not sure.
-
-**You give.** What you're buying. The price you've seen helps.
-
-**You get.** Whether the price is fair, buy now or wait, the true cost including consumables, and what actually goes wrong with it.
-
-**The edge.** Total cost of ownership, not sticker price — the cheap printer with expensive ink is the whole point.
-
-**Good to know.**
-
-- The Total Cost of Ownership often reveals the real price — a cheap printer needs expensive ink
-- Impulse check mode is genuinely useful — it asks questions you're avoiding
-- Comparison mode works best when you specify your priority so it can weight the recommendation
-- The negotiation scripts only appear when haggling is realistic — cars, furniture, services, rent
-- Adding context ('replacing old one', 'gift', 'bake once a month') dramatically improves the advice
-- Timing advice includes sale calendars — waiting 3 weeks can save 30%
-
 ### Decision Coach
 
 URL: https://deftbrain.com/DecisionCoach
-Tagline: A clear recommendation when you're too stuck to choose.
+Tagline: Get unstuck on a choice you keep going back and forth on
 Categories: Decisions, Tasks
 
 Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.
@@ -2655,7 +2676,7 @@ Stuck between choices? Describe the decision, your options, and what matters to 
 ### Drive Home
 
 URL: https://deftbrain.com/DriveHome
-Tagline: A clearer call before you get behind the wheel
+Tagline: Evaluate your options before deciding to drive.
 Categories: Decisions, Health & Wellness, Home & Daily Life
 
 Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.
@@ -2681,7 +2702,7 @@ Tell it about the drive and how you're feeling, and it gives you one clear call 
 ### Friendship Fade Alerter
 
 URL: https://deftbrain.com/FriendshipFadeAlerter
-Tagline: Stay connected to the people you care about
+Tagline: Notice which friendships are fading before they're gone
 Categories: Decisions, Relationships
 
 Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.
@@ -2708,7 +2729,7 @@ Choose a comfortable rhythm for the people you care about. Friendship Fade Alert
 ### Mise en Place
 
 URL: https://deftbrain.com/MiseEnPlace
-Tagline: The hard part isn't the cooking. It's deciding.
+Tagline: Explore the cooking possibilities with what's available
 Categories: Decisions, Home & Daily Life
 
 Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.
@@ -2731,7 +2752,7 @@ Dinner is rarely difficult because of the cooking. It's difficult because you're
 ### Not So Fast!
 
 URL: https://deftbrain.com/NotSoFast
-Tagline: The overlooked options, key conversations, and escalation paths nobody ever explains
+Tagline: You don't have to take "No" for an answer
 Categories: Decisions, Home & Daily Life, Learning, Money
 
 Been told no by a company, agency, or institution? DeftBrain helps you find what usually goes unmentioned: exceptions that aren't advertised, how the appeal works, who can actually change the decision, and how to escalate if the first answer stands.
@@ -2754,7 +2775,7 @@ Been told no by a company, agency, or institution? DeftBrain helps you find what
 ### Small Change, Big Difference
 
 URL: https://deftbrain.com/SmallChangeBigDifference
-Tagline: One small change that could make the rest easier.
+Tagline: Review your routines and identify obstacles
 Categories: Decisions, Self & Reflection
 
 Walk through a typical day and tell us what you want to improve. Small Change, Big Difference looks for one small adjustment that could make the rest of your routine easier — and gives you a practical way to try it.
@@ -2773,29 +2794,6 @@ Walk through a typical day and tell us what you want to improve. Small Change, B
 - There's no claim this is the mathematically optimal change — it's a sensible first experiment
 - 'What to Watch For' is the actual test — give the change a real try before judging it
 - If it doesn't help, that's useful information too — try the tool again with what you learned
-
-### The Debrief
-
-URL: https://deftbrain.com/TheDebrief
-Tagline: The meeting ended. Now figure out what actually happened.
-Categories: Decisions, Tasks, Work & Meetings
-
-What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.
-
-**When.** The meeting ended and nobody wrote anything down.
-
-**You give.** The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Spot Patterns.
-
-**You get.** Decisions, action items with owners, open questions, and drafted follow-up messages.
-
-**Good to know.**
-
-- Meeting type matters — a standup extraction focuses on blockers while a planning extraction focuses on ownership and timelines
-- UNASSIGNED action items are flagged in red — these are the ones that fall through the cracks if you don't fix them
-- The 'Tensions Detected' section is diplomatically worded but honest — use it to address things that got swept under the rug
-- Follow Up mode's 'Boss Update' is a 3-5 sentence upward summary — perfect for keeping your manager in the loop without forwarding the full transcript
-- Series mode catches the real meeting anti-patterns: topics that keep resurfacing, action items that 'disappeared', and decisions that get revisited
-- Individual nudges include urgency ratings and recommended channel (email vs. Slack vs. text) — send the urgent ones immediately
 
 ### Ticket Tackler
 
@@ -2850,7 +2848,7 @@ Describe two paths you're considering. Instead of another pro/con list, Which Li
 
 URL: https://deftbrain.com/BatchFlow
 Tagline: Your tasks, grouped so the day stops fighting you
-Categories: Tasks, Work & Meetings
+Categories: Tasks, Career and Business
 
 A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.
 

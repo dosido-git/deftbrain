@@ -33,12 +33,11 @@ export const CATEGORY_META = [
   { name: 'Money',               emoji: '💰', tag: 'loot', sub: 'money · finances · consumer', slug: 'money',
     example: 'This bill doesn’t look right.',
     desc: "Bills, quotes, negotiations, and figuring out whether a price is actually fair." },
-  { name: 'Career',              emoji: '🚀', tag: 'pursuits', sub: 'career · growth · identity', slug: 'career',
+  // Work & Meetings merged in (owner, 2026-10-27); the slug stays 'career' so
+  // its address does not change, and /tools/work-meetings redirects here.
+  { name: 'Career and Business', emoji: '🚀', tag: 'pursuits', sub: 'career · business · meetings', slug: 'career',
     example: 'I need to talk about my own work.',
-    desc: "Performance reviews, brag sheets, and making the case for work you've already done." },
-  { name: 'Work & Meetings',     emoji: '🏢', tag: 'the office', sub: 'work · meetings · tools', slug: 'work-meetings',
-    example: 'The meeting ended and I’m still not sure what was decided.',
-    desc: "Meetings that ran long, emails that need the right tone, and the office politics nobody explains." },
+    desc: "Performance reviews and brag sheets, meetings that ran long, emails that need the right tone, and making the case for your work." },
   { name: 'Health & Wellness',   emoji: '⚡', tag: 'energy', sub: 'mind · body · fuel', slug: 'health-wellness',
     example: 'I have a doctor appointment coming up.',
     desc: "Doctor visits, sleep, energy, and understanding what your body's actually telling you." },

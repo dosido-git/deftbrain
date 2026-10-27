@@ -18,9 +18,9 @@ const LEGACY_MAP = {
   Lifestyle:['Home & Daily Life'], Finance:['Money'], 'Consumer Rights':['Money'],
   'Mental Health':['Health & Wellness'], 'Health & Wellness':['Health & Wellness'],
   'Neurodivergent Support':['Health & Wellness'], Social:['Relationships'], 'Social Skills':['Relationships'],
-  Career:['Career'], Strategic:['Decisions'], Goals:['Tasks'],
+  Career:['Career and Business'], Strategic:['Decisions'], Goals:['Tasks'],
   'Focus & Productivity':['Health & Wellness','Tasks'], 'Document Analysis':['Learning'],
-  'Conflict Resolution':['Conversations'], 'Content Creation':['Conversations'], Work:['Work & Meetings'],
+  'Conflict Resolution':['Conversations'], 'Content Creation':['Conversations'], Work:['Career and Business'],
   Creative:['Ideas & Imagination'], Thinking:['Just for Fun'], 'Brain Games':['Just for Fun'],
   wellness:['Health & Wellness'], Intercourse:['Conversations'], 'Read the Room':['Relationships'],
 };

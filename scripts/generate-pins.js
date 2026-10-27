@@ -50,7 +50,7 @@ const PIN_SET = {
     'travel/can-you-leave-the-airport-during-a-layover',
     'travel/how-to-sleep-in-an-airport-during-a-long-layover',
   ],
-  'Career': [
+  'Career and Business': [
     'career/how-to-explain-a-layoff-gap',
     'career/how-to-write-self-review-bullets-that-get-you-the-raise',
   ],
@@ -104,11 +104,11 @@ const TOOL_PINS = [
     head: 'Got a ticket? See what kind of case you have.',
     sub: 'Not every ticket is worth fighting, or paying without a look.',
     gets: ['What the citation actually says', 'The facts that may matter', 'The evidence worth keeping', 'Help making your case, if an appeal makes sense'] },
-  { id: 'TheWholeStory', name: 'The Whole Story', board: 'Career',
+  { id: 'TheWholeStory', name: 'The Whole Story', board: 'Career and Business',
     head: 'Explain a gap, a setback, or a hard chapter',
     sub: 'Tell it what actually happened and who you are telling. Find honest words that work.',
     gets: ['Honest framing, not spin', 'Versions for interviews, networking, and more', 'The follow-up questions to prepare for', 'Common mistakes to avoid'] },
-  { id: 'BragSheetBuilder', name: 'Brag Sheet Builder', board: 'Career',
+  { id: 'BragSheetBuilder', name: 'Brag Sheet Builder', board: 'Career and Business',
     head: 'Remember your work. Make the case for it.',
     sub: 'Turn a year of work into a self-review, a promotion case, or a raise conversation.',
     gets: ['A case built for the next level', 'Bold, balanced, or quietly confident versions', 'A script for the raise conversation', 'Stories ready for interviews'] },

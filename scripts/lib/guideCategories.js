@@ -34,8 +34,7 @@ const HUB_COPY = {
   'Travel & Events':     ['Layovers and connections, parties and get-togethers, and things worth doing on a free day.', 'Whether 60 minutes is enough for a connection. Hosting a party people remember. What to do once you have done the touristy stuff.'],
   'Relationships':       ['Friends, partners, family and roommates: keeping in touch, dates, gifts, and the moments in between.', 'Reaching out to a friend you have lost touch with. Date ideas that are not dinner and a movie. A gift for the person who has everything.'],
   'Money':               ['Bills, fees, refunds, reviews, big purchases and splitting costs, and getting a company to fix things.', 'Getting a medical bill reduced. Spotting fake reviews. Escalating when customer service says there is nothing they can do.'],
-  'Career':              ['Raises and promotions, resumes and reviews, job offers, references and changing careers.', 'Writing self-review bullets that get you the raise. Explaining a layoff gap. Whether it is too late to learn coding.'],
-  'Work & Meetings':     ['Meetings, email, presentations and documents: getting work done with other people.', 'Running a meeting that stays on track. Pushing back on an unreasonable email. Cutting a presentation that runs long.'],
+  'Career and Business': ['Raises and promotions, resumes and reviews, job offers, meetings, email and presentations: work, and getting it done with other people.', 'Writing self-review bullets that get you the raise. Running a meeting that stays on track. Pushing back on an unreasonable email.'],
   'Health & Wellness':   ['Doctor visits and test results, energy and burnout, focus and movement.', 'What to ask your doctor. Telling burnout from tiredness. The smallest workout that still counts.'],
   'Conversations':       ['What to say, and how it will land: texts, hard talks, thank-yous, toasts and apologies.', 'Replying to a passive-aggressive text. Keeping a dying conversation going. A best man speech that lands.'],
   'Learning':            ['Studying, reading research, checking facts and finding the thing you half-remember.', 'Knowing whether a study is reliable. Turning a transcript into a study guide. Finding a book whose title you forgot.'],
@@ -52,15 +51,16 @@ const OLD_HUB_REDIRECTS = {
   cooking: 'home-daily-life',
   health: 'health-wellness',
   home: 'home-daily-life',
-  meetings: 'work-meetings',
+  meetings: 'career',
   pets: 'home-daily-life',
   planning: 'decisions',
   practical: 'home-daily-life',
-  presentations: 'work-meetings',
+  presentations: 'career',
   speeches: 'conversations',
   travel: 'travel-events',
   wellness: 'health-wellness',
-  workplace: 'work-meetings',
+  'work-meetings': 'career', // merged into Career and Business, 2026-10-27
+  workplace: 'career',
 };
 
 const TOOL_CATS = loadToolCategories();

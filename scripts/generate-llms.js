@@ -65,7 +65,7 @@ function loadTools() {
 // Humans, Loot, Pursuits, The Office, Energy, Discourse, Go Deep!,
 // Diversions, Me, What If?, Veer, Do It! — see DashBoard.js's CATEGORY_META.
 const CATEGORY_ORDER = [
-  'Home & Daily Life', 'Travel & Events', 'Relationships', 'Money', 'Career', 'Work & Meetings',
+  'Home & Daily Life', 'Travel & Events', 'Relationships', 'Money', 'Career and Business',
   'Health & Wellness', 'Conversations', 'Learning', 'Just for Fun', 'Self & Reflection', 'Ideas & Imagination',
   'Decisions', 'Tasks',
 ];

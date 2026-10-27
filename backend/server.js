@@ -719,9 +719,11 @@ app.get('/organizations', (req, res) => {
 // entry.
 const TOOL_CATEGORIES = [
   'home-daily-life', 'travel-events', 'relationships', 'money', 'career',
-  'work-meetings', 'health-wellness', 'conversations', 'learning',
+  'health-wellness', 'conversations', 'learning',
   'just-for-fun', 'self-reflection', 'ideas-imagination', 'decisions', 'tasks',
 ];
+// Work & Meetings merged into Career and Business (owner, 2026-10-27).
+app.get('/tools/work-meetings', (req, res) => res.redirect(301, '/tools/career'));
 TOOL_CATEGORIES.forEach(slug => {
   app.get(`/tools/${slug}`, (req, res) => {
     sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'tools', slug, 'index.html'));

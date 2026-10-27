@@ -222,7 +222,7 @@ export const tools = [
   tagline: "Stress-test your business idea before you invest time or money",
   tags: ["business idea", "startup idea", "idea validation", "business validation", "business model", "customer demand", "market demand", "weak assumptions", "business risk", "validation test", "founder", "entrepreneur", "side hustle", "competition", "business concept"],
   icon: "🔬",
-  categories: ['Career', 'Decisions'],
+  categories: ['Career and Business', 'Decisions'],
   headerColor: "#d8c8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -476,7 +476,7 @@ export const tools = [
   tagline: "Understand what you're agreeing to before you sign.",
   tags: ['contract', 'agreement', 'contract review', 'contract terms', 'contract clause', 'plain english', 'fine print', 'before signing', 'legal document', 'NDA', 'employment agreement', 'freelance contract', 'service agreement', 'SaaS agreement', 'subscription agreement', 'purchase agreement', 'lease', 'auto renewal', 'termination', 'payment terms', 'intellectual property', 'non-compete', 'liability', 'indemnification', 'dispute resolution', 'data privacy', 'negotiate contract', 'contract questions', 'governing law'],
   icon: "📋",
-  categories: ['Home & Daily Life', 'Money', 'Work & Meetings'],
+  categories: ['Home & Daily Life', 'Money', 'Career and Business'],
   headerColor: "#c0d8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -978,7 +978,7 @@ export const tools = [
   tagline: "Stress-test a career, a major decision or long-term bet before you commit",
   tags: ["career future", "future of my job", "skill worth learning", "career resilience", "automation risk", "ai job risk", "technology outlook", "investment thesis", "long-term decision", "future scenarios", "stress test career", "stress test investment", "stress test skill", "stress test technology", "what should i learn", "career pivot", "future uncertainty", "low-regret move", "tailwinds headwinds"],
   icon: "🔮",
-  categories: ['Career', 'Decisions'],
+  categories: ['Career and Business', 'Decisions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -1242,7 +1242,7 @@ export const tools = [
   tagline: "Find the weak spots in your plan before they find you.",
   tags: ['plan stress test', 'break my plan', 'pre-mortem', 'premortem', 'planning', 'failure modes', 'what could go wrong', 'risk planning', 'warning signs', 'assumption testing', 'weak assumptions', 'project risk', 'contingency planning', 'startup plan', 'business plan', 'career plan', 'personal plan', 'launch plan'],
   icon: "💀",
-  categories: ['Decisions', 'Work & Meetings'],
+  categories: ['Decisions', 'Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -1476,7 +1476,7 @@ export const tools = [
   tagline: "Widen the circle of people who know what you do",
   tags: ['luck', 'serendipity', 'opportunity', 'networking', 'connections', 'visibility', 'career'],
   icon: "🧲",
-  categories: ['Career', 'Relationships'],
+  categories: ['Career and Business', 'Relationships'],
   headerColor: "#e8d5b7",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -1545,7 +1545,7 @@ export const tools = [
     'professional visibility', 'linkedin', 'first contact', 'connection',
   ],
   icon: "🌀",
-  categories: ['Career', 'Relationships'],
+  categories: ['Career and Business', 'Relationships'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -1901,7 +1901,7 @@ export const tools = [
   tagline: "Make the first message easier to send — and easier to answer.",
   tags: ["cold email", "cold outreach", "first message", "outreach message", "networking message", "linkedin message", "dm", "introduction", "reach out", "follow up", "mentor", "collaboration", "job outreach", "professional networking", "stranger", "email"],
   icon: "📬",
-  categories: ['Career', 'Conversations'],
+  categories: ['Career and Business', 'Conversations'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -2339,7 +2339,7 @@ export const tools = [
     'executive presentation', 'public speaking', 'question prep',
   ],
   icon: "🎤",
-  categories: ['Work & Meetings'],
+  categories: ['Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -2584,7 +2584,7 @@ export const tools = [
   tagline: "The perfect gift for the hardest person to shop for.",
   tags: ["gift ideas", "personalized gift ideas", "thoughtful gift ideas", "hard to shop for", "gift for someone who has everything", "what gift should i get", "last-minute gift idea", "gift on a budget", "birthday gift", "thank you gift", "gift for boss", "gift for mom", "wedding gift", "graduation gift", "gift recommendation", "personal gift", "gift card message", "gift presentation", "gift reasoning"],
   icon: "🎁",
-  categories: ['Money', 'Relationships'],
+  categories: ['Relationships'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -2655,7 +2655,7 @@ export const tools = [
   tagline: "Context-appropriate things to say when a conversation stalls",
   tags: ['conversation', 'awkward', 'small talk', 'social', 'silence', 'chat', 'date', 'networking', 'ice breaker', 'what to say', 'first date', 'elevator', 'coworker'],
   icon: "💬",
-  categories: ['Conversations', 'Relationships', 'Work & Meetings'],
+  categories: ['Conversations', 'Relationships', 'Career and Business'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -3061,7 +3061,7 @@ export const tools = [
   tagline: "Presentation coach in your pocket.",
   tags: ['presentation', 'public speaking', 'rehearsal', 'practice', 'timing', 'cut speech', 'q&a', 'tough questions', 'presentation prep', 'opening', 'closing', 'transitions', 'speech', 'pitch', 'presentation coach'],
   icon: "🎙️",
-  categories: ['Career', 'Work & Meetings'],
+  categories: ['Career and Business'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -3534,7 +3534,7 @@ export const tools = [
   tagline: "Submit your profile, resume, email, tweet, etc. and get an honest (and funny) assessment",
   tags: ['roast', 'funny', 'comedy', 'humor', 'joke', 'resume', 'dating', 'linkedin', 'burn', 'fun'],
   icon: "🔥",
-  categories: ['Career', 'Just for Fun'],
+  categories: ['Career and Business', 'Just for Fun'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -3840,7 +3840,7 @@ export const tools = [
   tagline: "Know how to say it before you have to.",
   tags: ['pronounce', 'pronunciation', 'how to pronounce', 'how to say', 'pronunciation guide', 'mispronounce', 'phonetic spelling', 'phonetics', 'ipa', 'syllables', 'stress', 'mouth position', 'native language', 'foreign word', 'foreign name', 'name pronunciation', 'place pronunciation', 'food pronunciation', 'brand pronunciation', 'phrase pronunciation', 'restaurant', 'travel'],
   icon: "🗣️",
-  categories: ['Conversations', 'Learning'],
+  categories: ['Learning'],
   headerColor: "#9a4040",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -3922,7 +3922,7 @@ export const tools = [
   tagline: "The meeting ended. Now figure out what actually happened.",
   tags: ['meeting', 'transcript', 'notes', 'minutes', 'action items', 'decisions', 'follow up', 'standup', 'recap'],
   icon: "📋",
-  categories: ['Decisions', 'Tasks', 'Work & Meetings'],
+  categories: ['Career and Business', 'Tasks'],
   headerColor: "#d4dde8",
   description: "What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.",
   exampleOutput: {
@@ -4029,7 +4029,7 @@ export const tools = [
   tagline: "Find what matters in something long.",
   tags: ['summarize', 'distill', 'understand', 'connect ideas', 'throughline', 'themes', 'key points', 'lecture', 'podcast', 'sermon', 'article', 'transcript', 'notes', 'long text', 'multiple sources'],
   icon: "🎯",
-  categories: ['Conversations', 'Learning'],
+  categories: ['Learning', 'Conversations'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -4110,7 +4110,7 @@ export const tools = [
   tagline: "Frame your real story for any audience — honest but strategic",
   tags: ['resume gap', 'career pivot', 'fired', 'explain', 'story', 'interview', 'framing', 'narrative'],
   icon: "📖",
-  categories: ['Career', 'Conversations'],
+  categories: ['Career and Business', 'Conversations'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "Discovered – not indexed" page real substance.
@@ -4726,7 +4726,7 @@ export const tools = [
   tagline: "Your writing advisor for recommendation letters.",
   tags: ['recommendation', 'letter', 'reference', 'job', 'linkedin', 'writing', 'grad school', 'scholarship'],
   icon: "✍️",
-  categories: ['Career', 'Conversations'],
+  categories: ['Career and Business', 'Conversations'],
   headerColor: "#ccdfc4",
   description: "A finished recommendation letter, built on specific evidence and written in your voice. Tell DeftBrain about the person and why they deserve it, and you'll have a letter that sounds like you wrote it with care.",
   exampleOutput: {
@@ -4814,7 +4814,7 @@ export const tools = [
   tagline: "Find the words that fit the photo.",
   tags: ["caption", "photo caption", "image caption", "caption ideas", "social media", "instagram", "linkedin", "twitter", "tiktok", "facebook", "threads", "funny caption", "clever caption", "playful caption", "dry humor", "hashtags", "alt text", "photo context"],
   icon: "📸",
-  categories: ['Career', 'Conversations', 'Just for Fun'],
+  categories: ['Career and Business', 'Conversations', 'Just for Fun'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -4955,7 +4955,7 @@ tagline: "Take command of your available energy",
   tagline: "Your tasks, grouped so the day stops fighting you",
   tags: ['batch', 'tasks', 'focus', 'productivity', 'context switching', 'schedule', 'cognitive', 'todo', 'time management', 'deep work', 'flow state', 'energy', 'batching'],
   icon: '⚡',
-  categories: ['Tasks', 'Work & Meetings'],
+  categories: ['Tasks', 'Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -5339,7 +5339,7 @@ tagline: "Take command of your available energy",
   tagline: "The right number for every money moment — tips, splits, gifts, salary",
   tags: ['money', 'money etiquette', 'money conversation', 'awkward money', 'split bill', 'who pays', 'tipping', 'pay me back', 'lending money', 'salary expectations', 'salary negotiation', 'group expenses', 'roommate money', 'family money', 'gift amount', 'donation amount', 'affordability', 'inheritance', 'subscriptions', 'travel money', 'cultural money'],
   icon: "💵",
-  categories: ['Conversations', 'Money', 'Relationships'],
+  categories: ['Money', 'Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -5426,7 +5426,7 @@ tagline: "Take command of your available energy",
   tagline: "What skills do you need to improve or enhance for a new role?",
   tags: ['career', 'skills', 'job', 'transition', 'learning', 'gap', 'resume'],
   icon: "🗺️",
-  categories: ['Career', 'Decisions'],
+  categories: ['Career and Business', 'Decisions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -5612,7 +5612,7 @@ tagline: "Take command of your available energy",
   tagline: "Turn your accomplishments into wins for reviews and raises",
   tags: ['my boss', 'my manager', 'resume', 'achievements', 'career', 'promotion', 'accomplishments', 'interview', 'linkedin', 'performance review', 'raise', 'salary negotiation', 'job search', 'brag sheet', 'bullets', 'cv', 'job application', 'cover letter', 'behavioral interview', 'confidence', 'work history', 'wins', 'strengths', 'star stories', 'voice match'],
   icon: "🏆",
-  categories: ['Career', 'Work & Meetings'],
+  categories: ['Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -5866,7 +5866,7 @@ tagline: "Take command of your available energy",
   tagline: "Stress-test any name before you commit",
   tags: ['name', 'naming', 'brand name', 'business name', 'product name', 'project name', 'name evaluation', 'name audit', 'naming decision', 'compare names', 'naming finalists', 'pronunciation', 'spelling', 'memorability', 'word of mouth', 'distinctiveness', 'brand fit', 'naming risk', 'trademark concern', 'domain availability'],
   icon: "🔍",
-  categories: ['Career', 'Decisions'],
+  categories: ['Career and Business', 'Decisions'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08, after venue / existing-name grounding made it reliable.
@@ -5936,7 +5936,7 @@ tagline: "Take command of your available energy",
   tagline: "Name anything. Know it works before you commit.",
   tags: ['name', 'brand', 'brainstorm', 'business', 'product', 'startup'],
   icon: "⚡",
-  categories: ['Career', 'Ideas & Imagination'],
+  categories: ['Career and Business', 'Ideas & Imagination'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -7369,7 +7369,7 @@ tagline: "Take command of your available energy",
   tagline: "Learn what tends to happen before you run out of steam",
   tags: ["energy patterns", "low energy", "hit a wall", "crash", "daily check-in", "pattern tracking", "energy tracker", "sleep", "stress", "workload", "symptoms", "routines", "personal patterns", "fatigue", "warning signs", "burnout patterns"],
   icon: "⚡",
-  categories: ['Health & Wellness', 'Self & Reflection', 'Work & Meetings'],
+  categories: ['Health & Wellness', 'Self & Reflection', 'Career and Business'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -7515,7 +7515,7 @@ tagline: "Take command of your available energy",
   tagline: "A plan for the meeting—and the moments that could derail it.",
   tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",
-  categories: ['Work & Meetings'],
+  categories: ['Career and Business'],
   headerColor: "#97b4d8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -7706,7 +7706,7 @@ tagline: "Take command of your available energy",
   tagline: "Find out what actually needs a reply today",
   tags: ['email urgency', 'email triage', 'inbox triage', 'which emails to answer', 'what to reply today', 'email priorities', 'prioritize email', 'urgent email', 'reply now', 'reply this week', 'can this email wait', 'overwhelmed inbox', 'inbox anxiety', 'unread emails', 'email deadlines', 'ignore email', 'delegate email'],
   icon: "📬",
-  categories: ['Conversations', 'Tasks', 'Work & Meetings'],
+  categories: ['Conversations', 'Tasks', 'Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -8110,7 +8110,7 @@ tagline: "Take command of your available energy",
   tagline: "Know where you stand before you negotiate",
   tags: ["my boss", "my manager", "negotiation", "negotiation strategy", "negotiation prep", "leverage", "salary negotiation", "raise", "freelance rate", "vendor negotiation", "lease negotiation", "price negotiation", "contract negotiation", "dispute", "counteroffer", "bargaining", "counter move", "negotiation email"],
   icon: "⚖️",
-  categories: ['Career', 'Decisions', 'Money'],
+  categories: ['Career and Business', 'Decisions', 'Money'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -8195,7 +8195,7 @@ tagline: "Take command of your available energy",
   tagline: "Evaluate the necessity of a meeting",
   tags: ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar', 'work'],
   icon: "🕵️",
-  categories: ['Work & Meetings'],
+  categories: ['Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -8650,7 +8650,7 @@ tagline: "Take command of your available energy",
   tagline: "Plan a special evening without hours of searching",
   tags: ['date', 'date night', 'couples', 'relationship', 'romantic', 'activity', 'itinerary', 'anniversary', 'first date', 'budget'],
   icon: "💘",
-  categories: ['Money', 'Relationships', 'Travel & Events'],
+  categories: ['Relationships', 'Travel & Events'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08, after venue / existing-name grounding made it reliable.
@@ -8838,7 +8838,7 @@ tagline: "Take command of your available energy",
   tagline: "Work together. Even when you're working alone.",
   tags: ['focus', 'productivity', 'body double', 'accountability', 'cowork', 'solo tasks'],
   icon: "👥",
-  categories: ['Health & Wellness', 'Tasks', 'Work & Meetings'],
+  categories: ['Health & Wellness', 'Tasks', 'Career and Business'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -9267,7 +9267,7 @@ tagline: "Take command of your available energy",
   tagline: "Say the hard thing without losing the point.",
   tags: ['my boss', 'my manager', 'angry message', 'professional email', 'negotiate', 'persuade', 'firm', 'boundary', 'pushback', 'assertive', 'conflict', 'rewrite', 'workplace', 'communication'],
   icon: "🔨",
-  categories: ['Conversations', 'Relationships', 'Work & Meetings'],
+  categories: ['Conversations', 'Relationships', 'Career and Business'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -9449,7 +9449,7 @@ tagline: "Take command of your available energy",
   tagline: "Investigate a potential purchase before you commit",
   tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
   icon: "💲",
-  categories: ['Decisions', 'Money', 'Tasks'],
+  categories: ['Money', 'Decisions', 'Tasks'],
   headerColor: "#c0d8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -10183,7 +10183,7 @@ tagline: "Take command of your available energy",
   tagline: "Explains idioms, slang, jargon, metaphors, euphemisms, regional expressions, cultural references and more.",
   tags: ["idiom", "slang", "jargon", "metaphor", "euphemism", "phrase meaning", "what does this mean", "what does this phrase mean", "expression", "proverb", "workplace phrase", "regional expression", "cultural reference", "literal or figurative", "plain meaning", "meaning in context", "decode phrase", "language meaning"],
   icon: "💬",
-  categories: ['Conversations', 'Learning', 'Work & Meetings'],
+  categories: ['Conversations', 'Learning', 'Career and Business'],
   headerColor: "#cfe3e6",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "Discovered – not indexed" page real substance.
