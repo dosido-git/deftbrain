@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect, useContext, createContext } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import CheckNote, { checkStatusFor } from '../components/CheckNote';
@@ -264,6 +264,37 @@ const BillRescue = ({ tool }) => {
     warningFg:     'text-[var(--sc-accent)]',
     dangerFg:      'text-[var(--sc-x-text)]',
     danger:        'bg-[var(--sc-card)] border border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
+    required:      'text-[var(--sc-accent)]',
+    badge:         'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
+    // The other views (several bills, one charge, letters, tracker, call
+    // log, calendar, rehearsal, wins) — the same rules, audit/CONVENTIONS.md
+    // "Category-colour pages — PROVISIONAL": dark for what matters, medium
+    // for small labels, the contrast colour only for a warning.
+    calendarUpcoming:     'bg-[var(--sc-card)] text-[var(--sc-accent)] border-[var(--sc-line)]',
+    calendarOverdue:      'bg-[var(--sc-card)] text-[var(--sc-strong)] border-[var(--sc-accent)]',
+    calendarOverdueAlert: 'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
+    calendarResolved:     'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
+    chatRep:       'bg-[var(--sc-envelope)]',
+    chatUser:      'bg-[var(--sc-card)] border border-[var(--sc-line)]',
+    coachBorder:   'border-[var(--sc-line)]',
+    coachRatingGreat:     'text-[var(--sc-strong)]',
+    coachRatingGood:      'text-[var(--sc-strong)]',
+    coachRatingNeedsWork: 'text-[var(--sc-accent)]',
+    coachRatingTryAgain:  'text-[var(--sc-x-text)]',
+    hardModeBadge: 'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
+    progressTrack: 'bg-[var(--sc-line)]',
+    resolvedAccepted: 'text-[var(--sc-strong)]',
+    resolvedDenied:   'text-[var(--sc-x-text)]',
+    resolvedPartial:  'text-[var(--sc-accent)]',
+    statusInProgress: 'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
+    statusResolved:   'bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+    urgencyDefault:   'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
+    urgencyDispute:   'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
+    urgencyNegotiate: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+    urgencyNow:       'bg-[var(--sc-card)] text-[var(--sc-x-text)] border border-[var(--sc-x-line)]',
+    verdictFight:     'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
+    verdictNormal:    'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
+    verdictQuestion:  'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-accent)]',
   });
   const card = 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5';
   // Choice chips: a finger-sized target (40px) even when they wrap on a phone;
@@ -307,6 +338,8 @@ const BillRescue = ({ tool }) => {
   const [billImageBase64, setBillImageBase64] = useState(null);
   const [compressingImage, setCompressingImage] = useState(false);
   const [results, setResults] = usePersistentState('billrescue-last-result', null);
+  // Expand all / Collapse all: a counter each Section watches (SectionsSignal).
+  const [allOpen, setAllOpen] = useState({ n: 0, open: false });
   // With an answer on screen the form folds away; "Edit details" brings it back.
   const [editForm, setEditForm] = useState(false);
   const formRef = useRef(null);
@@ -872,7 +905,7 @@ const BillRescue = ({ tool }) => {
   const buildTriageText = useCallback(() => {
     if (!triageResults) return '';
     const r = triageResults;
-    let out = `${t('br_copy_triage_header')} — ${r.severity_emoji} ${r.severity}\n`;
+    let out = `${t('br_copy_triage_header')} — ${r.severity}\n`;
     out += `${r.headline}\n\n`;
     if (r.priority_order?.length) {
       out += `${t('br_copy_priority_order')}:\n`;
@@ -1096,13 +1129,13 @@ const BillRescue = ({ tool }) => {
                   <p className={`text-xs ${c.successFg} mt-0.5`}>✅ {t('br_pdf_ready')}</p>
                 </div>
                 <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                  className="bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center flex-shrink-0">✕</button>
+                  className={`${sv ? 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]' : 'bg-red-600 text-white'} w-5 h-5 rounded-full text-xs flex items-center justify-center flex-shrink-0`}>✕</button>
               </div>
             ) : (
               <div className="relative">
                 <img src={billImagePreview} alt={t('br_alt_bill')} className="w-full h-16 object-cover rounded-lg border" />
                 <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                  className="absolute top-1 end-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">✕</button>
+                  className={`absolute top-1 end-1 ${sv ? 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]' : 'bg-red-600 text-white'} w-5 h-5 rounded-full text-xs flex items-center justify-center`}>✕</button>
                 <p className={`text-xs ${c.successFg} mt-0.5`}>✅ {t('br_photo_ready')}</p>
               </div>
             )
@@ -1173,6 +1206,7 @@ const BillRescue = ({ tool }) => {
     if (!results) return null;
     const r = results;
     return (
+      <SectionsSignal.Provider value={allOpen}>
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
         <CheckNote status={checkStatus} className={c.textMuted} />
         {/* Recap of what the user told us — anchors persisted results on revisits */}
@@ -1297,6 +1331,13 @@ const BillRescue = ({ tool }) => {
             {(r.phone_script || r.payment_plan || r.escalation_ladder?.length > 0 || r.collections_defense || r.hardship_letter) && (
               <PartHeading newPage>{t('br_grp_letters')}</PartHeading>
             )}
+            {/* One control for every collapsed section below (owner, 2026-10-26). */}
+            <div data-print-hide className="flex justify-end -mb-2">
+              <button onClick={() => setAllOpen(p => ({ n: p.n + 1, open: !p.open }))}
+                className={`text-sm font-semibold ${linkStyle}`}>
+                {allOpen.open ? t('collapse_all') : t('expand_all')}
+              </button>
+            </div>
 
             {/* Collections defense */}
             {r.collections_defense && (
@@ -1599,6 +1640,7 @@ const BillRescue = ({ tool }) => {
             </div>
 
           </div>
+      </SectionsSignal.Provider>
     );
   };
 
@@ -1674,7 +1716,8 @@ const BillRescue = ({ tool }) => {
               r.severity === 'EMERGENCY' || r.severity === 'CRITICAL' ? c.danger :
               r.severity === 'STRESSFUL' ? c.warning : c.success
             } border-2 rounded-xl p-5 text-center`}>
-              <p className="text-3xl mb-1">{r.severity_emoji}</p>
+              {/* No status dot on a category page (owner, 2026-10-26: "not necessary"). */}
+              {!sv && <p className="text-3xl mb-1">{r.severity_emoji}</p>}
               <p className="text-lg font-black">{r.severity}</p>
               <p className={`text-sm mt-1 ${c.text}`}>{r.headline}</p>
               {r.total_owed && <p className={`text-xs ${c.textMuteded} mt-1`}>{t('br_total')}: {r.total_owed}</p>}
@@ -2011,7 +2054,7 @@ const BillRescue = ({ tool }) => {
         {qcResults && (
           <div className={`border rounded-xl p-5 ${getVerdictClass(qcResults.verdict)}`}>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl">{qcResults.verdict_emoji}</span>
+              {!sv && <span className="text-2xl">{qcResults.verdict_emoji}</span>}
               <span className="text-base font-black tracking-tight">{qcResults.verdict}</span>
               {qcResults.confidence && (
                 <span className={`text-xs px-1.5 py-0.5 rounded ${c.badge} font-bold`}>{qcResults.confidence} {t('br_confidence')}</span>
@@ -2367,7 +2410,7 @@ const BillRescue = ({ tool }) => {
               {/* Overdue alert */}
               {overdueItems.length > 0 && (
                 <div className={`${c.calendarOverdueAlert} border rounded-lg p-3`}>
-                  <p className="text-xs font-bold mb-2">🔴 {t('br_overdue_needs_attention')}</p>
+                  <p className="text-xs font-bold mb-2">{sv ? '' : '🔴 '}{t('br_overdue_needs_attention')}</p>
                   {overdueItems.map(it => (
                     <div key={it.id} className="flex items-center gap-2 text-xs mb-1.5">
                       <span>{it.type === 'followup' ? '📞' : '⚠️'}</span>
@@ -2660,6 +2703,8 @@ BillRescue.displayName = 'BillRescue';
 // ════════════════════════════════════════════════════════════
 function Section({ icon, title, badge, badgeColor, children, defaultOpen = false, keepTogether = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
+  const all = useContext(SectionsSignal);
+  useEffect(() => { if (all?.n) setOpen(all.open); }, [all]);
   const ui = (
     // Site style: a heading over a rule, not a card (the page's tool card is
     // the box). Prints whether open or closed (data-print-heading /
@@ -2683,6 +2728,9 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   );
   return ui;
 }
+
+// Expand all / Collapse all reaches every Section in the answer through this.
+const SectionsSignal = createContext(null);
 
 // One of the answer's four parts — next step, roadmap, letters and scripts,
 // supporting information (owner, 2026-10-25). An h2, so copy and print read

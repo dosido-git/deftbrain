@@ -2501,3 +2501,37 @@ review order for every remaining tool is:
 
 Conflict Coach demonstrated that the hallucination is not always the model's.
 Sometimes the software asked for it.
+
+---
+
+## Category-colour pages — PROVISIONAL (2026-10-26)
+
+**Status: temporary.** Written down so Bill Rescue and Signal vs Noise follow one set of rules while the owner judges them live. Applies only to tools in `PROTOTYPE_TOOLS` (`src/data/toolSchemes.js`); every other tool is unchanged. Replace or delete this section when the owner decides.
+
+Each category has four shades plus one contrast colour, exposed as CSS variables by `ToolPageWrapper`: `--sc-field` (lightest), `--sc-envelope` (light), `--sc-accent` (medium), `--sc-strong` (dark), `--sc-x` / `--sc-x-text` / `--sc-x-line` (contrast). Text boxes and letter pages are white (`--sc-card`).
+
+### Structure
+
+1. **Envelope.** The light shade wraps the whole tool: header (category, title, tagline, Bookmark) and the form.
+2. **Form.** White text boxes; typed text in the medium shade. Choice chips outlined in the medium shade; the chosen one filled with the dark shade and ticked (✓). One main button, dark shade.
+3. **Answer card.** The answer is one long card in the lightest shade, below the form and separate from it, headed "Your plan" / "Your answer" (serif) with Copy / Share / Print on the same row.
+4. **On the card.** Content sits straight on the card. Parts are serif headings over a rule; sections are a heading over a rule and collapse. Open by default: only the immediate action and the roadmap — everything else starts closed, with an "Expand all" control.
+5. **Boxes only for what matters most.**
+   - Envelope-shade box, thin border: the recap of what they told us, where they stand, a bottom line.
+   - White box with a 2px medium-shade border: the single most important block (Bill Rescue's "Today's only job", Signal vs Noise's signal). One per answer.
+   - Letters: white letter page, serif.
+   - Everything else inside a section is spacing, not a box; steps may keep a left rule.
+6. **Side panels.** In a Nutshell and the sample answer: brand gold. Related guides and tools: ink teal, no border. FAQ: the category shades.
+
+### Text colour
+
+1. **Content is neutral.** Answers, item titles, explanations, letters: near-black; secondary lines grey.
+2. **Dark shade = signposts.** Tool title and tagline, part and section headings, form questions, the label of the most important box, key figures ("Offer: $825").
+3. **Medium shade = small controls and small labels.** "Category: …", outline buttons, chips, typed text, links, small-caps sub-labels ("THE WORDS TO USE", "If they say no"), classifying tags.
+4. **Contrast colour = "look here", one meaning only.** An urgent status or a real warning ("Never do", flagged charges, CRITICAL). Not for classification.
+5. **No traffic-light colours** (green, amber, red, sky), and no status-dot emoji (🔴 🟡 🟢) in an answer. Severity is said in words, in the contrast colour when it is a warning. (The form's "How late?" chips keep their dots: they help pick, they do not judge.)
+8. **Expand all.** Wherever an answer has collapsed sections, one "Expand all" / "Collapse all" control sits above them.
+6. **Never add a new text colour.** Anything not covered uses the nearest rule above.
+7. **Readable:** every coloured text ≥ 4.5:1 on what it sits on, in light and dark.
+
+In code: each tool maps its `c` keys to these variables inside `if (sv) Object.assign(c, {…})`, so the non-prototype branch stays untouched.

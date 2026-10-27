@@ -93,6 +93,10 @@ const SignalVsNoise = ({ tool }) => {
   // Section headings in the dark shade; tags (they classify, they do not
   // warn) outlined in the medium shade, not amber, sky, emerald or plum.
   const inkHead = sv ? 'text-[var(--sc-strong)]' : null;
+  // Section headings as on Bill Rescue: one size, dark shade, not small caps;
+  // the caret in the medium shade.
+  const secHead = sv ? 'text-base font-bold text-[var(--sc-strong)]' : null;
+  const caretTone = sv ? 'text-[var(--sc-accent)]' : '';
   const neutralTag = 'border-[var(--sc-accent)] text-[var(--sc-accent)]';
   const plain = (str) => str;
   c.textMuteded = c.textMuted;
@@ -270,7 +274,12 @@ const SignalVsNoise = ({ tool }) => {
   // "sources" (HOW THE NOISE GETS MADE) and "verify" (STILL WORTH
   // VERIFYING) are collapsed by default — the target layout keeps the main
   // answer to signal/noise/bottom-line, with the rest one click away.
-  const [expanded, setExpanded] = useState({ noise: true, debated: false, sources: false, research: false });
+  // With a category scheme only the signal and the bottom line show open;
+  // every section starts closed, with Expand all above them (CONVENTIONS,
+  // "Category-colour pages — PROVISIONAL").
+  const [expanded, setExpanded] = useState({ noise: !sv, debated: false, sources: false, research: false });
+  const allExpanded = Object.values(expanded).every(Boolean);
+  const setAll = (open) => setExpanded({ noise: open, debated: open, sources: open, research: open });
 
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
@@ -506,7 +515,7 @@ const SignalVsNoise = ({ tool }) => {
                   </span>
                 </p>
                 {checking && (
-                  <div className={`ms-6 rounded-md p-2.5 text-[13px] space-y-1.5 ${isDark ? 'bg-zinc-900/40' : 'bg-white/70'}`}>
+                  <div className={`ms-6 rounded-md p-2.5 text-[13px] space-y-1.5 ${sv ? 'bg-[var(--sc-card)]' : isDark ? 'bg-zinc-900/40' : 'bg-white/70'}`}>
                     <p className="font-bold">{t('svn_checking_title')}</p>
                     <p>{checking.question}</p>
                     <ul className="list-disc ps-5 space-y-0.5">
@@ -636,14 +645,22 @@ const SignalVsNoise = ({ tool }) => {
               );
             })()}
 
+            {sv && (
+              <div data-print-hide className="flex justify-end -mb-2">
+                <button onClick={() => setAll(!allExpanded)} className={`text-sm font-semibold ${linkStyle}`}>
+                  {allExpanded ? t('collapse_all') : t('expand_all')}
+                </button>
+              </div>
+            )}
+
             {/* THE NOISE */}
             {results?.the_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button data-print-heading aria-expanded={!!(expanded.noise)} onClick={() => toggle('noise')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-black uppercase tracking-widest ${inkHead || (isDark ? 'text-amber-300' : 'text-amber-700')}`}>
+                  <p className={secHead || `text-xs font-black uppercase tracking-widest ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                     {plain(t('svn_noise_header'))}
                   </p>
-                  <span data-print-hide><Caret open={expanded.noise} /></span>
+                  <span data-print-hide className={caretTone}><Caret open={expanded.noise} /></span>
                 </button>
                 {(
                   <div data-sec-body hidden={!(expanded.noise)} className={`border-t ${c.border}`}>
@@ -680,10 +697,10 @@ const SignalVsNoise = ({ tool }) => {
             {(results?.still_worth_verifying?.length > 0 || results?.what_general_claims_cant_decide?.length > 0) && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button data-print-heading aria-expanded={!!(expanded.debated)} onClick={() => toggle('debated')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
+                  <p className={secHead || `text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
                     {plain(t('svn_debated_header'))}
                   </p>
-                  <span data-print-hide><Caret open={expanded.debated} /></span>
+                  <span data-print-hide className={caretTone}><Caret open={expanded.debated} /></span>
                 </button>
                 {(
                   <div data-sec-body hidden={!(expanded.debated)} className={`border-t ${c.border}`}>
@@ -765,8 +782,8 @@ const SignalVsNoise = ({ tool }) => {
             {results?.sources_of_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button data-print-heading aria-expanded={!!(expanded.sources)} onClick={() => toggle('sources')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('svn_sources_header')}</p>
-                  <span data-print-hide><Caret open={expanded.sources} /></span>
+                  <p className={secHead || `text-[15px] font-semibold ${c.labelText}`}>{t('svn_sources_header')}</p>
+                  <span data-print-hide className={caretTone}><Caret open={expanded.sources} /></span>
                 </button>
                 {(
                   <div data-sec-body hidden={!(expanded.sources)} className={`border-t ${c.border}`}>
@@ -787,8 +804,8 @@ const SignalVsNoise = ({ tool }) => {
             {results?.sources_examined?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button data-print-heading aria-expanded={!!(expanded.research)} onClick={() => toggle('research')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                  <p className={`text-[15px] font-semibold ${c.labelText}`}>🔎 {t('svn_sources_list_header')}</p>
-                  <span data-print-hide><Caret open={expanded.research} /></span>
+                  <p className={secHead || `text-[15px] font-semibold ${c.labelText}`}>🔎 {t('svn_sources_list_header')}</p>
+                  <span data-print-hide className={caretTone}><Caret open={expanded.research} /></span>
                 </button>
                 {(
                   <div data-sec-body hidden={!(expanded.research)} className={`border-t ${c.border} px-5 py-4 space-y-3`}>
