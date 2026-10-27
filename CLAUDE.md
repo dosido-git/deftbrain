@@ -21,6 +21,23 @@ not a patch, and the traps it lists (dynamic import by filename, a new input the
 backend never reads, changed English staling twelve translations) do not all fail
 a gate.
 
+## First priorities: accuracy and speed (owner, 2026-10-27)
+
+Every change is judged first on these two, together: speed without accuracy is
+practically useless, and an accurate answer nobody waits for helps no one.
+Before calling any tool work done, say what it does to each.
+
+- **Accuracy:** research first, then write only from what was found — never
+  write from memory and check afterwards. Strength (expected, common, varies,
+  ask) comes from the source, not the tone. Fix by type in shared code
+  (`audit/DEFECT-TYPES.md`), never per-tool prompt patches.
+- **Speed:** no single call writes more than ~1,200 tokens; the first part is
+  on screen in under 5s; checks run side by side; research is cached and
+  verification never blocks more than a few seconds
+  (`audit/CONVENTIONS.md`, "Speed defaults"; backend audit S10.1).
+- **Trade-off:** when one must give, keep accuracy and recover speed by
+  caching, pre-warming or showing progress — never by dropping a check.
+
 ## Foundation documents (read before design, copy, or product decisions)
 
 Four documents in `docs/foundation/` define what DeftBrain is and how it should
