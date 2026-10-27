@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "updated": "2026-10-09",
+  "updated": "2026-10-27",
   "note": "Per-endpoint outcome against the stand-in API. Regenerate with node scripts/smoke-tools.js --update"
  },
  "endpoints": {
@@ -132,7 +132,7 @@
   "/api/bill-rescue": {
    "ok": false,
    "status": 500,
-   "error": "Could not generate your bill rescue. Please try again."
+   "error": "Something went wrong. Please try again."
   },
   "/api/bill-rescue/letter": {
    "ok": false,
@@ -375,8 +375,9 @@
    "status": 200
   },
   "/api/culture-briefing": {
-   "ok": true,
-   "status": 200
+   "ok": false,
+   "status": 503,
+   "error": "The official-source check for this destination did not finish. Please try again in a minute — the research usually completes by then."
   },
   "/api/date-night": {
    "ok": true,
@@ -1184,38 +1185,13 @@
    "ok": true,
    "status": 200
   },
-  "/api/trip-recon": {
-   "ok": true,
-   "status": 200
-  },
-  "/api/trip-recon/alternatives": {
-   "ok": true,
-   "status": 200
-  },
-  "/api/trip-recon/ask-script": {
-   "ok": true,
-   "status": 200
-  },
-  "/api/trip-recon/comfort-kit": {
-   "ok": true,
-   "status": 200
-  },
-  "/api/trip-recon/companion-summary": {
-   "ok": true,
-   "status": 200
-  },
-  "/api/trip-recon/rescan": {
-   "ok": true,
-   "status": 200
-  },
-  "/api/trip-recon/route": {
-   "ok": true,
-   "status": 200
-  },
   "/api/signal-vs-noise": {
-   "ok": false,
-   "status": 503,
-   "error": "I could not complete the source check in time. Please try again — the research may already be warming in the cache."
+   "ok": true,
+   "status": 200
+  },
+  "/api/signal-vs-noise/checking": {
+   "ok": true,
+   "status": 200
   },
   "/api/signal-vs-noise/research": {
    "ok": true,
@@ -1365,7 +1341,7 @@
   "/api/someone-said-it-better": {
    "ok": false,
    "status": 503,
-   "error": "The source check did not finish in time. Try again in a moment — the research is usually ready by then."
+   "error": "None of the quotes found for this could be traced to a reliable source. Try describing the situation in different words."
   },
   "/api/someone-said-it-better/research": {
    "ok": true,
@@ -1451,6 +1427,34 @@
    "status": 200
   },
   "/api/tool-finder": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon/alternatives": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon/ask-script": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon/comfort-kit": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon/companion-summary": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon/rescan": {
+   "ok": true,
+   "status": 200
+  },
+  "/api/trip-recon/route": {
    "ok": true,
    "status": 200
   },
