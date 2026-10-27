@@ -567,9 +567,7 @@ const ResearchDecoder = ({ tool }) => {
         <div data-print-form {...(decodeResult ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>📄 {t('rd_decode_card_title')}</h3>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paste_label')} <span className={c.required}>*</span></label>
-            <p className={`text-[13px] ${c.textMuted} mb-2`}>{t('rd_paste_hint')}</p>
-
+            {/* Upload first, then the paste box (owner, 2026-10-27). */}
             {pdfBase64 ? (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3 mb-2`}>
                 <span className="text-lg">📄</span>
@@ -577,14 +575,15 @@ const ResearchDecoder = ({ tool }) => {
                 <button onClick={removeFile} className={`text-xs ${linkStyle} flex-shrink-0`}>{t('rd_remove_file')}</button>
               </div>
             ) : (
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-3">
                 <button type="button" onClick={() => fileInputRef.current?.click()} className={`${c.btnSecondary} px-3 py-2 rounded-xl text-xs font-semibold`}>📎 {t('rd_upload')}</button>
                 <span className={`text-[13px] ${c.textMuted}`}>{t('rd_upload_hint')}</span>
                 <input type="file" ref={fileInputRef} accept=".pdf,.txt,.md,.rtf" className="hidden" onChange={e => handleFile(e.target.files?.[0])} />
               </div>
             )}
 
-            {!pdfBase64 && <textarea value={paperText} onChange={e => { setPaperText(e.target.value); setDecodeResult(null); }} placeholder={t('rd_paste_ph')} rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />}
+            {!pdfBase64 && <label htmlFor="rd-paste" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paste_label')}</label>}
+            {!pdfBase64 && <textarea id="rd-paste" value={paperText} onChange={e => { setPaperText(e.target.value); setDecodeResult(null); }} placeholder={t('rd_paste_ph')} rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />}
           </div>
 
           <div>
