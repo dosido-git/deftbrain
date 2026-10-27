@@ -67,32 +67,30 @@ const SignalVsNoise = ({ tool }) => {
   // marks the one result that matters most (the signal).
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, {
-    card:          'bg-[var(--sc-card)]',
-    cardAlt:       'bg-[var(--sc-field)]',
-    input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-text)] placeholder:text-[var(--sc-muted)] placeholder:opacity-70 focus:border-[var(--sc-strong)] focus:ring-[var(--sc-line)]',
-    text:          'text-[var(--sc-text)]',
-    textSecondary: 'text-[var(--sc-text)] opacity-90',
-    textMuted:     'text-[var(--sc-muted)]',
-    labelText:     'text-[var(--sc-text)]',
-    required:      'text-[var(--sc-muted)]',
-    accentTxt:     'text-[var(--sc-text)]',
+    // Same roles as Bill Rescue: white text boxes with typed text in the
+    // medium shade, labels and titles dark, cards a step lighter than the
+    // panel, outline controls medium, the main button dark.
+    card:          'bg-[var(--sc-field)]',
+    cardAlt:       'bg-[var(--sc-envelope)]',
+    input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-accent)] focus:ring-[var(--sc-line)]',
+    labelText:     'text-[var(--sc-strong)]',
+    required:      'text-[var(--sc-x-text)]',
+    accentTxt:     'text-[var(--sc-accent)]',
     btnPrimary:    'bg-[var(--sc-button)] hover:opacity-90 text-[var(--sc-button-text)]',
-    btnIdle:       '!bg-transparent !border !border-[var(--sc-strong)] !text-[var(--sc-strong)] cursor-not-allowed',
-    btnSecondary:  'border border-[var(--sc-line)] text-[var(--sc-text)] bg-transparent hover:border-[var(--sc-muted)]',
+    btnIdle:       '!bg-transparent !border-2 !border-[var(--sc-accent)] !text-[var(--sc-accent)] cursor-not-allowed',
+    btnSecondary:  'border border-[var(--sc-accent)] text-[var(--sc-accent)] bg-transparent hover:bg-[var(--sc-field)]',
     border:        'border-[var(--sc-line)]',
-    // The one block that matters most stands out by weight and room, not hue.
-    signalBg:      'bg-[var(--sc-card)] !border-2 border-[var(--sc-strong)]',
+    // The signal is the part that matters most, like Bill Rescue's
+    // "Today's only job": a stronger border in the medium shade.
+    signalBg:      'bg-[var(--sc-envelope)] !border-2 border-[var(--sc-accent)]',
     signalText:    'text-[var(--sc-strong)]',
     debatedText:   'text-[var(--sc-strong)]',
   });
-  // Section headings and the small labels inside them: the category's ink
-  // or the shared neutral, never a status colour (amber, sky, emerald).
+  // Section headings in the dark shade; tags outlined in the contrast colour
+  // (Bill Rescue's accent badge), not amber, sky or emerald.
   const inkHead = sv ? 'text-[var(--sc-strong)]' : null;
-  // A neutral outlined tag in place of tinted badges.
-  const neutralTag = 'border-[var(--sc-line)] text-[var(--sc-muted)]';
-  // Section names carry a leading emoji in every language; the restrained
-  // pages read the words alone.
-  const plain = (str) => (sv && typeof str === 'string' ? str.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, '') : str);
+  const neutralTag = 'border-[var(--sc-x-line)] text-[var(--sc-x-text)]';
+  const plain = (str) => str;
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
@@ -141,7 +139,7 @@ const SignalVsNoise = ({ tool }) => {
             target="_blank"
             rel="noopener noreferrer"
             title={src.title || src.publisher || src.url}
-            className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)] text-[var(--sc-text)] hover:border-[var(--sc-muted)]' : isDark ? 'border-zinc-600 bg-zinc-800 text-[#a9cdef] hover:border-[#7fb3e0]' : 'border-gray-300 bg-white text-[#142a43] hover:border-[#142a43]'}`}
+            className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)] text-[var(--sc-accent)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 bg-zinc-800 text-[#a9cdef] hover:border-[#7fb3e0]' : 'border-gray-300 bg-white text-[#142a43] hover:border-[#142a43]'}`}
           >
             {src.id} · {src.publisher || (() => { try { return new URL(src.url).hostname.replace(/^www\./, ''); } catch { return t('svn_source_generic'); } })()} ↗
           </a>
@@ -494,7 +492,7 @@ const SignalVsNoise = ({ tool }) => {
             {busy && (
               // Boxed like CheckNote's "Still working" — the small grey line it
               // replaces went unnoticed through a 70s source search.
-              <div role="status" aria-live="polite" className={`border rounded-lg px-3 py-2 space-y-1.5 ${sv ? 'bg-[var(--sc-card)] border-[var(--sc-strong)] text-[var(--sc-text)]' : isDark ? 'bg-amber-900/25 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900'}`}>
+              <div role="status" aria-live="polite" className={`border rounded-lg px-3 py-2 space-y-1.5 ${sv ? 'bg-[var(--sc-field)] border-[var(--sc-accent)] text-[var(--sc-strong)]' : isDark ? 'bg-amber-900/25 border-amber-700 text-amber-100' : 'bg-amber-50 border-amber-300 text-amber-900'}`}>
                 <p className="flex items-start gap-2 text-sm font-semibold">
                   <span aria-hidden="true" className="inline-block flex-shrink-0 animate-spin">{tool?.icon ?? '📡'}</span>
                   <span>
@@ -563,7 +561,7 @@ const SignalVsNoise = ({ tool }) => {
                   <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('svn_analyzing')}</p>
                   {results?.analysis_mode === 'verified_research' && (
                     <>
-                      <span className={`text-[13px] font-bold px-1.5 py-0.5 rounded border ${sv ? neutralTag : isDark ? 'border-emerald-700 text-emerald-300' : 'border-emerald-300 text-emerald-700'}`}>
+                      <span className={`text-[13px] font-bold px-1.5 py-0.5 rounded border ${sv ? 'border-[var(--sc-accent)] text-[var(--sc-accent)]' : isDark ? 'border-emerald-700 text-emerald-300' : 'border-emerald-300 text-emerald-700'}`}>
                         {t('svn_mode_research')}
                       </span>
                       <span className={`text-[13px] ${c.textMuted}`}>
@@ -577,7 +575,7 @@ const SignalVsNoise = ({ tool }) => {
                       )}
                       {(restoredCheck || !researchedToday) && (
                         <button onClick={() => handleSubmit({ refresh: true })} disabled={busy}
-                          className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${sv ? 'border-[var(--sc-line)] text-[var(--sc-text)] hover:border-[var(--sc-muted)]' : isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
+                          className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${sv ? 'border-[var(--sc-accent)] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]' : isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
                           {t('svn_check_again')}
                         </button>
                       )}
@@ -721,7 +719,7 @@ const SignalVsNoise = ({ tool }) => {
               const hasAny = bl?.supported_takeaways?.length || bl?.treat_skeptically?.length || bl?.what_would_change_the_answer?.length;
               if (!hasAny) return null;
               return (
-                <div className={`rounded-2xl border-2 p-5 space-y-3 ${sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'}`}>
+                <div className={`rounded-2xl border-2 p-5 space-y-3 ${sv ? 'border-[var(--sc-accent)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'}`}>
                   <p className={`text-xs font-black uppercase tracking-widest ${inkHead || (isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>{plain(t('svn_bottom_line'))}</p>
                   {bl.supported_takeaways?.length > 0 && (
                     <div>
