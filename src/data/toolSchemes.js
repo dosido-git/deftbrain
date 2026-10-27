@@ -34,6 +34,37 @@ const SCHEMES = {
     light: { field: '#fdf9f6', envelope: '#f7ede6', line: '#e8d3c6', card: '#ffffff', accent: '#9a4a2e', strong: '#5f2d1b', onStrong: '#fdf9f6', button: '#5f2d1b', buttonText: '#fdf9f6', x: '#2c6a73', xText: '#225860', xLine: '#bcd9dc' },
     dark:  { field: '#221a16', envelope: '#2c211b', line: '#4c3a30', card: '#1e1714', accent: '#e4a98e', strong: '#f3dacd', onStrong: '#221a16', button: '#f3dacd', buttonText: '#221a16', x: '#7fc4cc', xText: '#a3d6dc', xLine: '#2e5257' },
   },
+  // The other seven (owner, 2026-10-27: "as distinct from the others as
+  // possible"): hues spread round the wheel away from sage, honey and
+  // terracotta; text contrast >= 5.4:1 light and dark.
+  'Home & Daily Life': { // warm graphite
+    light: { field: '#fbfbfb', envelope: '#f2f1f0', line: '#d8d6d5', card: '#ffffff', accent: '#605c57', strong: '#3b3835', onStrong: '#fbfbfb', button: '#3b3835', buttonText: '#fbfbfb', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
+    dark:  { field: '#1d1c1b', envelope: '#262524', line: '#444241', card: '#191818', accent: '#c1bdb9', strong: '#e2e1de', onStrong: '#1d1c1b', button: '#e2e1de', buttonText: '#1d1c1b', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
+  },
+  'Travel & Events': { // teal
+    light: { field: '#f9fcfd', envelope: '#ecf5f6', line: '#cadfe2', card: '#ffffff', accent: '#2f6b74', strong: '#1d4c53', onStrong: '#f9fcfd', button: '#1d4c53', buttonText: '#f9fcfd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
+    dark:  { field: '#172021', envelope: '#1e2a2c', line: '#364b4e', card: '#141b1d', accent: '#9cd5de', strong: '#d0edf1', onStrong: '#172021', button: '#d0edf1', buttonText: '#172021', x: '#eba38e', xText: '#eba38e', xLine: '#53352d' },
+  },
+  'Career and Business': { // indigo
+    light: { field: '#fafafd', envelope: '#edecf6', line: '#cdcbe1', card: '#ffffff', accent: '#3e397f', strong: '#232050', onStrong: '#fafafd', button: '#232050', buttonText: '#fafafd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
+    dark:  { field: '#181821', envelope: '#201f2b', line: '#39384d', card: '#15141c', accent: '#a39fdb', strong: '#d3d1f0', onStrong: '#181821', button: '#d3d1f0', buttonText: '#181821', x: '#eba38e', xText: '#eba38e', xLine: '#53352d' },
+  },
+  'Health & Wellness': { // jade
+    light: { field: '#f9fdfb', envelope: '#ecf6f1', line: '#cae2d7', card: '#ffffff', accent: '#2c6d4f', strong: '#1d533a', onStrong: '#f9fdfb', button: '#1d533a', buttonText: '#f9fdfb', x: '#a23e5c', xText: '#a23e5c', xLine: '#eac8d2' },
+    dark:  { field: '#17211c', envelope: '#1e2c25', line: '#364e43', card: '#141d19', accent: '#9cdebf', strong: '#d0f1e2', onStrong: '#17211c', button: '#d0f1e2', buttonText: '#17211c', x: '#e08aa5', xText: '#e08aa5', xLine: '#532d39' },
+  },
+  'Conversations': { // violet
+    light: { field: '#fbfafd', envelope: '#f2edf5', line: '#d8cce0', card: '#ffffff', accent: '#623d7b', strong: '#3c234e', onStrong: '#fbfafd', button: '#3c234e', buttonText: '#fbfafd', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
+    dark:  { field: '#1d1820', envelope: '#26202a', line: '#44394c', card: '#19151c', accent: '#c2a2d7', strong: '#e3d3ee', onStrong: '#1d1820', button: '#e3d3ee', buttonText: '#1d1820', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
+  },
+  'Ideas & Diversions': { // orchid
+    light: { field: '#fcfafc', envelope: '#f5edf3', line: '#dfcdda', card: '#ffffff', accent: '#793f67', strong: '#4c2440', onStrong: '#fcfafc', button: '#4c2440', buttonText: '#fcfafc', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
+    dark:  { field: '#20181e', envelope: '#2a2027', line: '#4b3946', card: '#1b151a', accent: '#d6a4c7', strong: '#edd4e5', onStrong: '#20181e', button: '#edd4e5', buttonText: '#20181e', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
+  },
+  'Decisions': { // blue
+    light: { field: '#f9fbfd', envelope: '#ecf0f6', line: '#cad5e2', card: '#ffffff', accent: '#355782', strong: '#1d3553', onStrong: '#f9fbfd', button: '#1d3553', buttonText: '#f9fbfd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
+    dark:  { field: '#171b21', envelope: '#1e242c', line: '#36414e', card: '#14181d', accent: '#9cb8de', strong: '#d0def1', onStrong: '#171b21', button: '#d0def1', buttonText: '#171b21', x: '#eba38e', xText: '#eba38e', xLine: '#53352d' },
+  },
 };
 
 // Brand gold — the "Brain" in the logo (owner's pick, 2026-10-25): In a
