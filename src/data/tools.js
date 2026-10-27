@@ -125,7 +125,7 @@ export const tools = [
     'how to help someone grieve', 'what to say after a death', 'condolence', 'sympathy',
   ],
   icon: "💙",
-  categories: ['Health & Wellness', 'Self & Reflection'],
+  categories: ['Health & Wellness'],
   headerColor: "#c0cce0",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -385,7 +385,7 @@ export const tools = [
   tagline: "Know before you go — cultural intelligence for any destination",
   tags: ['culture', 'travel', 'travel etiquette', 'cultural etiquette', 'local customs', 'customs', 'taboos', 'tipping', 'dress code', 'dining etiquette', 'business etiquette', 'greetings', 'gift etiquette', 'religion', 'manners', 'social norms', 'cultural norms', 'cultural differences', 'destination guide', 'country guide', 'family visit', 'moving abroad', 'expat', 'study abroad', 'remote work', 'travel safety', 'key phrases'],
   icon: "🌍",
-  categories: ['Relationships', 'Travel & Events'],
+  categories: ['Travel & Events', 'Relationships'],
   headerColor: "#b8d4e8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -809,7 +809,7 @@ export const tools = [
     'pre-drive check', 'arrival reminder'
   ],
   icon: "🚗",
-  categories: ['Decisions', 'Health & Wellness', 'Home & Daily Life'],
+  categories: ['Travel & Events', 'Health & Wellness', 'Home & Daily Life'],
   headerColor: "#1e2a3a",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -902,7 +902,7 @@ export const tools = [
   tagline: "Tell me what you're dealing with — I'll find the right tool.",
   tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse', 'discover', 'guide', 'navigate', 'right tool', 'suggest', 'match'],
   icon: "🧰",
-  categories: ['Tasks'],
+  categories: ['Home & Daily Life'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -1320,7 +1320,7 @@ export const tools = [
   tagline: "Review your routines and identify obstacles",
   tags: ['small change', 'habit', 'routine', 'daily routine', 'behavior change', 'personal improvement', 'habit experiment', 'friction', 'bottleneck', 'productivity', 'focus', 'morning routine', 'evening routine', 'systems thinking', 'what should I change'],
   icon: "⚡",
-  categories: ['Decisions', 'Self & Reflection'],
+  categories: ['Decisions'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -1403,7 +1403,7 @@ export const tools = [
   tagline: "Test your beliefs: where they hold, where they break",
   tags: ['belief', 'critical thinking', 'philosophy', 'assumptions', 'test', 'logic', 'values', 'worldview', 'self-awareness', 'bias', 'edge case'],
   icon: "🔬",
-  categories: ['Just for Fun', 'Learning', 'Self & Reflection'],
+  categories: ['Just for Fun', 'Learning'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -1740,7 +1740,7 @@ export const tools = [
   tagline: "Consider the benefits of opening up about something you've been hiding",
   tags: ['honest', 'hard conversation', 'truth', 'unsaid', 'relationship', 'conflict', 'feelings', 'scared', 'say it', 'communication', 'hiding', 'difficult'],
   icon: "💣",
-  categories: ['Conversations', 'Relationships', 'Self & Reflection'],
+  categories: ['Conversations', 'Relationships'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -2044,7 +2044,7 @@ export const tools = [
     'low cost hobbies', 'learn something new',
   ],
   icon: "🧭 ",
-  categories: ['Travel & Events'],
+  categories: ['Learning'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -2497,7 +2497,7 @@ export const tools = [
   tagline: "Make sense of the day that disappeared.",
   tags: ["where did the time go", "reconstruct my day", "time reconstruction", "lost time", "day review", "time gaps", "fragmented day", "unexpected time", "timeline", "how I spent my day"],
   icon: "⏳",
-  categories: ['Self & Reflection', 'Tasks'],
+  categories: ['Home & Daily Life'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -2907,7 +2907,7 @@ export const tools = [
   tagline: "There's a word for that. Let's find it.",
   tags: ['emotion', 'feelings', 'name a feeling', 'word for a feeling', 'emotional vocabulary', 'mixed emotions', 'hard to describe feeling', 'emotion word', 'foreign language word', 'plain english phrase', 'feeling dictionary', 'personal vocabulary', 'invented phrase', 'nuanced emotion', 'bittersweet', 'saudade'],
   icon: "🎭",
-  categories: ['Health & Wellness', 'Self & Reflection'],
+  categories: ['Health & Wellness'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -2986,7 +2986,7 @@ export const tools = [
   tagline: "See the patterns hiding in the way you write.",
   tags: ["writing tone", "tone analysis", "writing patterns", "communication style", "how do I sound", "text messages", "email tone", "work chat", "directness", "humor", "writing habits", "reader impression"],
   icon: "✨",
-  categories: ['Conversations', 'Self & Reflection'],
+  categories: ['Conversations'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -3922,7 +3922,7 @@ export const tools = [
   tagline: "The meeting ended. Now figure out what actually happened.",
   tags: ['meeting', 'transcript', 'notes', 'minutes', 'action items', 'decisions', 'follow up', 'standup', 'recap'],
   icon: "📋",
-  categories: ['Career and Business', 'Tasks'],
+  categories: ['Career and Business'],
   headerColor: "#d4dde8",
   description: "What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.",
   exampleOutput: {
@@ -4887,7 +4887,7 @@ title: "PEP — Personal Energy Planner",
 tagline: "Take command of your available energy",
   tags: ['low energy', 'energy', 'personal energy planner', 'what should I do', 'activity suggestion', 'tired', 'low motivation', 'rest', 'self care', 'capacity', 'mood', 'screen fatigue', 'low demand activity', 'quick activity', 'energy slump', 'something manageable'],
   icon: '✨',
-  categories: ['Health & Wellness', 'Self & Reflection'],
+  categories: ['Health & Wellness'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-09 — the one tool left out of the 2026-10-08 indexing pass.
@@ -4955,7 +4955,7 @@ tagline: "Take command of your available energy",
   tagline: "Your tasks, grouped so the day stops fighting you",
   tags: ['batch', 'tasks', 'focus', 'productivity', 'context switching', 'schedule', 'cognitive', 'todo', 'time management', 'deep work', 'flow state', 'energy', 'batching'],
   icon: '⚡',
-  categories: ['Tasks', 'Career and Business'],
+  categories: ['Home & Daily Life', 'Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -6459,7 +6459,7 @@ tagline: "Take command of your available energy",
   tagline: "Get something done without disappearing into it",
   tags: ["focus", "focus timer", "focus session", "deep work", "time boxing", "stop working", "know when to stop", "hyperfocus", "lose track of time", "work session", "pomodoro alternative", "stopping point", "enough for now", "take a break", "break reminder", "finish focus session", "restart note", "pick up where i left off", "get unstuck"],
   icon: "\ud83c\udfa9",
-  categories: ['Health & Wellness', 'Tasks'],
+  categories: ['Health & Wellness'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -6528,7 +6528,7 @@ tagline: "Take command of your available energy",
   tagline: "Get unstuck on a choice you keep going back and forth on",
   tags: ['decision help', 'make a decision', 'choose for me', 'pick one', 'decision paralysis', 'choice paralysis', 'too many options', 'stuck choosing', "can't decide", 'overwhelmed by choices', 'one answer', 'what should i do', 'what should i choose'],
   icon: "🎯",
-  categories: ['Decisions', 'Tasks'],
+  categories: ['Decisions'],
   headerColor: "#f5e0c0",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
@@ -6615,7 +6615,7 @@ tagline: "Take command of your available energy",
   tagline: "Discover the surprising threads that connect your experiences",
   tags: ['connection', 'network', 'path', 'introduction', 'reach', 'who knows who'],
   icon: "🔗",
-  categories: ['Just for Fun', 'Self & Reflection'],
+  categories: ['Just for Fun'],
   headerColor: "#d4dde8",
   description: "Find the hidden connections between seemingly unrelated parts of your life.\nYour favorite movie and your career. Your childhood hobby and your closest friendship.\n\nThe chain is always there. You just can't see it yet.",
   exampleOutput: {
@@ -6766,7 +6766,7 @@ tagline: "Take command of your available energy",
   tagline: "Proactively organize your end-of-life wishes and messages to loved ones",
   tags: ['legacy', 'estate', 'end of life', 'planning', 'documents', 'death', 'wishes'],
   icon: "📜",
-  categories: ['Home & Daily Life', 'Relationships', 'Self & Reflection'],
+  categories: ['Home & Daily Life', 'Relationships'],
   headerColor: "#e0b8b8",
   description: "One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.",
   exampleOutput: {
@@ -7083,7 +7083,7 @@ tagline: "Take command of your available energy",
   tagline: "Find one foothold in a project that feels too big to start",
   tags: ['overwhelm', 'overwhelming project', 'too big to start', 'getting started', 'first step', 'next step', 'stuck', 'procrastination', 'project paralysis', 'micro step', 'break down project', 'where to start'],
   icon: "⛏️",
-  categories: ['Health & Wellness', 'Tasks'],
+  categories: ['Health & Wellness'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -7369,7 +7369,7 @@ tagline: "Take command of your available energy",
   tagline: "Learn what tends to happen before you run out of steam",
   tags: ["energy patterns", "low energy", "hit a wall", "crash", "daily check-in", "pattern tracking", "energy tracker", "sleep", "stress", "workload", "symptoms", "routines", "personal patterns", "fatigue", "warning signs", "burnout patterns"],
   icon: "⚡",
-  categories: ['Health & Wellness', 'Self & Reflection', 'Career and Business'],
+  categories: ['Health & Wellness', 'Career and Business'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -7444,7 +7444,7 @@ tagline: "Take command of your available energy",
   tagline: "Find recurring themes and emotional patterns in your dreams",
   tags: ['dreams', 'dream meaning', 'dream interpretation', 'recurring dreams', 'repeated dreams', 'dream patterns', 'dream symbols', 'dream analysis', 'what does my dream mean', 'emotional patterns', 'waking life', 'dream journal', 'jungian dreams', 'freudian dreams'],
   icon: "🌙",
-  categories: ['Health & Wellness', 'Self & Reflection'],
+  categories: ['Health & Wellness'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -7706,7 +7706,7 @@ tagline: "Take command of your available energy",
   tagline: "Find out what actually needs a reply today",
   tags: ['email urgency', 'email triage', 'inbox triage', 'which emails to answer', 'what to reply today', 'email priorities', 'prioritize email', 'urgent email', 'reply now', 'reply this week', 'can this email wait', 'overwhelmed inbox', 'inbox anxiety', 'unread emails', 'email deadlines', 'ignore email', 'delegate email'],
   icon: "📬",
-  categories: ['Conversations', 'Tasks', 'Career and Business'],
+  categories: ['Conversations', 'Career and Business'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -8034,7 +8034,7 @@ tagline: "Take command of your available energy",
     'sensitive', 'temperature', 'place', 'before you go', 'accommodations'
   ],
   icon: "🗺️",
-  categories: ['Health & Wellness', 'Self & Reflection', 'Travel & Events'],
+  categories: ['Health & Wellness', 'Travel & Events'],
   headerColor: "#2a3820",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -8730,7 +8730,7 @@ tagline: "Take command of your available energy",
   tagline: "Figure out what matters now — and what can wait",
   tags: ['crisis', 'prioritize', 'task triage', 'urgent tasks', 'what to do first', 'overwhelmed', 'too much to do', 'tasks', 'deadlines', 'consequences', 'dependencies', 'people waiting', 'limited time', 'low energy', 'brain dump', 'just one thing', 'task breakdown', 'time blocking', 'delegation', 're-prioritize'],
   icon: "🚨",
-  categories: ['Health & Wellness', 'Tasks'],
+  categories: ['Health & Wellness'],
   headerColor: "#d4dde8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -8838,7 +8838,7 @@ tagline: "Take command of your available energy",
   tagline: "Work together. Even when you're working alone.",
   tags: ['focus', 'productivity', 'body double', 'accountability', 'cowork', 'solo tasks'],
   icon: "👥",
-  categories: ['Health & Wellness', 'Tasks', 'Career and Business'],
+  categories: ['Health & Wellness', 'Career and Business'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -8915,7 +8915,7 @@ tagline: "Take command of your available energy",
   tagline: "Be productive during unavoidable waiting times",
   tags: ['waiting mode', 'appointments', 'time block', 'freeze', 'productivity', 'energy'],
   icon: "⏳",
-  categories: ['Health & Wellness', 'Tasks'],
+  categories: ['Health & Wellness'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "crawled/discovered – not indexed" page substance.
@@ -9002,7 +9002,7 @@ tagline: "Take command of your available energy",
   tagline: "Everything in your head → one clear next step",
   tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'anxiety', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', '3am thoughts', 'can\'t focus', 'voice input', 'emergency mode', 'to-do list', 'mental load', 'structure thoughts', 'productive'],
   icon: "🧠",
-  categories: ['Health & Wellness', 'Self & Reflection', 'Tasks'],
+  categories: ['Health & Wellness'],
   headerColor: "#e0b8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -9103,7 +9103,7 @@ tagline: "Take command of your available energy",
   tagline: "Micro-challenges just outside your comfort zone",
   tags: ["comfort zone", "comfort zone challenge", "small challenge", "micro challenge", "small step", "try something new", "do something uncomfortable", "push myself", "build confidence", "fear of trying", "personal growth", "gentle challenge", "get out of comfort zone", "one small step", "low pressure challenge", "challenge sized to capacity", "slightly uncomfortable"],
   icon: "🫸",
-  categories: ['Health & Wellness', 'Self & Reflection'],
+  categories: ['Health & Wellness'],
   headerColor: "#ccdfc4",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -9183,7 +9183,7 @@ tagline: "Take command of your available energy",
   tagline: "Music that moves you from where you are to where you need to be.",
   tags: ["music", "focus music", "mood music", "listening plan", "study music", "work music", "calm music", "energy", "unwind", "winding down", "ambient", "lofi", "instrumental", "concentration", "creative work", "brain fog", "restless", "scattered", "overwhelmed", "music search"],
   icon: "🎧",
-  categories: ['Health & Wellness', 'Self & Reflection'],
+  categories: ['Health & Wellness'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
@@ -9449,7 +9449,7 @@ tagline: "Take command of your available energy",
   tagline: "Investigate a potential purchase before you commit",
   tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
   icon: "💲",
-  categories: ['Money', 'Decisions', 'Tasks'],
+  categories: ['Money', 'Decisions'],
   headerColor: "#c0d8b8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -9847,7 +9847,7 @@ tagline: "Take command of your available energy",
   tagline: "Preparation toolkit for interviews, presentations, hard conversations, dates, and more",
   tags: ['nervous', 'nerve-racking', 'anxiety', 'interview nerves', 'presentation nerves', 'performance nerves', 'stage fright', 'difficult conversation prep', 'date nerves', 'medical appointment nerves', 'pre-event prep', 'help me now', 'readiness', 'what to say', 'blanking', 'grounding', 'calm down', 'prepare for interview'],
   icon: '💪',
-  categories: ['Conversations', 'Health & Wellness', 'Self & Reflection'],
+  categories: ['Conversations', 'Health & Wellness'],
   headerColor: "#b8dcd8",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (strict index review: indexed only once it shows real output).
@@ -10252,7 +10252,7 @@ tagline: "Take command of your available energy",
   tagline: "Find a quote that says what you mean",
   tags: ["quotes", "quotations", "find a quote", "verified quotes", "real quotes", "quote for my situation", "words for what i am going through", "wisdom", "perspective", "comfort", "motivation", "reality check", "witty quote", "famous quotes", "inspiration", "grief quote", "career change quote", "quote attribution", "documented quotation"],
   icon: "📚",
-  categories: ['Learning', 'Self & Reflection'],
+  categories: ['Learning'],
   headerColor: "#e3eef0",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-07 to give this "Discovered – not indexed" page real substance.

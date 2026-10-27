@@ -66,8 +66,8 @@ function loadTools() {
 // Diversions, Me, What If?, Veer, Do It! — see DashBoard.js's CATEGORY_META.
 const CATEGORY_ORDER = [
   'Home & Daily Life', 'Travel & Events', 'Relationships', 'Money', 'Career and Business',
-  'Health & Wellness', 'Conversations', 'Learning', 'Just for Fun', 'Self & Reflection', 'Ideas & Imagination',
-  'Decisions', 'Tasks',
+  'Health & Wellness', 'Conversations', 'Learning', 'Just for Fun', 'Ideas & Imagination',
+  'Decisions',
 ];
 
 function primaryCategory(tool) {

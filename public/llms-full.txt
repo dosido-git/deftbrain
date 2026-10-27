@@ -16,6 +16,31 @@ This file carries the substance behind https://deftbrain.com/llms.txt: what each
 
 ## Home & Daily Life
 
+### Batch Flow
+
+URL: https://deftbrain.com/BatchFlow
+Tagline: Your tasks, grouped so the day stops fighting you
+Categories: Home & Daily Life, Career and Business
+
+A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.
+
+**When.** A scattered list and a day of constant gear-shifting ahead.
+
+**You give.** Everything on your plate, unfiltered. Or paste a raw list.
+
+**You get.** Tasks grouped by the kind of thinking each needs, sequenced to minimize switching.
+
+**The edge.** It groups by cognitive mode, not topic or deadline. Switching between creative and analytical work is what costs you the day.
+
+**Good to know.**
+
+- The 'Paste List' mode is fastest — just dump your notes app or inbox and BatchFlow will extract tasks automatically
+- Use 'Compare' (Sprint vs Marathon) when you're unsure how hard to push — it shows two different pacing strategies for the same tasks
+- Add even vague time estimates ('~30 min') to the task detail field — it makes batch durations much more accurate
+- The 'Weekly Rhythm' feature is worth setting up once — it gives you a repeatable weekly batching pattern for recurring tasks
+- If the same tasks keep getting deferred across sessions, the '⚠️ Stuck tasks' analysis will diagnose why and suggest a fix
+- After 3+ sessions, 'Insights' shows your actual batching patterns — which modes you favor, your real completion rate, and where you lose the most time
+
 ### Bike Medic
 
 URL: https://deftbrain.com/BikeMedic
@@ -66,7 +91,7 @@ Paste a contract — or upload the file — and get a plain-English breakdown of
 
 URL: https://deftbrain.com/FinalWish
 Tagline: Proactively organize your end-of-life wishes and messages to loved ones
-Categories: Home & Daily Life, Relationships, Self & Reflection
+Categories: Home & Daily Life, Relationships
 
 One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.
 
@@ -284,30 +309,104 @@ Walking somewhere alone? Tell Safe Walk where you're going, when, and anything y
 
 **Before you go.** The check-in reminder doesn't alert anyone. If someone should know your route, text them before you set out.
 
-## Travel & Events
+### Tool Finder
 
-### Hobby Match
+URL: https://deftbrain.com/ToolFinder
+Tagline: Tell me what you're dealing with — I'll find the right tool.
+Categories: Home & Daily Life
 
-URL: https://deftbrain.com/HobbyMatch
-Tagline: Discover hobbies you didn't know existed.
-Categories: Travel & Events
+Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.
 
-Looking for a hobby that actually fits your life? Tell Hobby Match what you enjoy, what you want more of, and the limits that matter. Get a short list of well-matched possibilities, why each might fit, what it takes to try, and an easy first step.
+**When.** You have a problem and no idea which tool solves it.
 
-**When.** You want a new hobby and keep landing on yoga or painting.
+**You give.** Your problem in plain language.
 
-**You give.** What you're like, what you're after, plus your schedule, budget and physical situation.
+**You get.** One to five tools ranked, each with why it fits your situation specifically.
 
-**You get.** Hobbies you'd never have searched for, matched to your actual constraints, with how to start each.
-
-**The edge.** It reaches well past the obvious list — urban sketching, historical fencing — because you can't search for something you don't know exists.
+**The edge.** It reads between the lines, so you don't have to know what the tool would be called.
 
 **Good to know.**
 
-- List what you have tried, and why it did or did not work — the reason matters more than the hobby
-- Tap 'Something weird' in the goals for the most unexpected recommendations
-- The 'try it once' step is meant to test the hobby before you buy equipment
-- The wildcard, when there is one, approaches what you asked for from a different angle
+- More detail gets better matches — 'money problem' is vague, 'my roommate owes me $200 and it's awkward' is specific
+- The workflow section shows how to chain tools together
+- Quick-pick buttons are great starting points if you're not sure how to describe it
+- If results aren't perfect, add more context and search again
+
+### Where Did the Time Go?
+
+URL: https://deftbrain.com/WhereDidTheTimeGo
+Tagline: Make sense of the day that disappeared.
+Categories: Home & Daily Life
+
+Ever reach the end of a day wondering where the time went? Walk through it as you remember it. Where Did the Time Go? helps you see what filled the hours, what broke up your day, and why it may have felt so different from the day you expected.
+
+**When.** The day is over and you can't account for it.
+
+**You give.** A timeframe and your account of what you did, as you remember it.
+
+**You get.** The day reconstructed from what you actually described, and why it may have felt the way it did.
+
+**The edge.** It reconstructs your account — it doesn't invent minutes you never gave it.
+
+**Good to know.**
+
+- The 'what feels off' field is optional but sharpens the reconstruction — it's what you're actually confused about, not another number to estimate
+- Times you're unsure of are fine left rough — the tool won't invent false precision
+- Not every day has a clean 'biggest mismatch' or a useful next-time change, and the tool will say so rather than force one
+- Recent Days lets you reopen a past reconstruction with one click
+
+## Travel & Events
+
+### Culture Briefing
+
+URL: https://deftbrain.com/CultureBriefing
+Tagline: Know before you go — cultural intelligence for any destination
+Categories: Travel & Events, Relationships
+
+A practical cultural briefing before you travel — greetings, taboos, dining, dress, tipping, business etiquette, religion and safety. It separates the practices that are widely observed from the ones that vary by region, generation or setting, and flags what is worth checking locally rather than taking on trust. Tailored to your trip purpose.
+
+**When.** You've booked the trip and you don't want to be the rude tourist.
+
+**You give.** Destination, trip purpose, how long, and where you're from.
+
+**You get.** What is widely observed, what tends to cause friction, what varies by region or setting, and what to check locally before you rely on it.
+
+**The edge.** Specific and calibrated to where you are from, rather than 'respect local customs' — and it separates a strong convention from a practice that varies, instead of presenting a country as one thing.
+
+**Good to know.**
+
+- Add your home country — the AI tailors the advice to highlight differences that specifically trip up travelers from your background
+- Business travelers: select 'Business' to get card exchange etiquette, hierarchy norms, meeting behavior, and negotiation style
+- Religion section appears automatically for destinations where it's culturally central — pay attention to it even if you're not religious
+- Key phrases go beyond 'hello' and 'thank you' — they're chosen for genuine utility and positive impression
+- Insider tips are the real value: things most travelers discover the hard way after an embarrassing moment
+- Works across all 12 DeftBrain languages — get your briefing in your native language
+
+### Drive Home
+
+URL: https://deftbrain.com/DriveHome
+Tagline: Evaluate your options before deciding to drive.
+Categories: Travel & Events, Health & Wellness, Home & Daily Life
+
+Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.
+
+**When.** You are about to start a drive and something in you is hesitating.
+
+**You give.** How long the drive is, when it is, the conditions, the road type, and how you are feeling.
+
+**You get.** A straight call — go, pause, or don't start — with what makes this drive harder and what to do instead.
+
+**The edge.** It works only from what you report, so it never talks you into a drive on facts it invented.
+
+**Good to know.**
+
+- Answer the condition question about now, not about the forecast — it reasons from what you report, so a stale answer gives a stale call
+- The hesitation box is the highest-value field on the form; a specific worry gets a specific answer
+- A go call is not a safety guarantee — it means nothing you reported gave a clear reason to wait
+- If the answer is pause and you resolve the missing fact, run it again rather than talking yourself past it
+- Walking home instead? SafeWalk covers that trip
+
+**Before you go.** Never use Drive Home while the vehicle is moving.
 
 ### Layover Maximizer
 
@@ -336,31 +435,6 @@ Find out whether your layover leaves time to get out of the airport — go, stay
 **Before you go.** Before leaving the airport, check the entry rules for your passport on an official government site. This plan assumes you're allowed out.
 
 ## Relationships
-
-### Culture Briefing
-
-URL: https://deftbrain.com/CultureBriefing
-Tagline: Know before you go — cultural intelligence for any destination
-Categories: Relationships, Travel & Events
-
-A practical cultural briefing before you travel — greetings, taboos, dining, dress, tipping, business etiquette, religion and safety. It separates the practices that are widely observed from the ones that vary by region, generation or setting, and flags what is worth checking locally rather than taking on trust. Tailored to your trip purpose.
-
-**When.** You've booked the trip and you don't want to be the rude tourist.
-
-**You give.** Destination, trip purpose, how long, and where you're from.
-
-**You get.** What is widely observed, what tends to cause friction, what varies by region or setting, and what to check locally before you rely on it.
-
-**The edge.** Specific and calibrated to where you are from, rather than 'respect local customs' — and it separates a strong convention from a practice that varies, instead of presenting a country as one thing.
-
-**Good to know.**
-
-- Add your home country — the AI tailors the advice to highlight differences that specifically trip up travelers from your background
-- Business travelers: select 'Business' to get card exchange etiquette, hierarchy norms, meeting behavior, and negotiation style
-- Religion section appears automatically for destinations where it's culturally central — pay attention to it even if you're not religious
-- Key phrases go beyond 'hello' and 'thank you' — they're chosen for genuine utility and positive impression
-- Insider tips are the real value: things most travelers discover the hard way after an embarrassing moment
-- Works across all 12 DeftBrain languages — get your briefing in your native language
 
 ### Date Night
 
@@ -465,7 +539,7 @@ See where you stand with a bill that's wrong, too big, or already late: how urge
 
 URL: https://deftbrain.com/BuyWise
 Tagline: Investigate a potential purchase before you commit
-Categories: Money, Decisions, Tasks
+Categories: Money, Decisions
 
 Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.
 
@@ -981,7 +1055,7 @@ Thinking about a career move? Skill Gap Map starts with what your own experience
 
 URL: https://deftbrain.com/TheDebrief
 Tagline: The meeting ended. Now figure out what actually happened.
-Categories: Career and Business, Tasks
+Categories: Career and Business
 
 What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.
 
@@ -1051,7 +1125,7 @@ Have a gap, a firing, or a messy chapter you'll need to explain? Share the real 
 
 URL: https://deftbrain.com/BeforeTheCrash
 Tagline: Learn what tends to happen before you run out of steam
-Categories: Health & Wellness, Self & Reflection, Career and Business
+Categories: Health & Wellness, Career and Business
 
 Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.
 
@@ -1078,7 +1152,7 @@ Track a few daily signals and look for patterns in the days when your energy dro
 
 URL: https://deftbrain.com/BrainDumpBuddy
 Tagline: Everything in your head → one clear next step
-Categories: Health & Wellness, Self & Reflection, Tasks
+Categories: Health & Wellness
 
 When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.
 
@@ -1102,7 +1176,7 @@ When everything in your head feels like one big pile, put it here exactly as it 
 
 URL: https://deftbrain.com/BrainStateDeejay
 Tagline: Music that moves you from where you are to where you need to be.
-Categories: Health & Wellness, Self & Reflection
+Categories: Health & Wellness
 
 Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we’ll lay out a listening plan in phases — what each one should sound like, and search terms you can use in your music service.
 
@@ -1125,7 +1199,7 @@ Changing mental state is a transition, not a switch. Tell us where your head is 
 
 URL: https://deftbrain.com/ChaosPilot
 Tagline: Figure out what matters now — and what can wait
-Categories: Health & Wellness, Tasks
+Categories: Health & Wellness
 
 Everything feels urgent at once, and it's hard to trust your own read on what actually needs you first. Chaos Pilot works only from what you know — deadlines, consequences, who's waiting — to put your tasks in a defensible order. When a missing fact would change that order, it says so instead of guessing.
 
@@ -1200,7 +1274,7 @@ Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease
 
 URL: https://deftbrain.com/DreamPatternSpotter
 Tagline: Find recurring themes and emotional patterns in your dreams
-Categories: Health & Wellness, Self & Reflection
+Categories: Health & Wellness
 
 Spots notable elements, possible associations, and recurring patterns in your dreams — then gives you thoughtful questions to explore what, if anything, they mean to you. Includes optional Jungian, Freudian, and dream-science perspectives for additional ways of looking at them.
 
@@ -1221,7 +1295,7 @@ Spots notable elements, possible associations, and recurring patterns in your dr
 
 URL: https://deftbrain.com/FocusPocus
 Tagline: Get something done without disappearing into it
-Categories: Health & Wellness, Tasks
+Categories: Health & Wellness
 
 Turn an open-ended task into a clear stopping point, work toward one concrete result, and stop without losing your place. Focus Pocus helps define what “enough for now” means, gives you one next move if you get stuck, and saves a restart breadcrumb when time is up.
 
@@ -1267,7 +1341,7 @@ Sometimes the problem isn't your focus. It's what your ears have to deal with. F
 
 URL: https://deftbrain.com/GentlePushGenerator
 Tagline: Micro-challenges just outside your comfort zone
-Categories: Health & Wellness, Self & Reflection
+Categories: Health & Wellness
 
 Turn something you'd like to get better at into a small, doable challenge just beyond what's comfortable today. No pep talks, no pressure—the attempt counts.
 
@@ -1291,7 +1365,7 @@ Turn something you'd like to get better at into a small, doable challenge just b
 
 URL: https://deftbrain.com/GriefGuide
 Tagline: Compassionate guidance for navigating loss — yours or someone else's
-Categories: Health & Wellness, Self & Reflection
+Categories: Health & Wellness
 
 Guidance for a loss — whether you're grieving yourself, supporting someone who is, or both. It stays close to what you tell it: what it heard, a few things that may help, words if you need them, and one gentle next step.
 
@@ -1367,7 +1441,7 @@ Describe what you're going through and get clear guidance on what type of suppor
 
 URL: https://deftbrain.com/NameThatFeeling
 Tagline: There's a word for that. Let's find it.
-Categories: Health & Wellness, Self & Reflection
+Categories: Health & Wellness
 
 Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.
 
@@ -1388,7 +1462,7 @@ Describe a feeling you can't quite name — that weird mix of emotions, the thin
 
 URL: https://deftbrain.com/PEP
 Tagline: Take command of your available energy
-Categories: Health & Wellness, Self & Reflection
+Categories: Health & Wellness
 
 Low on energy and not sure what to do with it? Tell PEP how much you have in you right now. Get something that fits. Try it. Tell PEP how it went. PEP uses your own history to make better suggestions next time.
 
@@ -1508,7 +1582,7 @@ Notice what leaves you with more energy — and what leaves you with less. Log a
 
 URL: https://deftbrain.com/TaskAvalancheBreaker
 Tagline: Find one foothold in a project that feels too big to start
-Categories: Health & Wellness, Tasks
+Categories: Health & Wellness
 
 Stuck on a project that feels too big to start? Task Avalanche Breaker finds one useful place to begin — not another giant to-do list.
 
@@ -1531,7 +1605,7 @@ Stuck on a project that feels too big to start? Task Avalanche Breaker finds one
 
 URL: https://deftbrain.com/TripRecon
 Tagline: Know unpleasant realities before you go
-Categories: Health & Wellness, Self & Reflection, Travel & Events
+Categories: Health & Wellness, Travel & Events
 
 Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise hard to handle? Tell Trip Recon what matters to you and what you already know. It helps you prepare for possibilities, ask for what you need, and make a backup plan without inventing conditions at the place.
 
@@ -1555,7 +1629,7 @@ Going somewhere that may be noisy, crowded, bright, smelly, warm, or otherwise h
 
 URL: https://deftbrain.com/VirtualBodyDouble
 Tagline: Work together. Even when you're working alone.
-Categories: Health & Wellness, Tasks, Career and Business
+Categories: Health & Wellness, Career and Business
 
 Hard to start, or stay on, a task when you're working alone? Say what you're working on, pick a companion, and it keeps you company until the timer ends, checking in along the way. That's body doubling: the focus that comes from someone else being in the room.
 
@@ -1578,7 +1652,7 @@ Hard to start, or stay on, a task when you're working alone? Say what you're wor
 
 URL: https://deftbrain.com/WaitingModeLiberator
 Tagline: Be productive during unavoidable waiting times
-Categories: Health & Wellness, Tasks
+Categories: Health & Wellness
 
 Got a thing later and can't start anything? That frozen feeling is real. This tool shows you how much free time you actually have, helps you decide what to do with it, and lets you stop thinking about the appointment until it's time.
 
@@ -1834,7 +1908,7 @@ Understand what your doctor told you once you're home and the details have blurr
 
 URL: https://deftbrain.com/EmailUrgencyTriager
 Tagline: Find out what actually needs a reply today
-Categories: Conversations, Tasks, Career and Business
+Categories: Conversations, Career and Business
 
 Analyze email urgency and cut through inbox anxiety. Find out what actually needs a response today vs what can wait.
 
@@ -1930,7 +2004,7 @@ An apology that fits what actually happened — not bigger, not smaller. Describ
 
 URL: https://deftbrain.com/NerveCheck
 Tagline: Preparation toolkit for interviews, presentations, hard conversations, dates, and more
-Categories: Conversations, Health & Wellness, Self & Reflection
+Categories: Conversations, Health & Wellness
 
 Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.
 
@@ -2020,7 +2094,7 @@ You know the stories. You know what the person means to you. Toast Writer helps 
 
 URL: https://deftbrain.com/TruthBomb
 Tagline: Consider the benefits of opening up about something you've been hiding
-Categories: Conversations, Relationships, Self & Reflection
+Categories: Conversations, Relationships
 
 Some things get harder the longer they go unsaid. Truth Bomb helps you separate what you know from what you're assuming, understand what speaking — or staying silent — would actually change, and decide what you want to do next.
 
@@ -2067,7 +2141,7 @@ Sometimes the message you need to send starts out angrier than you want it to la
 
 URL: https://deftbrain.com/WhatsMyVibe
 Tagline: See the patterns hiding in the way you write.
-Categories: Conversations, Self & Reflection
+Categories: Conversations
 
 How you write leaves impressions you may not notice yourself. Paste some messages you've written and What’s My Vibe points out the patterns in your words—your tone, habits, humor, directness, and the ways your writing might land on someone reading it.
 
@@ -2134,6 +2208,29 @@ Paste or upload a talk, lecture, podcast transcript, sermon, article, or notes �
 - Distill's point types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point
 - Connect mode shines across sources — paste or upload 3-5 transcripts (talks, lectures, or articles) and it finds the themes that are actually supported across all of them
 - An uploaded PDF or audio file is read in as text before anything else happens — if the extracted text looks off, you can edit it directly before running a mode
+
+### Hobby Match
+
+URL: https://deftbrain.com/HobbyMatch
+Tagline: Discover hobbies you didn't know existed.
+Categories: Learning
+
+Looking for a hobby that actually fits your life? Tell Hobby Match what you enjoy, what you want more of, and the limits that matter. Get a short list of well-matched possibilities, why each might fit, what it takes to try, and an easy first step.
+
+**When.** You want a new hobby and keep landing on yoga or painting.
+
+**You give.** What you're like, what you're after, plus your schedule, budget and physical situation.
+
+**You get.** Hobbies you'd never have searched for, matched to your actual constraints, with how to start each.
+
+**The edge.** It reaches well past the obvious list — urban sketching, historical fencing — because you can't search for something you don't know exists.
+
+**Good to know.**
+
+- List what you have tried, and why it did or did not work — the reason matters more than the hobby
+- Tap 'Something weird' in the goals for the most unexpected recommendations
+- The 'try it once' step is meant to test the hobby before you buy equipment
+- The wildcard, when there is one, approaches what you asked for from a different angle
 
 ### Missing Link
 
@@ -2259,7 +2356,7 @@ Conflicting claims everywhere? Signal vs. Noise researches the question first, t
 
 URL: https://deftbrain.com/SomeoneSaidItBetter
 Tagline: Find a quote that says what you mean
-Categories: Learning, Self & Reflection
+Categories: Learning
 
 Tell us what you're facing in your own words. Someone Said It Better discovers documented real quotations that fit the moment — words of wisdom, comfort, perspective, wit, or hard-earned truth from people who found a way to say it better.
 
@@ -2284,7 +2381,7 @@ Tell us what you're facing in your own words. Someone Said It Better discovers d
 
 URL: https://deftbrain.com/BeliefStressTest
 Tagline: Test your beliefs: where they hold, where they break
-Categories: Just for Fun, Learning, Self & Reflection
+Categories: Just for Fun, Learning
 
 Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.
 
@@ -2447,7 +2544,7 @@ Name a movie, show, book, or game. Plot Hole Finder looks for places where the s
 
 URL: https://deftbrain.com/SixDegreesOfMe
 Tagline: Discover the surprising threads that connect your experiences
-Categories: Just for Fun, Self & Reflection
+Categories: Just for Fun
 
 Find the hidden connections between seemingly unrelated parts of your life.
 Your favorite movie and your career. Your childhood hobby and your closest friendship.
@@ -2490,31 +2587,6 @@ You know the thing — you can almost see it, taste it, hear it — but you can'
 - Say what it definitely isn't. Ruling out an obvious near-match can narrow the search quickly.
 - When and where you encountered it can be especially useful — a coffee shop, TV episode, vacation, store, or approximate year.
 - If one result is close, say so. Knowing what almost fits often reveals which direction to search next.
-
-## Self & Reflection
-
-### Where Did the Time Go?
-
-URL: https://deftbrain.com/WhereDidTheTimeGo
-Tagline: Make sense of the day that disappeared.
-Categories: Self & Reflection, Tasks
-
-Ever reach the end of a day wondering where the time went? Walk through it as you remember it. Where Did the Time Go? helps you see what filled the hours, what broke up your day, and why it may have felt so different from the day you expected.
-
-**When.** The day is over and you can't account for it.
-
-**You give.** A timeframe and your account of what you did, as you remember it.
-
-**You get.** The day reconstructed from what you actually described, and why it may have felt the way it did.
-
-**The edge.** It reconstructs your account — it doesn't invent minutes you never gave it.
-
-**Good to know.**
-
-- The 'what feels off' field is optional but sharpens the reconstruction — it's what you're actually confused about, not another number to estimate
-- Times you're unsure of are fine left rough — the tool won't invent false precision
-- Not every day has a clean 'biggest mismatch' or a useful next-time change, and the tool will say so rather than force one
-- Recent Days lets you reopen a past reconstruction with one click
 
 ## Ideas & Imagination
 
@@ -2630,7 +2702,7 @@ Have a plan you're about to put into action? Describe it and Break My Plan? will
 
 URL: https://deftbrain.com/DecisionCoach
 Tagline: Get unstuck on a choice you keep going back and forth on
-Categories: Decisions, Tasks
+Categories: Decisions
 
 Makes the decision for you when you're too stuck to choose. Applies your constraints and preferences to give you ONE answer with execution steps — no options, no second-guessing.
 
@@ -2672,32 +2744,6 @@ Stuck between choices? Describe the decision, your options, and what matters to 
 - Decision Prism only analyzes the options you name — it won't add 'do nothing' unless you're already weighing it
 - The 'Still Stuck' exercises (coin-flip reaction, future-self exercise, smallest step) are genuinely effective — try them
 - Use the comparison matrix to have structured conversations with people you trust
-
-### Drive Home
-
-URL: https://deftbrain.com/DriveHome
-Tagline: Evaluate your options before deciding to drive.
-Categories: Decisions, Health & Wellness, Home & Daily Life
-
-Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.
-
-**When.** You are about to start a drive and something in you is hesitating.
-
-**You give.** How long the drive is, when it is, the conditions, the road type, and how you are feeling.
-
-**You get.** A straight call — go, pause, or don't start — with what makes this drive harder and what to do instead.
-
-**The edge.** It works only from what you report, so it never talks you into a drive on facts it invented.
-
-**Good to know.**
-
-- Answer the condition question about now, not about the forecast — it reasons from what you report, so a stale answer gives a stale call
-- The hesitation box is the highest-value field on the form; a specific worry gets a specific answer
-- A go call is not a safety guarantee — it means nothing you reported gave a clear reason to wait
-- If the answer is pause and you resolve the missing fact, run it again rather than talking yourself past it
-- Walking home instead? SafeWalk covers that trip
-
-**Before you go.** Never use Drive Home while the vehicle is moving.
 
 ### Friendship Fade Alerter
 
@@ -2776,7 +2822,7 @@ Been told no by a company, agency, or institution? DeftBrain helps you find what
 
 URL: https://deftbrain.com/SmallChangeBigDifference
 Tagline: Review your routines and identify obstacles
-Categories: Decisions, Self & Reflection
+Categories: Decisions
 
 Walk through a typical day and tell us what you want to improve. Small Change, Big Difference looks for one small adjustment that could make the rest of your routine easier — and gives you a practical way to try it.
 
@@ -2841,56 +2887,6 @@ Describe two paths you're considering. Instead of another pro/con list, Which Li
 - Pay attention to which narrative you read first, which you re-read, and which makes you feel something — that's data
 - Try different timeframes on the same decision — 1 year and 10 years tell very different stories
 - This isn't advice. It's a simulation. Your reaction to the narratives IS the answer.
-
-## Tasks
-
-### Batch Flow
-
-URL: https://deftbrain.com/BatchFlow
-Tagline: Your tasks, grouped so the day stops fighting you
-Categories: Tasks, Career and Business
-
-A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.
-
-**When.** A scattered list and a day of constant gear-shifting ahead.
-
-**You give.** Everything on your plate, unfiltered. Or paste a raw list.
-
-**You get.** Tasks grouped by the kind of thinking each needs, sequenced to minimize switching.
-
-**The edge.** It groups by cognitive mode, not topic or deadline. Switching between creative and analytical work is what costs you the day.
-
-**Good to know.**
-
-- The 'Paste List' mode is fastest — just dump your notes app or inbox and BatchFlow will extract tasks automatically
-- Use 'Compare' (Sprint vs Marathon) when you're unsure how hard to push — it shows two different pacing strategies for the same tasks
-- Add even vague time estimates ('~30 min') to the task detail field — it makes batch durations much more accurate
-- The 'Weekly Rhythm' feature is worth setting up once — it gives you a repeatable weekly batching pattern for recurring tasks
-- If the same tasks keep getting deferred across sessions, the '⚠️ Stuck tasks' analysis will diagnose why and suggest a fix
-- After 3+ sessions, 'Insights' shows your actual batching patterns — which modes you favor, your real completion rate, and where you lose the most time
-
-### Tool Finder
-
-URL: https://deftbrain.com/ToolFinder
-Tagline: Tell me what you're dealing with — I'll find the right tool.
-Categories: Tasks
-
-Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.
-
-**When.** You have a problem and no idea which tool solves it.
-
-**You give.** Your problem in plain language.
-
-**You get.** One to five tools ranked, each with why it fits your situation specifically.
-
-**The edge.** It reads between the lines, so you don't have to know what the tool would be called.
-
-**Good to know.**
-
-- More detail gets better matches — 'money problem' is vague, 'my roommate owes me $200 and it's awkward' is specific
-- The workflow section shows how to chain tools together
-- Quick-pick buttons are great starting points if you're not sure how to describe it
-- If results aren't perfect, add more context and search again
 
 ---
 

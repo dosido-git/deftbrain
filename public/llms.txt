@@ -10,6 +10,7 @@
 
 ## Home & Daily Life
 
+- [Batch Flow](https://deftbrain.com/BatchFlow): Your tasks, grouped so the day stops fighting you
 - [Bike Medic](https://deftbrain.com/BikeMedic): Figure out what's wrong with your bike and how to fix it
 - [Contract Decoder](https://deftbrain.com/ContractDecoder): Understand what you're agreeing to before you sign.
 - [Final Wish](https://deftbrain.com/FinalWish): Proactively organize your end-of-life wishes and messages to loved ones
@@ -21,15 +22,17 @@
 - [Renter's Deposit Saver](https://deftbrain.com/RentersDepositSaver): Protect your security deposit on move-in day
 - [Roommate Court](https://deftbrain.com/RoommateCourt): Settle roommate issues fairly and amicably
 - [Safe Walk](https://deftbrain.com/SafeWalk): A safety plan for walking somewhere alone
+- [Tool Finder](https://deftbrain.com/ToolFinder): Tell me what you're dealing with — I'll find the right tool.
+- [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): Make sense of the day that disappeared.
 
 ## Travel & Events
 
-- [Hobby Match](https://deftbrain.com/HobbyMatch): Discover hobbies you didn't know existed.
+- [Culture Briefing](https://deftbrain.com/CultureBriefing): Know before you go — cultural intelligence for any destination
+- [Drive Home](https://deftbrain.com/DriveHome): Evaluate your options before deciding to drive.
 - [Layover Maximizer](https://deftbrain.com/LayoverMaximizer): Turn dead time into a memorable part of your trip
 
 ## Relationships
 
-- [Culture Briefing](https://deftbrain.com/CultureBriefing): Know before you go — cultural intelligence for any destination
 - [Date Night](https://deftbrain.com/DateNight): Plan a special evening without hours of searching
 - [Giftology](https://deftbrain.com/Giftology): The perfect gift for the hardest person to shop for.
 - [Party Architect](https://deftbrain.com/PartyArchitect): Host events people actually remember.
@@ -120,6 +123,7 @@
 ## Learning
 
 - [Heart of the Matter](https://deftbrain.com/HeartOfTheMatter): Find what matters in something long.
+- [Hobby Match](https://deftbrain.com/HobbyMatch): Discover hobbies you didn't know existed.
 - [Missing Link](https://deftbrain.com/MissingLink): Stuck on a concept? We'll find where your understanding broke.
 - [Plain Talk](https://deftbrain.com/PlainTalk): Explains any text—and its structure—in plain language
 - [Pronounce It Right](https://deftbrain.com/PronounceItRight): Know how to say it before you have to.
@@ -139,10 +143,6 @@
 - [Six Degrees of Me](https://deftbrain.com/SixDegreesOfMe): Discover the surprising threads that connect your experiences
 - [Tip of Tongue](https://deftbrain.com/TipOfTongue): Describe anything half-remembered and DeftBrain will help you recall
 
-## Self & Reflection
-
-- [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): Make sense of the day that disappeared.
-
 ## Ideas & Imagination
 
 - [Alternate Path](https://deftbrain.com/AlternatePath): What if history went differently?
@@ -155,16 +155,10 @@
 - [Break My Plan?](https://deftbrain.com/BreakMyPlan): Find the weak spots in your plan before they find you.
 - [Decision Coach](https://deftbrain.com/DecisionCoach): Get unstuck on a choice you keep going back and forth on
 - [Decision Prism](https://deftbrain.com/DecisionPrism): See a tough decision from every angle
-- [Drive Home](https://deftbrain.com/DriveHome): Evaluate your options before deciding to drive.
 - [Friendship Fade Alerter](https://deftbrain.com/FriendshipFadeAlerter): Notice which friendships are fading before they're gone
 - [Mise en Place](https://deftbrain.com/MiseEnPlace): Explore the cooking possibilities with what's available
 - [Not So Fast!](https://deftbrain.com/NotSoFast): You don't have to take "No" for an answer
 - [Small Change, Big Difference](https://deftbrain.com/SmallChangeBigDifference): Review your routines and identify obstacles
 - [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? See what kind of case you actually have.
 - [Which Life?](https://deftbrain.com/WhichLife): Feel both futures before you choose.
-
-## Tasks
-
-- [Batch Flow](https://deftbrain.com/BatchFlow): Your tasks, grouped so the day stops fighting you
-- [Tool Finder](https://deftbrain.com/ToolFinder): Tell me what you're dealing with — I'll find the right tool.
 

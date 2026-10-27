@@ -39,10 +39,8 @@ const HUB_COPY = {
   'Conversations':       ['What to say, and how it will land: texts, hard talks, thank-yous, toasts and apologies.', 'Replying to a passive-aggressive text. Keeping a dying conversation going. A best man speech that lands.'],
   'Learning':            ['Studying, reading research, checking facts and finding the thing you half-remember.', 'Knowing whether a study is reliable. Turning a transcript into a study guide. Finding a book whose title you forgot.'],
   'Just for Fun':        ['Hobbies, shows and games, captions, comebacks and small adventures.', 'Hobbies for adults who do not know what they like anymore. Catching up on a show without spoilers. Free things to do near you.'],
-  'Self & Reflection':   ['Feelings you cannot name, dreams, energy and where your days actually go.', 'The word for that feeling. Why the same dream keeps coming back. Why it feels like you did nothing today.'],
   'Ideas & Imagination': ['Naming things, testing a business idea, and taking the first step on a creative project.', 'Coming up with a business name that is not terrible. Whether a name passes the drunk test. The smallest first step for writing a book.'],
   'Decisions':           ['Choosing between options, weighing a plan, and arguing a position well.', 'Choosing between two good options. Deciding when your gut and your logic disagree. Pressure-testing a plan before you bet money on it.'],
-  'Tasks':               ['To-do lists, big projects, focus and getting started when it all feels like too much.', 'What to do first when you are overwhelmed. Breaking down a project that is too big to start. Turning a brain dump into actual tasks.'],
 };
 
 // Old folder hub → the tool-category hub that took over its guides.
@@ -60,6 +58,8 @@ const OLD_HUB_REDIRECTS = {
   travel: 'travel-events',
   wellness: 'health-wellness',
   'work-meetings': 'career', // merged into Career and Business, 2026-10-27
+  'self-reflection': 'health-wellness', // dropped, 2026-10-27
+  tasks: 'home-daily-life', // dropped, 2026-10-27
   workplace: 'career',
 };
 

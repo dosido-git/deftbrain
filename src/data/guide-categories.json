@@ -65,7 +65,7 @@
   ],
   "conversations/how-do-i-sound-to-people-who-dont-know-me": [
    "Conversations",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "conversations/how-to-ask-for-a-discount-without-seeming-cheap": [
    "Conversations",
@@ -125,7 +125,7 @@
   ],
   "conversations/how-to-figure-out-your-default-communication-tone": [
    "Conversations",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "conversations/how-to-get-a-fee-waived": [
    "Money",
@@ -147,7 +147,7 @@
   ],
   "conversations/how-to-know-if-you-sound-aggressive-without-meaning-to": [
    "Conversations",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "conversations/how-to-know-if-your-message-will-be-misinterpreted-before": [
    "Conversations"
@@ -253,7 +253,7 @@
   ],
   "conversations/how-to-tell-if-youre-being-included-or-politely-tolerated": [
    "Relationships",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "conversations/how-to-thank-someone-who-really-helped-you-when-you-struggled": [
    "Conversations",
@@ -359,11 +359,11 @@
   ],
   "conversations/why-do-people-misread-my-texts-as-rude": [
    "Conversations",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "conversations/why-does-my-writing-feel-cold-even-when-im-being-friendly": [
    "Conversations",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "conversations/why-your-closest-friendships-fade-even-when-nothing-went-wrong": [
    "Relationships"
@@ -432,7 +432,7 @@
   ],
   "decisions/how-to-know-if-youll-regret-saying-no-to-something": [
    "Decisions",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "decisions/how-to-know-if-youre-overthinking-a-decision": [
    "Decisions"
@@ -474,7 +474,7 @@
   ],
   "decisions/how-to-stop-second-guessing-yourself-after-you-decide": [
    "Decisions",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "decisions/how-to-tell-what-actually-works": [
    "Learning",
@@ -493,7 +493,7 @@
   ],
   "decisions/why-am-i-so-bad-at-making-small-decisions-when-im-tired": [
    "Decisions",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "decisions/why-does-every-expert-contradict-every-other-expert": [
    "Learning"
@@ -689,7 +689,7 @@
   ],
   "learning/why-does-the-word-disappear-when-youre-trying-to-remember-it": [
    "Learning",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "learning/why-is-this-topic-so-hard-to-understand": [
    "Learning"
@@ -731,11 +731,11 @@
   ],
   "meetings/how-to-track-action-items-so-things-actually-get-done": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "meetings/how-to-turn-a-long-meeting-transcript-into-a-clear-summary": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "meetings/how-to-write-meeting-notes-that-people-actually-read": [
    "Career and Business"
@@ -948,7 +948,7 @@
   ],
   "planning/how-to-find-the-holes-in-your-own-thinking-before-someone-else-does": [
    "Decisions",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "planning/how-to-know-if-your-business-idea-is-actually-going-to-work": [
    "Decisions",
@@ -963,7 +963,7 @@
   ],
   "planning/the-questions-to-ask-before-starting-anything-that-costs-you-time": [
    "Decisions",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "practical/cheap-date-ideas": [
    "Relationships",
@@ -1095,7 +1095,7 @@
   ],
   "practical/things-to-do-alone-that-arent-sad": [
    "Just for Fun",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "practical/things-to-do-this-weekend": [
    "Just for Fun",
@@ -1215,7 +1215,7 @@
   ],
   "wellness/best-music-for-deep-focus": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/do-binaural-beats-actually-work-for-focus": [
    "Health & Wellness"
@@ -1224,17 +1224,17 @@
    "Health & Wellness"
   ],
   "wellness/emotions-i-dont-have-a-word-for": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/how-to-batch-similar-tasks-to-save-time": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-brain-dump-everything-in-your-head": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/how-to-break-down-an-overwhelming-project": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-calm-your-nerves-before-an-interview": [
    "Health & Wellness",
@@ -1242,54 +1242,53 @@
   ],
   "wellness/how-to-clear-your-head-when-everything-feels-jumbled": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-describe-your-feelings-when-you-dont-have-the-words": [
-   "Self & Reflection",
+   "Health & Wellness",
    "Conversations"
   ],
   "wellness/how-to-do-anything-when-you-cant-get-started": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/how-to-exercise-when-you-have-zero-motivation": [
    "Health & Wellness"
   ],
   "wellness/how-to-figure-out-what-to-do-first-when-overwhelmed": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-figure-out-where-your-time-actually-goes": [
-   "Tasks",
-   "Self & Reflection"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-figure-out-which-friends-are-actually-draining-you": [
    "Relationships",
    "Health & Wellness"
   ],
   "wellness/how-to-focus-when-working-alone": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-function-on-the-day-of-an-interview-or-exam": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-get-anything-done-on-the-day-of-a-big-meeting": [
-   "Tasks",
+   "Home & Daily Life",
    "Career and Business"
   ],
   "wellness/how-to-get-things-done-when-you-have-no-energy": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-group-your-work-so-you-actually-finish-things": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-interpret-your-own-dreams": [
-   "Self & Reflection",
+   "Health & Wellness",
    "Just for Fun"
   ],
   "wellness/how-to-know-if-youre-an-introvert-or-just-low-on-energy": [
-   "Self & Reflection",
    "Health & Wellness"
   ],
   "wellness/how-to-know-if-youre-burned-out-or-just-tired": [
@@ -1300,41 +1299,41 @@
    "Conversations"
   ],
   "wellness/how-to-make-a-project-feel-manageable": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-make-solo-deep-work-less-lonely": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/how-to-move-forward-on-a-project-thats-been-stuck-for-months": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-move-your-body-when-youre-sick-sore-or-hungover": [
    "Health & Wellness"
   ],
   "wellness/how-to-organize-a-brain-dump-into-actual-tasks": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-plan-around-lowenergy-days": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-plan-rest-before-you-need-it-not-after": [
    "Health & Wellness"
   ],
   "wellness/how-to-plan-your-week-so-you-dont-crash-by-thursday": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-power-through-tasks-youve-been-avoiding": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-prepare-mentally-for-a-hard-conversation": [
    "Conversations",
    "Health & Wellness"
   ],
   "wellness/how-to-prioritize-when-everything-feels-urgent": [
-   "Tasks",
+   "Home & Daily Life",
    "Decisions"
   ],
   "wellness/how-to-push-through-vs-when-to-stop": [
@@ -1344,35 +1343,35 @@
    "Health & Wellness"
   ],
   "wellness/how-to-remember-everything-you-need-to-do-without-losing-your-mind": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-remember-your-dreams-better": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/how-to-schedule-a-week-so-youre-not-constantly-switching-gears": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-schedule-downtime-when-you-dont-think-you-need-any": [
    "Health & Wellness"
   ],
   "wellness/how-to-schedule-tasks-based-on-your-energy-levels": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/how-to-start-when-everything-feels-too-big": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-stay-accountable-when-no-one-is-watching": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-stay-active-on-a-really-busy-week": [
    "Health & Wellness"
   ],
   "wellness/how-to-stop-context-switching-all-day": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-stop-wasting-the-morning-before-an-afternoon-appointment": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-stop-your-hands-from-shaking-before-a-presentation": [
    "Health & Wellness",
@@ -1382,60 +1381,59 @@
    "Health & Wellness"
   ],
   "wellness/how-to-track-time-without-obsessing-over-it": [
-   "Tasks",
-   "Self & Reflection"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-triage-your-todo-list-when-you-cant-think-straight": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-use-music-to-switch-between-tasks": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/how-to-use-the-day-before-a-deadline-without-panicking-or-procrastinating": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/how-to-work-alone-without-getting-distracted": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/is-silence-actually-better-than-ambient-noise-for-focus": [
    "Health & Wellness"
   ],
   "wellness/is-this-actually-urgent-or-am-i-panicking": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/music-that-actually-helps-you-work-vs-distracts-you": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/the-smallest-possible-first-step-for-writing-a-book": [
-   "Tasks",
+   "Home & Daily Life",
    "Ideas & Imagination"
   ],
   "wellness/the-smallest-workout-that-still-counts": [
    "Health & Wellness"
   ],
   "wellness/what-does-it-mean-when-you-dream-about-someone-whos-died": [
-   "Self & Reflection",
    "Health & Wellness"
   ],
   "wellness/what-is-body-doubling-and-does-it-actually-work": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/what-music-to-listen-to-while-studying": [
    "Learning",
    "Health & Wellness"
   ],
   "wellness/what-to-do-when-you-have-too-much-to-do-and-you-freeze": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/what-to-do-when-your-mind-wont-stop-racing": [
    "Health & Wellness"
   ],
   "wellness/what-to-do-when-your-todo-list-is-too-long-to-even-look-at": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/what-to-do-when-youre-panicking-right-before-an-event": [
    "Health & Wellness"
@@ -1445,57 +1443,57 @@
   ],
   "wellness/what-to-listen-to-when-youre-tired-but-need-to-keep-working": [
    "Health & Wellness",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/whats-the-best-background-noise-for-working": [
    "Health & Wellness"
   ],
   "wellness/whats-the-difference-between-jealousy-and-envy": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/whats-the-feeling-you-get-when-you-finish-a-tv-series-you-loved": [
-   "Self & Reflection",
+   "Health & Wellness",
    "Just for Fun"
   ],
   "wellness/whats-the-word-for-the-feeling-when-you-secretly-enjoy-someone-elses-failure": [
-   "Self & Reflection",
+   "Health & Wellness",
    "Just for Fun"
   ],
   "wellness/white-noise-vs-brown-noise-vs-pink-noise": [
    "Health & Wellness"
   ],
   "wellness/why-am-i-always-behind-even-when-im-working-all-day": [
-   "Tasks"
+   "Home & Daily Life"
   ],
   "wellness/why-am-i-tired-all-the-time-even-when-i-sleep-enough": [
    "Health & Wellness"
   ],
   "wellness/why-do-i-dream-about-people-i-havent-seen-in-years": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/why-do-i-feel-confusing-emotional-state": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/why-do-i-feel-confusing-emotional-states": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/why-do-i-keep-having-the-same-dream": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/why-does-it-feel-like-i-did-nothing-today": [
-   "Tasks",
-   "Self & Reflection"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/why-does-multitasking-make-me-so-tired": [
-   "Tasks",
+   "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/why-does-my-day-disappear-so-fast": [
-   "Tasks",
-   "Self & Reflection"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/why-is-it-so-hard-to-name-what-im-feeling": [
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/why-scheduled-rest-never-feels-like-enough": [
    "Health & Wellness"
@@ -1504,11 +1502,9 @@
    "Health & Wellness"
   ],
   "wellness/why-you-feel-drained-after-every-social-event-even-when-you-enjoyed-it": [
-   "Health & Wellness",
-   "Self & Reflection"
+   "Health & Wellness"
   ],
   "wellness/why-you-keep-saying-yes-to-things-that-exhaust-you": [
-   "Self & Reflection",
    "Health & Wellness"
   ],
   "wellness/why-your-energy-crashes-always-come-at-the-worst-time": [
@@ -1542,11 +1538,11 @@
   ],
   "workplace/how-to-find-the-action-items-buried-in-a-long-document": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/how-to-handle-a-flood-of-emails-after-vacation": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/how-to-hold-someone-accountable-in-writing": [
    "Career and Business",
@@ -1561,7 +1557,7 @@
   ],
   "workplace/how-to-know-if-an-email-is-actually-urgent": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/how-to-know-if-an-opportunity-is-worth-the-time": [
    "Decisions",
@@ -1578,14 +1574,14 @@
   ],
   "workplace/how-to-know-what-emails-actually-need-a-response": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/how-to-make-the-case-for-your-promotion-in-writing": [
    "Career and Business"
   ],
   "workplace/how-to-manage-email-overload": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/how-to-name-a-startup-when-all-the-good-names-are-taken": [
    "Ideas & Imagination"
@@ -1653,7 +1649,7 @@
    "Money"
   ],
   "workplace/how-to-spot-the-highest-leverage-thing-you-could-be-doing": [
-   "Tasks",
+   "Home & Daily Life",
    "Career and Business"
   ],
   "workplace/how-to-spot-whats-actually-changed-in-a-terms-of-service-update": [
@@ -1695,7 +1691,7 @@
   ],
   "workplace/how-to-triage-your-inbox-in-5-minutes": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/how-to-understand-a-document-written-in-academic-jargon": [
    "Learning"
@@ -1762,7 +1758,7 @@
   ],
   "workplace/what-to-do-when-you-have-1000-unread-emails": [
    "Career and Business",
-   "Tasks"
+   "Home & Daily Life"
   ],
   "workplace/what-to-look-for-in-an-nda-before-signing": [
    "Career and Business"

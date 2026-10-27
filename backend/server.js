@@ -720,10 +720,13 @@ app.get('/organizations', (req, res) => {
 const TOOL_CATEGORIES = [
   'home-daily-life', 'travel-events', 'relationships', 'money', 'career',
   'health-wellness', 'conversations', 'learning',
-  'just-for-fun', 'self-reflection', 'ideas-imagination', 'decisions', 'tasks',
+  'just-for-fun', 'ideas-imagination', 'decisions',
 ];
 // Work & Meetings merged into Career and Business (owner, 2026-10-27).
 app.get('/tools/work-meetings', (req, res) => res.redirect(301, '/tools/career'));
+// Self & Reflection and Tasks dropped (owner, 2026-10-27); their tools moved to Home & Daily Life.
+app.get('/tools/self-reflection', (req, res) => res.redirect(301, '/tools/home-daily-life'));
+app.get('/tools/tasks', (req, res) => res.redirect(301, '/tools/home-daily-life'));
 TOOL_CATEGORIES.forEach(slug => {
   app.get(`/tools/${slug}`, (req, res) => {
     sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'tools', slug, 'index.html'));
