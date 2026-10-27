@@ -13,7 +13,7 @@
 // (bg-[var(--sc-field)] …) serves light and dark. Only tools in PROTOTYPE_TOOLS
 // get a scheme; everything else renders exactly as before.
 
-export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck']);
+export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology']);
 
 const SCHEMES = {
   Money: {
