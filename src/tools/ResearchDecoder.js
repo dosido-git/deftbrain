@@ -146,8 +146,9 @@ const ASSESSMENT_TONE = {
 
 // The four ways in (plus recent work) as tabs on a category page, as on Bill
 // Rescue; elsewhere the content renders as before, under the mode pills.
-function ModeFrame({ sv, children, ...tabs }) {
-  return sv ? <ToolTabs {...tabs}>{children}</ToolTabs> : children;
+// With an answer showing, the tabs stay off paper (the answer card prints).
+function ModeFrame({ sv, printHide, children, ...tabs }) {
+  return sv ? <div {...(printHide ? { 'data-print-hide': '' } : {})}><ToolTabs {...tabs}>{children}</ToolTabs></div> : children;
 }
 
 const ResearchDecoder = ({ tool }) => {
@@ -548,7 +549,7 @@ const ResearchDecoder = ({ tool }) => {
     <div ref={stageRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
       {/* ─── Persistent Header Card ─── */}
       <div>
-        {renderHeaderRow()}
+        {!sv && renderHeaderRow()}
         {!sv && <div data-print-hide className="pt-3">
           <div className="flex flex-wrap gap-1.5">
             {MODES.map(m => <button aria-pressed={mode === m.id} key={m.id} onClick={() => { setMode(m.id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}><span className="me-1">{m.icon}</span> {m.label}</button>)}
@@ -557,8 +558,10 @@ const ResearchDecoder = ({ tool }) => {
         </div>}
       </div>
 
-      <ModeFrame sv={sv} label={tool?.title || 'Research Decoder'} active={mode} onChange={id => { setMode(id); setError(''); }}
+      <ModeFrame sv={sv} printHide={Boolean({ decode: decodeResult, headline: hlResult, compare: cmpResult, term: termResult }[mode])} label={tool?.title || 'Research Decoder'} active={mode} onChange={id => { setMode(id); setError(''); }}
         tabs={MODES.map(m => ({ id: m.id, icon: m.icon, label: m.label, tone: 'scheme' }))}>
+      {/* As on Bill Rescue: the top row sits inside every tab; the answer is its own card below. */}
+      {sv && renderHeaderRow()}
       {/* ═══ DECODE MODE ═══ */}
       {mode === 'decode' && <>
         <div data-print-form {...(decodeResult ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5 space-y-4`}>
@@ -611,6 +614,114 @@ const ResearchDecoder = ({ tool }) => {
           </button>
         </div>
 
+      </>}
+
+      {/* ═══ HEADLINE CHECK MODE ═══ */}
+      {mode === 'headline' && <>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+          <h3 className={`font-bold ${c.text}`}>📰 {t('rd_headline_card_title')}</h3>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_research_text_label')} <span className={c.required}>*</span></label>
+            {hlPdfBase64 ? (
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3`}>
+                <span className="text-lg">📄</span>
+                <span className={`text-sm ${c.text} flex-1`}>{t('rd_uploaded_file')} ({t('rd_check_a_headline').toLowerCase()})</span>
+                <button onClick={() => setHlPdfBase64(null)} className={`text-xs ${linkStyle} flex-shrink-0`}>{t('rd_remove_file')}</button>
+              </div>
+            ) : (
+              <textarea value={hlResearchText} onChange={e => { setHlResearchText(e.target.value); setHlResult(null); }} placeholder={t('rd_research_text_ph')} rows={6} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
+            )}
+          </div>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_headline_label')} <span className={c.required}>*</span></label>
+            <input value={hlHeadline} onChange={e => setHlHeadline(e.target.value)} placeholder={t('rd_headline_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          </div>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_article_excerpt_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <textarea value={hlArticleExcerpt} onChange={e => setHlArticleExcerpt(e.target.value)} placeholder={t('rd_article_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          </div>
+          {error && mode === 'headline' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+          <button onClick={handleHeadline} disabled={(!hlResearchText.trim() && !hlPdfBase64) || !hlHeadline.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_checking', 'Checking…')}</> : <>📰 {tr('rd_check_headline', 'Check the Headline')}</>}
+            {!loading && (
+              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+            )}
+          </button>
+        </div>
+
+      </>}
+
+      {/* ═══ COMPARE MODE ═══ */}
+      {mode === 'compare' && <>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+          <h3 className={`font-bold ${c.text}`}>⚖️ {t('rd_compare_card_title')}</h3>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper1_label')} <span className={c.required}>*</span></label>
+            <textarea value={cmpPaper1} onChange={e => { setCmpPaper1(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
+          </div>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper2_label')} <span className={c.required}>*</span></label>
+            <textarea value={cmpPaper2} onChange={e => { setCmpPaper2(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
+          </div>
+          {error && mode === 'compare' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+          <button onClick={handleCompare} disabled={!cmpPaper1.trim() || !cmpPaper2.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_comparing', 'Comparing…')}</> : <>⚖️ {tr('rd_compare_papers', 'Compare These Papers')}</>}
+            {!loading && (
+              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+            )}
+          </button>
+        </div>
+
+      </>}
+
+      {/* ═══ EXPLAIN A TERM MODE ═══ */}
+      {mode === 'term' && <>
+        <div className={`border-t ${c.border} pt-5 space-y-4`}>
+          <h3 className={`font-bold ${c.text}`}>🔤 {t('rd_term_card_title')}</h3>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_label')} <span className={c.required}>*</span></label>
+            <input value={termText} onChange={e => { setTermText(e.target.value); setTermResult(null); }} placeholder={t('rd_term_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          </div>
+          <div>
+            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <textarea value={termContext} onChange={e => setTermContext(e.target.value)} placeholder={t('rd_term_context_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          </div>
+          {error && mode === 'term' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+          <button onClick={handleTerm} disabled={!termText.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_decoding', 'Decoding…')}</> : <>🔤 {tr('rd_explain_it', 'Explain It')}</>}
+            {!loading && (
+              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
+            )}
+          </button>
+        </div>
+
+      </>}
+
+      {/* ═══ RECENT MODE ═══ */}
+      {mode === 'recent' && (
+        <div className={`border-t ${c.border} pt-5 space-y-3`}>
+          <h3 className={`font-bold ${c.text}`}>🕘 {t('rd_recent_title')}</h3>
+          {recentLog.length === 0 ? (
+            <p className={`text-sm ${c.textMuteded}`}>{t('rd_recent_empty')}</p>
+          ) : recentLog.map(entry => (
+            <div key={entry.id} className={`${c.cardAlt} rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+              <div className="min-w-0">
+                <p className={`text-xs font-bold uppercase ${c.textMuted}`}>{t(`rd_mode_${entry.mode}`)}</p>
+                <p className={`text-sm font-semibold ${c.text} truncate`}>{entry.title || t('rd_untitled')}</p>
+                <p className={`text-[13px] ${c.textMuteded}`}>{new Date(entry.timestamp).toLocaleDateString()}</p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => viewRecent(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{t('rd_view')}</button>
+                <button onClick={() => revisitRecent(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{t('rd_revisit')}</button>
+                <button onClick={() => setRecentLog(prev => prev.filter(x => x.id !== entry.id))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      </ModeFrame>
+
+      {mode === 'decode' && <>
         {!results && (
           <p data-print-hide className={`text-[13px] ${c.textMuted} text-center`}>
             {t('rd_xref_pre')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a>
@@ -722,40 +833,7 @@ const ResearchDecoder = ({ tool }) => {
           </div>
         ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; })()}
       </>}
-
-      {/* ═══ HEADLINE CHECK MODE ═══ */}
       {mode === 'headline' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
-          <h3 className={`font-bold ${c.text}`}>📰 {t('rd_headline_card_title')}</h3>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_research_text_label')} <span className={c.required}>*</span></label>
-            {hlPdfBase64 ? (
-              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3`}>
-                <span className="text-lg">📄</span>
-                <span className={`text-sm ${c.text} flex-1`}>{t('rd_uploaded_file')} ({t('rd_check_a_headline').toLowerCase()})</span>
-                <button onClick={() => setHlPdfBase64(null)} className={`text-xs ${linkStyle} flex-shrink-0`}>{t('rd_remove_file')}</button>
-              </div>
-            ) : (
-              <textarea value={hlResearchText} onChange={e => { setHlResearchText(e.target.value); setHlResult(null); }} placeholder={t('rd_research_text_ph')} rows={6} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
-            )}
-          </div>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_headline_label')} <span className={c.required}>*</span></label>
-            <input value={hlHeadline} onChange={e => setHlHeadline(e.target.value)} placeholder={t('rd_headline_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          </div>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_article_excerpt_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <textarea value={hlArticleExcerpt} onChange={e => setHlArticleExcerpt(e.target.value)} placeholder={t('rd_article_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          </div>
-          {error && mode === 'headline' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-          <button onClick={handleHeadline} disabled={(!hlResearchText.trim() && !hlPdfBase64) || !hlHeadline.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_checking', 'Checking…')}</> : <>📰 {tr('rd_check_headline', 'Check the Headline')}</>}
-            {!loading && (
-              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
-            )}
-          </button>
-        </div>
-
         {!results && (
           <p className={`text-[13px] ${c.textMuted} text-center`}>{t('rd_xref_headline_pre')}</p>
         )}
@@ -787,28 +865,7 @@ const ResearchDecoder = ({ tool }) => {
           </div>
         ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; })()}
       </>}
-
-      {/* ═══ COMPARE MODE ═══ */}
       {mode === 'compare' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
-          <h3 className={`font-bold ${c.text}`}>⚖️ {t('rd_compare_card_title')}</h3>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper1_label')} <span className={c.required}>*</span></label>
-            <textarea value={cmpPaper1} onChange={e => { setCmpPaper1(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
-          </div>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper2_label')} <span className={c.required}>*</span></label>
-            <textarea value={cmpPaper2} onChange={e => { setCmpPaper2(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
-          </div>
-          {error && mode === 'compare' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-          <button onClick={handleCompare} disabled={!cmpPaper1.trim() || !cmpPaper2.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_comparing', 'Comparing…')}</> : <>⚖️ {tr('rd_compare_papers', 'Compare These Papers')}</>}
-            {!loading && (
-              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
-            )}
-          </button>
-        </div>
-
         {cmpResult && (() => { const r = cmpResult; const answer = (
           <div className="space-y-4">
             {r.same_question && <div className={`${c[ASSESSMENT_TONE[r.same_question.assessment] || 'infoBox']} border rounded-xl p-4`}><h3 className="text-base font-bold text-sm">{t(`rd_same_q_${(r.same_question.assessment || '').toLowerCase()}`)}</h3>{r.same_question.explanation && <p className="text-sm mt-1">{r.same_question.explanation}</p>}</div>}
@@ -851,28 +908,7 @@ const ResearchDecoder = ({ tool }) => {
           </div>
         ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; })()}
       </>}
-
-      {/* ═══ EXPLAIN A TERM MODE ═══ */}
       {mode === 'term' && <>
-        <div className={`border-t ${c.border} pt-5 space-y-4`}>
-          <h3 className={`font-bold ${c.text}`}>🔤 {t('rd_term_card_title')}</h3>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_label')} <span className={c.required}>*</span></label>
-            <input value={termText} onChange={e => { setTermText(e.target.value); setTermResult(null); }} placeholder={t('rd_term_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          </div>
-          <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <textarea value={termContext} onChange={e => setTermContext(e.target.value)} placeholder={t('rd_term_context_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
-          </div>
-          {error && mode === 'term' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
-          <button onClick={handleTerm} disabled={!termText.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_decoding', 'Decoding…')}</> : <>🔤 {tr('rd_explain_it', 'Explain It')}</>}
-            {!loading && (
-              <kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>
-            )}
-          </button>
-        </div>
-
         {termResult && (() => { const answer = (
           <div className={`border-t ${c.border} pt-5 space-y-2`}>
             <h3 className={`font-bold ${c.text}`}>{termText}</h3>
@@ -884,30 +920,6 @@ const ResearchDecoder = ({ tool }) => {
           </div>
         ); return sv ? <AnswerCard title={t('your_answer')}>{answer}</AnswerCard> : answer; })()}
       </>}
-
-      {/* ═══ RECENT MODE ═══ */}
-      {mode === 'recent' && (
-        <div className={`border-t ${c.border} pt-5 space-y-3`}>
-          <h3 className={`font-bold ${c.text}`}>🕘 {t('rd_recent_title')}</h3>
-          {recentLog.length === 0 ? (
-            <p className={`text-sm ${c.textMuteded}`}>{t('rd_recent_empty')}</p>
-          ) : recentLog.map(entry => (
-            <div key={entry.id} className={`${c.cardAlt} rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
-              <div className="min-w-0">
-                <p className={`text-xs font-bold uppercase ${c.textMuted}`}>{t(`rd_mode_${entry.mode}`)}</p>
-                <p className={`text-sm font-semibold ${c.text} truncate`}>{entry.title || t('rd_untitled')}</p>
-                <p className={`text-[13px] ${c.textMuteded}`}>{new Date(entry.timestamp).toLocaleDateString()}</p>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <button onClick={() => viewRecent(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{t('rd_view')}</button>
-                <button onClick={() => revisitRecent(entry)} className={`${c.btnSecondary} border px-3 py-1.5 rounded-lg text-xs font-bold`}>{t('rd_revisit')}</button>
-                <button onClick={() => setRecentLog(prev => prev.filter(x => x.id !== entry.id))} className={`text-[13px] ${c.textMuteded}`}>🗑️</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      </ModeFrame>
 
       {results && (
         <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>

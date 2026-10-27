@@ -8,6 +8,8 @@
  *   2. Each tab has its own colour, and the panel it opens carries the same
  *      colour, so you can see which tab you're in from anywhere in the panel.
  *   3. One tab is always selected — the caller passes `active`.
+ *   4. The others are drawn too, outlined in their colour (2026-10-27): on a
+ *      category page their tint is the page's own shade.
  *
  * Usage:
  *   <ToolTabs label="Ways to practise" active={tab} onChange={setTab} tabs={[
@@ -71,7 +73,7 @@ export default function ToolTabs({ tabs, active, onChange, label, children }) {
                 sel ? 'pt-2 pb-2.5 font-bold' : `py-1.5 font-medium ${isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-stone-600 hover:text-stone-900'}`}`}
               style={sel
                 ? { background: panel, borderColor: tl, borderTopWidth: 3, borderBottomWidth: 2, borderBottomColor: panel }
-                : { background: isDark ? tt.darkTint : tt.tint, borderColor: 'transparent', borderBottomWidth: 2, borderBottomColor: line }}>
+                : { background: isDark ? tt.darkTint : tt.tint, borderColor: tl, borderBottomWidth: 2, borderBottomColor: line }}>
               <span className="text-base sm:text-sm" aria-hidden="true">{tb.icon}</span><span>{tb.label}</span>
               {tb.badge > 0 && <span className={`min-w-[1.25rem] h-5 px-1 rounded-full inline-flex items-center justify-center text-xs font-black ${isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-800'}`}>{tb.badge}</span>}
             </button>
