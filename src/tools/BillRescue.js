@@ -229,19 +229,21 @@ const BillRescue = ({ tool }) => {
   if (sv) Object.assign(c, {
     // Cards are the lightest shade, so a text box needs the white to show
     // where to type.
-    input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-accent)] focus:ring-[var(--sc-line)]',
-    labelText:     'text-[var(--sc-strong)]',
+    input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-text)] placeholder:text-[var(--sc-muted)] placeholder:opacity-70 focus:border-[var(--sc-strong)] focus:ring-[var(--sc-line)]',
+    // Restrained (2026-10-26): labels and body in the shared neutral ink;
+    // the category colour stays on the title, rules and the main button.
+    labelText:     'text-[var(--sc-text)]',
     sectionTitle:  'text-[var(--sc-strong)]',
-    accentTxt:     'text-[var(--sc-accent)]',
+    accentTxt:     'text-[var(--sc-muted)]',
     btnPrimary:    'bg-[var(--sc-strong)] hover:opacity-90 text-[var(--sc-on-strong)]',
-    btnSecondary:  'border border-[var(--sc-accent)] text-[var(--sc-accent)] bg-transparent hover:bg-[var(--sc-field)]',
+    btnSecondary:  'border border-[var(--sc-edge)] text-[var(--sc-text)] bg-transparent hover:border-[var(--sc-muted)]',
     border:        'border-[var(--sc-line)]',
     pillActive:    'border-[var(--sc-strong)] bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
-    pillInactive:  'border-[var(--sc-accent)] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]',
+    pillInactive:  'border-[var(--sc-edge)] text-[var(--sc-text)] hover:border-[var(--sc-muted)]',
     highlightBg:   'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
-    highlightText: 'text-[var(--sc-strong)]',
-    escalationNum: 'text-[var(--sc-accent)]',
-    stepBorderL:   'border-s-[var(--sc-accent)]',
+    highlightText: 'text-[var(--sc-muted)]',
+    escalationNum: 'text-[var(--sc-muted)]',
+    stepBorderL:   'border-s-[var(--sc-edge)]',
     accentBadge:   'border border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
     // Cards inside the answer: the envelope shade (owner, 2026-10-25), one
     // step darker than the lightest-shade answer card they sit on.
@@ -249,14 +251,14 @@ const BillRescue = ({ tool }) => {
     // answer card, the verdict, today's job and letters keep their boxes.
     card:          'border-transparent !px-0',
     cardAlt:       'bg-[var(--sc-envelope)]',
-    dropzone:      'border-[var(--sc-accent)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+    dropzone:      'border-[var(--sc-edge)] bg-[var(--sc-card)] text-[var(--sc-muted)]',
     quoteBg:       'border-s-2 border-[var(--sc-line)] !rounded-none !py-1 !pe-0',
-    success:       'border-transparent !px-0 text-[var(--sc-strong)]',
-    warning:       'border-transparent !px-0 text-[var(--sc-strong)]',
+    success:       'border-transparent !px-0 text-[var(--sc-text)]',
+    warning:       'border-transparent !px-0 text-[var(--sc-text)]',
     // Where you stand: the contrasting colour only when it is urgent or damage
     // is already done.
-    verdictCalm:   'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
-    verdictAlert:  'bg-[var(--sc-envelope)] border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
+    verdictCalm:   'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-text)]',
+    verdictAlert:  'bg-[var(--sc-card)] border-[var(--sc-x-line)] text-[var(--sc-x-text)]',
   });
   const card = 'rounded-2xl border border-[var(--sc-line)] bg-[var(--sc-field)] p-4 sm:p-5';
   // Choice chips: a finger-sized target (40px) even when they wrap on a phone;
@@ -267,7 +269,7 @@ const BillRescue = ({ tool }) => {
 
   // PROTOTYPE: links are clickable, so they take the medium shade like the
   // other outline controls — not the site's link blue.
-  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2'
+  const linkStyle = sv ? 'text-[var(--sc-text)] hover:text-[var(--sc-strong)] underline underline-offset-2'
     : isDark
     ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
     : 'text-[#165b9a] hover:text-[#142a43] underline underline-offset-2';
@@ -1216,7 +1218,7 @@ const BillRescue = ({ tool }) => {
         {r.todays_job?.action && (
           // The one container that must win (owner, 2026-10-26): accent border,
           // the biggest action line, and its words open beneath a rule.
-          <div className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
+          <div className={sv ? 'border-2 border-[var(--sc-strong)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
             <p className={`text-[13px] font-bold ${c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
             <p className={`text-xl font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
