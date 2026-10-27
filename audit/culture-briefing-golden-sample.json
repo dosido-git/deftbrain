@@ -5,7 +5,8 @@
     "locked": "2026-07-12",
     "note": "v3: added region + free-text context/constraints inputs (honored — dining tailored to vegetarian, region to Osaka); gift_giving section; forgiveness{forgiven[],serious[]}; confidence (high/med/low, low → UI banner). Haiku + code-computed risk_level (from cultural_gap) retained from v2. per-section dos/donts/notes neutralized (allowed empty); forgiveness kept non-empty (reliably populated). i18n: 8 new cb_ keys x 13 langs. Re-locked 2026-08-25 (v4): schema rewritten to the owner standard. dos/donts/notes became widely_observed/best_avoided/varies/check_locally — the standard asks for strong conventions separated from variable practice, which the old shape had no place for. cultural_gap and the risk_level computed from it are gone: one 0-100 score for how different a culture is IS the uniformity claim. insider_tips became practical_tips (the field name claimed the standing the standard forbids) and forgiveness became missteps (what locals forgive is a categorical claim about how a population reacts). Adopted PF-39 v2 with a guard profile. The fourth array per section pushed German past max_tokens=5000 — raised to 7000 and capped at 6 items total per section.",
     "baseline": "culturebriefing-v4",
-    "captured": "2026-08-25"
+    "captured": "2026-08-25",
+    "v4_note": "2026-10-27 rebuild: research first (lib/customsResearch.js, official sources first), essentials / for_your_needs / sections[items{text,strength,finding_ids}] / small_slips / sources; strength set in code from findings."
   },
   "cases": [
     {
@@ -24,197 +25,277 @@
         "userRegion": "US"
       },
       "output": {
-        "overview": "Japan operates on high attention to context, hierarchy, and consideration for others—what you do matters less than how you read the room and the person across from you. Osaka is more relaxed and direct than Tokyo, with a reputation for pragmatism and humour. Expect politeness that is genuine but also sometimes formal, and precision in timing and logistics.",
+        "destination": "Japan",
+        "tripPurpose": "business",
+        "overview": "One week of business travel in Osaka meeting a potential client executive team, with vegetarian diet and no alcohol consumption. Key practices cover business card exchange, addressing conventions, dining customs, and public transport behavior.",
+        "essentials": [
+          {
+            "point": "Receive business cards with both hands, read carefully, and keep on the table throughout the meeting; never write on, fold, or pocket a card.",
+            "finding_ids": [
+              "F18"
+            ]
+          },
+          {
+            "point": "Address executives by family name followed by '-san' (e.g. Yamada-san) unless invited to use first names.",
+            "finding_ids": [
+              "F17"
+            ]
+          },
+          {
+            "point": "Fish-based dashi stock is standard in miso soup, vegetable dishes, and sauces at most traditional restaurants, so confirm vegetarian options are truly meat-free and ask about dashi; many sauces also contain cooking sake (alcohol).",
+            "finding_ids": [
+              "F10",
+              "F11"
+            ]
+          },
+          {
+            "point": "Do not tip; saying thank you is the appropriate way to show appreciation at restaurants and taxis.",
+            "finding_ids": [
+              "F1"
+            ]
+          },
+          {
+            "point": "Do not make phone calls on urban commuter trains or buses; keep your phone on silent while on board.",
+            "finding_ids": [
+              "F2"
+            ]
+          },
+          {
+            "point": "If you give a gift to a client, present it with both hands and a slight bow; never hand over loose cash as a gift—place money in an envelope.",
+            "finding_ids": [
+              "F19"
+            ]
+          }
+        ],
+        "for_your_needs": [
+          {
+            "need": "Vegetarian meals at business dinners",
+            "plan": "When eating out, ask directly whether dishes contain dashi stock (fish-based broth used in miso soup, simmered vegetables, noodle broths, and sauces) or meat stock, as many dishes listed without meat are not vegetarian. Specify 'vegetarian' clearly when ordering. For business meals, raising your dietary requirements with the restaurant or your host ahead of time is worth considering so the question does not have to be navigated at the table.",
+            "finding_ids": [
+              "F10"
+            ]
+          }
+        ],
         "sections": [
           {
             "id": "greetings",
             "icon": "🤝",
-            "title": "Greetings & introductions",
-            "widely_observed": [
-              "Bowing replaces handshakes as the default greeting—a slight bow from the neck works in most business settings; depth and duration increase with formality or status difference",
-              "Business cards are exchanged with both hands, examined briefly and respectfully, never written on or placed in a back pocket during the meeting"
-            ],
-            "best_avoided": [
-              "Assuming the first-name basis that is common in the US—use family name with the appropriate honorific (san, sama for clients) until explicitly invited otherwise"
-            ],
-            "varies": [
-              "Younger professionals in Osaka may blend bows with handshakes; some may extend a hand first, particularly in international business settings"
-            ],
-            "check_locally": []
-          },
-          {
-            "id": "taboos",
-            "icon": "🚫",
-            "title": "Taboos & common mistakes",
-            "widely_observed": [
-              "Pointing with chopsticks or fingers at people; touching someone's head; standing chopsticks upright in rice (resembles a funeral ritual)"
-            ],
-            "best_avoided": [
-              "Talking loudly in public spaces or on trains; treating a business meeting as an opportunity to relax or joke (wait for cues from them)"
-            ],
-            "varies": [],
-            "check_locally": []
+            "title": "Greeting and Names",
+            "items": [
+              {
+                "text": "A slight bow or forward nod is appropriate in shops, hotels, and meetings.",
+                "strength": "common",
+                "finding_ids": [
+                  "F16"
+                ]
+              },
+              {
+                "text": "Address people by family name plus '-san' (e.g., Yamada-san) in business settings unless invited to use their first name.",
+                "strength": "common",
+                "finding_ids": [
+                  "F17"
+                ]
+              }
+            ]
           },
           {
             "id": "dining",
             "icon": "🍽️",
-            "title": "Dining etiquette",
-            "widely_observed": [
-              "Wait for the host to begin eating; say itadakimasu (literally 'I humbly receive') before eating and gochisousama (thank you for the meal) after",
-              "Slurping noodles and soup is standard and expected—not doing so reads as reluctance or unfamiliarity"
-            ],
-            "best_avoided": [
-              "Pouring your own drink when others are at the table—pour for them, they pour for you (even if you are not drinking alcohol, this gesture matters)"
-            ],
-            "varies": [
-              "Business lunches in Osaka tend toward faster, more casual settings than in Tokyo; evening meals are where relationship-building happens and often involve alcohol for others"
-            ],
-            "check_locally": [
-              "Vegetarian options in business meal settings—confirm what your host is planning or alert them in advance; while vegetarian food exists, it is not assumed in a business dining context, and meat-based stock is common in dishes that appear vegetarian"
+            "title": "Dining",
+            "items": [
+              {
+                "text": "Say 'itadakimasu' before eating and 'gochisosama deshita' when leaving a restaurant; these are customary expressions of gratitude.",
+                "strength": "common",
+                "finding_ids": [
+                  "F7"
+                ]
+              },
+              {
+                "text": "Do not stick chopsticks upright in rice or pass food from chopstick to chopstick, as both are associated with funeral rituals.",
+                "strength": "offense",
+                "finding_ids": [
+                  "F6"
+                ]
+              },
+              {
+                "text": "Use the oshibori (wet towel) to wipe your hands only, not your face or neck.",
+                "strength": "common",
+                "finding_ids": [
+                  "F8"
+                ]
+              }
             ]
           },
           {
-            "id": "dress",
-            "icon": "👗",
-            "title": "Dress & appearance",
-            "widely_observed": [
-              "Business formal is the baseline for client meetings—dark suit, neutral colours, closed-toe shoes; visible tattoos should be covered"
-            ],
-            "best_avoided": [
-              "Casual or athletic wear in any business setting; visible piercings beyond one ear piercing per ear; strong fragrances"
-            ],
-            "varies": [
-              "Tech and creative industries may dress more casually in internal offices, but a client-facing visitor should maintain formal dress"
-            ],
-            "check_locally": []
-          },
-          {
-            "id": "tipping",
-            "icon": "💰",
-            "title": "Tipping & payment",
-            "widely_observed": [
-              "Do not tip at restaurants, taxis, or hotels—service charge is included in the bill or the price, and tipping is not customary and can create awkwardness"
-            ],
-            "best_avoided": [
-              "Leaving cash on a table; offering personal payment when a company representative is handling the bill"
-            ],
-            "varies": [],
-            "check_locally": [
-              "Payment methods—check whether your cards (Visa, Mastercard) work in advance; IC cards like Suica or Pasmo are nearly universal for trains and vending but may not be your only option"
-            ]
-          },
-          {
-            "id": "business_etiquette",
+            "id": "business",
             "icon": "💼",
-            "title": "Business etiquette",
-            "widely_observed": [
-              "Hierarchy matters in decisions and deference—address the most senior person first, wait for them to set the tone, and direct formal remarks to them even if others respond",
-              "Meetings often end without a clear yes or no; consensus-building happens offline and across levels, so a non-committal response is not a rejection",
-              "Silence is normal in meetings and does not signal disagreement—it signals thought. Resist filling it"
-            ],
-            "best_avoided": [
-              "Aggressive or competitive language; pushing for immediate decisions; assuming personal opinions shared in conversation are negotiating positions",
-              "Discussing personal matters or using humour about politics, religion, or sensitive history in first meetings"
-            ],
-            "varies": [
-              "Osaka businesses tend toward more direct communication and faster decision-making than Tokyo; generational differences exist, with younger managers sometimes more comfortable with informality"
-            ],
-            "check_locally": []
+            "title": "Business Meetings",
+            "items": [
+              {
+                "text": "Receive business cards with both hands, read them carefully, and place them on the table in front of you during the meeting; do not write on, fold, or pocket them.",
+                "strength": "offense",
+                "finding_ids": [
+                  "F18"
+                ]
+              },
+              {
+                "text": "Key phrases to learn: 'sumimasen' (excuse me), 'arigato gozaimasu' (thank you), and 'itadakimasu' and 'gochisosama deshita' (before and after meals).",
+                "strength": "common",
+                "finding_ids": [
+                  "F23"
+                ]
+              }
+            ]
           },
           {
-            "id": "gift_giving",
+            "id": "gifts",
             "icon": "🎁",
-            "title": "Gifts & hospitality",
-            "widely_observed": [
-              "A small gift from your home country is standard when meeting a client team for the first time—wrapped, presented with both hands, offered without fanfare or expectation of immediate opening"
-            ],
-            "best_avoided": [
-              "Gifts that are too expensive (signals obligation or impropriety), sets of four items (the number is unlucky), white flowers, or anything with your company logo unless it is genuinely high-quality"
-            ],
-            "varies": [
-              "Some client teams may decline gifts politely due to company policy; accept the decline without pressing and do not take it personally"
-            ],
-            "check_locally": []
+            "title": "Gifts",
+            "items": [
+              {
+                "text": "Give and receive gifts with both hands accompanied by a slight bow; if giving money, place it in an envelope rather than handing it over loose.",
+                "strength": "common",
+                "finding_ids": [
+                  "F19"
+                ]
+              }
+            ]
           },
           {
-            "id": "religion",
-            "icon": "🕌",
-            "title": "Religion & customs",
-            "widely_observed": [
-              "Shinto shrines and Buddhist temples are common; removing shoes is expected in temple buildings and some restaurants"
-            ],
-            "best_avoided": [
-              "Stepping on threshold frames; photographing inside temple buildings without permission; dismissing local customs as quaint or superstition"
-            ],
-            "varies": [
-              "Religious observance varies widely by individual; many Japanese practise both Shinto and Buddhist customs without identifying as religious, and some follow neither"
-            ],
-            "check_locally": []
-          },
-          {
-            "id": "transport",
+            "id": "getting_around",
             "icon": "🚌",
-            "title": "Getting around",
-            "widely_observed": [
-              "Trains and subways are the backbone of Osaka transport—they are precise, frequent, and signalled in English in central areas; buy an IC card (Suica or Pasmo) at the airport",
-              "Avoid eating on trains except in designated areas; never talk on your phone; give up seats for elderly people and those visibly pregnant or injured"
-            ],
-            "best_avoided": [
-              "Standing near doors during rush hour; leaning against poles; blocking the path with luggage"
-            ],
-            "varies": [],
-            "check_locally": [
-              "Taxi etiquette—doors open and close automatically, so wait; payment by card is increasingly common but verify with your hotel or in advance; rides are expensive compared to the US"
+            "title": "Getting Around Osaka",
+            "items": [
+              {
+                "text": "Keep your phone on silent on trains and buses; avoid making calls while on board.",
+                "strength": "common",
+                "finding_ids": [
+                  "F2"
+                ]
+              },
+              {
+                "text": "Queue at floor markings, stand to the side of doors, and let passengers exit completely before boarding.",
+                "strength": "common",
+                "finding_ids": [
+                  "F4"
+                ]
+              },
+              {
+                "text": "Do not eat or drink on urban commuter trains; this is accepted only on long-distance trains and the Shinkansen.",
+                "strength": "common",
+                "finding_ids": [
+                  "F5"
+                ]
+              },
+              {
+                "text": "Offer your seat if an elderly, injured, pregnant, or disabled passenger boards; priority seats are marked in a different color.",
+                "strength": "common",
+                "finding_ids": [
+                  "F3"
+                ]
+              }
             ]
           },
           {
-            "id": "safety",
-            "icon": "🛡️",
-            "title": "Safety & scams",
-            "widely_observed": [
-              "Osaka is among the safest major cities globally—violent crime against visitors is extremely rare"
-            ],
-            "best_avoided": [],
-            "varies": [],
-            "check_locally": [
-              "Earthquakes are possible—check your hotel's emergency procedures on arrival; verify current security guidance for your US state before departure"
+            "id": "money",
+            "icon": "💰",
+            "title": "Payment and Tipping",
+            "items": [
+              {
+                "text": "Do not tip at restaurants, bars, or taxis; saying thank you is the appropriate way to show appreciation.",
+                "strength": "common",
+                "finding_ids": [
+                  "F1"
+                ]
+              }
             ]
-          },
-          {
-            "id": "phrases",
-            "icon": "💬",
-            "title": "Key phrases & attitude",
-            "widely_observed": [
-              "Learning even a few phrases (arigatou gozaimasu for formal thanks, sumimasen for excuse me/sorry, wakarimashita for I understand) is valued and disarms formality slightly",
-              "Nodding and saying hai (yes, I am listening) during conversation signals engagement and respect, not necessarily agreement"
-            ],
-            "best_avoided": [
-              "Expecting English in all settings—many middle-aged and older professionals speak very little English; have key business terms written down or use translation apps"
-            ],
-            "varies": [],
-            "check_locally": []
           }
         ],
-        "practical_tips": [
-          "Arrive 10 minutes early and note the train journey time with 5-minute buffer—punctuality is non-negotiable and lateness signals disrespect",
-          "Bring business cards (have them printed before you arrive if possible—a quality card matters more than quantity); exchange them at the start of every meeting",
-          "Alert your host in advance that you are vegetarian and do not drink alcohol so meals can be planned without awkwardness on the day",
-          "Download Google Translate offline and a transit app (Hyperdia or Google Maps work for Osaka trains)—you will not always find English signage outside central areas"
+        "small_slips": [],
+        "sources": [
+          {
+            "id": "S1",
+            "publisher": "Osaka Convention and Tourism Bureau",
+            "url": "https://osaka-info.jp/en/information/to-tourist/the-dos-and-donts-of-manner/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S2",
+            "publisher": "Kyoto City Tourism Association",
+            "url": "https://kyoto.travel/en/getting-around/basic-knowledge-and-manners-of-public-transportation-in-japan/",
+            "date": "2024-05-08",
+            "type": "official"
+          },
+          {
+            "id": "S3",
+            "publisher": "Japan Guide",
+            "url": "https://www.japan-guide.com/e/e2230.html",
+            "date": "2025-12-03",
+            "type": "reference"
+          },
+          {
+            "id": "S4",
+            "publisher": "Japan National Tourism Organization (JNTO)",
+            "url": "https://www.japan.travel/en/guide/japanese-food-etiquette/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S5",
+            "publisher": "Japan National Tourism Organization (JNTO)",
+            "url": "https://www.japan.travel/en/us/blog/table-manners-in-japan/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S6",
+            "publisher": "Japan Guide Agency",
+            "url": "https://www.j-g-a.org/dietary-restrictions.html",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S7",
+            "publisher": "JRailPass",
+            "url": "https://www.jrailpass.com/blog/japanese-etiquette-tips",
+            "date": "2017-03-13",
+            "type": "reference"
+          },
+          {
+            "id": "S8",
+            "publisher": "Tokyo Tourism Organization",
+            "url": "https://www.tokyotourism.org/japanese-etiquette-guide/",
+            "date": "2026-05-07",
+            "type": "official"
+          }
         ],
-        "missteps": {
-          "small_slips": [
-            "Mispronouncing someone's name after it has been corrected—you will be forgiven, but correcting yourself matters",
-            "Using chopsticks clumsily—most will offer a fork without comment if you struggle",
-            "Missing a bow or bowing too shallowly—context usually makes intent clear, and visitors are expected to be learning"
-          ],
-          "higher_stakes": [
-            "Pushing for a decision in a single meeting—interrupts the consensus-building process and signals misunderstanding of how decisions are made",
-            "Casual or dismissive language about Japanese history, politics, or tradition—signals disrespect for the host and damages relationship-building",
-            "Rejecting food or drink offered by your host without a reason—reads as rejection of the hospitality and the relationship"
-          ]
+        "finding_sources": {
+          "F1": "S1",
+          "F2": "S1",
+          "F3": "S2",
+          "F4": "S2",
+          "F5": "S3",
+          "F6": "S4",
+          "F7": "S4",
+          "F8": "S5",
+          "F10": "S6",
+          "F11": "S6",
+          "F16": "S7",
+          "F17": "S7",
+          "F18": "S8",
+          "F19": "S7",
+          "F20": "S7",
+          "F21": "S1",
+          "F22": "S1",
+          "F23": "S8"
         },
-        "confidence": "high"
-      }
+        "researched_at": "2026-10-27T22:38:20.424Z"
+      },
+      "optionalSections": [
+        "for_your_needs",
+        "small_slips"
+      ]
     },
     {
       "name": "de",
@@ -232,209 +313,292 @@
         "userRegion": "DE"
       },
       "output": {
-        "overview": "In Osaka und Japan allgemein sind Präzision, formale Hierarchien und aufmerksame Rücksichtnahme in geschäftlichen Kontexten weit verbreitet. Geschäftsbeziehungen folgen formalen Protokollen, die Geduld und indirekte Kommunikation voraussetzen. Für einen deutschen Besucher wirkt die Höflichkeit in alltäglichen Interaktionen oft ausgeprägter, während die tatsächlichen Entscheidungsprozesse langwieriger sind als die anfängliche Formalität vermuten lässt.",
+        "destination": "Japan",
+        "tripPurpose": "Geschäftsreise",
+        "overview": "Eine Woche Geschäftsreise nach Osaka mit Treffen der Geschäftsführung eines potenziellen Kunden. Vegetarische Ernährung und Alkoholverzicht erfordern Aufmerksamkeit bei der Auswahl von Restaurants und beim Nachfragen nach Zutaten.",
+        "essentials": [
+          {
+            "point": "Bei Geschäftstreffen: Visitenkarten mit beiden Händen entgegennehmen, aufmerksam lesen und während des Gesprächs vor sich auf dem Tisch ablegen – nicht beschreiben, falten oder in die Gesäßtasche stecken.",
+            "finding_ids": [
+              "F18"
+            ]
+          },
+          {
+            "point": "Vegetarische Gerichte enthalten oft Fisch-Dashi-Brühe (aus Bonito oder getrockneten Sardinen) in Misosuppe, Gemüse und Saucen – immer nachfragen, ob ein Gericht wirklich vegetarisch ist.",
+            "finding_ids": [
+              "F10"
+            ]
+          },
+          {
+            "point": "Sagen Sie vor dem Essen 'itadakimasu' und nach dem Essen 'gochisosama deshita' – diese Ausdrücke sind in Japan üblich.",
+            "finding_ids": [
+              "F7"
+            ]
+          },
+          {
+            "point": "Kein Trinkgeld in Restaurants oder Taxis erforderlich; 'danke' sagen ist die angemessene Art, Wertschätzung zu zeigen.",
+            "finding_ids": [
+              "F1"
+            ]
+          },
+          {
+            "point": "In urbanen Zügen und Bussen Ihr Handy auf Stumm stellen; Telefonate sollten Sie nicht führen.",
+            "finding_ids": [
+              "F2",
+              "F5"
+            ]
+          },
+          {
+            "point": "Adressen von Restaurants im Voraus sammeln, wo vegetarische Gerichte garantiert ohne Alkohol zubereitet werden, da Standard-Japanische Küche häufig Mirin oder Sake in Saucen enthält.",
+            "finding_ids": [
+              "F11"
+            ]
+          }
+        ],
+        "for_your_needs": [
+          {
+            "need": "Vegetarische Mahlzeiten finden",
+            "plan": "Fragen Sie in Restaurants nach dashi-freien Gerichten oder Speisen ohne Fischbrühe. Viele traditionelle Gerichte enthalten Fischbrühe als Basis, auch wenn kein Fleisch sichtbar ist – das gilt für Misosuppe, Nudelbrühen, geschmortes Gemüse und viele Saucen. Bezeichnungen wie 'ohne Fleisch' bedeuten in der Regel nicht vegetarisch im westlichen Sinne.",
+            "finding_ids": [
+              "F10"
+            ]
+          },
+          {
+            "need": "Alkoholfrei trinken",
+            "plan": "Mirin und Sake sind in vielen Saucen enthalten (Tempura-Dip, Yakitori-Sauce, Sojasoße), auch wenn Alkohol nicht offensichtlich ist. Machen Sie bei Bestellungen deutlich, dass Sie diese Zutaten vermeiden möchten. Wasser und Tee sind überall erhältlich. Ob das Nichtrinken von Alkohol in Geschäftssituationen Erklärungen erfordert, ist den vorliegenden Quellen nicht zu entnehmen — im Zweifel einfach auf alkoholfreie Alternativen hinweisen.",
+            "finding_ids": [
+              "F11"
+            ]
+          }
+        ],
         "sections": [
           {
             "id": "greetings",
             "icon": "🤝",
-            "title": "Grüße und Vorstellungen",
-            "widely_observed": [
-              "Verbeugung (ojigi) statt Handschlag oder als Ergänzung dazu — tiefe und Dauer signalisieren Respekt",
-              "Formalsprache (keigo) in geschäftlichen Erstkontakten, nicht sofort zu Du oder lockerer Ton übergehen",
-              "Namenskarten mit Titel und Unternehmen austauschen — mit beiden Händen überreicht und mit Aufmerksamkeit empfangen"
-            ],
-            "best_avoided": [
-              "Sofortige informelle Ansprache oder Vorname verwenden, bevor man eingeladen wird — signalisiert mangelnden Respekt vor Position",
-              "Beiläufige Handbewegungen oder offene Körperhaltung beim Zuhören — wirkt desinteressiert"
-            ],
-            "varies": [
-              "Jüngere Menschen in kreativen oder internationalen Branchen handhaben Formalität lockerer, aber in etablierten Unternehmen bleibt das Protokoll streng"
-            ],
-            "check_locally": []
-          },
-          {
-            "id": "taboos",
-            "icon": "🚫",
-            "title": "Tabus und häufige Fehler",
-            "widely_observed": [
-              "Geschenke nicht in Gegenwart anderer öffnen — wirkt unhöflich; heben Sie sie auf und öffnen Sie sie später privat",
-              "Mit Stäbchen nicht auf Menschen zeigen oder sie senkrecht in Reis stecken (Assoziation mit Bestattungsritualen)",
-              "Schuhe in bestimmten Bereichen (Wohnungen, manche Restaurants, Heiligtümer) ausziehen"
-            ],
-            "best_avoided": [
-              "Zu viel Augenkontakt halten — in Japan kann intensiver Blickkontakt aggressiv wirken",
-              "Laut sprechen oder auffallend gestikulieren in der Öffentlichkeit",
-              "Persönliche Fragen zu Alter, Familienstand oder Gehalt in frühen Gesprächen"
-            ],
-            "varies": [],
-            "check_locally": []
+            "title": "Begrüßung und Namen",
+            "items": [
+              {
+                "text": "Eine leichte Verbeugung oder ein Nicken (etwa 15 Grad) ist in fast allen alltäglichen Situationen angemessen.",
+                "strength": "common",
+                "finding_ids": [
+                  "F16"
+                ]
+              },
+              {
+                "text": "Sprechen Sie Geschäftspartner mit Familienname und der Honorifik '-san' an (z.B. Yamada-san); Vornamen ohne ausdrückliche Einladung sind in den meisten Kontexten zu vertraut.",
+                "strength": "common",
+                "finding_ids": [
+                  "F17"
+                ]
+              },
+              {
+                "text": "Nützliche Phrasen: 'sumimasen' (Entschuldigung), 'arigato gozaimasu' (danke).",
+                "strength": "common",
+                "finding_ids": [
+                  "F23"
+                ]
+              }
+            ]
           },
           {
             "id": "dining",
             "icon": "🍽️",
-            "title": "Essenskultur und Etikette",
-            "widely_observed": [
-              "Vor dem Essen 'itadakimasu' (wörtlich: ich empfange dankbar) sagen; nach dem Essen 'gochisousama' — zeigt Dankbarkeit",
-              "Mit Stäbchen essen; unerwartete Schwierigkeiten damit sind normal und werden nicht kommentiert",
-              "Vor dem Essen kurz warten, bis der Gastgeber oder die älteste Person beginnt"
-            ],
-            "best_avoided": [
-              "Essen stehen lassen oder große Mengen übrig lassen — signalisiert Missachtung der Vorbereitung",
-              "Mit vollem Mund sprechen oder beim Essen laut kauen"
-            ],
-            "varies": [
-              "Vegetarische Optionen in traditionellen Restaurants können begrenzt sein; in größeren Städten wie Osaka gibt es zunehmend spezialisierte Angebote"
-            ],
-            "check_locally": [
-              "Vegetarische Menüs im Restaurant vorab klären — 'dashi' (Fischbrühe) ist in vielen Gerichten enthalten; übersetzen Sie Ihre Einschränkungen schriftlich",
-              "Alkoholfreie Getränke in Business-Dinner verfügbar, aber vorab erwähnen hilft, um Überraschung zu vermeiden"
+            "title": "Essen in Osaka",
+            "items": [
+              {
+                "text": "Sagen Sie vor dem Essen 'itadakimasu' und nach dem Essen 'gochisosama deshita' – diese Ausdrücke sind in Japan üblich.",
+                "strength": "common",
+                "finding_ids": [
+                  "F7"
+                ]
+              },
+              {
+                "text": "Das oshibori (feuchtes Tuch) ist nur zum Händeabwischen gedacht, nicht für Gesicht, Hals oder Tisch.",
+                "strength": "common",
+                "finding_ids": [
+                  "F8"
+                ]
+              },
+              {
+                "text": "Essen während des Gehens ist auf normalen Straßen nicht üblich; Ausnahmen sind Touristenzonen wie Dotonbori und Kuromon Market.",
+                "strength": "common",
+                "finding_ids": [
+                  "F9"
+                ]
+              }
             ]
           },
           {
-            "id": "dress",
-            "icon": "👗",
-            "title": "Kleidung und Erscheinung",
-            "widely_observed": [
-              "Geschäftskleidung in Meetings: dunkler Anzug, Krawatte und polierte Schuhe — Konservatismus wird geschätzt",
-              "Saubere, gut gepflegte Kleidung; Verschleiß oder Flecken werden bemerkt",
-              "Unauffälliger Schmuck und dezente Farben in geschäftlichen Kontexten"
-            ],
-            "best_avoided": [
-              "Kurze Hosen, T-Shirts oder Flip-Flops bei Business-Terminen",
-              "Durchsichtige oder zu enge Kleidung"
-            ],
-            "varies": [
-              "In kreativen Industrien (Design, Tech-Startups) in Osaka ist Kleidung lockerer, aber bei Kundentreffen bleibt es konservativ"
-            ],
-            "check_locally": []
-          },
-          {
-            "id": "tipping",
-            "icon": "💰",
-            "title": "Trinkgeld und Zahlungen",
-            "widely_observed": [
-              "Kein Trinkgeld üblich oder erwartet — es kann sogar als Beleidigung verstanden werden, da es Dienstleistungsgebühren bereits enthalten sind",
-              "Bargeld ist verbreiteter als Kartenzahlung, besonders in kleineren Läden und Restaurants; große Hotels und Ketten akzeptieren Karten"
-            ],
-            "best_avoided": [
-              "Geld oder Karten mit einer Hand übergeben — mit beiden Händen ist respektvoller"
-            ],
-            "varies": [],
-            "check_locally": [
-              "Aktuelle Zahlungsoptionen (QR-Codes wie PayPay, Alipay) ändern sich schnell; fragen Sie beim Einchecken nach"
-            ]
-          },
-          {
-            "id": "business_etiquette",
+            "id": "business",
             "icon": "💼",
-            "title": "Geschäftsetikette",
-            "widely_observed": [
-              "Meishi (Namenskarten-Austausch) mit beiden Händen: überreichen Sie Ihre Karte mit der japanischen Seite oben, empfangen Sie die andere Person's Karte aufmerksam, studieren Sie sie kurz und legen Sie sie vor sich auf den Tisch (nicht sofort in die Tasche stecken)",
-              "Hierarchie beachten: sprechen Sie mit dem ranghöchsten Anwesenden zuerst; Entscheidungen werden selten auf der Stelle getroffen",
-              "Schriftliche Agendas und Hintergrundmaterialien im Voraus senden — zeigt Vorbereitung und Respekt vor ihrer Zeit"
-            ],
-            "best_avoided": [
-              "Zu direkt widersprechen oder 'Nein' frontal sagen — Japaner deuten Ablehnung oft indirekt an ('das wird schwierig sein'); Druck kann Verhandlungen beenden",
-              "Persönliche Erfolgsgeschichten oder Dominanz zeigen — wird als Arroganz wahrgenommen"
-            ],
-            "varies": [
-              "Internationale oder westlich geprägte Unternehmen in Osaka arbeiten direkter, aber staatliche oder traditionelle Organisationen folgen klassischen Hierarchien"
-            ],
-            "check_locally": [
-              "Entscheidungsprozesse können länger dauern als erwartet — mehrere Genehmigungsebenen sind normal; eine Woche ist oft nicht ausreichend für konkrete Zusagen"
+            "title": "Geschäftliches",
+            "items": [
+              {
+                "text": "Nehmen Sie Visitenkarten (meishi) mit beiden Händen entgegen, lesen Sie sie aufmerksam und legen Sie sie auf den Tisch vor sich; schreiben Sie nicht darauf und lagern Sie sie nicht in der hinteren Hosentasche.",
+                "strength": "offence",
+                "finding_ids": [
+                  "F18"
+                ]
+              }
             ]
           },
           {
-            "id": "gift_giving",
+            "id": "gifts",
             "icon": "🎁",
-            "title": "Geschenke und Gastfreundschaft",
-            "widely_observed": [
-              "Kleine Geschenke von Ihrem Heimatland oder lokale Spezialitäten sind in geschäftlichen Kontexten üblich und geschätzt — hochwertige Verpackung ist wichtig",
-              "Geschenke niemals mit Ausdrücken von Genauigkeit oder Größe überreichen ('ein kleines Zeichen meiner Wertschätzung')",
-              "Bestimmte Zahlen meiden: 4 (assoziiert mit Tod) und 9 (Unglück); Paare oder 3er-Sets sind günstig"
-            ],
-            "best_avoided": [
-              "Geschenke in Vierer-Sets oder mit 4er-Zahlen",
-              "Sehr teure Geschenke, die eine Schuldigkeit implizieren könnten"
-            ],
-            "varies": [],
-            "check_locally": []
-          },
-          {
-            "id": "religion",
-            "icon": "🕌",
-            "title": "Religion und Bräuche",
-            "widely_observed": [
-              "Shintoismus und Buddhismus sind weit verbreitet, aber meist nicht dogmatisch im Alltag; viele Menschen praktizieren beide",
-              "Schreine und Tempel respektieren: Schuhe ausziehen, wo angegeben, nicht fotografieren in privaten oder Gebetsräumen"
-            ],
-            "best_avoided": [
-              "Religöse Symbole oder Dekorationen als Souvenirs verwenden"
-            ],
-            "varies": [],
-            "check_locally": []
-          },
-          {
-            "id": "transport",
-            "icon": "🚌",
-            "title": "Verkehrsmittel und Mobilität",
-            "widely_observed": [
-              "Öffentliche Verkehrsmittel (U-Bahn, Busse, Züge) sind zuverlässig und pünktlich; IC-Karten (ICOCA in Osaka/Kansai) vereinfachen Zahlungen",
-              "In öffentlichen Verkehrsmitteln: ruhig sein, nicht telefonieren, Plätze für Ältere und Schwangere räumen"
-            ],
-            "best_avoided": [
-              "Sich beim Einsteigen drängen — obwohl es voll wird, ist eine informelle Ordnung üblich"
-            ],
-            "varies": [],
-            "check_locally": []
-          },
-          {
-            "id": "safety",
-            "icon": "🛡️",
-            "title": "Sicherheit und Betrug",
-            "widely_observed": [
-              "Japan hat niedrige Kriminalitätsraten; Taschendiebstahl in belebten Bereichen ist die Hauptsorge, nicht gewalttätiges Verbrechen"
-            ],
-            "best_avoided": [],
-            "varies": [],
-            "check_locally": [
-              "Aktuelle Naturkatastrophenrisiken prüfen (Erdbeben, Taifune) — Osaka liegt in einer aktiven Zone; Notfall-Nummern und Hotel-Richtlinien klären"
+            "title": "Geschenke",
+            "items": [
+              {
+                "text": "Geben und nehmen Sie Geschenke mit beiden Händen und einer leichten Verbeugung entgegen; legen Sie Geldgeschenke in einen Umschlag, nicht lose.",
+                "strength": "common",
+                "finding_ids": [
+                  "F19"
+                ]
+              }
             ]
           },
           {
-            "id": "phrases",
-            "icon": "💬",
-            "title": "Nützliche Ausdrücke und Grundhaltung",
-            "widely_observed": [
-              "Wenn Sie Japanisch versuchen, wird es immer geschätzt, auch wenn nur einzelne Wörter — 'arigatou gozaimasu' (vielen Dank) und 'shitsurei shimasu' (entschuldigen Sie) sind weit bringend",
-              "Indirekte, sanfte Kommunikation ist bevorzugt: 'das könnte schwierig sein' statt 'das geht nicht'; 'wir werden prüfen' statt sofortige Zusagen"
-            ],
-            "best_avoided": [
-              "Englisches Englisch oder Slang in formalen Kontexten; Standardaussprache hilft"
-            ],
-            "varies": [],
-            "check_locally": []
+            "id": "getting_around",
+            "icon": "🚌",
+            "title": "Verkehrsmittel in Osaka",
+            "items": [
+              {
+                "text": "In U-Bahnen und Stadtbahnen nicht essen oder trinken; bei Fernzügen ist das erlaubt.",
+                "strength": "common",
+                "finding_ids": [
+                  "F5"
+                ]
+              },
+              {
+                "text": "Handy auf Stumm stellen in Zügen und Bussen; Telefonate vermeiden.",
+                "strength": "common",
+                "finding_ids": [
+                  "F2"
+                ]
+              },
+              {
+                "text": "Beim Einsteigen in Zügen an den Bodenmarkierungen anstellen, zur Seite warten, aussteigen lassen, dann einsteigen – nicht drängen.",
+                "strength": "common",
+                "finding_ids": [
+                  "F4"
+                ]
+              },
+              {
+                "text": "Prioritätssitze (farbig markiert) sind für ältere, verletzte, schwangere und behinderte Personen reserviert; bieten Sie Ihren Platz an.",
+                "strength": "common",
+                "finding_ids": [
+                  "F3"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "money",
+            "icon": "💰",
+            "title": "Bezahlen und Trinkgeld",
+            "items": [
+              {
+                "text": "Trinkgeld ist in Japan nicht üblich – ein Dankeschön reicht völlig aus.",
+                "strength": "common",
+                "finding_ids": [
+                  "F1"
+                ]
+              }
+            ]
           }
         ],
-        "practical_tips": [
-          "Bringen Sie Ihre Namenkarten auf Deutsch und Englisch mit; wenn möglich, lassen Sie die japanische Rückseite von einem Übersetzungsdienst anfertigen. Kleine Pausen in Verhandlungen sind normal und signalisieren keine Dringlichkeit — das Treffen mit dem Führungsteam wird sich wahrscheinlich über mehrere Gesprächsrunden erstrecken.",
-          "Für vegetarische Gerichte: Teilen Sie Ihre Ernährungsweise dem Restaurant oder Gastgeber früh mit, idealerweise schriftlich. Machen Sie explizit deutlich, dass Fisch, Fleischbrühe und Meeresfrüchte ausgeschlossen sind — in manchen Kontexten werden diese nicht automatisch als Teil einer vegetarischen Einschränkung verstanden. Alkoholablehnung wird in geschäftlichen Kontexten routinemäßig akzeptiert; Sie müssen dies nicht rechtfertigen.",
-          "Kleine lokale Geschenke aus Deutschland (z.B. Kakao, Bier, Süßes in hochwertiger Verpackung) sind praktischer und persönlicher als generische Geschäftsgabeln"
+        "small_slips": [],
+        "sources": [
+          {
+            "id": "S1",
+            "publisher": "Osaka Convention and Tourism Bureau",
+            "url": "https://osaka-info.jp/en/information/to-tourist/the-dos-and-donts-of-manner/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S2",
+            "publisher": "Kyoto City Tourism Association",
+            "url": "https://kyoto.travel/en/getting-around/basic-knowledge-and-manners-of-public-transportation-in-japan/",
+            "date": "2024-05-08",
+            "type": "official"
+          },
+          {
+            "id": "S3",
+            "publisher": "Japan Guide",
+            "url": "https://www.japan-guide.com/e/e2230.html",
+            "date": "2025-12-03",
+            "type": "reference"
+          },
+          {
+            "id": "S4",
+            "publisher": "Japan National Tourism Organization (JNTO)",
+            "url": "https://www.japan.travel/en/guide/japanese-food-etiquette/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S5",
+            "publisher": "Japan National Tourism Organization (JNTO)",
+            "url": "https://www.japan.travel/en/us/blog/table-manners-in-japan/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S6",
+            "publisher": "Japan National Tourism Organization (JNTO)",
+            "url": "https://www.japan.travel/en/ca/etiquette/",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S7",
+            "publisher": "Japan Guide Agency",
+            "url": "https://www.j-g-a.org/dietary-restrictions.html",
+            "date": null,
+            "type": "official"
+          },
+          {
+            "id": "S8",
+            "publisher": "JRailPass",
+            "url": "https://www.jrailpass.com/blog/japanese-etiquette-tips",
+            "date": "2017-03-13",
+            "type": "reference"
+          },
+          {
+            "id": "S9",
+            "publisher": "Tokyo Tourism Organization",
+            "url": "https://www.tokyotourism.org/japanese-etiquette-guide/",
+            "date": "2026-05-07",
+            "type": "official"
+          }
         ],
-        "missteps": {
-          "small_slips": [
-            "Stäbchen falsch halten oder damit auf Menschen zeigen — wird bemerkt, aber nicht kommentiert",
-            "Den Namen falsch aussprechen — kurze Bitte um Korrektur ist willkommen",
-            "Sich leicht verspäten zu einem Treffen — ein oder zwei Minuten sind tolerabel, danach entschuldigen Sie sich formell"
-          ],
-          "higher_stakes": [
-            "Druck ausüben, schnelle Entscheidungen zu treffen oder 'Nein' direkt zu kritisieren — bricht das Vertrauen und kann das Geschäft beenden",
-            "Hierarchie ignorieren oder den ranghöchsten Anwesenden übergehen — signalisiert Mangel an Respekt und ist ein ernstes Signal",
-            "Geschenke in Gegenwart anderer öffnen oder abzulehnen — kann als unhöflich oder ablehnend verstanden werden"
-          ]
+        "finding_sources": {
+          "F1": "S1",
+          "F2": "S1",
+          "F3": "S2",
+          "F4": "S2",
+          "F5": "S3",
+          "F6": "S4",
+          "F7": "S4",
+          "F8": "S5",
+          "F9": "S6",
+          "F10": "S7",
+          "F11": "S7",
+          "F16": "S8",
+          "F17": "S8",
+          "F18": "S9",
+          "F19": "S8",
+          "F20": "S8",
+          "F21": "S1",
+          "F22": "S1",
+          "F23": "S9"
         },
-        "confidence": "medium"
-      }
+        "researched_at": "2026-10-27T22:38:20.424Z"
+      },
+      "optionalSections": [
+        "for_your_needs",
+        "small_slips"
+      ]
     }
   ]
 }
