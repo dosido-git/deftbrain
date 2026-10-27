@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "d46308947293d18c2c37b76fe3501c17e5633232",
+  "hash": "d77162f0440813d8979f8305af2bbd1c8a0fbcdb",
   "lastmod": "2026-10-27"
  },
  "static:about": {
@@ -24,11 +24,11 @@
   "lastmod": "2026-10-08"
  },
  "tool:AwkwardSilenceFiller": {
-  "hash": "4c78aafbbd02d0cd0e0bb888dcb5439fa2a62c7b",
-  "lastmod": "2026-10-25"
+  "hash": "b430b637f7dc87cf36b8194a0689a6e82056f61a",
+  "lastmod": "2026-10-27"
  },
  "tool:BillRescue": {
-  "hash": "481fd14ef9467dc45ed7729db31976622147c028",
+  "hash": "a13c444a9335a04845b657e907b0218504b0f2c6",
   "lastmod": "2026-10-27"
  },
  "tool:BragSheetBuilder": {
@@ -40,7 +40,7 @@
   "lastmod": "2026-10-08"
  },
  "tool:ComplaintEscalationWriter": {
-  "hash": "b277eb82fdd21397608a6d80776283c5d71f3087",
+  "hash": "14ace8b11332c37b13891419a1aa616effa89ef9",
   "lastmod": "2026-10-27"
  },
  "tool:ContextCollapse": {
@@ -60,8 +60,8 @@
   "lastmod": "2026-10-08"
  },
  "tool:DoctorVisitTranslator": {
-  "hash": "e928796b307effd82f89aaeb0ce81332876ba7a5",
-  "lastmod": "2026-10-20"
+  "hash": "4f90552336606a564a4bbd283f12c562c9378c92",
+  "lastmod": "2026-10-27"
  },
  "tool:FakeReviewDetective": {
   "hash": "bfd422fcf3dc7ca6d5b10674b5c1844dacd9626d",
@@ -72,8 +72,8 @@
   "lastmod": "2026-10-27"
  },
  "tool:GhostWriter": {
-  "hash": "037c4c56efacf6fc0c107065d28da6318fdbbad0",
-  "lastmod": "2026-10-25"
+  "hash": "d396cde1c659ea66a503bafe921d6e3e5fb2e665",
+  "lastmod": "2026-10-27"
  },
  "tool:HistoryToday": {
   "hash": "dffdbe693b211a229be0f57345ab490a8abf90f5",
@@ -84,32 +84,32 @@
   "lastmod": "2026-10-20"
  },
  "tool:LeaseTrapDetector": {
-  "hash": "f840e1fd94fc734f777f22778a80192f905ab4ae",
-  "lastmod": "2026-10-20"
+  "hash": "7f2ac7fb02d5e76a89a97345c160b98c8e07c888",
+  "lastmod": "2026-10-27"
  },
  "tool:MarkupDetective": {
-  "hash": "ef89eb6dcc5941be567c00af48b0fb2b78815b08",
-  "lastmod": "2026-10-08"
+  "hash": "887835265ae0c04b152e494a40134db094a86813",
+  "lastmod": "2026-10-27"
  },
  "tool:Mend": {
   "hash": "cf66b4ce8e881e7baf3401030bdab3271e648b0e",
   "lastmod": "2026-10-27"
  },
  "tool:MentalHealthNavigator": {
-  "hash": "ce1f0c294631814f4b23f7d00f03c78731235c4e",
+  "hash": "07c87b8974d481265a1d35b4bfd23c238b2577b9",
   "lastmod": "2026-10-27"
  },
  "tool:MiseEnPlace": {
-  "hash": "71cc0612d0623fe9fa376ddd4723aecc60c24c3e",
-  "lastmod": "2026-10-25"
+  "hash": "da3f58eed0022ef07d194aa3f16d353635db5b03",
+  "lastmod": "2026-10-27"
  },
  "tool:NameStorm": {
-  "hash": "7a88816cfed681791b299f939e9084c1ba12e555",
-  "lastmod": "2026-10-08"
+  "hash": "b13170cb9dd9fbbdde9f817688d6f9b69ff85059",
+  "lastmod": "2026-10-27"
  },
  "tool:PlainTalk": {
-  "hash": "fb2ccc2ed01f7cbdc185d558b92b498ff8bf59a1",
-  "lastmod": "2026-10-25"
+  "hash": "bca68a066044f61c59d7a36db12417a62a6b1f68",
+  "lastmod": "2026-10-27"
  },
  "tool:ProcedureProbe": {
   "hash": "8545cfb28d1e606407fb440d83a6ba11d5caa96f",
@@ -136,8 +136,8 @@
   "lastmod": "2026-08-19"
  },
  "tool:TheDebrief": {
-  "hash": "255c82dac4db0eac546848c69ccbf17e3e26376e",
-  "lastmod": "2026-10-20"
+  "hash": "682371afc738c2c6e881db4d8cb207cf71c71d30",
+  "lastmod": "2026-10-27"
  },
  "tool:TheGap": {
   "hash": "74d6a5e7c219e56b5cacea0301e930523e227e35",
@@ -148,8 +148,8 @@
   "lastmod": "2026-10-25"
  },
  "tool:VirtualBodyDouble": {
-  "hash": "877a402fb0b6296ecafa58609bf95cb1b776bf01",
-  "lastmod": "2026-10-20"
+  "hash": "440f7d6c79adafc6b852f265f848e8d170ccb3f0",
+  "lastmod": "2026-10-27"
  },
  "tool:WaitingModeLiberator": {
   "hash": "70ddcde501fd90788b9e0dc803d0475cf29f1f97",
@@ -320,8 +320,8 @@
   "lastmod": "2026-10-25"
  },
  "tool:Giftology": {
-  "hash": "990e5382487b8617df6af61ca505fd1598b56bb4",
-  "lastmod": "2026-10-08"
+  "hash": "26cedd07f4836adbabdce10fe7bfe043de54e094",
+  "lastmod": "2026-10-27"
  },
  "tool:SkillGapMap": {
   "hash": "73d1eed727d503f4daf25441220b5b079d593223",
@@ -360,11 +360,11 @@
   "lastmod": "2026-10-25"
  },
  "tool:HecklerPrep": {
-  "hash": "a13d7cb0036c2f79892fe9d75dfc080bc7a30e2b",
-  "lastmod": "2026-10-25"
+  "hash": "e599e87aa22f422b66db5bbcec2a4d690c5ff841",
+  "lastmod": "2026-10-27"
  },
  "tool:MagicMouth": {
-  "hash": "489bcbba2ffaa425167eaa69f201fa61216c881b",
+  "hash": "ded111835ac891a5a26a05c3210a93aeeb521e69",
   "lastmod": "2026-10-27"
  },
  "tool:SignalVsNoise": {
@@ -396,8 +396,8 @@
   "lastmod": "2026-10-27"
  },
  "tool:ConceptCoach": {
-  "hash": "fb940087d090a6a56d44136b206cc58ab71019f4",
-  "lastmod": "2026-10-08"
+  "hash": "717ebd5067b1a801e3b941eda909129e35c59c85",
+  "lastmod": "2026-10-27"
  },
  "tool:FutureProof": {
   "hash": "238a88079600545bace3cf5fafa8b67d356268d9",
@@ -420,8 +420,8 @@
   "lastmod": "2026-10-20"
  },
  "tool:HobbyMatch": {
-  "hash": "f57350d6d9ff6dd22726542cd7a7100172de33ec",
-  "lastmod": "2026-10-20"
+  "hash": "25c86ae82acd452c3f215001ab39aa4e091357e8",
+  "lastmod": "2026-10-27"
  },
  "tool:PartyArchitect": {
   "hash": "ff0ed4767b95a691465079e1dcf0778e4101bf3d",
@@ -468,8 +468,8 @@
   "lastmod": "2026-10-27"
  },
  "tool:BatchFlow": {
-  "hash": "f2746bc15332a37d89e4d6a2072efc35b80b6e4d",
-  "lastmod": "2026-10-09"
+  "hash": "18f491359657ca09f5dddf52f934adb40fbb8020",
+  "lastmod": "2026-10-27"
  },
  "tool:FocusSoundArchitect": {
   "hash": "3c93840ac153afb1e4b6fb73a1d1003d3de42354",
@@ -492,8 +492,8 @@
   "lastmod": "2026-10-20"
  },
  "tool:ToolFinder": {
-  "hash": "f51a2826836e6a80132039965ca6c6e96301cadb",
-  "lastmod": "2026-10-20"
+  "hash": "266290e3ae01322b6170011fa0a727c9622d626b",
+  "lastmod": "2026-10-27"
  },
  "tool:SmallChangeBigDifference": {
   "hash": "57d4f7159e442f24aa8fac704728a68e95bf8692",
@@ -516,8 +516,8 @@
   "lastmod": "2026-10-27"
  },
  "tool:DecisionPrism": {
-  "hash": "0aec5be29f0a0e03973eeb44374d234bb8a853e0",
-  "lastmod": "2026-10-20"
+  "hash": "7f1226b04d0dc7da8f3a1ab78478251d5c743f45",
+  "lastmod": "2026-10-27"
  },
  "tool:LazyWorkoutAdapter": {
   "hash": "7232c1a264f654cf122f000a0b8fdafd3efd56a9",
@@ -528,12 +528,12 @@
   "lastmod": "2026-10-25"
  },
  "tool:TheFinalWord": {
-  "hash": "5c00b216b8369db81436eae6c3f016e9327d1cd9",
-  "lastmod": "2026-10-20"
+  "hash": "cae9401671f2f76e070cc00a3e6f1209cd60c8df",
+  "lastmod": "2026-10-27"
  },
  "tool:GratitudeDebtClearer": {
-  "hash": "9243a69b6feebbb453def993bafc303e02de165f",
-  "lastmod": "2026-10-09"
+  "hash": "77009f27d9fc2aedd164e6f393213a1fda2c62c0",
+  "lastmod": "2026-10-27"
  },
  "tool:TaskAvalancheBreaker": {
   "hash": "5d904b0b36262cc443c4478d3d050a94ec83a60e",
@@ -544,12 +544,12 @@
   "lastmod": "2026-10-20"
  },
  "tool:EmailUrgencyTriager": {
-  "hash": "71559c21418c5540581b9c8204f202877635424d",
-  "lastmod": "2026-10-09"
+  "hash": "a5469a153d36af1dcce7bd42b0cc338987d923d8",
+  "lastmod": "2026-10-27"
  },
  "tool:FriendshipFadeAlerter": {
-  "hash": "d1adb4656124db1949503f81ff1f66778bb4597a",
-  "lastmod": "2026-10-25"
+  "hash": "5efe5d29b044e27b5f7ee8bbca9b7fad085d6743",
+  "lastmod": "2026-10-27"
  },
  "tool:TripRecon": {
   "hash": "da66c4454d8e45c18f9036a85506f32d7d7da9b0",
@@ -568,8 +568,8 @@
   "lastmod": "2026-10-20"
  },
  "tool:NameAudit": {
-  "hash": "f3ed1ccae83a6e0b68f0c8e8b9b12cf3eddba2af",
-  "lastmod": "2026-10-09"
+  "hash": "c9a6cfb92651bef0c5b355399973166160d8dba4",
+  "lastmod": "2026-10-27"
  },
  "tool:DateNight": {
   "hash": "569d0b5fac50c2b74807abe1111054249ac608ec",
