@@ -20,11 +20,13 @@ const SCHEMES = {
     light: { field: '#fafbf6', envelope: '#eef1e6', line: '#d3dac4', card: '#ffffff', accent: '#5f7150', strong: '#3d4a33', onStrong: '#fafbf6', button: '#3d4a33', buttonText: '#fafbf6', x: '#a23e5c', xText: '#7d2a44', xLine: '#e6bfcb' },
     dark:  { field: '#1b2018', envelope: '#232a1f', line: '#3a4433', card: '#1a1e17', accent: '#a9bd95', strong: '#d3e0c3', onStrong: '#1b2018', button: '#d3e0c3', buttonText: '#1b2018', x: '#e08aa5', xText: '#eba8bd', xLine: '#5e2c3c' },
   },
-  // Palette v3 (docs/design/category-palette-v3.html, 2026-10-26): Honey with
-  // a violet contrast, "Bright" family — a soft filled button with dark text.
+  // Restrained (owner, 2026-10-26: "orderly, calming, elegant, understated
+  // but distinct"): the category shows in three places only — a whisper tint
+  // on the panel, the title and section rules, and the one main button. Every
+  // other colour is a shared warm neutral (text, muted, line, accent).
   Learning: {
-    light: { field: '#fcfaf5', envelope: '#f7f2e6', line: '#e3d9bf', card: '#ffffff', accent: '#725f33', strong: '#4d4123', onStrong: '#fcfaf5', button: '#dac99f', buttonText: '#43381e', x: '#7b68b1', xText: '#624e97', xLine: '#d9d1ec' },
-    dark:  { field: '#231e13', envelope: '#2b261a', line: '#504630', card: '#1e1a10', accent: '#d5c090', strong: '#ebe2cc', onStrong: '#1e1a10', button: '#d4c091', buttonText: '#352c18', x: '#8d7ac2', xText: '#9c8cca', xLine: '#3d3458' },
+    light: { field: '#fdfcf9', envelope: '#f8f4ea', line: '#e7e2d8', card: '#ffffff', accent: '#6b655c', strong: '#57471f', onStrong: '#ffffff', button: '#57471f', buttonText: '#ffffff', x: '#57471f', xText: '#57471f', xLine: '#e7e2d8', text: '#2b2824', muted: '#6b655c' },
+    dark:  { field: '#1f1c17', envelope: '#26221b', line: '#3b362e', card: '#1f1c17', accent: '#aaa398', strong: '#e5d6b0', onStrong: '#1f1c17', button: '#e5d6b0', buttonText: '#1f1c17', x: '#e5d6b0', xText: '#e5d6b0', xLine: '#3b362e', text: '#ece8e1', muted: '#aaa398' },
   },
 };
 
@@ -42,15 +44,24 @@ const RELATED = {
   dark:  { bg: '#142826', line: '#2f514e', head: '#bfe3df', label: '#7cc4bd', text: '#d6ecea' },
 };
 
+// Restrained schemes (those with shared neutrals) keep the side panels
+// neutral too: gold and teal beside a tinted panel was three colours where
+// the page needs one (owner, 2026-10-26).
+const QUIET = {
+  light: { bg: '#ffffff', line: '#e7e2d8', head: '#2b2824', label: '#6b655c', text: '#3d3934', ctl: '#fdfcf9' },
+  dark:  { bg: '#1d1b18', line: '#34302a', head: '#ece8e1', label: '#aaa398', text: '#d9d4cc', ctl: '#26231e' },
+};
+const isQuiet = (tool) => Boolean(SCHEMES[schemeCategory(tool)]?.light?.text);
+
 const toVars = (prefix, o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [`--${prefix}-${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}`, v]));
 
-export function nutshellStyle(isDark) {
-  return toVars('nut', NUTSHELL[isDark ? 'dark' : 'light']);
+export function nutshellStyle(isDark, tool) {
+  return toVars('nut', (isQuiet(tool) ? QUIET : NUTSHELL)[isDark ? 'dark' : 'light']);
 }
 
 // Related links use the --nut-* names too, with ink-teal values.
-export function relatedStyle(isDark) {
-  return toVars('nut', RELATED[isDark ? 'dark' : 'light']);
+export function relatedStyle(isDark, tool) {
+  return toVars('nut', (isQuiet(tool) ? QUIET : RELATED)[isDark ? 'dark' : 'light']);
 }
 
 // The category whose colours a tool wears: its first category that has a
@@ -65,5 +76,5 @@ export function schemeStyle(tool, isDark) {
   if (!tool || !PROTOTYPE_TOOLS.has(tool.id)) return null;
   const s = SCHEMES[schemeCategory(tool)];
   if (!s) return null;
-  return { ...toVars('sc', s[isDark ? 'dark' : 'light']), ...nutshellStyle(isDark) };
+  return { ...toVars('sc', s[isDark ? 'dark' : 'light']), ...nutshellStyle(isDark, tool) };
 }

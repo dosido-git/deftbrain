@@ -170,7 +170,7 @@ export default function RelatedLinks() {
     // still prints everywhere else, per the note above.
     PROTOTYPE_TOOLS.has(seg) ? (
       // PROTOTYPE: outside the tool's envelope, in ink teal.
-      <div data-site-tail style={relatedStyle(isDark)} className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto mt-4 mb-6">
+      <div data-site-tail style={relatedStyle(isDark, tools.find(t => t.id === seg))} className="max-w-[1200px] mx-3 sm:mx-4 xl:mx-auto mt-4 mb-6">
         <div className="rounded-2xl border border-[var(--nut-line)] bg-[var(--nut-bg)] px-5 pt-5 [&_h2]:text-[var(--nut-head)] [&_a]:text-[var(--nut-label)]">
           {body}
         </div>

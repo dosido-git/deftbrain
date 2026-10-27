@@ -48,7 +48,7 @@ export function SiteTailDemo() {
   const id = pathname.replace(/^\/+/, '').split('/')[0];
   if (!PROTOTYPE_TOOLS.has(id)) return null;
   return (
-    <div style={nutshellStyle(isDark)} className="px-3 sm:px-4 mb-6">
+    <div style={nutshellStyle(isDark, getToolById(id))} className="px-3 sm:px-4 mb-6">
       <div className="max-w-[1200px] mx-auto"><PublicProductDemo tool={getToolById(id)} variant="nutshell" /></div>
     </div>
   );
