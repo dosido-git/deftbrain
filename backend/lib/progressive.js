@@ -54,9 +54,14 @@ async function progressive(req, res, { label, parts, ready = () => true, complet
   // The reply filter (lib/voiceFix.js) wraps res.json; streamed frames go
   // through it here, or "the visitor" and prompt markers reach the page.
   const fixBody = res.locals?.fixBody || (x => x);
+  // The filter reads the answer only: run on the whole frame it rewrote the
+  // 'changed' paths too ('for_your_needs' became 'the part above').
   const send = (frame) => {
     openStream();
-    res.write(`data: ${JSON.stringify(fixBody(frame))}\n\n`);
+    const out = { ...frame };
+    if (out.draft) out.draft = fixBody(out.draft);
+    if (out.checked) out.checked = fixBody(out.checked);
+    res.write(`data: ${JSON.stringify(out)}\n\n`);
   };
   const t0 = Date.now();
   let firstAt = 0;

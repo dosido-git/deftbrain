@@ -70,8 +70,10 @@ const EXAMPLES = [
 
 // How strongly each item holds, from the source it rests on (set by the
 // backend, never by the writer): a rule, a courtesy, something that varies,
-// a thing to ask your host, or something a source says can cause offence.
-const STRENGTH = { required: 'cb_s_required', common: 'cb_s_common', varies: 'cb_s_varies', ask: 'cb_s_ask', offence: 'cb_s_offence' };
+// a thing to ask your host, something a source says can cause offence — or a
+// law or safety matter, never labelled a courtesy.
+const STRENGTH = { required: 'cb_s_required', common: 'cb_s_common', varies: 'cb_s_varies', ask: 'cb_s_ask', offence: 'cb_s_offence', law: 'cb_s_law', safety: 'cb_s_safety' };
+const WARNING = new Set(['offence', 'law', 'safety']);
 
 function CultureBriefing({ tool }) {
   const { callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -118,6 +120,9 @@ function CultureBriefing({ tool }) {
   // contrast colour.
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
+    // Gray-500 is 4.4:1 on the envelope shade; one step darker passes.
+    textMuted: isDark ? 'text-zinc-400' : 'text-gray-600',
+    textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
     success:  'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     warning:  'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     sectionHead: 'text-base font-bold text-[var(--sc-strong)]',
@@ -174,7 +179,8 @@ function CultureBriefing({ tool }) {
     setActiveSection(null);
 
     try {
-      // Progressive (2026-10-17): the overview and first sections show first; checked after.
+      // Progressive: the questions for this visit show in seconds; the
+      // researched parts follow; checked after.
       let opened = false;
       const keep = d => ({ ...d, destination: destination.trim(), tripPurpose });
       const parsed = await callToolEndpointProgressive('culture-briefing', {
@@ -216,6 +222,11 @@ function CultureBriefing({ tool }) {
     if (!results) return '';
     const lines = [`${t('cb_copy_header')} — ${results.destination?.toUpperCase()}`, ''];
     if (results.overview) lines.push(results.overview, '');
+    if (results.visit?.length) {
+      lines.push(t('cb_visit_questions'));
+      results.visit.forEach(q => lines.push(`  • ${q.question}`));
+      lines.push('');
+    }
     if (results.essentials?.length) {
       lines.push(`${t('cb_essentials')}`);
       results.essentials.forEach(e => lines.push(`  • ${e.point}`));
@@ -223,7 +234,7 @@ function CultureBriefing({ tool }) {
     results.for_your_needs?.forEach(n => lines.push(`\n${n.need}: ${n.plan}`));
     results.sections?.forEach(sec => {
       lines.push(`\n${sec.icon ?? '•'} ${sec.title}`);
-      (sec.items || []).forEach(it => lines.push(`  • ${it.text} (${t(STRENGTH[it.strength] || 'cb_s_common')})`));
+      (sec.items || []).forEach(it => lines.push(`  • ${it.text}${STRENGTH[it.strength] ? ` (${t(STRENGTH[it.strength])})` : ''}`));
     });
     if (results.small_slips?.length) {
       lines.push(`\n${t('cb_small_slips_label')}`);
@@ -231,7 +242,7 @@ function CultureBriefing({ tool }) {
     }
     if (results.sources?.length) {
       lines.push(`\n${t('cb_sources')}`);
-      results.sources.forEach(src => lines.push(`  ${src.id} ${src.publisher} — ${src.url}`));
+      results.sources.forEach(src => lines.push(`  ${src.id} ${src.title ? `${src.title} — ` : ''}${src.publisher} — ${src.url}`));
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -435,9 +446,10 @@ function CultureBriefing({ tool }) {
       const srcs = [...new Set((ids || []).map(f => results.finding_sources?.[f]).filter(id => srcById[id]))];
       return srcs.length ? <span className={`ms-1 text-[12px] ${c.textMuted}`}>{srcs.map(id => <a key={id} href={srcById[id].url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 me-1">{id}</a>)}</span> : null;
     };
-    const tag = (strength) => (
-      <span className={`ms-2 text-[12px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap ${strength === 'offence' ? (sv ? 'border-[var(--sc-x-line)] text-[var(--sc-x-text)]' : c.danger) : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)]' : `${c.border} ${c.textMuted}`)}`}>
-        {t(STRENGTH[strength] || 'cb_s_common')}
+    // No tag on a plain fact (how to pay, a transport ban): it is not a courtesy.
+    const tag = (strength) => STRENGTH[strength] && (
+      <span className={`ms-2 text-[12px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap ${WARNING.has(strength) ? (sv ? 'border-[var(--sc-x-line)] text-[var(--sc-x-text)]' : c.danger) : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)]' : `${c.border} ${c.textMuted}`)}`}>
+        {t(STRENGTH[strength])}
       </span>
     );
     const SectionBody = ({ sec }) => (
@@ -458,6 +470,33 @@ function CultureBriefing({ tool }) {
           {results.overview && <p className={`mt-2 text-sm ${c.textSecondary}`}>{results.overview}</p>}
         </div>
 
+        {/* For this visit — leads (second review, 2026-10-27: the people
+            being visited, not a national checklist, organise the briefing).
+            The questions come first and need no research; the plans for the
+            visitor's own needs follow once the research lands. */}
+        {(results.visit?.length > 0 || results.for_your_needs?.length > 0) && (
+          <div>
+            <p className={`${head} mb-2`}>{t('cb_for_your_needs')}</p>
+            {results.visit?.length > 0 && (
+              <>
+                <p className={`text-sm font-semibold mb-1.5 ${c.text}`}>{t('cb_visit_questions')}</p>
+                <ul className="space-y-2 mb-3">
+                  {results.visit.map((q, i) => (
+                    <li key={i} className={`text-sm leading-relaxed ${c.textSecondary}`}>{q.question}{q.why ? <span className={c.textMuted}> — {q.why}</span> : null}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {results.for_your_needs?.length > 0 && (
+              <ul className="space-y-2">
+                {results.for_your_needs.map((n, i) => (
+                  <li key={i} className={`text-sm leading-relaxed ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{n.need}:</span> {n.plan}<Refs ids={n.finding_ids} /></li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {/* What matters most — the answer's key box (owner's review,
             2026-10-27: lead with the essentials, details after). */}
         {results.essentials.length > 0 && (
@@ -468,17 +507,6 @@ function CultureBriefing({ tool }) {
                 <li key={i} className={`text-sm leading-relaxed ${c.text}`}>{e.point}<Refs ids={e.finding_ids} /></li>
               ))}
             </ol>
-          </div>
-        )}
-
-        {results.for_your_needs?.length > 0 && (
-          <div>
-            <p className={`${head} mb-2`}>{t('cb_for_your_needs')}</p>
-            <ul className="space-y-2">
-              {results.for_your_needs.map((n, i) => (
-                <li key={i} className={`text-sm leading-relaxed ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{n.need}:</span> {n.plan}<Refs ids={n.finding_ids} /></li>
-              ))}
-            </ul>
           </div>
         )}
 
@@ -529,7 +557,7 @@ function CultureBriefing({ tool }) {
               {results.sources.map(src => (
                 <li key={src.id} className={`text-[13px] ${c.textMuted}`}>
                   <span className="font-semibold me-1">{src.id}</span>
-                  <a href={src.url} target="_blank" rel="noopener noreferrer" className={linkStyle}>{src.publisher}</a>{src.date ? ` · ${src.date}` : ''}
+                  <a href={src.url} target="_blank" rel="noopener noreferrer" className={linkStyle}>{src.title || src.publisher}</a>{src.title ? ` · ${src.publisher}` : ''}{src.date ? ` · ${src.date}` : ''}
                 </li>
               ))}
             </ul>

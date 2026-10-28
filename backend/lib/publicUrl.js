@@ -58,6 +58,32 @@ function pageDate(html) {
   return null;
 }
 
+// The page's own title (og:title first: <title> often carries the site name
+// too). Owner's review 2026-10-27: two articles from one publisher could not
+// be told apart in a source list.
+function pageTitle(html) {
+  const m = String(html || '').match(/property=["']og:title["'][^>]*content=["']([^"']{3,300})/i)
+    || String(html || '').match(/content=["']([^"']{3,300})["'][^>]*property=["']og:title/i)
+    || String(html || '').match(/<title[^>]*>([^<]{3,300})<\/title>/i);
+  return m ? pageText(m[1]).slice(0, 200) || null : null;
+}
+
+// When the page says it was last updated, if it does: a travel advisory first
+// published in 2013 and revised this month is this month's advice.
+function pageUpdated(html) {
+  const pats = [
+    /"dateModified"\s*:\s*"([^"]{8,40})"/i,
+    /property=["']article:modified_time["'][^>]*content=["']([^"']{8,40})/i,
+    /content=["']([^"']{8,40})["'][^>]*property=["']article:modified_time/i,
+  ];
+  for (const re of pats) {
+    const m = String(html || '').match(re);
+    const d = m && new Date(m[1]);
+    if (d && !isNaN(d) && d.getFullYear() > 1990) return d.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
 // The words on a page, without markup, scripts or styles.
 function pageText(html) {
   return String(html || '')
@@ -76,7 +102,7 @@ async function checkSourceLink(url, { timeoutMs = 6000 } = {}) {
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     // A home page cannot hold the finding it is cited for.
-    if (depth(url) === 0) return { status: 'moved', date: null, text: '' };
+    if (depth(url) === 0) return { status: 'moved', date: null, title: null, text: '' };
     let current = (await assertPublicUrl(url)).href;
     let res = null;
     for (let hop = 0; hop < 5; hop++) {
@@ -88,9 +114,9 @@ async function checkSourceLink(url, { timeoutMs = 6000 } = {}) {
       }
       break;
     }
-    if (res.status === 404 || res.status === 410) return { status: 'dead', date: null, text: '' };
-    if (!res.ok) return { status: 'unknown', date: null, text: '' };
-    if (current !== url && depth(current) < depth(url)) return { status: 'moved', date: null, text: '' };
+    if (res.status === 404 || res.status === 410) return { status: 'dead', date: null, title: null, text: '' };
+    if (!res.ok) return { status: 'unknown', date: null, title: null, text: '' };
+    if (current !== url && depth(current) < depth(url)) return { status: 'moved', date: null, title: null, text: '' };
     // Read at most 1.5 MB. A PDF or other binary gives no text, so nothing is
     // claimed about it.
     let html = '';
@@ -100,15 +126,15 @@ async function checkSourceLink(url, { timeoutMs = 6000 } = {}) {
       while (html.length < 1_500_000) { const { done, value } = await reader.read(); if (done) break; html += dec.decode(value, { stream: true }); }
       reader.cancel().catch(() => {});
     }
-    return { status: 'ok', date: pageDate(html), text: pageText(html) };
+    return { status: 'ok', date: pageDate(html), updated: pageUpdated(html), title: pageTitle(html), text: pageText(html) };
   } catch {
-    return { status: 'unknown', date: null, text: '' };
+    return { status: 'unknown', date: null, title: null, text: '' };
   } finally {
     clearTimeout(timer);
   }
 }
 
-module.exports = { assertPublicUrl, isBlockedHost, checkSourceLink, pageDate, pageText };
+module.exports = { assertPublicUrl, isBlockedHost, checkSourceLink, pageDate, pageText, pageTitle, pageUpdated };
 
 // Self-check: node backend/lib/publicUrl.js
 if (require.main === module) {
@@ -116,6 +142,9 @@ if (require.main === module) {
   assert.strictEqual(pageDate('<script type="application/ld+json">{"datePublished":"2026-04-15T09:00:00Z"}</script>'), '2026-04-15');
   assert.strictEqual(pageDate('<meta property="article:published_time" content="2026-01-07">'), '2026-01-07');
   assert.strictEqual(pageDate('<p>no date</p>'), null);
+  assert.strictEqual(pageTitle('<title>Site</title><meta property="og:title" content="How do I dress?">'), 'How do I dress?');
+  assert.strictEqual(pageTitle('<p>none</p>'), null);
+  assert.strictEqual(pageUpdated('{"datePublished":"2013-03-19","dateModified":"2026-10-20T10:00:00Z"}'), '2026-10-20');
   assert.strictEqual(pageText('<p>Pay grew <b>4.7%</b></p><script>x=1</script>'), 'Pay grew 4.7%');
   assert.strictEqual(isBlockedHost('169.254.169.254'), true);
   assert.strictEqual(depth('https://a.com/research/'), 1);

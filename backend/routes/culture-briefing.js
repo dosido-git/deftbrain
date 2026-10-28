@@ -1,7 +1,7 @@
 const express = require('express');
 const { allChecks } = require('../lib/bothChecks');
 const router  = express.Router();
-const { answer, whileSearching } = require('../lib/progressive');
+const { answer } = require('../lib/progressive');
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -9,9 +9,10 @@ const { runOutputGuard } = require('../lib/outputGuard');
 
 const { customsResearch } = require('../lib/customsResearch');
 const { checkEvidenceFit } = require('../lib/evidenceFit');
+const { calibrateClaims } = require('../lib/certaintyCheck');
 // The governing standard for this tool. One text, used to write the
 // briefing and to check it, so the two cannot drift into paraphrases.
-const STANDARD = `Describe common practices and useful tendencies without treating a country, city, religion, or population as culturally uniform. Distinguish strong conventions from variable practices. Avoid invented precision and categorical claims about how locals will react. Never claim insider knowledge. For legal, safety, payment, tipping, religious, or rapidly changing practical information, clearly qualify uncertainty and avoid presenting potentially changing information as guaranteed fact.`;
+const STANDARD = `Describe common practices and useful tendencies without treating a country, city, religion, or population as culturally uniform. Distinguish strong conventions from variable practices. Avoid invented precision and categorical claims about how locals will react. Never claim insider knowledge. For legal, safety, payment, tipping, religious, or rapidly changing practical information, clearly qualify uncertainty and avoid presenting potentially changing information as guaranteed fact. Describe a courtesy as a courtesy, with what makes it flexible ('prefer', 'may be appreciated', 'ask your host'); an accommodation for diet, alcohol, faith, health or the use of cutlery is always acceptable, and courtesy never requires eating, drinking or doing something unsuitable. The destination does not establish the hosts' language, faith, ethnicity or family customs: never assume them and never promise how communication will go; name what to ask instead. Keep safety and law apart from courtesy.`;
 
 // The visitor supplied a destination and a few trip facts. Everything else is
 // general knowledge about a place, which is exactly the kind of claim that
@@ -39,7 +40,10 @@ The failures:
 3. PREDICTING REACTIONS — 'they will be offended', 'locals will appreciate this', 'nobody will mind', 'people will understand', 'this damages trust', 'it breaks rapport', 'you will learn it quickly'. Also the softer forms, which are the same assertion with a gentler verb: 'is read as confident', 'this signals respect', 'is appreciated', 'traffic is understood', and any hedged effect — 'can damage the working relationship', 'may break rapport', 'could wound'. Hedging an effect claim does not make it an observation. 'Can come across as X' is the permitted ceiling and nothing may be appended to it. A convention can be described and a consequence can be phrased as how something CAN come across; how a person WILL respond cannot be known. In small_slips, a recovery ('a brief apology and asking for the pronunciation is a reasonable recovery') is right and a reassurance is not.
 4. CLAIMED INSIDER STANDING — 'locals will tell you', 'what only residents know', 'the secret is'. The briefing has not been there. A tip resting on a named national stereotype — 'X time', 'X directness' — fails here too. So does the same claim stated plainly in any other field: 'Nigerians may arrive late without apology', 'Germans are direct', 'the French expect formality'. A nationality is not a behaviour, and moving the claim out of the tips into a section does not fix it. Attach the observation to a SETTING, never to a people.
 5. VOLATILE INFORMATION STATED AS SETTLED — anything legal, financial, payment, tipping, religious, safety-related or subject to change, presented as guaranteed rather than as something to verify.
-6. THE PERSON'S OWN NEEDS TREATED AS FAULTS — not drinking, a diet, a faith practice or a disability presented as a misstep or something to explain away. They are things to plan for.${pack ? `
+6. THE PERSON'S OWN NEEDS TREATED AS FAULTS — not drinking, a diet, a faith practice or a disability presented as a misstep or something to explain away. They are things to plan for.
+7. A COURTESY MADE AN OBLIGATION — 'accept at least a small portion', 'right hand only', 'bring a gift to any home', 'never use black or white wrapping', 'avoid eating in public during Ramadan' city-wide. A general etiquette source describes what is common, not what every family expects: say 'prefer', 'may be appreciated', 'ask your host', scope it to the setting or observance, and keep the accommodation open (explain a diet, decline alcohol, use cutlery).
+8. THE FAMILY PRESUMED FROM THE PLACE — the hosts' language, faith, ethnicity or customs assumed from the destination ('learn some Yoruba' for Lagos), or communication promised ('so you will be able to communicate'). Name what to ask instead.
+9. SAFETY OR LAW CALLED COURTESY — photographing government, military or airport sites, or transport risks such as motorcycle taxis, framed as manners rather than as a legal or safety matter.${pack ? `
 
 RESEARCHED FINDINGS (the only outside facts this briefing may state):
 ${JSON.stringify(pack.findings)}` : ''}`;
@@ -91,36 +95,42 @@ router.post('/culture-briefing', rateLimit(DEFAULT_LIMITS), async (req, res) => 
   if (region && region.trim())   contextParts.push(`Specific region/city within ${destination.trim()}: ${region.trim()}`);
   if (context && context.trim())  contextParts.push(`Traveller's own context & constraints (HONOR these): ${context.trim()}`);
 
-  // Accuracy and speed first (CLAUDE.md; owner's review 2026-10-27). The
-  // briefing used to be written from memory and spot-checked afterwards; now
-  // official sources are researched first (lib/customsResearch.js, cached 30
-  // days per destination) and every item must cite a finding. Strength comes
-  // from the finding, set in code, so nothing is made a "higher-stakes"
-  // misstep unless a source says it causes offence. A first-time destination
-  // waits for the search with a note on screen (whileSearching); after that,
-  // four short parallel passes show the essentials in seconds.
+  // Accuracy and speed first (CLAUDE.md; owner's reviews 2026-10-27). The
+  // briefing is written only from official-first research (lib/customsResearch.js,
+  // cached 30 days per destination); every item cites a finding and its
+  // strength is set in code from the finding. A first-time destination takes
+  // ~90s to research, so the research starts at once and does not hold the
+  // page: the first part — the questions to settle for THIS visit, which
+  // state no outside fact and need no research — shows in seconds, and the
+  // researched parts land as the research finishes (second review: 95s with
+  // nothing on screen; the partner's family, not a national checklist, is
+  // the organising principle).
   const SECTIONS = [
-    ['greetings', '🤝'], ['dining', '🍽️'], ['business', '💼'], ['gifts', '🎁'],
-    ['places', '⛩️'], ['getting_around', '🚌'], ['money', '💰'], ['safety', '🛡️'],
+    ['greetings', '🤝'], ['occasions', '🎉'], ['dining', '🍽️'], ['business', '💼'], ['gifts', '🎁'],
+    ['places', '🛐'], ['getting_around', '🚌'], ['money', '💰'], ['safety', '🛡️'],
   ];
-  const TOPIC_SECTION = { greetings: 'greetings', names: 'greetings', language: 'greetings', dining: 'dining', dietary: 'dining', alcohol: 'dining', business: 'business', gifts: 'gifts', indoors: 'places', religious_sites: 'places', dress: 'places', photography: 'places', transport: 'getting_around', money: 'money', safety: 'safety', law: 'safety' };
+  const TOPIC_SECTION = { greetings: 'greetings', names: 'greetings', language: 'greetings', occasions: 'occasions', dining: 'dining', dietary: 'dining', alcohol: 'dining', business: 'business', gifts: 'gifts', indoors: 'places', religious_sites: 'places', dress: 'places', photography: 'places', transport: 'getting_around', money: 'money', safety: 'safety', law: 'safety' };
 
   try {
-    const pack = await whileSearching(req, res, 'customs', customsResearch({ destination: destination.trim(), region: region?.trim() }).catch(() => null));
-    if (!pack) {
-      return res.status(503).json({ error: 'The official-source check for this destination did not finish. Please try again in a minute — the research usually completes by then.', code: 'research_unavailable' });
-    }
-    const valid = new Set(pack.findings.map(f => f.id));
-    const byId = new Map(pack.findings.map(f => [f.id, f]));
+    const research = customsResearch({ destination: destination.trim(), region: region?.trim() }).catch(() => null);
+    let pack = null;
+    const getPack = async () => {
+      pack = await research;
+      if (!pack) throw new Error('customs research unavailable');
+      return pack;
+    };
+    const valid = () => new Set((pack?.findings || []).map(f => f.id));
+    const byId = () => new Map((pack?.findings || []).map(f => [f.id, f]));
     const findingsFor = ids => pack.findings.filter(f => ids.includes(TOPIC_SECTION[f.topic]));
 
-    const base = `A visitor is going to ${destination.trim()}${region ? ` (${region.trim()})` : ''}.
-${contextParts.join('\n')}
+    const trip = `A visitor is going to ${destination.trim()}${region ? ` (${region.trim()})` : ''}.
+${contextParts.join('\n')}`;
+    const base = `${trip}
 
 THE STANDARD:
 ${STANDARD}
 
-Write ONLY from the RESEARCHED FINDINGS below. Every item cites the finding ids it rests on; anything no finding supports is left out — never fill a gap from memory. Keep each item as strong as its finding, no stronger, and keep its scope (where or when it applies). Things the visitor told you about themselves (diet, not drinking, faith, access needs, children) are things to plan for, never missteps or something to explain away. Say each point once.`;
+Write ONLY from the RESEARCHED FINDINGS below. Every item cites the finding ids it rests on; anything no finding supports is left out — never fill a gap from memory. Keep each item as strong as its finding, no stronger, and keep its scope (where or when it applies). A finding from a general etiquette guide describes what is common, not what every family or host expects. Only what bears on what this visitor said they will do belongs; places they did not mention visiting (palaces, shrines, markets) are left out unless the trip is sightseeing. Things the visitor told you about themselves (diet, not drinking, faith, access needs, children) are things to plan for, never missteps or something to explain away. Say each point once.`;
     const ask = (findings, schema, rules) => `${base}
 
 RESEARCHED FINDINGS:
@@ -135,28 +145,50 @@ Never place a double-quote (") character inside any JSON string value.`;
     const system = withLanguage(`${STANDARD}\n\nReturn only valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted phrases or local-language terms plainly or with single quotes, or it breaks the JSON.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const call = (content, maxTokens, tag) => callClaudeWithRetry({ model: MODELS.FAST, max_tokens: maxTokens, system, messages: [{ role: 'user', content }] }, { label: tag });
     const sectionSchema = ids => `{ "sections": [ ${ids.map(id => `{ "id": "${id}", "title": "short heading in the visitor's language", "items": [ { "text": "one short practical sentence", "finding_ids": ["F1"] } ] }`).join(', ')} ] }`;
-    const sectionRules = 'At most 4 items per section, each one short sentence. A section with nothing relevant to this trip gets "items": [].';
+    const sectionRules = 'At most 4 items per section, each one short sentence. A section with nothing relevant to this trip gets "items": []. Photographing people (a matter of their consent) and photographing government, military or airport sites (a legal and security matter) are separate items. Transport risks are safety items, said as plainly as the source says them.';
     const sectionPart = (ids, i) => ({
       required: false,
-      run: () => call(ask(findingsFor(ids), sectionSchema(ids), sectionRules), 1200, `culture-briefing-${i + 2}`),
+      run: async () => { await getPack(); return call(ask(findingsFor(ids), sectionSchema(ids), sectionRules), 1200, `culture-briefing-${i + 2}`); },
       apply: (d, out) => { (Array.isArray(out?.sections) ? out.sections : []).forEach(sec => { if (sec && ids.includes(sec.id)) d.sectionMap = { ...d.sectionMap, [sec.id]: sec }; }); },
     });
-    const keep = (arr) => (Array.isArray(arr) ? arr : []).map(x => ({ ...x, finding_ids: (Array.isArray(x?.finding_ids) ? x.finding_ids : []).map(String).filter(id => valid.has(id)) })).filter(x => x.finding_ids.length);
+    const keep = (arr) => { const ok = valid(); return (Array.isArray(arr) ? arr : []).map(x => ({ ...x, finding_ids: (Array.isArray(x?.finding_ids) ? x.finding_ids : []).map(String).filter(id => ok.has(id)) })).filter(x => x.finding_ids.length); };
+    const visitOf = arr => (Array.isArray(arr) ? arr : []).filter(q => q && typeof q.question === 'string' && q.question.trim()).slice(0, 6).map(q => ({ question: q.question.trim(), why: typeof q.why === 'string' ? q.why.trim() : '' }));
 
     // Strength from the finding, never from the writer; each finding said
     // once across the sections (the essentials are the short summary above).
+    // Safety and law are labelled as such, never as a courtesy (second review:
+    // photographing government sites and motorcycle taxis read 'Common courtesy').
     const assemble = (d) => {
       const { sectionMap, ...rest } = structuredClone(d);
+      const visit = visitOf(rest.visit);
+      if (!pack) return { destination: destination.trim(), tripPurpose, visit, overview: '', essentials: [], for_your_needs: [], sections: [], small_slips: [], sources: [], finding_sources: {}, researched_at: null };
+      const findingById = byId();
       // Each finding said once outside the essentials: your needs first, then
       // the topics, then the slips (owner's review: 'no tipping' said three times).
       const used = new Set();
       const once = arr => keep(arr).filter(x => { const fresh = x.finding_ids.some(f => !used.has(f)); x.finding_ids.forEach(f => used.add(f)); return fresh; });
       const needs = once(rest.for_your_needs).slice(0, 4);
-      const strengthOf = ids => { const order = ['offence', 'required', 'ask', 'varies', 'common']; return ids.map(id => byId.get(id)?.strength).sort((a, b) => order.indexOf(a) - order.indexOf(b))[0] || 'common'; };
+      // A section item that says what an essential already said, nearly word
+      // for word, is left out of the section (owner: say each point once).
+      const wordsOf = x => new Set(String(x || '').toLowerCase().match(/[\p{L}\p{N}]+/gu) || []);
+      const essentialWords = keep(rest.essentials).map(e => wordsOf(e.point));
+      const restates = text => { const w = wordsOf(text); return w.size > 0 && essentialWords.some(e => [...w].filter(x => e.has(x)).length / w.size >= 0.8); };
+      const strengthOf = ids => {
+        const fs = ids.map(id => findingById.get(id)).filter(Boolean);
+        // Law only when every finding behind it is a legal requirement;
+        // a crime warning citing one law finding is still safety.
+        if (fs.length && fs.every(f => f.topic === 'law' && f.strength === 'required')) return 'law';
+        if (fs.some(f => f.topic === 'safety' || f.topic === 'law')) return 'safety';
+        // Transport and money facts are not courtesies: no 'Common courtesy'
+        // tag on a ban or on how to pay (second review: the okada ban).
+        if (fs.every(f => ['transport', 'money'].includes(f.topic)) && fs.every(f => f.strength === 'common')) return null;
+        const order = ['offence', 'required', 'ask', 'varies', 'common'];
+        return fs.map(f => f.strength).sort((a, b) => order.indexOf(a) - order.indexOf(b))[0] || 'common';
+      };
       const sections = SECTIONS.map(([id, icon]) => {
         const sec = sectionMap?.[id];
         if (!sec) return null;
-        const items = keep(sec.items).filter(it => { const fresh = it.finding_ids.some(f => !used.has(f)); it.finding_ids.forEach(f => used.add(f)); return fresh && it.text; })
+        const items = keep(sec.items).filter(it => { const fresh = it.finding_ids.some(f => !used.has(f)); it.finding_ids.forEach(f => used.add(f)); return fresh && it.text && !restates(it.text); })
           .map(it => ({ text: it.text, strength: strengthOf(it.finding_ids), finding_ids: it.finding_ids }));
         return items.length ? { id, icon, title: sec.title || id, items } : null;
       }).filter(Boolean);
@@ -164,6 +196,7 @@ Never place a double-quote (") character inside any JSON string value.`;
       const sourceIds = new Set(pack.findings.filter(f => cited.has(f.id)).map(f => f.source_id));
       return {
         destination: destination.trim(), tripPurpose,
+        visit,
         overview: rest.overview || '',
         essentials: keep(rest.essentials).slice(0, 6),
         for_your_needs: needs,
@@ -184,37 +217,59 @@ Never place a double-quote (") character inside any JSON string value.`;
 
     return await answer(req, res, {
       label: 'culture-briefing',
+      // The research can take ~90s after the first part is on screen; pings
+      // keep the connection from being dropped as idle.
+      heartbeat: true,
       parts: [
-        { required: true,
-          run: () => call(ask(pack.findings, `{ "overview": "1-2 sentences: what kind of trip this is and where practice differs by setting or region — never adjectives for a place or people", "essentials": [ { "point": "one of the 4-6 things that matter most for THIS trip and purpose, one short sentence", "finding_ids": ["F1"] } ] }`, 'essentials: the 4-6 points that matter most for this purpose and context, most important first, each one short sentence.'), 900, 'culture-briefing'),
-          apply: (d, out) => { if (out?.overview) d.overview = out.overview; if (out?.essentials) d.essentials = out.essentials; } },
-        sectionPart(['greetings', 'dining', 'business', 'gifts'], 0),
-        sectionPart(['places', 'getting_around', 'money', 'safety'], 1),
+        // First, in seconds, with no research: what to settle with the people
+        // they are visiting. Questions only — no outside fact is stated here.
         { required: false,
-          run: () => call(ask(pack.findings, `{ "for_your_needs": [ { "need": "a need the visitor stated, in a few words", "plan": "what to do about it, specific (for a vegetarian: what hidden ingredients to ask about)", "finding_ids": ["F1"] } ], "small_slips": [ { "slip": "an ordinary slip a visitor might make", "recovery": "a calm, simple recovery", "finding_ids": ["F1"] } ] }`, `for_your_needs: only for needs the visitor stated about THEMSELVES (diet, alcohol, faith, access, children) — not the trip's purpose or plans${context?.trim() ? '' : ' — they stated none, so []'}. small_slips: 0-3 ordinary slips with calm recoveries; nothing the visitor told you about themselves is a slip.`), 900, 'culture-briefing-4'),
+          run: () => call(`${trip}
+
+THE STANDARD:
+${STANDARD}
+
+Write the questions this visitor should settle before the trip with the person who invited them or knows the hosts (a partner, a host, a colleague, a host family — whoever their context names). Lead with the occasion or plans they described; for a wedding, for instance: which events they are attending (traditional, religious, civil, reception), what to wear and whether coordinated clothing or fabric is expected, what gift or contribution is usual for this family, whether and when photos are welcome, what time to arrive and who will introduce them. When they will meet people: which languages those people prefer, and how to greet and address elders or hosts. Only when they stated a need (diet, alcohol, faith, access, children): how and when to let the hosts know — never ask whether they have one. QUESTIONS ONLY — state no custom, language, faith or fact about the place or the people; the destination does not tell you the family's language, faith or customs.
+
+Return ONLY valid JSON:
+{ "visit": [ { "question": "one short question, addressed to the visitor (Which events…?)", "why": "what the answer settles, at most 10 words" } ] }
+4-6 questions, most useful first. Never place a double-quote (") character inside any JSON string value.`, 700, 'culture-briefing-visit'),
+          apply: (d, out) => { if (Array.isArray(out?.visit)) d.visit = out.visit; } },
+        { required: true,
+          run: async () => { await getPack(); return call(ask(pack.findings, `{ "overview": "1-2 sentences: what kind of trip this is and where practice differs by setting, region or family — never adjectives for a place or people", "essentials": [ { "point": "one of the 4-6 things that matter most for THIS trip and its plans, one short sentence", "finding_ids": ["F1"] } ] }`, 'essentials: the 4-6 points that matter most for what this visitor said they will do, most important first, each one short sentence. Safety and law points come before courtesies.'), 900, 'culture-briefing'); },
+          apply: (d, out) => { if (out?.overview) d.overview = out.overview; if (out?.essentials) d.essentials = out.essentials; } },
+        sectionPart(['greetings', 'dining', 'business'], 0),
+        sectionPart(['occasions', 'gifts', 'money'], 1),
+        sectionPart(['places', 'getting_around', 'safety'], 2),
+        { required: false,
+          run: async () => { await getPack(); return call(ask(pack.findings, `{ "for_your_needs": [ { "need": "a need the visitor stated, in a few words", "plan": "what to do about it, specific and practical — what to ask about, what to say, when to tell the hosts", "finding_ids": ["F1"] } ], "small_slips": [ { "slip": "a concrete action a visitor might get wrong (passing a dish with the left hand), not a broad assumption", "recovery": "a concrete recovery: thank the person, apologise briefly if needed, follow their lead", "finding_ids": ["F1"] } ] }`, `for_your_needs: only for needs the visitor stated about THEMSELVES (diet, alcohol, faith, access, children) — not the trip's purpose or plans${context?.trim() ? '' : ' — they stated none, so []'}; each plan adds practical help, not a restatement of a custom. small_slips: 0-3 concrete slips with concrete recoveries; nothing the visitor told you about themselves is a slip.`), 900, 'culture-briefing-4'); },
           apply: (d, out) => { if (out?.for_your_needs) d.for_your_needs = out.for_your_needs; if (out?.small_slips) d.small_slips = out.small_slips; } },
       ],
       finish: assemble,
-      ready: d => Boolean(d.overview && d.essentials?.length),
+      ready: d => Boolean(d.visit?.length || (d.overview && d.essentials?.length)),
       complete: d => Boolean(d.overview && d.essentials?.length),
       check: async (draft) => {
         const parsed = assemble(draft);
         // Side by side (lib/bothChecks.js): every item against the findings it
         // cites (T13); then the guard (the standard, and the person's needs
-        // never as faults).
+        // never as faults). The visit questions state no evidence, so the
+        // evidence check skips them; the guard reads them.
         await allChecks(parsed, [
           x => checkEvidenceFit(x, {
             label: 'culture-briefing',
             evidence: JSON.stringify(pack.findings),
             summary: ['overview', 'essentials'],
-            skip: ['destination', 'tripPurpose', 'sources', 'finding_sources', 'researched_at'],
+            skip: ['destination', 'tripPurpose', 'visit', 'sources', 'finding_sources', 'researched_at'],
             userLanguage,
           }),
           x => guardResult(x, req.body, pack),
+          // T5: a courtesy made a rule, or the hosts' language and reactions
+          // inferred from the place ('so you will be able to communicate').
+          x => calibrateClaims(x, { label: 'culture-briefing', userLanguage, skip: ['destination', 'tripPurpose', 'visit', 'sources', 'finding_sources', 'researched_at'] }),
         ], { label: 'culture-briefing' });
         // Back into the draft's shape, repairs included.
         Object.keys(draft).forEach(k => delete draft[k]);
-        Object.assign(draft, { overview: parsed.overview, essentials: parsed.essentials, for_your_needs: parsed.for_your_needs, small_slips: parsed.small_slips, sectionMap: Object.fromEntries(parsed.sections.map(sec => [sec.id, sec])) });
+        Object.assign(draft, { visit: parsed.visit, overview: parsed.overview, essentials: parsed.essentials, for_your_needs: parsed.for_your_needs, small_slips: parsed.small_slips, sectionMap: Object.fromEntries(parsed.sections.map(sec => [sec.id, sec])) });
       },
     });
   } catch (err) {
@@ -238,6 +293,9 @@ router.outputGuard = {
     'sweeping_characterisation_of_a_place', // a city given three adjectives
     'volatile_information_stated_as_settled',  // legal, payment, tipping, religious, changeable
     'uncertain_local_phrase_stated_confidently',
+    'courtesy_stated_as_obligation',        // 'accept at least…', 'right hand only', 'never…'
+    'hosts_language_faith_or_customs_presumed_from_place', // 'learn Yoruba' for Lagos
+    'safety_or_law_framed_as_courtesy',     // government-site photos, motorcycle taxis
   ],
   require: [
     'strong_conventions_distinguished_from_variable_practice',

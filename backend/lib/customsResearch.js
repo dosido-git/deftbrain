@@ -15,16 +15,27 @@
 // now redirect to a home page are dropped once, in the background.
 //
 //   const pack = await customsResearch({ destination, region });
-//   pack → { findings: [{ id, topic, practice, strength, scope, source_id }], sources: [{ id, publisher, url, date }] } | null
+//   pack → { findings: [{ id, topic, practice, strength, scope, source_id }], sources: [{ id, publisher, title, url, date, type }] } | null
 const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('./groundedFacts');
 const { checkSourceLink } = require('./publicUrl');
 
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const COLD_WAIT_MS = Number(process.env.CUSTOMS_RESEARCH_WAIT_MS || 120000);
-const TOPICS = ['greetings', 'names', 'dining', 'dietary', 'alcohol', 'indoors', 'religious_sites', 'transport', 'money', 'gifts', 'business', 'dress', 'photography', 'safety', 'law', 'language'];
+const TOPICS = ['greetings', 'names', 'occasions', 'dining', 'dietary', 'alcohol', 'indoors', 'religious_sites', 'transport', 'money', 'gifts', 'business', 'dress', 'photography', 'safety', 'law', 'language'];
 const STRENGTHS = ['required', 'common', 'varies', 'ask', 'offence'];
 const host = u => { try { return new URL(u).hostname.replace(/^www\./, '').toLowerCase(); } catch { return ''; } };
 const compact = (s, n = 400) => String(stripCites(s || '')).trim().replace(/\s+/g, ' ').slice(0, n);
+
+// A citation must support the claim's strength as well as the claim (owner's
+// review 2026-10-27: a general etiquette guide made 'accept at least a small
+// portion' a rule for every family). Only an official page can make
+// something required; a commercial page cannot say a thing causes offence —
+// at most that it varies.
+function capStrength(strength, type) {
+  if (strength === 'required' && type !== 'official') return 'common';
+  if (strength === 'offence' && type === 'commercial') return 'varies';
+  return strength;
+}
 
 function clean(raw, searchResults) {
   const seen = new Set((searchResults || []).map(r => r.url));
@@ -37,11 +48,13 @@ function clean(raw, searchResults) {
     const practice = compact(f?.practice, 360);
     if (!practice) return null;
     const type = ['official', 'reference', 'commercial'].includes(f?.source_type) ? f.source_type : 'commercial';
-    if (!byUrl.has(url)) { const id = `S${sources.length + 1}`; byUrl.set(url, id); sources.push({ id, publisher: compact(f?.publisher, 120) || host(url), url, date: compact(f?.date, 40) || null, type }); }
+    // Date and title come from the page itself (verifyPack), never the
+    // writer's reading of it: a source listed as June was dated 30 April.
+    if (!byUrl.has(url)) { const id = `S${sources.length + 1}`; byUrl.set(url, id); sources.push({ id, publisher: compact(f?.publisher, 120) || host(url), title: null, url, date: null, type }); }
     return {
       topic: TOPICS.includes(f?.topic) ? f.topic : 'greetings',
       practice,
-      strength: STRENGTHS.includes(f?.strength) ? f.strength : 'common',
+      strength: capStrength(STRENGTHS.includes(f?.strength) ? f.strength : 'common', type),
       scope: compact(f?.scope, 160) || null,
       source_id: byUrl.get(url),
     };
@@ -57,31 +70,50 @@ function clean(raw, searchResults) {
   return kept.length >= 6 ? { findings: kept, sources: sources.filter(src => usedSources.has(src.id)) } : null;
 }
 
+// A page that would not load still needs telling apart from its neighbours
+// from one publisher: its address's last part, as words ('how-do-i-dress-
+// respectfully-in-nigeria' → 'How do I dress respectfully in Nigeria'),
+// when that reads as a title (three words or more).
+function slugTitle(url) {
+  try {
+    const seg = new URL(url).pathname.split('/').filter(Boolean).pop() || '';
+    const words = decodeURIComponent(seg).replace(/\.[a-z]{2,5}$/i, '').split(/[-_]+/).filter(w => /^[a-z0-9]+$/i.test(w));
+    if (words.length < 3) return null;
+    const s = words.join(' ').replace(/\bi\b/g, 'I');
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  } catch { return null; }
+}
+
 // Dead or moved pages, checked once per cached pack (free, SSRF-guarded),
 // never holding a request for more than 2.5s; the cached object is fixed in
 // place for the next visitor.
 async function verifyPack(pack) {
-  if (!pack || pack.links_checked) return;
+  // v2 (2026-10-27): page dates and titles; packs checked before then are
+  // checked again once, free.
+  if (!pack || pack.links_checked4) return;
   if (pack.links_checking) return pack.links_checking;
   pack.links_checking = (async () => {
     const results = await Promise.all(pack.sources.map(s => checkSourceLink(s.url)));
     const bad = new Set(pack.sources.filter((s, i) => ['dead', 'moved'].includes(results[i].status)).map(s => s.id));
-    pack.sources.forEach((s, i) => { if (results[i].date) s.date = results[i].date; });
+    // The later of published and updated (an advisory first published in 2013
+    // and revised this month shows this month).
+    pack.sources.forEach((s, i) => { const r = results[i]; s.date = [r.date, r.updated].filter(Boolean).sort().pop() || null; s.title = r.title || s.title || slugTitle(s.url); });
     const kept = pack.findings.filter(f => !bad.has(f.source_id));
     if (bad.size && kept.length >= 6) {
       pack.findings = kept;
       pack.sources = pack.sources.filter(s => !bad.has(s.id));
       console.log(`[customs-research] dropped ${bad.size} source(s) whose link is dead or moved`);
     }
-    pack.links_checked = true;
+    pack.links_checked4 = true;
   })();
   return pack.links_checking;
 }
 
 async function customsResearch({ destination, region }) {
   const place = [region, destination].filter(x => x && String(x).trim()).join(', ');
-  // v2: findings carry their source's type (official / reference / commercial).
-  const cacheKey = `customs2:${normalizeKeyPart(destination)}:${normalizeKeyPart(region || '')}`;
+  // v3: occasions, travel advisories for safety and law, strength capped by
+  // source type, dates and titles from the page.
+  const cacheKey = `customs3:${normalizeKeyPart(destination)}:${normalizeKeyPart(region || '')}`;
   await groundedFacts({
     cacheKey,
     label: 'customs-research',
@@ -89,10 +121,10 @@ async function customsResearch({ destination, region }) {
     coldWaitMs: COLD_WAIT_MS,
     maxUses: 5,
     maxTokens: 7000,
-    system: 'You research what a visitor should know about customs and practical rules in a place, with web search. Prefer official sources in this order: the national or city tourism board, transit operators, government pages, the venues or institutions themselves; then established travel references. Never social posts, forums or blogs. Report only what the pages you retrieve say — never fill a gap from memory. Keep each finding as strong as the source puts it, no stronger: a courtesy is not a rule, and something is a cause of offence only if the source says so. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    system: 'You research what a visitor should know about customs and practical rules in a place, with web search. Prefer official sources in this order: the national or city tourism board, transit operators, government pages (for safety and law: national travel advisories such as the UK FCDO, Canada or the US State Department), the venues or institutions themselves; then established travel references. Never social posts, forums or blogs. Report only what the pages you retrieve say — never fill a gap from memory. Keep each finding as strong as the source puts it, no stronger: a courtesy is not a rule, and something is a cause of offence only if the source says so. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
     userPrompt: `Research visitor customs and practical rules for: ${place}
 
-Cover what visitors most often get wrong, across: greetings and how to address people (names, titles); dining and table manners; dietary needs (hidden animal ingredients such as stocks, vegetarian and halal options); alcohol (including declining it); indoor spaces and shoes; religious sites; public transport manners (priority seats, escalators, phones); money (tipping, payment, extra charges); gifts; business meetings (cards, language, interpreters); dress; photography; safety; laws visitors break by accident; language help.
+Cover what visitors most often get wrong, across: greetings and how to address people (names, titles); family occasions such as weddings and funerals (attire, gifts or cash contributions, arrival, photography); dining and table manners; dietary needs (hidden animal ingredients such as stocks, vegetarian and halal options); alcohol (including declining it); indoor spaces and shoes; religious sites; public transport manners (priority seats, escalators, phones); money (tipping, payment, extra charges); gifts; business meetings (cards, language, interpreters); dress; photography (photographing people is a matter of consent; photographing government, military or airport sites can be a legal and security matter — keep them separate); safety (including transport risks such as motorcycle taxis, from travel advisories); laws visitors break by accident; language help.
 
 Return ONLY valid JSON:
 { "findings": [ {
@@ -102,8 +134,7 @@ Return ONLY valid JSON:
   "scope": "where or when it applies (a setting, region or kind of venue), or null",
   "source_url": "the exact page URL it came from",
   "publisher": "who publishes that page",
-  "source_type": "official (government, national or city tourism board, transit operator, the venue or institution itself) | reference (established guidebook, encyclopedia, major news) | commercial (company blog, travel agency, shop, personal site)",
-  "date": "the page's date if shown, else null"
+  "source_type": "official (government, national or city tourism board, transit operator, the venue or institution itself) | reference (established guidebook, encyclopedia, major news) | commercial (company blog, travel agency, shop, personal site)"
 } ] }
 18-26 findings, each from a page you retrieved. At least half from official pages; use a commercial page only for something no official or reference page covers.`,
     render: (out, searchResults) => {
@@ -117,7 +148,7 @@ Return ONLY valid JSON:
   return pack && pack.findings?.length ? pack : null;
 }
 
-module.exports = { customsResearch, clean, STRENGTHS };
+module.exports = { customsResearch, clean, capStrength, STRENGTHS };
 
 // Self-check: node backend/lib/customsResearch.js --check
 if (require.main === module && process.argv.includes('--check')) {
@@ -128,6 +159,12 @@ if (require.main === module && process.argv.includes('--check')) {
   const pack = clean(raw, sr);
   assert.strictEqual(pack.findings.length, 6);                    // the unretrieved blog is gone
   assert.strictEqual(pack.findings[1].strength, 'common');        // unknown strength → common, never offence
+  assert.strictEqual(capStrength('required', 'reference'), 'common'); // only an official page makes a rule
+  assert.strictEqual(capStrength('offence', 'commercial'), 'varies');
+  assert.strictEqual(capStrength('offence', 'reference'), 'offence');
+  assert.strictEqual(pack.sources[0].date, null);                 // never the writer's date
+  assert.strictEqual(slugTitle('https://guardian.ng/nigerian/how-do-i-dress-respectfully-in-nigeria/'), 'How do I dress respectfully in nigeria');
+  assert.strictEqual(slugTitle('https://example.com/en/manners/'), null);
   assert.deepStrictEqual(pack.sources.map(s => s.id), ['S1', 'S2']);
   // A commercial page is dropped where an official one covers the topic.
   const mixed = clean({ findings: [...raw.findings, { topic: 'dining', practice: 'blog', strength: 'common', source_url: 'https://www.japan.travel/x', source_type: 'commercial' }] }, [...sr, { url: 'https://www.japan.travel/x' }]);
