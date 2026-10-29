@@ -269,7 +269,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 <div className="flex items-center justify-between gap-3 relative">
                   <p className="text-sm text-[var(--sc-accent)]">Category: {schemeCategory(detectedTool)}</p>
                   <button data-print-hide onClick={handleBookmarkHint}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--sc-accent)] text-[var(--sc-accent)] text-sm hover:bg-[var(--sc-field)]"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] text-sm hover:bg-[var(--sc-field)]"
                     aria-label="Bookmark this tool" title="Bookmark this tool">
                     <span aria-hidden="true">🔖</span><span className="hidden sm:inline">Bookmark</span>
                   </button>

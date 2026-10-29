@@ -368,7 +368,7 @@ const UpsellShield = ({ tool }) => {
 
           {/* Your exit line — prominent */}
           {r.exit_line && (
-            <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.warning} border rounded-xl p-4`}>
+            <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.warning} border rounded-xl p-4`}>
               <p className={`text-xs font-bold mb-1 ${sv ? 'text-[var(--sc-strong)]' : ''}`}>{t('us_exitline_label')}</p>
               <p className="text-sm font-bold leading-relaxed">{r.exit_line}</p>
             </div>

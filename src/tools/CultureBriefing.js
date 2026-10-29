@@ -500,7 +500,7 @@ function CultureBriefing({ tool }) {
         {/* What matters most — the answer's key box (owner's review,
             2026-10-27: lead with the essentials, details after). */}
         {results.essentials.length > 0 && (
-          <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
+          <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
             <p className={`${head} mb-2`}>{t('cb_essentials')}</p>
             <ol className="space-y-2 list-decimal ps-5">
               {results.essentials.map((e, i) => (

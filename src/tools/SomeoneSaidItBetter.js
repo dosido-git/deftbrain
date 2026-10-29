@@ -569,7 +569,7 @@ const SomeoneSaidItBetter = ({ tool }) => {
                   <span className={`text-[13px] ${c.textMuted}`}>{t('ssib_found_on', { date: foundLabel })}</span>
                   {(restoredFind || !foundToday) && (
                     <button onClick={handleFindDifferentWords} disabled={busy}
-                      className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${sv ? 'border-[var(--sc-accent)] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]' : isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${sv ? 'border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]' : isDark ? 'border-[#2c3a4a] text-[#a9cdef] hover:bg-[#1f2530]' : 'border-[#d4dde8] text-[#142a43] hover:bg-[#eef3f8]'}`}>
                       {t('ssib_find_different_words')}
                     </button>
                   )}

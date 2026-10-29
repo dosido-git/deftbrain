@@ -132,7 +132,7 @@ function ScamRadar({ tool }) {
   // warning — the contrast colour's one job; the other reads stay calm.
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
-    neutral:    'bg-[var(--sc-card)] border-[var(--sc-accent)]',
+    neutral:    'bg-[var(--sc-card)] border-[var(--sc-border,var(--sc-accent))]',
     neutralTxt: 'text-[var(--sc-strong)]',
     successTxt: 'text-[var(--sc-strong)]',
     warning:    'bg-[var(--sc-card)] border-[var(--sc-x-line)] text-[var(--sc-x-text)]',

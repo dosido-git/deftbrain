@@ -307,7 +307,7 @@ function QuoteCheck({ tool }) {
   // specific concerns were found.
   if (sv && verdictConfig) Object.assign(verdictConfig, results?.verdict === 'SPECIFIC_CONCERNS_FOUND'
     ? { bg: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]', txt: 'text-[var(--sc-x-text)]' }
-    : { bg: 'bg-[var(--sc-card)] border-[var(--sc-accent)]', txt: 'text-[var(--sc-strong)]' });
+    : { bg: 'bg-[var(--sc-card)] border-[var(--sc-border,var(--sc-accent))]', txt: 'text-[var(--sc-strong)]' });
 
   // The title row, shared by both phases. It used to live only inside
   // renderInput, which unmounts the moment a result exists — so with the

@@ -521,7 +521,7 @@ const HobbyMatch = ({ tool }) => {
 
           {/* ── PATTERN ── */}
           {r.pattern_in_matches && (
-            <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] text-[var(--sc-strong)] rounded-xl p-4 flex items-start gap-3' : `${c.success} border rounded-xl p-4 flex items-start gap-3`}>
+            <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] text-[var(--sc-strong)] rounded-xl p-4 flex items-start gap-3' : `${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">💡</span>
               <div>
                 <p className="text-xs font-bold mb-1">{t('hm_pattern_title')}</p>

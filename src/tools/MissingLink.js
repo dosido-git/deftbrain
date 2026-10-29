@@ -81,7 +81,7 @@ const MissingLink = ({ tool }) => {
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
     infoBox:     'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
-    successBox:  'bg-[var(--sc-card)] border-[var(--sc-accent)]',
+    successBox:  'bg-[var(--sc-card)] border-[var(--sc-border,var(--sc-accent))]',
     successTxt:  'text-[var(--sc-strong)]',
     warningBox:  'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
     warningTxt:  'text-[var(--sc-x-text)]',
@@ -353,7 +353,7 @@ const MissingLink = ({ tool }) => {
     const answer = (
       <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5 mt-4">
         {gap && (
-          <div data-keybox="" className={'p-5 rounded-2xl border-2 ' + (sv ? 'bg-[var(--sc-card)] border-[var(--sc-accent)]' : c.gapHigh)}>
+          <div data-keybox="" className={'p-5 rounded-2xl border-2 ' + (sv ? 'bg-[var(--sc-card)] border-[var(--sc-border,var(--sc-accent))]' : c.gapHigh)}>
             <p className={'text-[13px] font-bold mb-1 ' + (sv ? 'text-[var(--sc-strong)]' : c.textMuted)}>🎯 {t(described ? 'tg_most_likely' : 'tg_check_first')}</p>
             <p className={'text-lg font-bold ' + c.text}>{gap.concept}</p>
             {(gap.why_check_this || gap.why_this_one) && <p className={'text-sm mt-1 ' + c.textSecondary}>{gap.why_check_this || gap.why_this_one}</p>}

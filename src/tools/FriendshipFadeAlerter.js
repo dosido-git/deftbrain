@@ -164,12 +164,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
   // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
   // "Category-colour pages"): screens sit in the light answer panel, the add
   // form in the form panel; "it's been a while" takes the medium shade, not
-  // amber, and "time to say hello" the lightest — no traffic lights.
+  // amber, with the category wash behind it, and "time to say hello" the
+  // envelope shade — each a step off the white card. No traffic lights.
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
     rowCard:  'border-[var(--sc-line)] bg-[var(--sc-card)]',
-    rowWhile: 'border-[var(--sc-accent)] bg-[var(--sc-envelope)]',
-    rowHello: 'border-[var(--sc-line)] bg-[var(--sc-field)]',
+    rowWhile: 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-wash,var(--sc-envelope))]',
+    rowHello: 'border-[var(--sc-line)] bg-[var(--sc-envelope)]',
     titleInk: 'text-[var(--sc-strong)]',
   });
   const panel = sv ? ANSWER_CARD : `border ${c.border} ${c.card}`;

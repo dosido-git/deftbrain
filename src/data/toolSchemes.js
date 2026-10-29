@@ -27,12 +27,14 @@ const SCHEMES = {
     light: { field: '#fdfbf4', envelope: '#f4eedd', line: '#e2d5b3', card: '#ffffff', accent: '#7a632c', strong: '#4c3d18', onStrong: '#fdfbf4', button: '#4c3d18', buttonText: '#fdfbf4', x: '#8a4a7a', xText: '#733d66', xLine: '#e4c8dc' },
     dark:  { field: '#211d13', envelope: '#2a2518', line: '#463d27', card: '#1d1a11', accent: '#d2bd8a', strong: '#ecdfbd', onStrong: '#211d13', button: '#ecdfbd', buttonText: '#211d13', x: '#d79ac6', xText: '#e2b2d5', xLine: '#553048' },
   },
-  // Relationships in terracotta (owner, 2026-10-27, after red read as an
-  // alert and dusty rose felt uncomfortable), deep teal as the one
-  // contrasting colour.
+  // Relationships in raspberry (owner, 2026-10-29: serious, restrained;
+  // warm neutral surfaces, one deep ink, deep green as the one contrasting
+  // colour). Midnight dark mode. Source: docs/CATEGORY-COLOR-MAP-2.md v3.0.
+  // `accent` (small text, outline controls) is the ink; `border` is the
+  // medium shade for panel borders and chips (ink would shout there).
   Relationships: {
-    light: { field: '#fdf9f6', envelope: '#f7ede6', line: '#e8d3c6', card: '#ffffff', accent: '#9a4a2e', strong: '#5f2d1b', onStrong: '#fdf9f6', button: '#5f2d1b', buttonText: '#fdf9f6', x: '#2c6a73', xText: '#225860', xLine: '#bcd9dc' },
-    dark:  { field: '#221a16', envelope: '#2c211b', line: '#4c3a30', card: '#1e1714', accent: '#e4a98e', strong: '#f3dacd', onStrong: '#221a16', button: '#f3dacd', buttonText: '#221a16', x: '#7fc4cc', xText: '#a3d6dc', xLine: '#2e5257' },
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#D5BAC0', card: '#FFFFFF', accent: '#8A3556', strong: '#8A3556', onStrong: '#FFFFFF', button: '#8A3556', buttonText: '#FFFFFF', border: '#AF768C', wash: '#EEE6E3', tab: '#EAE0DF', text: '#1F1E1B', x: '#295B48', xText: '#295B48', xLine: '#C5D6CF' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#473D46', card: '#101216', accent: '#C296A7', strong: '#C296A7', onStrong: '#14130F', button: '#C296A7', buttonText: '#14130F', border: '#79626F', wash: '#33313A', tab: '#28262E', text: '#E8ECF2', x: '#BBCBC4', xText: '#BBCBC4', xLine: '#475651' },
   },
   // The other seven (owner, 2026-10-27: "as distinct from the others as
   // possible"): hues spread round the wheel away from sage, honey and

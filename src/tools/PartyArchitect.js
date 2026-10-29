@@ -452,7 +452,7 @@ const PartyArchitect = ({ tool }) => {
           )}
 
           {r.event_shape && (
-            <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.warning} border rounded-xl p-4`}>
+            <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.warning} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>🎚️ {t('pa_the_shape')}</p>
               <p className={`text-sm font-medium leading-relaxed`}>{r.event_shape}</p>
             </div>

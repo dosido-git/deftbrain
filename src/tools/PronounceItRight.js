@@ -142,7 +142,7 @@ const PronounceItRight = ({ tool }) => {
     // Gray-500 is 4.2:1 on the envelope shade; one step darker passes.
     textMuted:   isDark ? 'text-zinc-400' : 'text-gray-600',
     textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
-    phonBg:     'bg-[var(--sc-card)] border-[var(--sc-accent)]',
+    phonBg:     'bg-[var(--sc-card)] border-[var(--sc-border,var(--sc-accent))]',
     tipBg:      'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     tipText:    'text-[var(--sc-strong)]',
     infoBox:    'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',

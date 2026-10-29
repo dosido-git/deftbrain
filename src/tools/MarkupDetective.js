@@ -376,7 +376,7 @@ const MarkupDetective = ({ tool }) => {
           <CheckNote status={checkStatus} className={c.textMuted} />
 
           {/* Verdict banner — the key box with a category scheme. */}
-          <div {...(sv ? { 'data-keybox': '' } : {})} className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4' : `border-t ${c.border} pt-5`}>
+          <div {...(sv ? { 'data-keybox': '' } : {})} className={sv ? 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4' : `border-t ${c.border} pt-5`}>
             {results?.product_identified && (
               <p className={`text-xs font-medium ${c.textMuted} mb-3`}>{t('mkd_analyzing')} {results.product_identified}</p>
             )}

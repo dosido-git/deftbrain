@@ -201,7 +201,7 @@ const ResearchDecoder = ({ tool }) => {
     infoBox:    'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
     successBox: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     successTxt: 'text-[var(--sc-strong)]',
-    warningBox: 'bg-[var(--sc-card)] !border-2 border-[var(--sc-accent)]',
+    warningBox: 'bg-[var(--sc-card)] !border-2 border-[var(--sc-border,var(--sc-accent))]',
   });
   c.textMuteded = c.textMuted;
   c.label = c.labelText;

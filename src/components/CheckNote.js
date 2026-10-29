@@ -32,7 +32,7 @@ export default function CheckNote({ status }) {
   // takes the page's shades instead of amber / green (audit/CONVENTIONS.md
   // "Category-colour pages": no traffic-light colours).
   const scheme = working
-    ? '[[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-accent)] [[data-scheme]_&]:text-[var(--sc-strong)]'
+    ? '[[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-border,var(--sc-accent))] [[data-scheme]_&]:text-[var(--sc-strong)]'
     : '[[data-scheme]_&]:bg-[var(--sc-card)] [[data-scheme]_&]:border-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
   return (
     <p data-print-hide role="status" aria-live="polite" className={`flex items-start gap-2 border rounded-lg px-3 py-2 text-sm font-semibold ${tone} ${scheme}`}>

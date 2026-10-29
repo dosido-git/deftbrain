@@ -240,7 +240,7 @@ const BillRescue = ({ tool }) => {
     // "Category-colour pages — PROVISIONAL": dark for what matters, medium
     // for small labels, the contrast colour only for a warning.
     calendarUpcoming:     'bg-[var(--sc-card)] text-[var(--sc-accent)] border-[var(--sc-line)]',
-    calendarOverdue:      'bg-[var(--sc-card)] text-[var(--sc-strong)] border-[var(--sc-accent)]',
+    calendarOverdue:      'bg-[var(--sc-card)] text-[var(--sc-strong)] border-[var(--sc-border,var(--sc-accent))]',
     calendarOverdueAlert: 'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
     calendarResolved:     'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
     chatRep:       'bg-[var(--sc-envelope)]',
@@ -263,7 +263,7 @@ const BillRescue = ({ tool }) => {
     urgencyNow:       'bg-[var(--sc-card)] text-[var(--sc-x-text)] border border-[var(--sc-x-line)]',
     verdictFight:     'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
     verdictNormal:    'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
-    verdictQuestion:  'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-accent)]',
+    verdictQuestion:  'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-border,var(--sc-accent))]',
   });
   const chip = CHIP;
   c.textMuteded = c.textMuted;
@@ -1221,7 +1221,7 @@ const BillRescue = ({ tool }) => {
         {r.todays_job?.action && (
           // The one container that must win (owner, 2026-10-26): accent border,
           // the biggest action line, and its words open beneath a rule.
-          <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
+          <div data-keybox="" className={sv ? 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5' : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
             <p className={`text-[13px] font-bold ${sv ? c.sectionTitle : c.text} mb-1`}>🎯 {t('br_todays_job')}</p>
             <p className={`text-xl font-black ${c.text}`}>{r.todays_job.action}</p>
             {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}

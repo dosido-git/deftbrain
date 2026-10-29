@@ -190,7 +190,7 @@ const DateNight = ({ tool }) => {
     chipOff:      SCHEME_C.pillInactive,
     headerCard:   'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     btnAction:    'bg-[var(--sc-button,var(--sc-strong))] hover:opacity-90 text-[var(--sc-button-text,var(--sc-on-strong))]',
-    btnLive:      'border border-[var(--sc-accent)] text-[var(--sc-accent)] bg-transparent hover:bg-[var(--sc-field)]',
+    btnLive:      'border border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] bg-transparent hover:bg-[var(--sc-field)]',
     accentCard:   'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     altCard:      'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
     infoCard:     'bg-[var(--sc-envelope)] border-[var(--sc-line)]',

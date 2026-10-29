@@ -280,7 +280,7 @@ const FakeReviewDetective = ({ tool }) => {
   if (sv) Object.assign(c, SCHEME_C, {
     sv:           true,
     highlight:    'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
-    btnOutline:   'border-[var(--sc-accent)] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]',
+    btnOutline:   'border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]',
     pillGray:     'bg-[var(--sc-envelope)] text-[var(--sc-accent)] border-[var(--sc-line)]',
     pillCyan:     'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
     statCard:     'bg-[var(--sc-card)] border-[var(--sc-line)]',
@@ -750,7 +750,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div data-copy-results ref={resultsRef} className="space-y-4">
           {/* Fixed copy. Everything below is scores and flags; this is the
               reason any of it is worth reading. */}
-          <div data-keybox="" className={sv ? 'bg-[var(--sc-card)] border-2 border-[var(--sc-accent)] rounded-xl p-5 space-y-2' : `${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+          <div data-keybox="" className={sv ? 'bg-[var(--sc-card)] border-2 border-[var(--sc-border,var(--sc-accent))] rounded-xl p-5 space-y-2' : `${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
             <p className={`text-sm font-bold ${c.text}`}>💚 {t('frd_first_matters')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{t('frd_fm_1')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{t('frd_fm_2')}</p>

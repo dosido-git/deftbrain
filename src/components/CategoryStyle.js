@@ -26,17 +26,17 @@ export const SERIF = "'Source Serif 4', Georgia, serif";
 // A tool adds its own keys after these.
 export const SCHEME_C = {
   // Text boxes white on the lighter panel; typed text in the medium shade.
-  input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-accent)] focus:ring-[var(--sc-line)]',
+  input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-border,var(--sc-accent))] focus:ring-[var(--sc-line)]',
   labelText:     'text-[var(--sc-strong)]',
   sectionTitle:  'text-[var(--sc-strong)]',
   accentTxt:     'text-[var(--sc-accent)]',
   required:      'text-[var(--sc-accent)]',
   btnPrimary:    'bg-[var(--sc-button,var(--sc-strong))] hover:opacity-90 text-[var(--sc-button-text,var(--sc-on-strong))]',
-  btnIdle:       '!bg-transparent !border-2 !border-[var(--sc-accent)] !text-[var(--sc-accent)] cursor-not-allowed',
-  btnSecondary:  'border border-[var(--sc-accent)] text-[var(--sc-accent)] bg-transparent hover:bg-[var(--sc-field)]',
+  btnIdle:       '!bg-transparent !border-2 !border-[var(--sc-border,var(--sc-accent))] !text-[var(--sc-accent)] cursor-not-allowed',
+  btnSecondary:  'border border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] bg-transparent hover:bg-[var(--sc-field)]',
   border:        'border-[var(--sc-line)]',
   pillActive:    'border-[var(--sc-strong)] bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
-  pillInactive:  'border-[var(--sc-accent)] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]',
+  pillInactive:  'border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] hover:bg-[var(--sc-field)]',
   highlightBg:   'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
   highlightText: 'text-[var(--sc-strong)]',
   badge:         'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
@@ -45,7 +45,7 @@ export const SCHEME_C = {
   card:          'border-transparent !px-0',
   cardAlt:       'bg-[var(--sc-envelope)]',
   quoteBg:       'border-s-2 border-[var(--sc-line)] !rounded-none !py-1 !pe-0',
-  dropzone:      'border-[var(--sc-accent)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+  dropzone:      'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
   // No traffic-light colours: key figures dark, small labels medium, warnings
   // (the contrast colour's one job) in the contrast shade.
   success:       'border-transparent !px-0 text-[var(--sc-strong)]',
@@ -60,7 +60,7 @@ export const SCHEME_C = {
 export const CHIP = 'px-3 py-2 rounded-lg text-[13px] font-bold border min-h-[40px]';
 
 // The form's own panel: lightest shade, medium border, on the envelope.
-export const FORM_PANEL = 'rounded-xl border-2 border-[var(--sc-accent)] bg-[var(--sc-field)] p-3 sm:p-5';
+export const FORM_PANEL = 'rounded-xl border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-field)] p-3 sm:p-5';
 
 // The answer: one long card in the lightest shade, separate from the form,
 // headed by its name with Copy / Share / Print on the same row.
@@ -91,7 +91,7 @@ export function AnswerCard({ title, children, className = '' }) {
 // the medium shade, its label in the dark shade. One per answer.
 export function KeyBox({ label, children, className = '' }) {
   return (
-    <div data-keybox="" className={`border-2 border-[var(--sc-accent)] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5 ${className}`}>
+    <div data-keybox="" className={`border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5 ${className}`}>
       {label && <p className="text-[13px] font-bold text-[var(--sc-strong)] mb-1">{label}</p>}
       {children}
     </div>

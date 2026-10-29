@@ -671,7 +671,7 @@ const PlainTalk = ({ tool }) => {
                     aria-pressed={on}
                     className={`text-start px-4 py-3 rounded-xl border transition-all ${
                       on ? ((sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'))
-                         : ((sv ? 'border-[var(--sc-line)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300'))
+                         : ((sv ? 'border-[var(--sc-line)] hover:border-[var(--sc-border,var(--sc-accent))]' : isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300'))
                     }`}>
                     <span className={`block text-sm font-bold ${c.text}`}>{m.emoji} {t(m.labelKey)}</span>
                     <span className={`block text-xs mt-0.5 ${c.textMuteded}`}>{t(m.subKey)}</span>
@@ -742,7 +742,7 @@ const PlainTalk = ({ tool }) => {
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                         textType === tt.id
                           ? (sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
-                          : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
+                          : (sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-border,var(--sc-accent))]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
                       }`}>
                       <span>{tt.emoji}</span> {t(tt.labelKey)}
                     </button>
@@ -1431,7 +1431,7 @@ const PlainTalk = ({ tool }) => {
                                       onClick={() => setCompareQuestions(prev => on ? prev.filter(x => x !== q.id) : [...prev, q.id])}
                                       className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                         on ? ((sv ? 'border-[var(--sc-strong)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]'))
-                                           : ((sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-accent)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'))
+                                           : ((sv ? 'border-[var(--sc-line)] text-[var(--sc-accent)] hover:border-[var(--sc-border,var(--sc-accent))]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'))
                                       }`}>
                                       {on ? '☑' : '☐'} {t(q.labelKey)}
                                     </button>
