@@ -256,7 +256,6 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
       </div>
     </section>
 
-    {/* Categories above the demo (owner, 2026-10-08). */}
     <section className="db-home-section db-home-categories" id="categories" aria-labelledby="home-categories-title" data-db-section="categories">
       <div className="db-home-section-heading">
         <h2 id="home-categories-title">Explore by category</h2>
@@ -276,47 +275,6 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
       </nav>
       <p className="db-home-guide-intro">Just want some quick info? Check out our helpful collection of <a href="/guides">Guides →</a></p>
     </section>
-
-
-    {byId.has('DoctorVisitPrep') && <section className="db-home-demo db-home-section" aria-labelledby="home-demo-title" data-db-section="demo">
-      <h2 id="home-demo-title">See how it works</h2>
-      {/* Labelled as one example (2026-10-04, owner): with no label the
-          Doctor Visit Prep walkthrough read as what DeftBrain is, not as one
-          of many tools working the same way. */}
-      <p className="db-home-demo-label">An example, using one tool: <strong>Doctor Visit Prep</strong></p>
-      {/* The "you don't have to figure out what to ask" point moved here from
-          the hero (2026-09-27): it's the claim this demo shows, and the hero
-          said it a second time right above the finder's own steps line. */}
-      <p className="db-home-demo-intro"><strong>You don’t have to figure out what to ask.</strong> Each tool asks questions about your situation, then helps you create something useful—a clear explanation, a message draft, a question list, or a plan.</p>
-      <ol className="db-home-demo-steps">
-        <li>
-          <h3><span aria-hidden="true">1</span> Your situation</h3>
-          <p className="db-home-example">“Right-sided lower back pain, getting worse for 3 weeks.”</p>
-          <p>You want to explain what’s happening and remember what to ask.</p>
-          {/* Sits at the foot of step 1 so it lines up with the bottom of
-              step 3's caption; on one-column layouts the copy after the
-              list shows instead (CSS swaps them), so it still comes last. */}
-          <Link to="/DoctorVisitPrep" className="db-home-primary-link db-home-demo-cta-inline">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
-        </li>
-        <li>
-          <h3><span aria-hidden="true">2</span> The tool asks</h3>
-          <p className="db-home-example">Chief concern <small>The single main reason for the visit</small></p>
-          <p className="db-home-example">What are you hoping to get out of this visit?</p>
-          <p>A few relevant questions help you organize what matters.</p>
-        </li>
-        <li>
-          <h3><span aria-hidden="true">3</span> What you get</h3>
-          {/* A real supplied result screenshot, not invented sample output.
-              The fade and caption explicitly mark this as a partial view. */}
-          <Link to="/DoctorVisitPrep" className="db-home-result-preview">
-            <img src="/see-it-in-action/DoctorVisitPrep.webp" alt="Preview of a real Doctor Visit Prep result. Open Doctor Visit Prep to try it yourself." loading="lazy" />
-            <span>Preview of a longer result <span aria-hidden="true">↓</span></span>
-          </Link>
-          <p className="db-home-result-caption">A real sample result, with more detail below the preview.</p>
-        </li>
-      </ol>
-      <Link to="/DoctorVisitPrep" className="db-home-primary-link db-home-demo-cta-after">Try Doctor Visit Prep <span aria-hidden="true">→</span></Link>
-    </section>}
 
     <div className="db-home-explore" data-db-section="scramble"><ToolScramble allTools={allTools} onBrowse={onBrowse} /></div>
     {/* Objection-handling — collapsed by default, after the tools content

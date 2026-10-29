@@ -11,7 +11,7 @@
  * zinc-800 cards) so moving between home and a tool stays in one palette.
  *
  *   --db-*  DashBoard's CLR palette (header, search results, catalog)
- *   --h-*   HomeIntro's sections (hero, finder, cards, demo, categories)
+ *   --h-*   HomeIntro's sections (hero, finder, cards, categories)
  */
 :root {
   --db-sand50: #faf8f5;  --db-sand100: #f3efe8;  --db-sand200: #e8e1d5;  --db-sand300: #d5cab8;
@@ -31,7 +31,6 @@
   --h-input-bg: #ffffff; --h-input-border: #a49b90; --h-input-text: #142a43; --h-placeholder: #9b948b;
   --h-btn-bg: #142a43;   --h-btn-hover: #234568;  --h-btn-text: #ffffff;
   --h-focus: #165b9a;
-  --h-demo-bg: #f0ebf7;  --h-demo-border: #d9d1e8; --h-step-dot: #d6c7ef; --h-example-bg: #fffdfd;
   --h-pill-border: #c6bfb5; --h-pill-hover: #f0ebf7;
   --h-kbd-bg: #f6f1ea;   --h-kbd-border: #d8cfc3;
   --h-shadow: #142a4312;
@@ -51,7 +50,6 @@
   --h-input-bg: #18181b; --h-input-border: #71717a; --h-input-text: #f4f4f5; --h-placeholder: #71717a;
   --h-btn-bg: #2f6fb0;   --h-btn-hover: #3a7cc0;  --h-btn-text: #ffffff;
   --h-focus: #7fb3e0;
-  --h-demo-bg: #221f2b;  --h-demo-border: #3b3548; --h-step-dot: #4a3f66; --h-example-bg: #18181b;
   --h-pill-border: #52525b; --h-pill-hover: #2a2733;
   --h-kbd-bg: #27272a;   --h-kbd-border: #52525b;
   --h-shadow: #00000040;
