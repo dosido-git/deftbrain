@@ -12,7 +12,9 @@
 
 - [Batch Flow](https://deftbrain.com/BatchFlow): Your tasks, grouped so the day stops fighting you
 - [Bike Medic](https://deftbrain.com/BikeMedic): Figure out what's wrong with your bike and how to fix it
+- [Caption Magic](https://deftbrain.com/CaptionMagic): Find the words that fit the photo.
 - [Contract Decoder](https://deftbrain.com/ContractDecoder): Understand what you're agreeing to before you sign.
+- [Document Detective](https://deftbrain.com/DocumentDetective): Paste the document. Find what matters to you.
 - [Final Wish](https://deftbrain.com/FinalWish): Proactively organize your end-of-life wishes and messages to loved ones
 - [LaundroMat](https://deftbrain.com/LaundroMat): What to wash, how to wash it, and what to do when things go wrong
 - [Lease Trap Detector](https://deftbrain.com/LeaseTrapDetector): Find predatory clauses hiding in your lease
@@ -24,6 +26,7 @@
 - [Roommate Court](https://deftbrain.com/RoommateCourt): Settle roommate issues fairly and amicably
 - [Safe Walk](https://deftbrain.com/SafeWalk): A safety plan for walking somewhere alone
 - [Tool Finder](https://deftbrain.com/ToolFinder): Tell me what you're dealing with — I'll find the right tool.
+- [Waiting Mode Liberator](https://deftbrain.com/WaitingModeLiberator): Be productive during unavoidable waiting times
 - [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): Make sense of the day that disappeared.
 
 ## Travel & Events
@@ -55,9 +58,9 @@
 
 - [Before Hello](https://deftbrain.com/BeforeHello): Get on someone's radar before you ask them for anything
 - [Brag Sheet Builder](https://deftbrain.com/BragSheetBuilder): Turn your accomplishments into wins for reviews and raises
-- [Caption Magic](https://deftbrain.com/CaptionMagic): Find the words that fit the photo.
 - [Cold Open Craft](https://deftbrain.com/ColdOpenCraft): Make the first message easier to send — and easier to answer.
 - [Concept Coach](https://deftbrain.com/ConceptCoach): Stress-test your business idea before you invest time or money
+- [Email Urgency Triager](https://deftbrain.com/EmailUrgencyTriager): Find out what actually needs a reply today
 - [Future Proof](https://deftbrain.com/FutureProof): Stress-test a career, a major decision or long-term bet before you commit
 - [Get Noticed](https://deftbrain.com/GetNoticed): Widen the circle of people who know what you do
 - [Ghost Writer](https://deftbrain.com/GhostWriter): Your writing advisor for recommendation letters.
@@ -80,7 +83,7 @@
 - [Brain State Deejay](https://deftbrain.com/BrainStateDeejay): Music that moves you from where you are to where you need to be.
 - [Chaos Pilot](https://deftbrain.com/ChaosPilot): Figure out what matters now — and what can wait
 - [Doctor Visit Prep](https://deftbrain.com/DoctorVisitPrep): Walk in prepared — because fifteen minutes goes by quickly.
-- [Document Detective](https://deftbrain.com/DocumentDetective): Paste the document. Find what matters to you.
+- [Doctor Visit Translator](https://deftbrain.com/DoctorVisitTranslator): Turn medical jargon into plain English
 - [Dream Pattern Spotter](https://deftbrain.com/DreamPatternSpotter): Find recurring themes and emotional patterns in your dreams
 - [Focus Pocus](https://deftbrain.com/FocusPocus): Get something done without disappearing into it
 - [Focus Sound Architect](https://deftbrain.com/FocusSoundArchitect): Customized background sounds to help you focus
@@ -97,12 +100,9 @@
 - [Task Avalanche Breaker](https://deftbrain.com/TaskAvalancheBreaker): Find one foothold in a project that feels too big to start
 - [Trip Recon](https://deftbrain.com/TripRecon): Know unpleasant realities before you go
 - [Virtual Body Double](https://deftbrain.com/VirtualBodyDouble): Work together. Even when you're working alone.
-- [Waiting Mode Liberator](https://deftbrain.com/WaitingModeLiberator): Be productive during unavoidable waiting times
 
 ## Conversations
 
-- [Analogy Engine](https://deftbrain.com/AnalogyEngine): Explain anything to anyone — using their world.
-- [Argue Smarter](https://deftbrain.com/ArgueSmarter): Test your ideas against the strongest criticism you can find
 - [Awkward Silence Filler](https://deftbrain.com/AwkwardSilenceFiller): Context-appropriate things to say when a conversation stalls
 - [Comeback Cooker](https://deftbrain.com/ComebackCooker): The comeback you wish you'd said, ready for next time
 - [Complaint Escalation Writer](https://deftbrain.com/ComplaintEscalationWriter): A clear plan for when a company stops answering
@@ -110,8 +110,6 @@
 - [Context Collapse](https://deftbrain.com/ContextCollapse): See how different people will read the same message — before you send it
 - [Decoder Ring](https://deftbrain.com/DecoderRing): What a confusing message might really mean
 - [Difficult Talk Coach](https://deftbrain.com/DifficultTalkCoach): Practice hard conversations before they happen
-- [Doctor Visit Translator](https://deftbrain.com/DoctorVisitTranslator): Turn medical jargon into plain English
-- [Email Urgency Triager](https://deftbrain.com/EmailUrgencyTriager): Find out what actually needs a reply today
 - [Gratitude Debt Clearer](https://deftbrain.com/GratitudeDebtClearer): Turn what happened into the thank-you you've been meaning to send.
 - [Magic Mouth (M²)](https://deftbrain.com/MagicMouth): Ask for the unlikely—and get it!
 - [Mend](https://deftbrain.com/Mend): Match your apology to the actual harm caused
@@ -127,6 +125,7 @@
 
 ## Learning
 
+- [Analogy Engine](https://deftbrain.com/AnalogyEngine): Explain anything to anyone — using their world.
 - [Heart of the Matter](https://deftbrain.com/HeartOfTheMatter): Find what matters in something long.
 - [Hobby Match](https://deftbrain.com/HobbyMatch): Discover hobbies you didn't know existed.
 - [Missing Link](https://deftbrain.com/MissingLink): Stuck on a concept? We'll find where your understanding broke.
@@ -139,6 +138,7 @@
 ## Ideas & Diversions
 
 - [Alternate Path](https://deftbrain.com/AlternatePath): What if history went differently?
+- [Argue Smarter](https://deftbrain.com/ArgueSmarter): Test your ideas against the strongest criticism you can find
 - [Belief Stress Test](https://deftbrain.com/BeliefStressTest): Test your beliefs: where they hold, where they break
 - [Bookmark](https://deftbrain.com/Bookmark): Catch up on a book, a show, a sports match or a season without spoilers
 - [Brain Roulette](https://deftbrain.com/BrainRoulette): A custom random rabbit hole to learn something new

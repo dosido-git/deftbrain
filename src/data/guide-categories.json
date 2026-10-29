@@ -1,5 +1,5 @@
 {
- "_note": "Which of the 14 tool categories each guide belongs to: [main, optional second]. Keyed by guides/<folder>/<slug> — the folder stays the URL; this only decides where a guide is SHOWN. Assigned by hand from titles, 2026-10-24.",
+ "_note": "Which of the 10 tool categories each guide belongs to: [main, optional second]. Keyed by guides/<folder>/<slug> — the folder stays the URL; this only decides where a guide is SHOWN. Assigned by hand from titles, 2026-10-24.",
  "guides": {
   "apologies/how-to-apologize-at-work-for-a-mistake-everyone-saw": [
    "Conversations",
@@ -53,15 +53,15 @@
   ],
   "conversations/captions-for-solo-travel-photos": [
    "Conversations",
-   "Ideas & Diversions"
+   "Home & Daily Life"
   ],
   "conversations/first-message-on-a-dating-app-that-actually-gets-a-reply": [
    "Conversations",
-   "Relationships"
+   "Career and Business"
   ],
   "conversations/funny-captions-for-couples-photos": [
    "Conversations",
-   "Ideas & Diversions"
+   "Home & Daily Life"
   ],
   "conversations/how-do-i-sound-to-people-who-dont-know-me": [
    "Conversations",
@@ -89,7 +89,7 @@
   ],
   "conversations/how-to-caption-a-photo-when-you-dont-know-what-to-say": [
    "Conversations",
-   "Ideas & Diversions"
+   "Home & Daily Life"
   ],
   "conversations/how-to-come-up-with-a-good-analogy-for-a-complex-idea": [
    "Conversations",
@@ -105,7 +105,7 @@
   ],
   "conversations/how-to-defend-a-position-without-getting-defensive": [
    "Conversations",
-   "Decisions"
+   "Ideas & Diversions"
   ],
   "conversations/how-to-explain-ai-to-non-technical-people": [
    "Conversations",
@@ -121,7 +121,7 @@
   ],
   "conversations/how-to-explain-your-job-to-your-family-at-thanksgiving": [
    "Conversations",
-   "Relationships"
+   "Learning"
   ],
   "conversations/how-to-figure-out-your-default-communication-tone": [
    "Conversations",
@@ -168,11 +168,11 @@
   ],
   "conversations/how-to-prep-for-a-meeting-where-youll-get-pushback": [
    "Career and Business",
-   "Conversations"
+   "Ideas & Diversions"
   ],
   "conversations/how-to-prepare-for-a-tough-question-you-cant-answer": [
    "Conversations",
-   "Career and Business"
+   "Ideas & Diversions"
   ],
   "conversations/how-to-reach-out-to-a-friend-youve-lost-touch-with": [
    "Relationships",
@@ -186,11 +186,12 @@
    "Conversations"
   ],
   "conversations/how-to-rebuild-a-friendship-thats-gone-quiet-without-being-awkward": [
-   "Relationships"
+   "Relationships",
+   "Career and Business"
   ],
   "conversations/how-to-reconnect-with-someone-before-you-ask-them-for-a-favor": [
    "Conversations",
-   "Relationships"
+   "Career and Business"
   ],
   "conversations/how-to-reply-to-a-rude-email-without-stooping-to-their-level": [
    "Conversations",
@@ -228,7 +229,7 @@
   ],
   "conversations/how-to-spot-a-logical-fallacy-in-an-argument": [
    "Learning",
-   "Conversations"
+   "Ideas & Diversions"
   ],
   "conversations/how-to-stay-close-to-a-friend-after-one-of-you-moves": [
    "Relationships"
@@ -239,7 +240,7 @@
   ],
   "conversations/how-to-steelman-an-argument-you-disagree-with": [
    "Decisions",
-   "Conversations"
+   "Ideas & Diversions"
   ],
   "conversations/how-to-tell-if-a-conversation-is-going-well-or-going-badly": [
    "Conversations"
@@ -253,7 +254,7 @@
   ],
   "conversations/how-to-tell-if-youre-being-included-or-politely-tolerated": [
    "Relationships",
-   "Health & Wellness"
+   "Conversations"
   ],
   "conversations/how-to-thank-someone-who-really-helped-you-when-you-struggled": [
    "Conversations",
@@ -311,10 +312,12 @@
    "Conversations"
   ],
   "conversations/how-to-write-instagram-captions-that-get-engagement": [
-   "Conversations"
+   "Conversations",
+   "Home & Daily Life"
   ],
   "conversations/professional-instagram-caption-examples": [
-   "Conversations"
+   "Conversations",
+   "Home & Daily Life"
   ],
   "conversations/recommendation-letter-template-for-graduate-school": [
    "Career and Business",
@@ -399,19 +402,19 @@
   ],
   "decisions/how-to-anticipate-the-strongest-argument-against-your-position": [
    "Decisions",
-   "Conversations"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-argue-better": [
    "Conversations",
-   "Decisions"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-argue-with-someone-whos-smarter-than-you": [
    "Conversations",
-   "Decisions"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-argue-without-getting-emotional": [
    "Conversations",
-   "Decisions"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-choose-between-two-good-options": [
    "Decisions"
@@ -428,7 +431,7 @@
   ],
   "decisions/how-to-evaluate-a-wellness-trend-before-buying-in": [
    "Decisions",
-   "Health & Wellness"
+   "Learning"
   ],
   "decisions/how-to-know-if-youll-regret-saying-no-to-something": [
    "Decisions",
@@ -439,7 +442,7 @@
   ],
   "decisions/how-to-know-if-youve-actually-won-an-argument": [
    "Conversations",
-   "Decisions"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-make-a-decision-when-everything-feels-equally-bad": [
    "Decisions"
@@ -458,15 +461,15 @@
   ],
   "decisions/how-to-prepare-for-a-debate": [
    "Conversations",
-   "Learning"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-spot-a-logical-fallacy-in-real-time": [
    "Learning",
-   "Decisions"
+   "Ideas & Diversions"
   ],
   "decisions/how-to-spot-wellness-marketing-dressed-as-science": [
    "Decisions",
-   "Health & Wellness"
+   "Learning"
   ],
   "decisions/how-to-stop-decision-paralysis-when-youre-burned-out": [
    "Decisions",
@@ -613,7 +616,7 @@
   ],
   "learning/common-myths-most-people-still-believe": [
    "Learning",
-   "Ideas & Diversions"
+   "Conversations"
   ],
   "learning/how-to-ask-a-question-when-you-dont-know-what-to-ask": [
    "Learning"
@@ -625,7 +628,8 @@
    "Learning"
   ],
   "learning/how-to-fact-check-something-you-read-online": [
-   "Learning"
+   "Learning",
+   "Conversations"
   ],
   "learning/how-to-find-a-book-you-cant-remember-the-title-of": [
    "Learning",
@@ -651,7 +655,8 @@
    "Learning"
   ],
   "learning/how-to-remember-a-word-thats-on-the-tip-of-your-tongue": [
-   "Learning"
+   "Learning",
+   "Ideas & Diversions"
   ],
   "learning/how-to-settle-an-argument-with-facts": [
    "Learning",
@@ -689,7 +694,7 @@
   ],
   "learning/why-does-the-word-disappear-when-youre-trying-to-remember-it": [
    "Learning",
-   "Health & Wellness"
+   "Ideas & Diversions"
   ],
   "learning/why-is-this-topic-so-hard-to-understand": [
    "Learning"
@@ -779,7 +784,8 @@
    "Decisions"
   ],
   "money/how-to-complain-to-a-state-attorney-general": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-deal-with-a-retention-specialist": [
    "Money",
@@ -789,16 +795,20 @@
    "Money"
   ],
   "money/how-to-do-a-credit-card-chargeback": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-escalate-a-customer-service-complaint": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-escalate-when-the-official-answer-is-no": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-file-a-complaint-with-the-bbb": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-get-a-hospital-bill-reduced": [
    "Money",
@@ -806,13 +816,15 @@
   ],
   "money/how-to-get-a-medical-bill-reduced-when-they-say-its-final": [
    "Money",
-   "Health & Wellness"
+   "Conversations"
   ],
   "money/how-to-get-out-of-a-non-refundable-fee": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-get-past-no-when-its-not-actually-final": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-handle-a-venmo-request-thats-wrong": [
    "Money",
@@ -822,7 +834,8 @@
    "Money"
   ],
   "money/how-to-make-a-company-respond-when-theyre-ignoring-you": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-negotiate-a-medical-bill": [
    "Money",
@@ -832,7 +845,8 @@
    "Money"
   ],
   "money/how-to-push-back-on-bank-fees": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/how-to-read-an-itemized-hospital-bill": [
    "Money",
@@ -881,7 +895,8 @@
    "Money"
   ],
   "money/how-to-write-a-formal-complaint-letter-to-a-company": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/red-flags-in-product-reviews-that-mean-its-fake": [
    "Money"
@@ -891,7 +906,8 @@
    "Home & Daily Life"
   ],
   "money/what-to-do-when-customer-service-says-theres-nothing-they-can-do": [
-   "Money"
+   "Money",
+   "Conversations"
   ],
   "money/what-to-do-with-a-bill-you-cant-afford": [
    "Money"
@@ -993,20 +1009,23 @@
    "Relationships"
   ],
   "practical/hobbies-for-adults-who-dont-know-what-they-like": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Learning"
   ],
   "practical/hobbies-for-introverts-that-dont-feel-forced": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Learning"
   ],
   "practical/hobbies-that-dont-cost-a-lot-of-money": [
    "Ideas & Diversions",
-   "Money"
+   "Learning"
   ],
   "practical/hot-vs-cold-water-for-laundry-when-does-it-actually-matter": [
    "Home & Daily Life"
   ],
   "practical/how-to-ask-someone-how-to-pronounce-their-name": [
-   "Conversations"
+   "Conversations",
+   "Learning"
   ],
   "practical/how-to-build-outfits-from-what-you-already-own": [
    "Home & Daily Life"
@@ -1021,7 +1040,8 @@
    "Home & Daily Life"
   ],
   "practical/how-to-find-a-hobby-youll-actually-stick-with": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Learning"
   ],
   "practical/how-to-find-the-right-gift-for-someone-you-barely-know": [
    "Relationships"
@@ -1085,17 +1105,18 @@
   ],
   "practical/icebreakers-that-dont-feel-forced": [
    "Conversations",
-   "Travel & Events"
+   "Relationships"
   ],
   "practical/lastminute-gift-ideas-that-dont-look-lastminute": [
    "Relationships"
   ],
   "practical/new-hobbies-to-try": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Learning"
   ],
   "practical/things-to-do-alone-that-arent-sad": [
    "Ideas & Diversions",
-   "Health & Wellness"
+   "Travel & Events"
   ],
   "practical/things-to-do-this-weekend": [
    "Ideas & Diversions",
@@ -1182,7 +1203,7 @@
   ],
   "speeches/wedding-toast-quotes-for-parents": [
    "Conversations",
-   "Relationships"
+   "Learning"
   ],
   "speeches/what-to-say-at-a-memorial-service-when-youre-not-a-writer": [
    "Conversations",
@@ -1207,7 +1228,8 @@
    "Travel & Events"
   ],
   "wellness/alternatives-to-coworking-spaces-if-you-work-from-home": [
-   "Career and Business"
+   "Career and Business",
+   "Health & Wellness"
   ],
   "wellness/best-ambient-sounds-for-studying": [
    "Health & Wellness",
@@ -1234,11 +1256,12 @@
    "Health & Wellness"
   ],
   "wellness/how-to-break-down-an-overwhelming-project": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-calm-your-nerves-before-an-interview": [
    "Health & Wellness",
-   "Career and Business"
+   "Conversations"
   ],
   "wellness/how-to-clear-your-head-when-everything-feels-jumbled": [
    "Health & Wellness",
@@ -1256,7 +1279,8 @@
    "Health & Wellness"
   ],
   "wellness/how-to-figure-out-what-to-do-first-when-overwhelmed": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-figure-out-where-your-time-actually-goes": [
    "Home & Daily Life",
@@ -1267,7 +1291,8 @@
    "Health & Wellness"
   ],
   "wellness/how-to-focus-when-working-alone": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-function-on-the-day-of-an-interview-or-exam": [
    "Health & Wellness",
@@ -1299,20 +1324,23 @@
    "Conversations"
   ],
   "wellness/how-to-make-a-project-feel-manageable": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-make-solo-deep-work-less-lonely": [
    "Home & Daily Life",
    "Health & Wellness"
   ],
   "wellness/how-to-move-forward-on-a-project-thats-been-stuck-for-months": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-move-your-body-when-youre-sick-sore-or-hungover": [
    "Health & Wellness"
   ],
   "wellness/how-to-organize-a-brain-dump-into-actual-tasks": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-plan-around-lowenergy-days": [
    "Health & Wellness",
@@ -1326,7 +1354,8 @@
    "Home & Daily Life"
   ],
   "wellness/how-to-power-through-tasks-youve-been-avoiding": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-prepare-mentally-for-a-hard-conversation": [
    "Conversations",
@@ -1334,7 +1363,7 @@
   ],
   "wellness/how-to-prioritize-when-everything-feels-urgent": [
    "Home & Daily Life",
-   "Decisions"
+   "Health & Wellness"
   ],
   "wellness/how-to-push-through-vs-when-to-stop": [
    "Health & Wellness"
@@ -1343,7 +1372,8 @@
    "Health & Wellness"
   ],
   "wellness/how-to-remember-everything-you-need-to-do-without-losing-your-mind": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-remember-your-dreams-better": [
    "Health & Wellness"
@@ -1359,10 +1389,12 @@
    "Health & Wellness"
   ],
   "wellness/how-to-start-when-everything-feels-too-big": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-stay-accountable-when-no-one-is-watching": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-stay-active-on-a-really-busy-week": [
    "Health & Wellness"
@@ -1375,7 +1407,7 @@
   ],
   "wellness/how-to-stop-your-hands-from-shaking-before-a-presentation": [
    "Health & Wellness",
-   "Career and Business"
+   "Conversations"
   ],
   "wellness/how-to-tell-when-youre-about-to-burn-out-before-you-do": [
    "Health & Wellness"
@@ -1385,7 +1417,8 @@
    "Health & Wellness"
   ],
   "wellness/how-to-triage-your-todo-list-when-you-cant-think-straight": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/how-to-use-music-to-switch-between-tasks": [
    "Home & Daily Life",
@@ -1395,7 +1428,8 @@
    "Home & Daily Life"
   ],
   "wellness/how-to-work-alone-without-getting-distracted": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/is-silence-actually-better-than-ambient-noise-for-focus": [
    "Health & Wellness"
@@ -1410,7 +1444,7 @@
   ],
   "wellness/the-smallest-possible-first-step-for-writing-a-book": [
    "Home & Daily Life",
-   "Ideas & Diversions"
+   "Health & Wellness"
   ],
   "wellness/the-smallest-workout-that-still-counts": [
    "Health & Wellness"
@@ -1419,7 +1453,8 @@
    "Health & Wellness"
   ],
   "wellness/what-is-body-doubling-and-does-it-actually-work": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/what-music-to-listen-to-while-studying": [
    "Learning",
@@ -1433,10 +1468,12 @@
    "Health & Wellness"
   ],
   "wellness/what-to-do-when-your-todo-list-is-too-long-to-even-look-at": [
-   "Home & Daily Life"
+   "Home & Daily Life",
+   "Health & Wellness"
   ],
   "wellness/what-to-do-when-youre-panicking-right-before-an-event": [
-   "Health & Wellness"
+   "Health & Wellness",
+   "Conversations"
   ],
   "wellness/what-to-listen-to-when-you-cant-concentrate-in-a-noisy": [
    "Health & Wellness"
@@ -1499,7 +1536,8 @@
    "Health & Wellness"
   ],
   "wellness/why-you-cant-focus-before-something-stressful": [
-   "Health & Wellness"
+   "Health & Wellness",
+   "Home & Daily Life"
   ],
   "wellness/why-you-feel-drained-after-every-social-event-even-when-you-enjoyed-it": [
    "Health & Wellness"
@@ -1514,10 +1552,12 @@
    "Health & Wellness"
   ],
   "workplace/common-naming-mistakes-that-kill-startups": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-brainstorm-names-that-arent-terrible": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-break-down-a-complicated-document-section-by-section": [
    "Learning",
@@ -1528,10 +1568,12 @@
    "Decisions"
   ],
   "workplace/how-to-come-up-with-a-business-name": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-decide-between-multiple-side-projects": [
-   "Decisions"
+   "Decisions",
+   "Career and Business"
   ],
   "workplace/how-to-figure-out-what-career-to-switch-to": [
    "Career and Business"
@@ -1564,7 +1606,8 @@
    "Career and Business"
   ],
   "workplace/how-to-know-if-your-business-name-is-forgettable": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-know-if-your-job-is-at-risk": [
    "Career and Business"
@@ -1584,7 +1627,8 @@
    "Home & Daily Life"
   ],
   "workplace/how-to-name-a-startup-when-all-the-good-names-are-taken": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-politely-decline-a-meeting": [
    "Career and Business",
@@ -1603,11 +1647,12 @@
    "Money"
   ],
   "workplace/how-to-read-a-job-offer-letter-employment-contract-before-signing": [
-   "Career and Business"
+   "Career and Business",
+   "Home & Daily Life"
   ],
   "workplace/how-to-read-a-long-policy-update-without-losing-your-mind": [
    "Learning",
-   "Career and Business"
+   "Home & Daily Life"
   ],
   "workplace/how-to-read-a-school-newsletter-hoa-notice-efficiently": [
    "Home & Daily Life",
@@ -1621,7 +1666,8 @@
    "Home & Daily Life"
   ],
   "workplace/how-to-read-between-the-lines-of-a-performance-review": [
-   "Career and Business"
+   "Career and Business",
+   "Learning"
   ],
   "workplace/how-to-respond-to-a-passive-aggressive-email": [
    "Career and Business",
@@ -1636,10 +1682,11 @@
   ],
   "workplace/how-to-skim-a-long-document-without-missing-the-important-parts": [
    "Learning",
-   "Career and Business"
+   "Home & Daily Life"
   ],
   "workplace/how-to-skim-a-long-email-and-not-miss-anything-important": [
-   "Career and Business"
+   "Career and Business",
+   "Home & Daily Life"
   ],
   "workplace/how-to-spend-your-free-time-when-you-want-a-career-change": [
    "Career and Business"
@@ -1664,7 +1711,8 @@
    "Learning"
   ],
   "workplace/how-to-tell-if-a-name-is-too-similar-to-an-existing-brand": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-tell-what-a-document-is-actually-saying-vs-what-it": [
    "Learning"
@@ -1678,13 +1726,16 @@
    "Conversations"
   ],
   "workplace/how-to-tell-your-manager-their-feedback-is-unfair": [
-   "Career and Business"
+   "Career and Business",
+   "Conversations"
   ],
   "workplace/how-to-test-a-business-name-before-committing": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-test-if-a-name-passes-the-drunk-test": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/how-to-translate-a-confusing-document-into-plain-language": [
    "Learning"
@@ -1726,10 +1777,12 @@
    "Conversations"
   ],
   "workplace/what-does-lets-table-this-mean": [
-   "Career and Business"
+   "Career and Business",
+   "Conversations"
   ],
   "workplace/what-does-lets-take-this-offline-mean": [
-   "Career and Business"
+   "Career and Business",
+   "Conversations"
   ],
   "workplace/what-does-noted-mean-in-work-email": [
    "Career and Business",
@@ -1743,7 +1796,8 @@
    "Career and Business"
   ],
   "workplace/what-makes-a-name-memorable": [
-   "Ideas & Diversions"
+   "Ideas & Diversions",
+   "Career and Business"
   ],
   "workplace/what-skills-are-actually-futureproof": [
    "Career and Business",
@@ -1754,14 +1808,15 @@
   ],
   "workplace/what-to-actually-pay-attention-to-in-a-benefits-packet": [
    "Career and Business",
-   "Money"
+   "Home & Daily Life"
   ],
   "workplace/what-to-do-when-you-have-1000-unread-emails": [
    "Career and Business",
    "Home & Daily Life"
   ],
   "workplace/what-to-look-for-in-an-nda-before-signing": [
-   "Career and Business"
+   "Career and Business",
+   "Home & Daily Life"
   ]
  }
 }

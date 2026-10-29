@@ -1,9 +1,9 @@
 // scripts/lib/guideCategories.js
 //
-// Guides are shown under the SAME 14 categories as the tools (2026-10-24).
+// Guides are shown under the SAME 10 categories as the tools (2026-10-24).
 // Each guide's folder stays its URL (/guides/<folder>/<slug>) — nothing about
 // a guide's address changes. src/data/guide-categories.json says which one or
-// two of the 14 categories each guide belongs to (assigned by hand from the
+// two of the 10 categories each guide belongs to (assigned by hand from the
 // titles); everything that groups guides reads it through this file:
 // the guides home and tool category pages (guideShelves.js), the category
 // hubs (build-guides-indexes.js), each guide's own label (build-guides.js),
