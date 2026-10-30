@@ -9,6 +9,8 @@ import { useTranslation } from '../i18n/useTranslation';
 import { getEmergencyNumber } from '../utils/emergencyNumber';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -273,7 +275,35 @@ const SafeWalk = ({ tool }) => {
     walkBtn:       isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-white' : 'bg-slate-700 hover:bg-slate-600 text-white',
   };
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    successTxt: 'text-[var(--sc-strong)]',
+    deleteHover: 'transition-colors',
+    btnGhost: 'text-[var(--sc-muted)]',
+    btnDis: 'bg-[var(--sc-line)] text-[var(--sc-muted)] cursor-not-allowed',
+    tabActive: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+    tabInactive: 'bg-[var(--sc-card)] text-[var(--sc-muted)] border-[var(--sc-line)]',
+    dangerBg: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    dangerText: 'text-[var(--sc-x-text)]',
+    infoBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    infoText: 'text-[var(--sc-strong)]',
+    walkCard: 'bg-[var(--sc-strong)]',
+    walkTextSec: 'text-[var(--sc-muted)]',
+    walkBorder: 'border-[var(--sc-line)]',
+    walkBtn: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // Returns true if value contains city+state abbreviation or 5-digit zip
@@ -1053,7 +1083,8 @@ const SafeWalk = ({ tool }) => {
       const r = assessResult;
 
       return (
-        <div className="scroll-mt-24 space-y-3" ref={assessResultRef}>
+        <div className={sv ? `${ANSWER_CARD} scroll-mt-24 space-y-3`.trim() : "scroll-mt-24 space-y-3"} ref={assessResultRef}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           <CheckNote status={checkStatus} className={c.textMuted} />
           {/* What Matters */}
           {r.what_matters && renderCollapsible('matters', '🚶', t('sw_what_matters'), (
@@ -1079,7 +1110,7 @@ const SafeWalk = ({ tool }) => {
               {r.before_you_go.map((item, i) => (
                 <button key={i} aria-pressed={!!checkedItems[i]} onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
                   className={`w-full flex items-start gap-3 p-3 rounded-lg border text-start transition-all
-                    ${checkedItems[i] ? (isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200') : `${c.cardAlt} ${c.border}`}`}>
+                    ${checkedItems[i] ? ((sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200')) : `${c.cardAlt} ${c.border}`}`}>
                   <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5
                     ${checkedItems[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>
                     {checkedItems[i] && <span>✓</span>}
@@ -1178,7 +1209,7 @@ const SafeWalk = ({ tool }) => {
     const fromErr = fromTouched && fromLocation.trim() && !fromOk;
     const toErr   = toTouched   && toLocation.trim()   && !toOk;
     return (
-      <div className="space-y-3 pt-1">
+      <div className={sv ? `${FORM_PANEL} space-y-3`.trim() : "space-y-3 pt-1"}>
         <div className="flex gap-3">
           <div className="flex-1 min-w-0">
             <span className={`text-[15px] font-semibold ${c.labelText} mb-1.5 block`}>{t('sw_from')} <span className={c.required}>*</span></span>
@@ -1187,7 +1218,7 @@ const SafeWalk = ({ tool }) => {
               onBlur={() => setFromTouched(true)}
               placeholder={t('sw_ph_from')}
               className={`w-full px-3 py-2.5 rounded-xl border text-base outline-none transition-colors
-                ${fromErr ? (isDark ? 'border-red-700 bg-red-900/20 text-zinc-100 placeholder-zinc-500' : 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400') : c.input}`} />
+                ${fromErr ? ((sv ? 'border-[var(--sc-x-line)] bg-[var(--sc-card)] text-[var(--sc-text)] placeholder-zinc-400' : isDark ? 'border-red-700 bg-red-900/20 text-zinc-100 placeholder-zinc-500' : 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400')) : c.input}`} />
             {fromErr && <p className="text-[13px] text-red-500 mt-1">{t('sw_err_location')}</p>}
           </div>
           <div className="flex-1 min-w-0">
@@ -1197,7 +1228,7 @@ const SafeWalk = ({ tool }) => {
               onBlur={() => setToTouched(true)}
               placeholder={t('sw_ph_to')}
               className={`w-full px-3 py-2.5 rounded-xl border text-base outline-none transition-colors
-                ${toErr ? (isDark ? 'border-red-700 bg-red-900/20 text-zinc-100 placeholder-zinc-500' : 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400') : c.input}`} />
+                ${toErr ? ((sv ? 'border-[var(--sc-x-line)] bg-[var(--sc-card)] text-[var(--sc-text)] placeholder-zinc-400' : isDark ? 'border-red-700 bg-red-900/20 text-zinc-100 placeholder-zinc-500' : 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400')) : c.input}`} />
             {toErr && <p className="text-[13px] text-red-500 mt-1">{t('sw_err_location')}</p>}
           </div>
         </div>
@@ -1447,16 +1478,16 @@ const SafeWalk = ({ tool }) => {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div className="flex items-start justify-between">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '🚶'}</span>{tool?.tagline ?? t('sw_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+            </p>)}
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ms-3">
             {hasAnyContent && (

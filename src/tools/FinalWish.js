@@ -8,6 +8,8 @@ import { useTranslation } from '../i18n/useTranslation';
 import { formatDate } from '../utils/formatLocale';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -354,6 +356,32 @@ const FinalWish = ({ tool }) => {
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const c = buildC(isDark);
+  // Category colours (src/data/toolSchemes.js): tool colours mapped to the
+  // scheme's ink, envelope and contrast shades by role; inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    textWarm: 'text-[var(--sc-strong)]',
+    borderWarm: 'border-[var(--sc-line)]',
+    tag: 'bg-[var(--sc-envelope)] text-[var(--sc-muted)]',
+    letterBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    letterText: 'text-[var(--sc-text)]',
+    progressDone: 'bg-[var(--sc-strong)]',
+    progressPend: 'bg-[var(--sc-line)]',
+    envelopeBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    diffAdd: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    diffRem: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    diffChg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    lockBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    warmBg: 'bg-[var(--sc-envelope)]',
+    deleteHover: '',
+    cardAltInset: 'bg-[var(--sc-envelope)]',
+    cardAltHover: '',
+  });
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
   const linkStyle = isDark
@@ -1258,7 +1286,7 @@ async function decrypt(){
   const renderToasts = () => toasts.length > 0 ? (
     <div className="fixed top-4 end-4 z-50 space-y-2" style={{ maxWidth: '320px' }}>
       {toasts.map(toast => (
-        <div key={toast.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? (isDark ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white') : toast.type === 'error' ? (isDark ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white') : (isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-zinc-700 text-white')}`}>
+        <div key={toast.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? ((sv ? 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]' : isDark ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white')) : toast.type === 'error' ? ((sv ? 'bg-[var(--sc-x)] text-[var(--sc-card)]' : isDark ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white')) : (isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-zinc-700 text-white')}`}>
           {toast.type === 'success' ? '✅ ' : toast.type === 'error' ? '⚠️ ' : ''}{toast.msg}
         </div>
       ))}
@@ -1339,21 +1367,21 @@ async function decrypt(){
           (PF-17c). Screen only. */}
       <div
         data-print-hide
-        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+        style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
       >
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+          {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
-          </p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+          </p>)}
+          <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
         </div>
       </div>
 
       {resumePrompt && (
-        <div className={`my-4 p-5 rounded-2xl border-2 ${isDark ? 'border-emerald-700 bg-emerald-900/20' : 'border-emerald-300 bg-emerald-50'}`}>
-          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-300' : 'text-emerald-800'} mb-3`}>{t('fws_resume_prompt')}</p>
+        <div className={`my-4 p-5 rounded-2xl border-2 ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-emerald-700 bg-emerald-900/20' : 'border-emerald-300 bg-emerald-50')}`}>
+          <p className={`text-sm font-semibold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')} mb-3`}>{t('fws_resume_prompt')}</p>
           <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{t('fws_resume_draft')}</button>
           <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_start_fresh')}</button>
         </div>
@@ -1438,7 +1466,7 @@ async function decrypt(){
           <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_mode_know_desc')}</p>
         </button>
         <button onClick={() => setScreen('emergency')} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `border-red-300 ${isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `border-red-300 ${(sv ? '' : isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400')}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🚨</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_emergency_title')}</span></div>
           <p className={`text-[13px] ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
         </button>
@@ -1654,7 +1682,7 @@ async function decrypt(){
                         <div className="flex flex-wrap gap-2 mt-1">
                           {SOCIAL_MEDIA_OPTIONS.map(opt => (
                             <button key={opt.value} onClick={() => updateAccount(acc.id, 'socialWish', opt.value)}
-                              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${acc.socialWish === opt.value ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${acc.socialWish === opt.value ? ((sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700')) : `${c.border} ${c.textMuteded}`}`}>
                               {t(opt.labelKey)}
                             </button>
                           ))}
@@ -1701,7 +1729,7 @@ async function decrypt(){
             const checked = documents[doc.id]?.checked || false;
             const location = documents[doc.id]?.location || '';
             return (
-              <div key={doc.id} className={`p-4 rounded-xl border transition-all ${checked ? (isDark ? 'border-amber-700/40 bg-amber-900/10' : 'border-amber-200 bg-amber-50/50') : c.border}`}>
+              <div key={doc.id} className={`p-4 rounded-xl border transition-all ${checked ? ((sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-amber-700/40 bg-amber-900/10' : 'border-amber-200 bg-amber-50/50')) : c.border}`}>
                 <div className="flex items-start gap-3">
                   <button onClick={() => setDocuments(prev => ({ ...prev, [doc.id]: { ...prev[doc.id], checked: !checked } }))}
                     className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center mt-0.5 transition-all ${checked ? 'bg-amber-500 border-amber-500 text-white' : c.border}`}>
@@ -1857,7 +1885,7 @@ async function decrypt(){
           <p className={`text-[13px] font-bold ${c.textSecondary} mb-2`}>{t('fws_tone_label')}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {[{ value: 'warm', labelKey: 'fws_tone_warm' }, { value: 'funny', labelKey: 'fws_tone_funny' }, { value: 'heartfelt', labelKey: 'fws_tone_heartfelt' }, { value: 'direct', labelKey: 'fws_tone_direct' }, { value: 'pep talk', labelKey: 'fws_tone_pep_talk' }].map(toneOpt => (
-              <button key={toneOpt.value} onClick={() => updateMessageField(idx, 'tone', toneOpt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === toneOpt.value ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>{t(toneOpt.labelKey)}</button>
+              <button key={toneOpt.value} onClick={() => updateMessageField(idx, 'tone', toneOpt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === toneOpt.value ? ((sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700')) : `${c.border} ${c.textMuteded}`}`}>{t(toneOpt.labelKey)}</button>
             ))}
           </div>
           {allPeopleNames.length > 1 && (
@@ -2122,7 +2150,7 @@ async function decrypt(){
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
             {DELIVERY_LOCATIONS.map(loc => (
               <button key={loc.id} onClick={() => setDeliveryLocation(loc.id)}
-                className={`p-2.5 rounded-lg border text-xs font-medium text-start transition-all ${deliveryLocation === loc.id ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
+                className={`p-2.5 rounded-lg border text-xs font-medium text-start transition-all ${deliveryLocation === loc.id ? ((sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700')) : `${c.border} ${c.textMuteded}`}`}>
                 {loc.icon} {t(loc.labelKey)}
               </button>
             ))}
@@ -2239,15 +2267,15 @@ async function decrypt(){
       {renderToasts()}
       <div
         data-print-hide
-        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+        style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
-            </p>
+            </p>)}
           </div>
           {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
           {hasInput ? (
@@ -2257,7 +2285,7 @@ async function decrypt(){
       </div>
       <div data-print-hide>{renderProgressBar()}</div>
       {/* Prints as filled in: the visitor chose to print their own draft. */}
-      <div data-print-form>{renderCurrentChapter()}</div>
+      <div data-print-form className={sv ? FORM_PANEL : undefined}>{renderCurrentChapter()}</div>
 
       {results && (
         <p data-print-hide className={`text-[13px] ${c.textMuted} mt-3 text-center`}>

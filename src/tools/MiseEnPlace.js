@@ -9,6 +9,8 @@ import { useTranslation } from '../i18n/useTranslation';
 import { compressImage, CompressionPresets } from '../utils/imageCompression';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // THEME — Navy & Gold
@@ -175,7 +177,36 @@ const MiseEnPlace = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    criticalBg: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    criticalText: 'text-[var(--sc-x-text)]',
+    parallelBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    parallelText: 'text-[var(--sc-strong)]',
+    tipBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    tipText: 'text-[var(--sc-strong)]',
+    timelineBg: 'bg-[var(--sc-card)] border-[var(--sc-line)]',
+    timelineDot: 'bg-[var(--sc-strong)]',
+    timelineLine: 'bg-[var(--sc-line)]',
+    inset: 'bg-[var(--sc-envelope)]',
+    dropActive: 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]',
+    histBg: 'bg-[var(--sc-card)] border-[var(--sc-line)]',
+    histAccent: 'text-[var(--sc-strong)]',
+    histCard: 'border-[var(--sc-line)]',
+    deleteHover: '',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
   const resultsRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -389,7 +420,7 @@ const MiseEnPlace = ({ tool }) => {
   // RENDER: Input
   // ══════════════════════════════════════════
   const renderInput = () => (
-    <div data-print-form className="space-y-4">
+    <div data-print-form className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
       {/* Ingredients */}
       <div className={`border-t ${c.border} pt-5`}>
         <label className={`text-base font-bold ${c.text} mb-1 block`}>{t('mep_kitchen_q')} <span className={c.required}>*</span></label>
@@ -591,8 +622,8 @@ const MiseEnPlace = ({ tool }) => {
     if (!results) return null;
 
     return (
-      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
-<CheckNote status={checkStatus} className={c.textMuted} />
+      <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`}>
+{sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
         {/* Selected Meal header */}
         {results.selected_meal && (
           <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>
@@ -769,16 +800,16 @@ const MiseEnPlace = ({ tool }) => {
       <div>
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+              {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🍳'}</span>{t('mep_tagline')}
-              </p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              </p>)}
+              <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
             </div>
             {(results || ingredients.trim()) && (
               <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
