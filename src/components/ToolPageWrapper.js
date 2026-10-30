@@ -428,7 +428,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     ['You get', tool.primer.get], ['The edge', tool.primer.edge]]
                     .filter(([, v]) => v).map(([label, value]) => (
                     <div key={label}>
-                      <dt className={`text-[10px] font-bold ${sv ? 'text-[var(--nut-label)]' : colors.accent} uppercase tracking-wide`}>{label}</dt>
+                      <dt className={`text-xs font-extrabold ${sv ? 'text-[var(--nut-head)]' : colors.accent} uppercase tracking-wide mb-0.5`}>{label}</dt>
                       <dd className={`text-sm ${sv ? 'text-[var(--nut-text)]' : colors.textSecondary} leading-relaxed`}>{value}</dd>
                     </div>
                   ))}
