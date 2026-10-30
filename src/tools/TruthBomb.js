@@ -81,7 +81,7 @@ const TruthBomb = ({ tool }) => {
   const waysBox = (i) => (sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : (DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0]).bg(isDark));
   const waysTxt = (i) => (sv ? c.sectionTitle : (DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0]).text(isDark));
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // All useState / useRef before any useEffect
   const [whoItsAbout, setWhoItsAbout] = useState('');
