@@ -2504,11 +2504,15 @@ Sometimes the software asked for it.
 
 ---
 
-## Category-colour pages — PROVISIONAL (2026-10-26)
+## Category-colour pages (permanent since 2026-10-30)
 
-**Status: temporary.** Written down so Bill Rescue and Signal vs Noise follow one set of rules while the owner judges them live. Applies only to tools in `PROTOTYPE_TOOLS` (`src/data/toolSchemes.js`); every other tool is unchanged. Replace or delete this section when the owner decides.
+**Status: the house style.** Every tool in the catalog wears it — all 121 since 2026-10-30. A new tool is not done until it does. Palettes are v3.0 (`docs/CATEGORY-COLOR-MAP-2.md`); a tool wears its **first** category's colours. The list that turns it on is still called `PROTOTYPE_TOOLS` (`src/data/toolSchemes.js`) — the name is historical, the list is now the whole catalog.
 
-Each category has four shades plus one contrast colour, exposed as CSS variables by `ToolPageWrapper`: `--sc-field` (lightest), `--sc-envelope` (light), `--sc-accent` (medium), `--sc-strong` (dark), `--sc-x` / `--sc-x-text` / `--sc-x-line` (contrast). Text boxes and letter pages are white (`--sc-card`).
+**Gate 9c** (`node scripts/category-style-audit.js`, `npm run check:category-style`, pre-push) fails a tool page that: is not in `PROTOTYPE_TOOLS`; wears a category other than its first; never calls `schemeStyle()`; has no answer card (`ANSWER_CARD` / `AnswerHeader`) or no form panel (`FORM_PANEL`), unless exempted in the script with a reason; puts `text-white` on `bg-[var(--sc-strong)]`; or leaves the old tinted header band on (`style={!sv && …}`). Everything below that the gate cannot see (box choice, text-colour roles, "Expand all", contrast) is checked by eye and by the in-page contrast scan, light **and** dark.
+
+Bill Rescue and Signal vs Noise are the full reference treatment (sections, key box, Expand all). The rest of the catalog has the structure (envelope, form panel, one answer card, colours by role); bringing each up to the full treatment happens tool by tool, not as a sweep.
+
+Each category has four shades plus one contrast colour, exposed as CSS variables by `ToolPageWrapper`: `--sc-field` (lightest), `--sc-envelope` (light), `--sc-accent` (medium), `--sc-strong` (dark), `--sc-x` / `--sc-x-text` / `--sc-x-line` (contrast), plus `--sc-on-strong` (text on the dark shade), `--sc-text` and `--sc-muted` (neutral text). Text boxes and letter pages use `--sc-card`.
 
 ### Structure
 
@@ -2534,7 +2538,13 @@ Each category has four shades plus one contrast colour, exposed as CSS variables
 6. **Never add a new text colour.** Anything not covered uses the nearest rule above.
 7. **Readable:** every coloured text ≥ 4.5:1 on what it sits on, in light and dark.
 
-In code: each tool maps its `c` keys to these variables inside `if (sv) Object.assign(c, {…})`, so the non-prototype branch stays untouched.
+In code: each tool maps its `c` keys to these variables inside `if (sv) Object.assign(c, SCHEME_C, {…})` (`src/components/CategoryStyle.js`), and every inline colour ternary carries its own `sv ?` branch. Traps from the rollout:
+
+- **Text on the dark shade is `text-[var(--sc-on-strong)]`, never `text-white`.** In midnight the dark shade is light, so white text on it is unreadable (gated).
+- **A gradient "hero" card goes to the envelope shade, not the dark one** — its inner text is usually coloured, and accent text on the ink disappears.
+- **Module-level sub-components need `sv` as a prop**; they cannot see the tool's `sv`.
+- **Neutral inactive chips need their own `sv ?` branch** — the old greys miss 4.5:1 on the category field.
+- **The contrast scan must run with transitions off.** The hidden browser pane freezes CSS transitions, and a scan mid-transition reports false failures.
 
 ## Speed defaults (owner, 2026-10-27: speed is primary)
 

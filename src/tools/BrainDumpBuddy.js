@@ -1045,13 +1045,13 @@ const BrainDumpBuddy = ({ tool }) => {
           {/* Persistent header */}
           <div
             data-print-hide
-            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-6"
-            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+            className={sv ? 'mb-4 ' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-6'}
+            style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
           >
             <div>
               <div className="flex items-center justify-between">
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-[17px] leading-snug ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{t('bdb_tagline')}</p>
+                {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}><span className="me-2 text-xl">{tool?.icon ?? '🧠'}</span>{t('bdb_tagline')}</p>)}
                 <div className="flex items-center gap-2">
                   {contextInfo && (
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${c.btnSecondary}`}>

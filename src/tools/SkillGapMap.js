@@ -758,7 +758,7 @@ const SkillGapMap = ({ tool }) => {
                     placeholder={t('sgm_explore_whats_missing_ph')}
                     className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                   <button onClick={() => handleExplore()} disabled={loading}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold ${(sv ? 'bg-[var(--sc-strong)]' : isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0]' : 'bg-[#142a43] hover:bg-[#234568]')} text-white disabled:opacity-40 flex-shrink-0`}>
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold ${(sv ? 'bg-[var(--sc-strong)]' : isDark ? 'bg-[#2f6fb0] hover:bg-[#3a7cc0]' : 'bg-[#142a43] hover:bg-[#234568]')} ${sv ? 'text-[var(--sc-on-strong)]' : 'text-white'} disabled:opacity-40 flex-shrink-0`}>
                     {t('sgm_explore_regenerate')}
                   </button>
                 </div>

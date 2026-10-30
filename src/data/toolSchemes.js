@@ -1,4 +1,6 @@
-// PROTOTYPE (2026-10-25, uncommitted): category colour schemes.
+// Category colour schemes (v3.0 palettes; house style since 2026-10-30 —
+// audit/CONVENTIONS.md "Category-colour pages", enforced by Gate 9c,
+// scripts/category-style-audit.js).
 //
 // Owner's rules: every tool takes its category's colour in four shades —
 //   field     lightest  text boxes
@@ -11,7 +13,8 @@
 //
 // Exposed as CSS variables (--sc-*, --nut-*) so one set of classes
 // (bg-[var(--sc-field)] …) serves light and dark. Only tools in PROTOTYPE_TOOLS
-// get a scheme; everything else renders exactly as before.
+// get a scheme — the name is historical: since 2026-10-30 it is the whole
+// catalog, and the gate fails a catalog tool missing from it.
 
 export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat', 'AwkwardSilenceFiller', 'DriveHome', 'LayoverMaximizer', 'MicroAdventureMapper', 'AnalogyEngine', 'WhatsMyVibe', 'VelvetHammer', 'TruthBomb', 'ToastWriter', 'ComebackCooker', 'GratitudeDebtClearer', 'WhatsThatMean', 'NotSoFast', 'ContextCollapse', 'ConflictCoach', 'DecoderRing', 'MagicMouth', 'NerveCheck', 'ReadTheRoom', 'ComplaintEscalationWriter', 'DifficultTalkCoach', 'TheFinalWord', 'Mend', 'BreakMyPlan', 'SmallChangeBigDifference', 'WhichLife', 'DecisionPrism', 'DecisionCoach', 'TicketTackler', 'BeliefStressTest', 'TipOfTongue', 'AlternatePath', 'PlotHoleFinder', 'FanTheory', 'TimeWarp', 'WrongAnswersOnly', 'Bookmark', 'ArgueSmarter', 'HistoryToday', 'SixDegreesOfMe', 'BrainRoulette', 'ContractDecoder', 'ToolFinder', 'WhereDidTheTimeGo', 'DocumentDetective', 'MiseEnPlace', 'CaptionMagic', 'BatchFlow', 'FinalWish', 'BikeMedic', 'PlantRescue', 'LeaseTrapDetector', 'RecipeChaosSolver', 'WaitingModeLiberator', 'SafeWalk', 'RoommateCourt', 'RentersDepositSaver', 'LaundroMat', 'PaperworkPath', 'ConceptCoach', 'FutureProof', 'GetNoticed', 'BeforeHello', 'ColdOpenCraft', 'HecklerPrep', 'TheRunthrough', 'RoastMe', 'TheDebrief', 'TheWholeStory', 'GhostWriter', 'SkillGapMap', 'BragSheetBuilder', 'NameAudit', 'NameStorm', 'MeetingHijackStopper', 'EmailUrgencyTriager', 'LeverageLogic', 'JustifyMyMeeting', 'MentalHealthNavigator', 'GriefGuide', 'SleepArchitect', 'DoctorVisitPrep', 'ProcedureProbe', 'NameThatFeeling', 'SocialBatteryAdvisor', 'PEP', 'LazyWorkoutAdapter', 'FocusSoundArchitect', 'FocusPocus', 'TaskAvalancheBreaker', 'PetBehaviorDecoder', 'BeforeTheCrash', 'DreamPatternSpotter', 'DoctorVisitTranslator', 'TripRecon', 'ChaosPilot', 'VirtualBodyDouble', 'BrainDumpBuddy', 'GentlePushGenerator', 'BrainStateDeejay']);
 
@@ -109,8 +112,8 @@ export function relatedStyle(isDark, tool) {
 }
 
 // The category whose colours a tool wears: its first category that has a
-// scheme. shortcut: prototype has only Money, so Bill Rescue (listed
-// Conversations first) wears Money; with all 14 schemes this is just [0].
+// scheme. Every catalog category has one now, so this is categories[0]
+// (Gate 9c fails a tool where it is not).
 export function schemeCategory(tool) {
   return (tool?.categories || []).find(cat => SCHEMES[cat]) || null;
 }
