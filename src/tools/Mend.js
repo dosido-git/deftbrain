@@ -7,6 +7,8 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // Constants
@@ -206,11 +208,46 @@ const Mend = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
+    formCard:      isDark ? 'bg-zinc-800' : 'bg-white',
+    listCard:      isDark ? 'bg-zinc-800' : 'bg-white',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): each view's form in the form panel and its
+  // answer in one card; view tabs as the scheme's chips; apology levels and
+  // over/under-apology told apart by words in the envelope shade instead of
+  // a green-to-red ladder; red flags keep the contrast colour. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  const ENV = 'bg-[var(--sc-envelope)] border-[var(--sc-line)]';
+  if (sv) Object.assign(c, SCHEME_C, {
+    label:        SCHEME_C.labelText,
+    formCard:     FORM_PANEL,
+    listCard:     ANSWER_CARD,
+    cardInner:    'bg-[var(--sc-card)] border border-[var(--sc-line)]',
+    btnDanger:    `border-2 ${SCHEME_C.btnSecondary}`,
+    tabActive:    `border ${SCHEME_C.pillActive}`,
+    tabInactive:  `border ${SCHEME_C.pillInactive}`,
+    success:      `${ENV} text-[var(--sc-strong)]`,
+    calmBg:       ENV,
+    level1:       `${ENV} text-[var(--sc-strong)]`,
+    level2:       `${ENV} text-[var(--sc-strong)]`,
+    level3:       `${ENV} text-[var(--sc-strong)]`,
+    level4:       `${ENV} text-[var(--sc-strong)]`,
+    level5:       `${ENV} text-[var(--sc-strong)]`,
+    overApology:  ENV,
+    underApology: ENV,
+    flagBg:       'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    goodBg:       ENV,
+    rewriteBg:    'bg-[var(--sc-card)] border-[var(--sc-border,var(--sc-accent))]',
+    cyanBg:       ENV,
+    amberBg:      ENV,
+    warning:      `${ENV} text-[var(--sc-strong)]`,
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   const levelColor = (lvl) => c[`level${lvl}`] || c.level3;
 
@@ -839,7 +876,7 @@ const Mend = ({ tool }) => {
       )}
 
       {/* Form */}
-      <div {...(calResults ? { 'data-print-hide': true } : {})} className={`rounded-xl p-6 ${c.card}`}>
+      <div {...(calResults ? { 'data-print-hide': true } : {})} className={`rounded-xl p-6 ${c.formCard}`}>
         <div className="mb-4">
           <p className={`text-sm ${c.textSecondary}`}>{t('apc_cal_subtitle')}</p>
         </div>
@@ -887,7 +924,8 @@ const Mend = ({ tool }) => {
 
       {/* Results */}
       {calResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* The verdict is a sentence now, not a score. "Level 6" reads as a
               risk rating handed down by an assessor; someone typing this in
               has already worked out that they got it wrong. The number is
@@ -985,9 +1023,9 @@ const Mend = ({ tool }) => {
                   const phrase = typeof item === 'string' ? item : item.phrase;
                   const why = typeof item === 'string' ? null : item.why_its_bad;
                   return (
-                    <div key={i} className={`rounded-lg p-3 ${isDark ? 'bg-red-900/20' : 'bg-red-100/60'}`}>
-                      <p className={`font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>"{phrase}"</p>
-                      {why && <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{why}</p>}
+                    <div key={i} className={`rounded-lg p-3 ${(sv ? 'bg-[var(--sc-card)]' : isDark ? 'bg-red-900/20' : 'bg-red-100/60')}`}>
+                      <p className={`font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>"{phrase}"</p>
+                      {why && <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{why}</p>}
                     </div>
                   );
                 })}
@@ -998,19 +1036,19 @@ const Mend = ({ tool }) => {
           {/* Over-apologizing */}
           {calResults.if_youre_over_apologizing?.applies !== false && calResults.if_youre_over_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.overApology}`}>
-              <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>
+              <h3 className={`text-lg font-bold mb-3 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-900')}`}>
                 <span className="me-2">💙</span>{t('apc_cal_over_heading')}
               </h3>
               {calResults.if_youre_over_apologizing.reality_check && (
-                <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{calResults.if_youre_over_apologizing.reality_check}</p>
+                <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-300' : 'text-sky-800')}>{calResults.if_youre_over_apologizing.reality_check}</p>
               )}
               {calResults.if_youre_over_apologizing.reframe && (
-                <p className={`mt-2 ${isDark ? 'text-sky-300' : 'text-sky-800'}`}>
+                <p className={`mt-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-300' : 'text-sky-800')}`}>
                   <strong>{t('apc_cal_over_say_instead')}</strong> {calResults.if_youre_over_apologizing.reframe}
                 </p>
               )}
               {calResults.if_youre_over_apologizing.permission && (
-                <p className={`mt-3 font-semibold ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>{calResults.if_youre_over_apologizing.permission}</p>
+                <p className={`mt-3 font-semibold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-900')}`}>{calResults.if_youre_over_apologizing.permission}</p>
               )}
               <button onClick={() => { setAuditSituations(prev => [...prev, { id: uid(), text: calForm.whatHappened, didApologize: true }]); setView('audit'); }}
                 className={`mt-3 px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
@@ -1022,19 +1060,19 @@ const Mend = ({ tool }) => {
           {/* Under-apologizing */}
           {calResults.if_youre_under_apologizing?.applies !== false && calResults.if_youre_under_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.underApology}`}>
-              <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-orange-200' : 'text-orange-900'}`}>
+              <h3 className={`text-lg font-bold mb-3 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-orange-200' : 'text-orange-900')}`}>
                 <span className="me-2">🔧</span>{t('apc_needs_repair')}
               </h3>
               {calResults.if_youre_under_apologizing.reality_check && (
-                <p className={isDark ? 'text-orange-300' : 'text-orange-800'}>{calResults.if_youre_under_apologizing.reality_check}</p>
+                <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-orange-300' : 'text-orange-800')}>{calResults.if_youre_under_apologizing.reality_check}</p>
               )}
               {calResults.if_youre_under_apologizing.what_to_add && (
-                <p className={`mt-2 ${isDark ? 'text-orange-300' : 'text-orange-800'}`}>
+                <p className={`mt-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-orange-300' : 'text-orange-800')}`}>
                   <strong>{t('apc_cal_under_what_to_add')}</strong> {calResults.if_youre_under_apologizing.what_to_add}
                 </p>
               )}
               {calResults.if_youre_under_apologizing.repair_actions && (
-                <p className={`mt-2 ${isDark ? 'text-orange-300' : 'text-orange-800'}`}>
+                <p className={`mt-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-orange-300' : 'text-orange-800')}`}>
                   <strong>{t('apc_cal_under_repair_actions')}</strong> {calResults.if_youre_under_apologizing.repair_actions}
                 </p>
               )}
@@ -1171,7 +1209,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderDetect = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🔍</span>{t('apc_det_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_det_subtitle')}</p>
 
@@ -1199,7 +1237,8 @@ const Mend = ({ tool }) => {
       </div>
 
       {detectResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Grade */}
           <div className={`border-4 rounded-xl p-6 ${
             detectResults.overall_grade === 'A' ? c.level1 :
@@ -1221,7 +1260,7 @@ const Mend = ({ tool }) => {
             <SectionCard title={t('apc_det_section_good')} icon="✅" accent={c.goodBg}>
               <div className="space-y-1">
                 {detectResults.whats_good.map((g, i) => (
-                  <p key={i} className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>• {g}</p>
+                  <p key={i} className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')}>• {g}</p>
                 ))}
               </div>
             </SectionCard>
@@ -1236,9 +1275,9 @@ const Mend = ({ tool }) => {
                     <div className="flex items-start gap-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.badge}`}>{f.type?.replace(/_/g, ' ')}</span>
                     </div>
-                    <p className={`mt-2 font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>"{f.text}"</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{f.problem}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}><strong>{t('apc_det_fix_label')}</strong> {f.fix}</p>
+                    <p className={`mt-2 font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>"{f.text}"</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{f.problem}</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}><strong>{t('apc_det_fix_label')}</strong> {f.fix}</p>
                   </div>
                 ))}
               </div>
@@ -1263,13 +1302,13 @@ const Mend = ({ tool }) => {
           {detectResults.rewritten && (
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
-                <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
+                <h3 className={`text-lg font-bold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}>
                   <span className="me-2">✨</span>{t('apc_det_rewritten')}
                 </h3>
               </div>
-              <p className={`leading-relaxed ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>{detectResults.rewritten}</p>
+              <p className={`leading-relaxed ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}>{detectResults.rewritten}</p>
               {detectResults.delivery_note && (
-                <p className={`text-sm mt-3 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                <p className={`text-sm mt-3 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>
                   <span className="me-1">💡</span>{detectResults.delivery_note}
                 </p>
               )}
@@ -1292,7 +1331,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderDelivery = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🎯</span>{t('apc_del_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_del_subtitle')}</p>
 
@@ -1324,7 +1363,8 @@ const Mend = ({ tool }) => {
       </div>
 
       {delResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Timing */}
           {delResults.when && (
             <SectionCard title={t('apc_del_section_when')} icon="⏰">
@@ -1333,12 +1373,12 @@ const Mend = ({ tool }) => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                 <div className={`rounded-lg p-3 border ${c.flagBg}`}>
-                  <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{t('apc_del_too_soon')}</p>
-                  <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>{delResults.when.too_soon_risk}</p>
+                  <p className={`text-sm font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>{t('apc_del_too_soon')}</p>
+                  <p className={`text-sm ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{delResults.when.too_soon_risk}</p>
                 </div>
                 <div className={`rounded-lg p-3 border ${c.flagBg}`}>
-                  <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{t('apc_del_too_late')}</p>
-                  <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>{delResults.when.too_late_risk}</p>
+                  <p className={`text-sm font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>{t('apc_del_too_late')}</p>
+                  <p className={`text-sm ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{delResults.when.too_late_risk}</p>
                 </div>
               </div>
             </SectionCard>
@@ -1352,7 +1392,7 @@ const Mend = ({ tool }) => {
                 <p className={`text-sm mt-1 ${c.textSecondary}`}>{delResults.how.why_this_medium}</p>
               </div>
               {delResults.how.avoid_medium && (
-                <p className={`text-sm mt-3 ${isDark ? 'text-red-400' : 'text-red-600'}`}><span className="me-1">🚫</span>{delResults.how.avoid_medium}</p>
+                <p className={`text-sm mt-3 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}><span className="me-1">🚫</span>{delResults.how.avoid_medium}</p>
               )}
             </SectionCard>
           )}
@@ -1371,10 +1411,10 @@ const Mend = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
+                  <h3 className={`text-lg font-bold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}>
                     <span className="me-2">🎤</span>{t('apc_del_opening_line')}
                   </h3>
-                  <p className={`text-lg mt-2 italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>"{delResults.opening_line}"</p>
+                  <p className={`text-lg mt-2 italic ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-800')}`}>"{delResults.opening_line}"</p>
                 </div>
               </div>
             </div>
@@ -1443,7 +1483,7 @@ const Mend = ({ tool }) => {
           {/* Common mistake */}
           {delResults.common_mistake && (
             <div className={`rounded-xl p-4 border-2 ${c.flagBg}`}>
-              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="me-2">⚠️</span><strong>{t('apc_del_common_mistake')}</strong> {delResults.common_mistake}</p>
+              <p className={(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}><span className="me-2">⚠️</span><strong>{t('apc_del_common_mistake')}</strong> {delResults.common_mistake}</p>
             </div>
           )}
 
@@ -1459,7 +1499,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderAudit = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">📊</span>{t('apc_aud_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_aud_subtitle')}</p>
 
@@ -1492,7 +1532,7 @@ const Mend = ({ tool }) => {
               <div key={s.id} className={`rounded-lg p-3 flex items-start justify-between gap-3 border ${c.cardInner}`}>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm ${c.text}`}>{s.text}</p>
-                  <span className={`text-xs ${s.didApologize ? (isDark ? 'text-sky-400' : 'text-sky-600') : (isDark ? 'text-orange-400' : 'text-orange-600')}`}>
+                  <span className={`text-xs ${s.didApologize ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-400' : 'text-sky-600')) : ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-orange-400' : 'text-orange-600'))}`}>
                     {s.didApologize ? t('apc_aud_apologized') : t('apc_aud_didnt_apologize')}
                   </span>
                 </div>
@@ -1519,7 +1559,8 @@ const Mend = ({ tool }) => {
       </div>
 
       {auditResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Pattern verdict */}
           <div className={`border-4 rounded-xl p-6 ${
             auditResults.pattern === 'over_apologizer' ? c.level4 :
@@ -1585,8 +1626,8 @@ const Mend = ({ tool }) => {
               <div className="space-y-3">
                 {auditResults.reframes.map((rf, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.cardInner}`}>
-                    <p className={`text-sm line-through ${isDark ? 'text-red-400' : 'text-red-500'}`}>"{rf.instead_of}"</p>
-                    <p className={`text-sm mt-1 font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>→ "{rf.try}"</p>
+                    <p className={`text-sm line-through ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-500')}`}>"{rf.instead_of}"</p>
+                    <p className={`text-sm mt-1 font-medium ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>→ "{rf.try}"</p>
                   </div>
                 ))}
               </div>
@@ -1596,16 +1637,16 @@ const Mend = ({ tool }) => {
           {/* Deeper insight */}
           {auditResults.deeper_insight && (
             <div className={`rounded-xl p-5 border-2 ${c.overApology}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="me-2">💙</span>{t('apc_aud_deeper_insight')}</h3>
-              <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{auditResults.deeper_insight}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-900')}`}><span className="me-2">💙</span>{t('apc_aud_deeper_insight')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-300' : 'text-sky-800')}>{auditResults.deeper_insight}</p>
             </div>
           )}
 
           {/* One thing to practice */}
           {auditResults.one_thing_to_practice && (
             <div className={`rounded-xl p-5 border-2 ${c.success}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="me-2">🎯</span>{t('apc_aud_challenge')}</h3>
-              <p className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>{auditResults.one_thing_to_practice}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}><span className="me-2">🎯</span>{t('apc_aud_challenge')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')}>{auditResults.one_thing_to_practice}</p>
             </div>
           )}
 
@@ -1621,7 +1662,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderCultural = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🌍</span>{t('apc_cul_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_cul_subtitle')}</p>
 
@@ -1669,7 +1710,8 @@ const Mend = ({ tool }) => {
       </div>
 
       {culResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Culture context */}
           <div className={`border-4 rounded-xl p-6 ${c.level2}`}>
             <h2 className="text-2xl font-bold"><span className="me-2">🌍</span>{culResults.culture_context}</h2>
@@ -1692,8 +1734,8 @@ const Mend = ({ tool }) => {
           {/* Surprise */}
           {culResults.what_might_surprise_you && (
             <div className={`rounded-xl p-5 border-2 ${c.overApology}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="me-2">😮</span>{t('apc_cul_surprise')}</h3>
-              <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{culResults.what_might_surprise_you}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-900')}`}><span className="me-2">😮</span>{t('apc_cul_surprise')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-300' : 'text-sky-800')}>{culResults.what_might_surprise_you}</p>
             </div>
           )}
 
@@ -1701,17 +1743,17 @@ const Mend = ({ tool }) => {
           {culResults.adapted_apology && (
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
-                <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
+                <h3 className={`text-lg font-bold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}>
                   <span className="me-2">✨</span>{t('apc_cul_adapted')}
                 </h3>
               </div>
               {culResults.adapted_apology.words && (
-                <p className={`text-lg italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>"{culResults.adapted_apology.words}"</p>
+                <p className={`text-lg italic ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-800')}`}>"{culResults.adapted_apology.words}"</p>
               )}
               <div className="space-y-2 mt-3">
-                {culResults.adapted_apology.delivery && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>{t('apc_cul_delivery')}</strong> {culResults.adapted_apology.delivery}</p>}
-                {culResults.adapted_apology.gestures && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>{t('apc_cul_gestures')}</strong> {culResults.adapted_apology.gestures}</p>}
-                {culResults.adapted_apology.timing && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>{t('apc_cul_timing')}</strong> {culResults.adapted_apology.timing}</p>}
+                {culResults.adapted_apology.delivery && <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')}`}><strong>{t('apc_cul_delivery')}</strong> {culResults.adapted_apology.delivery}</p>}
+                {culResults.adapted_apology.gestures && <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')}`}><strong>{t('apc_cul_gestures')}</strong> {culResults.adapted_apology.gestures}</p>}
+                {culResults.adapted_apology.timing && <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')}`}><strong>{t('apc_cul_timing')}</strong> {culResults.adapted_apology.timing}</p>}
               </div>
             </div>
           )}
@@ -1720,7 +1762,7 @@ const Mend = ({ tool }) => {
           {culResults.avoid?.length > 0 && (
             <SectionCard title={t('apc_cul_section_avoid')} icon="🚫" accent={c.flagBg}>
               <div className="space-y-1">
-                {culResults.avoid.map((a, i) => <p key={i} className={isDark ? 'text-red-300' : 'text-red-800'}>• {a}</p>)}
+                {culResults.avoid.map((a, i) => <p key={i} className={(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}>• {a}</p>)}
               </div>
             </SectionCard>
           )}
@@ -1763,7 +1805,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderDecode = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🧐</span>{t('apc_dec_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_dec_subtitle')}</p>
 
@@ -1795,7 +1837,8 @@ const Mend = ({ tool }) => {
       </div>
 
       {decodeResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Verdict */}
           <div className={`border-4 rounded-xl p-6 ${
             ['genuine', 'mostly_genuine'].includes(decodeResults.verdict) ? c.level1 :
@@ -1834,7 +1877,7 @@ const Mend = ({ tool }) => {
             <SectionCard title={t('apc_dec_section_real')} icon="✅" accent={c.goodBg}>
               <div className="space-y-1">
                 {decodeResults.whats_real.map((g, i) => (
-                  <p key={i} className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>• {g}</p>
+                  <p key={i} className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')}>• {g}</p>
                 ))}
               </div>
             </SectionCard>
@@ -1855,11 +1898,11 @@ const Mend = ({ tool }) => {
           {decodeResults.what_a_real_apology_would_sound_like && (
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
-                <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
+                <h3 className={`text-lg font-bold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}>
                   <span className="me-2">✨</span>{t('apc_dec_real_sound')}
                 </h3>
               </div>
-              <p className={`text-lg italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
+              <p className={`text-lg italic ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-800')}`}>
                 "{decodeResults.what_a_real_apology_would_sound_like}"
               </p>
             </div>
@@ -1885,15 +1928,15 @@ const Mend = ({ tool }) => {
           {/* Pattern warning */}
           {decodeResults.pattern_warning && (
             <div className={`rounded-xl p-4 border-2 ${c.flagBg}`}>
-              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="me-2">⚠️</span>{decodeResults.pattern_warning}</p>
+              <p className={(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}><span className="me-2">⚠️</span>{decodeResults.pattern_warning}</p>
             </div>
           )}
 
           {/* Emotional validation */}
           {decodeResults.emotional_validation && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}><span className="me-2">💜</span>{t('apc_dec_validation')}</h3>
-              <p className={isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}>{decodeResults.emotional_validation}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}><span className="me-2">💜</span>{t('apc_dec_validation')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}>{decodeResults.emotional_validation}</p>
             </div>
           )}
 
@@ -1917,7 +1960,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderPractice = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🎭</span>{t('apc_prac_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_prac_subtitle')}</p>
 
@@ -1964,7 +2007,7 @@ const Mend = ({ tool }) => {
             {/* Scene setting (first response) */}
             {practiceResults?.scene_setting && practiceHistory.length === 0 && (
               <div className={`rounded-lg p-4 border-2 ${c.cyanBg} mb-4`}>
-                <p className={`text-sm italic ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{practiceResults.scene_setting}</p>
+                <p className={`text-sm italic ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>{practiceResults.scene_setting}</p>
               </div>
             )}
 
@@ -1985,7 +2028,7 @@ const Mend = ({ tool }) => {
               {/* History */}
               {practiceHistory.map((h, i) => (
                 <div key={i} className={`rounded-lg p-4 ${h.role === 'user'
-                  ? (isDark ? 'bg-emerald-900/30 border border-emerald-700 ms-8' : 'bg-emerald-50 border border-emerald-200 ms-8')
+                  ? ((sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)] ms-8' : isDark ? 'bg-emerald-900/30 border border-emerald-700 ms-8' : 'bg-emerald-50 border border-emerald-200 ms-8'))
                   : (isDark ? 'bg-zinc-700 me-8' : 'bg-gray-100 me-8')}`}>
                   <p className={`text-xs font-medium mb-1 ${c.textMuteded}`}>{h.role === 'user' ? t('apc_prac_you') : t('apc_prac_them')}</p>
                   <p className={c.text}>{h.text}</p>
@@ -2016,27 +2059,27 @@ const Mend = ({ tool }) => {
             {/* Coaching box */}
             {practiceResults?.coaching && (
               <div className={`rounded-lg p-4 border-2 ${c.amberBg} mb-4`}>
-                <p className={`text-xs font-semibold mb-2 ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>{t('apc_prac_coach_notes')}</p>
+                <p className={`text-xs font-semibold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-300' : 'text-amber-800')}`}>{t('apc_prac_coach_notes')}</p>
                 {practiceResults.coaching.tip_before_starting && (
-                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_tip')}</strong> {practiceResults.coaching.tip_before_starting}</p>
+                  <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><strong>{t('apc_prac_tip')}</strong> {practiceResults.coaching.tip_before_starting}</p>
                 )}
                 {practiceResults.coaching.what_landed && (
-                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_what_landed')}</strong> {practiceResults.coaching.what_landed}</p>
+                  <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><strong>{t('apc_prac_what_landed')}</strong> {practiceResults.coaching.what_landed}</p>
                 )}
                 {practiceResults.coaching.what_felt_off && (
-                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_what_off')}</strong> {practiceResults.coaching.what_felt_off}</p>
+                  <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><strong>{t('apc_prac_what_off')}</strong> {practiceResults.coaching.what_felt_off}</p>
                 )}
                 {practiceResults.coaching.try_next && (
-                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_try_next')}</strong> {practiceResults.coaching.try_next}</p>
+                  <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><strong>{t('apc_prac_try_next')}</strong> {practiceResults.coaching.try_next}</p>
                 )}
                 {practiceResults.coaching.watch_for && (
-                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_watch_for')}</strong> {practiceResults.coaching.watch_for}</p>
+                  <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><strong>{t('apc_prac_watch_for')}</strong> {practiceResults.coaching.watch_for}</p>
                 )}
                 {practiceResults.coaching.progress && (
                   <span className={`inline-block mt-2 px-2 py-0.5 rounded-full text-xs font-medium ${
-                    practiceResults.coaching.progress === 'improving' ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') :
-                    practiceResults.coaching.progress === 'steady' ? (isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700') :
-                    (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700')
+                    practiceResults.coaching.progress === 'improving' ? ((sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700')) :
+                    practiceResults.coaching.progress === 'steady' ? ((sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700')) :
+                    ((sv ? 'bg-[var(--sc-card)] text-[var(--sc-x-text)]' : isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'))
                   }`}>{practiceResults.coaching.progress}</span>
                 )}
               </div>
@@ -2077,7 +2120,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderForgive = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">💜</span>{t('apc_for_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_for_subtitle')}</p>
 
@@ -2114,13 +2157,14 @@ const Mend = ({ tool }) => {
       </div>
 
       {forgiveResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Situation read & validation */}
           {forgiveResults.situation_read && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <p className={`${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{forgiveResults.situation_read}</p>
+              <p className={`${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}>{forgiveResults.situation_read}</p>
               {forgiveResults.emotional_validation && (
-                <p className={`mt-3 font-medium ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}>{forgiveResults.emotional_validation}</p>
+                <p className={`mt-3 font-medium ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}>{forgiveResults.emotional_validation}</p>
               )}
             </div>
           )}
@@ -2131,14 +2175,14 @@ const Mend = ({ tool }) => {
               <div className="space-y-3">
                 {forgiveResults.forgiveness_clarity.what_forgiveness_means_here && (
                   <div className={`rounded-lg p-3 border ${c.goodBg}`}>
-                    <p className={`text-sm font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>{t('apc_for_what_means')}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>{forgiveResults.forgiveness_clarity.what_forgiveness_means_here}</p>
+                    <p className={`text-sm font-medium ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')}`}>{t('apc_for_what_means')}</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-700')}`}>{forgiveResults.forgiveness_clarity.what_forgiveness_means_here}</p>
                   </div>
                 )}
                 {forgiveResults.forgiveness_clarity.what_forgiveness_does_NOT_mean && (
                   <div className={`rounded-lg p-3 border ${c.flagBg}`}>
-                    <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{t('apc_for_what_not_mean')}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-red-200' : 'text-red-700'}`}>{forgiveResults.forgiveness_clarity.what_forgiveness_does_NOT_mean}</p>
+                    <p className={`text-sm font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>{t('apc_for_what_not_mean')}</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-200' : 'text-red-700')}`}>{forgiveResults.forgiveness_clarity.what_forgiveness_does_NOT_mean}</p>
                   </div>
                 )}
                 {forgiveResults.forgiveness_clarity.forgiving_vs_reconciling && (
@@ -2163,7 +2207,7 @@ const Mend = ({ tool }) => {
                 {forgiveResults.apology_assessment.whats_there && <p className={`text-sm mt-2 ${c.textSecondary}`}><strong className={c.text}>{t('apc_for_whats_there')}</strong> {forgiveResults.apology_assessment.whats_there}</p>}
                 {forgiveResults.apology_assessment.whats_missing && <p className={`text-sm mt-1 ${c.textSecondary}`}><strong className={c.text}>{t('apc_for_whats_missing')}</strong> {forgiveResults.apology_assessment.whats_missing}</p>}
                 {forgiveResults.apology_assessment.is_enough_to_work_with !== undefined && (
-                  <p className={`text-xs mt-2 font-semibold ${forgiveResults.apology_assessment.is_enough_to_work_with ? (isDark ? 'text-emerald-300' : 'text-emerald-700') : (isDark ? 'text-amber-300' : 'text-amber-700')}`}>
+                  <p className={`text-xs mt-2 font-semibold ${forgiveResults.apology_assessment.is_enough_to_work_with ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')) : ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-300' : 'text-amber-700'))}`}>
                     {forgiveResults.apology_assessment.is_enough_to_work_with ? t('apc_for_enough') : t('apc_for_not_enough')}
                   </p>
                 )}
@@ -2209,16 +2253,16 @@ const Mend = ({ tool }) => {
           {/* If not ready */}
           {forgiveResults.if_youre_not_ready && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}><span className="me-2">💜</span>{t('apc_for_not_ready')}</h3>
-              <p className={isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}>{forgiveResults.if_youre_not_ready}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}><span className="me-2">💜</span>{t('apc_for_not_ready')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}>{forgiveResults.if_youre_not_ready}</p>
             </div>
           )}
 
           {/* Reflection */}
           {forgiveResults.one_thing_to_sit_with && (
             <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-zinc-100' : 'text-[#142a43]'}`}><span className="me-2">🪷</span>{t('apc_for_sit_with')}</h3>
-              <p className={`italic ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>{forgiveResults.one_thing_to_sit_with}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}><span className="me-2">🪷</span>{t('apc_for_sit_with')}</h3>
+              <p className={`italic ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>{forgiveResults.one_thing_to_sit_with}</p>
             </div>
           )}
 
@@ -2234,7 +2278,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderRoadmap = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🗺️</span>{t('apc_road_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_road_subtitle')}</p>
 
@@ -2271,7 +2315,8 @@ const Mend = ({ tool }) => {
       </div>
 
       {roadmapResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Damage assessment */}
           {roadmapResults.damage_assessment && (
             <div className={`border-4 rounded-xl p-6 ${
@@ -2298,9 +2343,9 @@ const Mend = ({ tool }) => {
               <div className="space-y-3">
                 {roadmapResults.common_mistakes.map((m, i) => (
                   <div key={i} className={`rounded-lg p-3 border ${c.flagBg}`}>
-                    <p className={`font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{m.mistake}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_road_tempting', { val: m.why_its_tempting })}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}><strong>{t('apc_road_instead')}</strong> {m.what_to_do_instead}</p>
+                    <p className={`font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>{m.mistake}</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('apc_road_tempting', { val: m.why_its_tempting })}</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}><strong>{t('apc_road_instead')}</strong> {m.what_to_do_instead}</p>
                   </div>
                 ))}
               </div>
@@ -2313,7 +2358,7 @@ const Mend = ({ tool }) => {
               <div className="space-y-4">
                 {roadmapResults.roadmap.map((phase, i) => (
                   <div key={i} className={`rounded-lg border-s-4 ${
-                    i === 0 ? 'border-s-emerald-500' : i === 1 ? 'border-s-cyan-500' : i === 2 ? 'border-s-cyan-500' : i === 3 ? 'border-s-orange-500' : 'border-s-red-500'
+                    sv ? 'border-s-[var(--sc-border,var(--sc-accent))]' : i === 0 ? 'border-s-emerald-500' : i === 1 ? 'border-s-cyan-500' : i === 2 ? 'border-s-cyan-500' : i === 3 ? 'border-s-orange-500' : 'border-s-red-500'
                   } ${c.cardInner} p-4`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`text-xs font-bold px-2 py-1 rounded ${c.badge}`}>{phase.phase}</span>
@@ -2334,11 +2379,11 @@ const Mend = ({ tool }) => {
                       </div>
                     )}
 
-                    {phase.avoid_this && <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>🚫 {phase.avoid_this}</p>}
+                    {phase.avoid_this && <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>🚫 {phase.avoid_this}</p>}
 
                     {phase.milestone && (
-                      <div className={`mt-2 rounded-lg p-2 ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-                        <p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_road_milestone', { val: phase.milestone })}</p>
+                      <div className={`mt-2 rounded-lg p-2 ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-emerald-900/20' : 'bg-emerald-50')}`}>
+                        <p className={`text-xs ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>{t('apc_road_milestone', { val: phase.milestone })}</p>
                       </div>
                     )}
 
@@ -2355,8 +2400,8 @@ const Mend = ({ tool }) => {
               <div className="space-y-3">
                 {roadmapResults.trust_rebuilding_signals.map((s, i) => (
                   <div key={i} className={`rounded-lg p-3 border ${c.goodBg}`}>
-                    <p className={`font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>{s.signal}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>{s.what_it_looks_like}</p>
+                    <p className={`font-medium ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')}`}>{s.signal}</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-700')}`}>{s.what_it_looks_like}</p>
                     <p className={`text-xs mt-1 ${c.textMuteded}`}>{s.dont_rush_it}</p>
                   </div>
                 ))}
@@ -2369,7 +2414,7 @@ const Mend = ({ tool }) => {
             <SectionCard title={t('apc_road_section_red_flags')} icon="🚩" accent={c.flagBg}>
               <div className="space-y-1">
                 {roadmapResults.red_flags_to_watch.map((f, i) => (
-                  <p key={i} className={isDark ? 'text-red-300' : 'text-red-800'}>• {f}</p>
+                  <p key={i} className={(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}>• {f}</p>
                 ))}
               </div>
             </SectionCard>
@@ -2378,16 +2423,16 @@ const Mend = ({ tool }) => {
           {/* Hardest truth */}
           {roadmapResults.hardest_truth && (
             <div className={`rounded-xl p-5 border-2 ${c.amberBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="me-2">💛</span>{t('apc_road_hard_truth')}</h3>
-              <p className={isDark ? 'text-amber-300' : 'text-amber-800'}>{roadmapResults.hardest_truth}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><span className="me-2">💛</span>{t('apc_road_hard_truth')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-300' : 'text-amber-800')}>{roadmapResults.hardest_truth}</p>
             </div>
           )}
 
           {/* Daily practice */}
           {roadmapResults.daily_practice && (
             <div className={`rounded-xl p-5 border-2 ${c.success}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="me-2">🌅</span>{t('apc_road_daily_practice')}</h3>
-              <p className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>{roadmapResults.daily_practice}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}><span className="me-2">🌅</span>{t('apc_road_daily_practice')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-800')}>{roadmapResults.daily_practice}</p>
             </div>
           )}
 
@@ -2413,7 +2458,7 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderLetter = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">✉️</span>{t('apc_let_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_let_subtitle')}</p>
 
@@ -2457,11 +2502,12 @@ const Mend = ({ tool }) => {
       </div>
 
       {letterResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Approach */}
           {letterResults.letter_approach && (
             <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
-              <p className={isDark ? 'text-zinc-100' : 'text-[#142a43]'}>{letterResults.letter_approach}</p>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}>{letterResults.letter_approach}</p>
             </div>
           )}
 
@@ -2486,13 +2532,13 @@ const Mend = ({ tool }) => {
                 <div key={i} className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div>
-                      <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
+                      <h3 className={`text-lg font-bold ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-200' : 'text-emerald-900')}`}>
                         {v.tone_label}
                       </h3>
                       <p className={`text-[13px] ${c.textMuteded}`}>{t('apc_let_word_count', { best: v.best_for, n: v.word_count })}</p>
                     </div>
                   </div>
-                  <div className={`whitespace-pre-wrap text-sm leading-relaxed ${isDark ? 'text-emerald-100' : 'text-emerald-900'}`}>
+                  <div className={`whitespace-pre-wrap text-sm leading-relaxed ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-100' : 'text-emerald-900')}`}>
                     {v.letter}
                   </div>
                 </div>
@@ -2505,10 +2551,10 @@ const Mend = ({ tool }) => {
             <SectionCard title={t('apc_let_section_not_include')} icon="🚫" accent={c.flagBg}>
               <div className="space-y-2">
                 {letterResults.what_NOT_to_include.map((item, i) => (
-                  <div key={i} className={`rounded-lg p-3 ${isDark ? 'bg-red-900/20' : 'bg-red-100/60'}`}>
-                    <p className={`font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{item.phrase_type}</p>
-                    <p className={`text-sm italic mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>"{item.example}"</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{item.why}</p>
+                  <div key={i} className={`rounded-lg p-3 ${(sv ? 'bg-[var(--sc-card)]' : isDark ? 'bg-red-900/20' : 'bg-red-100/60')}`}>
+                    <p className={`font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-800')}`}>{item.phrase_type}</p>
+                    <p className={`text-sm italic mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>"{item.example}"</p>
+                    <p className={`text-sm mt-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{item.why}</p>
                   </div>
                 ))}
               </div>
@@ -2530,8 +2576,8 @@ const Mend = ({ tool }) => {
           {/* Final check */}
           {letterResults.final_check && (
             <div className={`rounded-xl p-5 border-2 ${c.amberBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="me-2">✋</span>{t('apc_let_before_send')}</h3>
-              <p className={isDark ? 'text-amber-300' : 'text-amber-800'}>{letterResults.final_check}</p>
+              <h3 className={`font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-900')}`}><span className="me-2">✋</span>{t('apc_let_before_send')}</h3>
+              <p className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-300' : 'text-amber-800')}>{letterResults.final_check}</p>
             </div>
           )}
 
@@ -2563,7 +2609,7 @@ const Mend = ({ tool }) => {
 
   const renderFix = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.formCard}`}>
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🔁</span>{t('apc_fix_heading')}</h2>
         <p className={`text-sm mb-5 ${c.textMuteded}`}>{t('apc_fix_subtitle')}</p>
 
@@ -2612,17 +2658,18 @@ const Mend = ({ tool }) => {
       </div>
 
       {fixResults && (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {/* Diagnosis */}
           <div className={`rounded-xl p-6 ${c.card}`}>
             <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="me-2">🔬</span>{t('apc_fix_section_diagnosis')}</h3>
-            <p className={`text-base font-medium mb-4 ${isDark ? 'text-red-300' : 'text-red-700'}`}>{fixResults.diagnosis?.summary}</p>
+            <p className={`text-base font-medium mb-4 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-700')}`}>{fixResults.diagnosis?.summary}</p>
 
             <div className="space-y-3 mb-4">
               {fixResults.diagnosis?.problems?.map((p, i) => (
                 <div key={i} className={`rounded-lg p-4 border ${c.flagBg}`}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700'}`}>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${(sv ? 'bg-[var(--sc-card)] text-[var(--sc-x-text)]' : isDark ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700')}`}>
                       {PROBLEM_TYPE_KEYS[p.type] ? t(PROBLEM_TYPE_KEYS[p.type]) : p.label}
                     </span>
                   </div>
@@ -2633,12 +2680,12 @@ const Mend = ({ tool }) => {
             </div>
 
             <div className={`rounded-lg p-3 border ${c.cyanBg}`}>
-              <p className={`text-[13px] font-semibold mb-1 ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{t('apc_fix_trying_to_do')}</p>
+              <p className={`text-[13px] font-semibold mb-1 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('apc_fix_trying_to_do')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis?.what_they_were_trying_to_do}</p>
             </div>
             {fixResults.diagnosis?.why_it_backfired && (
               <div className={`rounded-lg p-3 border ${c.flagBg} mt-3`}>
-                <p className={`text-[13px] font-semibold mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_fix_backfired')}</p>
+                <p className={`text-[13px] font-semibold mb-1 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('apc_fix_backfired')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis.why_it_backfired}</p>
               </div>
             )}
@@ -2650,7 +2697,7 @@ const Mend = ({ tool }) => {
             <p className={`text-sm mb-4 ${c.textMuteded}`}>{fixResults.the_fix?.approach}</p>
 
             <div className={`rounded-lg p-4 border ${c.goodBg} mb-4`}>
-              <p className={`text-[13px] font-semibold mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_fix_rebuilt')}</p>
+              <p className={`text-[13px] font-semibold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>{t('apc_fix_rebuilt')}</p>
               <p className={`text-sm leading-relaxed whitespace-pre-line ${c.text}`}>{fixResults.the_fix?.rebuilt_apology}</p>
               <div className="mt-3">
               </div>
@@ -2662,11 +2709,11 @@ const Mend = ({ tool }) => {
                 {fixResults.the_fix.what_changed.map((w, i) => (
                   <div key={i} className={`rounded-lg p-3 border text-sm grid grid-cols-1 sm:grid-cols-2 gap-2 ${c.cardInner}`}>
                     <div>
-                      <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_fix_before')}</span>
+                      <span className={`text-xs font-medium ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('apc_fix_before')}</span>
                       <p className={`mt-0.5 ${c.textSecondary}`}>{w.original_element}</p>
                     </div>
                     <div>
-                      <span className={`text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('apc_fix_after')}</span>
+                      <span className={`text-xs font-medium ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')}`}>{t('apc_fix_after')}</span>
                       <p className={`mt-0.5 ${c.textSecondary}`}>{w.replaced_with}</p>
                     </div>
                     <div className={`sm:col-span-2 text-[13px] ${c.textMuteded}`}>{w.why_better}</div>
@@ -2684,7 +2731,7 @@ const Mend = ({ tool }) => {
                 <div className="space-y-2 text-sm">
                   <p><span className={`font-medium ${c.text}`}>{t('apc_fix_timing')}</span> <span className={c.textSecondary}>{fixResults.delivery_note.timing}</span></p>
                   <p><span className={`font-medium ${c.text}`}>{t('apc_fix_medium')}</span> <span className={c.textSecondary}>{fixResults.delivery_note.medium}</span></p>
-                  <p className={`mt-2 p-2 rounded-lg ${c.amberBg} text-xs ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
+                  <p className={`mt-2 p-2 rounded-lg ${c.amberBg} text-xs ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-300' : 'text-amber-800')}`}>
                     ⚠️ {fixResults.delivery_note.one_thing_not_to_do}
                   </p>
                 </div>
@@ -2705,14 +2752,14 @@ const Mend = ({ tool }) => {
   );
 
   const statusColors = {
-    active: isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700',
-    resolved: isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700',
-    stalled: isDark ? 'bg-orange-900/40 text-orange-300' : 'bg-orange-100 text-orange-700',
+    active: (sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700'),
+    resolved: (sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700'),
+    stalled: (sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-orange-900/40 text-orange-300' : 'bg-orange-100 text-orange-700'),
   };
 
   const renderRepairs = () => (
     <div className="space-y-6">
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div className={`rounded-xl p-6 ${c.listCard}`}>
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">🔧</span>{t('apc_rep_heading')}</h2>
@@ -2814,8 +2861,8 @@ const Mend = ({ tool }) => {
               <p className={`text-sm mt-2 ${c.textSecondary}`}>{r.what}</p>
               {r.apologyGiven && <p className={`text-sm mt-1 italic ${c.textMuteded}`}>"{r.apologyGiven}"</p>}
               {r.commitments && (
-                <div className={`mt-2 rounded-lg p-2 text-sm ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-                  <span className={`font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_rep_committed_to')}</span>{' '}
+                <div className={`mt-2 rounded-lg p-2 text-sm ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-emerald-900/20' : 'bg-emerald-50')}`}>
+                  <span className={`font-medium ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>{t('apc_rep_committed_to')}</span>{' '}
                   <span className={c.textSecondary}>{r.commitments}</span>
                 </div>
               )}
@@ -2876,8 +2923,8 @@ const Mend = ({ tool }) => {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div>
           <div className="flex items-start justify-between">
@@ -2885,10 +2932,10 @@ const Mend = ({ tool }) => {
                 <h1>. PF-17c: dark ink in both themes, on the tool's own pale
                 headerColor. */}
             <div className="min-w-0">
-              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+              {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
-              </p>
-              <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              </p>)}
+              <button data-print-hide onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
             </div>
             {results ? (
               <button data-print-hide onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
@@ -2902,7 +2949,7 @@ const Mend = ({ tool }) => {
             answers to questions nobody has asked yet. They come back under the
             answer, as things you might now want. Other views keep the row, or
             there is no way back. */}
-        <div data-print-hide className={`flex flex-wrap gap-2 pt-3 ${view === 'calibrate' ? 'hidden' : ''}`}>
+        <div data-print-hide className={`flex flex-wrap gap-2 ${sv ? 'mb-2' : 'pt-3'} ${view === 'calibrate' ? 'hidden' : ''}`}>
           {VIEWS.map(v => (
             <button key={v.id} onClick={() => goToView(v.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${view === v.id ? c.tabActive : c.tabInactive}`}>

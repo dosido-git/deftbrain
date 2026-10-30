@@ -403,7 +403,7 @@ const TruthBomb = ({ tool }) => {
                     </p>
                   )}
                   {results?.permission_to_not_say_it?.is_silence_legitimate !== undefined && (
-                    <p className={`text-sm font-semibold ${sv ? c.sectionTitle : results?.permission_to_not_say_it?.is_silence_legitimate ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>
+                    <p className={`text-sm font-semibold ${sv ? c.sectionTitle : results?.permission_to_not_say_it?.is_silence_legitimate ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')) : ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-600'))}`}>
                       {results?.permission_to_not_say_it?.is_silence_legitimate ? t('tb_silence_legit') : t('tb_silence_costs')}
                     </p>
                   )}

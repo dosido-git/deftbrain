@@ -226,16 +226,16 @@ const VelvetHammer = ({ tool }) => {
 
   const toneColor = (tone) => {
     if (sv) return c.sectionTitle;
-    if (tone === 'clear') return isDark ? 'text-emerald-400' : 'text-emerald-600';
-    if (tone === 'tactful') return isDark ? 'text-amber-400' : 'text-amber-600';
-    return isDark ? 'text-red-400' : 'text-red-600';
+    if (tone === 'clear') return (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600');
+    if (tone === 'tactful') return (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-600');
+    return (sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600');
   };
 
   const toneBg = (tone) => {
     if (sv) return `${c.badge} border-[var(--sc-line)]`;
-    if (tone === 'clear') return isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300';
-    if (tone === 'tactful') return isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300';
-    return isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200';
+    if (tone === 'clear') return (sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300');
+    if (tone === 'tactful') return (sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300');
+    return (sv ? 'bg-[var(--sc-card)] border-[var(--sc-x-line)]' : isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200');
   };
 
   return (

@@ -381,7 +381,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
         {/* ── PANIC RESULT ── */}
         {panicResult && (
-          <div className={`mb-5 p-5 rounded-xl border-2 ${sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)]' : isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300'}`}>
+          <div className={`mb-5 p-5 rounded-xl border-2 ${sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)]' : (sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300')}`}>
             <p className={`text-[13px] font-bold ${c.success} mb-2`}>{t('asf_panic_say_now')}</p>
             <p className={`text-lg font-bold ${c.text} mb-3`}>"{panicResult.line}"</p>
             {panicResult.they_say && (
@@ -397,7 +397,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               </div>
             )}
             {panicResult.silence_ok && (
-              <p className={`text-xs ${sv ? c.goodTxt : isDark ? 'text-emerald-300' : 'text-emerald-700'} italic mt-2`}>💚 {panicResult.silence_ok}</p>
+              <p className={`text-xs ${sv ? c.goodTxt : (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')} italic mt-2`}>💚 {panicResult.silence_ok}</p>
             )}
           </div>
         )}
@@ -589,7 +589,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_4')}</p>
             </NoteBox>
           ) : (
-          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+          <div className={`${c.card} border-2 ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-emerald-700' : 'border-emerald-300')} rounded-xl p-5 space-y-2`}>
             <p className={`text-sm font-bold ${c.text}`}>💚 {t('asf_first_matters')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_1')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_2')}</p>
@@ -816,7 +816,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           {r.encouragement && (
             <div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className={`flex-shrink-0 mt-0.5 ${c.success}`}>💚</span>
-              <p className={`text-sm ${sv ? c.goodTxt : isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{r.encouragement}</p>
+              <p className={`text-sm ${sv ? c.goodTxt : (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')}`}>{r.encouragement}</p>
             </div>
           )}
 

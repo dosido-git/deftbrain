@@ -214,14 +214,14 @@ const NotSoFast = ({ tool }) => {
     : null;
 
   // ── Render helpers ──
-  const rungHeaderBg = sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-[#1f2530]' : 'bg-zinc-100';
+  const rungHeaderBg = sv ? 'bg-[var(--sc-envelope)]' : (sv ? 'bg-zinc-100' : isDark ? 'bg-[#1f2530]' : 'bg-zinc-100');
   const rungNumBg    = sv ? 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]' : 'bg-cyan-800 text-white';
   const magicWordBg  = sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]' : isDark
     ? 'bg-zinc-700 border-zinc-600 text-emerald-400'
     : 'bg-zinc-100 border-zinc-300 text-zinc-700';
-  const firstMoveBg  = sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]';
-  const firstMoveLabel = sv ? c.sectionTitle : isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]';
-  const phraseInk = sv ? c.sectionTitle : isDark ? 'text-emerald-400' : 'text-emerald-700';
+  const firstMoveBg  = sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)]' : (sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]');
+  const firstMoveLabel = sv ? c.sectionTitle : (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#142a43]');
+  const phraseInk = sv ? c.sectionTitle : (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700');
 
   // PF-16: the tool's one reset, on the title row, from the first keystroke.
   const resetBtn = (results || goal.trim() || problem.trim() || system.trim() || whatTried.trim() || officialAnswer.trim()) ? (
@@ -499,7 +499,7 @@ const NotSoFast = ({ tool }) => {
           {results?.magic_phrases?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.secBox}`}>
               <button data-print-heading aria-expanded={!!(expanded.phrases)} onClick={() => toggle('phrases')} className="w-full text-start px-5 py-4 flex items-center justify-between">
-                <p className={`text-[15px] font-semibold ${sv ? c.labelText : isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✨ {t('rb_magic_phrases')}</p>
+                <p className={`text-[15px] font-semibold ${sv ? c.labelText : (sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>✨ {t('rb_magic_phrases')}</p>
                 <span data-print-hide><Caret open={expanded.phrases} /></span>
               </button>
               {(
