@@ -135,9 +135,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
   // amber or red — openers are classified in words, not traffic lights.
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
-    // Secondary grey one step darker: gray-500 on the tinted panel is 4.4:1.
-    textMuted:   isDark ? 'text-zinc-400' : 'text-gray-600',
-    textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
     label:    SCHEME_C.labelText,
     btnPanic: `border-2 ${SCHEME_C.btnSecondary} !shadow-none`,
     chainBg:  'border-s-2 border-[var(--sc-line)] !rounded-none !py-1 !pe-0',

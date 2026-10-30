@@ -252,9 +252,6 @@ const LayoverMaximizer = ({ tool }) => {
   // contrast colour.
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
-    // Secondary grey one step darker: gray-500 on the tinted panel is 4.4:1.
-    textMuted:   isDark ? 'text-zinc-400' : 'text-gray-600',
-    textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
     label:       SCHEME_C.labelText,
     skyText:     SCHEME_C.accentTxt,
     highlight:   'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',

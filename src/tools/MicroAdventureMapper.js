@@ -212,9 +212,6 @@ const MicroAdventureMapper = ({ tool }) => {
   // the extension in the envelope shade instead of amber and sky.
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
-    // Secondary grey one step darker: gray-500 on the tinted panel is 4.4:1.
-    textMuted:   isDark ? 'text-zinc-400' : 'text-gray-600',
-    textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
     label:         SCHEME_C.labelText,
     warningBox:    'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
     warningTxt:    'text-[var(--sc-x-text)]',

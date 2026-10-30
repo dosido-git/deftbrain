@@ -28,6 +28,10 @@ export const SCHEME_C = {
   // Text boxes white on the lighter panel; typed text in the medium shade.
   input:         'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-accent)] placeholder:text-[var(--sc-accent)] placeholder:opacity-60 focus:border-[var(--sc-border,var(--sc-accent))] focus:ring-[var(--sc-line)]',
   labelText:     'text-[var(--sc-strong)]',
+  // Secondary grey from the palette: Tailwind's gray-500 is 4.4:1 on the
+  // v3.0 envelope, under the 4.5 floor.
+  textMuted:     'text-[var(--sc-muted)]',
+  textMuteded:   'text-[var(--sc-muted)]',
   sectionTitle:  'text-[var(--sc-strong)]',
   accentTxt:     'text-[var(--sc-accent)]',
   required:      'text-[var(--sc-accent)]',

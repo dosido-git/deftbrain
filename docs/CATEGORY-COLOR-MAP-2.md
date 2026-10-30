@@ -50,6 +50,7 @@ restyled; indigo `#444C94` was the third option.
 | Envelope (page panel) | `envelope` | `#F5F3EE` | `#1F232B` |
 | White card / text boxes | `card` | `#FFFFFF` | `#101216` |
 | Body text | `text` | `#1F1E1B` | `#E8ECF2` |
+| Secondary grey | `muted` | `#4B5563` | `#A1A1AA` |
 | Text on the ink button | `onStrong`, `buttonText` | `#FFFFFF` | `#14130F` |
 
 ## Per-category tokens (formulas)
@@ -76,8 +77,7 @@ The midnight contrast formula is inferred from one example (Relationships'
 | Category | In `toolSchemes.js` |
 | --- | --- |
 | Relationships | v3.0 (from the chat) |
-| Conversations, Travel & Events | v3.0 (sheet values; tab and midnight from the formulas) |
-| Money, Learning | older restyle palettes, not yet v3.0 |
+| Money, Learning, Conversations, Travel & Events | v3.0 (sheet values; tab and midnight from the formulas) |
 | The other five | older 2026-10-27 drafts; no tool uses them yet |
 
 ## Open items
