@@ -7,6 +7,8 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 
 // ════════════════════════════════════════════════════════════
@@ -218,7 +220,66 @@ const BrainRoulette = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'font-semibold underline text-[#7fb3e0] hover:text-[#a9cdef]' : 'font-semibold underline text-[#165b9a] hover:text-[#142a43]';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-text)]',
+    textStrong: 'text-[var(--sc-text)]',
+    textCyan: 'text-[var(--sc-accent)]',
+    btnGhost: 'text-[var(--sc-muted)]',
+    ghostHover: '',
+    verdictFalse: 'text-[var(--sc-x-text)]',
+    verdictMisleading: 'text-[var(--sc-strong)]',
+    verdictComplicated: 'text-[var(--sc-muted)]',
+    verdictTrue: 'text-[var(--sc-strong)]',
+    pillCustom: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)] ring-2 shadow-sm',
+    depthActive: 'border-[var(--sc-line)] bg-[var(--sc-envelope)] shadow-sm',
+    depthInactive: 'border-[var(--sc-line)] bg-[var(--sc-card)]',
+    resultHeader: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+    resultBorder: 'border-[var(--sc-line)]',
+    deeperCard: 'bg-[var(--sc-card)] border-[var(--sc-line)] hover:shadow-sm',
+    savedCard: 'bg-[var(--sc-envelope)]',
+    savedPill: 'bg-[var(--sc-envelope)] text-[var(--sc-accent)]',
+    streak: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+    limitBar: 'bg-[var(--sc-envelope)]',
+    limitFill: 'bg-[var(--sc-envelope)]',
+    footerText: 'text-[var(--sc-muted)]',
+    chainBorder: 'border-s-[var(--sc-border,var(--sc-accent))]',
+    tabActive: 'border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)]',
+    tabInactive: 'border-transparent text-[var(--sc-muted)]',
+    historyRow: '',
+    statBox: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    debateClaim: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    debateReveal: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    journeyStep: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    journeyActive: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)] border-[var(--sc-border,var(--sc-accent))]',
+    journeyDone: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
+    journeyPending: 'bg-[var(--sc-envelope)] text-[var(--sc-muted)] border-[var(--sc-line)]',
+    digestCard: 'bg-gradient-to-br from-white border-[var(--sc-line)]',
+    conceptPill: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
+    flashcardFront: 'bg-gradient-to-br',
+    flashcardBack: 'bg-[var(--sc-card)] border-[var(--sc-line)]',
+    flashcardForgot: 'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
+    flashcardEasy: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
+    debateWhyBg: 'bg-white/50',
+    threadPanelBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    conceptsBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    savedItemHover: '',
+    savedBtnActive: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+    savedBtnInactive: 'bg-[var(--sc-envelope)] text-[var(--sc-muted)]',
+    savedInner: 'bg-[var(--sc-card)]',
+    deleteHover: '',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'font-semibold underline text-[#7fb3e0] hover:text-[#a9cdef]' : 'font-semibold underline text-[#165b9a] hover:text-[#142a43]';
 
   // Resolve verdict colorKey → c value with explicit refs
   // (S1.1k can't trace c[colorKey] indirection; explicit chain also catches typos.)
@@ -1220,17 +1281,17 @@ const BrainRoulette = ({ tool }) => {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4 ' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="me-2 text-xl">{tool?.icon ?? '🎲'}</span>
+              {!sv && <span className="me-2 text-xl">{tool?.icon ?? '🎲'}</span>}
               <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Roulette'}</h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bro_tagline')}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+                {!sv && <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Roulette'}</h2>}
+                {!sv && <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bro_tagline')}</p>}
+                <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
               </div>
             </div>
             {(!!result || selectedInterests.length > 0) && (
@@ -1266,7 +1327,7 @@ const BrainRoulette = ({ tool }) => {
       {activeTab === 'spin' && (
         <>
           {/* Interests */}
-          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className="mb-5">
+          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} mb-5` : 'mb-5'}>
             <div className="mb-3"><h3 className={`text-base font-bold ${c.text} mb-1`}>{t('bro_your_interests')}</h3><p className={`text-[13px] ${c.textMuted}`}>{t('bro_pick_2plus')}</p></div>
             <div className="flex flex-wrap gap-2 mb-3">
               {allInterests.map(int => {
@@ -1365,7 +1426,8 @@ const BrainRoulette = ({ tool }) => {
 
           {/* Result card */}
           {result && (
-            <div data-copy-results ref={resultsRef} className={`scroll-mt-24 rounded-2xl overflow-hidden mb-5 border ${c.border} ${c.card}`}>
+            <div data-copy-results ref={resultsRef} className={sv ? `scroll-mt-24 mb-5 ${ANSWER_CARD}` : `scroll-mt-24 rounded-2xl overflow-hidden mb-5 border ${c.border} ${c.card}`}>
+              {sv && <AnswerHeader title={t('your_answer')} />}
               <div className={`px-6 py-4 ${c.resultHeader}`}>
                 <h2 className="text-xl font-bold text-white">{result.title}</h2>
                 {result.interest_connections?.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{result.interest_connections.map((cn, i) => <span key={i} className="text-[13px] font-boldr bg-white/20 text-white px-2 py-0.5 rounded-full">{cn}</span>)}</div>}

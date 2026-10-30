@@ -8,6 +8,8 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // BRAND
@@ -87,7 +89,22 @@ const TipOfTongue = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#6e8aaa] hover:text-[#85afd6] underline' : 'text-[#165b9a] hover:text-[#1e3a58] underline';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    lowBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    lowText: 'text-[var(--sc-strong)]',
+    histBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#6e8aaa] hover:text-[#85afd6] underline' : 'text-[#165b9a] hover:text-[#1e3a58] underline';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State (useState before usePersistentState — PF-11/PF-14) ─────
@@ -229,7 +246,7 @@ const TipOfTongue = ({ tool }) => {
   // INPUT
   // ══════════════════════════════════════════
   const renderInput = () => (
-    <div className="space-y-4">
+    <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
       {/* Category picker */}
       <div className={'border rounded-xl p-5 ' + c.card + ' ' + c.border}>
         <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-3 block'}>{t('tot_cat_question')}</label>
@@ -290,7 +307,7 @@ const TipOfTongue = ({ tool }) => {
         {!loading && (
           <kbd aria-hidden="true"
             className={'hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border text-[10px] font-bold tracking-wide '
-              + (description.trim() ? 'border-white/30 bg-white/15' : (isDark ? 'border-[#7fb3e0] text-[#a9cdef]' : 'border-[#142a43] text-[#142a43]'))}>
+              + (description.trim() ? 'border-white/30 bg-white/15' : ((sv ? 'border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] text-[#a9cdef]' : 'border-[#142a43] text-[#142a43]')))}>
             ⌘↵
           </kbd>
         )}
@@ -312,8 +329,8 @@ const TipOfTongue = ({ tool }) => {
     const matches = results.matches || [];
 
     return (
-      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
-<CheckNote status={checkStatus} className={c.textMuted} />
+      <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`}>
+{sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
         {results.category_detected && (
           <p className={'text-xs font-medium ' + c.textMuted}>{t('tot_looking_for')} {results.category_detected}</p>
         )}
@@ -615,16 +632,16 @@ const TipOfTongue = ({ tool }) => {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div className="flex items-center justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '💭'}</span>{t('tot_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+            </p>)}
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
           </div>
           {(results || description.trim()) && (
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ {t('tot_start_over')}</button>

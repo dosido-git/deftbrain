@@ -9,6 +9,8 @@ import { PendingBtn, usePendingKey } from '../components/PendingAction';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -171,13 +173,49 @@ const SixDegreesOfMe = ({ tool }) => {
     challengeBg:   isDark ? 'bg-zinc-800/80 border-zinc-700' : 'bg-slate-50 border-slate-200',
     storyBg:       isDark ? 'bg-zinc-800' : 'bg-white',
   };
+
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    infoBox: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    successTxt: 'text-[var(--sc-strong)]',
+    warningTxt: 'text-[var(--sc-strong)]',
+    dangerHover: '',
+    chainNode: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    chainNodeA: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    chainNodeB: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    chainConnText: 'text-[var(--sc-muted)]',
+    insightBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    insightText: 'text-[var(--sc-strong)]',
+    insightBody: 'text-[var(--sc-strong)]',
+    profileFilled: 'text-[var(--sc-strong)]',
+    surprisePill: 'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border-[var(--sc-line)]',
+    historyCard: 'bg-[var(--sc-envelope)]',
+    tabActive: 'border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)]',
+    tabInactive: 'border-transparent text-[var(--sc-muted)]',
+    errorBox: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    errorText: 'text-[var(--sc-x-text)]',
+    aiQuestionBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    whatIfBg: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    challengeBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    storyBg: 'bg-[var(--sc-card)]',
+  });
   // SVG color (used as fill= / stroke=) — not a Tailwind class, so kept outside the c block
   const webNodeColor = isDark ? '#67e8f9' : '#0891b2';
   
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Session: Core ──
   const [thingA, setThingA] = useState('');
@@ -605,7 +643,7 @@ const SixDegreesOfMe = ({ tool }) => {
     return (
       <div className={`rounded-2xl border overflow-hidden mb-4 ${c.card}`}>
         {/* Header */}
-        <div className={`px-5 py-3 border-b ${c.border} ${isFlip ? (isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]') : ''}`}>
+        <div className={`px-5 py-3 border-b ${c.border} ${isFlip ? ((sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]')) : ''}`}>
           <p className={`text-[15px] font-semibold ${c.labelText}`}>
             {label || (isFlip ? t('sdm_chain_reverse_path') : t('sdm_chain_the_chain'))}
           </p>
@@ -1183,17 +1221,17 @@ const SixDegreesOfMe = ({ tool }) => {
           made for (PF-17c), with the tabs under it. Screen only. */}
       <div
         data-print-hide
-        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8"
-        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        className={sv ? 'mb-4 ' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8'}
+        style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
       >
         <div className="pb-3">
           <div className="flex items-start justify-between gap-3">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+              {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                 <span className="me-2 text-xl">{tool?.icon ?? '🔗'}</span>{t('sdm_tagline')}
-              </p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              </p>)}
+              <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
             </div>
             {(result || thingA.trim() || thingB.trim() || betweenResult) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -1204,7 +1242,7 @@ const SixDegreesOfMe = ({ tool }) => {
         </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 pt-3 border-b overflow-x-auto" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
+      <div className="flex gap-1 pt-3 border-b overflow-x-auto" style={{ borderColor: sv ? 'var(--sc-line)' : isDark ? '#3f3f46' : '#e2e8f0' }}>
         {TABS.map(tab => (
           <button key={tab.id} aria-pressed={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}
             className={`px-3 py-2 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap text-start ${
@@ -1232,11 +1270,11 @@ const SixDegreesOfMe = ({ tool }) => {
           </div>
 
           {/* The two ends of the chain */}
-          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className={`mb-5 p-5 rounded-2xl border ${c.card}`}>
+          <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} mb-5`.trim() : `mb-5 p-5 rounded-2xl border ${c.card}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" aria-hidden="true" />
+                  <span className={`w-2.5 h-2.5 rounded-full ${sv ? 'bg-[var(--sc-accent)]' : 'bg-amber-500'} shrink-0`} aria-hidden="true" />
                   {t('sdm_thing_a')} <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingA} onChange={e => setThingA(e.target.value)}
@@ -1246,7 +1284,7 @@ const SixDegreesOfMe = ({ tool }) => {
               </div>
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" aria-hidden="true" />
+                  <span className={`w-2.5 h-2.5 rounded-full ${sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-500'} shrink-0`} aria-hidden="true" />
                   {t('sdm_thing_b')} <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingB} onChange={e => setThingB(e.target.value)}
@@ -1388,8 +1426,8 @@ const SixDegreesOfMe = ({ tool }) => {
           )}
 
           {/* Chain result */}
-          <div data-copy-results ref={resultsRef} className="scroll-mt-24">
-            {result && renderChainVisualization(result, { showWhatIf: true })}
+          <div data-copy-results ref={resultsRef} className={`scroll-mt-24 ${sv ? ANSWER_CARD : ''}`}>
+            {sv && <AnswerHeader title={t('your_answer')} />}{result && renderChainVisualization(result, { showWhatIf: true })}
           </div>
 
           {/* Flip result */}
