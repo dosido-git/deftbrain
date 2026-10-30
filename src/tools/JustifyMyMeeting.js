@@ -9,7 +9,7 @@ import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { toolTagline } from '../utils/toolTagline';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, SvSection, ExpandAll, KEY_BOX, useOnExpandAll } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -674,7 +674,7 @@ const JustifyMyMeeting = ({ tool }) => {
       {judgeResults && (
         <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
           {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
-          <div className={`${verdictColor(judgeResults.verdict)} border-2 rounded-xl p-5 text-center`}>
+          <div data-keybox="" className={sv ? KEY_BOX : `${verdictColor(judgeResults.verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{VERDICT_EMOJI[judgeResults.verdict] || '📊'}</span>
             <p className={`text-xl font-black ${c.text}`}>{verdictLabel(judgeResults.verdict)}</p>
             {judgeResults.one_liner && <p className={`text-sm ${c.textSecondary} mt-2`}>{judgeResults.one_liner}</p>}
@@ -686,11 +686,11 @@ const JustifyMyMeeting = ({ tool }) => {
             </Section>
           )}
 
+          {sv && <ExpandAll />}
           {judgeResults.why_this_verdict?.length > 0 && (
-            <div className={`border-t ${c.border} pt-5`}>
-              <p className={`text-xs font-bold ${c.text} mb-1.5`}>🧭 {t('mbd_j_why')}</p>
+            <SvSection sv={sv} c={c} icon="🧭" title={t('mbd_j_why')} className={`border-t ${c.border} pt-5`} heading={<p className={`text-xs font-bold ${c.text} mb-1.5`}>🧭 {t('mbd_j_why')}</p>}>
               {judgeResults.why_this_verdict.map((x, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {x}</p>)}
-            </div>
+            </SvSection>
           )}
 
           {(judgeResults.what_earns_the_meeting?.length > 0 || judgeResults.what_weakens_the_case?.length > 0) && (
@@ -710,8 +710,7 @@ const JustifyMyMeeting = ({ tool }) => {
           {renderFootprint(judgeResults.time_footprint)}
 
           {judgeResults.better_format?.how && (
-            <div className={`border-t ${c.border} pt-5`}>
-              <p className={`text-xs font-bold ${c.text} mb-1`}>🔀 {t('mbd_j_better')}</p>
+            <SvSection sv={sv} c={c} icon="🔀" title={t('mbd_j_better')} className={`border-t ${c.border} pt-5`} heading={<p className={`text-xs font-bold ${c.text} mb-1`}>🔀 {t('mbd_j_better')}</p>}>
               {judgeResults.better_format.recommendation && FORMAT_LABELS[judgeResults.better_format.recommendation] && (
                 <p className={`text-[13px] font-bold ${c.accentTxt} mb-1.5`}>{t(FORMAT_LABELS[judgeResults.better_format.recommendation])}</p>
               )}
@@ -719,7 +718,7 @@ const JustifyMyMeeting = ({ tool }) => {
               {judgeResults.better_format.assumptions && (
                 <p className={`text-[13px] ${c.textMuted} mt-2`}>{t('mbd_j_assumes')} {judgeResults.better_format.assumptions}</p>
               )}
-            </div>
+            </SvSection>
           )}
 
           {judgeResults.next_move && (
@@ -737,14 +736,13 @@ const JustifyMyMeeting = ({ tool }) => {
 
           {/* The follow-up the verdict earns — offered, never assumed. */}
           {showAgendaOffer && !agendaResults && (
-            <div className={`border-t ${c.border} pt-5`}>
-              <p className={`text-xs font-bold ${c.text} mb-1`}>🔧 {t('mbd_agenda_offer_title')}</p>
+            <SvSection sv={sv} c={c} icon="🔧" title={t('mbd_agenda_offer_title')} className={`border-t ${c.border} pt-5`} heading={<p className={`text-xs font-bold ${c.text} mb-1`}>🔧 {t('mbd_agenda_offer_title')}</p>}>
               <p className={`text-xs ${c.textSecondary} mb-3`}>{t('mbd_agenda_offer_sub')}</p>
               <button onClick={runAgenda} disabled={loading}
                 className={`${c.btnPrimary} px-4 py-2.5 rounded-lg text-sm font-bold min-h-[44px] w-full disabled:opacity-50`}>
                 {loading ? t('mbd_agenda_btn_loading') : t('mbd_agenda_btn')}
               </button>
-            </div>
+            </SvSection>
           )}
 
           {showMessageOffer && !messageResults && (
@@ -1313,6 +1311,7 @@ JustifyMyMeeting.displayName = 'JustifyMyMeeting';
 // ════════════════════════════════════════════════════════════
 function Section({ icon, title, badge, children, defaultOpen = false, c }) {
   const [open, setOpen] = useState(defaultOpen);
+  useOnExpandAll(setOpen);
   const ui = (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
       <button data-print-heading aria-expanded={!!(open)} onClick={() => setOpen(p => !p)}

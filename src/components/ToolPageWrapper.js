@@ -11,6 +11,7 @@ import { ensurePrintStyles } from './printStyles';
 import SiteHeader from './SiteHeader';
 import './ToolPageSiteStyle.css';
 import { schemeStyle, schemeCategory } from '../data/toolSchemes';
+import { SectionGroup } from './CategoryStyle';
 import { PRINT_HEADER_LOGO, PRINT_FOOTER_BRAND } from '../utils/printBranding';
 import { toolTagline } from '../utils/toolTagline';
 
@@ -355,7 +356,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         <main data-print-main className={`lg:col-span-8 mb-8 lg:mb-0 ${sv ? 'rounded-b-[20px] border border-t-0 border-[var(--sc-line)] bg-[var(--sc-envelope)] px-5 sm:px-8 pb-6 sm:pb-8 print:bg-transparent print:border-0 print:p-0' : ''}`}>
           {sv ? (
             /* PROTOTYPE: no outer card — the tool draws its own form and answer cards. */
-            <section data-print-section className="scroll-mt-24">{children}</section>
+            <section data-print-section className="scroll-mt-24"><SectionGroup>{children}</SectionGroup></section>
           ) : (
           <section data-print-section className={`scroll-mt-24 border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
               // One flat card. The tool's color is a pale band the tool's own

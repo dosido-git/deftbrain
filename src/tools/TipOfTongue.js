@@ -9,7 +9,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, KEY_BOX } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // BRAND
@@ -339,7 +339,7 @@ const TipOfTongue = ({ tool }) => {
             and the rest become a single "not it?" line — three full cards after
             an unmistakable match invites doubt the evidence does not support. */}
         {(results.dominant ? matches.slice(0, 1) : matches).map((m, idx) => (
-          <div key={idx} className={'rounded-xl border-2 overflow-hidden transition-all ' + confBg(m.confidence)}>
+          <div key={idx} {...(sv && idx === 0 ? { 'data-keybox': '' } : {})} className={sv && idx === 0 ? `${KEY_BOX} !p-0 overflow-hidden` : 'rounded-xl border-2 overflow-hidden transition-all ' + confBg(m.confidence)}>
             <button onClick={() => setExpandedMatch(expandedMatch === idx ? -1 : idx)}
               className="w-full text-start p-5">
               <div className="flex items-center gap-3 mb-2">

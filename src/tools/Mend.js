@@ -8,7 +8,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, KEY_BOX } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // Constants
@@ -963,7 +963,7 @@ const Mend = ({ tool }) => {
           )}
 
           {calResults.todays_job?.action && (
-            <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
+            <div data-keybox="" className={sv ? KEY_BOX : `${c.card} border-2 ${c.border} rounded-xl p-5`}>
               <p className={`text-[13px] font-bold ${c.textSecondary} mb-1`}>🎯 {t('apc_todays_job')}</p>
               <p className={`text-lg font-black ${c.text}`}>{calResults.todays_job.action}</p>
               {calResults.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{calResults.todays_job.why}</p>}

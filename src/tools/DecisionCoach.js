@@ -9,7 +9,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, KEY_BOX } from '../components/CategoryStyle';
 
 
 
@@ -730,7 +730,7 @@ const DecisionCoach = ({ tool }) => {
         {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
-        <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
+        <div data-keybox="" className={sv ? KEY_BOX : `p-6 rounded-2xl border-2 ${c.decisionBg}`}>
           <div className={`text-[13px] font-bold mb-3 ${c.decisionText}`}>
             {awaitingAnswer ? t('dc_call_right_now') : t('dc_your_decision')}
           </div>

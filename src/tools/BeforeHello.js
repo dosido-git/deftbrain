@@ -8,7 +8,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, KEY_BOX } from '../components/CategoryStyle';
 
 // Five, rotated by pickExample: investor, mentor, employer, client and
 // connector — five of the seven target types, each a different kind of ask
@@ -338,7 +338,7 @@ const BeforeHello = ({ tool }) => {
             )}
 
             {results.ready_to_say_hello && (
-              <div className={`rounded-2xl border-2 p-5 ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]')}`}>
+              <div data-keybox="" className={sv ? KEY_BOX : `rounded-2xl border-2 p-5 ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]')}`}>
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <p className={`text-xs font-black uppercase tracking-widest ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>3 · {t('bh_ready_heading')}</p>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-black ${c.card} border ${c.border}`}>{t(`bh_status_${results.ready_to_say_hello.status}`)}</span>

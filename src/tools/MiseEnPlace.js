@@ -10,7 +10,7 @@ import { compressImage, CompressionPresets } from '../utils/imageCompression';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, KEY_BOX, SvSection, ExpandAll } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // THEME — Navy & Gold
@@ -626,7 +626,7 @@ const MiseEnPlace = ({ tool }) => {
 {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
         {/* Selected Meal header */}
         {results.selected_meal && (
-          <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>
+          <div data-keybox="" className={sv ? KEY_BOX : `p-5 rounded-2xl border-2 ${c.tipBg}`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">👨‍🍳</span>
               <span className={`text-sm font-bold ${c.tipText}`}>{t('mep_tonights_move')}</span>
@@ -637,15 +637,15 @@ const MiseEnPlace = ({ tool }) => {
         )}
 
         {/* Detected ingredients */}
+        {sv && <ExpandAll />}
         {results.detected_ingredients?.length > 0 && (
-          <div className={`p-4 rounded-xl ${c.inset}`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🥑 {t('mep_working_with')}</p>
+          <SvSection sv={sv} c={c} icon="🥑" title={t('mep_working_with')} className={`p-4 rounded-xl ${c.inset}`} heading={<p className={`text-xs font-bold ${c.textMuted} mb-2`}>🥑 {t('mep_working_with')}</p>}>
             <div className="flex flex-wrap gap-1.5">
               {results.detected_ingredients.map((ing, i) => (
                 <span key={i} className={`px-2 py-0.5 rounded text-xs font-medium ${c.badge}`}>{ing}</span>
               ))}
             </div>
-          </div>
+          </SvSection>
         )}
 
         {/* Meal options */}

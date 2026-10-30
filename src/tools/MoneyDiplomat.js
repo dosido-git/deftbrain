@@ -7,7 +7,7 @@ import { toolTagline } from '../utils/toolTagline';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { Badge } from '../components/Badge';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, AnswerCard, ToolTopRow } from '../components/CategoryStyle';
+import { KeyBox, SCHEME_C, FORM_PANEL, AnswerCard, ToolTopRow, KEY_BOX, Section, ExpandAll } from '../components/CategoryStyle';
 import { useTranslation } from '../i18n/useTranslation';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 import { pickExample } from '../utils/exampleRotation';
@@ -379,7 +379,7 @@ const HEAD_TONE = {
   'Not enough to tell': 'info', 'Not enough information': 'info',
 };
 
-function GroundedResult({ mode, results, c, t }) {
+function GroundedResult({ mode, results, c, t, sv }) {
   const spec = SECTIONS[mode];
   if (!spec || !results) return null;
   const head = spec.head ? results[spec.head] : null;
@@ -459,9 +459,23 @@ function GroundedResult({ mode, results, c, t }) {
       }
     })();
     if (!inner) return null;
-    return <div key={key} className={`border-t ${c.border} pt-5`}><Label k={labelKey} />{inner}</div>;
+    return { key, labelKey, inner };
   };
+  const parts = spec.body.map(([k, lk, kind]) => render(k, lk, kind)).filter(Boolean);
 
+  // Category page: the headline is the key box, the first part stays open,
+  // the rest collapse under Expand all.
+  if (sv) return (
+    <div className="space-y-4">
+      {head
+        ? <div data-keybox="" className={`${KEY_BOX} text-center`}><Badge c={c} type={HEAD_TONE[head] || 'info'}>{head}</Badge></div>
+        : parts[0] && <KeyBox label={t(parts[0].labelKey)}>{parts[0].inner}</KeyBox>}
+      {parts.length > (head ? 1 : 2) && <ExpandAll />}
+      <div>
+        {parts.slice(head ? 0 : 1).map((p, i) => <Section key={p.key} c={c} title={t(p.labelKey)} defaultOpen={head && i === 0}>{p.inner}</Section>)}
+      </div>
+    </div>
+  );
   return (
     <div className="space-y-4">
       {head && (
@@ -469,7 +483,7 @@ function GroundedResult({ mode, results, c, t }) {
           <Badge c={c} type={HEAD_TONE[head] || 'info'}>{head}</Badge>
         </div>
       )}
-      {spec.body.map(([k, lk, kind]) => render(k, lk, kind))}
+      {parts.map(p => <div key={p.key} className={`border-t ${c.border} pt-5`}><Label k={p.labelKey} />{p.inner}</div>)}
     </div>
   );
 }
@@ -906,7 +920,7 @@ const MoneyDiplomat = ({ tool }) => {
         </div>
 
         {/* ─── TIP ADVISOR RESULTS ─── */}
-        {activeType === 'tip' && results?.practical_answer && <GroundedResult mode="tip" results={results} c={c} t={t} />}
+        {activeType === 'tip' && results?.practical_answer && <GroundedResult mode="tip" results={results} c={c} t={t} sv={sv} />}
         {activeType === 'split' && results?.options && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.the_awkward_part && <p className={`text-xs ${c.noteTxt} italic`}>😬 {results?.the_awkward_part}</p>}
@@ -954,8 +968,8 @@ const MoneyDiplomat = ({ tool }) => {
         )}
 
         {/* ─── VENMO VERDICT RESULTS ─── */}
-        {activeType === 'venmo' && results?.verdict && <GroundedResult mode="venmo" results={results} c={c} t={t} />}
-        {activeType === 'gift' && results?.range && <GroundedResult mode="gift" results={results} c={c} t={t} />}
+        {activeType === 'venmo' && results?.verdict && <GroundedResult mode="venmo" results={results} c={c} t={t} sv={sv} />}
+        {activeType === 'gift' && results?.range && <GroundedResult mode="gift" results={results} c={c} t={t} sv={sv} />}
         {activeType === 'roommate' && results?.fair_split && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.fair_split?.map((fs, i) => (
@@ -985,7 +999,7 @@ const MoneyDiplomat = ({ tool }) => {
         )}
 
         {/* ─── FAMILY MONEY RESULTS ─── */}
-        {activeType === 'family' && results?.practical_issue && <GroundedResult mode="family" results={results} c={c} t={t} />}
+        {activeType === 'family' && results?.practical_issue && <GroundedResult mode="family" results={results} c={c} t={t} sv={sv} />}
         {activeType === 'dining' && results?.pre_game && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.who_pays && (
@@ -1054,7 +1068,7 @@ const MoneyDiplomat = ({ tool }) => {
         )}
 
         {/* ─── LENDING RESULTS ─── */}
-        {activeType === 'lend' && results?.recommendation && <GroundedResult mode="lend" results={results} c={c} t={t} />}
+        {activeType === 'lend' && results?.recommendation && <GroundedResult mode="lend" results={results} c={c} t={t} sv={sv} />}
         {activeType === 'work' && results?.assessment && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <div className="flex items-center gap-2 flex-wrap">
@@ -1087,8 +1101,8 @@ const MoneyDiplomat = ({ tool }) => {
         )}
 
         {/* ─── TRAVEL MONEY RESULTS ─── */}
-        {activeType === 'travel' && results?.bridge && <GroundedResult mode="travel" results={results} c={c} t={t} />}
-        {activeType === 'date' && results?.options && <GroundedResult mode="date" results={results} c={c} t={t} />}
+        {activeType === 'travel' && results?.bridge && <GroundedResult mode="travel" results={results} c={c} t={t} sv={sv} />}
+        {activeType === 'date' && results?.options && <GroundedResult mode="date" results={results} c={c} t={t} sv={sv} />}
         {activeType === 'subs' && results?.fair_split && (
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             {results?.the_wrinkle && <p className={`text-xs ${c.noteTxt} italic`}>😬 {results?.the_wrinkle}</p>}
@@ -1112,11 +1126,11 @@ const MoneyDiplomat = ({ tool }) => {
         )}
 
         {/* ─── SALARY RESULTS ─── */}
-        {activeType === 'salary' && results?.ask && <GroundedResult mode="salary" results={results} c={c} t={t} />}
-        {activeType === 'afford' && results?.gut_check && <GroundedResult mode="afford" results={results} c={c} t={t} />}
-        {activeType === 'inheritance' && results?.arrangement_considered && <GroundedResult mode="inheritance" results={results} c={c} t={t} />}
-        {activeType === 'cultural' && results?.bridge && <GroundedResult mode="cultural" results={results} c={c} t={t} />}
-        {activeType === 'charity' && results?.recommendation && <GroundedResult mode="charity" results={results} c={c} t={t} />}
+        {activeType === 'salary' && results?.ask && <GroundedResult mode="salary" results={results} c={c} t={t} sv={sv} />}
+        {activeType === 'afford' && results?.gut_check && <GroundedResult mode="afford" results={results} c={c} t={t} sv={sv} />}
+        {activeType === 'inheritance' && results?.arrangement_considered && <GroundedResult mode="inheritance" results={results} c={c} t={t} sv={sv} />}
+        {activeType === 'cultural' && results?.bridge && <GroundedResult mode="cultural" results={results} c={c} t={t} sv={sv} />}
+        {activeType === 'charity' && results?.recommendation && <GroundedResult mode="charity" results={results} c={c} t={t} sv={sv} />}
 
         {/* Cross-refs */}
         <div data-print-hide className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

@@ -15,7 +15,7 @@
  *   <NoteBox>…</NoteBox>                              recap, where you stand, bottom line
  *   <SectionGroup> <ExpandAll /> <Section …/> … </SectionGroup>
  */
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import Caret from './Caret';
 import { RegisteredActions } from './ActionButtons';
 import { useTranslation } from '../i18n/useTranslation';
@@ -93,9 +93,11 @@ export function AnswerCard({ title, children, className = '' }) {
 
 // The single most important block of an answer: white, a stronger border in
 // the medium shade, its label in the dark shade. One per answer.
+// KEY_BOX: the same box as a class, for a block whose markup stays the tool's own.
+export const KEY_BOX = 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5';
 export function KeyBox({ label, children, className = '' }) {
   return (
-    <div data-keybox="" className={`border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)] rounded-xl p-4 sm:p-5 ${className}`}>
+    <div data-keybox="" className={`${KEY_BOX} ${className}`}>
       {label && <p className="text-[13px] font-bold text-[var(--sc-strong)] mb-1">{label}</p>}
       {children}
     </div>
@@ -127,6 +129,19 @@ const SectionsSignal = createContext(null);
 // For a tool's own collapsible section: { n, open } changes on each Expand all.
 export const useExpandAll = () => useContext(SectionsSignal);
 
+// State for a tool's own `{ [key]: open }` collapsibles after Expand all:
+// every key reads open; the next single toggle starts a fresh object.
+export const ALL_OPEN = new Proxy({}, { get: (_, k) => typeof k === 'string' });
+// …and after Collapse all every key reads closed (false, not undefined, so
+// sections that read `!== false` as open close too).
+export const ALL_CLOSED = new Proxy({}, { get: (_, k) => (typeof k === 'string' ? false : undefined) });
+
+// A tool's own collapsibles join Expand all: onToggle(open) runs on each press.
+export function useOnExpandAll(onToggle) {
+  const all = useContext(SectionsSignal);
+  useEffect(() => { if (all?.n) onToggle(all.open); }, [all?.n]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
 export function SectionGroup({ children }) {
   const [all, setAll] = useState({ n: 0, open: false });
   return <SectionsSignal.Provider value={{ ...all, toggle: () => setAll(p => ({ n: p.n + 1, open: !p.open })) }}>{children}</SectionsSignal.Provider>;
@@ -135,9 +150,17 @@ export function SectionGroup({ children }) {
 export function ExpandAll({ className = '' }) {
   const all = useContext(SectionsSignal);
   const { t } = useTranslation();
+  // Shown only when a collapsible section sits beside it: an answer whose
+  // optional parts all came back empty has nothing to expand.
+  const ref = useRef(null);
+  const [has, setHas] = useState(true);
+  useEffect(() => {
+    const found = !!ref.current?.parentElement?.querySelector('[data-sec-body]');
+    if (found !== has) setHas(found);
+  });
   if (!all) return null;
   return (
-    <div data-print-hide className={`flex justify-end -mb-2 ${className}`}>
+    <div ref={ref} data-print-hide className={`${has ? 'flex' : 'hidden'} justify-end -mb-2 ${className}`}>
       <button onClick={all.toggle}
         className="text-sm font-semibold text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2">
         {all.open ? t('collapse_all') : t('expand_all')}
@@ -171,6 +194,14 @@ export function Section({ icon, title, badge, badgeColor, children, defaultOpen 
       <div data-sec-body hidden={!open} className="pb-5 space-y-3">{children}</div>
     </div>
   );
+}
+
+// A tool's own block that becomes a collapsible Section on a category page and
+// stays exactly as it was elsewhere: `heading` is the block's old heading
+// element, `className` its old wrapper classes.
+export function SvSection({ sv, c, icon, title, defaultOpen = false, className, heading, children }) {
+  if (sv) return <Section c={c} icon={icon} title={title} defaultOpen={defaultOpen}>{children}</Section>;
+  return <div className={className}>{heading}{children}</div>;
 }
 
 // The row above the form: Try an example on the left, the tool's other

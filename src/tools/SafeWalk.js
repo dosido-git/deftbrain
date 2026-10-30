@@ -10,7 +10,7 @@ import { getEmergencyNumber } from '../utils/emergencyNumber';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, Section as SchemeSection, ExpandAll } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -1066,6 +1066,7 @@ const SafeWalk = ({ tool }) => {
   const renderPlanTab = () => {
     const renderCollapsible = (key, icon, title, children) => {
       const isOpen = expandedSections[key];
+      if (sv) return <SchemeSection key={key} c={c} icon={icon} title={title} defaultOpen={!!isOpen}>{children}</SchemeSection>;
       return (
         <div className={`rounded-xl border ${c.border} ${c.card} overflow-hidden mb-3`}>
           <button data-print-heading aria-expanded={!!(isOpen)} onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
@@ -1087,6 +1088,7 @@ const SafeWalk = ({ tool }) => {
           {sv && <AnswerHeader title={t('your_answer')} />}
           <CheckNote status={checkStatus} className={c.textMuted} />
           {/* What Matters */}
+          {sv && <ExpandAll />}
           {r.what_matters && renderCollapsible('matters', '🚶', t('sw_what_matters'), (
             <div className={`p-4 rounded-xl border ${c.cardAlt} ${c.border}`}>
               <p className={`text-sm ${c.text}`}>{r.what_matters.summary}</p>

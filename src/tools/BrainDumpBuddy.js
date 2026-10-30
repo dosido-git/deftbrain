@@ -652,10 +652,10 @@ const BrainDumpBuddy = ({ tool }) => {
                       {/* Reclassify buttons — hidden when checked */}
                       {!checked && (
                         <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-                          {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ✅</button>}
-                          {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ☁️</button>}
-                          {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
-                          {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 💗</button>}
+                          {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} title={t(CATEGORY_CONFIG.actions.labelKey)} aria-label={t(CATEGORY_CONFIG.actions.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ✅</button>}
+                          {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} title={t(CATEGORY_CONFIG.worries.labelKey)} aria-label={t(CATEGORY_CONFIG.worries.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ☁️</button>}
+                          {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} title={t(CATEGORY_CONFIG.can_drop.labelKey)} aria-label={t(CATEGORY_CONFIG.can_drop.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
+                          {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} title={t(CATEGORY_CONFIG.feelings.labelKey)} aria-label={t(CATEGORY_CONFIG.feelings.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 💗</button>}
                         </div>
                       )}
                     </div>
