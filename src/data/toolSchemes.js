@@ -13,7 +13,7 @@
 // (bg-[var(--sc-field)] …) serves light and dark. Only tools in PROTOTYPE_TOOLS
 // get a scheme; everything else renders exactly as before.
 
-export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat']);
+export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat', 'AwkwardSilenceFiller', 'DriveHome', 'LayoverMaximizer', 'MicroAdventureMapper']);
 
 const SCHEMES = {
   Money: {
@@ -43,9 +43,13 @@ const SCHEMES = {
     light: { field: '#fbfbfb', envelope: '#f2f1f0', line: '#d8d6d5', card: '#ffffff', accent: '#605c57', strong: '#3b3835', onStrong: '#fbfbfb', button: '#3b3835', buttonText: '#fbfbfb', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
     dark:  { field: '#1d1c1b', envelope: '#262524', line: '#444241', card: '#191818', accent: '#c1bdb9', strong: '#e2e1de', onStrong: '#1d1c1b', button: '#e2e1de', buttonText: '#1d1c1b', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
   },
-  'Travel & Events': { // teal
-    light: { field: '#f9fcfd', envelope: '#ecf5f6', line: '#cadfe2', card: '#ffffff', accent: '#2f6b74', strong: '#1d4c53', onStrong: '#f9fcfd', button: '#1d4c53', buttonText: '#f9fcfd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
-    dark:  { field: '#172021', envelope: '#1e2a2c', line: '#364b4e', card: '#141b1d', accent: '#9cd5de', strong: '#d0edf1', onStrong: '#172021', button: '#d0edf1', buttonText: '#172021', x: '#eba38e', xText: '#eba38e', xLine: '#53352d' },
+  // Travel & Events in pine, Conversations in deep teal (owner, 2026-10-29:
+  // v3.0, midnight dark). Light ink, contrast, border, rule and wash are the
+  // palette sheet's (docs/CATEGORY-COLOR-MAP-2.md); tab, contrast border and
+  // the midnight set use the formulas measured from Relationships.
+  'Travel & Events': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#B9C5BB', card: '#FFFFFF', accent: '#2D5A44', strong: '#2D5A44', onStrong: '#FFFFFF', button: '#2D5A44', buttonText: '#FFFFFF', border: '#708F80', wash: '#E7E8E2', tab: '#E1E4DD', text: '#1F1E1B', x: '#5B2942', xText: '#5B2942', xLine: '#D6CBCC' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#394243', card: '#101216', accent: '#90A89C', strong: '#90A89C', onStrong: '#14130F', button: '#90A89C', buttonText: '#14130F', border: '#5D6C69', wash: '#2D3339', tab: '#23282C', text: '#E8ECF2', x: '#CBBBC4', xText: '#CBBBC4', xLine: '#49474E' },
   },
   'Career and Business': { // indigo
     light: { field: '#fafafd', envelope: '#edecf6', line: '#cdcbe1', card: '#ffffff', accent: '#3e397f', strong: '#232050', onStrong: '#fafafd', button: '#232050', buttonText: '#fafafd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
@@ -55,9 +59,9 @@ const SCHEMES = {
     light: { field: '#f9fdfb', envelope: '#ecf6f1', line: '#cae2d7', card: '#ffffff', accent: '#2c6d4f', strong: '#1d533a', onStrong: '#f9fdfb', button: '#1d533a', buttonText: '#f9fdfb', x: '#a23e5c', xText: '#a23e5c', xLine: '#eac8d2' },
     dark:  { field: '#17211c', envelope: '#1e2c25', line: '#364e43', card: '#141d19', accent: '#9cdebf', strong: '#d0f1e2', onStrong: '#17211c', button: '#d0f1e2', buttonText: '#17211c', x: '#e08aa5', xText: '#e08aa5', xLine: '#532d39' },
   },
-  'Conversations': { // violet
-    light: { field: '#fbfafd', envelope: '#f2edf5', line: '#d8cce0', card: '#ffffff', accent: '#623d7b', strong: '#3c234e', onStrong: '#fbfafd', button: '#3c234e', buttonText: '#fbfafd', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
-    dark:  { field: '#1d1820', envelope: '#26202a', line: '#44394c', card: '#19151c', accent: '#c2a2d7', strong: '#e3d3ee', onStrong: '#1d1820', button: '#e3d3ee', buttonText: '#1d1820', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
+  'Conversations': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#B5C5C2', card: '#FFFFFF', accent: '#1F5A5C', strong: '#1F5A5C', onStrong: '#FFFFFF', button: '#1F5A5C', buttonText: '#FFFFFF', border: '#678F90', wash: '#E6E8E4', tab: '#E0E4DF', text: '#1F1E1B', x: '#5B2B29', xText: '#5B2B29', xLine: '#D6CBC7' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#374246', card: '#101216', accent: '#89A8A9', strong: '#89A8A9', onStrong: '#14130F', button: '#89A8A9', buttonText: '#14130F', border: '#596C70', wash: '#2C333A', tab: '#22282E', text: '#E8ECF2', x: '#CBBBBB', xText: '#CBBBBB', xLine: '#49474C' },
   },
   'Ideas & Diversions': { // orchid
     light: { field: '#fcfafc', envelope: '#f5edf3', line: '#dfcdda', card: '#ffffff', accent: '#793f67', strong: '#4c2440', onStrong: '#fcfafc', button: '#4c2440', buttonText: '#fcfafc', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },

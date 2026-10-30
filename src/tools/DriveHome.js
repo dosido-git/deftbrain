@@ -7,6 +7,8 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { CopyBtn } from '../components/ActionButtons';
 import { useScrollToSection } from '../hooks/useScrollToSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerCard, ToolTopRow } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -144,12 +146,12 @@ const Choice = ({ c, active, onClick, children }) => (
   <button
     type="button" aria-pressed={active} onClick={onClick}
     className={`min-h-[44px] rounded-lg border px-3 py-2 text-sm font-semibold transition ${active ? c.pillActive : c.pillInactive}`}
-  >{children}</button>
+  >{active && c.tick ? <span className={c.tick}>✓</span> : null}{children}</button>
 );
 
 const Card = ({ c, title, children, className = '' }) => (
-  <section className={`rounded-xl border ${c.border} ${c.card} p-4 md:p-5 shadow-sm ${className}`}>
-    {title && <h3 className={`mb-3 font-bold ${c.text}`}>{title}</h3>}
+  <section className={`${c.cardShell} ${className}`}>
+    {title && <h3 className={`mb-3 font-bold ${c.cardTitle}`}>{title}</h3>}
     {children}
   </section>
 );
@@ -161,6 +163,12 @@ const Bullets = ({ c, items }) => (
     ))}
   </ul>
 );
+
+// With a category scheme the whole answer is one card; without, the blocks
+// stand on their own as before.
+const AnswerWrap = ({ sv, title, children }) => (sv
+  ? <AnswerCard title={title} className="space-y-3">{children}</AnswerCard>
+  : <>{children}</>);
 
 const DriveHome = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -192,11 +200,30 @@ const DriveHome = ({ tool }) => {
                           : 'border-gray-300 text-gray-600 hover:border-gray-400',
     // PF-13 exception — an outline, not a smudge, while the form is incomplete.
     btnIdle:       isDark ? '!bg-transparent !border-2 !border-[#7fb3e0]/85 !text-[#a9cdef] cursor-not-allowed' : '!bg-transparent !border-2 !border-[#142a43]/80 !text-[#142a43] cursor-not-allowed',
+    cardShell:     `rounded-xl border p-4 md:p-5 shadow-sm ${isDark ? 'border-zinc-700 bg-zinc-800' : 'border-gray-200 bg-white'}`,
+    cardTitle:     isDark ? 'text-zinc-50' : 'text-gray-900',
+    tick:          '',
+    verdictLabel:  '',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the three form groups in one form panel, the
+  // answer in one card. No green / amber / red verdict: the read is the key
+  // box, and only "don't drive" — a real warning — takes the contrast colour.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    // Secondary grey one step darker: gray-500 on the tinted panel is 4.4:1.
+    textMuted:   isDark ? 'text-zinc-400' : 'text-gray-600',
+    textMuteded: isDark ? 'text-zinc-400' : 'text-gray-600',
+    label:     SCHEME_C.labelText,
+    cardShell: 'py-2',
+    cardTitle: SCHEME_C.sectionTitle,
+    tick:      'me-1',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   // ── Form ──
   const [from, setFrom] = useState('');
@@ -399,9 +426,12 @@ const DriveHome = ({ tool }) => {
   // RENDER HELPERS
   // ══════════════════════════════════════════
 
-  const tone = result?.recommendation === 'do_not_drive' ? c.danger
+  const tone = sv
+    ? (result?.recommendation === 'do_not_drive' ? 'border-2 border-[var(--sc-x-line)] bg-[var(--sc-card)]' : 'border-2 border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-card)]')
+    : result?.recommendation === 'do_not_drive' ? c.danger
     : result?.recommendation === 'go' ? c.success
     : c.warning;
+  const verdictLabel = sv ? (result?.recommendation === 'do_not_drive' ? 'text-[var(--sc-x-text)]' : 'text-[var(--sc-strong)]') : c.verdictLabel;
 
   const readLabel = result?.recommendation === 'do_not_drive' ? t('dh_read_stop')
     : result?.recommendation === 'go' ? t('dh_read_go')
@@ -415,42 +445,68 @@ const DriveHome = ({ tool }) => {
   const revealRef = useRef(null);
   useScrollToSection(revealRef, result);
 
+  // Once a result exists there is nothing to submit — see below.
+  const renderSubmit = () => (result ? null : (
+        <button type="button" onClick={assess} disabled={!canAssess || loading} title={t('dh_cmd_enter')}
+          className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition ${canAssess && !loading ? c.btnPrimary : c.btnIdle}`}>
+          {loading
+            ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🚗'}</span> {t('dh_checking')}</>
+            : t('dh_submit')}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+        </button>
+  ));
+
+  // The row above the form. With a category scheme the wrapper carries the
+  // tagline and the tool keeps one row: Try an example and Start over (PF-16:
+  // the tool's one reset, top right).
+  const renderHeaderRow = () => {
+    const resetBtn = canReset ? (
+      <button onClick={handleReset}
+        className={`shrink-0 px-3 ${sv ? 'py-1.5 whitespace-nowrap' : 'py-2 min-h-[40px]'} rounded-lg text-sm font-bold ${c.btnSecondary}`}
+      >↺ {t('start_over')}</button>
+    ) : null;
+    // ── PF-30 header: icon + tagline, Try an example, Start over ──
+    // Site style (2026-09-27): a pale band of the tool's color bleeding to the
+    // card edges, the ground the "Try an example" pill was made for (PF-17c).
+    if (!sv) return (
+        <div>
+          <div
+            data-print-hide
+            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
+            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          >
+            <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+              <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                <span className="me-2 text-xl">{tool?.icon ?? '🚗'}</span>{t('dh_hero')}
+              </p>
+              {/* PF-17c */}
+              <button onClick={loadExample} disabled={loading}
+                style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+                className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+                ✨ {t('try_example')}
+              </button>
+            </div>
+            {resetBtn}
+          </div>
+          </div>
+        </div>
+    );
+    return <ToolTopRow onExample={loadExample} loading={loading}>{resetBtn}</ToolTopRow>;
+  };
+
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {/* ── PF-30 header: icon + tagline, Try an example, Start over ── */}
-      <div>
-        {/* Header — site style (2026-09-27): a pale band of the tool's color
-            bleeding to the card edges, the ground the "Try an example" pill was
-            made for (PF-17c). Screen only. */}
-        <div
-          data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
-        >
-          <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
-              <span className="me-2 text-xl">{tool?.icon ?? '🚗'}</span>{t('dh_hero')}
-            </p>
-            {/* PF-17c */}
-            <button onClick={loadExample} disabled={loading}
-              style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
-              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
-              ✨ {t('try_example')}
-            </button>
-          </div>
-          {canReset ? (
-            <button onClick={handleReset}
-              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
-            >↺ {t('start_over')}</button>
-          ) : null}
-        </div>
-        </div>
-      </div>
+      {renderHeaderRow()}
 
       {/* The form prints blank; with a result, only the result prints. */}
-      <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className="space-y-4">
+      <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} space-y-2` : 'space-y-4'}>
       <Card c={c} title={t('dh_sec_drive')}>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="block">
@@ -505,22 +561,12 @@ const DriveHome = ({ tool }) => {
             onChange={e => onEdit(setConcern)(e.target.value)} placeholder={t('dh_ph_hesitate')} />
         </label>
       </Card>
+      {sv && renderSubmit()}
       </div>
 
       {/* Once a result exists there is nothing to submit — the form above it is
           the form that produced it, and Start over is the way to a new one. */}
-      {!result && <button type="button" onClick={assess} disabled={!canAssess || loading} title={t('dh_cmd_enter')}
-        className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition ${canAssess && !loading ? c.btnPrimary : c.btnIdle}`}>
-        {loading
-          ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '🚗'}</span> {t('dh_checking')}</>
-          : t('dh_submit')}
-        {!loading && (
-          <kbd aria-hidden="true"
-            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-            ⌘↵
-          </kbd>
-        )}
-      </button>}
+      {!sv && renderSubmit()}
 
       {error && (
         <div className={`rounded-xl border p-4 text-sm ${c.danger}`}>{error}</div>
@@ -528,8 +574,9 @@ const DriveHome = ({ tool }) => {
 
       {result && (
         <div ref={revealRef} className="scroll-mt-24 space-y-4">
-          <section className={`rounded-xl border p-4 md:p-5 ${tone}`}>
-            <p className="text-[13px] font-bold">{readLabel}</p>
+          <AnswerWrap sv={sv} title={t('your_answer')}>
+          <section data-keybox="" className={`rounded-xl border p-4 md:p-5 ${tone}`}>
+            <p className={`text-[13px] font-bold ${verdictLabel}`}>{readLabel}</p>
             <h2 className="mt-2 text-xl font-bold">{result.headline}</h2>
             {result.summary && <p className="mt-2">{result.summary}</p>}
             {result.main_concern && <p className="mt-3 text-sm"><strong>{t('dh_main_concern')}</strong> {result.main_concern}</p>}
@@ -558,6 +605,7 @@ const DriveHome = ({ tool }) => {
               ))}
             </Card>
           )}
+          </AnswerWrap>
 
           {result.recommendation === 'go' && !showCheckin && (
             <button type="button" onClick={() => setShowCheckin(true)}
@@ -574,7 +622,7 @@ const DriveHome = ({ tool }) => {
 
       {showCheckin && (
         <div className="space-y-4">
-          <Card c={c} title={t('dh_before_leave')}>
+          <Card c={c} title={t('dh_before_leave')} className={sv ? `${FORM_PANEL} !py-3 sm:!py-5` : ''}>
             <p className={`mb-4 text-sm ${c.textMuted}`}>{t('dh_checkin_note')}</p>
             <label className="block">
               <span className={`text-sm font-semibold ${c.label}`}>{t('dh_checkin_person')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
@@ -616,7 +664,7 @@ const DriveHome = ({ tool }) => {
           </Card>
 
           {timerEnd && !arrived && (
-            <Card c={c} title={remaining > 0 ? t('dh_reminder_running') : t('dh_checkin_now')}>
+            <Card c={c} title={remaining > 0 ? t('dh_reminder_running') : t('dh_checkin_now')} className={sv ? ANSWER_CARD : ''}>
               {remaining > 0 ? (
                 <>
                   <p className="text-4xl font-bold tabular-nums">{fmtClock(remaining)}</p>
@@ -640,7 +688,7 @@ const DriveHome = ({ tool }) => {
           )}
 
           {arrived && (
-            <Card c={c} title={t('dh_checked_in')}>
+            <Card c={c} title={t('dh_checked_in')} className={sv ? ANSWER_CARD : ''}>
               <p className={c.textSecondary}>✓ {t('dh_reminder_cleared')}</p>
               {contact && <p className={`mt-2 text-sm ${c.textMuted}`}>{t('dh_tell_contact', { name: contact })}</p>}
             </Card>
