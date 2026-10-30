@@ -8,6 +8,8 @@ import { pickExample } from '../utils/exampleRotation';
 import { tools } from '../data/tools';
 import Caret from '../components/Caret';
 import { useScrollToSection } from '../hooks/useScrollToSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // Local date, not toISOString(): that converts to UTC first, so west of
 // Greenwich an evening check-in lands on tomorrow. This log is a record of
@@ -128,9 +130,22 @@ export default function BeforeTheCrash() {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
-
   const tool = tools.find(x => x.id === 'BeforeTheCrash');
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-text)]',
+    deleteHover: '',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+
 
   const [entry, setEntry] = useState({ ...EMPTY_ENTRY });
   const [view, setView] = useState('dashboard');
@@ -316,19 +331,19 @@ export default function BeforeTheCrash() {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '⚡'}</span>{t('cpv2_hero')}
-            </p>
+            </p>)}
             {/* PF-17c */}
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
-              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
-              ✨ {t('try_example')}
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+              className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>
+              {!sv && '✨ '}{t('try_example')}
             </button>
           </div>
           {canReset ? (
@@ -365,7 +380,8 @@ export default function BeforeTheCrash() {
       </details>
 
       {view === 'dashboard' && (
-        <div className="space-y-4">
+        <div className={sv ? `${ANSWER_CARD} space-y-4`.trim() : "space-y-4"}>
+          {sv && <AnswerHeader title={t('your_answer')} />}
           {logs.length === 0 ? (
             <Section title={t('cpv2_no_pattern')}>
               <p className={c.textMuted}>{t('cpv2_no_pattern_sub')}</p>
@@ -518,7 +534,7 @@ export default function BeforeTheCrash() {
       )}
 
       {view === 'checkin' && (
-        <div className="space-y-4">
+        <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
           <Section title={t('cpv2_today')}>
             <p className={`text-xs -mt-1 mb-4 ${c.textMuted}`}>{t('cpv2_replace_note')}</p>
             <div className="space-y-4">

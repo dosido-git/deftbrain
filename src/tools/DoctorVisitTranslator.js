@@ -10,6 +10,8 @@ import { useTranslation } from '../i18n/useTranslation';
 import { track } from '../utils/analytics';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -181,7 +183,22 @@ const DoctorVisitTranslator = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    highlight: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    pillGray: 'bg-[var(--sc-envelope)] text-[var(--sc-muted)] border-[var(--sc-line)]',
+    deleteHover: '',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── useState (all first per PF-14) ──
@@ -493,16 +510,16 @@ const DoctorVisitTranslator = ({ tool }) => {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '👩‍⚕️'}</span>{tool?.tagline ?? t('dvt_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap" title={t('dvt_try_example_title')}>✨ {t('try_example')}</button>
+            </p>)}
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'} title={t('dvt_try_example_title')}>{!sv && '✨ '}{t('try_example')}</button>
           </div>
           {(doctorNotes.trim() || results || pdfFile || concerns.trim() || doctorName.trim()) && (
             <button
@@ -528,7 +545,7 @@ const DoctorVisitTranslator = ({ tool }) => {
             { id: 'prep', icon: '📝', label: t('dvt_tab_prep') },
           ].map(m => (
             <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
-              className={`p-2.5 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-gray-200 hover:border-gray-300')}`}>
+              className={`p-2.5 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? ((sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]')) : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-gray-200 hover:border-gray-300')}`}>
               <span className="text-lg block">{m.icon}</span>
               <p className={`text-xs font-semibold ${c.text}`}>{m.label}</p>
             </button>
@@ -555,7 +572,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
       {/* ══════════ INPUT MODE ══════════ */}
       {mode === 'input' && (
-        <div className={`border-t ${c.border} pt-5 space-y-5`}>
+        <div className={sv ? `${FORM_PANEL} space-y-5`.trim() : `border-t ${c.border} pt-5 space-y-5`}>
           <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
             <span>⚠️</span>
             <div><h4 className="font-bold text-sm mb-0.5">{t('dvt_disclaimer_title')}</h4><p className="text-xs">{t('dvt_disclaimer_body')}</p></div>
@@ -566,7 +583,7 @@ const DoctorVisitTranslator = ({ tool }) => {
             <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>{t('dvt_what_translating')}</label>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">{DOC_TYPES.map(dt => (
               <button key={dt.id} onClick={() => setDocumentType(dt.id)}
-                className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
+                className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? ((sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]')) : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
                 <p className={`text-xs font-semibold ${c.text}`}>{t(dt.labelKey)}</p>
               </button>
             ))}</div>
@@ -598,10 +615,10 @@ const DoctorVisitTranslator = ({ tool }) => {
                 onClick={() => fileInputRef.current?.click()}
                 className={`w-full mb-2 border-2 border-dashed rounded-lg p-3 text-center cursor-pointer transition-colors ${
                   pdfDragging
-                    ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]')
+                    ? ((sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]'))
                     : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-300 hover:border-gray-400')
                 }`}>
-                <p className={`text-[13px] ${c.textMuted}`}>{t('dvt_drop_pdf')} <span className={`text-cyan-500 underline`}>{t('dvt_browse')}</span></p>
+                <p className={`text-[13px] ${c.textMuted}`}>{t('dvt_drop_pdf')} <span className={`${sv ? 'text-[var(--sc-accent)]' : 'text-cyan-500'} underline`}>{t('dvt_browse')}</span></p>
                 <p className={`text-[13px] ${c.textMuted} mt-0.5`}>{t('dvt_pdf_hint')}</p>
                 <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden"
                   onChange={e => handlePdfSelect(e.target.files[0])} />
@@ -665,8 +682,8 @@ const DoctorVisitTranslator = ({ tool }) => {
 
       {/* ══════════ RESULTS MODE ══════════ */}
       {mode === 'results' && results && (
-        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
-          <CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
+        <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
               <button
@@ -730,7 +747,7 @@ const DoctorVisitTranslator = ({ tool }) => {
                       const currN = new Set(results.medications.map(m => m.name.toLowerCase()));
                       const added = results.medications.filter(m => !prevN.has(m.name.toLowerCase()));
                       const removed = comparisonEntry.results.medications.filter(m => !currN.has(m.name.toLowerCase()));
-                      return <>{added.map((m, i) => <p key={`a${i}`} className="text-xs text-emerald-500">➕ {m.name}</p>)}{removed.map((m, i) => <p key={`r${i}`} className="text-xs text-red-400">➖ {m.name}</p>)}{!added.length && !removed.length && <p className={`text-[13px] ${c.textMuted}`}>{t('dvt_no_changes')}</p>}</>;
+                      return <>{added.map((m, i) => <p key={`a${i}`} className={sv ? 'text-xs text-[var(--sc-strong)]' : 'text-xs text-emerald-500'}>➕ {m.name}</p>)}{removed.map((m, i) => <p key={`r${i}`} className={sv ? 'text-xs text-[var(--sc-x-text)]' : 'text-xs text-red-400'}>➖ {m.name}</p>)}{!added.length && !removed.length && <p className={`text-[13px] ${c.textMuted}`}>{t('dvt_no_changes')}</p>}</>;
                     })()}
                   </div>
                 )}
@@ -910,7 +927,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               <label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('dvt_symptom')}<span className={c.required}>*</span></label>
               <div className="flex flex-wrap gap-1 mb-2">{SYMPTOM_PRESETS.map(s => (
                 <button key={s.id} onClick={() => setJournalEntry(p => ({ ...p, symptom: t(s.k) }))}
-                  className={`text-xs px-2 py-1 rounded border transition-colors ${journalEntry.symptom === t(s.k) ? (isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]') : `${c.pillGray} border`}`}>{t(s.k)}</button>
+                  className={`text-xs px-2 py-1 rounded border transition-colors ${journalEntry.symptom === t(s.k) ? ((sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530]' : 'border-[#142a43] bg-[#eef3f8]')) : `${c.pillGray} border`}`}>{t(s.k)}</button>
               ))}</div>
               <input value={journalEntry.symptom} onChange={e => setJournalEntry(p => ({ ...p, symptom: e.target.value }))} placeholder={t('dvt_ph_symptom')} className={`w-full p-2 border rounded-lg ${c.input} outline-none text-sm`} />
             </div>
@@ -932,7 +949,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               <div className="space-y-2">{symptomTrends.map(tr => (
                 <div key={tr.name} className={`${c.cardAlt} border rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-1"><span className={`text-sm font-semibold ${c.text}`}>{tr.name}</span><span className={`${tr.trend === 'improving' ? c.success : tr.trend === 'worsening' ? c.danger : c.pillGray} border text-xs font-bold px-1.5 py-0.5 rounded`}>{tr.trend === 'improving' ? t('dvt_better') : tr.trend === 'worsening' ? t('dvt_worse') : t('dvt_stable')}</span></div>
-                  <div className="flex items-center gap-2"><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? 'bg-red-500' : tr.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[13px] ${c.textMuted} w-14 text-end`}>{tr.recentAvg}/10</span></div>
+                  <div className="flex items-center gap-2"><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? (sv ? 'bg-[var(--sc-x)]' : 'bg-red-500') : tr.recentAvg >= 4 ? (sv ? 'bg-[var(--sc-strong)]' : 'bg-amber-500') : (sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-500')}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[13px] ${c.textMuted} w-14 text-end`}>{tr.recentAvg}/10</span></div>
                   <p className={`text-[13px] ${c.textMuted} mt-1`}>{tr.count}× · {t('dvt_avg')} {tr.avg}/10 · {tr.last.date}</p>
                 </div>
               ))}</div>
@@ -946,7 +963,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               <div key={e.id} className="flex items-center gap-2">
                 <span className={`w-16 text-[13px] ${c.textMuted}`}>{e.date}</span>
                 <span className={`text-xs font-semibold ${c.text} w-24 truncate`}>{e.symptom}</span>
-                <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${e.severity >= 7 ? 'bg-red-500' : e.severity >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${e.severity * 10}%` }} /></div>
+                <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${e.severity >= 7 ? (sv ? 'bg-[var(--sc-x)]' : 'bg-red-500') : e.severity >= 4 ? (sv ? 'bg-[var(--sc-strong)]' : 'bg-amber-500') : (sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-500')}`} style={{ width: `${e.severity * 10}%` }} /></div>
                 <span className={`w-6 text-end text-xs font-bold ${c.textMuted}`}>{e.severity}</span>
                 {e.triggers && <span className={`${c.pillGray} border text-xs px-1 py-0.5 rounded truncate max-w-[60px]`}>{e.triggers}</span>}
                 <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-[13px] ${c.textMuted} ${c.deleteHover}`}>✕</button>
@@ -1011,7 +1028,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               <div className={`relative ps-4 border-s-2 space-y-2 ${isDark ? 'border-zinc-700' : 'border-gray-300'}`}>
                 {sessionHistory.slice(0, 6).map(e => (
                   <div key={e.id} className="relative">
-                    <div className="absolute -start-[21px] w-3 h-3 rounded-full bg-cyan-500" />
+                    <div className={sv ? 'absolute -start-[21px] w-3 h-3 rounded-full bg-[var(--sc-strong)]' : 'absolute -start-[21px] w-3 h-3 rounded-full bg-cyan-500'} />
                     <p className={`text-xs font-bold ${c.textMuted}`}>{e.date} · {e.visitType}</p>
                     <p className={`text-xs ${c.text}`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || t('dvt_visit_word')}</p>
                     {e.results?.medications?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>💊 {e.results.medications.map(m => m.name.split(' ')[0]).join(', ')}</p>}
@@ -1034,7 +1051,7 @@ const DoctorVisitTranslator = ({ tool }) => {
             <div><div className="flex items-center justify-between mb-1.5"><label className={`text-sm font-semibold ${c.textSecondary}`}>{t('dvt_questions')}</label><button onClick={() => setPrepData(p => ({ ...p, questions: [...p.questions, ''] }))} className={`text-xs ${c.textSecondary}`}>➕</button></div><div className="space-y-1.5">{prepData.questions.map((q, i) => <div key={i} className="flex gap-2"><span className={c.textMuted}>❓</span><input value={q} onChange={e => setPrepData(p => ({ ...p, questions: p.questions.map((qq, j) => j === i ? e.target.value : qq) }))} placeholder={t('dvt_ph_question_n', { count: i + 1 })} className={`flex-1 p-2 border rounded-lg ${c.input} outline-none text-sm`} />{prepData.questions.length > 1 && <button onClick={() => setPrepData(p => ({ ...p, questions: p.questions.filter((_, j) => j !== i) }))} className={`${c.textMuted} ${c.deleteHover}`}>🗑️</button>}</div>)}</div></div>
           </div>
 
-          {symptomTrends?.length > 0 && <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_journal_trends')}</h3><p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dvt_show_doctor')}</p>{symptomTrends.map(tr => <div key={tr.name} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-semibold ${c.text} w-24`}>{tr.name}</span><div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? 'bg-red-500' : tr.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[13px] ${c.textMuted}`}>{tr.recentAvg}/10 · {tr.trend === 'improving' ? t('dvt_trend_improving') : tr.trend === 'worsening' ? t('dvt_trend_worsening') : t('dvt_trend_stable')}</span></div>)}</div>}
+          {symptomTrends?.length > 0 && <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_journal_trends')}</h3><p className={`text-[13px] ${c.textMuted} mb-2`}>{t('dvt_show_doctor')}</p>{symptomTrends.map(tr => <div key={tr.name} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-semibold ${c.text} w-24`}>{tr.name}</span><div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${tr.recentAvg >= 7 ? (sv ? 'bg-[var(--sc-x)]' : 'bg-red-500') : tr.recentAvg >= 4 ? (sv ? 'bg-[var(--sc-strong)]' : 'bg-amber-500') : (sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-500')}`} style={{ width: `${tr.recentAvg * 10}%` }} /></div><span className={`text-[13px] ${c.textMuted}`}>{tr.recentAvg}/10 · {tr.trend === 'improving' ? t('dvt_trend_improving') : tr.trend === 'worsening' ? t('dvt_trend_worsening') : t('dvt_trend_stable')}</span></div>)}</div>}
 
           {sessionHistory.some(e => e.results?.questions_for_next_visit?.length) && <div className={`border-t ${c.border} pt-5`}><h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dvt_past_questions')}</h3>{sessionHistory.filter(e => e.results?.questions_for_next_visit?.length).slice(0, 3).flatMap(e => e.results.questions_for_next_visit.map((q, i) => <div key={`${e.id}-${i}`} className="flex items-start gap-2 mb-1"><span className={c.textMuted}>❓</span><div><p className={`text-xs ${c.textSecondary}`}>{q}</p><p className={`text-[13px] ${c.textMuted}`}>{e.date}</p></div></div>))}</div>}
 

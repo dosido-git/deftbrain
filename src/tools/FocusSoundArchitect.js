@@ -7,6 +7,8 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // WEB AUDIO SYNTHESIS ENGINE
@@ -696,6 +698,21 @@ const FocusSoundArchitect = ({ tool }) => {
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
+
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    deleteHover: '',
+  });
 
   const [task, setTask] = useState('deep_work');
   const [environments, setEnvironments] = useState([]);
@@ -1428,16 +1445,16 @@ const FocusSoundArchitect = ({ tool }) => {
             made for (PF-17c). Screen only. */}
         <div
           data-print-hide
-          className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-          style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+          className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+          style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
         >
           <div className="flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? ' 🎧'}</span>{tool?.tagline ?? t('fsa_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+            </p>)}
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
           </div>
           {recipe && (
             <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
@@ -1454,7 +1471,7 @@ const FocusSoundArchitect = ({ tool }) => {
       {/* SETUP (no recipe yet)                               */}
       {/* ═══════════════════════════════════════════════════ */}
       {!recipe && (
-        <div className="space-y-4">
+        <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
 
           {/* Fast path: ready-made soundscapes */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
@@ -1463,7 +1480,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {QUICK_PRESETS.map(p => (
                 <button key={p.id} onClick={() => loadPreset(p)}
-                  className={`p-3 rounded-xl border text-start transition-all ${isDark ? 'border-zinc-600 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 hover:border-[#142a43] hover:bg-[#eef3f8]'}`}>
+                  className={`p-3 rounded-xl border text-start transition-all ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-zinc-600 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 hover:border-[#142a43] hover:bg-[#eef3f8]')}`}>
                   <div className={`text-sm font-bold ${c.text}`}>{p.nameKey ? t(p.nameKey) : p.name}</div>
                   <div className={`text-[13px] ${c.textMuted} mt-0.5`}>{p.descKey ? t(p.descKey) : p.description}</div>
                 </button>
@@ -1535,7 +1552,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="flex flex-wrap gap-2">
               {SENSITIVITIES.map(item => (
                 <button key={item.id} onClick={() => toggleMulti(sensitivities, setSensitivities, item.id)}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${sensitivities.includes(item.id) ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : c.pillInactive}`}>
+                  className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${sensitivities.includes(item.id) ? ((sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700')) : c.pillInactive}`}>
                   {t(item.labelKey)}
                 </button>
               ))}
@@ -1543,7 +1560,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="mt-4">
               <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('fsa_energy')} <span className={c.accentTxt}>{energyLabel}</span></label>
               <input type="range" min="0" max="100" value={energyGoal} onChange={e => setEnergyGoal(Number(e.target.value))}
-                className="fsa-slider w-full h-2 rounded-lg cursor-pointer accent-cyan-600" />
+                className={sv ? 'fsa-slider w-full h-2 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider w-full h-2 rounded-lg cursor-pointer accent-cyan-600'} />
               <div className={`flex justify-between text-[13px] ${c.textMuted} mt-1`}><span>{t('fsa_very_calm')}</span><span>{t('fsa_energized')}</span></div>
             </div>
           </div>
@@ -1563,14 +1580,14 @@ const FocusSoundArchitect = ({ tool }) => {
           </div>
 
           <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading}
-            className="relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40 disabled:opacity-50">
+            className={sv ? 'relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all bg-[var(--sc-strong)] text-[var(--sc-on-strong)] disabled:opacity-50' : 'relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40 disabled:opacity-50'}>
             {loading ? <><span className="animate-spin inline-block me-1 text-xl">{tool?.icon ?? '🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1 text-xl">{tool?.icon ?? '🎧'}</span>{t('fsa_design_btn')}</>}
           </button>
 
           {error && (
-            <div className={`p-4 rounded-xl flex items-start gap-3 ${isDark ? 'bg-red-900/30 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
+            <div className={`p-4 rounded-xl flex items-start gap-3 ${(sv ? 'bg-[var(--sc-card)] border border-[var(--sc-x-line)]' : isDark ? 'bg-red-900/30 border border-red-800' : 'bg-red-50 border border-red-200')}`}>
               <span>⚠️</span>
-              <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-700'}`}>{error}</p>
+              <p className={`text-sm ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-700')}`}>{error}</p>
             </div>
           )}
         </div>
@@ -1580,16 +1597,16 @@ const FocusSoundArchitect = ({ tool }) => {
       {/* PLAYER + RECIPE                                     */}
       {/* ═══════════════════════════════════════════════════ */}
       {recipe && (
-        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
+        <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`}>
 
-          {/* Transport bar */}
-          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5 ${!isPlaying ? (isDark ? 'ring-2 ring-[#7fb3e0]/40' : 'ring-2 ring-[#142a43]/30') : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}{/* Transport bar */}
+          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5 ${!isPlaying ? ((sv ? 'ring-2' : isDark ? 'ring-2 ring-[#7fb3e0]/40' : 'ring-2 ring-[#142a43]/30')) : ''}`}>
             <div className="flex items-center gap-4 mb-4">
               <button onClick={togglePlayPause}
-                className={`w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg transition-all ${
+                className={`w-14 h-14 rounded-full flex items-center justify-center ${sv ? 'text-[var(--sc-on-strong)]' : 'text-white'} text-2xl font-bold shadow-lg transition-all ${
                   isPlaying
-                    ? 'bg-red-500 hover:bg-red-600 shadow-red-200 dark:shadow-red-900/40'
-                    : 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-200 dark:shadow-cyan-900/40 animate-pulse'
+                    ? (sv ? 'bg-[var(--sc-x)]' : 'bg-red-500 hover:bg-red-600 shadow-red-200 dark:shadow-red-900/40')
+                    : (sv ? 'bg-[var(--sc-strong)] animate-pulse' : 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-200 dark:shadow-cyan-900/40 animate-pulse')
                 }`}>
                 {isPlaying ? '⏹' : '▶️'}
               </button>
@@ -1612,7 +1629,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <span className={`text-xs font-bold w-16 ${c.textMuted}`}>{t('fsa_master')}</span>
               <input type="range" min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
-                className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
+                className={sv ? 'fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600'} />
               <span className={`text-xs font-mono w-8 text-end ${c.textMuted}`}>{masterVolume}</span>
             </div>
 
@@ -1629,7 +1646,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <button onClick={adaptiveMode ? stopAdaptiveMode : startAdaptiveMode}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   adaptiveMode
-                    ? isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    ? (sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)] border border-[var(--sc-line)]' : isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200')
                     : isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                 }`}>
                 🎙️ {adaptiveMode ? t('fsa_adaptive_on') : t('fsa_adaptive_volume')}
@@ -1640,7 +1657,7 @@ const FocusSoundArchitect = ({ tool }) => {
               </button>
               {Object.values(mutedLayers).some(v => v) && (
                 <button onClick={unmuteAll}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'text-amber-400 hover:bg-amber-900/20' : 'text-amber-600 hover:bg-amber-50'}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400 hover:bg-amber-900/20' : 'text-amber-600 hover:bg-amber-50')}`}>
                   {t('fsa_unmute_all')}
                 </button>
               )}
@@ -1665,7 +1682,7 @@ const FocusSoundArchitect = ({ tool }) => {
 
             {/* Adaptive mode indicator */}
             {adaptiveMode && (
-              <p className={`text-xs mt-2 flex items-center gap-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+              <p className={`text-xs mt-2 flex items-center gap-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')}`}>
                 {t('fsa_adaptive_listening_note')}
               </p>
             )}
@@ -1679,14 +1696,14 @@ const FocusSoundArchitect = ({ tool }) => {
                   🎬 {sceneName(activeScene)}
                 </h4>
                 <button onClick={stopScene}
-                  className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors ${isDark ? 'text-red-400 hover:bg-red-900/20' : 'text-red-500 hover:bg-red-50'}`}>
+                  className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400 hover:bg-red-900/20' : 'text-red-500 hover:bg-red-50')}`}>
                   {t('fsa_stop_scene')}
                 </button>
               </div>
 
               {/* Overall progress bar */}
               <div className={`w-full h-2 rounded-full overflow-hidden mb-3 ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
-                <div className="h-full rounded-full bg-cyan-500 transition-all duration-1000"
+                <div className={sv ? 'h-full rounded-full bg-[var(--sc-strong)] transition-all duration-1000' : 'h-full rounded-full bg-cyan-500 transition-all duration-1000'}
                   style={{ width: `${sceneProgress.overallProgress * 100}%` }} />
               </div>
 
@@ -1698,18 +1715,18 @@ const FocusSoundArchitect = ({ tool }) => {
                   return (
                     <div key={i} className={`flex-1 p-2 rounded-lg text-center transition-all ${
                       isActive
-                        ? isDark ? 'bg-[#1f2530] border border-[#7fb3e0]' : 'bg-[#eef3f8] border border-[#d4dde8]'
+                        ? (sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-[#1f2530] border border-[#7fb3e0]' : 'bg-[#eef3f8] border border-[#d4dde8]')
                         : isDone
-                          ? isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-200'
+                          ? (sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-200')
                           : isDark ? 'bg-zinc-700/30 border border-zinc-700' : 'bg-zinc-50 border border-zinc-200'
                     }`}>
-                      <p className={`text-xs font-bold ${isActive ? (isDark ? 'text-[#a9cdef]' : 'text-[#142a43]') : isDone ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuted}`}>
+                      <p className={`text-xs font-bold ${isActive ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')) : isDone ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')) : c.textMuted}`}>
                         {isDone ? '✅' : isActive ? '▶' : ''} {phaseName(phase)}
                       </p>
                       <p className={`text-[13px] ${c.textMuted}`}>{t('fsa_stat_minutes', { min: phase.durationMin })}</p>
                       {isActive && (
                         <div className={`mt-1 w-full h-1 rounded-full overflow-hidden ${isDark ? 'bg-zinc-600' : 'bg-zinc-200'}`}>
-                          <div className="h-full rounded-full bg-cyan-400 transition-all duration-1000"
+                          <div className={sv ? 'h-full rounded-full bg-[var(--sc-envelope)] transition-all duration-1000' : 'h-full rounded-full bg-cyan-400 transition-all duration-1000'}
                             style={{ width: `${sceneProgress.phaseProgress * 100}%` }} />
                         </div>
                       )}
@@ -1727,9 +1744,9 @@ const FocusSoundArchitect = ({ tool }) => {
           {/* Layer mixer */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}>
-              <span className={isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}>🎧</span> {t('fsa_layer_mixer')}
+              <span className={(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}>🎧</span> {t('fsa_layer_mixer')}
               {recipe.layers?.some(l => l.type === 'binaural') && (
-                <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${(sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700')}`}>
                   {t('fsa_use_headphones_pill')}
                 </span>
               )}
@@ -1755,15 +1772,15 @@ const FocusSoundArchitect = ({ tool }) => {
                     <div className="flex items-center justify-between gap-1 mb-2">
                       <div className="flex items-center gap-1">
                         <button onClick={() => toggleLayerMute(idx)} title={mutedLayers[idx] ? t('fsa_unmute') : t('fsa_mute')}
-                          className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? (isDark ? 'text-red-400' : 'text-red-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                          className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? ((sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-500')) : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
                           {mutedLayers[idx] ? '🔇' : '🔊'}
                         </button>
                         <button onClick={() => soloLayer(idx)} title={t('fsa_solo')}
-                          className={`p-1 rounded text-xs font-bold transition-colors ${isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-zinc-400 hover:text-amber-600'}`}>
+                          className={`p-1 rounded text-xs font-bold transition-colors ${(sv ? 'text-[var(--sc-muted)]' : isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-zinc-400 hover:text-amber-600')}`}>
                           S
                         </button>
                         <button onClick={() => setShowEQ(showEQ === idx ? null : idx)} title={t('fsa_eq')}
-                          className={`p-1 rounded text-xs font-bold transition-colors ${showEQ === idx ? (isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                          className={`p-1 rounded text-xs font-bold transition-colors ${showEQ === idx ? ((sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')) : (sv ? 'text-[var(--sc-muted)]' : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
                           {t('fsa_eq')}
                         </button>
                       </div>
@@ -1780,7 +1797,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     </div>
                     <input type="range" min="0" max="100" value={vol}
                       onChange={e => handleLayerVolume(idx, Number(e.target.value))}
-                      className="fsa-slider w-full h-1.5 rounded-lg cursor-pointer accent-cyan-600" />
+                      className={sv ? 'fsa-slider w-full h-1.5 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider w-full h-1.5 rounded-lg cursor-pointer accent-cyan-600'} />
 
                     {/* Per-layer EQ (3-band) */}
                     {showEQ === idx && (
@@ -1793,8 +1810,8 @@ const FocusSoundArchitect = ({ tool }) => {
                               <span className={`text-xs font-bold w-12 ${c.textMuted}`}>{band.emoji} {t(band.labelKey)}</span>
                               <input type="range" min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
-                                className="fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500" />
-                              <span className={`text-xs font-mono w-8 text-end ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuted}`}>
+                                className={sv ? 'fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500'} />
+                              <span className={`text-xs font-mono w-8 text-end ${val > 0 ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')) : val < 0 ? ((sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-500')) : c.textMuted}`}>
                                 {t('fsa_eq_db', { sign: val > 0 ? '+' : '', val })}
                               </span>
                             </div>
@@ -1821,7 +1838,7 @@ const FocusSoundArchitect = ({ tool }) => {
                 {!showAddLayer ? (
                   <button onClick={() => setShowAddLayer(true)}
                     className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all text-sm font-bold ${
-                      isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-zinc-300 text-zinc-500 hover:border-[#142a43] hover:text-[#142a43]'
+                      (sv ? 'border-[var(--sc-line)] text-[var(--sc-muted)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-[#7fb3e0] hover:text-[#a9cdef]' : 'border-zinc-300 text-zinc-500 hover:border-[#142a43] hover:text-[#142a43]')
                     }`}>
                     {t('fsa_add_layer')}
                   </button>
@@ -1835,7 +1852,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       {ADDABLE_LAYERS.filter(al => !(recipe.layers || []).some(l => l.type === al.type && al.type !== 'binaural')).map(al => (
                         <button key={al.type} onClick={() => addLayerToRecipe(al)}
                           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                            isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]'
+                            (sv ? 'border-[var(--sc-line)] text-[var(--sc-muted)]' : isDark ? 'border-zinc-600 text-zinc-300 hover:border-[#7fb3e0] hover:bg-[#1f2530]' : 'border-zinc-200 text-zinc-600 hover:border-[#142a43] hover:bg-[#eef3f8]')
                           }`}>
                           <span>{al.emoji}</span> {layerLabel({ type: al.type })}
                         </button>
@@ -1858,7 +1875,7 @@ const FocusSoundArchitect = ({ tool }) => {
                   disabled={smartAdjustLoading}
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                     feedback === f.id
-                      ? isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]'
+                      ? (sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]')
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   } disabled:opacity-40`}>
                   {/* Was a STATIC swap to the tool icon — it read as a changed
@@ -1870,7 +1887,7 @@ const FocusSoundArchitect = ({ tool }) => {
               ))}
             </div>
             {smartAdjustLoading && (
-              <p className={`text-xs ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'} mt-2`}>
+              <p className={`text-xs ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')} mt-2`}>
                 {t('fsa_ai_adjusting')}
               </p>
             )}
@@ -1893,14 +1910,14 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
               <button data-print-heading aria-expanded={!!(showTips)} onClick={() => setShowTips(!showTips)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
-                <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>💡</span> {t('fsa_tips_adjustments')}
+                <span className={(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-600')}>💡</span> {t('fsa_tips_adjustments')}
                 <span data-print-hide><Caret open={showTips} className="ms-auto" /></span>
               </button>
               {(
                 <div data-sec-body hidden={!(showTips)} className="mt-4 space-y-3">
                   {recipe.usage_tips?.map((tip, i) => (
                     <div key={i} className={`flex items-start gap-2 text-sm ${c.textSecondary}`}>
-                      <span className={isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}>•</span>
+                      <span className={(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}>•</span>
                       <span>{tip}</span>
                     </div>
                   ))}
@@ -1910,9 +1927,9 @@ const FocusSoundArchitect = ({ tool }) => {
           )}
 
           {error && (
-            <div className={`p-4 rounded-xl flex items-start gap-3 ${isDark ? 'bg-red-900/30 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
+            <div className={`p-4 rounded-xl flex items-start gap-3 ${(sv ? 'bg-[var(--sc-card)] border border-[var(--sc-x-line)]' : isDark ? 'bg-red-900/30 border border-red-800' : 'bg-red-50 border border-red-200')}`}>
               <span>⚠️</span>
-              <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-700'}`}>{error}</p>
+              <p className={`text-sm ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-700')}`}>{error}</p>
             </div>
           )}
 

@@ -9,6 +9,8 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -139,6 +141,24 @@ const DoctorVisitPrep = ({ tool }) => {
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
+
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    chosen: 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)] text-[var(--sc-strong)]',
+    unchosen: 'border-[var(--sc-line)] text-[var(--sc-text)]',
+    highlight: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    deleteHover: '',
+  });
 
   const linkStyle = isDark
     ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2'
@@ -440,16 +460,16 @@ const DoctorVisitPrep = ({ tool }) => {
           example" pill was designed for (PF-17c). */}
       <div
         data-print-hide
-        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+        style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
       >
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+            {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
               <span className="me-2 text-xl">{tool?.icon ?? '📝'}</span>{tool?.tagline ?? t('dvp_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap" title={t('dvp_try_example_title')}>✨ {t('try_example')}</button>
+            </p>)}
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'} title={t('dvp_try_example_title')}>{!sv && '✨ '}{t('try_example')}</button>
           </div>
           {hasResetableState && (
             <button
@@ -467,7 +487,7 @@ const DoctorVisitPrep = ({ tool }) => {
           On paper: with results, the handout prints the results and a short
           summary of these answers instead (below); without, the form prints
           with each question kept on one page (data-print-form). */}
-      <div className="pt-2 space-y-6" data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
+      <div className={sv ? `${FORM_PANEL} space-y-6`.trim() : "pt-2 space-y-6"} data-print-form {...(results ? { 'data-print-hide': '' } : {})}>
         {/* Disclaimer */}
         <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
           <span>⚠️</span>
@@ -688,12 +708,12 @@ const DoctorVisitPrep = ({ tool }) => {
 
       {/* ══════════ RESULTS ══════════ */}
       {results && (
-        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-6">
-          <CheckNote status={checkStatus} className={c.textMuted} />
+        <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-6 ${sv ? ANSWER_CARD : ''}`}>
+          {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
           {/* First thing on the page, because it changes how everything below
               it should be read. It used to be the last thing on the page.
               Framing, not a warning — so no ⚠️ and no amber. */}
-          <div className={`${c.card} border ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-4`}>
+          <div className={`${c.card} border ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-emerald-700' : 'border-emerald-300')} rounded-xl p-4`}>
             <p className={`text-[15px] leading-relaxed ${c.text}`}>
               <strong>{t('dvp_remember_label')}</strong> {t('dvp_remember_body')}
             </p>
@@ -972,21 +992,21 @@ const DoctorVisitPrep = ({ tool }) => {
       {tool?.exampleOutput && (() => {
         const x = tool.exampleOutput;
         const toneClass = {
-          red: isDark ? 'border-red-800/60 bg-red-900/15' : 'border-red-200 bg-red-50',
-          yellow: isDark ? 'border-amber-800/60 bg-amber-900/15' : 'border-amber-200 bg-amber-50',
-          green: isDark ? 'border-emerald-800/60 bg-emerald-900/15' : 'border-emerald-200 bg-emerald-50',
+          red: (sv ? 'border-[var(--sc-x-line)] bg-[var(--sc-card)]' : isDark ? 'border-red-800/60 bg-red-900/15' : 'border-red-200 bg-red-50'),
+          yellow: (sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-amber-800/60 bg-amber-900/15' : 'border-amber-200 bg-amber-50'),
+          green: (sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-emerald-800/60 bg-emerald-900/15' : 'border-emerald-200 bg-emerald-50'),
           neutral: isDark ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-200 bg-zinc-50',
         };
         return (
-          <details data-print-hide className={`${isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200'} border-2 border-dashed rounded-xl overflow-hidden`}>
-            <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${isDark ? 'hover:bg-amber-900/20' : 'hover:bg-amber-100/40'}`}>
+          <details data-print-hide className={`${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-amber-950/20 border-amber-800/50' : 'bg-amber-50/60 border-amber-200')} border-2 border-dashed rounded-xl overflow-hidden`}>
+            <summary className={`cursor-pointer list-none p-5 flex items-center justify-between gap-4 ${(sv ? '' : isDark ? 'hover:bg-amber-900/20' : 'hover:bg-amber-100/40')}`}>
               <div>
                 <p className={`text-base font-black ${c.text}`}>{x.title}</p>
                 <p className={`text-sm mt-1 ${c.textSecondary}`}>{x.intro}</p>
               </div>
-              <span className={`text-sm font-bold whitespace-nowrap ${isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]'}`}>{x.expandLabel}</span>
+              <span className={`text-sm font-bold whitespace-nowrap ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{x.expandLabel}</span>
             </summary>
-            <div className={`border-t border-dashed ${isDark ? 'border-amber-800/50' : 'border-amber-200'} p-5 space-y-4`}>
+            <div className={`border-t border-dashed ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-amber-800/50' : 'border-amber-200')} p-5 space-y-4`}>
               <div>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{x.sampleLabel}</p>
                 <blockquote className={`p-4 rounded-xl border-s-4 ${isDark ? 'bg-zinc-900/60 border-zinc-500 text-zinc-200' : 'bg-zinc-50 border-zinc-400 text-gray-800'} text-sm leading-relaxed`}>
