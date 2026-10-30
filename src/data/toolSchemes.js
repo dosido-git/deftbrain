@@ -13,7 +13,7 @@
 // (bg-[var(--sc-field)] …) serves light and dark. Only tools in PROTOTYPE_TOOLS
 // get a scheme; everything else renders exactly as before.
 
-export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat', 'AwkwardSilenceFiller', 'DriveHome', 'LayoverMaximizer', 'MicroAdventureMapper', 'AnalogyEngine', 'WhatsMyVibe', 'VelvetHammer', 'TruthBomb', 'ToastWriter']);
+export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat', 'AwkwardSilenceFiller', 'DriveHome', 'LayoverMaximizer', 'MicroAdventureMapper', 'AnalogyEngine', 'WhatsMyVibe', 'VelvetHammer', 'TruthBomb', 'ToastWriter', 'ComebackCooker', 'GratitudeDebtClearer', 'WhatsThatMean', 'NotSoFast']);
 
 const SCHEMES = {
   // v3.0 (owner, 2026-10-29; docs/CATEGORY-COLOR-MAP-2.md): one ink per
