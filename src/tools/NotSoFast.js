@@ -214,7 +214,7 @@ const NotSoFast = ({ tool }) => {
     : null;
 
   // ── Render helpers ──
-  const rungHeaderBg = sv ? 'bg-[var(--sc-envelope)]' : (sv ? 'bg-zinc-100' : isDark ? 'bg-[#1f2530]' : 'bg-zinc-100');
+  const rungHeaderBg = sv ? 'bg-[var(--sc-envelope)]' : (sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-[#1f2530]' : 'bg-zinc-100');
   const rungNumBg    = sv ? 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]' : 'bg-cyan-800 text-white';
   const magicWordBg  = sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]' : isDark
     ? 'bg-zinc-700 border-zinc-600 text-emerald-400'

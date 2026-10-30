@@ -8,6 +8,8 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 
 
@@ -125,7 +127,57 @@ const DecisionCoach = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    deleteHover: '',
+    btnDecide: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+    btnDanger: 'bg-[var(--sc-card)] text-[var(--sc-x-text)] border-[var(--sc-x-line)]',
+    decisionBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    decisionText: 'text-[var(--sc-strong)]',
+    decisionHighlight: 'text-[var(--sc-strong)]',
+    stepNum: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+    warnText: 'text-[var(--sc-x-text)]',
+    warnTitle: 'text-[var(--sc-x-text)]',
+    histAccent: 'text-[var(--sc-strong)]',
+    welcomeBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    welcomeText: 'text-[var(--sc-strong)]',
+    prosWinner: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    prosWinText: 'text-[var(--sc-strong)]',
+    prosBar: 'bg-[var(--sc-strong)]',
+    timerBg: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    timerText: 'text-[var(--sc-x-text)]',
+    groupBar: 'bg-[var(--sc-strong)]',
+    patternHighlight: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    followUpBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    followUpText: 'text-[var(--sc-strong)]',
+    devilFor: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    devilAgainst: 'bg-[var(--sc-card)] border-[var(--sc-x-line)]',
+    chainBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    chainText: 'text-[var(--sc-strong)]',
+    chainArrow: 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)]',
+    templateBtn: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-strong)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    stepText: 'text-[var(--sc-text)]',
+    hintBg: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    hintText: 'text-[var(--sc-muted)]',
+    prosLoser: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    prosBarBg: 'bg-[var(--sc-line)]',
+    quickBtn: 'bg-[var(--sc-card)] border-[var(--sc-line)] text-[var(--sc-text)]',
+    groupPerson: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    patternCard: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+    batchCard: 'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── Session ──
@@ -500,7 +552,7 @@ const DecisionCoach = ({ tool }) => {
   // RENDER: Input Form (all 4 modes)
   // ══════════════════════════════════════════
   const renderInputForm = () => (
-    <div className="space-y-4">
+    <div className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
       {/* The question. First substantial field, and the only required one —
           category was removed because the sentence already contains it. */}
       {decideMode !== 'proscons' && (
@@ -674,8 +726,8 @@ const DecisionCoach = ({ tool }) => {
     // settled. Steps, ruled-out and a closing line all do assert that.
     const awaitingAnswer = !!results?.one_thing_that_could_change_this?.question;
     return (
-      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
-        <CheckNote status={checkStatus} className={c.textMuted} />
+      <div data-copy-results ref={resultsRef} className={`scroll-mt-24 space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`}>
+        {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
@@ -771,7 +823,8 @@ const DecisionCoach = ({ tool }) => {
     if (!prosResult) return null;
     const cmp = prosResult.comparison || []; const w = prosResult.winner; const mx = Math.max(...cmp.map(o => o.score || 0), 1);
     return (
-      <div className="space-y-4 mt-4">
+      <div className={`space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`}>
+        {sv && <AnswerHeader title={t('your_answer')} />}
         {w && (<div className={`p-6 rounded-2xl border-2 ${c.prosWinner}`}><div className={`text-xs font-bold uppercase mb-2 ${c.prosWinText}`}>{t('dc_winner')}</div><p className={`text-2xl font-bold ${c.prosWinText} mb-2`}>{w.choice}</p><p className={`text-sm ${c.prosWinText} opacity-80`}>{w.why}</p>{w.margin && <span className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${w.margin === 'landslide' ? 'bg-emerald-200 text-emerald-800' : w.margin === 'clear' ? 'bg-amber-200 text-amber-800' : 'bg-zinc-200 text-zinc-700'}`}>{w.margin === 'landslide' ? t('dc_margin_landslide') : w.margin === 'clear' ? t('dc_margin_clear') : t('dc_margin_close')}</span>}</div>)}
         {cmp.map((o, i) => { const isW = o.option === w?.choice; return (
           <div key={i} className={`p-4 rounded-2xl border ${isW ? c.prosWinner : c.prosLoser}`}>
@@ -796,7 +849,8 @@ const DecisionCoach = ({ tool }) => {
     if (!devilsResult) return null;
     const gutRight = devilsResult.verdict === 'trust_gut';
     return (
-      <div className="space-y-4 mt-4">
+      <div className={`space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`}>
+        {sv && <AnswerHeader title={t('your_answer')} />}
         <div className={`p-5 rounded-2xl border ${c.devilAgainst}`}><p className={`text-xs font-bold ${c.warnTitle} mb-2`}>{t('dc_against', { gut: gutInstinct })}</p>{devilsResult.case_against?.map((r, i) => <p key={i} className={`text-xs ${c.warnText} mb-1`}>❌ {r}</p>)}</div>
         <div className={`p-5 rounded-2xl border ${c.devilFor}`}><p className={`text-xs font-bold ${c.prosWinText} mb-2`}>{t('dc_for_gut')}</p>{devilsResult.case_for?.map((r, i) => <p key={i} className={`text-xs ${c.prosWinText} mb-1`}>✅ {r}</p>)}</div>
         <div className={`p-6 rounded-2xl border-2 ${gutRight ? c.prosWinner : c.decisionBg}`}>
@@ -818,7 +872,8 @@ const DecisionCoach = ({ tool }) => {
   const renderChainResult = () => {
     if (!chainResult) return null;
     return (
-      <div className="space-y-4 mt-4">
+      <div className={`space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`}>
+        {sv && <AnswerHeader title={t('your_answer')} />}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}><div className={`text-xs font-bold uppercase mb-2 ${c.decisionText}`}>{t('dc_chain_primary')}</div><p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{chainResult.primary?.choice}</p><p className={`text-sm ${c.decisionText}`}>{chainResult.primary?.why}</p></div>
         {chainResult.downstream?.map((ds, i) => (
           <div key={i} className={`p-4 rounded-xl border ${c.chainBg}`}><div className="flex items-start gap-3">
@@ -1164,16 +1219,16 @@ const DecisionCoach = ({ tool }) => {
       {/* Site style (2026-09-27): pale header band bleeding to the card edges,
           the ground the "Try an example" pill was made for (PF-17c). Screen only. */}
       <div data-print-hide
-        className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex items-start justify-between gap-3"
-        style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+        className={sv ? 'mb-4 flex items-center justify-between gap-3' : "-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5 flex items-start justify-between gap-3"}
+        style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
       >
         <div>
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-          <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+          {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
             <span className="me-2 text-xl">{tool?.icon ?? '🎯'}</span>{tool?.tagline ?? t('dc_tagline')}
-          </p>
+          </p>)}
           {activeTab === 'decide' && !results && !prosResult && !devilsResult && !chainResult && (
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+            <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
           )}
         </div>
         <button

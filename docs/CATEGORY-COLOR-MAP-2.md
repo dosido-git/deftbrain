@@ -78,7 +78,7 @@ The midnight contrast formula is inferred from one example (Relationships'
 | --- | --- |
 | Relationships | v3.0 (from the chat) |
 | Money, Learning, Conversations, Travel & Events | v3.0 (sheet values; tab and midnight from the formulas) |
-| The other five | older 2026-10-27 drafts; no tool uses them yet |
+| Home & Daily Life, Career and Business, Health & Wellness, Ideas & Diversions, Decisions | v3.0 (sheet values; Home graphite and every midnight set from the formulas) |
 
 ## Open items
 

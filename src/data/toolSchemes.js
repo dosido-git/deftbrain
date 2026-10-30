@@ -13,7 +13,7 @@
 // (bg-[var(--sc-field)] …) serves light and dark. Only tools in PROTOTYPE_TOOLS
 // get a scheme; everything else renders exactly as before.
 
-export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat', 'AwkwardSilenceFiller', 'DriveHome', 'LayoverMaximizer', 'MicroAdventureMapper', 'AnalogyEngine', 'WhatsMyVibe', 'VelvetHammer', 'TruthBomb', 'ToastWriter', 'ComebackCooker', 'GratitudeDebtClearer', 'WhatsThatMean', 'NotSoFast', 'ContextCollapse', 'ConflictCoach', 'DecoderRing', 'MagicMouth', 'NerveCheck', 'ReadTheRoom', 'ComplaintEscalationWriter', 'DifficultTalkCoach', 'TheFinalWord', 'Mend']);
+export const PROTOTYPE_TOOLS = new Set(['BillRescue', 'SignalVsNoise', 'ScamRadar', 'UpsellShield', 'QuoteCheck', 'Giftology', 'FakeReviewDetective', 'DateNight', 'SomeoneSaidItBetter', 'MissingLink', 'ResearchDecoder', 'PlainTalk', 'CultureBriefing', 'FriendshipFadeAlerter', 'PartyArchitect', 'HeartOfTheMatter', 'HobbyMatch', 'PronounceItRight', 'MarkupDetective', 'BuyWise', 'MoneyDiplomat', 'AwkwardSilenceFiller', 'DriveHome', 'LayoverMaximizer', 'MicroAdventureMapper', 'AnalogyEngine', 'WhatsMyVibe', 'VelvetHammer', 'TruthBomb', 'ToastWriter', 'ComebackCooker', 'GratitudeDebtClearer', 'WhatsThatMean', 'NotSoFast', 'ContextCollapse', 'ConflictCoach', 'DecoderRing', 'MagicMouth', 'NerveCheck', 'ReadTheRoom', 'ComplaintEscalationWriter', 'DifficultTalkCoach', 'TheFinalWord', 'Mend', 'BreakMyPlan', 'SmallChangeBigDifference', 'WhichLife', 'DecisionPrism', 'DecisionCoach', 'TicketTackler']);
 
 const SCHEMES = {
   // v3.0 (owner, 2026-10-29; docs/CATEGORY-COLOR-MAP-2.md): one ink per
@@ -37,12 +37,12 @@ const SCHEMES = {
     light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#D5BAC0', card: '#FFFFFF', accent: '#8A3556', strong: '#8A3556', onStrong: '#FFFFFF', button: '#8A3556', buttonText: '#FFFFFF', border: '#AF768C', wash: '#EEE6E3', tab: '#EAE0DF', text: '#1F1E1B', muted: '#4B5563', x: '#295B48', xText: '#295B48', xLine: '#C5D6CF' },
     dark:  { field: '#171A20', envelope: '#1F232B', line: '#473D46', card: '#101216', accent: '#C296A7', strong: '#C296A7', onStrong: '#14130F', button: '#C296A7', buttonText: '#14130F', border: '#79626F', wash: '#33313A', tab: '#28262E', text: '#E8ECF2', muted: '#A1A1AA', x: '#BBCBC4', xText: '#BBCBC4', xLine: '#475651' },
   },
-  // The other seven (owner, 2026-10-27: "as distinct from the others as
-  // possible"): hues spread round the wheel away from sage, honey and
-  // terracotta; text contrast >= 5.4:1 light and dark.
-  'Home & Daily Life': { // warm graphite
-    light: { field: '#fbfbfb', envelope: '#f2f1f0', line: '#d8d6d5', card: '#ffffff', accent: '#605c57', strong: '#3b3835', onStrong: '#fbfbfb', button: '#3b3835', buttonText: '#fbfbfb', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
-    dark:  { field: '#1d1c1b', envelope: '#262524', line: '#444241', card: '#191818', accent: '#c1bdb9', strong: '#e2e1de', onStrong: '#1d1c1b', button: '#e2e1de', buttonText: '#1d1c1b', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
+  // v3.0 for the rest (owner, 2026-10-29): Home graphite, Career navy, Health
+  // leaf green, Ideas ochre, Decisions copper. Light values from the palette
+  // sheet (Home's graphite has none there, so all of it is from the formulas).
+  'Home & Daily Life': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#BFBFBD', card: '#FFFFFF', accent: '#40454C', strong: '#40454C', onStrong: '#FFFFFF', button: '#40454C', buttonText: '#FFFFFF', border: '#7F8285', wash: '#E8E7E3', tab: '#E3E2DE', text: '#1F1E1B', muted: '#4B5563', x: '#5B4629', xText: '#5B4629', xLine: '#D6D0C7' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#3D4045', card: '#101216', accent: '#A0A2A6', strong: '#A0A2A6', onStrong: '#14130F', button: '#A0A2A6', buttonText: '#14130F', border: '#66696E', wash: '#2E323A', tab: '#25282D', text: '#E8ECF2', muted: '#A1A1AA', x: '#CBC4BB', xText: '#CBC4BB', xLine: '#494A4B' },
   },
   // Travel & Events in pine, Conversations in deep teal (owner, 2026-10-29:
   // v3.0, midnight dark). Light ink, contrast, border, rule and wash are the
@@ -52,25 +52,25 @@ const SCHEMES = {
     light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#B9C5BB', card: '#FFFFFF', accent: '#2D5A44', strong: '#2D5A44', onStrong: '#FFFFFF', button: '#2D5A44', buttonText: '#FFFFFF', border: '#708F80', wash: '#E7E8E2', tab: '#E1E4DD', text: '#1F1E1B', muted: '#4B5563', x: '#5B2942', xText: '#5B2942', xLine: '#D6CBCC' },
     dark:  { field: '#171A20', envelope: '#1F232B', line: '#394243', card: '#101216', accent: '#90A89C', strong: '#90A89C', onStrong: '#14130F', button: '#90A89C', buttonText: '#14130F', border: '#5D6C69', wash: '#2D3339', tab: '#23282C', text: '#E8ECF2', muted: '#A1A1AA', x: '#CBBBC4', xText: '#CBBBC4', xLine: '#49474E' },
   },
-  'Career and Business': { // indigo
-    light: { field: '#fafafd', envelope: '#edecf6', line: '#cdcbe1', card: '#ffffff', accent: '#3e397f', strong: '#232050', onStrong: '#fafafd', button: '#232050', buttonText: '#fafafd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
-    dark:  { field: '#181821', envelope: '#201f2b', line: '#39384d', card: '#15141c', accent: '#a39fdb', strong: '#d3d1f0', onStrong: '#181821', button: '#d3d1f0', buttonText: '#181821', x: '#eba38e', xText: '#eba38e', xLine: '#53352d' },
+  'Career and Business': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#B7BBC2', card: '#FFFFFF', accent: '#27395A', strong: '#27395A', onStrong: '#FFFFFF', button: '#27395A', buttonText: '#FFFFFF', border: '#6C788F', wash: '#E7E6E4', tab: '#E0E0DF', text: '#1F1E1B', muted: '#4B5563', x: '#5B4A29', xText: '#5B4A29', xLine: '#D6D1C7' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#3C4049', card: '#101216', accent: '#9AA3B2', strong: '#9AA3B2', onStrong: '#14130F', button: '#9AA3B2', buttonText: '#14130F', border: '#636975', wash: '#2E323B', tab: '#24282F', text: '#E8ECF2', muted: '#A1A1AA', x: '#CBC5BB', xText: '#CBC5BB', xLine: '#494A4B' },
   },
-  'Health & Wellness': { // jade
-    light: { field: '#f9fdfb', envelope: '#ecf6f1', line: '#cae2d7', card: '#ffffff', accent: '#2c6d4f', strong: '#1d533a', onStrong: '#f9fdfb', button: '#1d533a', buttonText: '#f9fdfb', x: '#a23e5c', xText: '#a23e5c', xLine: '#eac8d2' },
-    dark:  { field: '#17211c', envelope: '#1e2c25', line: '#364e43', card: '#141d19', accent: '#9cdebf', strong: '#d0f1e2', onStrong: '#17211c', button: '#d0f1e2', buttonText: '#17211c', x: '#e08aa5', xText: '#e08aa5', xLine: '#532d39' },
+  'Health & Wellness': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#BACBB3', card: '#FFFFFF', accent: '#2F6F2A', strong: '#2F6F2A', onStrong: '#FFFFFF', button: '#2F6F2A', buttonText: '#FFFFFF', border: '#729D6E', wash: '#E7EAE0', tab: '#E1E6DA', text: '#1F1E1B', muted: '#4B5563', x: '#58295B', xText: '#58295B', xLine: '#D6CBD1' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#36433C', card: '#101216', accent: '#87AC84', strong: '#87AC84', onStrong: '#14130F', button: '#87AC84', buttonText: '#14130F', border: '#586E5C', wash: '#2B3336', tab: '#22292A', text: '#E8ECF2', muted: '#A1A1AA', x: '#C9BBCB', xText: '#C9BBCB', xLine: '#494750' },
   },
   'Conversations': {
     light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#B5C5C2', card: '#FFFFFF', accent: '#1F5A5C', strong: '#1F5A5C', onStrong: '#FFFFFF', button: '#1F5A5C', buttonText: '#FFFFFF', border: '#678F90', wash: '#E6E8E4', tab: '#E0E4DF', text: '#1F1E1B', muted: '#4B5563', x: '#5B2B29', xText: '#5B2B29', xLine: '#D6CBC7' },
     dark:  { field: '#171A20', envelope: '#1F232B', line: '#374246', card: '#101216', accent: '#89A8A9', strong: '#89A8A9', onStrong: '#14130F', button: '#89A8A9', buttonText: '#14130F', border: '#596C70', wash: '#2C333A', tab: '#22282E', text: '#E8ECF2', muted: '#A1A1AA', x: '#CBBBBB', xText: '#CBBBBB', xLine: '#49474C' },
   },
-  'Ideas & Diversions': { // orchid
-    light: { field: '#fcfafc', envelope: '#f5edf3', line: '#dfcdda', card: '#ffffff', accent: '#793f67', strong: '#4c2440', onStrong: '#fcfafc', button: '#4c2440', buttonText: '#fcfafc', x: '#2c6a73', xText: '#2c6a73', xLine: '#c8e6ea' },
-    dark:  { field: '#20181e', envelope: '#2a2027', line: '#4b3946', card: '#1b151a', accent: '#d6a4c7', strong: '#edd4e5', onStrong: '#20181e', button: '#edd4e5', buttonText: '#20181e', x: '#7fc4cc', xText: '#7fc4cc', xLine: '#2d4f53' },
+  'Ideas & Diversions': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#D0C6AA', card: '#FFFFFF', accent: '#7A5C0C', strong: '#7A5C0C', onStrong: '#FFFFFF', button: '#7A5C0C', buttonText: '#FFFFFF', border: '#A5905A', wash: '#ECE8DE', tab: '#E9E4D7', text: '#1F1E1B', muted: '#4B5563', x: '#29375B', xText: '#29375B', xLine: '#CCCDD1' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#424037', card: '#101216', accent: '#B2A173', strong: '#B2A173', onStrong: '#14130F', button: '#B2A173', buttonText: '#14130F', border: '#706852', wash: '#313234', tab: '#272728', text: '#E8ECF2', muted: '#A1A1AA', x: '#BBC0CB', xText: '#BBC0CB', xLine: '#454950' },
   },
-  'Decisions': { // blue
-    light: { field: '#f9fbfd', envelope: '#ecf0f6', line: '#cad5e2', card: '#ffffff', accent: '#355782', strong: '#1d3553', onStrong: '#f9fbfd', button: '#1d3553', buttonText: '#f9fbfd', x: '#a8462c', xText: '#a8462c', xLine: '#eacfc8' },
-    dark:  { field: '#171b21', envelope: '#1e242c', line: '#36414e', card: '#14181d', accent: '#9cb8de', strong: '#d0def1', onStrong: '#171b21', button: '#d0def1', buttonText: '#171b21', x: '#eba38e', xText: '#eba38e', xLine: '#53352d' },
+  'Decisions': {
+    light: { field: '#FBFAF7', envelope: '#F5F3EE', line: '#D9BFAE', card: '#FFFFFF', accent: '#984719', strong: '#984719', onStrong: '#FFFFFF', button: '#984719', buttonText: '#FFFFFF', border: '#B98263', wash: '#EEE7DF', tab: '#ECE2D9', text: '#1F1E1B', muted: '#4B5563', x: '#29495B', xText: '#29495B', xLine: '#CCD1D1' },
+    dark:  { field: '#171A20', envelope: '#1F232B', line: '#483D3B', card: '#101216', accent: '#C6997F', strong: '#C6997F', onStrong: '#14130F', button: '#C6997F', buttonText: '#14130F', border: '#7B6459', wash: '#333135', tab: '#282729', text: '#E8ECF2', muted: '#A1A1AA', x: '#BBC6CB', xText: '#BBC6CB', xLine: '#454A50' },
   },
 };
 

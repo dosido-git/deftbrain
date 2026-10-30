@@ -943,7 +943,7 @@ const TheFinalWord = ({ tool }) => {
   const VoiceButton = () => {
     if (!voiceSupported) return null;
     return (
-      <button onClick={toggleVoice} className={`p-3 rounded-xl border-2 transition-all ${isListening ? 'border-red-500 bg-red-500/10 text-red-500 animate-pulse' : (sv ? 'border-slate-300 text-slate-400' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-amber-500 hover:text-amber-400' : 'border-slate-300 text-slate-400 hover:border-amber-500 hover:text-amber-500')}`} title={isListening ? t('tfw_voice_stop') : t('tfw_voice_speak')}>
+      <button onClick={toggleVoice} className={`p-3 rounded-xl border-2 transition-all ${isListening ? 'border-red-500 bg-red-500/10 text-red-500 animate-pulse' : (sv ? 'border-[var(--sc-line)] text-[var(--sc-muted)]' : isDark ? 'border-zinc-600 text-zinc-400 hover:border-amber-500 hover:text-amber-400' : 'border-slate-300 text-slate-400 hover:border-amber-500 hover:text-amber-500')}`} title={isListening ? t('tfw_voice_stop') : t('tfw_voice_speak')}>
         <span className="text-lg">{isListening ? '🔇' : '🎤'}</span>
       </button>
     );
@@ -1542,7 +1542,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ MULTIPLAYER GAME ═══════ */}
         {(mpMode === 'lobby' || mpMode === 'playing') && roomState?.started && roomState?.currentQuestion && !roomState?.finished && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
             <div className={`px-6 py-4 ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]')} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
                 <span className={`text-xs font-black uppercase tracking-widest ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{roomState.currentQuestion.category_label || t('tfw_mp_trivia_fallback')}</span>
@@ -1616,7 +1616,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ MULTIPLAYER FINISHED ═══════ */}
         {roomState?.finished && (mpMode === 'lobby' || mpMode === 'playing') && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
             <div className={`px-6 py-8 text-center ${(sv ? 'bg-gradient-to-b to-white' : isDark ? 'bg-[#1f2530]' : 'bg-gradient-to-b from-fuchsia-50 to-white')}`}>
               <span className="text-5xl block mb-3">🏆</span>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('tfw_mp_finished_header', { code: roomCode })}</p>
@@ -1654,7 +1654,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* Quick Question Result */}
         {result?._mode === 'question' && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
             <div className={`px-6 py-4 ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-amber-900/20' : 'bg-amber-50')} border-b ${c.border}`}>
               <div className="flex items-center gap-2"><span>⚖️</span><span className={`text-xs font-black uppercase tracking-widest ${c.accentTxt}`}>{t('tfw_result_final_word')}</span>
                 {result.category && <span className={`ms-auto text-xs font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{result.category}</span>}
@@ -1677,7 +1677,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* Dispute Result */}
         {result?._mode === 'dispute' && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
             <div className={`px-6 py-5 text-center ${(sv ? 'bg-gradient-to-r' : isDark ? 'bg-gradient-to-r from-amber-900/30 to-zinc-800' : 'bg-gradient-to-r from-amber-50 to-amber-100')}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accentTxt}`}>{t('tfw_verdict_header')}</p>
               {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>{resultInputSummary}</p>}
@@ -1712,7 +1712,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* Fact Check Result */}
         {result?._mode === 'factcheck' && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
             <div className={`px-6 py-6 text-center ${getRulingStyle(result.ruling)}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.textMuted}`}>{t('tfw_ruling')}</p>
               {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>"{resultInputSummary}"</p>}
@@ -1732,7 +1732,7 @@ const TheFinalWord = ({ tool }) => {
                   <p className={`text-[13px] font-boldr mb-2 ${c.accentTxt}`}>{t('tfw_related_claims')}</p>
                   <div className="space-y-2">
                     {result.related_claims.map((rc, i) => (
-                      <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-start px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${(sv ? 'border-slate-200 text-slate-700' : isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700')}`}>
+                      <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-start px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${(sv ? 'border-[var(--sc-line)] text-[var(--sc-text)]' : isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700')}`}>
                         <span className="flex-shrink-0">🛡️</span>
                         <span className="flex-1">{rc}</span>
                         <span className={`text-[13px] ${c.textMuted}`}>{t('tfw_check_arrow')}</span>
@@ -1749,7 +1749,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ DEEP DISSECT RESULT ═══════ */}
         {dissectResult && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
 
             {/* Header — overall verdict */}
             <div className={`px-6 py-5 text-center ${getRulingStyle(dissectResult.overall_verdict?.ruling)}`}>
@@ -1773,11 +1773,11 @@ const TheFinalWord = ({ tool }) => {
                   <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('tfw_dissect_breaking_down')}</p>
                   {dissectResult.components.map((comp, i) => {
                     const verdictColors = {
-                      true:            (sv ? 'border-s-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-s-emerald-500 bg-emerald-900/10' : 'border-s-emerald-500 bg-emerald-50'),
+                      true:            (sv ? 'border-s-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-s-emerald-500 bg-emerald-900/10' : 'border-s-emerald-500 bg-emerald-50'),
                       false:           (sv ? 'border-s-[var(--sc-x-line)] bg-[var(--sc-card)]' : isDark ? 'border-s-red-500 bg-red-900/10' : 'border-s-red-500 bg-red-50'),
-                      misleading:      (sv ? 'border-s-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-s-amber-500 bg-amber-900/10' : 'border-s-amber-500 bg-amber-50'),
-                      missing_context: (sv ? 'border-s-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-s-sky-500 bg-sky-900/10' : 'border-s-sky-500 bg-sky-50'),
-                      exaggerated:     (sv ? 'border-s-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-s-orange-500 bg-amber-900/10' : 'border-s-orange-500 bg-orange-50'),
+                      misleading:      (sv ? 'border-s-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-s-amber-500 bg-amber-900/10' : 'border-s-amber-500 bg-amber-50'),
+                      missing_context: (sv ? 'border-s-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-s-sky-500 bg-sky-900/10' : 'border-s-sky-500 bg-sky-50'),
+                      exaggerated:     (sv ? 'border-s-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-s-orange-500 bg-amber-900/10' : 'border-s-orange-500 bg-orange-50'),
                       unverifiable:    isDark ? 'border-s-zinc-500 bg-zinc-700/30'       : 'border-s-slate-400 bg-slate-50',
                       opinion:         (sv ? 'border-s-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)]' : isDark ? 'border-s-[#7fb3e0] bg-[#1f2530]' : 'border-s-[#142a43] bg-[#eef3f8]'),
                     };
@@ -1857,7 +1857,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ DEVIL'S ADVOCATE RESULT ═══════ */}
         {daResult && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white')}`}>
             <div className={`px-6 py-5 text-center ${(sv ? 'bg-gradient-to-r' : isDark ? 'bg-gradient-to-r from-amber-900/30 to-zinc-800' : 'bg-gradient-to-r from-amber-50 to-amber-100')}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.accentTxt}`}>{t('tfw_da_verdict_header')}</p>
               {resultInputSummary && <p className={`text-xs italic mb-2 ${c.textMuted}`}>{resultInputSummary}</p>}
@@ -1901,7 +1901,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ LOCAL TRIVIA QUESTION ═══════ */}
         {triviaQuestion && !triviaFinished && !mpMode && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
             <div className={`px-6 py-4 ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-[#1f2530]' : 'bg-[#eef3f8]')} border-b ${c.border}`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -1942,7 +1942,7 @@ const TheFinalWord = ({ tool }) => {
 
         {/* ═══════ LOCAL TRIVIA ENDGAME ═══════ */}
         {triviaFinished && !mpMode && (
-          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-white' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
+          <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-card)]' : isDark ? 'border-[#2c3a4a] bg-zinc-800' : 'border-[#d4dde8] bg-white')}`}>
             <div className={`px-6 py-8 text-center ${(sv ? 'bg-gradient-to-b to-white' : isDark ? 'bg-[#1f2530]' : 'bg-gradient-to-b from-fuchsia-50 to-white')}`}>
               <span className="text-5xl block mb-3">🏆</span>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('tfw_trivia_champion')}</p>
