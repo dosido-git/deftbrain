@@ -8,6 +8,8 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { toolTagline } from '../utils/toolTagline';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -128,7 +130,22 @@ const JustifyMyMeeting = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+    neutral: 'bg-[var(--sc-envelope)] border-[var(--sc-line)] text-[var(--sc-text)]',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   // ── State ──
@@ -617,7 +634,7 @@ const JustifyMyMeeting = ({ tool }) => {
 
   const renderJudge = () => (
     <div className="space-y-4">
-      <div data-print-form {...(judgeResults ? { 'data-print-hide': '' } : {})} className={`border-t ${c.border} pt-5`}>
+      <div data-print-form {...(judgeResults ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} `.trim() : `border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_j_intro')}</p>
 
         <div className="mb-4">
@@ -655,8 +672,8 @@ const JustifyMyMeeting = ({ tool }) => {
       </div>
 
       {judgeResults && (
-        <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-          <CheckNote status={checkStatus} className={c.textMuted} />
+        <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
+          {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
           <div className={`${verdictColor(judgeResults.verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{VERDICT_EMOJI[judgeResults.verdict] || '📊'}</span>
             <p className={`text-xl font-black ${c.text}`}>{verdictLabel(judgeResults.verdict)}</p>
@@ -836,7 +853,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderZombie = () => (
     <div className="space-y-4">
-      <div className={`border-t ${c.border} pt-5`}>
+      <div className={sv ? `${FORM_PANEL} `.trim() : `border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_z_intro')}</p>
 
         <div className="mb-4">
@@ -888,8 +905,8 @@ const JustifyMyMeeting = ({ tool }) => {
       </div>
 
       {zombieResults && (
-        <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-          <div className={`${verdictColor(zombieResults.verdict)} border-2 rounded-xl p-5 text-center`}>
+        <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
+          {sv && <AnswerHeader title={t('your_answer')} />}<div className={`${verdictColor(zombieResults.verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{VERDICT_EMOJI[zombieResults.verdict] || '🧟'}</span>
             <p className={`text-xl font-black ${c.text}`}>{verdictLabel(zombieResults.verdict)}</p>
             {zombieResults.one_liner && <p className={`text-sm ${c.textSecondary} mt-2`}>{zombieResults.one_liner}</p>}
@@ -946,7 +963,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderWeek = () => (
     <div className="space-y-4">
-      <div className={`border-t ${c.border} pt-5`}>
+      <div className={sv ? `${FORM_PANEL} `.trim() : `border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_w_intro')}</p>
 
         <div className="space-y-3 mb-4">
@@ -993,8 +1010,8 @@ const JustifyMyMeeting = ({ tool }) => {
       </div>
 
       {weekResults && (
-        <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-          {weekResults.summary && (
+        <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
+          {sv && <AnswerHeader title={t('your_answer')} />}{weekResults.summary && (
             <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
               <p className={`text-sm ${c.text}`}>{weekResults.summary}</p>
             </div>
@@ -1085,7 +1102,7 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   const renderRescue = () => (
     <div className="space-y-4">
-      <div className={`border-t ${c.border} pt-5`}>
+      <div className={sv ? `${FORM_PANEL} `.trim() : `border-t ${c.border} pt-5`}>
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_r_intro')}</p>
 
         <div className="mb-4">
@@ -1118,8 +1135,8 @@ const JustifyMyMeeting = ({ tool }) => {
       </div>
 
       {rescueResults && (
-        <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
-          {rescueResults.the_problem && (
+        <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
+          {sv && <AnswerHeader title={t('your_answer')} />}{rescueResults.the_problem && (
             <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
               <p className={`text-[13px] font-bold ${c.textMuted} uppercase mb-1`}>{t('mbd_r_problem')}</p>
               <p className={`text-sm ${c.text}`}>{rescueResults.the_problem}</p>
@@ -1213,18 +1230,18 @@ const JustifyMyMeeting = ({ tool }) => {
               made for (PF-17c). Screen only. */}
           <div
             data-print-hide
-            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5"
-            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+            className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5 mb-5'}
+            style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
           >
             <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🕵️'}</span>
                   {toolTagline(tool?.tagline ?? t('mbd_tagline'))}
-                </p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+                </p>)}
+                <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
               </div>
               {canReset && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

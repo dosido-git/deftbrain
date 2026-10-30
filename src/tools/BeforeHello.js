@@ -7,6 +7,8 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
+import { schemeStyle } from '../data/toolSchemes';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
 
 // Five, rotated by pickExample: investor, mentor, employer, client and
 // connector — five of the seven target types, each a different kind of ask
@@ -87,7 +89,21 @@ const BeforeHello = ({ tool }) => {
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
-  const linkStyle = isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
+  // Category colours (src/data/toolSchemes.js, audit/CONVENTIONS.md
+  // "Category-colour pages"): the form in the form panel, the answer in one
+  // card; tool colours mapped to the scheme's ink, envelope and contrast
+  // shades by role, the contrast colour only for warnings. Inline colour
+  // ternaries below carry their own `sv ?` branch.
+  const sv = schemeStyle(tool, isDark);
+  if (sv) Object.assign(c, SCHEME_C, {
+    label: SCHEME_C.labelText,
+    // Bordered boxes here keep their padding: white on the answer card.
+    card: 'bg-[var(--sc-card)]',
+    text: 'text-[var(--sc-text)]',
+    textSecondary: 'text-[var(--sc-muted)]',
+  });
+
+  const linkStyle = sv ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
   const [checkStatus, setCheckStatus] = useState(null); // CheckNote: checking | done | fixed
 
   const [targetType, setTargetType] = useState('');
@@ -190,17 +206,17 @@ const BeforeHello = ({ tool }) => {
               made for (PF-17c). Screen only. */}
           <div
             data-print-hide
-            className="-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5"
-            style={/^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
+            className={sv ? 'mb-4' : '-mx-4 -mt-4 sm:-mx-6 sm:-mt-6 lg:-mx-8 lg:-mt-8 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-5'}
+            style={!sv && /^#[0-9a-f]{6}$/i.test(tool?.headerColor || '') ? { background: `${tool.headerColor}${isDark ? '26' : '66'}` } : undefined}
           >
             <div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 {/* PF-30 — the wrapper already prints the tool name as the page heading. */}
-                <p className={`text-[17px] leading-snug ${c.textSecondary}`}>
+                {!sv && (<p className={`text-[17px] leading-snug ${c.textSecondary}`}>
                   <span className="me-2 text-xl">{tool?.icon ?? '🌀'}</span>{t('bh_tagline')}
-                </p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+                </p>)}
+                <button onClick={loadExample} disabled={loading} style={sv ? undefined : { backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={sv ? `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap ${SCHEME_C.btnSecondary} disabled:opacity-40` : 'mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap'}>{!sv && '✨ '}{t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(results || targetDescription.trim() || targetType.trim() || whyThemContext.trim() || yourBackground.trim()) ? (
@@ -215,7 +231,7 @@ const BeforeHello = ({ tool }) => {
       </div>
 
         {!results && (
-          <div className={`rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
+          <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : `rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('bh_target_label')} <span className={c.required}>*</span>
@@ -232,7 +248,7 @@ const BeforeHello = ({ tool }) => {
                 {TARGET_TYPES.map(tt => (
                   <button key={tt.id} onClick={() => setTargetType(targetType === tt.id ? '' : tt.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                      targetType === tt.id ? 'bg-cyan-700 text-white border-cyan-700' : c.btnSecondary
+                      targetType === tt.id ? (sv ? 'bg-[var(--sc-strong)] text-[var(--sc-on-strong)] border-[var(--sc-strong)]' : 'bg-cyan-700 text-white border-cyan-700') : c.btnSecondary
                     }`}>
                     {t(tt.labelKey)}
                   </button>
@@ -284,8 +300,8 @@ const BeforeHello = ({ tool }) => {
         )}
 
         {results && (
-          <div ref={resultsRef} className="scroll-mt-24 space-y-4">
-            <CheckNote status={checkStatus} className={c.textMuted} />
+          <div ref={resultsRef} className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`}>
+            {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuted} />
             {results.starting_position && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🧭 {t('bh_starting_position')}</p>
@@ -297,8 +313,8 @@ const BeforeHello = ({ tool }) => {
 
             {results.strengthen_your_position && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                <div className={`px-5 py-4 ${isDark ? 'bg-amber-900/10' : 'bg-amber-50'}`}>
-                  <p className={`text-xs font-black uppercase tracking-widest mb-1 ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>1 · {t('bh_strengthen')}</p>
+                <div className={`px-5 py-4 ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-amber-900/10' : 'bg-amber-50')}`}>
+                  <p className={`text-xs font-black uppercase tracking-widest mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-300' : 'text-amber-800')}`}>1 · {t('bh_strengthen')}</p>
                   <p className={`text-sm font-semibold ${c.text}`}>{results.strengthen_your_position.summary}</p>
                 </div>
                 <div className="px-5 py-4 space-y-3">
@@ -317,14 +333,14 @@ const BeforeHello = ({ tool }) => {
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>2 · {t('bh_genuine_overlap')}</p>
                 <p className={`text-sm mb-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bh_where_exists')}:</span> {results.genuine_overlap.where_it_exists}</p>
                 <p className={`text-sm mb-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bh_how_deepen')}:</span> {results.genuine_overlap.how_to_deepen_it}</p>
-                <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-800'}`}><span className="font-semibold">{t('bh_dont_manufacture')}:</span> {results.genuine_overlap.what_not_to_manufacture}</p>
+                <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-200' : 'text-amber-800')}`}><span className="font-semibold">{t('bh_dont_manufacture')}:</span> {results.genuine_overlap.what_not_to_manufacture}</p>
               </div>
             )}
 
             {results.ready_to_say_hello && (
-              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]'}`}>
+              <div className={`rounded-2xl border-2 p-5 ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-[#2c3a4a] bg-[#1f2530]' : 'border-[#d4dde8] bg-[#eef3f8]')}`}>
                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#a9cdef]' : 'text-[#142a43]'}`}>3 · {t('bh_ready_heading')}</p>
+                  <p className={`text-xs font-black uppercase tracking-widest ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>3 · {t('bh_ready_heading')}</p>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-black ${c.card} border ${c.border}`}>{t(`bh_status_${results.ready_to_say_hello.status}`)}</span>
                 </div>
                 <p className={`text-sm mb-2 ${c.text}`}>{results.ready_to_say_hello.why}</p>
@@ -342,13 +358,13 @@ const BeforeHello = ({ tool }) => {
                 <p className={`text-sm mb-2 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bh_when')}:</span> {results.first_contact.when_to_reach_out}</p>
                 <p className={`text-sm mb-3 ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('bh_frame')}:</span> {results.first_contact.the_frame}</p>
                 <div className={`p-3 rounded-xl border font-mono text-sm mb-2 ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-gray-200'} ${c.textSecondary}`}>{results.first_contact.what_to_say}</div>
-                <p className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}><span className="font-semibold">{t('bh_dont_say')}:</span> {results.first_contact.what_not_to_say}</p>
+                <p className={`text-xs ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-300' : 'text-red-700')}`}><span className="font-semibold">{t('bh_dont_say')}:</span> {results.first_contact.what_not_to_say}</p>
               </div>
             )}
 
             {results.do_today && (
-              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-emerald-700 bg-emerald-900/10' : 'border-emerald-300 bg-emerald-50'}`}>
-                <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>⚡ {t('bh_do_today')}</p>
+              <div className={`rounded-2xl border-2 p-5 ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-emerald-700 bg-emerald-900/10' : 'border-emerald-300 bg-emerald-50')}`}>
+                <p className={`text-xs font-black uppercase tracking-widest mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-300' : 'text-emerald-700')}`}>⚡ {t('bh_do_today')}</p>
                 <p className={`text-sm font-medium ${c.text}`}>{results.do_today}</p>
               </div>
             )}
