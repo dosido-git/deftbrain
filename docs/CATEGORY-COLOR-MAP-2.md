@@ -29,7 +29,7 @@
 | Relationships | raspberry `#8A3556` | `#295B48` | `#AF768C` | `#D5BAC0` | `#EEE6E3` |
 | Career and Business | navy `#27395A` | `#5B4A29` | `#6C788F` | `#B7BBC2` | `#E7E6E4` |
 | Conversations | deep teal `#1F5A5C` | `#5B2B29` | `#678F90` | `#B5C5C2` | `#E6E8E4` |
-| Home & Daily Life | stone `#5E5648` | `#293B5B` | `#928C83` | `#C8C4BC` | `#EAE8E2` |
+| Home & Daily Life | graphite `#40454C` | from the formulas | from the formulas | from the formulas | from the formulas |
 | Travel & Events | pine `#2D5A44` | `#5B2942` | `#708F80` | `#B9C5BB` | `#E7E8E2` |
 | Ideas & Diversions | ochre `#7A5C0C` | `#29375B` | `#A5905A` | `#D0C6AA` | `#ECE8DE` |
 | Health & Wellness | leaf green `#2F6F2A` | `#58295B` | `#729D6E` | `#BACBB3` | `#E7EAE0` |
@@ -37,8 +37,10 @@
 
 The sheet's second round moved Health & Wellness from rust to leaf green (too
 close to Relationships) and Decisions from steel blue to copper (too close to
-Career). Home & Daily Life: the sheet shows stone; the chat later used graphite
-`#40454C` (indigo `#444C94` was the third option). **Owner to confirm Home.**
+Career). Home & Daily Life is **graphite** `#40454C` (owner, 2026-10-29). The
+sheet only shows its stone version (`#5E5648`, contrast `#293B5B`), so
+graphite's other light values come from the formulas below when Home is
+restyled; indigo `#444C94` was the third option.
 
 ## Shared neutrals
 
