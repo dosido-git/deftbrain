@@ -18,7 +18,8 @@
  *   5. `bg-[var(--sc-strong)]` and `text-white` in one class string — use
  *      text-[var(--sc-on-strong)];
  *   6. the tinted header band (`tool?.headerColor` background) not switched
- *      off with `!sv &&`.
+ *      off with `!sv &&`;
+ *   7. collapsible sections (SvSection, useOnExpandAll) with no <ExpandAll />.
  */
 const path = require('path');
 const fs = require('fs');
@@ -70,6 +71,12 @@ for (const tool of tools) {
   if (!/schemeStyle\(/.test(src)) fail(tool.id, 'never calls schemeStyle()');
   if (!NO_ANSWER_CARD[tool.id] && !/\b(ANSWER_CARD|AnswerCard|AnswerHeader)\b/.test(src)) fail(tool.id, 'no answer card (ANSWER_CARD / AnswerHeader)');
   if (!NO_FORM_PANEL[tool.id] && !/\b(FORM_PANEL|FormPanel)\b|--sc-field/.test(src)) fail(tool.id, 'no form panel (FORM_PANEL)');
+
+  // Collapsible sections come with one Expand all (CONVENTIONS, rule 8); the
+  // control itself shows only past two sections, so placing it is always right.
+  if (/<SvSection\b|<SchemeSection\b|useOnExpandAll\(/.test(src) && !/<ExpandAll\b/.test(src)) {
+    fail(tool.id, 'collapsible sections without an Expand all (<ExpandAll />)');
+  }
 
   const lines = src.split('\n');
   lines.forEach((line, i) => {

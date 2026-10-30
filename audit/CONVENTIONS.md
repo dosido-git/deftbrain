@@ -2510,7 +2510,13 @@ Sometimes the software asked for it.
 
 **Gate 9c** (`node scripts/category-style-audit.js`, `npm run check:category-style`, pre-push) fails a tool page that: is not in `PROTOTYPE_TOOLS`; wears a category other than its first; never calls `schemeStyle()`; has no answer card (`ANSWER_CARD` / `AnswerHeader`) or no form panel (`FORM_PANEL`), unless exempted in the script with a reason; puts `text-white` on `bg-[var(--sc-strong)]`; or leaves the old tinted header band on (`style={!sv && …}`). Everything below that the gate cannot see (box choice, text-colour roles, "Expand all", contrast) is checked by eye and by the in-page contrast scan, light **and** dark.
 
-Bill Rescue and Signal vs Noise are the full reference treatment (sections, key box, Expand all). The rest of the catalog has the structure (envelope, form panel, one answer card, colours by role); bringing each up to the full treatment happens tool by tool, not as a sweep.
+Bill Rescue and Signal vs Noise are the reference treatment. Since 2026-10-30 the rest of the catalog carries it too, as far as each answer has the parts: one key box on the answer's most important block, secondary parts collapsed under one Expand all, the immediate action left open. Tools whose answer is a single deliverable (a letter, a speech, a quote list) or an app rather than a report (timers, trackers, decision trees) keep their own shape — a key box or sections are not forced onto them.
+
+How, without touching the non-category render (`src/components/CategoryStyle.js`):
+- `SvSection` — a block that becomes a collapsible Section on a category page and renders exactly as before elsewhere.
+- `KEY_BOX` / `KeyBox` — the key box, as a class for markup that stays the tool's own.
+- `useOnExpandAll(cb)` — a tool's own collapsibles join Expand all; for `{ [key]: open }` state use `open ? ALL_OPEN : ALL_CLOSED`.
+- `ExpandAll` — the page wrapper provides its context, so a tool only places it; it shows only when more than two collapsible sections sit beside it (owner, 2026-10-30). Gate 9c fails collapsible sections with no Expand all.
 
 Each category has four shades plus one contrast colour, exposed as CSS variables by `ToolPageWrapper`: `--sc-field` (lightest), `--sc-envelope` (light), `--sc-accent` (medium), `--sc-strong` (dark), `--sc-x` / `--sc-x-text` / `--sc-x-line` (contrast), plus `--sc-on-strong` (text on the dark shade), `--sc-text` and `--sc-muted` (neutral text). Text boxes and letter pages use `--sc-card`.
 
@@ -2534,7 +2540,7 @@ Each category has four shades plus one contrast colour, exposed as CSS variables
 3. **Medium shade = small controls and small labels.** "Category: …", outline buttons, chips, typed text, links, small-caps sub-labels ("THE WORDS TO USE", "If they say no"), classifying tags.
 4. **Contrast colour = "look here", one meaning only.** An urgent status or a real warning ("Never do", flagged charges, CRITICAL). Not for classification.
 5. **No traffic-light colours** (green, amber, red, sky), and no status-dot emoji (🔴 🟡 🟢) in an answer. Severity is said in words, in the contrast colour when it is a warning. (The form's "How late?" chips keep their dots: they help pick, they do not judge.)
-8. **Expand all.** Wherever an answer has collapsed sections, one "Expand all" / "Collapse all" control sits above them.
+8. **Expand all.** Wherever an answer has more than two collapsible sections, one "Expand all" / "Collapse all" control sits above them.
 6. **Never add a new text colour.** Anything not covered uses the nearest rule above.
 7. **Readable:** every coloured text ≥ 4.5:1 on what it sits on, in light and dark.
 

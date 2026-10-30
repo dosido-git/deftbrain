@@ -150,12 +150,13 @@ export function SectionGroup({ children }) {
 export function ExpandAll({ className = '' }) {
   const all = useContext(SectionsSignal);
   const { t } = useTranslation();
-  // Shown only when a collapsible section sits beside it: an answer whose
-  // optional parts all came back empty has nothing to expand.
+  // Shown only when more than two collapsible sections sit beside it (owner,
+  // 2026-10-30): one or two are opened as easily by hand, and an answer whose
+  // optional parts came back empty has nothing to expand.
   const ref = useRef(null);
   const [has, setHas] = useState(true);
   useEffect(() => {
-    const found = !!ref.current?.parentElement?.querySelector('[data-sec-body]');
+    const found = (ref.current?.parentElement?.querySelectorAll('[data-sec-body]').length || 0) > 2;
     if (found !== has) setHas(found);
   });
   if (!all) return null;

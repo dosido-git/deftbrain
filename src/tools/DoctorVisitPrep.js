@@ -10,7 +10,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { revealSection } from '../utils/revealSection';
 import { schemeStyle } from '../data/toolSchemes';
-import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader, KEY_BOX, useOnExpandAll, ALL_OPEN, ALL_CLOSED, ExpandAll } from '../components/CategoryStyle';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -186,6 +186,7 @@ const DoctorVisitPrep = ({ tool }) => {
     opener: true, redFlags: true, questions: true, mention: true,
     medQs: false, checklist: true, bring: false, tips: false,
   });
+  useOnExpandAll(open => setSecs(open ? ALL_OPEN : ALL_CLOSED));
 
   // ── useRef (after all useState per PF-14) ──
   const resultsRef = useRef(null);
@@ -732,6 +733,7 @@ const DoctorVisitPrep = ({ tool }) => {
           </div>
 
           {/* Red flags — top of results, conditional */}
+          {sv && <ExpandAll />}
           {results?.red_flag_symptoms_to_report?.length > 0 && (
             <Sec
               icon="🚨"
@@ -753,7 +755,7 @@ const DoctorVisitPrep = ({ tool }) => {
           {/* Opening line */}
           {results?.opener && (
             <Sec icon="🎯" title={t('dvp_sec_opener')} open={secs.opener} onToggle={() => tog('opener')} c={c}>
-              <div className={`${c.highlight} border rounded-lg p-4`}>
+              <div data-keybox="" className={sv ? KEY_BOX : `${c.highlight} border rounded-lg p-4`}>
                 <p className="text-xs font-bold tracking-wide mb-1.5">{t('dvp_say_first_minute')}</p>
                 <p className={`text-[17px] leading-relaxed ${c.text} font-medium italic`}>"<BiText text={results?.opener} c={c} />"</p>
               </div>
