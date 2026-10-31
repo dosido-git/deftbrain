@@ -75,6 +75,8 @@ const DEFAULT_PRICING = {
   'claude-opus-4':    { in: 15, out: 75, cache_write: 18.75, cache_read: 1.50 },
   'claude-sonnet-4':  { in: 3,  out: 15, cache_write: 3.75,  cache_read: 0.30 },
   'claude-haiku-4-5': { in: 1,  out: 5,  cache_write: 1.25,  cache_read: 0.10 },
+  'claude-sonnet-5-5': { in: 2, out: 10, cache_write: 2.50,  cache_read: 0.20 },
+  'claude-opus-5-5':  { in: 4,  out: 20, cache_write: 5.00,  cache_read: 0.40 },
   'claude-opus':      { in: 15, out: 75, cache_write: 18.75, cache_read: 1.50 },
   'claude-sonnet':    { in: 3,  out: 15, cache_write: 3.75,  cache_read: 0.30 },
   'claude-haiku':     { in: 1,  out: 5,  cache_write: 1.25,  cache_read: 0.10 },
