@@ -510,7 +510,8 @@ const GUIDES_BROWSE_STYLE = `
     .gh-jump a{border:1px solid var(--gh-line);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--gh-ink);text-decoration:none;white-space:nowrap}
     .gh-jump a:hover{border-color:var(--gh-blue);color:var(--gh-blue)}
     .gh-cat{padding:10px 0 14px;scroll-margin-top:20px}
-    .gh-cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:6px}
+    .gh-cat-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 16px;margin-bottom:6px}
+    .gh-cat-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 28px;margin-inline-start:auto}
     .gh-cat-head h3{font-family:var(--gh-serif);font-weight:500;font-size:19px;margin:0}
     .gh-cat-head a{font-size:13px;font-weight:800;color:var(--gh-blue);text-decoration:none;white-space:nowrap}
     .gh-cat-head a:hover{text-decoration:underline}
@@ -534,8 +535,10 @@ function renderGuidesHome(specs) {
       <section class="gh-cat" id="${escHtml(c.slug)}" aria-labelledby="gh-cat-${escHtml(c.slug)}">
         <div class="gh-cat-head">
           <h3 id="gh-cat-${escHtml(c.slug)}">${escHtml(c.emoji.trim())} ${escHtml(c.name)}</h3>
-          <a href="/guides/${escHtml(c.slug)}">All ${escHtml(c.name)} guides →</a>
-          <a href="/tools/${escHtml(c.slug)}">${escHtml(c.name)} tools →</a>
+          <div class="gh-cat-links">
+            <a href="/guides/${escHtml(c.slug)}">All ${escHtml(c.name)} guides</a>
+            <a href="/tools/${escHtml(c.slug)}">${escHtml(c.name)} tools</a>
+          </div>
         </div>
 ${guideListHtml(shelves[c.name].guides, '        ')}
       </section>`).join('\n');
@@ -578,7 +581,7 @@ ${guideListHtml(shelves[c.name].guides, '        ')}
     </section>
 
     <section class="gh-browse gh-shell" id="browse">
-      <div class="gh-browse-head"><h2>Browse our library.</h2></div>
+      <div class="gh-browse-head"><h2>Categories:</h2></div>
       <nav class="gh-jump" aria-label="Jump to a category">
         ${jumpHtml}
       </nav>
