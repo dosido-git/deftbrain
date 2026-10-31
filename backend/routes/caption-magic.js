@@ -72,9 +72,16 @@ const NEVER_INFERABLE = [
   'what viewers will do, feel, notice or how they will respond to the post',
 ];
 
+// One post, several photos (carousel or album). Ten is what Instagram allows
+// per carousel and keeps the request under the 12mb body tier.
+const MAX_PHOTOS = 10;
+const SET_NEVER_INFERABLE = 'whether the photos were taken at the same time, place or event, or in the order shown';
+
 function renderEnvelope(env) {
   const list = (a) => (Array.isArray(a) && a.length ? a.map(x => `- ${x}`).join('\n') : '- (none)');
-  return `EVIDENCE ENVELOPE
+  const n = Number(env.photo_count) || 1;
+  const set = n > 1 ? `ONE POST, ${n} PHOTOS. This is a carousel or album, and every caption is for the whole set — not for one photo, and not a list of them. A caption that would only make sense under one of the photos has failed; write from what runs through the set, or from the set as a whole. [n] at the start of an item means it is in photo n; photo 1 is the one people see first. Never write photo numbers in a caption.\n\n` : '';
+  return `${set}EVIDENCE ENVELOPE
 
 OBSERVED:
 ${list(env.observed)}
@@ -157,10 +164,16 @@ function normaliseCaptions(out) {
 // ════════════════════════════════════════════
 router.post('/caption-magic', rateLimit(), async (req, res) => {
   try {
-    const { imageBase64, imageDescription, platform, context, avoidMention, captionLength, userLanguage } = req.body;
+    const { imageBase64, images, imageDescription, platform, context, avoidMention, captionLength, userLanguage } = req.body;
+    // `images` is one post with several photos (a carousel or album); the old
+    // single `imageBase64` is still accepted for cached bundles.
+    const sources = (Array.isArray(images) && images.length ? images : [imageBase64]).filter(Boolean);
 
-    if (!imageBase64 && !imageDescription) {
+    if (!sources.length && !imageDescription) {
       return res.status(400).json({ error: 'Provide an image or image description' });
+    }
+    if (sources.length > MAX_PHOTOS) {
+      return res.status(400).json({ error: `Up to ${MAX_PHOTOS} photos per post.` });
     }
 
     const platformName = platform || 'instagram';
@@ -168,15 +181,20 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
     const lengthPref = captionLength || 'medium';
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = parseDataUrl(imageBase64);
-    if (imageBase64 && !parsed && !imageDescription) {
+    const parsedAll = sources.map(parseDataUrl);
+    // A set is all-or-nothing: a caption written for nine of ten photos would
+    // be describing a different post.
+    if (parsedAll.some(p => !p) && (sources.length > 1 || !imageDescription)) {
       return res.status(400).json({ error: "That image didn't upload correctly — try re-uploading it." });
     }
+    const parsed = parsedAll.filter(Boolean);
+    const photoCount = parsed.length;
 
     // ── STAGE 1 — OBSERVE ─────────────────────────────────────────────
     let envelope;
-    if (parsed) {
+    if (photoCount) {
       const observePrompt = `You are looking at an image for a captioning tool. You are not writing captions. Your only job is to say what is in the picture and what is not knowable from it.
+${photoCount > 1 ? '\nThis is one of several photos going into the same post. Describe only this one.\n' : ''}
 
 ${imageDescription ? `The person also described it: ${imageDescription}` : ''}
 ${context ? `And gave this context: ${context}` : ''}
@@ -202,22 +220,33 @@ OUTPUT (JSON only):
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-      const obs = await callClaudeWithRetry({
+      // One observation per photo, side by side: each is read alone so one
+      // photo's details cannot leak into another's.
+      const all = await Promise.all(parsed.map(p => callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 1500,
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: parsed.media_type, data: parsed.data } },
+          { type: 'image', source: { type: 'base64', media_type: p.media_type, data: p.data } },
           { type: 'text', text: withLanguage(observePrompt, userLanguage) + locale },
         ] }],
-      }, { label: 'CaptionMagicObserve' });
+      }, { label: 'CaptionMagicObserve' })));
 
-      if (!Array.isArray(obs.observed)) {
+      if (all.some(obs => !Array.isArray(obs?.observed))) {
         return res.status(500).json({ error: 'Could not read the image. Please try again.' });
       }
+      // Several photos: every item is marked [n] for the photo it came from, so
+      // the generator and the validator can tell "a dog in photo 2" from "a
+      // dog". A number, not a word, because the envelope is shown on the page.
+      const tag = (i, a) => (Array.isArray(a) ? a : []).map(x => (photoCount > 1 ? `[${i + 1}] ${x}` : x));
       envelope = {
-        observed: obs.observed,
-        uncertain: Array.isArray(obs.uncertain) ? obs.uncertain : [],
-        prohibited_inferences: [...NEVER_INFERABLE, ...(Array.isArray(obs.prohibited_inferences) ? obs.prohibited_inferences : [])],
+        observed: all.flatMap((obs, i) => tag(i, obs.observed)),
+        uncertain: all.flatMap((obs, i) => tag(i, obs.uncertain)),
+        prohibited_inferences: [
+          ...NEVER_INFERABLE,
+          ...(photoCount > 1 ? [SET_NEVER_INFERABLE] : []),
+          ...all.flatMap((obs, i) => tag(i, obs.prohibited_inferences)),
+        ],
+        photo_count: photoCount,
       };
     } else {
       // No image: nothing is being interpreted. Every fact came from the person,
@@ -404,7 +433,9 @@ OUTPUT (JSON only):
       "char_count": 150
     }
   ],
-  "alt_text": "Descriptive accessibility text, built from OBSERVED. A screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word, so it carries the envelope more strictly than anything else here, not less."
+${photoCount > 1
+  ? `  "alt_texts": ["Exactly ${photoCount} entries, one per photo in order. Each is descriptive accessibility text built only from that photo's [n] items, with no [n] marker in it. A screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word, so it carries the envelope more strictly than anything else here, not less."]`
+  : `  "alt_text": "Descriptive accessibility text, built from OBSERVED. A screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word, so it carries the envelope more strictly than anything else here, not less."`}
 }
 
 ${NO_QUOTE_RULE}
@@ -439,7 +470,11 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
       // grounded in the same observation, and re-reading the image on every nudge
       // would cost a vision call and could drift — the visitor would be playing
       // with a photo the tool kept re-interpreting underneath them.
-      finish: (d) => { const o = structuredClone(d); normaliseCaptions(o); return { ...o, envelope }; },
+      finish: (d) => {
+        const o = structuredClone(d); normaliseCaptions(o);
+        if (Array.isArray(o.alt_texts)) o.alt_texts = o.alt_texts.map(a => String(a || '').replace(/^\s*\[\d+\]\s*/, ''));
+        return { ...o, envelope };
+      },
       ready: d => Array.isArray(d.captions) && d.captions.length > 0,
       complete: d => Array.isArray(d.captions) && d.captions.length > 0,
       // ── STAGE 3/4 — VALIDATE, THEN REPAIR WHAT FAILED ─────────────────
@@ -472,6 +507,9 @@ function checkableFields(out) {
     }
   });
   if (typeof out.alt_text === 'string') fields.push(['alt_text', out.alt_text]);
+  (Array.isArray(out.alt_texts) ? out.alt_texts : []).forEach((a, i) => {
+    if (typeof a === 'string') fields.push([`alt_texts[${i}]`, a]);
+  });
   return fields;
 }
 
@@ -541,7 +579,7 @@ The register is not the test. A joke can carry a fact, and a flat sentence can c
   VIOLATION: after three hours of repotting this thing
   VIOLATION: she had no idea I was taking this
 
-alt_text is different in kind. It is a description for someone who cannot see the picture, not caption voice, and it gets no creative licence at all: no jokes, no personification, no invented detail. A screen-reader user has no way to see past a wrong word.
+alt_text (and each alt_texts entry) is different in kind. It is a description for someone who cannot see the picture, not caption voice, and it gets no creative licence at all: no jokes, no personification, no invented detail. A screen-reader user has no way to see past a wrong word.
 
 WHEN UNCERTAIN, PRESERVE CREATIVITY. The purpose of this check is to prevent misleading fabrication, not to make captions descriptive. A flagged line gets rewritten, so a wrong flag costs the visitor a joke — flag only where an invented detail could genuinely mislead someone about the real circumstances behind the photograph. Silence is the right answer far more often than not.
 
@@ -602,7 +640,7 @@ ${violations.map((v, i) => `${i}. [${v.field}]
    current: ${getByPath(out, v.field)}
    unsupported: ${v.proposition}${v.why ? ` (${v.why})` : ''}`).join('\n\n')}
 
-Where the item is alt_text, the replacement is a plain description for someone who cannot see the picture — no joke, no voice, nothing invented.
+Where the item is alt_text or alt_texts, the replacement is a plain description for someone who cannot see the picture — no joke, no voice, nothing invented.
 
 Return one replacement per numbered item, keyed by its number.
 ${violations.some(v => v.field.endsWith('.hashtags')) ? 'For a hashtags item, return a comma-separated list of tags with no leading #.\n' : ''}
@@ -792,6 +830,7 @@ router.post('/caption-magic/more', rateLimit(), async (req, res) => {
       prohibited_inferences: Array.isArray(envelope.prohibited_inferences) && envelope.prohibited_inferences.length
         ? envelope.prohibited_inferences
         : [...NEVER_INFERABLE],
+      photo_count: Math.min(Number(envelope.photo_count) || 1, MAX_PHOTOS),
     };
 
     const already = Array.isArray(previous) && previous.length
