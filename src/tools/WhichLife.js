@@ -275,7 +275,18 @@ const WhichLife = ({ tool }) => {
   handleSubmitRef.current = handleSubmit;
   canSubmitRef.current = !!(pathA.trim() && pathB.trim());
 
-  useRegisterActions(buildFullText(), tool?.title || t('cr_default_title'));
+  // What Share can put in a result link; the visitor ticks which. The framed
+  // decision restates their own situation, so it starts unticked.
+  const shareParts = results ? [
+    { label: t('share_part_situation'), text: results.decision_framed || '', private: true },
+    { label: `${t('cr_patha_label')}: ${results.path_a?.label || ''}`, text: results.path_a?.narrative?.trimEnd() || '' },
+    { label: `${t('cr_pathb_label')}: ${results.path_b?.label || ''}`, text: results.path_b?.narrative?.trimEnd() || '' },
+    { label: t('cr_the_tradeoff'), text: results.what_to_notice?.the_tradeoff || '' },
+    { label: t('cr_watch_reaction'), text: results.what_to_notice?.watch_your_reaction || '' },
+    { label: t('cr_question_sit_with'), text: results.what_to_notice?.a_question_to_sit_with || '' },
+  ].filter(x => x.text) : null;
+
+  useRegisterActions(buildFullText(), tool?.title || t('cr_default_title'), undefined, shareParts);
 
   // ─── Scroll to results ───
   // Once per answer, not on every progressive draft.

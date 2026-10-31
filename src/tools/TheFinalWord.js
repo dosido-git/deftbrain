@@ -819,7 +819,21 @@ const TheFinalWord = ({ tool }) => {
   };
 
   // Register export content with the wrapper's persistent ActionBar
-  useRegisterActions(getVerdictText(), tool?.title || t('tfw_copy_title'));
+  // What Share can put in a result link; the visitor ticks which. What was
+  // asked or argued can name people, so it starts unticked.
+  const asked = result?._mode === 'question' ? question.trim()
+    : result?._mode === 'dispute' ? `"${claimA.trim()}" vs "${claimB.trim()}"`
+    : result?._mode === 'factcheck' ? claim.trim() : '';
+  const ruling = result?._mode === 'question' ? result.answer
+    : result?._mode === 'dispute' ? result.verdict_headline
+    : result?._mode === 'factcheck' ? result.ruling_display : '';
+  const shareParts = result ? [
+    { label: t('share_part_situation'), text: asked, private: true },
+    { label: t('tfw_verdict_header').replace(/^\P{L}+/u, ''), text: [ruling, result.explanation].filter(Boolean).join('\n\n') },
+    { label: t('tfw_sources').replace(/^\P{L}+/u, ''), text: (result.sources || []).join('\n') },
+  ].filter(x => x.text) : null;
+
+  useRegisterActions(getVerdictText(), tool?.title || t('tfw_copy_title'), undefined, shareParts);
 
   const buildTriviaShareText = () => {
     const sorted = [...teams].sort((a, b) => b.score - a.score);

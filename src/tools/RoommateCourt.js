@@ -410,7 +410,20 @@ const RoommateCourt = ({ tool }) => {
     : roommates.length >= 2 && choreList.length >= 1;
   tabRef.current = activeTab;
 
-  useRegisterActions(buildFullText(), tool?.title || 'Roommate Court');
+  // What Share can put in a result link; the visitor ticks which. Chore
+  // assignments name the roommates, so they start unticked.
+  const r = disputeResult;
+  const shareParts = [
+    r?.the_read && { label: tr('rc_the_read', 'The Read'), text: [tr(READ_LABEL_KEY[r.the_read.label], r.the_read.label), r.the_read.explanation].filter(Boolean).join('\n\n') },
+    r?.what_to_try?.length && { label: tr('rc_what_to_try', 'What to Try'), text: r.what_to_try.map((w, i) => `${i + 1}. ${w.action}`).join('\n') },
+    r?.conversation?.start_with_this && { label: tr('rc_start_with_this', 'Start With This'), text: r.conversation.start_with_this },
+    r?.conversation?.proposal && { label: tr('rc_proposal', 'A Concrete Proposal'), text: r.conversation.proposal },
+    assignResult?.assignments?.length && { label: tr('rc_tab_chores', 'Chore Roulette'), private: true,
+      text: assignResult.assignments.map(a => `${a.roommate}: ${a.chores.map(ch => ch.name).join(', ')}`).join('\n') },
+    assignResult?.why_these_assignments && { label: tr('rc_why_assignments', 'Why These Assignments'), text: assignResult.why_these_assignments },
+  ].filter(x => x && x.text);
+
+  useRegisterActions(buildFullText(), tool?.title || 'Roommate Court', undefined, shareParts);
 
   const anyResult = disputeResult || assignResult;
   useEffect(() => {
