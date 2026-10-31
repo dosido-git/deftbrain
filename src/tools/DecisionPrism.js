@@ -327,7 +327,17 @@ const DecisionPrism = ({ tool }) => {
   submitRef.current    = analyze;
   canSubmitRef.current = !!decision.trim() && !loading;
 
-  useRegisterActions(buildFullCopy(), tool?.title || 'Decision Prism');
+  // What Share can put in a result link; the visitor ticks which. The summary
+  // restates their own situation, so it starts unticked.
+  const shareParts = results ? [
+    { label: t('share_part_situation'), text: results.decision_summary || '', private: true },
+    { label: t('ptw_real_q_title').replace(/^\P{L}+/u, ''), text: results.underlying_question || '' },
+    { label: t('ptw_gut_title').replace(/^\P{L}+/u, ''), text: results.what_your_description_points_to || '' },
+    { label: t('ptw_current_read_title').replace(/^\P{L}+/u, ''), text: results.current_read?.summary || '' },
+    { label: t('ptw_one_q_title').replace(/^\P{L}+/u, ''), text: results.one_question || '' },
+  ].filter(x => x.text) : null;
+
+  useRegisterActions(buildFullCopy(), tool?.title || 'Decision Prism', undefined, shareParts);
 
   // ── Scroll to results ──
   useEffect(() => {

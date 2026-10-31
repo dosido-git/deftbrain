@@ -343,7 +343,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {/* Light/dark switches from the site header (2026-09-27). */}
             </div>
             {actions.content && (
-              <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />
+              <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} shareParts={actions.shareParts} />
             )}
           </div>}
         </div>

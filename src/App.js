@@ -15,6 +15,7 @@ import SiteEnd from './components/SiteEnd';
 import BusyNotice from './components/BusyNotice';
 import NotFound from './components/NotFound';
 import SharedVerdict from './components/SharedVerdict';
+import SharedResult from './components/SharedResult';
 import AllToolsPage from './components/AllToolsPage';
 import WaitNotice from './components/WaitNotice';
 import OrganizationsPage from './components/OrganizationsPage';
@@ -47,6 +48,7 @@ export default function App() {
                   </div>
                 } />
                 <Route path="/verdict/:id" element={<SharedVerdict />} />
+                <Route path="/r/:id" element={<SharedResult allTools={tools} />} />
                 <Route path="/tools" element={<AllToolsPage allTools={tools} />} />
                 <Route path="/organizations" element={<OrganizationsPage allTools={tools} />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />

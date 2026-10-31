@@ -930,6 +930,14 @@ if (IS_PRODUCTION) {
     next();
   });
 
+  // Shared results (/r/:id, /verdict/:id) carry the result in the link and
+  // render client-side. 200 so link previews work; noindex because each one
+  // is a visitor's own result, not a page for search.
+  app.get(['/r/:id', '/verdict/:id'], (req, res) => {
+    res.set('X-Robots-Tag', 'noindex');
+    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  });
+
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\//, '');
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;

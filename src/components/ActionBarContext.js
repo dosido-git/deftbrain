@@ -24,7 +24,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 const ActionBarContext = createContext(null);
 
 export const ActionBarProvider = ({ children }) => {
-  const [actions, setActions] = useState({ content: '', title: 'DeftBrain', shareUrl: '' });
+  const [actions, setActions] = useState({ content: '', title: 'DeftBrain', shareUrl: '', shareParts: null });
 
   // Strip query/hash: the shared link should be the tool, not the sharer's
   // session state (?operator=1, ?lang=, a scroll anchor).
@@ -33,16 +33,17 @@ export const ActionBarProvider = ({ children }) => {
     try { return window.location.origin + window.location.pathname; } catch (_) { return ''; }
   };
 
-  const registerActions = useCallback((content, title, shareUrl) => {
+  const registerActions = useCallback((content, title, shareUrl, shareParts) => {
     setActions({
       content: content || '',
       title: title || 'DeftBrain',
       shareUrl: shareUrl || currentUrl(),
+      shareParts: shareParts?.length ? shareParts : null,
     });
   }, []);
 
   const clearActions = useCallback(() => {
-    setActions({ content: '', title: 'DeftBrain', shareUrl: '' });
+    setActions({ content: '', title: 'DeftBrain', shareUrl: '', shareParts: null });
   }, []);
 
   return (
@@ -65,10 +66,16 @@ export const useActionBar = () => {
  * @param {string} content  — the text to copy/share/print
  * @param {string} title    — used by Share and Print dialogs
  * @param {string} [shareUrl] — optional; defaults to the current page URL
+ * @param {Array<{label: string, text: string, private?: boolean}>} [shareParts]
+ *   optional; lets Share make a link to the result itself (/r/:id). The
+ *   visitor picks which parts go in; `private` parts (names, amounts, their
+ *   own situation) start unticked.
  */
-export const useRegisterActions = (content, title, shareUrl) => {
+export const useRegisterActions = (content, title, shareUrl, shareParts) => {
   const { registerActions } = useActionBar();
+  // Parts arrive as a fresh array every render; compare by value.
+  const partsKey = shareParts ? JSON.stringify(shareParts) : '';
   useEffect(() => {
-    registerActions(content, title, shareUrl);
-  }, [content, title, shareUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    registerActions(content, title, shareUrl, shareParts);
+  }, [content, title, shareUrl, partsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 };

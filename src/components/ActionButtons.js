@@ -7,6 +7,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { serializeResults, markdownToHtml } from '../utils/copyFromDom';
 import { PRINT_HEADER_LOGO, PRINT_FOOTER_BRAND } from '../utils/printBranding';
 import { useActionBar } from './ActionBarContext';
+import { encodeSharePayload } from '../utils/shareEncode';
 
 /**
  * Shared action buttons for tool output: Copy, Share, Print.
@@ -157,12 +158,16 @@ export const CopyBtn = ({ content, label, onCopied, title, exact = false, quiet 
  * Firefox, older Chrome) get a menu of share links instead.
  *
  * Props:
- *   content  — text to share (native sheet only)
+ *   content  — text to share (native sheet, only when there are no `parts`)
  *   title    — share dialog title (default: "DeftBrain")
  *   url      — optional URL to include (defaults to current page)
+ *   parts    — optional [{label, text, private}] from useRegisterActions;
+ *              when present, Share opens a panel where the visitor ticks what
+ *              goes into a link to the result itself (/r/:id, SharedResult.js)
  */
-// The fallback links carry only the page address and title, never `content`:
-// a result can hold names and money amounts, and these go out in a URL.
+// Links carry only an address and title, never `content`: a result can hold
+// names and money amounts, and these go out in a URL. A result link holds
+// exactly the parts the visitor ticked.
 const SHARE_LINKS = [
   ['X', (u, t) => `https://x.com/intent/post?url=${u}&text=${t}`],
   ['Facebook', (u) => `https://www.facebook.com/sharer/sharer.php?u=${u}`],
@@ -171,11 +176,16 @@ const SHARE_LINKS = [
   ['Reddit', (u, t) => `https://www.reddit.com/submit?url=${u}&title=${t}`],
   ['WhatsApp', (u, t) => `https://wa.me/?text=${t}%20${u}`],
 ];
+// Keeps a result link well under the server's 16 KB request-line limit,
+// even in scripts that take 3 bytes a character.
+const PART_MAX = 500;
+const clip = (s) => (s.length > PART_MAX ? s.slice(0, PART_MAX - 1).trimEnd() + '…' : s);
 
-export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
+export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
   const s = useButtonStyles();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [picked, setPicked] = useState([]);
   const wrapRef = useRef(null);
   const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
@@ -191,10 +201,8 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
     };
   }, [open]);
 
-  const handleShare = async () => {
+  const nativeShare = async (shareData) => {
     try {
-      const shareData = { title, text: content };
-      if (url) shareData.url = url;
       await navigator.share(shareData);
       track('share');
     } catch (err) {
@@ -205,37 +213,80 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
     }
   };
 
-  if (canShare) {
+  if (canShare && !parts) {
     return (
-      <button onClick={handleShare} className={`${btnClass} ${s.base}`}>
+      <button onClick={() => nativeShare(url ? { title, text: content, url } : { title, text: content })}
+        className={`${btnClass} ${s.base}`}>
         <span className="text-sm">📤</span> {t('share')}
       </button>
     );
   }
 
+  const hasWindow = typeof window !== 'undefined';
   // Origin + path only: a query string could hold what the visitor typed.
-  const pageUrl = url || (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : 'https://deftbrain.com');
-  const u = encodeURIComponent(pageUrl);
+  const pageUrl = url || (hasWindow ? window.location.origin + window.location.pathname : 'https://deftbrain.com');
+  const chosen = parts ? parts.filter((_, i) => picked[i]) : [];
+  const linkUrl = chosen.length && hasWindow
+    ? `${window.location.origin}/r/${encodeSharePayload({
+        t: window.location.pathname.split('/')[1],
+        p: chosen.map(p => [p.label || '', clip(String(p.text || ''))]),
+      })}`
+    : pageUrl;
+  const u = encodeURIComponent(linkUrl);
   const tt = encodeURIComponent(title);
   const item = 'block w-full px-3 py-1.5 text-sm text-start rounded-md ' + (s.isDark ? 'hover:bg-zinc-700 text-zinc-100' : 'hover:bg-gray-100 text-gray-700') + ' [[data-scheme]_&]:hover:bg-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
+  const muted = s.isDark ? 'text-zinc-400' : 'text-gray-500';
+
+  const toggle = () => {
+    // Each opening starts from the safe default: private parts unticked.
+    if (!open && parts) setPicked(parts.map(p => !p.private));
+    setOpen(o => !o);
+  };
 
   return (
     <div ref={wrapRef} className="relative">
-      <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="true"
+      <button onClick={toggle} aria-expanded={open} aria-haspopup="true"
         className={`${btnClass} ${s.base}`}>
         <span className="text-sm">📤</span> {t('share')}
       </button>
       {open && (
-        <div className={`absolute end-0 top-full mt-1 z-50 min-w-[11rem] p-1 rounded-lg border shadow-lg ${s.isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'} [[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-line)]`}>
-          {SHARE_LINKS.map(([name, make]) => (
-            <a key={name} href={make(u, tt)} target="_blank" rel="noopener noreferrer"
-              onClick={() => { track('share'); setOpen(false); }} className={item}>{name}</a>
-          ))}
-          <a href={`mailto:?subject=${tt}&body=${u}`} onClick={() => { track('share'); setOpen(false); }} className={item}>
-            {t('share_email')}
-          </a>
+        <div className={`absolute end-0 top-full mt-1 z-50 p-1 rounded-lg border shadow-lg ${parts ? 'max-h-[70vh] overflow-y-auto max-sm:fixed max-sm:inset-x-4 max-sm:top-20 max-sm:w-auto ' : ''}${parts ? 'w-[min(20rem,calc(100vw-2rem))]' : 'min-w-[11rem]'} ${s.isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'} [[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-line)]`}>
+          {parts && (
+            <fieldset className="px-3 pt-2 pb-1 space-y-2">
+              <legend className={`text-sm font-semibold ${s.isDark ? 'text-zinc-100' : 'text-gray-800'}`}>{t('share_result_heading')}</legend>
+              <p className={`text-xs ${muted}`}>{t('share_result_note')}</p>
+              {parts.map((p, i) => (
+                <label key={i} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" className="mt-1" checked={!!picked[i]}
+                    onChange={() => setPicked(prev => prev.map((v, j) => (j === i ? !v : v)))} />
+                  <span>
+                    <span className={s.isDark ? 'text-zinc-100' : 'text-gray-700'}>{p.label}</span>
+                    {p.private && <span className={`block text-xs ${muted}`}>{t('share_private_hint')}</span>}
+                    <span dir="auto" className={`text-xs line-clamp-2 ${muted}`}>{p.text}</span>
+                  </span>
+                </label>
+              ))}
+              {!chosen.length && <p className={`text-xs ${muted}`}>{t('share_none_picked')}</p>}
+              <hr className={s.isDark ? 'border-zinc-600' : 'border-gray-200'} />
+            </fieldset>
+          )}
+          {canShare ? (
+            <button onClick={() => { nativeShare({ title, url: linkUrl }); setOpen(false); }} className={item}>
+              📤 {t('share')}
+            </button>
+          ) : (
+            <>
+              {SHARE_LINKS.map(([name, make]) => (
+                <a key={name} href={make(u, tt)} target="_blank" rel="noopener noreferrer"
+                  onClick={() => { track('share'); setOpen(false); }} className={item}>{name}</a>
+              ))}
+              <a href={`mailto:?subject=${tt}&body=${u}`} onClick={() => { track('share'); setOpen(false); }} className={item}>
+                {t('share_email')}
+              </a>
+            </>
+          )}
           <div className="px-3 py-1.5">
-            <CopyBtn content={pageUrl} label={t('share_copy_link')} exact quiet onCopied={() => track('share')} />
+            <CopyBtn content={linkUrl} label={t('share_copy_link')} exact quiet onCopied={() => track('share')} />
           </div>
         </div>
       )}
@@ -331,6 +382,7 @@ export const ActionBar = ({
   copyLabel,
   printLabel,
   shareUrl,
+  shareParts,
   onCopied,
   showCopy = true,
   showShare = true,
@@ -339,7 +391,7 @@ export const ActionBar = ({
   return (
     <div data-print-hide className="flex items-center gap-2">
       {showCopy && <CopyBtn content={content} title={title} label={copyLabel} onCopied={onCopied} />}
-      {showShare && <ShareBtn content={content} title={title} url={shareUrl} />}
+      {showShare && <ShareBtn content={content} title={title} url={shareUrl} parts={shareParts} />}
       {/* PrintBtn takes only `label`. It prints the RENDERED page via
           window.print() plus the print CSS in ToolPageWrapper — data-print-hide
           drops the chrome, data-print-main expands the tool's output to full
@@ -474,5 +526,5 @@ export default ActionButtons;
 export const RegisteredActions = () => {
   const { actions } = useActionBar();
   if (!actions.content) return null;
-  return <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />;
+  return <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} shareParts={actions.shareParts} />;
 };
