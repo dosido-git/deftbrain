@@ -536,8 +536,8 @@ function renderGuidesHome(specs) {
         <div class="gh-cat-head">
           <h3 id="gh-cat-${escHtml(c.slug)}">${escHtml(c.emoji.trim())} ${escHtml(c.name)}</h3>
           <div class="gh-cat-links">
-            <a href="/guides/${escHtml(c.slug)}">All ${escHtml(c.name)} guides</a>
-            <a href="/tools/${escHtml(c.slug)}">${escHtml(c.name)} tools</a>
+            <a href="/guides/${escHtml(c.slug)}" aria-label="All ${escHtml(c.name)} guides">All guides</a>
+            <a href="/tools/${escHtml(c.slug)}" aria-label="${escHtml(c.name)} tools">Tools</a>
           </div>
         </div>
 ${guideListHtml(shelves[c.name].guides, '        ')}
