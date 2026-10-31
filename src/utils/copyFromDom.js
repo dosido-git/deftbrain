@@ -235,3 +235,29 @@ export function markdownToHtml(md) {
   if (inList) out.push('</ul>');
   return out.join('\n');
 }
+
+/**
+ * The on-screen result as share parts ({label, text}), one per section —
+ * what ShareBtn offers when a tool has not listed its own parts. Every part
+ * is marked `auto` and starts unticked: unlike a tool's own list, nothing
+ * here knows which sections echo names or amounts.
+ * @returns {Array|null} null when there is no result to read
+ */
+export function resultParts(title) {
+  const md = serializeResults(title);
+  if (!md) return null;
+  // Drop the "# title / tagline / _date_" header serializeResults adds.
+  const body = md.slice(md.indexOf('\n\n') + 2);
+  const parts = [];
+  let cur = { label: '', lines: [] };
+  for (const line of body.split('\n')) {
+    const h = /^#{1,6} (.*)$/.exec(line);
+    if (h) { parts.push(cur); cur = { label: h[1].replace(/^\P{L}+/u, ''), lines: [] }; }
+    else cur.lines.push(line);
+  }
+  parts.push(cur);
+  const out = parts
+    .map(p => ({ label: p.label, text: p.lines.join('\n').trim(), private: true, auto: true }))
+    .filter(p => p.text);
+  return out.length ? out : null;
+}

@@ -4,7 +4,7 @@ import { track } from '../utils/analytics';
 import { flushSync } from 'react-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
-import { serializeResults, markdownToHtml } from '../utils/copyFromDom';
+import { serializeResults, markdownToHtml, resultParts } from '../utils/copyFromDom';
 import { PRINT_HEADER_LOGO, PRINT_FOOTER_BRAND } from '../utils/printBranding';
 import { useActionBar } from './ActionBarContext';
 import { encodeSharePayload } from '../utils/shareEncode';
@@ -158,12 +158,14 @@ export const CopyBtn = ({ content, label, onCopied, title, exact = false, quiet 
  * Firefox, older Chrome) get a menu of share links instead.
  *
  * Props:
- *   content  — text to share (native sheet, only when there are no `parts`)
+ *   content  — text to share (native sheet, only when there is no result to pick from)
  *   title    — share dialog title (default: "DeftBrain")
  *   url      — optional URL to include (defaults to current page)
- *   parts    — optional [{label, text, private}] from useRegisterActions;
- *              when present, Share opens a panel where the visitor ticks what
- *              goes into a link to the result itself (/r/:id, SharedResult.js)
+ *   parts    — optional [{label, text, private}] from useRegisterActions.
+ *              Share opens a panel where the visitor ticks what goes into a
+ *              link to the result itself (/r/:id, SharedResult.js). Without
+ *              it, the sections are read off the page (resultParts), all
+ *              starting unticked.
  */
 // Links carry only an address and title, never `content`: a result can hold
 // names and money amounts, and these go out in a URL. A result link holds
@@ -186,6 +188,7 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [picked, setPicked] = useState([]);
+  const [autoParts, setAutoParts] = useState(null);
   const wrapRef = useRef(null);
   const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
@@ -213,34 +216,35 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
     }
   };
 
-  if (canShare && !parts) {
-    return (
-      <button onClick={() => nativeShare(url ? { title, text: content, url } : { title, text: content })}
-        className={`${btnClass} ${s.base}`}>
-        <span className="text-sm">📤</span> {t('share')}
-      </button>
-    );
-  }
-
   const hasWindow = typeof window !== 'undefined';
   // Origin + path only: a query string could hold what the visitor typed.
   const pageUrl = url || (hasWindow ? window.location.origin + window.location.pathname : 'https://deftbrain.com');
-  const chosen = parts ? parts.filter((_, i) => picked[i]) : [];
-  const linkUrl = chosen.length && hasWindow
+  // A tool's own list, else the sections read off the page when Share opened.
+  const list = parts || autoParts;
+  const chosen = list ? list.filter((_, i) => picked[i]) : [];
+  const resultUrl = chosen.length && hasWindow
     ? `${window.location.origin}/r/${encodeSharePayload({
         t: window.location.pathname.split('/')[1],
         p: chosen.map(p => [p.label || '', clip(String(p.text || ''))]),
       })}`
-    : pageUrl;
+    : null;
+  // Past this a link risks the server's request-line limit; offer the page.
+  const tooLong = !!resultUrl && resultUrl.length > 8000;
+  const linkUrl = resultUrl && !tooLong ? resultUrl : pageUrl;
   const u = encodeURIComponent(linkUrl);
   const tt = encodeURIComponent(title);
   const item = 'block w-full px-3 py-1.5 text-sm text-start rounded-md ' + (s.isDark ? 'hover:bg-zinc-700 text-zinc-100' : 'hover:bg-gray-100 text-gray-700') + ' [[data-scheme]_&]:hover:bg-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
   const muted = s.isDark ? 'text-zinc-400' : 'text-gray-500';
 
   const toggle = () => {
+    if (open) { setOpen(false); return; }
+    const next = parts || resultParts(title);
+    if (!parts) setAutoParts(next);
+    // Nothing to pick from: the phone's share sheet straight away, as before.
+    if (!next && canShare) { nativeShare(url ? { title, text: content, url } : { title, text: content }); return; }
     // Each opening starts from the safe default: private parts unticked.
-    if (!open && parts) setPicked(parts.map(p => !p.private));
-    setOpen(o => !o);
+    if (next) setPicked(next.map(p => !p.private));
+    setOpen(true);
   };
 
   return (
@@ -250,23 +254,24 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
         <span className="text-sm">📤</span> {t('share')}
       </button>
       {open && (
-        <div className={`absolute end-0 top-full mt-1 z-50 p-1 rounded-lg border shadow-lg ${parts ? 'max-h-[70vh] overflow-y-auto max-sm:fixed max-sm:inset-x-4 max-sm:top-20 max-sm:w-auto ' : ''}${parts ? 'w-[min(20rem,calc(100vw-2rem))]' : 'min-w-[11rem]'} ${s.isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'} [[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-line)]`}>
-          {parts && (
+        <div className={`absolute end-0 top-full mt-1 z-50 p-1 rounded-lg border shadow-lg ${list ? 'max-h-[70vh] overflow-y-auto max-sm:fixed max-sm:inset-x-4 max-sm:top-20 max-sm:w-auto ' : ''}${list ? 'w-[min(20rem,calc(100vw-2rem))]' : 'min-w-[11rem]'} ${s.isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'} [[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-line)]`}>
+          {list && (
             <fieldset className="px-3 pt-2 pb-1 space-y-2">
               <legend className={`text-sm font-semibold ${s.isDark ? 'text-zinc-100' : 'text-gray-800'}`}>{t('share_result_heading')}</legend>
               <p className={`text-xs ${muted}`}>{t('share_result_note')}</p>
-              {parts.map((p, i) => (
+              {list.map((p, i) => (
                 <label key={i} className="flex items-start gap-2 text-sm cursor-pointer">
                   <input type="checkbox" className="mt-1" checked={!!picked[i]}
                     onChange={() => setPicked(prev => prev.map((v, j) => (j === i ? !v : v)))} />
                   <span>
                     <span className={s.isDark ? 'text-zinc-100' : 'text-gray-700'}>{p.label}</span>
-                    {p.private && <span className={`block text-xs ${muted}`}>{t('share_private_hint')}</span>}
+                    {p.private && !p.auto && <span className={`block text-xs ${muted}`}>{t('share_private_hint')}</span>}
                     <span dir="auto" className={`text-xs line-clamp-2 ${muted}`}>{p.text}</span>
                   </span>
                 </label>
               ))}
               {!chosen.length && <p className={`text-xs ${muted}`}>{t('share_none_picked')}</p>}
+              {tooLong && <p className={`text-xs ${muted}`}>{t('share_too_long')}</p>}
               <hr className={s.isDark ? 'border-zinc-600' : 'border-gray-200'} />
             </fieldset>
           )}
