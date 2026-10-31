@@ -255,6 +255,7 @@ Limits: it checks that tools run, not that answers are right. 62 endpoints never
 | Instance | Status |
 |---|---|
 | Surge wrapper broke all streaming (Small Change, Which Life?) for 3 days | fixed (6d4030c5) |
+| Model switch: every max_tokens was sized on Sonnet 4.6, and Sonnet 5.5 writes ~1.5x the tokens, so German answers came back cut off (Difficult Talk Coach, Giftology, 2026-10-30). Smoke can't see it: canned answers never truncate | shared headroom for 5.5 in `lib/claude.js` (uncommitted, SMART still 4.6) |
 
 ---
 

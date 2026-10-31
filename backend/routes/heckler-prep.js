@@ -479,7 +479,9 @@ async function validateAndRepair(component, ledger, userLanguage, localeSuffix, 
   try {
     const verdict = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 500,
+      // 500 truncated 2 of 14 checks on every run (2026-10-30): a truncated
+      // verdict is a skipped check, and the answer goes out unvalidated.
+      max_tokens: 1200,
       temperature: 0,
       system: withLanguage(VALIDATOR_SYSTEM, userLanguage) + localeSuffix,
       messages: [{ role: 'user', content: prompt }],

@@ -50,6 +50,27 @@ anthropic.messages.create = function (params, ...rest) {
   const label = params.epistemicLabel;
   const dateLine = params.__dateLine;
   const { epistemicLabel, __dateLine, ...clean } = params;
+  // Claude Sonnet 5.5 thinks by default, and thinking tokens count against
+  // max_tokens — every budget here was tuned on non-thinking 4.6, so a 5.5 call
+  // truncates (Heckler Prep 2026-10-30: 6 of 15 passes cut off). Off unless a
+  // caller asks for it; `between_tools` is 5.5's off switch (`disabled` is a
+  // 400). It also rejects non-default sampling, so temperature/top_* go.
+  if (/^claude-sonnet-5-5/.test(String(clean.model || ''))) {
+    if (!clean.thinking) clean.thinking = { type: 'between_tools' };
+    // Even without thinking, 5.5 writes ~1.5x 4.6's tokens for the same answer,
+    // more in German: Difficult Talk Coach lost 4 of 10 parts at 2200-2500.
+    if (clean.max_tokens) clean.max_tokens = Math.ceil(clean.max_tokens * 1.6);
+    delete clean.temperature; delete clean.top_p; delete clean.top_k;
+  }
+  // Claude Opus 5.5 cannot turn thinking off at all (400); the nearest to our
+  // non-thinking budgets is the lowest effort. Sampling params are rejected too.
+  if (/^claude-opus-5-5/.test(String(clean.model || ''))) {
+    if (!clean.output_config?.effort) clean.output_config = { ...(clean.output_config || {}), effort: 'low' };
+    // Its thinking counts against max_tokens, and every budget here was sized
+    // for answers alone: add room for the thinking so the answer still fits.
+    if (clean.max_tokens) clean.max_tokens += 4000;
+    delete clean.temperature; delete clean.top_p; delete clean.top_k;
+  }
   const rawSystem = typeof clean.system === 'string' ? clean.system : undefined;
   // Split off the per-visitor suffix (language/locale) BEFORE the universal
   // and per-tool prompt text is assembled, so the cache breakpoint lands
