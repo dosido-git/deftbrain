@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ensurePrintStyles } from './printStyles';
 import { track } from '../utils/analytics';
 import { flushSync } from 'react-dom';
@@ -153,20 +153,43 @@ export const CopyBtn = ({ content, label, onCopied, title, exact = false, quiet 
 
 // ─── ShareBtn ────────────────────────────────────────────────
 /**
- * Native share sheet via Web Share API.
- * Auto-hides on browsers that don't support it.
- * 
+ * Native share sheet via Web Share API. Browsers without one (most desktop
+ * Firefox, older Chrome) get a menu of share links instead.
+ *
  * Props:
- *   content  — text to share
+ *   content  — text to share (native sheet only)
  *   title    — share dialog title (default: "DeftBrain")
  *   url      — optional URL to include (defaults to current page)
  */
+// The fallback links carry only the page address and title, never `content`:
+// a result can hold names and money amounts, and these go out in a URL.
+const SHARE_LINKS = [
+  ['X', (u, t) => `https://x.com/intent/post?url=${u}&text=${t}`],
+  ['Facebook', (u) => `https://www.facebook.com/sharer/sharer.php?u=${u}`],
+  ['LinkedIn', (u) => `https://www.linkedin.com/sharing/share-offsite/?url=${u}`],
+  ['Bluesky', (u, t) => `https://bsky.app/intent/compose?text=${t}%20${u}`],
+  ['Reddit', (u, t) => `https://www.reddit.com/submit?url=${u}&title=${t}`],
+  ['WhatsApp', (u, t) => `https://wa.me/?text=${t}%20${u}`],
+];
+
 export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
   const s = useButtonStyles();
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
   const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
-  if (!canShare) return null;
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) => { if (!wrapRef.current?.contains(e.target)) setOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
   const handleShare = async () => {
     try {
@@ -182,10 +205,41 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
     }
   };
 
+  if (canShare) {
+    return (
+      <button onClick={handleShare} className={`${btnClass} ${s.base}`}>
+        <span className="text-sm">📤</span> {t('share')}
+      </button>
+    );
+  }
+
+  // Origin + path only: a query string could hold what the visitor typed.
+  const pageUrl = url || (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : 'https://deftbrain.com');
+  const u = encodeURIComponent(pageUrl);
+  const tt = encodeURIComponent(title);
+  const item = 'block w-full px-3 py-1.5 text-sm text-start rounded-md ' + (s.isDark ? 'hover:bg-zinc-700 text-zinc-100' : 'hover:bg-gray-100 text-gray-700') + ' [[data-scheme]_&]:hover:bg-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
+
   return (
-    <button onClick={handleShare} className={`${btnClass} ${s.base}`}>
-      <span className="text-sm">📤</span> {t('share')}
-    </button>
+    <div ref={wrapRef} className="relative">
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="true"
+        className={`${btnClass} ${s.base}`}>
+        <span className="text-sm">📤</span> {t('share')}
+      </button>
+      {open && (
+        <div className={`absolute end-0 top-full mt-1 z-50 min-w-[11rem] p-1 rounded-lg border shadow-lg ${s.isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-white border-gray-200'} [[data-scheme]_&]:bg-[var(--sc-envelope)] [[data-scheme]_&]:border-[var(--sc-line)]`}>
+          {SHARE_LINKS.map(([name, make]) => (
+            <a key={name} href={make(u, tt)} target="_blank" rel="noopener noreferrer"
+              onClick={() => { track('share'); setOpen(false); }} className={item}>{name}</a>
+          ))}
+          <a href={`mailto:?subject=${tt}&body=${u}`} onClick={() => { track('share'); setOpen(false); }} className={item}>
+            {t('share_email')}
+          </a>
+          <div className="px-3 py-1.5">
+            <CopyBtn content={pageUrl} label={t('share_copy_link')} exact quiet onCopied={() => track('share')} />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
