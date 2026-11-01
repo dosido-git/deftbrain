@@ -633,7 +633,7 @@ const RoommateCourt = ({ tool }) => {
           rows={2}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none mb-3 resize-none`} />
 
-        {!invite && dispute.trim() && yourSide.trim() && (
+        {!invite && dispute.trim() && (
           <div className="mb-3">
             <AskThem toolId="RoommateCourt" toolTitle={tool?.title || 'Roommate Court'} c={c}
               topic={{ dispute: dispute.trim(), duration, priorComm, livingSituation }} side={{ yourSide: yourSide.trim() }} />
