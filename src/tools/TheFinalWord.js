@@ -11,6 +11,7 @@ import { revealSection, focusSection } from '../utils/revealSection';
 import { encodeSharePayload } from '../utils/shareEncode';
 import { schemeStyle } from '../data/toolSchemes';
 import { SCHEME_C, FORM_PANEL, ANSWER_CARD, AnswerHeader } from '../components/CategoryStyle';
+import { readInvite, AskThem, InviteBanner, SendBack } from '../components/InviteKit';
 
 // Disputes span both genuinely different kinds — a fact that can be looked
 // up, a he-said-she-said with no record, a long-running family grievance —
@@ -270,6 +271,17 @@ const TheFinalWord = ({ tool }) => {
 
   // Devil's Advocate
   const [devilsAdvocate, setDevilsAdvocate] = useState(false);
+  // "Ask the other person" (InviteKit): an ask link fills the sender's claim
+  // out of view; a back link returns both claims.
+  const [invite] = useState(() => readInvite('TheFinalWord'));
+  useEffect(() => {
+    if (!invite) return;
+    setMode('dispute'); setDevilsAdvocate(false); setResult(null);
+    setPersonA(invite.topic.personA || ''); setPersonB(invite.topic.personB || '');
+    setDisputeContext(invite.topic.context || '');
+    setClaimA(invite.a.claim || '');
+    if (invite.kind === 'back') { setClaimB(invite.b.claim || ''); setPersonB(invite.b.name || invite.topic.personB || ''); }
+  }, [invite]); // eslint-disable-line react-hooks/exhaustive-deps
   const [daPosition, setDaPosition] = useState('');
   const [daTopic, setDaTopic] = useState('');
   const [daResult, setDaResult] = useState(null);
@@ -1293,6 +1305,7 @@ const TheFinalWord = ({ tool }) => {
             {/* ════ DISPUTE (with Devil's Advocate toggle) ════ */}
             {mode === 'dispute' && (
               <div className="space-y-4">
+                <InviteBanner invite={invite} topicText={disputeContext} c={c} />
                 {/* Devil's Advocate Toggle */}
                 <div className={`p-3 rounded-xl border ${c.cardAlt} flex items-center justify-between`}>
                   <div>
@@ -1335,6 +1348,9 @@ const TheFinalWord = ({ tool }) => {
                         <input value={personB} onChange={(e) => setPersonB(e.target.value)} placeholder={t('tfw_dispute_person_b')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                       </div>
                     </div>
+                    {invite?.kind === 'ask' ? (
+                      <p className={`text-[13px] ${c.textMuted}`}>{t('invite_hidden_side', { name: personA || t('tfw_dispute_person_a') })}</p>
+                    ) : (
                     <div>
                       <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_says', { name: personA || t('tfw_dispute_person_a') })} <span className={c.required}>*</span></label>
                       <div className="flex gap-2">
@@ -1342,6 +1358,11 @@ const TheFinalWord = ({ tool }) => {
                         <VoiceButton />
                       </div>
                     </div>
+                    )}
+                    {!invite && claimA.trim() && !claimB.trim() && (
+                      <AskThem toolId="TheFinalWord" toolTitle={tool?.title || 'The Final Word'} c={c}
+                        topic={{ personA: personA.trim(), personB: personB.trim(), context: disputeContext.trim() }} side={{ claim: claimA.trim() }} />
+                    )}
                     <div className="flex items-center justify-center">
                       <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${(sv ? 'bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-700')}`}>{t('tfw_dispute_vs')}</div>
                     </div>
@@ -1722,6 +1743,9 @@ const TheFinalWord = ({ tool }) => {
             <ShareLinkDisplay />
             <VerdictActions showAppealBtn={true} />
           </div>
+        )}
+        {result?._mode === 'dispute' && (
+          <SendBack toolId="TheFinalWord" toolTitle={tool?.title || 'The Final Word'} invite={invite} bSide={{ claim: claimB.trim(), name: personB.trim() }} c={c} />
         )}
 
         {/* Fact Check Result */}

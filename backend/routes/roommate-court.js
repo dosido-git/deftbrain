@@ -250,6 +250,10 @@ router.post('/roommate-court', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       const duration = cleanString(req.body.duration, 100);
       const priorCommunication = cleanString(req.body.priorCommunication, 100);
       const livingSituation = cleanString(req.body.livingSituation, 100);
+      // "Ask the other person" (src/components/InviteKit.js): theirSide was
+      // written by them, and on an ask link the description was too.
+      const theirOwnWords = req.body.theirOwnWords === true;
+      const disputeByThem = req.body.disputeByThem === true;
 
       if (!dispute) return res.status(400).json({ error: "Describe what's going on." });
 
@@ -263,13 +267,13 @@ Living situation: ${livingSituation || 'not specified'}
 Duration of issue: ${duration || 'not specified'}
 Prior communication attempts: ${priorCommunication || 'not specified'}
 
-WHAT'S GOING ON (the visitor's account):
+WHAT'S GOING ON (${disputeByThem ? "the other person's description, written when they asked the visitor for their side" : "the visitor's account"}):
 ${dispute}
 
 WHAT'S THEIR SIDE (the visitor's own account of the situation, if given beyond the description above):
 ${yourSide || 'not separately provided'}
 
-WHAT WOULD THEY SAY (the visitor's understanding of the other person's perspective — may be absent; do not treat absence as evidence of anything):
+${theirOwnWords ? "THEIR SIDE (written by the other person themselves, in their own words — give it the same weight as the visitor's side)" : "WHAT WOULD THEY SAY (the visitor's understanding of the other person's perspective — may be absent; do not treat absence as evidence of anything)"}:
 ${theirSide || 'not provided — the visitor does not know or did not guess'}`;
       const readPrompt = `${caseFile}
 
