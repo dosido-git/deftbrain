@@ -481,6 +481,7 @@ const CaptionMagic = ({ tool }) => {
             <button onClick={handlePaste} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('cm_paste')}</button>
           </div>
           <p className={`text-[13px] ${c.textMuted}`}>{isDragging ? t('cm_drop_here') : t('cm_drag_hint')}</p>
+          {!isDragging && <p className={`text-[13px] mt-1 ${c.textMuted}`}>{t('cm_multi_hint', { max: MAX_PHOTOS })}</p>}
         </div>
       ) : (
         <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}

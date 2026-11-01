@@ -4803,12 +4803,12 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "The photo's ready and the caption isn't.",
-    give: "The image, and anything it can't show — who's in it, what was happening, the joke behind it.",
-    get: "Six captions, from the plain one to one that goes somewhere strange. Then ask for funnier, drier or weirder.",
+    when: "The photo's ready — or the whole set of them — and the caption isn't.",
+    give: "One photo, or up to 20 for a single post like a carousel or album, and anything they can't show — who's in them, what was happening, the joke behind it.",
+    get: "Six captions for the post, from the plain one to one that goes somewhere strange, plus alt text for each photo. Then ask for funnier, drier or weirder.",
     edge: "It won't invent a backstory for your photo, and it won't play it safe with the joke either.",
   },
-  seoDescription: "Share a photo or describe it, tell us anything the picture cannot, and get six captions across the range — plain, warm, clever, dry, playful and one that goes somewhere else entirely. Free, no signup.",
+  seoDescription: "Share a photo — or up to 20 for one carousel or album — or describe it, tell us anything the pictures cannot, and get six captions across the range — plain, warm, clever, dry, playful and one that goes somewhere else entirely. Free, no signup.",
   seoTitle: "Social Media Caption Generator",
   title: "Caption Magic",
   tagline: "Find the words that fit the photo.",
