@@ -39,7 +39,7 @@ export function useDocumentHead({ title, description, canonicalPath, ogImageSlug
     // default.png was redrawn 2026-10-02; ?v=2 matches index.html and
     // prerender.js so social sites fetch the new one.
     // Tool cards' ?v= matches scripts/prerender.js getOgImage.
-    const ogImageUrl = `${BASE_URL}/og/${imgSlug}.png${imgSlug === 'default' ? '?v=2' : '?v=3'}`;
+    const ogImageUrl = `${BASE_URL}/og/${imgSlug}.png${imgSlug === 'default' ? '?v=2' : '?v=4'}`;
     setMeta('og:image', ogImageUrl, 'property');
     setMeta('og:image:width', '1200', 'property');
     setMeta('og:image:height', '630', 'property');

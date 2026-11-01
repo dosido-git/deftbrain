@@ -130,5 +130,7 @@
   "JustifyMyMeeting": "meeting-b-s-detector",
   "MeetingHijackStopper": "meeting-hijack-preventer",
   "WhatsThatMean": "whats-that-mean",
-  "SomeoneSaidItBetter": "someone-said-it-better"
+  "SomeoneSaidItBetter": "someone-said-it-better",
+  "NotSoFast": "not-so-fast",
+  "BeforeTheCrash": "before-the-crash"
 }

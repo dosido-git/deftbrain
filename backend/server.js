@@ -917,7 +917,7 @@ app.use(express.static(path.join(__dirname, '..', 'build'), {
 // drawn from the same payload: the first part the visitor ticked, under the
 // tool's name. Same id, same picture, so it caches forever. Text the card's
 // fonts can't draw (Arabic, CJK…) gets the tool's own card instead.
-const { renderCard, canDraw, clip, clean } = require('./lib/shareCard');
+const { renderCard, canDraw, clip, clean, firstSentence } = require('./lib/shareCard');
 const { TOOL_CATALOG } = require('./lib/toolCatalog');
 const TOOL_OG_SLUGS = require('../src/data/tool-og-slugs.json');
 function decodeSharePayload(id) {
@@ -940,7 +940,7 @@ app.get('/r/:id/card.png', rateLimit({ perMinute: 30, perDay: 1000 }, 'card:'), 
   try {
     let png = cardCache.get(req.params.id);
     if (!png) {
-      png = await renderCard({ kicker: s.tool.title, label: s.label, headline: s.text, foot: 'Shared from DeftBrain · free, no sign-up' });
+      png = await renderCard({ kicker: s.tool.title, label: s.label, headline: s.text });
       if (cardCache.size >= 300) cardCache.delete(cardCache.keys().next().value);
       cardCache.set(req.params.id, png);
     }
@@ -982,9 +982,14 @@ if (IS_PRODUCTION) {
     const s = req.path.startsWith('/r/') && req.params.id.length <= 9000 && decodeSharePayload(req.params.id);
     if (!s) return res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     if (!indexHtml) indexHtml = fs.readFileSync(path.join(__dirname, '..', 'build', 'index.html'), 'utf8');
+    // Title is the visitor's own opening sentence, as a person would title a
+    // post; the product name is already on the card.
     const url = `https://deftbrain.com/r/${req.params.id}`;
-    const title = esc(`${s.label ? `${clean(s.label)} — ` : ''}${s.tool.title}`);
-    const desc = esc(clip(s.text, 200));
+    const text = clean(s.text);
+    const lead = firstSentence(s.text, 110) || clean(s.label) || s.tool.title;
+    const title = esc(lead);
+    const rest = text.startsWith(lead.replace(/…$/, '')) ? text.slice(lead.replace(/…$/, '').length).trim() : text;
+    const desc = esc(clip(rest, 200) || clean(s.label) || s.tool.title);
     const img = esc(`${url}/card.png`);
     const html = indexHtml
       .replace(/(<meta property="og:title" content=")[^"]*/, `$1${title}`)

@@ -24,7 +24,7 @@
 // ────────────────────────────────────────────────────────────────────────────
 
 const MODELS = {
-  SMART: process.env.MODEL_SMART || 'claude-sonnet-4-6',            // default workhorse (most tools)
+  SMART: process.env.MODEL_SMART || 'claude-sonnet-5-5',            // default workhorse (most tools)
   FAST:  process.env.MODEL_FAST  || 'claude-haiku-4-5-20251001',   // cheap/fast — PINNED snapshot (determinism)
   DEEP:  process.env.MODEL_DEEP  || 'claude-opus-4-8',             // hardest reasoning / vision
 };
@@ -40,12 +40,6 @@ const ALL_MODELS = [...new Set(Object.values(MODELS))];
 const ACKNOWLEDGED_NEWER = [
   // Noted 2026-10-16 (owner): staying on Haiku 4.5 for now; not evaluated.
   'claude-haiku-5-5',
-  // Evaluated 2026-07-11: staying on claude-sonnet-4-6. Sonnet 5 is more verbose —
-  // AlternatePath deep-mode truncated at the max_tokens tuned for 4.6 (golden
-  // 3/3 → 2/3). Adopting it is a deliberate migration (re-tune max_tokens on the
-  // max-schema tools + re-verify all goldens + weigh cost/latency), not an env
-  // flip. Remove this line when that migration is done.
-  'claude-sonnet-5',
   // Evaluated 2026-07-26 (released 07-24): staying on claude-opus-4-8 for now.
   // Opus 5 is live but more verbose at our tuned budgets — golden comparison
   // truncated markup-detective (2500) and two buy-wise legs (4000/5000);
@@ -57,7 +51,8 @@ const ACKNOWLEDGED_NEWER = [
   // and schedule the upgrade as its own project. Same verbosity risk as the
   // 5.0 notes above (max_tokens truncation on the big-schema routes, golden
   // re-verification, cost/latency). Remove a line when its migration is done.
-  'claude-sonnet-5-5',  // released 2026-09-28 (SMART candidate)
+  // (claude-sonnet-5-5 adopted as the SMART default 2026-10-31, after
+  // production had already run it via MODEL_SMART.)
   'claude-opus-5-5',    // released 2026-09-21 (DEEP candidate)
 ];
 

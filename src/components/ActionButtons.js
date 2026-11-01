@@ -182,6 +182,18 @@ const SHARE_LINKS = [
 // even in scripts that take 3 bytes a character.
 const PART_MAX = 500;
 const clip = (s) => (s.length > PART_MAX ? s.slice(0, PART_MAX - 1).trimEnd() + '…' : s);
+// A shared result's post text is the visitor's own opening sentence, not the
+// tool's name — a Reddit title or a tweet reads as a person sharing what they
+// found. Same rule as firstSentence in backend/lib/shareCard.js.
+// A list or timeline ("8:00 Coffee\n9:00 Standup") has no sentence, and its
+// lines run together into nonsense, so only a line of real prose counts.
+const firstSentence = (s, max = 200) => {
+  const line = String(s || '').split('\n').map(l => l.replace(/\s+/g, ' ').trim()).find(l => l.length >= 25);
+  if (!line) return '';
+  const m = line.match(/^.+?[.!?…。！？](?=\s|$)/u);
+  const r = m ? m[0] : line;
+  return r.length > max ? r.slice(0, max - 1).replace(/\s+\S*$/, '') + '…' : r;
+};
 
 export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
   const s = useButtonStyles();
@@ -232,7 +244,11 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
   const tooLong = !!resultUrl && resultUrl.length > 8000;
   const linkUrl = resultUrl && !tooLong ? resultUrl : pageUrl;
   const u = encodeURIComponent(linkUrl);
-  const tt = encodeURIComponent(title);
+  const isResult = !!resultUrl && !tooLong;
+  const shareText = isResult
+    ? chosen.map(p => firstSentence(p.text)).find(Boolean) || chosen[0].label || title
+    : title;
+  const tt = encodeURIComponent(shareText);
   const item = 'block w-full px-3 py-1.5 text-sm text-start rounded-md ' + (s.isDark ? 'hover:bg-zinc-700 text-zinc-100' : 'hover:bg-gray-100 text-gray-700') + ' [[data-scheme]_&]:hover:bg-[var(--sc-line)] [[data-scheme]_&]:text-[var(--sc-strong)]';
   const muted = s.isDark ? 'text-zinc-400' : 'text-gray-500';
 
@@ -276,7 +292,7 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
             </fieldset>
           )}
           {canShare ? (
-            <button onClick={() => { nativeShare({ title, url: linkUrl }); setOpen(false); }} className={item}>
+            <button onClick={() => { nativeShare(isResult ? { title, text: shareText, url: linkUrl } : { title, url: linkUrl }); setOpen(false); }} className={item}>
               📤 {t('share')}
             </button>
           ) : (
@@ -285,7 +301,7 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
                 <a key={name} href={make(u, tt)} target="_blank" rel="noopener noreferrer"
                   onClick={() => { track('share'); setOpen(false); }} className={item}>{name}</a>
               ))}
-              <a href={`mailto:?subject=${tt}&body=${u}`} onClick={() => { track('share'); setOpen(false); }} className={item}>
+              <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${tt}%0A%0A${u}`} onClick={() => { track('share'); setOpen(false); }} className={item}>
                 {t('share_email')}
               </a>
             </>

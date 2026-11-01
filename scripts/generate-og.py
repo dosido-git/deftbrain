@@ -368,10 +368,6 @@ def extract_tools(tools_js_path):
             if slug is None:
                 skipped_unmapped.append(tool_id)
                 continue
-            # Tools with an ogCard get the newer card from
-            # scripts/generate-tool-cards.js; drawing here would overwrite it.
-            if re.search(r'\n\s*ogCard:\s*\{', block):
-                continue
             og_icon = ogIcon_v or icon_v
             tools.append({
                 'id':      tool_id,
@@ -410,6 +406,12 @@ def main():
 
     if default_only:
         return
+
+    # Tool cards moved to scripts/generate-tool-cards.js (2026-10-31): the
+    # cream template shared with result cards. This script now draws only
+    # default.png; drawing tool cards here would overwrite the new ones.
+    print('Tool cards: run node scripts/generate-tool-cards.js')
+    return
 
     # Tool cards
     print(f'Reading {TOOLS_JS_PATH}...')

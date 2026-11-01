@@ -81,7 +81,8 @@ async function load() {
 const el = (type, style, children) => ({ type, props: { style, children } });
 
 // kicker: the tool name, small caps in orange. label: optional heading of the
-// part shown. headline: the line the card is about. foot: one quiet line.
+// part shown. headline: the line the card is about. foot: optional quiet
+// line — left off by default, since a pitch there is what makes a card an ad.
 function template({ kicker, label, headline, sub, foot }, brain) {
   const h = clip(headline, 170);
   return el('div', {
@@ -101,8 +102,8 @@ function template({ kicker, label, headline, sub, foot }, brain) {
       el('div', { fontFamily: 'Playfair Display', fontSize: `${headlineSize(h.length)}px`, fontWeight: 700, color: INK, lineHeight: 1.12, letterSpacing: '-0.5px' }, h),
       sub && el('div', { fontSize: '26px', color: '#3a3530', marginTop: '26px', lineHeight: 1.35 }, clip(sub, 120)),
     ].filter(Boolean)),
-    el('div', { display: 'flex', borderTop: '1px solid #e2dcd2', paddingTop: '20px', fontSize: '20px', color: MUTED }, clip(foot, 90)),
-  ]);
+    foot && el('div', { display: 'flex', borderTop: '1px solid #e2dcd2', paddingTop: '20px', fontSize: '20px', color: MUTED }, clip(foot, 90)),
+  ].filter(Boolean));
 }
 
 async function renderCard(card) {
@@ -111,4 +112,13 @@ async function renderCard(card) {
   return new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } }).render().asPng();
 }
 
-module.exports = { renderCard, canDraw, clip, clean };
+// The text up to the first sentence end, for a title. Same rule as
+// firstSentence in src/components/ActionButtons.js.
+function firstSentence(s, max) {
+  const line = String(s || '').split('\n').map(clean).find(l => l.length >= 25);
+  if (!line) return '';
+  const m = line.match(/^.+?[.!?…。！？](?=\s|$)/u);
+  return clip(m ? m[0] : line, max);
+}
+
+module.exports = { renderCard, canDraw, clip, clean, firstSentence };
