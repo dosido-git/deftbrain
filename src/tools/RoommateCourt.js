@@ -393,11 +393,31 @@ const RoommateCourt = ({ tool }) => {
     cancelProgressive(); setCheckStatus(null); setDisputeResult(null);
   }, []);
 
+  // What the visitor gave us, so a copy or printout stands on its own. The
+  // form is gone once results show, so this is the only place it appears.
+  const caseFacts = useCallback(() => {
+    const pick = (opts, id) => { const o = opts.find(x => x.id === id); return o ? t(o.labelKey) : id; };
+    return [
+      [tr('rc_q_dispute', "What's going on?"), dispute.trim()],
+      [tr('rc_q_your_side', "What's your side?"), yourSide.trim()],
+      [invite ? t('invite_their_side') : tr('rc_q_their_side', 'What would they say?'), theirSide.trim()],
+      [tr('rc_q_duration', 'How long has this been happening?'), duration && pick(DURATION_OPTIONS, duration)],
+      [tr('rc_q_talked', 'What have you already tried?'), priorComm && pick(COMM_OPTIONS, priorComm)],
+      [tr('rc_q_living', 'Living situation'), livingSituation && pick(LIVING_OPTIONS, livingSituation)],
+    ].filter(([, v]) => v);
+  }, [dispute, yourSide, theirSide, invite, duration, priorComm, livingSituation, t, tr]);
+
   const buildFullText = useCallback(() => {
     const lines = [];
     if (disputeResult) {
       const r = disputeResult;
       lines.push(`⚖️ ${tr('rc_title', 'Roommate Court')}`, '');
+      const facts = caseFacts();
+      if (facts.length) {
+        lines.push(`${t('wait_you_told_us')}:`);
+        facts.forEach(([q, a]) => lines.push(`${q} ${a}`));
+        lines.push('');
+      }
       if (r.the_read) {
         lines.push(`${tr('rc_the_read', 'The Read')}: ${tr(READ_LABEL_KEY[r.the_read.label], r.the_read.label)}`);
         if (r.the_read.explanation) lines.push(r.the_read.explanation);
@@ -418,7 +438,7 @@ const RoommateCourt = ({ tool }) => {
     }
     const out = lines.join('\n').trim();
     return out ? out + BRAND : '';
-  }, [disputeResult, assignResult, tr]);
+  }, [disputeResult, assignResult, caseFacts, t, tr]);
 
   submitRef.current = activeTab === 'dispute' ? submitDispute : assignChores;
   canSubmitRef.current = activeTab === 'dispute'
@@ -483,6 +503,18 @@ const RoommateCourt = ({ tool }) => {
     return (
       <div className={`scroll-mt-24 space-y-4 mt-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
         {sv && <AnswerHeader title={t('your_answer')} />}<CheckNote status={checkStatus} className={c.textMuteded || c.textMuted} />
+
+        <div className={`p-4 rounded-xl border ${c.border} ${c.cardAltCard}`}>
+          <p className={`text-sm font-bold ${c.text} mb-2`}>{t('wait_you_told_us')}</p>
+          <dl className="space-y-2">
+            {caseFacts().map(([q, a]) => (
+              <div key={q}>
+                <dt className={`text-[13px] ${c.textMuted}`}>{q}</dt>
+                <dd dir="auto" className={`text-sm ${c.text} whitespace-pre-line`}>{a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
 
         <div data-keybox="" className={sv ? KEY_BOX : `p-4 rounded-xl border-2 ${c.verdictBg}`}>
           <div className="flex items-center gap-2 mb-2">
