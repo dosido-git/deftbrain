@@ -38,7 +38,11 @@ const ALL_MODELS = [...new Set(Object.values(MODELS))];
 // and turn the check green again. This keeps the decision explicit and reviewable
 // rather than silently ignored. Empty = adopt-or-be-nagged.
 const ACKNOWLEDGED_NEWER = [
-  // Noted 2026-10-16 (owner): staying on Haiku 4.5 for now; not evaluated.
+  // Evaluated 2026-11-01: staying on Haiku 4.5 for now. Saved cases pass on
+  // 5.5 (with the lib/claude.js budget/thinking adjustments), but on Micro-
+  // Adventure Mapper its answers tripped the v2 guard ~2.5x as often as 4.5's
+  // (invented/ignored visitor details), and every flag is a Sonnet repair, so
+  // the saving shrinks while quality drops. Revisit per tool, not globally.
   'claude-haiku-5-5',
   // Evaluated 2026-07-26 (released 07-24): staying on claude-opus-4-8 for now.
   // Opus 5 is live but more verbose at our tuned budgets — golden comparison
@@ -70,6 +74,9 @@ const DEFAULT_PRICING = {
   'claude-opus-4':    { in: 15, out: 75, cache_write: 18.75, cache_read: 1.50 },
   'claude-sonnet-4':  { in: 3,  out: 15, cache_write: 3.75,  cache_read: 0.30 },
   'claude-haiku-4-5': { in: 1,  out: 5,  cache_write: 1.25,  cache_read: 0.10 },
+  // Prompts of 100K tokens or fewer (every DeftBrain call); above that it is
+  // 0.50 / 2.50. 5-minute cache writes 1.25x input, reads 0.1x.
+  'claude-haiku-5-5': { in: 0.10, out: 0.50, cache_write: 0.125, cache_read: 0.01 },
   'claude-sonnet-5-5': { in: 2, out: 10, cache_write: 2.50,  cache_read: 0.20 },
   'claude-opus-5-5':  { in: 4,  out: 20, cache_write: 5.00,  cache_read: 0.40 },
   'claude-opus':      { in: 15, out: 75, cache_write: 18.75, cache_read: 1.50 },

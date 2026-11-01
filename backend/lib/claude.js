@@ -7,7 +7,7 @@ const { withEpistemics } = require('./epistemics');
 const { currentRoute, currentIsTestClient, currentRequestBody } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
-const { withSurge, isSurging, noteUnclearInput } = require('./surge');
+const { withSurge, isSurging, noteUnclearInput, noteDeclined } = require('./surge');
 const { withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
@@ -59,6 +59,16 @@ anthropic.messages.create = function (params, ...rest) {
     if (!clean.thinking) clean.thinking = { type: 'between_tools' };
     // Even without thinking, 5.5 writes ~1.5x 4.6's tokens for the same answer,
     // more in German: Difficult Talk Coach lost 4 of 10 parts at 2200-2500.
+    if (clean.max_tokens) clean.max_tokens = Math.ceil(clean.max_tokens * 1.6);
+    delete clean.temperature; delete clean.top_p; delete clean.top_k;
+  }
+  // Claude Haiku 5.5 thinks by default too, and its tokenizer counts the same
+  // text as ~30% more tokens and it writes longer (Mise en Place and Money
+  // Diplomat cut off at 1.3x on 2026-11-01), so budgets tuned on 4.5 truncate. Thinking
+  // off (`disabled` is accepted at its default effort), budgets scaled for the
+  // tokenizer, and sampling params go (non-default ones are a 400).
+  if (/^claude-haiku-5-5/.test(String(clean.model || ''))) {
+    if (!clean.thinking) clean.thinking = { type: 'disabled' };
     if (clean.max_tokens) clean.max_tokens = Math.ceil(clean.max_tokens * 1.6);
     delete clean.temperature; delete clean.top_p; delete clean.top_k;
   }
@@ -503,6 +513,16 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
     // Truncation: the response hit the token ceiling, so the JSON is cut off. Retrying
     // regenerates the same over-budget output and truncates again — 3 slow attempts that
     // end in a gateway 502. Fail fast with an actionable error instead of retrying.
+    // A safety classifier declined (Haiku 5.5 and later; no server-side
+    // fallback). The same input is declined again, and moving it to another
+    // model would be working around the decision — stop and say so plainly.
+    if (message.stop_reason === 'refusal') {
+      noteDeclined();
+      const e = new Error(`[${label}] Declined by the model's safety check`);
+      e.code = 'declined';
+      throw e;
+    }
+
     if (message.stop_reason === 'max_tokens') {
       throw new Error(`[${label}] Response truncated at max_tokens=${requestParams.max_tokens}. Increase max_tokens or bound the schema/output size.`);
     }

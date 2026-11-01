@@ -145,6 +145,14 @@ function noteUnclearInput() {
 
 const UNCLEAR_MESSAGE = 'This needs a little more detail to work with. Add a few words about what it is, then try again.';
 
+// The model's safety check declined the request (stop_reason "refusal"). 422,
+// not 500: nothing broke, and retrying the same words gets the same answer.
+function noteDeclined() {
+  const s = busyScope.getStore();
+  if (s) s.declined = true;
+}
+const DECLINED_MESSAGE = "This one couldn't be answered here. If you rephrase it or leave out some details, it may work.";
+
 // A request can be moved to a smaller model only when nothing in it needs the
 // bigger one: server-side tools (web search) and extended thinking stay put.
 function swappable(params) {
@@ -209,6 +217,10 @@ function busyMiddleware(req, res, next) {
   busyScope.enterWith(scope);
   const json = res.json.bind(res);
   res.json = (body) => {
+    if (scope.declined && !scope.overloaded && res.statusCode >= 500 && !res.headersSent) {
+      res.status(422);
+      return json({ error: DECLINED_MESSAGE, code: 'declined' });
+    }
     if (scope.unclear && !scope.overloaded && res.statusCode >= 500 && !res.headersSent) {
       res.status(422);
       return json({ error: UNCLEAR_MESSAGE, code: 'unclear_input' });
@@ -238,4 +250,4 @@ function surgeStatus() {
 const ticker = setInterval(() => { if (mode() !== 'on' && mode() !== 'off') isSurging(); }, 30 * 1000);
 if (ticker.unref) ticker.unref();
 
-module.exports = { withSurge, isSurging, busyMiddleware, surgeStatus, BUSY_MESSAGE, noteUnclearInput, UNCLEAR_MESSAGE, _test: { familyOf, fallbackFor, isOverload } };
+module.exports = { withSurge, isSurging, busyMiddleware, surgeStatus, BUSY_MESSAGE, noteUnclearInput, UNCLEAR_MESSAGE, noteDeclined, DECLINED_MESSAGE, _test: { familyOf, fallbackFor, isOverload } };
