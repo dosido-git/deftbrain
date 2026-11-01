@@ -57,6 +57,32 @@ function parseInvite(toolId, raw) {
   return inv;
 }
 
+// Every way to send the link to one person. The device's share sheet, where
+// there is one, lists every app they have; the direct links are for browsers
+// without it (desktop Chrome, Firefox). Copy covers anything not listed.
+const SendTo = ({ url, text, title, c, onSent }) => {
+  const { t } = useTranslation();
+  const canShare = typeof navigator !== 'undefined' && !!navigator.share;
+  const btn = `px-3 py-2 rounded-lg text-sm font-semibold border ${c.border} ${c.btnSecondary}`;
+  const msg = encodeURIComponent(`${text} ${url}`);
+  const link = (href, label, newTab = true) => (
+    <a href={href} onClick={onSent} className={btn} {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{label}</a>
+  );
+  return (
+    <>
+      {canShare && (
+        <button type="button" onClick={async () => { try { await navigator.share({ title, text, url }); onSent(); } catch (_) { /* cancelled */ } }}
+          className={btn}>📤 {t('invite_send')}</button>
+      )}
+      {link(`sms:?&body=${msg}`, t('invite_sms'), false)}
+      {link(`https://wa.me/?text=${msg}`, 'WhatsApp')}
+      {link(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, 'Telegram')}
+      {link(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${text}\n\n${url}`)}`, t('share_email'), false)}
+      <CopyBtn content={url} label={t('invite_copy')} exact quiet onCopied={onSent} />
+    </>
+  );
+};
+
 // Sender's panel: optional first name, then the link.
 // noteKey: what the sender is told the other person will see. Default fits a
 // hidden side; tools where the topic is shown pass their own.
@@ -66,7 +92,6 @@ export const AskThem = ({ toolId, toolTitle, topic, side, c, disabled, noteKey =
   const [name, setName] = useState('');
   const url = inviteUrl(toolId, { k: 'ask', f: clipAll(topic), a: clipAll(side), ...(name.trim() ? { n: name.trim().slice(0, 40) } : {}) });
   const text = t('invite_message', { tool: toolTitle });
-  const canShare = typeof navigator !== 'undefined' && !!navigator.share;
   const sent = () => track('invite_sent', { tool: toolId });
 
   if (!open) {
@@ -87,18 +112,7 @@ export const AskThem = ({ toolId, toolTitle, topic, side, c, disabled, noteKey =
           className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
       </label>
       <div className="flex flex-wrap items-center gap-2">
-        {canShare ? (
-          <button type="button" onClick={async () => { try { await navigator.share({ title: toolTitle, text, url }); sent(); } catch (_) { /* cancelled */ } }}
-            className={`px-3 py-2 rounded-lg text-sm font-semibold border ${c.border} ${c.btnSecondary}`}>📤 {t('invite_send')}</button>
-        ) : (
-          <>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`} target="_blank" rel="noopener noreferrer" onClick={sent}
-              className={`px-3 py-2 rounded-lg text-sm font-semibold border ${c.border} ${c.btnSecondary}`}>WhatsApp</a>
-            <a href={`mailto:?subject=${encodeURIComponent(toolTitle)}&body=${encodeURIComponent(`${text}\n\n${url}`)}`} onClick={sent}
-              className={`px-3 py-2 rounded-lg text-sm font-semibold border ${c.border} ${c.btnSecondary}`}>{t('share_email')}</a>
-          </>
-        )}
-        <CopyBtn content={url} label={t('invite_copy')} exact quiet onCopied={sent} />
+        <SendTo url={url} text={text} title={toolTitle} c={c} onSent={sent} />
       </div>
     </div>
   );
@@ -132,7 +146,6 @@ export const SendBack = ({ toolId, toolTitle, invite, bSide, c, bodyKey = 'invit
   const { t } = useTranslation();
   if (!invite || invite.kind !== 'ask') return null;
   const url = inviteUrl(toolId, { k: 'back', f: clipAll(invite.topic), a: clipAll(invite.a), b: clipAll(bSide) });
-  const canShare = typeof navigator !== 'undefined' && !!navigator.share;
   const sent = () => track('invite_completed', { tool: toolId });
   const who = invite.name ? t(bodyKey, { name: invite.name }) : t(bodyAnonKey);
   return (
@@ -140,11 +153,7 @@ export const SendBack = ({ toolId, toolTitle, invite, bSide, c, bodyKey = 'invit
       <p className={`text-sm font-semibold ${c.labelText}`}>👥 {t('invite_back_title')}</p>
       <p className={`text-[13px] ${c.textMuted}`}>{who}</p>
       <div className="flex flex-wrap items-center gap-2">
-        {canShare && (
-          <button type="button" onClick={async () => { try { await navigator.share({ title: toolTitle, url }); sent(); } catch (_) { /* cancelled */ } }}
-            className={`px-3 py-2 rounded-lg text-sm font-semibold border ${c.border} ${c.btnSecondary}`}>📤 {t('invite_send')}</button>
-        )}
-        <CopyBtn content={url} label={t('invite_copy')} exact quiet onCopied={sent} />
+        <SendTo url={url} text={t('invite_back_title')} title={toolTitle} c={c} onSent={sent} />
       </div>
     </div>
   );
