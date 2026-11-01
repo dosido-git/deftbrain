@@ -2499,6 +2499,12 @@ export const tools = [
   icon: "⏳",
   categories: ['Home & Daily Life'],
   headerColor: "#e0b8b8",
+  // Link-preview card (scripts/generate-tool-cards.js). The headline is the
+  // visitor's own words from the real example below, not a slogan.
+  ogCard: {
+    headline: "“I feel like I worked 8 solid hours but I honestly couldn’t tell you what I produced.”",
+    sub: "Describe the day as you remember it and see what actually filled the hours.",
+  },
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 (all tools indexable once they show real output).
   exampleOutput: {

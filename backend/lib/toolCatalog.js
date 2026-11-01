@@ -69,7 +69,9 @@ function buildCatalog() {
       const icon = extractField(line, 'icon');
       const give = extractField(line, 'give');   // primer.give — what the tool accepts
 
-      if (title) current.title = title;
+      // First wins: the tool's own title comes before exampleOutput.title
+      // ("See what X gives you"), which used to overwrite it for 119 tools.
+      if (title && !current.title) current.title = title;
       if (categoriesMatch) {
         const cats = categoriesMatch[1]
           .split(',')

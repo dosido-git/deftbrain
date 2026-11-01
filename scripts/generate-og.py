@@ -368,6 +368,10 @@ def extract_tools(tools_js_path):
             if slug is None:
                 skipped_unmapped.append(tool_id)
                 continue
+            # Tools with an ogCard get the newer card from
+            # scripts/generate-tool-cards.js; drawing here would overwrite it.
+            if re.search(r'\n\s*ogCard:\s*\{', block):
+                continue
             og_icon = ogIcon_v or icon_v
             tools.append({
                 'id':      tool_id,

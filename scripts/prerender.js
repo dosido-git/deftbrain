@@ -66,7 +66,9 @@ const INDEXABLE_TOOLS = new Set([...(TOOLS_KEEP_LIST.focus || []), ...(TOOLS_KEE
 
 function getOgImage(toolId) {
   const slug = TOOL_OG_SLUGS[toolId];
-  return slug ? `${SITE_URL}/og/${slug}.png` : DEFAULT_OG_IMAGE;
+  // ?v= busts platforms' cached copies; bump it with useDocumentHead.js
+  // whenever tool cards are redrawn (v=3: new cream cards, 2026-10-31).
+  return slug ? `${SITE_URL}/og/${slug}.png?v=3` : DEFAULT_OG_IMAGE;
 }
 
 // ─── Static React routes: /tools and /organizations (2026-10-03) ─────────────

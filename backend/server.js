@@ -912,6 +912,46 @@ app.use(express.static(path.join(__dirname, '..', 'build'), {
   },
 }));
 
+// ── Shared-result preview card (/r/:id/card.png) ──
+// The link carries the result (src/utils/shareEncode.js), so the card is
+// drawn from the same payload: the first part the visitor ticked, under the
+// tool's name. Same id, same picture, so it caches forever. Text the card's
+// fonts can't draw (Arabic, CJK…) gets the tool's own card instead.
+const { renderCard, canDraw, clip, clean } = require('./lib/shareCard');
+const { TOOL_CATALOG } = require('./lib/toolCatalog');
+const TOOL_OG_SLUGS = require('../src/data/tool-og-slugs.json');
+function decodeSharePayload(id) {
+  try {
+    const json = Buffer.from(String(id).replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+    const p = JSON.parse(json);
+    const tool = p && TOOL_CATALOG.find(t => t.id === p.t);
+    const part = Array.isArray(p.p) && p.p.find(x => Array.isArray(x) && typeof x[1] === 'string' && x[1].trim());
+    return tool && part ? { tool, label: typeof part[0] === 'string' ? part[0] : '', text: part[1] } : null;
+  } catch (_) { return null; }
+}
+const cardCache = new Map(); // shortcut: in-memory, lost on restart; fine while cards are cheap to redraw
+app.get('/r/:id/card.png', rateLimit({ perMinute: 30, perDay: 1000 }, 'card:'), async (req, res) => {
+  const s = req.params.id.length <= 9000 && decodeSharePayload(req.params.id);
+  if (!s) return res.redirect(302, '/og/default.png?v=2');
+  if (!canDraw(s.tool.title, s.label, s.text)) {
+    const slug = TOOL_OG_SLUGS[s.tool.id];
+    return res.redirect(302, slug ? `/og/${slug}.png` : '/og/default.png?v=2');
+  }
+  try {
+    let png = cardCache.get(req.params.id);
+    if (!png) {
+      png = await renderCard({ kicker: s.tool.title, label: s.label, headline: s.text, foot: 'Shared from DeftBrain · free, no sign-up' });
+      if (cardCache.size >= 300) cardCache.delete(cardCache.keys().next().value);
+      cardCache.set(req.params.id, png);
+    }
+    res.set({ 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Robots-Tag': 'noindex' });
+    res.send(png);
+  } catch (err) {
+    console.error('share card failed:', err.message);
+    res.redirect(302, '/og/default.png?v=2');
+  }
+});
+
 // ── Serve React build (production) ──
 if (IS_PRODUCTION) {
   // ── Trailing slash redirect — must be before catch-all ──
@@ -933,9 +973,28 @@ if (IS_PRODUCTION) {
   // Shared results (/r/:id, /verdict/:id) carry the result in the link and
   // render client-side. 200 so link previews work; noindex because each one
   // is a visitor's own result, not a page for search.
+  // /r/:id swaps the page's preview tags for this result: its card, and
+  // the tool and first part as title and description.
+  let indexHtml = null;
+  const esc = v => String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   app.get(['/r/:id', '/verdict/:id'], (req, res) => {
     res.set('X-Robots-Tag', 'noindex');
-    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    const s = req.path.startsWith('/r/') && req.params.id.length <= 9000 && decodeSharePayload(req.params.id);
+    if (!s) return res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    if (!indexHtml) indexHtml = fs.readFileSync(path.join(__dirname, '..', 'build', 'index.html'), 'utf8');
+    const url = `https://deftbrain.com/r/${req.params.id}`;
+    const title = esc(`${s.label ? `${clean(s.label)} — ` : ''}${s.tool.title}`);
+    const desc = esc(clip(s.text, 200));
+    const img = esc(`${url}/card.png`);
+    const html = indexHtml
+      .replace(/(<meta property="og:title" content=")[^"]*/, `$1${title}`)
+      .replace(/(<meta name="twitter:title" content=")[^"]*/, `$1${title}`)
+      .replace(/(<meta property="og:description" content=")[^"]*/, `$1${desc}`)
+      .replace(/(<meta name="twitter:description" content=")[^"]*/, `$1${desc}`)
+      .replace(/(<meta property="og:url" content=")[^"]*/, `$1${esc(url)}`)
+      .replace(/(<meta property="og:image" content=")[^"]*/, `$1${img}`)
+      .replace(/(<meta name="twitter:image" content=")[^"]*/, `$1${img}`);
+    res.type('html').send(html);
   });
 
   app.get('*', (req, res) => {
