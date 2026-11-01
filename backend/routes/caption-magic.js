@@ -72,9 +72,12 @@ const NEVER_INFERABLE = [
   'what viewers will do, feel, notice or how they will respond to the post',
 ];
 
-// One post, several photos (carousel or album). Ten is what Instagram allows
-// per carousel and keeps the request under the 12mb body tier.
-const MAX_PHOTOS = 10;
+// One post, several photos (carousel or album). Twenty is Instagram's and
+// Threads' carousel limit (2026) and, at the page's compression, stays well
+// under the 12mb body tier. X allows four. TikTok's photo mode allows more,
+// but twenty already takes most of a minute to read.
+const MAX_PHOTOS = 20;
+const PHOTO_LIMITS = { twitter: 4 };
 const SET_NEVER_INFERABLE = 'whether the photos were taken at the same time, place or event, or in the order shown';
 
 function renderEnvelope(env) {
@@ -164,7 +167,7 @@ function normaliseCaptions(out) {
 // ════════════════════════════════════════════
 router.post('/caption-magic', rateLimit(), async (req, res) => {
   try {
-    const { imageBase64, images, imageDescription, platform, context, avoidMention, captionLength, userLanguage } = req.body;
+    const { imageBase64, images, photoNotes, imageDescription, platform, avoidMention, captionLength, userLanguage } = req.body;
     // `images` is one post with several photos (a carousel or album); the old
     // single `imageBase64` is still accepted for cached bundles.
     const sources = (Array.isArray(images) && images.length ? images : [imageBase64]).filter(Boolean);
@@ -172,9 +175,17 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
     if (!sources.length && !imageDescription) {
       return res.status(400).json({ error: 'Provide an image or image description' });
     }
-    if (sources.length > MAX_PHOTOS) {
-      return res.status(400).json({ error: `Up to ${MAX_PHOTOS} photos per post.` });
+    const photoLimit = PHOTO_LIMITS[platform] || MAX_PHOTOS;
+    if (sources.length > photoLimit) {
+      return res.status(400).json({ error: `Up to ${photoLimit} photos per post.` });
     }
+    // A note per photo in a set ("my sister's first apartment" under photo 3).
+    // Each is a fact the visitor supplied, marked [n] like the envelope, and it
+    // joins the post-wide note everywhere that note is used.
+    const notes = (Array.isArray(photoNotes) && sources.length > 1 ? photoNotes : [])
+      .slice(0, sources.length).map(n => String(n || '').trim().slice(0, 300));
+    const told = notes.map((n, i) => (n ? `[${i + 1}] ${n}` : '')).filter(Boolean);
+    const context = [req.body.context, ...told].filter(Boolean).join('\n') || null;
 
     const platformName = platform || 'instagram';
     const charLimit = PLATFORM_LIMITS[platformName] || 2200;
@@ -193,11 +204,13 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
     // ── STAGE 1 — OBSERVE ─────────────────────────────────────────────
     let envelope;
     if (photoCount) {
-      const observePrompt = `You are looking at an image for a captioning tool. You are not writing captions. Your only job is to say what is in the picture and what is not knowable from it.
+      // Each photo's observer sees the post-wide note and its own, never
+      // another photo's — "my sister" under photo 3 must not name someone in 2.
+      const observePrompt = (i) => `You are looking at an image for a captioning tool. You are not writing captions. Your only job is to say what is in the picture and what is not knowable from it.
 ${photoCount > 1 ? '\nThis is one of several photos going into the same post. Describe only this one.\n' : ''}
-
 ${imageDescription ? `The person also described it: ${imageDescription}` : ''}
-${context ? `And gave this context: ${context}` : ''}
+${req.body.context ? `And gave this context: ${req.body.context}` : ''}
+${notes[i] ? `About this photo they said: ${notes[i]}` : ''}
 Anything the person told you is established fact. It belongs in observed, never in uncertain — you cannot doubt what you were told, only what you are looking at.
 
 OBSERVED is what you could point at: objects, materials, colours, counts, setting, text you can read. Short noun phrases, not sentences. Nothing about cause, purpose, history or feeling.
@@ -222,12 +235,12 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
       // One observation per photo, side by side: each is read alone so one
       // photo's details cannot leak into another's.
-      const all = await Promise.all(parsed.map(p => callClaudeWithRetry({
+      const all = await Promise.all(parsed.map((p, i) => callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 1500,
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: p.media_type, data: p.data } },
-          { type: 'text', text: withLanguage(observePrompt, userLanguage) + locale },
+          { type: 'text', text: withLanguage(observePrompt(i), userLanguage) + locale },
         ] }],
       }, { label: 'CaptionMagicObserve' })));
 
@@ -247,6 +260,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
           ...all.flatMap((obs, i) => tag(i, obs.prohibited_inferences)),
         ],
         photo_count: photoCount,
+        told,
       };
     } else {
       // No image: nothing is being interpreted. Every fact came from the person,
@@ -815,7 +829,7 @@ const NUDGES = {
 
 router.post('/caption-magic/more', rateLimit(), async (req, res) => {
   try {
-    const { envelope, previous, nudge, platform, context, avoidMention, captionLength, userLanguage } = req.body;
+    const { envelope, previous, nudge, platform, avoidMention, captionLength, userLanguage } = req.body;
 
     if (!envelope || !Array.isArray(envelope.observed)) {
       return res.status(400).json({ error: 'Missing what the photo showed. Generate captions first.' });
@@ -832,6 +846,9 @@ router.post('/caption-magic/more', rateLimit(), async (req, res) => {
         : [...NEVER_INFERABLE],
       photo_count: Math.min(Number(envelope.photo_count) || 1, MAX_PHOTOS),
     };
+    // Per-photo notes travel inside the envelope so "Six more" keeps them.
+    const told = Array.isArray(envelope.told) ? envelope.told.slice(0, MAX_PHOTOS).map(n => String(n).slice(0, 310)) : [];
+    const context = [req.body.context, ...told].filter(Boolean).join('\n') || null;
 
     const already = Array.isArray(previous) && previous.length
       ? `\nALREADY WRITTEN — do not repeat these, and do not rephrase them either:\n${previous.map(t => `- ${t}`).join('\n')}\n`
