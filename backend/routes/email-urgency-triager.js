@@ -733,7 +733,7 @@ Return ONLY valid JSON.`;
   }
 }
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 // email-urgency-triager-v2. Reviewed 2026-08-25. Urgency is the product, and
 // the guard exists to keep it traceable to the pasted text rather than to a
 // sender's tone or a subject line that says URGENT.

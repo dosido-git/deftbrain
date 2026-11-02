@@ -717,7 +717,7 @@ ${NO_QUOTE_RULE}`;
   }
 });
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'Grounding rewrite, 2026-09-04 — this tool never had outputStandard/outputGuard or any deterministic backstop before this pass (only a single top-level-key presence guard per endpoint, which is preserved). Six regex checks now: the four unconditionally-banned patterns from the original rewrite (the tool\'s own signature failure "BUT REALLY IT\'S..." inventing a deeper fear; unverifiable physiological claims for a body/breathing action; a population claim about "most people"; an unevidenced probability/outcome estimate) plus two added after a follow-up live probe caught real recurrences: an invented motivational interpretation of the situation on Help Me Now\'s "remember" field ("someone already decided you were worth their time" — the exact live-probe sentence), and the specific banned closing line "You\'re ready. Go." Hedge-dependent bans that are CONDITIONALLY allowed per the prompt text (Debrief\'s character-transformation claims like "proved you can perform under pressure," which are fine WHEN the supplied outcome directly supports them; "you\'re stronger than you think" family, fine WHEN grounded; Main\'s psychological-explanation ban in why_it_helps_here, too varied to safely reduce to a regex on first pass) are deliberately left prompt-only — a keyword ban would block a legitimate grounded use as readily as an invented one. specific-prep, sos, and fear-ladder endpoints were removed in this rewrite, not merged elsewhere; situationType now flows into the main endpoint\'s single grounded plan instead of a separate deep-prep call.',

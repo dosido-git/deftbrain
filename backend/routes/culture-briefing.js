@@ -278,7 +278,7 @@ Return ONLY valid JSON:
   }
 });
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 // culture-briefing-v2. Reviewed 2026-08-25 against the owner's standard.
 // Describing a common practice is the product and is not guarded; claiming
 // more than general knowledge supports is.

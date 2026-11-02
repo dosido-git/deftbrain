@@ -74,7 +74,7 @@ const { checkConsistency } = require('../lib/outputGuard');
 // visitor never supplied — the receipts example's unprompted "Spend the
 // next 5 minutes" was this same failure mode applied to time instead of
 // structure.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'first_move_missing_or_empty',

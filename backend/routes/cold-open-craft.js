@@ -300,7 +300,7 @@ Every factual statement about either person must trace directly to the supplied 
 // a risk badge, a rationale and a "best if", and the compliance notes about
 // what it had declined to invent ran longer than the messages. v2 sections 7
 // and 8 are the ones this needed — lead with the answer, say it once.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 
 // These messages go out under the visitor's own name, so the guard is about
 // what they will be taken to have claimed: an opinion they never expressed, an

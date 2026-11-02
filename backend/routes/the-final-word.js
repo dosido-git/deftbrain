@@ -102,7 +102,7 @@ function collectProseFields(parsed) {
   return fields;
 }
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'invented_source_study_statistic_quote_or_url',

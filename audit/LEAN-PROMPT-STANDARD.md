@@ -71,6 +71,22 @@ So:
 - **Switch-only is a valid result.** Where the tool's own prompt is dense with real distinctions, keep it and just declare `lean`; most of the per-call waste was the two global blocks.
 - **Plan-first only when sections must agree** (advice, scripts, a verdict the rest builds on). Independent sections run as parallel disjoint passes: faster.
 
+## Switch-only batch (2026-11-01)
+
+60 tools on the v2 standard were switched to the house rules with their own prompts unchanged, one
+saved case each, the same report-only check on old and new. Where a result looked worse, the old
+prompt was rerun on today's model (a second backend serving the previous commit) so model drift
+did not count against the prompt.
+
+- **Reverted (old prompt kept):** Before the Crash (2 vs 7 flags), Dream Pattern Spotter (0 vs 7),
+  Document Detective (3 vs 6), Conflict Coach (68% longer, no gain), Heckler Prep (14 vs 22),
+  Meeting Hijack Stopper (3 vs 6), Plot Hole Finder (3 vs 19), Grief Guide (5 vs 7, a sensitive
+  tool), Party Architect (5 vs 12), Which Life (13 vs 18). These are the tools whose global contracts were doing real work.
+- **Kept:** the rest, at equal or fewer flags. Most of the extra length seen against saved answers
+  was the newer model: today's-model reruns of the old prompts were as long.
+- **Cost:** the switch roughly halves the cost of a run (Before the Crash $0.42 → $0.18, Plot Hole
+  Finder $0.96 → $0.58), because ~4,000 words of instructions no longer go with every call.
+
 ## Done means
 
 - The route declares `router.outputStandard = 'lean'`, with its `router.outputGuard` kept.

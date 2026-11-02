@@ -558,7 +558,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
 // Reviewed against backend/lib/outputStandard.js during the rewrite around the
 // tool contract. validateResult runs on every response.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'percentages and multipliers are blanked in code; breadth and mechanism are pinned to English because the frontend switches on them.',

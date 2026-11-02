@@ -637,7 +637,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
   }
 });
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 // friendship-fade-alerter-v2. Reviewed 2026-08-27. The tool's whole risk is
 // that a number — days since contact — reads as a verdict on a friendship. It
 // is not one. Someone can go eight months without speaking to a person they

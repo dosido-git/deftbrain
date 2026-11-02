@@ -225,7 +225,7 @@ function stripCites(val) {
   return val;
 }
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'overall_route_risk_score_or_level',

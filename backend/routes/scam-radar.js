@@ -1019,7 +1019,7 @@ THE MESSAGE CAN BE SUSPICIOUS WITHOUT YOU KNOWING WHO SENT IT.
 
 VERIFY OUTSIDE THE MESSAGE.`;
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'numeric_confidence_score',

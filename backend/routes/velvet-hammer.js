@@ -10,7 +10,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 // sample: core_message said "three emails went unanswered" when the draft
 // showed one was answered, and called the user "the sender"). The prompt
 // already carried the v2 rules; the guard is the check behind them.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'a count, date, amount or event changed from the draft (three unanswered when the draft shows one answered)',

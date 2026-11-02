@@ -411,7 +411,7 @@ CRITICAL:
   }
 });
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 // focus-sound-architect-v2. Reviewed 2026-08-26. Sound is subjective and the
 // tool's job is to make something that sounds right for a stated interference.
 // What it must not do is borrow authority it has not got: the frequency-band

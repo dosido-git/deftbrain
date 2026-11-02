@@ -726,7 +726,7 @@ Return only the requested JSON.`;
   }
 });
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 // drive-home-v2. Reviewed 2026-08-25. The old version searched the web and
 // spoke about the route; this one knows nothing but what the driver typed, and
 // the guard exists to keep it that way.

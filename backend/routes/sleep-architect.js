@@ -18,7 +18,7 @@ const { checkConsistency } = require('../lib/outputGuard');
 // content discipline itself (no diagnosis, no medication, no arbitrary
 // precision, one experiment at a time) lives in TOOL_RULES below and is
 // prompt-enforced, not code-verified — that's the honest scope of this guard.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'nonnull_sleep_score_reaching_the_visitor',

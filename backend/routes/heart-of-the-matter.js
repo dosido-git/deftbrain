@@ -29,7 +29,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // always null/empty by design (the schema says so, and validateResult
 // below makes it true even if the model doesn't comply) rather than
 // asking the model to guess at exam coverage.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'exam_strategy_not_null',

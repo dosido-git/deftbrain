@@ -473,7 +473,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
 // Reviewed against backend/lib/outputStandard.js during the rewrite around the
 // core system prompt. All three endpoints run validateResult.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'invented specifics (keypresses, extensions, email formulas, URLs, named regulators), odds and outcome promises, folklore stated as policy, and body-language claims are blanked in code; difficulty is pinned to English because the frontend switches on it.',

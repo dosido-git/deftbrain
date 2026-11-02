@@ -346,7 +346,7 @@ const ZOMBIE_VERDICTS = ['ALIVE AND USEFUL', 'NEEDS A REFRESH', 'TOO FREQUENT', 
 // supported two, and a "Shorter meeting" whose plan added up to the same hour).
 // The prompt's rules and validateResult's phrase list were already v2 in
 // spirit; the guard reads the whole answer against what was typed.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'a count, frequency or history stated more strongly than the input supports (at least three when two were described)',
@@ -980,7 +980,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
 // Reviewed against backend/lib/outputStandard.js during the rewrite around the
 // shared instructions. Every endpoint runs scrub; the arithmetic runs in code.
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'scores, percentages, work-weeks and wasted-hours language are blanked in code; person-hours are computed from supplied numbers, never generated; verdicts are pinned to English because the frontend switches on them.',

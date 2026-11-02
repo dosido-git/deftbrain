@@ -590,7 +590,7 @@ Return ONLY valid JSON:
   }
 });
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = {
   prohibit: [
     'restates_one_conclusion_across_several_fields',
