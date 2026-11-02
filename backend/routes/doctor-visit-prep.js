@@ -250,4 +250,5 @@ Return ONLY the JSON object.${lang}`;
   }
 });
 
+router.outputStandard = 'lean';
 module.exports = router;

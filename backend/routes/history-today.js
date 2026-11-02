@@ -454,4 +454,5 @@ Return ONLY valid JSON:
   }
 });
 
+router.outputStandard = 'lean';
 module.exports = router;

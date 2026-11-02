@@ -97,10 +97,13 @@ Not switched yet:
 - **Bike Medic**: more flags (14→18), a safety tool; stays.
 - **Awkward Silence Filler, BuyWise, Complaint Escalation Writer**: schemas ask for a guess
   (`likely_response`, `risk_level`, `success_likelihood`); redesign the field first.
-- **Brag Sheet Builder, Date Night**: need a `router.outputGuard` defect list before they can leave
-  the frozen list.
-- Not run (budget): decoder-ring, difficult-talk-coach, doctor-visit-prep, doctor-visit-translator,
-  fake-review-detective, history-today, layover-maximizer, lease-trap-detector, markup-detective,
+- **Brag Sheet Builder, Date Night, Difficult Talk Coach**: need a `router.outputGuard` defect list
+  before they can leave the frozen list (Difficult Talk Coach also ran 60% longer).
+- **Decoder Ring (`primary_emotion`), Fake Review Detective (`manipulation_detected`), Doctor Visit
+  Translator (`expected_results_timeline`, `likely_coverage`, no guard)**: fewer flags on the
+  switch, but their schemas ask for a guess; redesign the field first.
+- Switched in the second pass: Doctor Visit Prep (10→3 flags), History Today (18→19).
+- Not run (budget): layover-maximizer, lease-trap-detector, markup-detective,
   mental-health-navigator, mise-en-place, plain-talk, procedure-probe, renters-deposit-saver,
   not-so-fast, the-debrief, missing-link, waiting-mode-liberator; and the 15 frozen tools with no
   post-check.
