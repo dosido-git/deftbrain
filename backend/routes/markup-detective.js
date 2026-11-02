@@ -128,4 +128,5 @@ Rules:
   }
 });
 
+router.outputStandard = 'lean';
 module.exports = router;

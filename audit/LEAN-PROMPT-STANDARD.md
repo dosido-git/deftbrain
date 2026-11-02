@@ -102,11 +102,13 @@ Not switched yet:
 - **Decoder Ring (`primary_emotion`), Fake Review Detective (`manipulation_detected`), Doctor Visit
   Translator (`expected_results_timeline`, `likely_coverage`, no guard)**: fewer flags on the
   switch, but their schemas ask for a guess; redesign the field first.
-- Switched in the second pass: Doctor Visit Prep (10→3 flags), History Today (18→19).
-- Not run (budget): layover-maximizer, lease-trap-detector, markup-detective,
-  mental-health-navigator, mise-en-place, plain-talk, procedure-probe, renters-deposit-saver,
-  not-so-fast, the-debrief, missing-link, waiting-mode-liberator; and the 15 frozen tools with no
-  post-check.
+- Switched in the second pass: Doctor Visit Prep (10→3 flags), History Today (18→19), Markup
+  Detective (20→13), Mental Health Navigator (19→11).
+- **Layover Maximizer (33→26), Lease Trap Detector (26→21)**: fewer flags, but `risk_level` in the
+  schema; redesign the field first.
+- Not run: the local API workspace hit its monthly limit on 2026-11-01 (back 2026-12-01):
+  mise-en-place, plain-talk, procedure-probe, renters-deposit-saver, not-so-fast, the-debrief,
+  missing-link, waiting-mode-liberator; and the 15 frozen tools with no post-check.
 
 ## Done means
 

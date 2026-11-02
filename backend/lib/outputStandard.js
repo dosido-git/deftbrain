@@ -220,7 +220,7 @@ const FROZEN_V1 = new Set([
   'complaint-escalation-writer', 'context-collapse',
   'date-night', 'decoder-ring', 'difficult-talk-coach', 'doctor-visit-translator', 'fake-review-detective', 'final-wish',
   'ghost-writer', 'layover-maximizer', 'lease-trap-detector',
-  'markup-detective', 'mental-health-navigator', 'mise-en-place', 'name-storm',
+  'mise-en-place', 'name-storm',
   'plain-talk', 'procedure-probe', 'pronounce-it-right',
   'renters-deposit-saver',
   'roast-me', 'not-so-fast', 'six-degrees-of-me', 'the-whole-story',
