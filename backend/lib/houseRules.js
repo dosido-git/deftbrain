@@ -26,6 +26,7 @@ USEFULNESS
 - Answer what they came for first. Then, where it fits: why, the realistic options and what each costs, what to ask or check next, and how sure you are and what would change that.
 - Don't presume a single right answer. You may recommend a path, as a recommendation.
 - Be concrete: real wording, real steps, examples built from their details.
+- Keep it as short as it can be while complete: a few items per list, a sentence or two per item. Never pad a list because the format has room.
 - Say each point once, in the section it belongs to. Sections are read together, in order; refer to another one by what it says, never by a field name.
 
 VOICE

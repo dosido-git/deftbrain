@@ -55,11 +55,15 @@ yet rebuilt keep both until their turn.
 |---|---|---|
 | Roommate Court | **lean kept**: better answer (recommendation, confidence, costs), 13s vs 18.5s | sections must agree, so plan-first fixed drift; the rules were mostly generic |
 | Skill Gap Map | **lean kept**: first part 4.8s vs 15.5s, whole answer 16s vs 95s, grounded | one ~1,000-word block was repeated three times |
+| Future Proof | **lean kept**: same flags (13/13), first part 6.6s vs 14.1s, whole 24.5s vs 51.5s | ~650 lines of owner rules condensed to 10 bullets |
+| Read the Room | **lean kept** after adding a length rule: flags 4 vs 5, 6.3s vs 8.2s | first try ran 82% longer: the old "3 items per list" rule had been dropped |
 | Party Architect | **old kept**: lean invented an end time, food "creating a shared moment", cleanup as a hint to leave (guard flags 32-35 vs 19) | its rules encode real, tool-specific distinctions; its six parallel passes were already fast (9s) |
 
 So:
 - **Never assume shorter is better. Run the old and new prompt on the same case and keep the better answer** (fewer guard flags, nothing invented, complete), then compare speed.
 - **Name the tool's own traps** as short bullets; the route's `router.outputGuard` terms are the list.
+- **Keep length rules.** Dropping "3 items per list" nearly doubled an answer; the house rules now carry a general length rule, and a tool keeps its own counts.
+- **Flag counts vary ±2 run to run.** The bar is "not clearly worse", read alongside the answer itself.
 - **Plan-first only when sections must agree** (advice, scripts, a verdict the rest builds on). Independent sections run as parallel disjoint passes: faster.
 
 ## Done means
