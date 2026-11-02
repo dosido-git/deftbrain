@@ -744,7 +744,7 @@ Return ONLY valid JSON matching this shape:
 });
 
 // Reviewed against backend/lib/outputStandard.js during the 2026-09-03 rewrite.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'tourism copy, invented clock times, insider claims about doors/staff/crowds, stated prices and opening states, and street addresses are blanked in code. The schema itself carries no address, no start time and no end time — the fields the old version used to invent into no longer exist.',

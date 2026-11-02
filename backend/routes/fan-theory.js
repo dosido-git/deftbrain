@@ -370,7 +370,7 @@ plausibility and creativity are INTEGERS 1-10 (return the number only). strength
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // fan-theory-v2. Reviewed 2026-08-26. The theory is meant to be wrong; the
 // EVIDENCE is not meant to be invented. Everything here polices the second
 // half, and nothing polices the first — a wild reading is the product.

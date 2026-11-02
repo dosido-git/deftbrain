@@ -542,7 +542,7 @@ ${NO_QUOTE_RULE}`;
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'invented_recipe_quantity', 'invented_total_time', 'time_total_disagrees_with_steps',

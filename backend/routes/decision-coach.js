@@ -678,7 +678,7 @@ CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
   } catch (e) { console.error('DecisionCoach chain:', e); res.status(500).json({ error: 'Decision chain failed' }); }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // decision-coach-v2. Reviewed 2026-08-25. Deciding firmly is the product and
 // is not guarded. The guard covers one thing: an assumption written as a fact
 // the visitor supplied.

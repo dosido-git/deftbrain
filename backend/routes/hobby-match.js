@@ -1091,7 +1091,7 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'invented_user_psychology_or_emotional_state',

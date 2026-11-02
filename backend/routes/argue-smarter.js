@@ -723,5 +723,4 @@ Write every field with precision — no filler, no padding, no restating what wa
   }
 });
 
-router.outputStandard = 'lean';
 module.exports = router;

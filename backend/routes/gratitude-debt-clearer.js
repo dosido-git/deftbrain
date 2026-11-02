@@ -479,7 +479,7 @@ ${NO_QUOTE_RULE}`;
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // gratitude-debt-clearer-v2. Reviewed 2026-08-28 after the rewrite. Every other
 // v2 tool produces something the visitor reads; this one produces something they
 // SEND, to someone who was actually there. An invented detail is not a quality

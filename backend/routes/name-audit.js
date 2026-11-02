@@ -1069,7 +1069,7 @@ ${NO_QUOTE_RULE}`;
 });
 
 // Reviewed against backend/lib/outputStandard.js during the 2026-09-04 rewrite.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'No numeric score, radar chart, "clean global language" claim, live-world ownership/existence assertion, fictional personification, phoneme-to-psychology folklore, universal-pronunciation-consistency claim, or "agreement = reliable signal" framing survives to the response — all seven are regex-detected and blanked in code, not left to the prompt alone. The literal string "null" is normalized to a real null (how_it_looks.issues answered it that way on the first live probe). check_before_you_commit and the domain/handle labels are code-computed, never model-authored.',

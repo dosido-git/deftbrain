@@ -393,5 +393,4 @@ Never place a double-quote (") character inside any JSON string value — write 
   }
 });
 
-router.outputStandard = 'lean';
 module.exports = router;

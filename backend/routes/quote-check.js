@@ -348,7 +348,7 @@ CODES VS SENTENCES: the only ALL_CAPS values in this schema are the fields whose
 // domain is exactly what the generic v2 guard is built to check, since the
 // failure modes are almost entirely "the visitor's own situation, invented
 // or twisted" rather than specialist knowledge the guard can't verify.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'invented_price_range',                 // a typical/market price range presented as fact

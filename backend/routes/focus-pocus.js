@@ -390,7 +390,7 @@ router.post('/focus-pocus/session', rateLimit(AUTOMATIC_LIMITS, 'fp-session'), a
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // focus-pocus-v2. Reviewed 2026-08-26. The tool's whole job is helping someone
 // STOP, so the guard polices the ways a coach drifts into keeping them going.
 router.outputGuard = {

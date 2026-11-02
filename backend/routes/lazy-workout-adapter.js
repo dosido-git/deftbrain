@@ -689,7 +689,7 @@ Write every field with precision — no filler, no padding, no restating what wa
   } catch (error) { console.error('[LazyWorkoutNudge]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'diagnoses_a_condition_from_something_the_visitor_merely_described',

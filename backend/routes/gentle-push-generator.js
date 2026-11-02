@@ -571,7 +571,7 @@ function isCompletePush(push) {
   );
 }
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // gentle-push-generator-v2. Reviewed 2026-08-28. The risk here is not bad advice
 // so much as presumption: a tool that suggests how to be braver is one keystroke
 // away from telling someone why they are afraid, and it was never told. The

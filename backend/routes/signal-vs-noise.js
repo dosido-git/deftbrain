@@ -124,7 +124,7 @@ KEEP THE SIGNAL.
 NAME THE NOISE.
 LEAVE GENUINE UNCERTAINTY INTACT.`;
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.renumberSources = (p) => renumberSources(p); // for the self-check below
 router.outputGuard = {
   prohibit: [

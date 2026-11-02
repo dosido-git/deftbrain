@@ -18,8 +18,7 @@ const ROOT = path.join(__dirname, '..');
 const ROUTES = path.join(ROOT, 'backend', 'routes');
 const { FROZEN_V1 } = require(path.join(ROOT, 'backend', 'lib', 'outputStandard'));
 
-// 'lean' (lib/houseRules.js) is v2's successor and carries the same duties.
-const DECLARES_V2 = /(?:^|\n)\s*router\.outputStandard\s*=\s*['"](?:v2|lean)['"]/;
+const DECLARES_V2 = /(?:^|\n)\s*router\.outputStandard\s*=\s*['"]v2['"]/;
 const problems = [];
 const notes = [];
 
@@ -77,17 +76,10 @@ const CALLS_GUARD = /runOutputGuard\s*\(|checkAgainstSupplied\s*\(|enforceEnvelo
 // Routes exempt from needing a guard, by name and with a reason. Empty today.
 const GUARD_EXEMPT = new Map([]);
 
-// A lean route converted from the frozen list keeps the check it already ran:
-// the Sonnet consistency check (contradictions, ignored choices, invented
-// details) or the number check. That is a post-generation check that can
-// change what ships, so it satisfies 3b without a v2 guard profile.
-const DECLARES_LEAN = /(?:^|\n)\s*router\.outputStandard\s*=\s*['"]lean['"]/;
-const CALLS_SHARED_CHECK = /checkConsistency\s*\(|allChecks\s*\(|withNumberCheck\s*\(/;
 for (const slug of onDisk) {
   const src = fs.readFileSync(path.join(ROUTES, `${slug}.js`), 'utf8');
   if (!DECLARES_V2.test(src)) continue;
   if (GUARD_EXEMPT.has(slug)) continue;
-  if (DECLARES_LEAN.test(src) && !CALLS_GUARD.test(src) && CALLS_SHARED_CHECK.test(src)) continue;
   if (!CALLS_GUARD.test(src)) {
     problems.push(`backend/routes/${slug}.js declares v2 but never runs a post-generation check — v2 would be an instruction nothing verifies.\n     Call runOutputGuard() from lib/outputGuard (or a tool-specific equivalent) before responding.`);
   } else if (!DECLARES_GUARD.test(src)) {

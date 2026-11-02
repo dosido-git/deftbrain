@@ -215,12 +215,15 @@ describe these checks in the output.
 // variants), verified live against the real endpoint — see
 // audit/tool-notes/PRONOUNCEITRIGHT-NOTES.md.
 const FROZEN_V1 = new Set([
-  'mend', 'awkward-silence-filler', 'bike-medic',
-  'brag-sheet-builder', 'brain-roulette', 'brainstate-deejay', 'buy-wise',
+  'alternate-path', 'analogy-engine', 'mend', 'argue-smarter',
+  'awkward-silence-filler', 'batch-flow', 'belief-stress-test', 'bike-medic',
+  'bill-rescue', 'bookmark', 'brag-sheet-builder', 'brain-dump-buddy',
+  'brain-roulette', 'brainstate-deejay', 'buy-wise',
   'complaint-escalation-writer', 'context-collapse',
-  'date-night', 'decoder-ring', 'difficult-talk-coach', 'doctor-visit-translator', 'fake-review-detective', 'final-wish',
-  'ghost-writer', 'layover-maximizer', 'lease-trap-detector',
-  'mise-en-place', 'name-storm',
+  'date-night', 'decoder-ring', 'difficult-talk-coach', 'doctor-visit-prep',
+  'doctor-visit-translator', 'fake-review-detective', 'final-wish',
+  'ghost-writer', 'history-today', 'layover-maximizer', 'lease-trap-detector',
+  'markup-detective', 'mental-health-navigator', 'mise-en-place', 'name-storm',
   'plain-talk', 'procedure-probe', 'pronounce-it-right',
   'renters-deposit-saver',
   'roast-me', 'not-so-fast', 'six-degrees-of-me', 'the-whole-story',

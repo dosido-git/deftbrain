@@ -498,7 +498,7 @@ Your response MUST contain ALL 3 keys: answer, watch_out, next_step.`, userLangu
 // pass and calendar facts were added (lib/outputStandard.js, PF-39). The
 // prompt already led with the verdict, right-sized the response and refused
 // to promise outcomes; these are the failure modes the guard enforces.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'rule_exemption_or_defense_relied_on_although_the_facts_do_not_meet_one_of_its_conditions',

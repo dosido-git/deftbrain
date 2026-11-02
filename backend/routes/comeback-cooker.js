@@ -117,7 +117,7 @@ Exaggeration, absurdity and obvious fantasy are FINE — this tool writes the li
 // invented motive and consequence, a technique label on every line, and a
 // paragraph predicting what everyone watching would conclude. What it owed them
 // was five good lines.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 
 // Cathartic fiction, so exaggeration is fine and mind-reading is not. The
 // sharpest failure here is a POSITION: a comeback that answers an intrusive

@@ -456,7 +456,7 @@ something they supplied. Omit empty sections. Do not manufacture enough
 content to populate every section — a short, honest result beats a complete-
 looking fabricated one.`);
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = OUTPUT_GUARD;
 
 router.post('/trip-recon', rateLimit(DEFAULT_LIMITS), async (req, res) => {

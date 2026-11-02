@@ -2157,7 +2157,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // Reviewed against backend/lib/outputStandard.js during the 2026-09-04 rewrite.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'predicted outcomes and reactions, visible spending read as evidence about a person, an invented real-issue-underneath, a culture given one uniform money rule, and tax or legal conclusions are all blanked in code. The three verdict enums are pinned to English because the frontend switches on them. The money-profile and monthly-recap routes were deleted rather than repaired: both built a personality out of usage.',

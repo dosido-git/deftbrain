@@ -267,7 +267,7 @@ At the end, run the two FINAL CHECK questions from the rules above against every
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 
 // A reconstruction, not a review. The failures that matter: an activity or a
 // duration the visitor never mentioned, a stronger word than theirs ("wasted",

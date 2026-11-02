@@ -26,7 +26,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // diagnosis, never a percentage, never an invented timeline.
 // ════════════════════════════════════════════════════════════
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'symptom_mapped_directly_to_a_cause_without_supporting_evidence',

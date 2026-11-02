@@ -192,7 +192,7 @@ RULES:
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // truth-bomb, reviewed 2026-10-17. The failure is never a missing answer — it
 // is an answer that quietly upgrades what the user said: a suspicion becomes a
 // fact, a guess about the other person becomes their stated reason,

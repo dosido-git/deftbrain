@@ -8,8 +8,7 @@ const { currentRoute, currentIsTestClient, currentRequestBody } = require('./out
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
 const { withSurge, isSurging, noteUnclearInput, noteDeclined } = require('./surge');
-const { withOutputStandard, currentStandard } = require('./outputStandard');
-const { withHouseRules } = require('./houseRules');
+const { withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -93,11 +92,7 @@ anthropic.messages.create = function (params, ...rest) {
   // Two layers, outermost last: the epistemic contract is universal and sits on
   // top as the stable cacheable prefix; the v2 output standard sits under it and
   // applies only to routes that declared it. See lib/outputStandard.js.
-  // A lean tool (router.outputStandard = 'lean') gets the short house rules
-  // instead of both long contracts — see lib/houseRules.js.
-  const stableText = (currentStandard() === 'lean'
-    ? withHouseRules(stablePart)
-    : withEpistemics(withOutputStandard(stablePart), label)) || ' ';
+  const stableText = withEpistemics(withOutputStandard(stablePart), label) || ' ';
   // The date line rides here, not in stableText — it changes once every 24h,
   // and putting it in the cached block would invalidate EVERY route's cache
   // app-wide once a day (found 2026-09-24 investigating an org-wide cache-hit

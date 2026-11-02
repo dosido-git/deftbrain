@@ -719,7 +719,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
 // Reviewed against backend/lib/outputStandard.js while rewriting this route
 // around the core reasoning rule. Every endpoint runs validateResult.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   checks: ['validateResult'],
   note: 'their_position is emptied in code when the visitor supplied nothing about the other side; prediction and score/grade language is blanked.',

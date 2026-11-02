@@ -33,7 +33,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // behind the pattern-threshold/contrast rules is now the shared
 // SMALL_SAMPLE_PATTERN_DISCIPLINE block from lib/claude.js — see its
 // comment there for when to reuse it on other tools.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'worth_noticing_or_contrasts_exceeding_the_declared_caps',

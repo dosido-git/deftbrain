@@ -8,7 +8,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, groundedData, normalizeKeyPart, matchVerifiedSources } = require('../lib/groundedFacts');
 const { runOutputGuard } = require('../lib/outputGuard');
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'unsupported_legal_conclusion',

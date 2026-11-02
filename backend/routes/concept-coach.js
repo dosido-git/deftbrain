@@ -632,7 +632,7 @@ Important:
 // §3 and §5. validateResult() below is the post-generation check: it is
 // deterministic, it runs on every response, and it refuses rather than shipping a
 // shape the frontend cannot render. See PF-39.
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'any_numeric_score_percentage_probability_or_grade',

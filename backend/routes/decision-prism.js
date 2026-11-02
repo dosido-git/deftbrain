@@ -37,7 +37,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // merged back with a spread — frontend sees one flat object either way.
 // ════════════════════════════════════════════════════════════
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'option_invented_that_the_visitor_never_supplied_including_do_nothing_stay_wait_or_compromise',

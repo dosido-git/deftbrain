@@ -622,7 +622,7 @@ Return ONLY valid JSON:
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // crisis-prioritizer-v2. A STRING here declares nothing and enforces nothing
 // — Gate 9's regex matches it either way, which is exactly how Crash
 // Predictor shipped with a guard that never ran. Each term below is a

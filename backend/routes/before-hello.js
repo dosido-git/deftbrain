@@ -220,7 +220,7 @@ If any answer reveals a problem, revise before returning.`;
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // before-hello. The tool's failure mode is not a wrong answer — it is a
 // plausible one built on facts the user never supplied about a real person
 // they intend to contact, or an action whose only purpose is being seen.

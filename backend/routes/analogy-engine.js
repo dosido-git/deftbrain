@@ -307,5 +307,4 @@ ${TIP}
   }
 });
 
-router.outputStandard = 'lean';
 module.exports = router;

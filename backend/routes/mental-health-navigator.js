@@ -165,5 +165,4 @@ Guidelines:
   }
 });
 
-router.outputStandard = 'lean';
 module.exports = router;

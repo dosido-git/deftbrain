@@ -429,7 +429,7 @@ LENGTH (this pass is what the reader waits for): each gift AT MOST 12 words; sit
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // giftology-v2. Reviewed 2026-08-28. The tool's failure mode is confident
 // commerce: asked where to buy something it will name a shop, a price and a
 // delivery window, because that is what the answer to that question looks like.

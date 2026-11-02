@@ -262,7 +262,7 @@ RULES:
 // check ran, so a capper sentence or an invented aftermath shipped whenever
 // the prompt's own rules slipped. Tips and mistakes lost their fixed "2-3"
 // count (§7: a slot is not a reason to fill it).
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 // toast-writer. The failure mode is not a bad speech — it is a good-sounding
 // one the speaker stands up and says in front of the honoree, with a detail
 // that never happened or a verdict about the person they never meant.

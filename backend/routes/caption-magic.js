@@ -918,7 +918,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   }
 });
 
-router.outputStandard = 'lean';
+router.outputStandard = 'v2';
 
 // Exposed for the enforcement test: the validator is the one part of this file
 // whose failure mode is silence, so it has to be callable without a live image
