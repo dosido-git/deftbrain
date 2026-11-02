@@ -59,6 +59,8 @@ yet rebuilt keep both until their turn.
 | Read the Room | **lean kept** after adding a length rule: flags 4 vs 5, 6.3s vs 8.2s | first try ran 82% longer: the old "3 items per list" rule had been dropped |
 | Pet Behavior Decoder | **lean kept**: flags 5 vs 14 and 4 vs 4 (medication case, same vet-contact level), 15.5s vs 21.6s | 45-section rulebook condensed to 9 bullets |
 | Research Decoder | **lean kept**: flags 6 vs 6, 12.8s vs 20.5s; longer, but the saved answer is from Sonnet 4.6 | modes kept as one line each |
+| Break My Plan | **lean kept** after naming "even with could": flags 9 vs 10, first part 5.5s vs 20.1s | first try predicted the passed-over manager "could be less engaged" |
+| Quote Check | **switch only** (own prompt kept, house rules instead of the global blocks): flags 0 vs 3, 9.3s | dense one-paragraph rules, each a real distinction |
 | Party Architect | **old kept**: lean invented an end time, food "creating a shared moment", cleanup as a hint to leave (guard flags 32-35 vs 19) | its rules encode real, tool-specific distinctions; its six parallel passes were already fast (9s) |
 
 So:
@@ -66,6 +68,7 @@ So:
 - **Name the tool's own traps** as short bullets; the route's `router.outputGuard` terms are the list.
 - **Keep length rules.** Dropping "3 items per list" nearly doubled an answer; the house rules now carry a general length rule, and a tool keeps its own counts.
 - **Flag counts vary ±2 run to run.** The bar is "not clearly worse", read alongside the answer itself.
+- **Switch-only is a valid result.** Where the tool's own prompt is dense with real distinctions, keep it and just declare `lean`; most of the per-call waste was the two global blocks.
 - **Plan-first only when sections must agree** (advice, scripts, a verdict the rest builds on). Independent sections run as parallel disjoint passes: faster.
 
 ## Done means
