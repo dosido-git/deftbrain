@@ -18,7 +18,8 @@ const ROOT = path.join(__dirname, '..');
 const ROUTES = path.join(ROOT, 'backend', 'routes');
 const { FROZEN_V1 } = require(path.join(ROOT, 'backend', 'lib', 'outputStandard'));
 
-const DECLARES_V2 = /(?:^|\n)\s*router\.outputStandard\s*=\s*['"]v2['"]/;
+// 'lean' (lib/houseRules.js) is v2's successor and carries the same duties.
+const DECLARES_V2 = /(?:^|\n)\s*router\.outputStandard\s*=\s*['"](?:v2|lean)['"]/;
 const problems = [];
 const notes = [];
 
