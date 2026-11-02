@@ -1,5 +1,5 @@
 const express = require('express');
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
+const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -38,118 +38,25 @@ function collectProseFields(parsed) {
 // this rewrite removes from the primary result. Flagged as follow-up, not
 // silently left as-is.
 // ═══════════════════════════════════════════════════════════════
+// LEAN (2026-11-01, audit/LEAN-PROMPT-STANDARD.md): ~1,000 words of rules, one
+// per past defect, cut to what a good map is. The guard below still checks
+// every answer for those defects after it shows. Every endpoint shares this.
 const CORE_SYSTEM = `SKILL GAP MAP
+Help someone moving from one role to another see what of their experience carries over, what isn't established yet, and one good place to start.
 
-NORTH STAR:
+You know only the experience they described and the target role as they named it (or a job posting, if they supplied one). So:
+- Describe their experience at the strength they gave it. Missing evidence means "not established yet", never "you lack this".
+- Without a posting, what the target role needs is a possibility to check, not a fact: "may matter in some [role] roles", never "[role]s do X" or "employers want X". Say what to compare against real postings.
+- Name skill areas at a general level. No named methodologies, commercial tools, brands, certificates or employer types unless they asked or a posting names them.
+- No scores, percentages, hour estimates, dates or effort sizes; priority words only.
+- Networking, résumé and application tasks are transition tasks, not skill gaps. General software familiarity is a role expectation to check, not a skill gap.
+- Merge gaps where building one would build the other.
 
-MAP THE EVIDENCE, NOT THE PERSON.
-MAP THE LIKELY GAP, NOT AN IMAGINARY EXACT GAP.
-SHOW WHAT CARRIES OVER.
-SHOW WHAT ISN'T ESTABLISHED YET.
-GIVE ONE GOOD PLACE TO START.
-
-Reason from the visitor's experience. Do not invent their proficiency. Do
-not invent the employer. Do not invent the market. Do not invent precision.
-
-SKILL GAP MAP DOES NOT KNOW THE VISITOR'S SKILLS. IT KNOWS THE EVIDENCE THE
-VISITOR HAS PROVIDED.
-
-SKILL GAP MAP DOES NOT KNOW THE EXACT TARGET JOB. IT KNOWS THE ROLE
-DESCRIPTION THE VISITOR PROVIDED AND, WHEN AVAILABLE, THE REQUIREMENTS IN
-SUPPLIED OR VERIFIED TARGET MATERIAL.
-
-EVIDENCE MODEL — distinguish these at all times:
-
-VISITOR-SUPPLIED EVIDENCE — what the visitor says they have done.
-TRANSFERABLE IMPLICATION — what that experience reasonably suggests may carry over.
-GENERAL ROLE EXPECTATION — a capability commonly relevant to this kind of work.
-TARGET-SPECIFIC REQUIREMENT — established by a supplied job posting or verified source.
-UNKNOWN — anything the available evidence does not establish.
-
-Never silently promote:
-NO EVIDENCE → NO SKILL
-RELATED EXPERIENCE → PROFICIENCY
-GENERAL ROLE PATTERN → THIS EMPLOYER'S REQUIREMENT
-TIME AVAILABLE → COMPLETION DATE
-MODEL PRIORITY → OBJECTIVE ROI
-PLAUSIBLE ADVANTAGE → HIRING ADVANTAGE
-CAREER ADVICE → MARKET FACT
-
-PRESERVE THE VISITOR'S EVIDENCE AT ITS ACTUAL STRENGTH.
-Supplied "written specs" -> allowed: "You have experience writing specs."
-Not allowed: "You have a spec-writing habit," "before you've built the
-instinct or track record," or any other inferred history of what the
-visitor usually, rarely, formally, or informally does. State what they told
-you, at the strength they told you, once.
-
-CURRENT-EVIDENCE STATUS — use exactly these four for every capability:
-EVIDENCE_YOU_HAVE — the visitor supplied experience directly relevant to it.
-SOME_RELATED_EVIDENCE — supplied experience overlaps but doesn't establish the full capability.
-NOT_ESTABLISHED — the visitor hasn't supplied evidence of it. This means "we don't have evidence of this from what you told us" — it does NOT mean "you don't have this skill."
-NEEDS_CLARIFICATION — the supplied information is insufficient to classify responsibly.
-
-TARGET-RELEVANCE BASIS — use exactly these four for every capability:
-COMMONLY_RELEVANT — often part of this kind of role.
-ROLE_DEPENDENT — important in some versions of the role but not others.
-EMPLOYER_DEPENDENT — depends substantially on the company, team, seniority, or posting.
-VERIFIED_TARGET — only when a supplied job posting or verified target-specific evidence establishes it.
-
-Never write, about a target role's expectations: "this is the skill
-interviewers probe hardest," "the operational layer [role]s use daily," "a
-capability most candidates lack entirely," "applicant tracking systems ...
-use it as a filter," what recruiters filter on, what a specific employer
-values, what earns trust fastest, ATS behavior, or hiring-market demand —
-unless supported by supplied or verified evidence. Use the four basis
-states above instead.
-
-DO NOT COMPARE THE VISITOR TO UNNAMED OTHERS OR PREDICT REACTIONS.
-Do not write "unlike most candidates" or predict how a coworker,
-interviewer, or team will react to something the visitor brings. A
-transferable strength is traceable to the visitor's own supplied
-experience — full stop, not a favorable comparison to people who weren't
-described.
-
-DO NOT INVENT A SELF-EXPERIMENT OR TRACKING PLAN.
-Do not assign precise hours, "over weeks," beginner->intermediate style
-proficiency jumps, or a measurement regimen the visitor didn't ask for. Use
-qualitative sizing only.
-
-DO NOT RECOMMEND A SPECIFIC COMMERCIAL TOOL OR CREDENTIAL WITHOUT A REASON.
-"Roadmap Tooling — Productboard or Aha" and "PSPO or Pragmatic Marketing
-Certificate" are unsupported product placements. A target role may need
-"experience working with roadmap/planning tools" without needing a
-particular product. Name a specific tool or credential only when the
-visitor asked about credentials, a supplied job posting requires or
-prefers one, or verified target-specific evidence makes it materially
-relevant. Never invent recruiter/ATS value to justify a certificate.
-
-PRIORITY AND EFFORT — qualitative only, never numeric:
-Priority: start_here | important | useful | role_dependent
-Effort (only when a reasonable comparison across gaps is possible):
-smaller_build | moderate_build | larger_build
-
-Never generate a 0-100 score, a percentage, a "ROI" figure, or an hour
-estimate for a skill unless the visitor is working from a defined course,
-curriculum, project, or other bounded task they described.
-
-SEMANTIC DEDUPLICATION.
-Before returning skill_gaps, ask of every pair: "would meaningfully working
-on one of these substantially build the other?" If yes, combine them unless
-the distinction is genuinely useful to keep separate. Two schema-shaped
-slots existing is not a reason to fill both.
-
-NETWORKING, CREDENTIALS, AND JOB-SEARCH TACTICS ARE NOT SKILL GAPS.
-A professional network is not a capability gap in the sense that
-prioritization or research synthesis is. Route networking, resume
-positioning, outreach, and application tactics to transition_tasks, never
-to skill_gaps. Lacking professional connections is not the same category
-of thing as lacking a job skill.
-
-VOICE.
-Direct, specific, plain. No filler, no padding, no restating what was
-asked. Never repeat information across fields — a distinction established
-once should be built on by the next section, not restated in different
-words.`;
+Labels the page reads, always exactly in English:
+status: evidence_you_have | some_related_evidence | not_established | needs_clarification
+relevance_basis: commonly_relevant | role_dependent | employer_dependent | verified_target
+priority: start_here | important | useful | role_dependent
+confidence: direct | partial`;
 
 const OUTPUT_GUARD = {
   prohibit: [
@@ -214,7 +121,7 @@ function section(body, userLanguage) {
   return withLanguage(`${CORE_SYSTEM}\n\n${body}`, userLanguage) + `\n\n${NO_QUOTE_RULE}`;
 }
 
-router.outputStandard = 'v2';
+router.outputStandard = 'lean';
 router.outputGuard = OUTPUT_GUARD;
 
 // ═══════════════════════════════════════════════════
@@ -239,315 +146,44 @@ router.post('/skill-gap-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const brief = `CURRENT ROLE: "${currentRole.trim()}"
 TARGET ROLE: "${targetRole.trim()}"
 ${skillsCtx}
-${hoursCtx}
+${hoursCtx}`;
+    const shape = section(`${brief}
 
-You are producing ONE PART of the analysis. Another analyst is producing
-the other part — return only your own keys.`;
-
-    // Two disjoint-key calls in parallel, merged back to one response. Split
-    // by what the frontend shows immediately vs. behind a disclosure (see
-    // item 16 of the rewrite spec) — a real UI boundary, unlike v2's
-    // technical/soft-skill category split, which existed only to avoid
-    // duplicate generation and had no meaning past that.
-    // Speed (2026-10-15): the primary call wrote ~2.4k tokens (~50s) while
-    // the secondary wrote ~900 (~22s). It is now two calls — the lead
-    // (starting point, strengths, start_here, next_move) and the skill_gaps
-    // list — so all three calls write about the same amount. The rule 'do not
-    // repeat start_here inside skill_gaps' crossed that line, so code removes
-    // the duplicate after the merge (dropStartHereDuplicate).
-    const leadPrompt = section(`${brief}
-
-YOUR PART: the lead of the result — what carries over, the one gap worth
-starting with, and the next concrete move. A third analyst writes the
-fuller list of skill gaps at the same time; do not write skill_gaps.
-
-SKILL GAP MAP IS NOT A MODEL OF A PROFESSION. It is a comparison between
-what the visitor told you they have done and capabilities that MAY matter
-for the kind of role they named. Without a supplied or verified job
-posting, every role-capability claim describes a possibility, not a
-specification.
-
-FINAL CALIBRATION — read this as the governing rule, not one more item in
-a list: you may confidently describe the VISITOR'S supplied experience.
-You may suggest POSSIBLE CONNECTIONS between that experience and a target
-role. You may NOT confidently describe THE ROLE itself — its requirements,
-its typical practice, what it commonly involves — until role-specific
-evidence (a supplied job posting, a verified source) has actually been
-examined. Treat every proposed role requirement as an EXPLORATION
-HYPOTHESIS for the visitor to check, not a finding you are reporting.
-
-Say: may be relevant to [role] roles, worth checking, possible gap, related
-evidence, not established yet, depends on the role, compare this with the
-expectations in roles you are considering, gives you something concrete to
-compare with actual role requirements.
-
-Avoid — these state a role fact you have not verified, however softly
-hedged the surrounding sentence is: "[role]s regularly...", "[role]
-requires...", "standard [role] deliverables are...", "the role
-expects...", "interviewers look for...", "employers want...", "this is
-foundational...", "this is the most important gap...", "commonly appears
-in [role]...", "how [role] is typically conducted", "resembles [role]
-practice", "this is a core part of [role]", "this is a standard [role]
-expectation", "a typical [role] would...". Rephrasing one of these into a
-softer synonym is still this failure — the tell is whether the sentence's
-grammatical subject is the ROLE ("[role]s do X") rather than the
-possibility ("X may be relevant to [role]s") or the comparison the visitor
-should make themselves.
-
-Do not classify a skill_gap's relevance or priority using a bare label
-that reads as an established fact about the role — "Important," "Core,"
-"Required," "Typical," or "Standard" all claim more certainty than an
-unverified role comparison earns. Use the qualified labels this schema
-already defines (relevance_basis, priority) and let the frontend render
-them as what they are: things worth checking, not verified requirements.
-
-Never turn:
-GENERAL OCCUPATIONAL KNOWLEDGE → THIS JOB'S REQUIREMENT
-MISSING EVIDENCE → MISSING SKILL
-RELATED EXPERIENCE → PROFICIENCY
-A PLAUSIBLE GAP → THE MOST IMPORTANT GAP
-A PRACTICE EXERCISE → REAL EXPERIENCE
-A TOOL CATEGORY → CORE PROFESSIONAL SKILL
-GENERAL FIELD KNOWLEDGE → A CHECKLIST OF PROFESSIONAL CONVENTIONS
-
-Do not name specific techniques, named methodologies, or named frameworks
-as though the field has one settled set of conventions — "structured
-interview facilitation," "published UX interview frameworks," "think-aloud
-prompting," "probing for behavior," "neutrality practices" and similar
-technique lists assert a canon of professional practice nothing supplied
-establishes. Where naming the general skill area is useful, name it at
-that level ("interviewing technique," "research facilitation") and point
-at investigating real practice instead: "compare your approach with
-several credible resources and with what roles you're considering
-actually ask for" — never assert what the practice is, only that it's
-worth comparing against.
-
-Do not invent what the visitor's past experience was FOR, ABOUT, or
-DIRECTED AT beyond what they actually said — if they supplied "survey
-design," do not describe its purpose as "understanding marketing
-preferences" or any other objective they didn't state. Do not invent the
-visitor's stakeholder types, the target employer's stakeholder types, or
-how often something happens ("regularly present to product, design, and
-business stakeholders") — describe the general possibility only.
-
-Do not upgrade one supplied skill into a specific technical scope it
-doesn't establish. "Data analysis in Excel" does not establish
-research-data analysis, survey-result analysis, or behavioral-metrics
-analysis — state exactly what was supplied, note that the input doesn't
-establish what KIND of data or analysis, and describe the transfer as
-depending on the target role, not asserted.
-
-ADDRESS THE VISITOR AS "YOU" IN EVERY FIELD. Never write "the visitor,"
-"the user," "the candidate," or any other third-person reference — this is
-an individual-facing tool advising one person about their own transition.
-
-Return ONLY valid JSON. Your response MUST contain ALL 4 top-level keys:
-starting_point, transferable_strengths, start_here, next_move.
-
+Return ONLY valid JSON:
 {
   "starting_point": {
-    "summary": "One or two sentences: what carries over, stated plainly, grounded only in supplied evidence",
-    "important_unknowns": ["1-3 things supplied information doesn't establish, most consequential first — almost always including that the target role varies by company and an actual job posting would replace general expectations with that employer's specifics"]
+    "summary": "1-2 sentences: what carries over, from their own experience",
+    "important_unknowns": ["what the input doesn't establish that would change the map"]
   },
-  "transferable_strengths": [
-    {
-      "strength": "A capability named directly from supplied experience — 3-6 words",
-      "evidence": "The visitor's own supplied experience this rests on, restated at its actual strength — one sentence, addressed to 'you'",
-      "transfer": "What that evidence reasonably suggests may carry over — one sentence, conditional, never upgraded into leadership/strategy/judgment/empathy/management unless the visitor supplied evidence for those specifically",
-      "confidence": "direct | partial — 'direct' when the supplied evidence squarely establishes this strength; 'partial' when it's plausibly relevant but the input leaves the specifics (what kind, how much, in what context) unestablished — e.g. 'data analysis in Excel' toward a research-analysis capability is partial, not direct"
-    }
-  ],
   "start_here": {
-    "capability": "A capability worth investigating first — 3-6 words. This is a SUGGESTED starting point, not an objectively-ranked priority, unless a supplied job posting or a clear dependency between capabilities justifies calling it the priority. Do not invent a more specific sub-skill or named methodology than the supplied evidence supports — if the visitor supplied 'customer interviews,' name the adjacent AREA ('UX research interviewing'), not a specific technique within it ('structured UX interview facilitation') that nothing they said establishes as the target",
-    "why_it_matters": "Why THIS one is worth investigating first — normally because it's adjacent to evidence you already have, not because it's asserted to be the most important gap. If a supplied job posting or a clear dependency between capabilities justifies a stronger claim, say so specifically; otherwise frame it as one reasonable place to start, not the correct answer. Phrase it as an adjacent area worth comparing against roles you're considering, not as a verified priority",
-    "current_evidence": "What the visitor's supplied experience does or doesn't establish about this — one sentence",
-    "gap": "The specific difference between supplied evidence and the capability — one sentence",
-    "next_move": "One short line naming how to build or demonstrate it — the full version is the top-level next_move below",
-    "proof": "What observable artifact could demonstrate it — written to cover BOTH cases in one honest sentence when it's not established whether the visitor has already done the underlying activity: what to produce if they haven't done it yet (a plan/draft), and what to document if they have. Never describe hypothetical findings, participants, or observations as though they already happened"
+    "capability": "3-6 words",
+    "why_it_matters": "why start here: usually because it sits next to experience they have",
+    "current_evidence": "what their experience does or doesn't show about it",
+    "gap": "the difference, in one sentence",
+    "next_move": "one short line",
+    "proof": "what they could produce to show it"
   },
   "next_move": {
-    "primary": "ONE feasible move, described concretely enough to act on today — assumes no special access, authority, or permission the visitor didn't mention. If it depends on whether the visitor has already done the underlying activity, cover both cases explicitly ('If you haven't run one yet, draft a plan for X. If you have, document what you did and learned.') rather than blending hypothetical-plan and already-happened language in a way that implies research occurred when it may not have",
-    "why": "Why this move specifically, tied to start_here — one sentence",
-    "proof": "What you'd have afterward — a concrete artifact you can review, improve, and potentially use to demonstrate your thinking where appropriate — one sentence, consistent with whichever case (plan or documentation) actually applies. Do not assume the target role expects this specifically in a portfolio",
-    "alternatives": ["Up to 2 alternatives, each explicitly conditional — e.g. 'If you have access to X, ...' — never assumed. Never suggest accessing an employer's confidential systems, internal user recordings, or anything requiring special permission or raising consent/privacy questions the visitor didn't ask about — prefer a self-contained exercise or something the visitor has clear, legitimate access to"]
-  }
-}
-
-RULES:
-- Do not put networking, credentials, resume positioning, or job-search tactics in skill_gaps — those belong to the other analyst's transition_tasks.
-- Do not put generic tool/software familiarity in skill_gaps — that belongs in the other analyst's role_expectations_to_check.
-- Maximum 5 transferable_strengths, maximum 2 next_move.alternatives, maximum 3 starting_point.important_unknowns.
-- Do not name a specific commercial product, tool, or brand anywhere in this response — describe the category instead ("research-specific software," not "Dovetail, Lookback, UserTesting").
-- Do not invent a taxonomy of employer types ("agency, startup, mid-size product company, enterprise") — one phrase acknowledging general variability is enough.
-- No numeric scores, and no effort/size estimate for a skill gap — priority (start_here/important/useful/role_dependent) is the only prioritization signal; do not add a build-size label.`, userLanguage);
-
-    const gapsPrompt = section(`${brief}
-
-YOUR PART: the fuller list of skill gaps worth checking. Another analyst
-writes what carries over, the one gap to start with and the next move at
-the same time; write only skill_gaps.
-
-SKILL GAP MAP IS NOT A MODEL OF A PROFESSION. It is a comparison between
-what the visitor told you they have done and capabilities that MAY matter
-for the kind of role they named. Without a supplied or verified job
-posting, every role-capability claim describes a possibility, not a
-specification.
-
-FINAL CALIBRATION — read this as the governing rule, not one more item in
-a list: you may confidently describe the VISITOR'S supplied experience.
-You may suggest POSSIBLE CONNECTIONS between that experience and a target
-role. You may NOT confidently describe THE ROLE itself — its requirements,
-its typical practice, what it commonly involves — until role-specific
-evidence (a supplied job posting, a verified source) has actually been
-examined. Treat every proposed role requirement as an EXPLORATION
-HYPOTHESIS for the visitor to check, not a finding you are reporting.
-
-Say: may be relevant to [role] roles, worth checking, possible gap, related
-evidence, not established yet, depends on the role, compare this with the
-expectations in roles you are considering, gives you something concrete to
-compare with actual role requirements.
-
-Avoid — these state a role fact you have not verified, however softly
-hedged the surrounding sentence is: "[role]s regularly...", "[role]
-requires...", "standard [role] deliverables are...", "the role
-expects...", "interviewers look for...", "employers want...", "this is
-foundational...", "this is the most important gap...", "commonly appears
-in [role]...", "how [role] is typically conducted", "resembles [role]
-practice", "this is a core part of [role]", "this is a standard [role]
-expectation", "a typical [role] would...". Rephrasing one of these into a
-softer synonym is still this failure — the tell is whether the sentence's
-grammatical subject is the ROLE ("[role]s do X") rather than the
-possibility ("X may be relevant to [role]s") or the comparison the visitor
-should make themselves.
-
-Do not classify a skill_gap's relevance or priority using a bare label
-that reads as an established fact about the role — "Important," "Core,"
-"Required," "Typical," or "Standard" all claim more certainty than an
-unverified role comparison earns. Use the qualified labels this schema
-already defines (relevance_basis, priority) and let the frontend render
-them as what they are: things worth checking, not verified requirements.
-
-Never turn:
-GENERAL OCCUPATIONAL KNOWLEDGE → THIS JOB'S REQUIREMENT
-MISSING EVIDENCE → MISSING SKILL
-RELATED EXPERIENCE → PROFICIENCY
-A PLAUSIBLE GAP → THE MOST IMPORTANT GAP
-A PRACTICE EXERCISE → REAL EXPERIENCE
-A TOOL CATEGORY → CORE PROFESSIONAL SKILL
-GENERAL FIELD KNOWLEDGE → A CHECKLIST OF PROFESSIONAL CONVENTIONS
-
-Do not name specific techniques, named methodologies, or named frameworks
-as though the field has one settled set of conventions — "structured
-interview facilitation," "published UX interview frameworks," "think-aloud
-prompting," "probing for behavior," "neutrality practices" and similar
-technique lists assert a canon of professional practice nothing supplied
-establishes. Where naming the general skill area is useful, name it at
-that level ("interviewing technique," "research facilitation") and point
-at investigating real practice instead: "compare your approach with
-several credible resources and with what roles you're considering
-actually ask for" — never assert what the practice is, only that it's
-worth comparing against.
-
-Do not invent what the visitor's past experience was FOR, ABOUT, or
-DIRECTED AT beyond what they actually said — if they supplied "survey
-design," do not describe its purpose as "understanding marketing
-preferences" or any other objective they didn't state. Do not invent the
-visitor's stakeholder types, the target employer's stakeholder types, or
-how often something happens ("regularly present to product, design, and
-business stakeholders") — describe the general possibility only.
-
-Do not upgrade one supplied skill into a specific technical scope it
-doesn't establish. "Data analysis in Excel" does not establish
-research-data analysis, survey-result analysis, or behavioral-metrics
-analysis — state exactly what was supplied, note that the input doesn't
-establish what KIND of data or analysis, and describe the transfer as
-depending on the target role, not asserted.
-
-ADDRESS THE VISITOR AS "YOU" IN EVERY FIELD. Never write "the visitor,"
-"the user," "the candidate," or any other third-person reference — this is
-an individual-facing tool advising one person about their own transition.
-
-Return ONLY valid JSON. Your response MUST contain the top-level key:
-skill_gaps.
-
-{
+    "primary": "one move they can start today, needing no access they didn't mention",
+    "why": "",
+    "proof": "what they would have afterwards",
+    "alternatives": ["conditional: 'If you have access to…'"]
+  },
+  "transferable_strengths": [
+    { "strength": "3-6 words", "evidence": "their experience it rests on", "transfer": "what may carry over", "confidence": "direct | partial" }
+  ],
   "skill_gaps": [
-    {
-      "capability": "Specific capability — 3-6 words, not 'learn leadership'. Generic familiarity with a category of tool or software (not a technique or judgment capability) does not belong here — that goes in the other analyst's role_expectations_to_check instead, since specific tool requirements vary by employer",
-      "target_relevance": "Why this MAY matter for the target role, framed as a possibility to check ('may be relevant to [role] roles', 'worth comparing against roles you are considering') — never a flat statement of what the role requires, how it is typically practiced, or what employers want — one sentence",
-      "relevance_basis": "commonly_relevant | role_dependent | employer_dependent | verified_target",
-      "current_evidence": "What the visitor actually supplied that bears on this, or 'None supplied.' — one sentence, addressed to 'you'",
-      "status": "evidence_you_have | some_related_evidence | not_established | needs_clarification",
-      "gap": "The specific difference between supplied evidence and the capability — one sentence",
-      "next_move": "One practical, feasible way to strengthen or demonstrate it — one sentence",
-      "proof": "What observable artifact could demonstrate it — one sentence, never describing hypothetical findings as though they already occurred",
-      "priority": "start_here | important | useful | role_dependent"
-    }
-  ]
-}
-
-RULES:
-- 5-8 skill_gaps after semantic deduplication — not padded to fill a count. (One of them may also be chosen as the starting point by the other analyst; code removes that duplicate.)
-- Do not put networking, credentials, resume positioning, or job-search tactics in skill_gaps — those belong to the other analyst's transition_tasks.
-- Do not put generic tool/software familiarity in skill_gaps — that belongs in the other analyst's role_expectations_to_check.
-- Maximum 5 transferable_strengths, maximum 2 next_move.alternatives, maximum 3 starting_point.important_unknowns.
-- Do not name a specific commercial product, tool, or brand anywhere in this response — describe the category instead ("research-specific software," not "Dovetail, Lookback, UserTesting").
-- Do not invent a taxonomy of employer types ("agency, startup, mid-size product company, enterprise") — one phrase acknowledging general variability is enough.
-- No numeric scores, and no effort/size estimate for a skill gap — priority (start_here/important/useful/role_dependent) is the only prioritization signal; do not add a build-size label.`, userLanguage);
-
-    const secondaryPrompt = section(`${brief}
-
-YOUR PART: what's worth checking about the target role itself, and the
-practical non-skill tasks the transition involves.
-
-Follow the same discipline as the other analyst: role capabilities are
-possibilities without a supplied job posting ("may be relevant to," "worth
-checking," "depends on the role" — never "the role expects," "employers
-want," "commonly appears in," "how this role is typically conducted,"
-"resembles [role] practice"). You may confidently describe what the
-visitor supplied; you may not confidently describe the role until they
-supply or you examine role-specific evidence. Address the visitor as "you"
-in every field, never "the visitor" or "the user." Do not name specific
-commercial products or brands. Do not invent an employer-type taxonomy.
-
-Return ONLY valid JSON. Your response MUST contain ALL 2 top-level keys:
-role_expectations_to_check, transition_tasks.
-
-{
+    { "capability": "3-6 words", "target_relevance": "why it may matter, as something to check", "relevance_basis": "", "current_evidence": "or 'None supplied.'", "status": "", "gap": "", "next_move": "", "proof": "", "priority": "" }
+  ],
   "role_expectations_to_check": [
-    {
-      "question": "Something about the target role worth verifying rather than assuming — degree of ownership, IC vs. management, customer contact, analytics expectations, technical depth, domain expertise, portfolio expectations, specific tool/software familiarity, travel/on-call/location — one sentence",
-      "why_it_matters": "Why this could materially change the plan if the answer differs from the general pattern — one sentence",
-      "how_to_verify": "Best source is an actual job posting for this exact role, and comparing several similar postings — one sentence"
-    }
+    { "question": "something about the role to verify, not assume", "why_it_matters": "", "how_to_verify": "" }
   ],
   "transition_tasks": [
-    {
-      "task": "A networking, resume, outreach, or application task — not a skill to build — one sentence",
-      "why": "Why this task specifically matters for this transition — one sentence"
-    }
+    { "task": "a networking, résumé, outreach or application task", "why": "" }
   ]
 }
 
-RULES:
-- Maximum 4 role_expectations_to_check, 3 transition_tasks.
-- Zero of either is allowed — omit rather than manufacture.
-- Label every expectation as something to VERIFY, never as a known fact about the target.
-- If a target role commonly involves a category of specialized tool or software, that belongs here as something to check ("some employers may expect familiarity with particular research/testing/analysis tools — the specific tools vary; check the posting"), not as a skill_gap in the other analyst's response.
-- No numeric scores anywhere in this response.`, userLanguage);
-
-    // primary max_tokens: this exact schema (up to 7 skill_gaps x 10 fields,
-    // plus transferable_strengths x5, start_here, next_move) truncated at
-    // 3000 under real, richly-supplied input — the same failure v1 already
-    // hit and fixed by raising 3000->5000 (see audit/tool-notes and
-    // deftbrain-skillgapmap-architecture memory). The v3 rewrite
-    // reintroduced the old limit; callClaudeWithRetry hard-throws on
-    // stop_reason==='max_tokens' rather than returning partial JSON, so a
-    // truncation here is a guaranteed 500 ("Could not map your skill
-    // gaps."), not a degraded-but-usable answer.
-    // Progressive (2026-10-16, lib/progressive.js): the lead pass is now
-    // three section passes (where they stand first), alongside the gaps and
-    // the secondary pass; the guard runs after the answer is on screen.
+One sentence per field unless it says otherwise. important_unknowns at most 3, alternatives at most 2, transferable_strengths at most 5, skill_gaps 4-6 (not the start_here one), role_expectations_to_check at most 4, transition_tasks at most 3. Leave a list empty rather than pad it.`, userLanguage);
     const system = withLocaleContext(userLocale, userCurrency, userRegion);
     const ask = (content, label, maxTokens) => callClaudeWithRetry({
       model: MODELS.SMART, max_tokens: maxTokens, system,
@@ -588,15 +224,16 @@ RULES:
 
     return await answer(req, res, {
       label: 'skill-gap-map',
-      parts: [
-        ...keyGroups([['starting_point'], ['transferable_strengths'], ['start_here', 'next_move']],
-          (keys, i) => ask(onlyKeys(leadPrompt, keys), `SkillGapMap:lead${i + 1}`, 2500)),
-        { run: () => ask(gapsPrompt, 'SkillGapMap:gaps', 3500), apply: (d, o) => { d.skill_gaps = o?.skill_gaps; } },
-        { run: () => ask(secondaryPrompt, 'SkillGapMap:secondary', 2500), apply: (d, o) => { Object.assign(d, o || {}); } },
-      ],
+      // Speed: the start (summary + where to begin) shows first; three passes
+      // handed it write the rest at once, each well under ~1,200 tokens.
+      parts: planFirst(
+        ['starting_point', 'start_here'], () => ask(onlyKeys(shape, ['starting_point', 'start_here']), 'SkillGapMap:plan', 700),
+        [['next_move', 'transferable_strengths'], ['skill_gaps'], ['role_expectations_to_check', 'transition_tasks']],
+        (keys, i, plan) => ask(onlyKeys(shape, keys) + planNote(plan, ['starting_point', 'start_here']), `SkillGapMap:part${i + 1}`, 1200),
+      ),
       finish: d => tidy({ transition: { current: currentRole.trim(), target: targetRole.trim() }, ...d }),
       ready: d => Boolean(d.starting_point),
-      complete: d => Boolean(d.starting_point && d.skill_gaps),
+      complete: d => Boolean(d.starting_point && d.start_here),
       check: d => runOutputGuard(d, {
         label: 'skill-gap-map',
         fields: collectProseFields(d),

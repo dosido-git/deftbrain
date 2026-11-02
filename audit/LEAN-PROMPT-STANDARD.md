@@ -49,8 +49,21 @@ yet rebuilt keep both until their turn.
 - Checks run after the answer shows (existing `check:`). Keep the tool's guard; drop nothing
   that catches a real defect.
 
+## Lessons from the first tools (2026-11-01)
+
+| Tool | Result | Why |
+|---|---|---|
+| Roommate Court | **lean kept**: better answer (recommendation, confidence, costs), 13s vs 18.5s | sections must agree, so plan-first fixed drift; the rules were mostly generic |
+| Skill Gap Map | **lean kept**: first part 4.8s vs 15.5s, whole answer 16s vs 95s, grounded | one ~1,000-word block was repeated three times |
+| Party Architect | **old kept**: lean invented an end time, food "creating a shared moment", cleanup as a hint to leave (guard flags 32-35 vs 19) | its rules encode real, tool-specific distinctions; its six parallel passes were already fast (9s) |
+
+So:
+- **Never assume shorter is better. Run the old and new prompt on the same case and keep the better answer** (fewer guard flags, nothing invented, complete), then compare speed.
+- **Name the tool's own traps** as short bullets; the route's `router.outputGuard` terms are the list.
+- **Plan-first only when sections must agree** (advice, scripts, a verdict the rest builds on). Independent sections run as parallel disjoint passes: faster.
+
 ## Done means
 
 - The route declares `router.outputStandard = 'lean'`, with its `router.outputGuard` kept.
-- Gates pass; the golden case runs once live; the answer is compared with the old one on the same
-  input (complete, no repeats, nothing invented, first part < 5s).
+- Gates pass; the golden case runs live on BOTH the old and new prompt; the new one ships only if
+  its answer is at least as good (complete, no repeats, nothing invented) and not slower to first part.
