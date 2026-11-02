@@ -261,4 +261,5 @@ ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.bo
   }
 });
 
+router.outputStandard = 'lean';
 module.exports = router;

@@ -802,4 +802,5 @@ function stripCites(val) {
   return val;
 }
 
+router.outputStandard = 'lean';
 module.exports = router;

@@ -139,4 +139,5 @@ verdict.rating must be one of the exact English values listed — the interface 
   }
 });
 
+router.outputStandard = 'lean';
 module.exports = router;

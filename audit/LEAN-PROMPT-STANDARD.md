@@ -87,6 +87,24 @@ did not count against the prompt.
 - **Cost:** the switch roughly halves the cost of a run (Before the Crash $0.42 → $0.18, Plot Hole
   Finder $0.96 → $0.58), because ~4,000 words of instructions no longer go with every call.
 
+## Older (frozen) tools, first pass (2026-11-01)
+
+Switched with their own prompts kept, leaving `FROZEN_V1`: Alternate Path (18→5 flags), Analogy
+Engine, Argue Smarter, Batch Flow, Belief Stress Test, Bill Rescue, Bookmark, Brain Dump Buddy — each
+equal or fewer flags. Their existing consistency/number check satisfies the audit.
+
+Not switched yet:
+- **Bike Medic**: more flags (14→18), a safety tool; stays.
+- **Awkward Silence Filler, BuyWise, Complaint Escalation Writer**: schemas ask for a guess
+  (`likely_response`, `risk_level`, `success_likelihood`); redesign the field first.
+- **Brag Sheet Builder, Date Night**: need a `router.outputGuard` defect list before they can leave
+  the frozen list.
+- Not run (budget): decoder-ring, difficult-talk-coach, doctor-visit-prep, doctor-visit-translator,
+  fake-review-detective, history-today, layover-maximizer, lease-trap-detector, markup-detective,
+  mental-health-navigator, mise-en-place, plain-talk, procedure-probe, renters-deposit-saver,
+  not-so-fast, the-debrief, missing-link, waiting-mode-liberator; and the 15 frozen tools with no
+  post-check.
+
 ## Done means
 
 - The route declares `router.outputStandard = 'lean'`, with its `router.outputGuard` kept.

@@ -215,10 +215,8 @@ describe these checks in the output.
 // variants), verified live against the real endpoint — see
 // audit/tool-notes/PRONOUNCEITRIGHT-NOTES.md.
 const FROZEN_V1 = new Set([
-  'alternate-path', 'analogy-engine', 'mend', 'argue-smarter',
-  'awkward-silence-filler', 'batch-flow', 'belief-stress-test', 'bike-medic',
-  'bill-rescue', 'bookmark', 'brag-sheet-builder', 'brain-dump-buddy',
-  'brain-roulette', 'brainstate-deejay', 'buy-wise',
+  'mend', 'awkward-silence-filler', 'bike-medic',
+  'brag-sheet-builder', 'brain-roulette', 'brainstate-deejay', 'buy-wise',
   'complaint-escalation-writer', 'context-collapse',
   'date-night', 'decoder-ring', 'difficult-talk-coach', 'doctor-visit-prep',
   'doctor-visit-translator', 'fake-review-detective', 'final-wish',
