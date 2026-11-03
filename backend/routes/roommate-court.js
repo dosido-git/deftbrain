@@ -1,157 +1,213 @@
 const express = require('express');
-const { answer, keyGroups, onlyKeys } = require('../lib/progressive');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext, cleanJsonResponse } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { runOutputGuard } = require('../lib/outputGuard');
+const { logMetric } = require('../lib/metricsSink');
+const { currentIsTestClient } = require('../lib/outputStandard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
 
-// V2 REWRITE (roommate-court-v2). The v1 tool promised to adjudicate fault
-// from one person's account (fault percentages, "whos_right"), invent the
-// "real underlying conflict" behind a dispute, script both sides of a
-// conversation through to a fictional accepted agreement, and assert
-// jurisdiction-dependent housing law. It also claimed Chore Roulette computed
-// objective fairness from universal 1/2/3 effort weights nobody supplied. This
-// rewrite keeps the courtroom PERSONALITY — Roommate Court can still have a
-// clear, verdict-like voice — while dropping every claim to evidence it does
-// not have: it heard one witness, not both, and it has no household-specific
-// data on how burdensome a chore actually is unless told.
-//
-// No literal "DEFTBRAIN_OUTPUT_STANDARD_V2" string in the prompt text — that
-// is decorative noise the real v2 standard does not need; it comes from
-// router.outputStandard = 'v2' below (same fix as Say What? and Research
-// Decoder's installs).
-const MEDIATOR_SYSTEM = `ROOMMATE COURT — WORK IT OUT
+const MEDIATOR_SYSTEM = `Help this person work through a household disagreement. Give a concise, even-handed answer using the accounts provided, with these sections:
 
-ROLE
+1. The Read: a short assessment and why.
+2. Where the Disagreement Is: each person's stated concern, where they differ, and any important unanswered question.
+3. What to Try: practical options with a brief reason for each.
+4. Start With This: a short, speakable opening.
+5. Ask This: one useful question to ask the other person.
+6. If They Push Back: a possible objection, clearly hypothetical, and a speakable reply.
+7. A Concrete Proposal: words the visitor could say to propose a way forward.
+8. If That Doesn't Work: a proportionate next option and when to use it.
 
-Help someone think through a conflict with a roommate or another person they share a home with.
+Add a closing perspective only if it contributes something new. Avoid repeating points across sections. Present scripts as options, preserving the visitor's stated position. If contact would be unsafe, prioritize safety and omit conversation sections that would not help.
 
-You have one person's account.
+Treat a request as an agreement only when acceptance is supplied. Put only speakable words inside scripts; keep coaching outside them. Make the fallback address what remains unresolved rather than repeat the initial advice.`;
 
-Your job is NOT to determine objective guilt, diagnose the relationship, or discover the hidden psychological truth.
+// One Luna call with the validated brief. No shared Claude policies or model
+// checker/repair: schema validation only protects the existing renderer.
+const MEDIATOR_MODEL = process.env.MODEL_ROOMMATE_COURT || 'gpt-6-luna';
+const READ_LABELS = [
+  'YOUR REQUEST LOOKS REASONABLE', 'THEIR CONCERN LOOKS REASONABLE TOO',
+  'YOU MAY BE ASKING TOO MUCH', "THEIR RESPONSE DOESN'T ADDRESS THE PROBLEM",
+  "YOU'RE TALKING PAST EACH OTHER", "THE EXPECTATION ISN'T CLEAR YET",
+  'THIS NEEDS A FIRMER BOUNDARY', 'NOT ENOUGH TO TELL',
+];
+const prose = { type: 'string', minLength: 1 };
+const optionalProse = { anyOf: [prose, { type: 'null' }] };
+const list = items => ({ type: 'array', items });
+const record = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
+const MEDIATOR_SCHEMA = record({
+  the_read: record({ label: { type: 'string', enum: READ_LABELS }, explanation: prose }),
+  where_the_disagreement_is: record({
+    your_stated_concern: prose, their_reported_concern: prose,
+    collision: prose, unknowns_that_matter: list(prose),
+  }),
+  what_to_try: { ...list(record({ action: prose, why_it_may_help: prose })), minItems: 1 },
+  conversation: { anyOf: [record({
+    start_with_this: optionalProse, ask_this: optionalProse,
+    if_they_push_back: list(record({ possible_response: prose, you_could_say: prose })),
+    proposal: optionalProse,
+  }), { type: 'null' }] },
+  if_that_doesnt_work: { ...list(record({ next_step: prose, when_it_makes_sense: prose })), minItems: 1 },
+  one_thing_not_to_lose_sight_of: optionalProse,
+});
 
-Your job is to:
-1. identify what is established from the visitor's account
-2. distinguish disagreement from missing information
-3. identify each stated concern
-4. show where expectations may differ
-5. find practical options that could work
-6. help the visitor have a useful conversation
-7. identify reasonable next steps if ordinary conversation does not resolve it
+function matchesSchema(value, schema) {
+  if (schema.anyOf) return schema.anyOf.some(s => matchesSchema(value, s));
+  if (schema.type === 'null') return value === null;
+  if (schema.type === 'string') return typeof value === 'string'
+    && (!schema.minLength || value.trim().length >= schema.minLength)
+    && (!schema.enum || schema.enum.includes(value));
+  if (schema.type === 'array') return Array.isArray(value)
+    && value.length >= (schema.minItems || 0) && value.every(v => matchesSchema(v, schema.items));
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+    && schema.required.every(k => Object.prototype.hasOwnProperty.call(value, k))
+    && Object.keys(value).every(k => Object.prototype.hasOwnProperty.call(schema.properties, k)
+      && matchesSchema(value[k], schema.properties[k]));
+}
 
-EPISTEMIC RULE
+function validateResult(value) {
+  if (!matchesSchema(value, MEDIATOR_SCHEMA)) throw new Error('Invalid mediation response shape');
+  return value;
+}
 
-Internally classify information as:
+const parseJson = text => JSON.parse(cleanJsonResponse(text));
 
-REPORTED BY YOU — something the visitor says happened, felt, wanted, agreed to, or was said.
-REPORTED ABOUT THEM — something the visitor reports the other person said or did.
-REASONABLE INTERPRETATION — a bounded interpretation useful for understanding the conflict.
-UNKNOWN — something the supplied account cannot establish.
+// Publish only complete top-level values, never guessed/partially repaired JSON.
+// This makes the read visible before the rest of the single response finishes.
+function mediationDrafts(publish) {
+  let text = '', cursor = 0, start = 0, depth = 0, inString = false, escaped = false;
+  const draft = {};
+  return chunk => {
+    text += chunk;
+    if (text.length > 250000) throw new Error('Mediation response too large');
+    for (; cursor < text.length; cursor++) {
+      const ch = text[cursor];
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (ch === '\\') escaped = true;
+        else if (ch === '"') inString = false;
+        continue;
+      }
+      if (ch === '"') { inString = true; continue; }
+      if (ch === '{' || ch === '[') {
+        if (depth === 0) start = cursor + 1;
+        depth++;
+      } else if (ch === '}' || ch === ']') depth--;
+      if ((ch === ',' && depth === 1) || (ch === '}' && depth === 0)) {
+        const field = text.slice(start, cursor).trim();
+        start = cursor + 1;
+        if (!field) continue;
+        const entry = parseJson(`{${field}}`);
+        const [key] = Object.keys(entry);
+        if (!Object.prototype.hasOwnProperty.call(MEDIATOR_SCHEMA.properties, key)
+          || !matchesSchema(entry[key], MEDIATOR_SCHEMA.properties[key])) throw new Error('Invalid mediation section');
+        draft[key] = entry[key];
+        if (draft.the_read) publish({ ...draft });
+      }
+    }
+  };
+}
 
-Do not silently convert REPORTED ABOUT THEM into OBJECTIVE FACT, or REASONABLE INTERPRETATION into HIDDEN TRUTH.
-
-Write: "You say you've discussed this twice and the problem has continued." Not: "She ignored two agreements."
-
-Write: "Her stated concern is that washing dishes after a late shift is difficult." Not: "Her tiredness is real and doing dishes at 9pm is genuinely hard."
-
-The visitor may be reporting accurately, but you did not independently hear the other person.
-
-PRESERVE REPORTED PERSPECTIVE
-
-When describing the absent person's circumstances, preferences, feelings, limits, needs, intentions, or capabilities, preserve the fact that you know them only through the visitor's report. Do not silently upgrade a reported perspective into an independently established fact.
-
-Do not transform "They say they are too tired to wash dishes after work" into "They cannot manage dishes after work." Do not transform "They say this schedule would be difficult" into "This is not a schedule they can realistically meet."
-
-Prefer: "You report that she says washing dishes after a late shift is too much." "She reportedly wants to wait until a day off." "The question is whether the two of you can agree on a standard she says she can meet and that also works for you."
-
-This does not require a disclaimer in every sentence — establish the attribution naturally, then reason normally within that frame. The goal is not timid language; it is to never claim privileged access to either person's internal state, including the visitor's. Distinguish what happened, what someone reports, what someone wants, and what you infer.
-
-DO NOT ADOPT THE VISITOR'S FAIRNESS CLAIM AS ESTABLISHED FACT
-
-A visitor's claim that an arrangement is unfair, unequal, excessive, disrespectful, unreasonable, or disproportionate remains their position unless the supplied facts independently establish it. "Fair share," "your share," "your rightful portion," and similar phrasing are conclusions, not facts you can restate as settled — including in indirect form, e.g. "so you're paying more than your share."
-
-Write: "You think the even split doesn't reflect differences in how the utilities are being used." Not: "The even split charges you more than your fair share of heating" and not "so you end up paying more than your share." Say what the visitor believes or wants changed, not that the current arrangement is, in fact, unfair to them. Do not write that the visitor "absorbs an acknowledged disadvantage" unless the other person actually acknowledged it.
-
-NO FAULT PERCENTAGES
-
-Never generate a numerical allocation of blame, fault, responsibility, reasonableness, or credibility (e.g. "You: 25% / Them: 75%"). There is no defensible measurement behind such precision.
-
-Replace the verdict with THE READ. Possible labels:
-YOUR REQUEST LOOKS REASONABLE
-THEIR CONCERN LOOKS REASONABLE TOO
-YOU MAY BE ASKING TOO MUCH
-THEIR RESPONSE DOESN'T ADDRESS THE PROBLEM
-YOU'RE TALKING PAST EACH OTHER
-THE EXPECTATION ISN'T CLEAR YET
-THIS NEEDS A FIRMER BOUNDARY
-NOT ENOUGH TO TELL
-
-Use whichever best captures the supplied situation. A label is a practical interpretation, not a legal or factual ruling.
-
-DO NOT INVENT THE "REAL CONFLICT"
-
-Never claim to know the real underlying conflict, the root cause, what this is really about, hidden resentment, control issues, disrespect, laziness, entitlement, avoidance, jealousy, manipulation, power dynamics, personality traits, or why either person behaves as they do — unless the visitor explicitly establishes it.
-
-Replace "what's really going on" with WHERE THE DISAGREEMENT IS: what you want, what they say they want, where those needs or expectations collide, and what is still unknown. Reason about the structure of the disagreement, not hidden psychology.
-
-AGREEMENTS AND HISTORY
-
-Be precise about prior conversations. "Talked twice" does not necessarily mean an agreement was reached twice, a promise was made, a commitment was broken, or the other person ignored the visitor. Only use those descriptions if the visitor establishes them. A recurring problem may justify a firmer approach — it does not prove bad faith.
-
-RECOMMENDATIONS
-
-Prefer practical changes to moral judgments. Good options may include: clarify the actual expectation, distinguish must-have from preference, define responsibility, change timing, change where something happens, create a simple household system, divide a shared resource, agree on a reminder method, run a short trial, revisit an arrangement, document an agreed household rule.
-
-Do not invent arbitrary requirements. A suggested 24-hour rule, 48-hour rule, two-week trial, reminder deadline, cleaning frequency, guest cutoff, or quiet hour is a PROPOSAL unless supplied by the visitor. Never write as though both people have already agreed to a proposed solution.
-
-DO NOT QUIETLY CHANGE THE VISITOR'S PROPOSAL
-
-If the visitor already supplied a specific proposed arrangement, preserve it accurately — do not silently restructure it into a different kind of arrangement. If "split these evenly" was proposed, do not turn it into "assign different percentages to these." If suggesting a modification or alternative, label it explicitly: "One variation worth considering is..." A new idea is fine; presenting it as the visitor's own idea is not.
-
-CONVERSATION SCRIPT
-
-Do not write an entire fictional successful conversation — never invent the roommate's exact pushback, their emotional reaction, their acceptance of the proposal, or a final agreement.
-
-Instead provide:
-START WITH THIS — a literal sentence or two the visitor could read aloud verbatim as the opening line of the conversation, in the first person, addressed to the roommate. Test it yourself: if it could not be spoken aloud as-is, it is not START WITH THIS.
-Wrong (this is instructions, not a script): "Before the conversation, check whether heating is separate on your bill, pick a time when you're both unhurried, and explain that you use more heat because you're home more."
-Right (this is something to actually say): "I've been thinking about our utility split — I'm home a lot more than you, so I'm using more heat. I'd like to pay more of that bill if we keep splitting internet and water evenly."
-Any preparation the visitor should do first (checking a bill, deciding on a number, picking a time) belongs under WHAT TO TRY, never inside START WITH THIS.
-IF THEY PUSH BACK — only when a response is already supplied by the visitor, or clearly labeled "if they respond along the lines of..." — then a possible response.
-ASK THIS — one useful question that invites information the visitor does not yet have.
-LAND HERE — a concrete proposal the visitor could make.
-
-Never script an agreement ("Them: Fine, yeah. 48 hours I can do.") unless those words actually occurred.
-
-Any section presented as a script must contain speakable language, not instructions about what to say.
-
-BOUNDARIES VS AGREEMENTS
-
-Distinguish REQUEST (what you ask the other person to do), AGREEMENT (something both people actually accept), BOUNDARY (what you will do, or what condition you require for your own participation, space, property, or choices), and HOUSEHOLD RULE (a mutually adopted shared expectation). Do not call every desired rule a boundary. Do not invent mutual agreements.
-
-ESCALATION
-
-Escalation must be proportional and grounded. Possible categories: another conversation with a clearer proposal, a written summary of what was actually agreed, neutral third-party mediation, a dorm/RA or housing resource if applicable, a landlord/property manager question when genuinely relevant, reviewing the actual lease or housing rules, planning a change in living arrangement.
-
-Do not invent landlord authority, lease provisions, habitability violations, tenant rights, eviction rights, buyout rights, mediation availability, free municipal programs, legal process, or deposit consequences. Do not say things like "neither of you can simply be asked to leave without legal process" — housing rights vary by jurisdiction, tenancy status, ownership, lease terms, and household relationship. If legal/housing rights matter, say: "Your lease and local housing rules determine your options. Verify those before acting."
-
-PREVENTION
-
-Do not invent a root cause ("the root cause is that your household never established written standards") or a universal prevention claim ("a written roommate agreement prevents most disputes like this"). Prefer conditional framing: "If unclear expectations contributed here, writing down whatever you both actually agree to could make future misunderstandings less likely." Prevention must follow from the supplied conflict or be clearly conditional.
-
-ONE THING NOT TO LOSE SIGHT OF
-
-Use only when there is one particularly useful perspective. Do not validate facts you cannot know, diagnose either person, pronounce the visitor "not uptight," tell them their feelings are objectively correct, or become the visitor's partisan ally. Be direct without pretending to possess the other side of the story.
-
-VOICE
-
-Write directly to the visitor as "you." Be practical, even-handed, calm, specific, willing to say the visitor's request appears unreasonable, and willing to say the other person's reported response does not address a legitimate household problem. Do not become bland in the name of neutrality — Roommate Court can still have a verdict-like personality. The personality comes from a clear read and useful judgment, not fabricated certainty.
-
-FINAL RULE: HEAR THE CASE. DO NOT PRETEND YOU HEARD THE OTHER WITNESS.
-
-${NO_QUOTE_RULE}`;
+async function mediateWithLuna(req, res, caseFile, userLanguage) {
+  if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'This experience is temporarily unavailable. Please try again later.' });
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  const timeout = setTimeout(abort, 90000);
+  const started = Date.now();
+  const streaming = req.body.progressive === true;
+  const fixBody = value => res.locals?.fixBody ? res.locals.fixBody(value) : value;
+  let heartbeat;
+  const send = frame => {
+    if (res.destroyed || res.writableEnded) return;
+    // fixBody can mutate, so it receives an independent snapshot.
+    if (frame.draft) frame = { ...frame, draft: fixBody(structuredClone(frame.draft)) };
+    res.write(`data: ${JSON.stringify(frame)}\n\n`);
+  };
+  res.on('close', abort);
+  if (streaming) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+    heartbeat = setInterval(() => { if (!res.destroyed && !res.writableEnded) res.write(': waiting\n\n'); }, 10000);
+  }
+  try {
+    const instructions = withLanguage(MEDIATOR_SYSTEM, userLanguage)
+      + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
+      + '\nUse the JSON fields for the sections above. Keep the_read.label as an English identifier. Use null for optional content that would not help.';
+    const response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: MEDIATOR_MODEL, instructions, input: caseFile,
+        reasoning: { effort: 'low' },
+        text: { verbosity: 'low', format: { type: 'json_schema', name: 'roommate_mediation', strict: true, schema: MEDIATOR_SCHEMA } },
+        max_output_tokens: 4096, stream: true, store: false,
+      }),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Luna HTTP ${response.status}`);
+    if (!response.body) throw new Error('Missing Luna response stream');
+    let buffer = '', output = '', completed = null;
+    const decoder = new TextDecoder();
+    const append = mediationDrafts(draft => { if (streaming) send({ draft }); });
+    const consume = raw => {
+      const data = raw.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trim()).join('\n');
+      if (!data || data === '[DONE]') return;
+      const event = parseJson(data);
+      if (event.type === 'response.output_text.delta') {
+        output += event.delta;
+        append(event.delta);
+      } else if (event.type === 'response.completed') {
+        completed = event.response;
+      } else if (['response.failed', 'response.incomplete', 'response.refusal.delta', 'response.refusal.done', 'error'].includes(event.type)) {
+        throw new Error(`Luna ${event.type}`);
+      }
+    };
+    for await (const chunk of response.body) {
+      buffer += decoder.decode(chunk, { stream: true });
+      buffer = buffer.replace(/\r\n/g, '\n');
+      if (buffer.length > 1000000) throw new Error('Luna frame too large');
+      let end;
+      while ((end = buffer.indexOf('\n\n')) !== -1) { consume(buffer.slice(0, end)); buffer = buffer.slice(end + 2); }
+    }
+    buffer += decoder.decode();
+    if (buffer.trim()) consume(buffer);
+    if (completed?.usage) {
+      const u = completed.usage;
+      const cacheRead = u.input_tokens_details?.cached_tokens || 0;
+      const cacheWrite = u.input_tokens_details?.cache_write_tokens || 0;
+      logMetric('llm_usage', {
+        route: 'roommate-court', testClient: currentIsTestClient(), label: 'roommate-court-luna',
+        model: completed.model || MEDIATOR_MODEL, input: u.input_tokens, output: u.output_tokens,
+        cache_read: cacheRead, cache_write: cacheWrite, ms: Date.now() - started,
+        usd: MEDIATOR_MODEL === 'gpt-6-luna'
+          ? ((u.input_tokens - cacheRead - cacheWrite) * 0.10 + cacheRead * 0.01 + cacheWrite * 0.125 + u.output_tokens * 0.50) / 1000000
+          : null,
+      });
+    }
+    if (completed?.status !== 'completed' || !output) throw new Error('Incomplete Luna response');
+    const result = validateResult(parseJson(output));
+    if (!result.the_read?.explanation) throw new Error('Missing mediation read');
+    if (streaming) { send({ draft: result }); send({ done: true }); res.end(); }
+    else return res.json(result);
+  } catch (error) {
+    // No automatic retry, alternate provider, content repair, or raw provider
+    // error text. A partial answer must not be marked complete.
+    console.error('Roommate Court Luna:', error.message);
+    if (!res.destroyed && !res.writableEnded) {
+      const errorBody = { error: "Couldn't work through this. Please try again." };
+      if (streaming) { send(errorBody); res.end(); }
+      else res.status(502).json(errorBody);
+    }
+  } finally {
+    clearTimeout(timeout);
+    if (heartbeat) clearInterval(heartbeat);
+    res.off('close', abort);
+    controller.abort();
+  }
+}
 
 const ASSIGNER_SYSTEM = `ROOMMATE COURT — CHORE ROULETTE
 
@@ -216,17 +272,6 @@ function cleanString(value, max = 8000) {
   return value.trim().slice(0, max);
 }
 
-function collectProseFields(parsed) {
-  const fields = [];
-  const walk = (val, path) => {
-    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
-    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
-    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
-  };
-  walk(parsed, '');
-  return fields;
-}
-
 function formatChoreHistory(hist) {
   if (!hist || !hist.length) return '';
   return `\n\nASSIGNMENT HISTORY (most recent first):\n${hist.map((round, i) => {
@@ -257,11 +302,6 @@ router.post('/roommate-court', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
       if (!dispute) return res.status(400).json({ error: "Describe what's going on." });
 
-      // Speed (2026-10-15): one call wrote ~1.9k tokens (39s of a 56s run in
-      // German). Two calls now write disjoint keys at once: the read (what is
-      // going on and what to try) and the conversation (what to say, and what
-      // next if it fails). Both see the whole case file; the guard's
-      // consistency check reads the merged answer.
       const caseFile = `CASE FILE:
 Living situation: ${livingSituation || 'not specified'}
 Duration of issue: ${duration || 'not specified'}
@@ -270,82 +310,12 @@ Prior communication attempts: ${priorCommunication || 'not specified'}
 WHAT'S GOING ON (${disputeByThem ? "the other person's description, written when they asked the visitor for their side" : "the visitor's account"}):
 ${dispute}
 
-WHAT'S THEIR SIDE (the visitor's own account of the situation, if given beyond the description above):
+YOUR ADDITIONAL ACCOUNT:
 ${yourSide || 'not separately provided'}
 
 ${theirOwnWords ? "THEIR SIDE (written by the other person themselves, in their own words — give it the same weight as the visitor's side)" : "WHAT WOULD THEY SAY (the visitor's understanding of the other person's perspective — may be absent; do not treat absence as evidence of anything)"}:
 ${theirSide || 'not provided — the visitor does not know or did not guess'}`;
-      const readPrompt = `${caseFile}
-
-THIS PASS writes the read of the situation and what to try. A second pass, reading the same case file at the same time, writes the conversation and what to do if it does not work — do not write those.
-
-Return ONLY valid JSON matching this schema:
-{
-  "the_read": {
-    "label": "YOUR REQUEST LOOKS REASONABLE|THEIR CONCERN LOOKS REASONABLE TOO|YOU MAY BE ASKING TOO MUCH|THEIR RESPONSE DOESN'T ADDRESS THE PROBLEM|YOU'RE TALKING PAST EACH OTHER|THE EXPECTATION ISN'T CLEAR YET|THIS NEEDS A FIRMER BOUNDARY|NOT ENOUGH TO TELL",
-    "explanation": "2-3 sentences"
-  },
-  "where_the_disagreement_is": {
-    "your_stated_concern": "",
-    "their_reported_concern": "",
-    "collision": "the practical conflict between the two",
-    "unknowns_that_matter": [""]
-  },
-  "what_to_try": [
-    { "action": "", "why_it_may_help": "" }
-  ],
-  "one_thing_not_to_lose_sight_of": ""
-}
-
-the_read.label MUST be exactly one of the English options above even in another language — it is a code value the UI switches on, not display text. Omit unsupported or unnecessary fields — do not force three actions when fewer genuinely fit. unknowns_that_matter at most 3, what_to_try at most 4.`;
-      const talkPrompt = `${caseFile}
-
-THIS PASS writes the conversation the visitor could have and what to do if it does not work. A second pass, reading the same case file at the same time, writes the read of the situation and the actions to try — do not write those.
-
-Return ONLY valid JSON matching this schema:
-{
-  "conversation": {
-    "start_with_this": "a short opening the visitor can actually say",
-    "ask_this": "one useful question that invites information the visitor doesn't have",
-    "if_they_push_back": [
-      { "possible_response": "clearly a possibility, not something already said", "you_could_say": "" }
-    ],
-    "proposal": "a concrete proposal the visitor could make — never an agreement already reached"
-  },
-  "if_that_doesnt_work": [
-    { "next_step": "", "when_it_makes_sense": "" }
-  ]
-}
-
-Omit unsupported or unnecessary fields — do not force three escalation steps or multiple pushback scenarios when fewer genuinely fit. if_they_push_back at most 2, if_that_doesnt_work at most 3.`;
-
-      const system = withLanguage(MEDIATOR_SYSTEM, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-      // Progressive (2026-10-16, lib/progressive.js): four section passes at
-      // once — the read first — and the guard after the answer is on screen.
-      const ORDER = ['the_read', 'where_the_disagreement_is', 'what_to_try', 'conversation', 'if_that_doesnt_work', 'one_thing_not_to_lose_sight_of'];
-      const pass = (prompt, tag) => (keys, i) => callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 2000,
-        system,
-        messages: [{ role: 'user', content: withLanguage(onlyKeys(prompt, keys), userLanguage) }],
-      }, { label: `roommate-court-v2-${tag}${i + 1}` });
-      const talkParts = keyGroups([['conversation'], ['if_that_doesnt_work']], pass(talkPrompt, 'talk')).map(p => ({ ...p, required: false }));
-      return await answer(req, res, {
-        label: 'roommate-court-v2',
-        parts: [...keyGroups([['the_read'], ['where_the_disagreement_is', 'what_to_try', 'one_thing_not_to_lose_sight_of']], pass(readPrompt, 'read')), ...talkParts],
-        // Original key order, so the page renders as before.
-        finish: d => Object.fromEntries(ORDER.filter(k => d[k] !== undefined).map(k => [k, d[k]])),
-        ready: d => Boolean(d.the_read?.label),
-        complete: d => Boolean(d.the_read?.label),
-        check: d => runOutputGuard(d, {
-          label: 'roommate-court-v2',
-          fields: collectProseFields(d),
-          supplied: `SITUATION: ${dispute}\nYOUR SIDE: ${yourSide || 'none'}\nWHAT WOULD THEY SAY: ${theirSide || 'none supplied'}\nDURATION: ${duration || 'none'}\nTRIED SO FAR: ${priorCommunication || 'none'}\nLIVING SITUATION: ${livingSituation || 'none'}`,
-          promise: 'Help the visitor separate fact from disagreement in a household conflict, using only their account — never adjudicate fault, invent a hidden root conflict, or script a fictional agreement.',
-          guard: router.outputGuard,
-          userLanguage,
-        }),
-      });
+      return await mediateWithLuna(req, res, caseFile, userLanguage);
     }
 
     // ── CHORE ROULETTE: ASSIGN ──

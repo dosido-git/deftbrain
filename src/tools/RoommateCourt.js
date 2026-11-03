@@ -250,7 +250,7 @@ const RoommateCourt = ({ tool }) => {
       const durKey = DURATION_OPTIONS.find(d => d.id === duration)?.labelKey;
       const commKey = COMM_OPTIONS.find(d => d.id === priorComm)?.labelKey;
       const liveKey = LIVING_OPTIONS.find(d => d.id === livingSituation)?.labelKey;
-      // Progressive (2026-10-16): the read shows first; checked after.
+      // One Luna response streams complete sections; no model checker runs.
       const res = await callToolEndpointProgressive('roommate-court', {
         action: 'mediate',
         dispute: dispute.trim(),
@@ -265,13 +265,14 @@ const RoommateCourt = ({ tool }) => {
         livingSituation: liveKey ? t(liveKey) : livingSituation,
         userLocale, userCurrency, userRegion,
       }, {
+        requireComplete: true,
         onDraft: d => { setDisputeResult(d); setCheckStatus('checking'); },
         onChecked: (d, changed) => { setDisputeResult(d); setCheckStatus(checkStatusFor(changed)); },
       });
       if (!res) return; // replaced by a newer run
       setDisputeResult(res);
       setShowEscalation(false);
-    } catch (err) { setError(err.message || tr('rc_err_mediate', "Couldn't work through this. Please try again.")); }
+    } catch (err) { setDisputeResult(null); setCheckStatus(null); setError(err.message || tr('rc_err_mediate', "Couldn't work through this. Please try again.")); }
   }, [dispute, yourSide, theirSide, invite, duration, priorComm, livingSituation, callToolEndpointProgressive, userLocale, userCurrency, userRegion, t, tr]);
 
   useEffect(() => {

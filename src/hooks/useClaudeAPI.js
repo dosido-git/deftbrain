@@ -216,7 +216,7 @@ export const useClaudeAPI = () => {
   // visitor is reading by then. A newer progressive call cancels an older one,
   // so a late check can never overwrite a newer answer.
   const progressiveAbort = useRef(null);
-  const callToolEndpointProgressive = async (endpoint, data, { onDraft, onChecked } = {}) => {
+  const callToolEndpointProgressive = async (endpoint, data, { onDraft, onChecked, requireComplete = false } = {}) => {
     progressiveAbort.current?.abort();
     const ctrl = new AbortController();
     progressiveAbort.current = ctrl;
@@ -228,6 +228,7 @@ export const useClaudeAPI = () => {
     const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data), progressive: true });
     let latest = null;
     let gotChecked = false;
+    let gotDone = false;
     try {
       let response;
       for (let attempt = 0; ; attempt++) {
@@ -279,6 +280,7 @@ export const useClaudeAPI = () => {
           let f;
           try { f = JSON.parse(frame.slice(6)); } catch { continue; }
           if (f.error) throw new Error(f.error);
+          if (f.done === true) gotDone = true;
           if (f.searching) setWaitSearching(f.searching);
           if (f.draft) {
             if (!latest) { endWait('ok'); signalBusy('clear'); setLoading(false); }
@@ -293,6 +295,7 @@ export const useClaudeAPI = () => {
         }
       }
       if (!latest) throw new Error('No answer came back. Please try again.');
+      if (requireComplete && !gotDone) throw new Error('The answer was interrupted. Please try again.');
       // A route with no check (or a skipped one) still finishes: tell the page,
       // so its CheckNote says "Finished" instead of "Still working" forever.
       if (!gotChecked) onChecked?.(latest, null);
@@ -303,7 +306,7 @@ export const useClaudeAPI = () => {
       track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
       setError(err.message);
       // A failure after the answer showed (the check stream broke) keeps it.
-      if (latest) return latest;
+      if (latest && !requireComplete) return latest;
       throw err;
     } finally {
       endWait(latest ? 'ok' : 'error');
