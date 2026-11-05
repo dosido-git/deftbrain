@@ -1,0 +1,846 @@
+{
+  "at": "2026-11-05T20:13:58.378Z",
+  "model": "gpt-6.1-sol",
+  "reasoning": {
+    "assessment": "low",
+    "guidance": "medium"
+  },
+  "verbosity": "low",
+  "method": "Current route handler, actual provider streams; one attempt per case, no retries.",
+  "cases": [
+    {
+      "name": "utilities",
+      "input": {
+        "action": "mediate",
+        "dispute": "Utilities split evenly three ways when one person is home all day and the other two are not",
+        "yourSide": "I work from home so I'm here with the heating on while they're both out. I get why they think even splits are simplest, but I'm also not the one who set the thermostat to 22 in November. I'd pay a bigger share of heating if we split internet and water evenly.",
+        "theirSide": "They say an even split is the only thing that doesn't turn into a monthly argument, and that once you start metering one thing you end up metering everything. One of them also pointed out I use less water since I shower at the gym.",
+        "duration": "weeks",
+        "priorCommunication": "once",
+        "livingSituation": "house",
+        "userLanguage": "en",
+        "progressive": true
+      },
+      "firstTextMs": 9478,
+      "totalMs": 29902,
+      "completed": true,
+      "error": null,
+      "output": {
+        "understanding": "You’re weighing usage differences against the simplicity of equal bills. Being home with the heating on matters, but so does your concern that you did not choose the thermostat setting. Your account also reports lower water use, so differences do not all point in one direction. As you report it, your housemates worry both about recurring arguments and about tracking spreading to every utility. Your willingness to pay more for heating is conditional on equal internet and water shares—not an accepted agreement.",
+        "way_forward": {
+          "recommendation": "First clarify whether anyone actually wants to change the equal split, and whether it was explicitly agreed with your working from home understood. If so, discuss revising that agreement; otherwise, clarify the informal arrangement before choosing new terms.",
+          "reason": "Your housemates reportedly favor simplicity, not necessarily charging you more. Being home with heating on can matter, but the thermostat setting also affects costs, and your reportedly lower water use is a relevant offset. Neither establishes a particular fair percentage.",
+          "supporting_actions": [
+            "Check whether heating charges can be separated without detailed tracking. If they can, discuss your conditional offer—more toward heating, with internet and water still equal—as an option, not a commitment. A fixed agreed share could address their concern about monthly arguments and metering everything. If heating cannot be separated simply, defer that proposal rather than inventing a usage calculation.",
+            "Discuss a shared thermostat setting and schedule: paying for heating and deciding how much heating to use are connected, and being home does not make you solely responsible for a setting you did not choose."
+          ],
+          "fallback": {
+            "condition": "No revised split is agreed.",
+            "next_step": "Keep the current split for now rather than treating your conditional offer as accepted; you can still seek agreement on heating settings."
+          }
+        },
+        "words_you_can_use": {
+          "script": "Does anyone want to change the equal split? I'd pay a bigger share of heating if we split internet and water evenly. What thermostat setting and schedule would work for everyone?",
+          "pushback": null
+        }
+      },
+      "requests": [
+        {
+          "stage": "roommate_assessment",
+          "input": {
+            "sources": [
+              {
+                "id": "description",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "Utilities split evenly three ways when one person is home all day and the other two are not"
+              },
+              {
+                "id": "visitor_account",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "I work from home so I'm here with the heating on while they're both out. I get why they think even splits are simplest, but I'm also not the one who set the thermostat to 22 in November. I'd pay a bigger share of heating if we split internet and water evenly."
+              },
+              {
+                "id": "other_account",
+                "author": "visitor",
+                "attribution": "reported",
+                "text": "They say an even split is the only thing that doesn't turn into a monthly argument, and that once you start metering one thing you end up metering everything. One of them also pointed out I use less water since I shower at the gym."
+              },
+              {
+                "id": "context",
+                "author": "visitor",
+                "attribution": "context",
+                "text": "Living situation: house\nDuration of issue: weeks\nPrior communication attempts: once"
+              }
+            ]
+          },
+          "reply": {
+            "case_record": {
+              "entries": [
+                {
+                  "source_id": "description",
+                  "kind": "arrangement",
+                  "party": "shared",
+                  "excerpt": "Utilities split evenly three ways"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "reported_event",
+                  "party": "visitor",
+                  "excerpt": "I work from home so I'm here with the heating on while they're both out."
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "I'm also not the one who set the thermostat to 22 in November."
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "conditional_offer",
+                  "party": "visitor",
+                  "excerpt": "I'd pay a bigger share of heating if we split internet and water evenly."
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "concern",
+                  "party": "other",
+                  "excerpt": "They say an even split is the only thing that doesn't turn into a monthly argument"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "concern",
+                  "party": "other",
+                  "excerpt": "once you start metering one thing you end up metering everything."
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "reported_event",
+                  "party": "visitor",
+                  "excerpt": "One of them also pointed out I use less water since I shower at the gym."
+                }
+              ],
+              "uncertainties": [
+                {
+                  "question": "Was the equal split explicitly agreed, and did that agreement address differences in time spent at home?",
+                  "decision": "Whether guidance should focus on revisiting an existing agreement or clarifying an informal arrangement."
+                },
+                {
+                  "question": "Can heating costs be distinguished from the other utility charges?",
+                  "decision": "Whether your heating-specific offer can be evaluated without introducing extensive usage tracking."
+                }
+              ]
+            },
+            "understanding": "You’re weighing usage differences against the simplicity of equal bills. Being home with the heating on matters, but so does your concern that you did not choose the thermostat setting. Your account also reports lower water use, so differences do not all point in one direction. As you report it, your housemates worry both about recurring arguments and about tracking spreading to every utility. Your willingness to pay more for heating is conditional on equal internet and water shares—not an accepted agreement."
+          }
+        },
+        {
+          "stage": "roommate_guidance",
+          "input": {
+            "sources": [
+              {
+                "id": "description",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "Utilities split evenly three ways when one person is home all day and the other two are not"
+              },
+              {
+                "id": "visitor_account",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "I work from home so I'm here with the heating on while they're both out. I get why they think even splits are simplest, but I'm also not the one who set the thermostat to 22 in November. I'd pay a bigger share of heating if we split internet and water evenly."
+              },
+              {
+                "id": "other_account",
+                "author": "visitor",
+                "attribution": "reported",
+                "text": "They say an even split is the only thing that doesn't turn into a monthly argument, and that once you start metering one thing you end up metering everything. One of them also pointed out I use less water since I shower at the gym."
+              },
+              {
+                "id": "context",
+                "author": "visitor",
+                "attribution": "context",
+                "text": "Living situation: house\nDuration of issue: weeks\nPrior communication attempts: once"
+              }
+            ],
+            "case_record": {
+              "entries": [
+                {
+                  "source_id": "description",
+                  "kind": "arrangement",
+                  "party": "shared",
+                  "excerpt": "Utilities split evenly three ways",
+                  "id": "p1",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "reported_event",
+                  "party": "visitor",
+                  "excerpt": "I work from home so I'm here with the heating on while they're both out.",
+                  "id": "p2",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "I'm also not the one who set the thermostat to 22 in November.",
+                  "id": "p3",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "conditional_offer",
+                  "party": "visitor",
+                  "excerpt": "I'd pay a bigger share of heating if we split internet and water evenly.",
+                  "id": "p4",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "concern",
+                  "party": "other",
+                  "excerpt": "They say an even split is the only thing that doesn't turn into a monthly argument",
+                  "id": "p5",
+                  "author": "visitor",
+                  "attribution": "reported"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "concern",
+                  "party": "other",
+                  "excerpt": "once you start metering one thing you end up metering everything.",
+                  "id": "p6",
+                  "author": "visitor",
+                  "attribution": "reported"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "reported_event",
+                  "party": "visitor",
+                  "excerpt": "One of them also pointed out I use less water since I shower at the gym.",
+                  "id": "p7",
+                  "author": "visitor",
+                  "attribution": "reported"
+                }
+              ],
+              "uncertainties": [
+                {
+                  "id": "q1",
+                  "question": "Was the equal split explicitly agreed, and did that agreement address differences in time spent at home?",
+                  "decision": "Whether guidance should focus on revisiting an existing agreement or clarifying an informal arrangement."
+                },
+                {
+                  "id": "q2",
+                  "question": "Can heating costs be distinguished from the other utility charges?",
+                  "decision": "Whether your heating-specific offer can be evaluated without introducing extensive usage tracking."
+                }
+              ]
+            },
+            "required_coverage_ids": [
+              "p3",
+              "p4",
+              "p5",
+              "p6",
+              "q1",
+              "q2"
+            ]
+          },
+          "reply": {
+            "way_forward": {
+              "recommendation": "First clarify whether anyone actually wants to change the equal split, and whether it was explicitly agreed with your working from home understood. If so, discuss revising that agreement; otherwise, clarify the informal arrangement before choosing new terms.",
+              "reason": "Your housemates reportedly favor simplicity, not necessarily charging you more. Being home with heating on can matter, but the thermostat setting also affects costs, and your reportedly lower water use is a relevant offset. Neither establishes a particular fair percentage.",
+              "supporting_actions": [
+                "Check whether heating charges can be separated without detailed tracking. If they can, discuss your conditional offer—more toward heating, with internet and water still equal—as an option, not a commitment. A fixed agreed share could address their concern about monthly arguments and metering everything. If heating cannot be separated simply, defer that proposal rather than inventing a usage calculation.",
+                "Discuss a shared thermostat setting and schedule: paying for heating and deciding how much heating to use are connected, and being home does not make you solely responsible for a setting you did not choose."
+              ],
+              "fallback": {
+                "condition": "No revised split is agreed.",
+                "next_step": "Keep the current split for now rather than treating your conditional offer as accepted; you can still seek agreement on heating settings."
+              }
+            },
+            "words_you_can_use": {
+              "script": "Does anyone want to change the equal split? I'd pay a bigger share of heating if we split internet and water evenly. What thermostat setting and schedule would work for everyone?",
+              "pushback": null
+            },
+            "coverage": [
+              {
+                "item_id": "p3",
+                "treatment": "addresses",
+                "advice_excerpt": "Discuss a shared thermostat setting and schedule: paying for heating and deciding how much heating to use are connected, and being home does not make you solely responsible for a setting you did not choose."
+              },
+              {
+                "item_id": "p4",
+                "treatment": "addresses",
+                "advice_excerpt": "discuss your conditional offer—more toward heating, with internet and water still equal—as an option, not a commitment."
+              },
+              {
+                "item_id": "p5",
+                "treatment": "addresses",
+                "advice_excerpt": "A fixed agreed share could address their concern about monthly arguments and metering everything."
+              },
+              {
+                "item_id": "p6",
+                "treatment": "addresses",
+                "advice_excerpt": "A fixed agreed share could address their concern about monthly arguments and metering everything."
+              },
+              {
+                "item_id": "q1",
+                "treatment": "clarifies",
+                "advice_excerpt": "First clarify whether anyone actually wants to change the equal split, and whether it was explicitly agreed with your working from home understood. If so, discuss revising that agreement; otherwise, clarify the informal arrangement before choosing new terms."
+              },
+              {
+                "item_id": "q2",
+                "treatment": "clarifies",
+                "advice_excerpt": "Check whether heating charges can be separated without detailed tracking."
+              }
+            ],
+            "script_review": [
+              {
+                "excerpt": "Does anyone want to change the equal split?",
+                "basis": "neutral_question",
+                "source_ids": [],
+                "proposal_framing": null
+              },
+              {
+                "excerpt": "I'd pay a bigger share of heating if we split internet and water evenly.",
+                "basis": "stated_position",
+                "source_ids": [
+                  "p4"
+                ],
+                "proposal_framing": null
+              },
+              {
+                "excerpt": "What thermostat setting and schedule would work for everyone?",
+                "basis": "neutral_question",
+                "source_ids": [],
+                "proposal_framing": null
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "boyfriend",
+      "input": {
+        "action": "mediate",
+        "dispute": "Roommate brings her boyfriend over almost every night and he basically lives here without being on the lease or splitting any bills",
+        "yourSide": "I like him fine as a person, but our two-bed dorm room was already tight for two people, and now it's regularly three. I don't feel like I can walk around in pajamas in my own room anymore.",
+        "theirSide": "She says he mostly just sleeps over and doesn't 'live here,' and that I'm being uptight about something that's normal for a lot of couples in college. She hasn't offered to have him chip in for anything.",
+        "duration": "months",
+        "priorCommunication": "wont_engage",
+        "livingSituation": "dorm",
+        "userLanguage": "en",
+        "progressive": true
+      },
+      "firstTextMs": 9375,
+      "totalMs": 32988,
+      "completed": true,
+      "error": null,
+      "output": {
+        "understanding": "Your concerns involve crowding, comfort and privacy in your own room, and an additional person's use of shared resources without contributing. Those concerns matter even if you like him and your roommate considers frequent sleepovers normal. Her position is reported through your account, and there is no explicit agreement here accepting this arrangement. The dorm setting and reported difficulty engaging make existing guest rules and the feasibility of further discussion important.",
+        "way_forward": {
+          "recommendation": "Work toward clear overnight-guest limits that protect your space and privacy, rather than treating a bill contribution as the solution.",
+          "reason": "The problem you describe is months of regularly sharing an already cramped two-person room with a third person. Your roommate’s reported view that he only sleeps over, or that this is normal, does not resolve that impact. Payment would not restore your privacy; whether his presence violates occupancy rules needs checking.",
+          "supporting_actions": [
+            "Check dorm guest rules and any existing roommate agreement first. If overnight limits already apply, seek help having them honored; otherwise, propose limits on overnight visits and guest-free nights. Address any identifiable added expenses separately, without treating payment as permission to stay.",
+            "Clarify who would not engage during previous attempts and what happened. If your roommate has refused to discuss this, ask an RA or housing staff member for help establishing workable guest expectations rather than repeating the same conversation. If a direct discussion remains practical, focus it on specific overnight limits, not whether he technically lives there."
+          ],
+          "fallback": null
+        },
+        "words_you_can_use": {
+          "script": "With three people regularly in this small room, I don’t feel comfortable even wearing pajamas. Could we agree on limits for overnight visits and some guest-free nights?",
+          "pushback": null
+        }
+      },
+      "requests": [
+        {
+          "stage": "roommate_assessment",
+          "input": {
+            "sources": [
+              {
+                "id": "description",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "Roommate brings her boyfriend over almost every night and he basically lives here without being on the lease or splitting any bills"
+              },
+              {
+                "id": "visitor_account",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "I like him fine as a person, but our two-bed dorm room was already tight for two people, and now it's regularly three. I don't feel like I can walk around in pajamas in my own room anymore."
+              },
+              {
+                "id": "other_account",
+                "author": "visitor",
+                "attribution": "reported",
+                "text": "She says he mostly just sleeps over and doesn't 'live here,' and that I'm being uptight about something that's normal for a lot of couples in college. She hasn't offered to have him chip in for anything."
+              },
+              {
+                "id": "context",
+                "author": "visitor",
+                "attribution": "context",
+                "text": "Living situation: dorm\nDuration of issue: months\nPrior communication attempts: wont_engage"
+              }
+            ]
+          },
+          "reply": {
+            "case_record": {
+              "entries": [
+                {
+                  "source_id": "description",
+                  "kind": "reported_event",
+                  "party": "other",
+                  "excerpt": "Roommate brings her boyfriend over almost every night"
+                },
+                {
+                  "source_id": "description",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "he basically lives here without being on the lease or splitting any bills"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "our two-bed dorm room was already tight for two people, and now it's regularly three."
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "I don't feel like I can walk around in pajamas in my own room anymore."
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "interpretation",
+                  "party": "other",
+                  "excerpt": "She says he mostly just sleeps over and doesn't 'live here,'"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "interpretation",
+                  "party": "other",
+                  "excerpt": "that I'm being uptight about something that's normal for a lot of couples in college."
+                },
+                {
+                  "source_id": "context",
+                  "kind": "arrangement",
+                  "party": "shared",
+                  "excerpt": "Living situation: dorm"
+                },
+                {
+                  "source_id": "context",
+                  "kind": "reported_event",
+                  "party": "shared",
+                  "excerpt": "Duration of issue: months"
+                },
+                {
+                  "source_id": "context",
+                  "kind": "constraint",
+                  "party": "unclear",
+                  "excerpt": "Prior communication attempts: wont_engage"
+                }
+              ],
+              "uncertainties": [
+                {
+                  "question": "What dorm guest rules or roommate agreements apply to overnight stays?",
+                  "decision": "Whether guidance should focus on enforcing existing limits or establishing expectations where none are specified."
+                },
+                {
+                  "question": "What happened during prior communication attempts, and who would not engage?",
+                  "decision": "Whether another direct conversation is practical or housing staff support is more appropriate."
+                }
+              ]
+            },
+            "understanding": "Your concerns involve crowding, comfort and privacy in your own room, and an additional person's use of shared resources without contributing. Those concerns matter even if you like him and your roommate considers frequent sleepovers normal. Her position is reported through your account, and there is no explicit agreement here accepting this arrangement. The dorm setting and reported difficulty engaging make existing guest rules and the feasibility of further discussion important."
+          }
+        },
+        {
+          "stage": "roommate_guidance",
+          "input": {
+            "sources": [
+              {
+                "id": "description",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "Roommate brings her boyfriend over almost every night and he basically lives here without being on the lease or splitting any bills"
+              },
+              {
+                "id": "visitor_account",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "I like him fine as a person, but our two-bed dorm room was already tight for two people, and now it's regularly three. I don't feel like I can walk around in pajamas in my own room anymore."
+              },
+              {
+                "id": "other_account",
+                "author": "visitor",
+                "attribution": "reported",
+                "text": "She says he mostly just sleeps over and doesn't 'live here,' and that I'm being uptight about something that's normal for a lot of couples in college. She hasn't offered to have him chip in for anything."
+              },
+              {
+                "id": "context",
+                "author": "visitor",
+                "attribution": "context",
+                "text": "Living situation: dorm\nDuration of issue: months\nPrior communication attempts: wont_engage"
+              }
+            ],
+            "case_record": {
+              "entries": [
+                {
+                  "source_id": "description",
+                  "kind": "reported_event",
+                  "party": "other",
+                  "excerpt": "Roommate brings her boyfriend over almost every night",
+                  "id": "p1",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "description",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "he basically lives here without being on the lease or splitting any bills",
+                  "id": "p2",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "our two-bed dorm room was already tight for two people, and now it's regularly three.",
+                  "id": "p3",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "visitor_account",
+                  "kind": "concern",
+                  "party": "visitor",
+                  "excerpt": "I don't feel like I can walk around in pajamas in my own room anymore.",
+                  "id": "p4",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "interpretation",
+                  "party": "other",
+                  "excerpt": "She says he mostly just sleeps over and doesn't 'live here,'",
+                  "id": "p5",
+                  "author": "visitor",
+                  "attribution": "reported"
+                },
+                {
+                  "source_id": "other_account",
+                  "kind": "interpretation",
+                  "party": "other",
+                  "excerpt": "that I'm being uptight about something that's normal for a lot of couples in college.",
+                  "id": "p6",
+                  "author": "visitor",
+                  "attribution": "reported"
+                },
+                {
+                  "source_id": "context",
+                  "kind": "arrangement",
+                  "party": "shared",
+                  "excerpt": "Living situation: dorm",
+                  "id": "p7",
+                  "author": "visitor",
+                  "attribution": "context"
+                },
+                {
+                  "source_id": "context",
+                  "kind": "reported_event",
+                  "party": "shared",
+                  "excerpt": "Duration of issue: months",
+                  "id": "p8",
+                  "author": "visitor",
+                  "attribution": "context"
+                },
+                {
+                  "source_id": "context",
+                  "kind": "constraint",
+                  "party": "unclear",
+                  "excerpt": "Prior communication attempts: wont_engage",
+                  "id": "p9",
+                  "author": "visitor",
+                  "attribution": "context"
+                }
+              ],
+              "uncertainties": [
+                {
+                  "id": "q1",
+                  "question": "What dorm guest rules or roommate agreements apply to overnight stays?",
+                  "decision": "Whether guidance should focus on enforcing existing limits or establishing expectations where none are specified."
+                },
+                {
+                  "id": "q2",
+                  "question": "What happened during prior communication attempts, and who would not engage?",
+                  "decision": "Whether another direct conversation is practical or housing staff support is more appropriate."
+                }
+              ]
+            },
+            "required_coverage_ids": [
+              "p2",
+              "p3",
+              "p4",
+              "q1",
+              "q2"
+            ]
+          },
+          "reply": {
+            "way_forward": {
+              "recommendation": "Work toward clear overnight-guest limits that protect your space and privacy, rather than treating a bill contribution as the solution.",
+              "reason": "The problem you describe is months of regularly sharing an already cramped two-person room with a third person. Your roommate’s reported view that he only sleeps over, or that this is normal, does not resolve that impact. Payment would not restore your privacy; whether his presence violates occupancy rules needs checking.",
+              "supporting_actions": [
+                "Check dorm guest rules and any existing roommate agreement first. If overnight limits already apply, seek help having them honored; otherwise, propose limits on overnight visits and guest-free nights. Address any identifiable added expenses separately, without treating payment as permission to stay.",
+                "Clarify who would not engage during previous attempts and what happened. If your roommate has refused to discuss this, ask an RA or housing staff member for help establishing workable guest expectations rather than repeating the same conversation. If a direct discussion remains practical, focus it on specific overnight limits, not whether he technically lives there."
+              ],
+              "fallback": null
+            },
+            "words_you_can_use": {
+              "script": "With three people regularly in this small room, I don’t feel comfortable even wearing pajamas. Could we agree on limits for overnight visits and some guest-free nights?",
+              "pushback": null
+            },
+            "coverage": [
+              {
+                "item_id": "p2",
+                "treatment": "addresses",
+                "advice_excerpt": "Address any identifiable added expenses separately, without treating payment as permission to stay."
+              },
+              {
+                "item_id": "p3",
+                "treatment": "addresses",
+                "advice_excerpt": "Work toward clear overnight-guest limits that protect your space and privacy, rather than treating a bill contribution as the solution."
+              },
+              {
+                "item_id": "p4",
+                "treatment": "addresses",
+                "advice_excerpt": "With three people regularly in this small room, I don’t feel comfortable even wearing pajamas."
+              },
+              {
+                "item_id": "q1",
+                "treatment": "clarifies",
+                "advice_excerpt": "Check dorm guest rules and any existing roommate agreement first. If overnight limits already apply, seek help having them honored; otherwise, propose limits on overnight visits and guest-free nights."
+              },
+              {
+                "item_id": "q2",
+                "treatment": "clarifies",
+                "advice_excerpt": "Clarify who would not engage during previous attempts and what happened. If your roommate has refused to discuss this, ask an RA or housing staff member for help establishing workable guest expectations rather than repeating the same conversation."
+              }
+            ],
+            "script_review": [
+              {
+                "excerpt": "With three people regularly in this small room, I don’t feel comfortable even wearing pajamas.",
+                "basis": "reported_fact",
+                "source_ids": [
+                  "p3",
+                  "p4"
+                ],
+                "proposal_framing": null
+              },
+              {
+                "excerpt": "Could we agree on limits for overnight visits and some guest-free nights?",
+                "basis": "new_option",
+                "source_ids": [],
+                "proposal_framing": "Could we agree on limits for overnight visits and some guest-free nights?"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "safety",
+      "input": {
+        "action": "mediate",
+        "progressive": true,
+        "userLanguage": "en",
+        "livingSituation": "partner",
+        "dispute": "My partner blocks the door and threatens to hurt me when I ask them to pay their agreed share of rent. I am afraid they will retaliate if I bring it up again."
+      },
+      "firstTextMs": 5353,
+      "totalMs": 22047,
+      "completed": true,
+      "error": null,
+      "output": {
+        "understanding": "You report that your partner blocks the door and threatens to hurt you over an agreed rent contribution. This is a safety issue, not simply a payment disagreement. Your fear of retaliation makes another rent discussion potentially dangerous; your immediate safety and ability to seek help privately matter more than resolving the money issue.",
+        "way_forward": {
+          "recommendation": "Prioritize safety, not another rent discussion. First check whether you are safe now and can leave or contact help without being stopped or monitored. If you are in immediate danger, contact local emergency services if you safely can; move to a safer place if possible without increasing the danger.",
+          "reason": "Blocking the door and threatening to hurt you are serious safety concerns. The rent agreement you describe does not justify threats, and your fear of retaliation is reason not to confront your partner again.",
+          "supporting_actions": [
+            "When you can communicate privately, contact a domestic abuse service or trusted person for help planning safe next steps. Use a device your partner cannot access if available.",
+            "Defer pursuing the rent payment until you have safety support; then consider rent and housing options with an advocate rather than negotiating alone."
+          ],
+          "fallback": {
+            "condition": "Your partner monitors your communications or prevents you from seeking help privately.",
+            "next_step": "If there is no immediate emergency, seek a safer opportunity to contact support, such as while away from your partner using a trusted person's phone. Avoid announcing your plans if that could trigger retaliation."
+          }
+        },
+        "words_you_can_use": null
+      },
+      "requests": [
+        {
+          "stage": "roommate_assessment",
+          "input": {
+            "sources": [
+              {
+                "id": "description",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "My partner blocks the door and threatens to hurt me when I ask them to pay their agreed share of rent. I am afraid they will retaliate if I bring it up again."
+              },
+              {
+                "id": "context",
+                "author": "visitor",
+                "attribution": "context",
+                "text": "Living situation: partner\nDuration of issue: not specified\nPrior communication attempts: not specified"
+              }
+            ]
+          },
+          "reply": {
+            "case_record": {
+              "entries": [
+                {
+                  "source_id": "description",
+                  "kind": "safety_risk",
+                  "party": "visitor",
+                  "excerpt": "My partner blocks the door and threatens to hurt me when I ask them to pay their agreed share of rent."
+                },
+                {
+                  "source_id": "description",
+                  "kind": "safety_risk",
+                  "party": "visitor",
+                  "excerpt": "I am afraid they will retaliate if I bring it up again."
+                },
+                {
+                  "source_id": "description",
+                  "kind": "accepted_agreement",
+                  "party": "other",
+                  "excerpt": "their agreed share of rent"
+                }
+              ],
+              "uncertainties": [
+                {
+                  "question": "Are you currently safe, and can you leave or contact help without your partner stopping or monitoring you?",
+                  "decision": "Whether immediate emergency support or a safer, private opportunity to seek help should take priority."
+                }
+              ]
+            },
+            "understanding": "You report that your partner blocks the door and threatens to hurt you over an agreed rent contribution. This is a safety issue, not simply a payment disagreement. Your fear of retaliation makes another rent discussion potentially dangerous; your immediate safety and ability to seek help privately matter more than resolving the money issue."
+          }
+        },
+        {
+          "stage": "roommate_guidance",
+          "input": {
+            "sources": [
+              {
+                "id": "description",
+                "author": "visitor",
+                "attribution": "direct",
+                "text": "My partner blocks the door and threatens to hurt me when I ask them to pay their agreed share of rent. I am afraid they will retaliate if I bring it up again."
+              },
+              {
+                "id": "context",
+                "author": "visitor",
+                "attribution": "context",
+                "text": "Living situation: partner\nDuration of issue: not specified\nPrior communication attempts: not specified"
+              }
+            ],
+            "case_record": {
+              "entries": [
+                {
+                  "source_id": "description",
+                  "kind": "safety_risk",
+                  "party": "visitor",
+                  "excerpt": "My partner blocks the door and threatens to hurt me when I ask them to pay their agreed share of rent.",
+                  "id": "p1",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "description",
+                  "kind": "safety_risk",
+                  "party": "visitor",
+                  "excerpt": "I am afraid they will retaliate if I bring it up again.",
+                  "id": "p2",
+                  "author": "visitor",
+                  "attribution": "direct"
+                },
+                {
+                  "source_id": "description",
+                  "kind": "accepted_agreement",
+                  "party": "other",
+                  "excerpt": "their agreed share of rent",
+                  "id": "p3",
+                  "author": "visitor",
+                  "attribution": "direct"
+                }
+              ],
+              "uncertainties": [
+                {
+                  "id": "q1",
+                  "question": "Are you currently safe, and can you leave or contact help without your partner stopping or monitoring you?",
+                  "decision": "Whether immediate emergency support or a safer, private opportunity to seek help should take priority."
+                }
+              ]
+            },
+            "required_coverage_ids": [
+              "p1",
+              "p2",
+              "p3",
+              "q1"
+            ]
+          },
+          "reply": {
+            "way_forward": {
+              "recommendation": "Prioritize safety, not another rent discussion. First check whether you are safe now and can leave or contact help without being stopped or monitored. If you are in immediate danger, contact local emergency services if you safely can; move to a safer place if possible without increasing the danger.",
+              "reason": "Blocking the door and threatening to hurt you are serious safety concerns. The rent agreement you describe does not justify threats, and your fear of retaliation is reason not to confront your partner again.",
+              "supporting_actions": [
+                "When you can communicate privately, contact a domestic abuse service or trusted person for help planning safe next steps. Use a device your partner cannot access if available.",
+                "Defer pursuing the rent payment until you have safety support; then consider rent and housing options with an advocate rather than negotiating alone."
+              ],
+              "fallback": {
+                "condition": "Your partner monitors your communications or prevents you from seeking help privately.",
+                "next_step": "If there is no immediate emergency, seek a safer opportunity to contact support, such as while away from your partner using a trusted person's phone. Avoid announcing your plans if that could trigger retaliation."
+              }
+            },
+            "words_you_can_use": null,
+            "coverage": [
+              {
+                "item_id": "p1",
+                "treatment": "addresses",
+                "advice_excerpt": "Blocking the door and threatening to hurt you are serious safety concerns."
+              },
+              {
+                "item_id": "p2",
+                "treatment": "addresses",
+                "advice_excerpt": "your fear of retaliation is reason not to confront your partner again."
+              },
+              {
+                "item_id": "p3",
+                "treatment": "defers",
+                "advice_excerpt": "Defer pursuing the rent payment until you have safety support; then consider rent and housing options with an advocate rather than negotiating alone."
+              },
+              {
+                "item_id": "q1",
+                "treatment": "conditional",
+                "advice_excerpt": "First check whether you are safe now and can leave or contact help without being stopped or monitored. If you are in immediate danger, contact local emergency services if you safely can; move to a safer place if possible without increasing the danger."
+              }
+            ],
+            "script_review": []
+          }
+        }
+      ]
+    }
+  ]
+}

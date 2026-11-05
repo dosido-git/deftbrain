@@ -3,12 +3,13 @@
     "tool": "RoommateCourt",
     "captured": "2026-09-08",
     "baseline": "roommate-court-v2",
-    "model": "claude-sonnet-4-6 (all 3 actions) + lib/outputGuard.js (v2 enforcement on mediate)",
+    "model": "gpt-6-luna (mediation); claude-sonnet-4-6 (chore assignment and review)",
     "endpoints": [
       "/api/roommate-court (action: mediate|assign|rebalance)"
     ],
     "note": "V2 rewrite, 2026-09-08: full architecture change per owner's brief. Renamed 'Dispute Court' tab to 'Work It Out' (tool name stays Roommate Court); removed the Category selector. Mediator no longer returns fault percentages (your_fault_pct/their_fault_pct) or a whos_right verdict -- replaced with the_read.label, a pinned-English 8-value enum (YOUR REQUEST LOOKS REASONABLE...NOT ENOUGH TO TELL). Removed underlying_issues.real_conflict / surface_conflict / communication_breakdown (invented 'real conflict') -- replaced with where_the_disagreement_is{your_stated_concern,their_reported_concern,collision,unknowns_that_matter}. conversation_script (a full scripted two-sided dialogue ending in an invented agreement) replaced with conversation{start_with_this,ask_this,if_they_push_back[],proposal} -- if_they_push_back entries are explicitly hypothetical, proposal is explicitly not an agreement. resolution.compromise/boundaries and if_stuck.escalation_options/self_protection/exit_strategy replaced with what_to_try[] and if_that_doesnt_work[] (progressive disclosure). prevention (unconditional prevention claims) and reality_check (partisan-ally framing) replaced with one_thing_not_to_lose_sight_of (optional, non-partisan). Assigner (Chore Roulette) no longer invents universal 1/2/3 effort weights or a fairness_score percentage -- chores now carry an optional household-supplied load (UNSPECIFIED|LIGHTER|MEDIUM|HEAVIER) echoed back exactly as supplied, never invented; this_round.load_totals is null unless at least one chore had a supplied load. Rebalance (was 'That's Not Fair!', now 'Something Doesn't Work?') no longer returns complaint_valid -- replaced with what_changed + adjustment_needed, treating the complaint as new information rather than a claim to adjudicate. See audit/tool-notes/ROOMMATECOURT-NOTES.md for the full correction history.",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden roommate-court). Diff for QUALITY not exact match: HTTP 200, no truncation, the_read.label stays the exact pinned English string regardless of userLanguage. The mediate case is German specifically because its schema is the largest and most truncation-fragile (3500 max_tokens); verify it still returns all 6 top-level fields with no error."
+    "how_to_regression_diff": "Run npm run check:golden roommate-court on a fresh working-tree backend. Mediation has three fields, with nullable conversation and fallback; verify language, attribution and safety as well as structure.",
+    "redesign": "2026-11-05: mediation now uses understanding, way_forward with optional fallback, and nullable words_you_can_use. Refreshed German mediation output from actual working-tree backend; chore snapshots unchanged."
   },
   "cases": [
     {
@@ -28,56 +29,19 @@
         "livingSituation": "Geteilte Wohnung"
       },
       "output": {
-        "the_read": {
-          "label": "YOU'RE TALKING PAST EACH OTHER",
-          "explanation": "Du beschreibst ein Problem mit deiner Arbeitssituation – du siehst das Geschirr den ganzen Tag und es beeinträchtigt deine Konzentration. Sie beschreibt ein Problem mit ihrer Erschöpfung nach langen Schichten. Beide Anliegen sind nachvollziehbar, aber ihr redet bislang über zwei verschiedene Dinge: du über den Ort (die Küche als dein Arbeitsumfeld), sie über den Zeitpunkt (abends um 21 Uhr)."
-        },
-        "where_the_disagreement_is": {
-          "your_stated_concern": "Schmutziges Geschirr steht tagelang in der Spüle, direkt neben deinem Homeoffice-Arbeitsplatz. Du möchtest, dass es spätestens nach einer Nacht weggeräumt wird.",
-          "their_reported_concern": "Nach langen Krankenhausschichten ist sie abends zu erschöpft, um noch Geschirr zu spülen. Sie erledigt es an freien Tagen und empfindet deine Erwartung als übertrieben.",
-          "collision": "Deine Forderung 'nicht länger als eine Nacht' und ihr Rhythmus 'an freien Tagen' passen strukturell nicht zusammen – je nach Schichtplan können zwischen zwei freien Tagen mehrere Tage liegen. Ihr habt noch keinen gemeinsamen Standard gefunden, der beide Lebensrealitäten berücksichtigt.",
-          "unknowns_that_matter": [
-            "Wie oft und wie regelmäßig hat sie freie Tage – d.h. wie lange bleibt das Geschirr im Schnitt tatsächlich stehen?",
-            "Wäre für sie ein anderer Zeitpunkt als abends realisierbar – z.B. morgens vor der Schicht oder am nächsten freien Morgen?",
-            "Habt ihr bisher eine konkrete Frist oder Regelung vereinbart, oder war es bislang eher ein allgemeines Gespräch über das Problem?"
-          ]
-        },
-        "what_to_try": [
-          {
-            "action": "Die Frist vom Zeitpunkt lösen und an einen Zustand knüpfen",
-            "why_it_may_help": "Statt 'nicht länger als eine Nacht' könnte das Ziel lauten: 'Geschirr ist weggeräumt, bevor ein neuer Arbeitstag für mich beginnt.' Das lässt ihr etwas Flexibilität beim Zeitpunkt, schützt aber deinen Arbeitsalltag."
-          },
-          {
-            "action": "Eine konkrete, schriftlich festgehaltene Hausregel vorschlagen",
-            "why_it_may_help": "Ihr habt mehrfach geredet, aber es ist unklar, ob dabei eine verbindliche Abmachung entstanden ist. Eine kurze schriftliche Formulierung – z.B. per Nachricht oder Notiz – macht sichtbar, worüber ihr euch tatsächlich einig seid, und verhindert spätere unterschiedliche Erinnerungen."
-          },
-          {
-            "action": "Zwischen 'muss' und 'wäre schön' trennen",
-            "why_it_may_help": "Du sagst selbst, du verlangst keine makellose Küche. Es könnte helfen, ihr genau zu sagen, was dein Minimum ist – z.B. dass die Spüle frei ist, wenn du morgens anfängst zu arbeiten – damit sie nicht das Gefühl hat, du willst permanente Sauberkeit."
-          }
-        ],
-        "conversation": {
-          "start_with_this": "Ich möchte das nochmal ansprechen, weil es für mich im Alltag wirklich ein Problem ist – nicht weil ich es perfekt haben will, sondern weil ich den ganzen Tag in Sichtweite der Spüle arbeite. Ich glaube, wir haben bisher aneinander vorbeigeredet.",
-          "ask_this": "Wann wäre für dich realistisch, das Geschirr wegzuräumen – nicht abends nach der Schicht, aber vielleicht am nächsten Morgen oder bevor du wieder arbeitest?",
-          "if_they_push_back": [
-            {
-              "possible_response": "Entfernt. Das Tool darf nicht vorhersagen, wie sie reagieren wird – das wäre Gedankenlesen. Stattdessen: Bereite dich darauf vor, dass das Gespräch schwierig sein könnte, aber konzentriere dich auf das, was du kontrollieren kannst: deine Frage, dein Anliegen klar zu benennen.",
-              "you_could_say": "Wenn sie wieder sagt, du seist zu pingelig: Bleib bei deinem Anliegen, nicht ihrer Müdigkeit oder deiner Großzügigkeit. Du könntest sagen: 'Mir geht es nicht um Perfektion – mir geht es darum, dass ich hier arbeite und tagelang schmutziges Geschirr sehe. Wann wäre für dich ein realistischer Zeitpunkt?'"
-            }
+        "understanding": "Nach deiner Schilderung bleibt Geschirr oft mehrere Tage, teils bis zu einer Woche, in der gemeinsamen Spüle. Das belastet dich besonders, weil die Küche direkt neben deinem Arbeitsplatz liegt. Du wünschst dir, dass es höchstens eine Nacht stehen bleibt. Nach deinem Verständnis ist deine Mitbewohnerin nach langen Krankenhausdiensten zu erschöpft, um abends zu spülen, und erledigt es an freien Tagen; sie hält deinen Wunsch offenbar für pingelig. Eine ausdrückliche Vereinbarung zur Spüle ist nicht genannt. Müdigkeit kann erklären, warum sie nicht spätabends spült, löst aber die länger andauernde Beeinträchtigung nicht. Da ihr schon mehrfach gesprochen habt, sollte der nächste Schritt auf eine konkrete, für beide machbare Regel zielen.",
+        "way_forward": {
+          "recommendation": "Vereinbart eine konkrete Frist, bis wann Geschirr aus der Spüle geräumt wird, statt vorauszusetzen, dass es noch am Abend abgewaschen sein muss. Deine gewünschte Grenze von einer Nacht ist ein nachvollziehbarer Vorschlag, aber bislang keine gemeinsame Vereinbarung.",
+          "reason": "So wird deine Belastung durch tagelang sichtbares Geschirr berücksichtigt, ohne ihre Erschöpfung nach langen Schichten zu übergehen. Eine klare Frist macht außerdem überprüfbar, ob eure Gespräche tatsächlich etwas ändern.",
+          "supporting_actions": [
+            "Sprecht einen Zeitpunkt aus, der auch nach späten Schichten realistisch ist, etwa bis zum nächsten Tag; klärt dabei, ob es ums Abwaschen oder zunächst ums Freimachen der Spüle geht."
           ],
-          "proposal": "Formuliere einen Vorschlag als Frage, nicht als Regel: 'Wäre es realistisch, wenn das Geschirr spätestens am nächsten Morgen weg ist – nicht um 21 Uhr, sondern wann immer du Zeit hast?' Dann höre, was sie sagt, bevor ihr versucht, euch zu einigen."
+          "fallback": null
         },
-        "if_that_doesnt_work": [
-          {
-            "next_step": "Das Gespräch schriftlich zusammenfassen",
-            "when_it_makes_sense": "Wenn ihr euch mündlich einigt, aber das Problem danach weitergeht – eine kurze Nachricht nach dem Gespräch ('Ich fasse kurz zusammen, worüber wir uns geeinigt haben...') macht aus einem Gespräch eine nachweisbare Abmachung."
-          },
-          {
-            "next_step": "Die Wohnsituation grundsätzlich neu bewerten",
-            "when_it_makes_sense": "Wenn nach mehreren Versuchen mit konkreten Vorschlägen keine Einigung entsteht und die Situation deinen Arbeitsalltag dauerhaft beeinträchtigt, lohnt es sich zu überlegen, ob die Wohnkonstellation langfristig für dich funktioniert – unabhängig davon, wer 'Recht hat'."
-          }
-        ],
-        "one_thing_not_to_lose_sight_of": "Ihr redet bislang aneinander vorbei – du über den Ort, sie über den Zeitpunkt. Ein Vorschlag, der ihr beim Zeitpunkt Spielraum lässt, aber dir beim Ergebnis Klarheit gibt, hat bessere Chancen als eine starre Frist. Das erfordert, dass ihr vorher wirklich versteht, was für die andere Person machbar ist."
+        "words_you_can_use": {
+          "script": "Ich möchte noch einmal konkret über das Geschirr sprechen. Wenn es mehrere Tage in der Spüle bleibt, belastet mich das bei der Arbeit direkt daneben. Ich verstehe, dass du nach einer langen Schicht vielleicht nicht abends spülen kannst. Können wir vereinbaren, bis wann es spätestens weggeräumt ist? Für mich wäre höchstens eine Nacht ein guter Ausgangspunkt.",
+          "pushback": null
+        }
       },
       "optionalSections": [
         "what_to_try",

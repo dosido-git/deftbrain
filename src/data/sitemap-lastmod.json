@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "6a860bc6d34f4a5ee461fa6bd1cdb4cc4cb86e72",
-  "lastmod": "2026-11-01"
+  "hash": "d1640d255193a37e45caa55a3e0cd4c5ccf025e2",
+  "lastmod": "2026-11-05"
  },
  "static:about": {
   "hash": "111d7e0c9a60e6c6c6a36fe1b8a40cdc77728da4",
@@ -352,8 +352,8 @@
   "lastmod": "2026-10-27"
  },
  "tool:RoommateCourt": {
-  "hash": "5194345f6e07ea85d4e77d4a482eca32bd8f9bc2",
-  "lastmod": "2026-10-29"
+  "hash": "5e54d3049fada5fbf21f864b38a812c250e94287",
+  "lastmod": "2026-11-05"
  },
  "tool:PaperworkPath": {
   "hash": "32922684acdf9978f37f58e7c2d4ed41a9988f1c",

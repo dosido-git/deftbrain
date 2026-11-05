@@ -9601,8 +9601,8 @@ tagline: "Take command of your available energy",
   primer: {
     when: "The same roommate argument for the third time — or chores that need dividing.",
     give: "What's going on, your side, and — if you know it — what they'd say. Don't guess just to fill that in.",
-    get: "Where the actual disagreement sits, practical options worth trying, and words to start the conversation with.",
-    edge: "It only has your account, and says so — no fault percentages, no invented 'real conflict,' no fictional conversation where they agree.",
+    get: "A grounded assessment, a practical way forward, and words you can use when a conversation would help.",
+    edge: "It distinguishes the accounts provided, keeps uncertainty visible, and can prioritize safety instead of a conversation.",
   },
   seoDescription: "Roommate problem? Tell Roommate Court what's happening and what each side says. It helps you separate facts from disagreement and gives you words to start the conversation — plus a chore-dividing wheel that rotates the load over time. Free.",
   seoTitle: "Roommate Dispute Mediator",
@@ -9615,47 +9615,42 @@ tagline: "Take command of your available energy",
   // Real output, shown on the page (PublicProductDemo + prerender). Added
   // 2026-10-08 so the page shows what the tool does before it is indexed.
   exampleOutput: {
-    title: "See what Roommate Court gives you",
-    expandLabel: "See a real example ↓",
-    intro: "Real output from an actual run on the dispute below — an excerpt of a longer result, nothing reworded.",
-    sampleLabel: "The dispute",
-    sampleText: "Dishes left in the sink for days at a time, sometimes a full week. My side: I work from home and the kitchen is right next to my desk. I end up staring at a sink full of dirty dishes for half my workday. I'm not asking for spotless — just for them not to sit overnight more than once. Her side: She works long hours at the hospital and says she's too tired to wash dishes when she gets home at 9pm. She'll do them on her days off. She thinks I'm being uptight because I'm home all day. Going on for months; raised more than once.",
-    context: "Real run, 2026-10-08 — one of the tool's own built-in examples.",
-    sections: [
-      {
-        label: "You're talking past each other",
-        tone: "yellow",
-        text: "You are asking for a timeline — no dish sits overnight more than once. She is describing a physical limit — she cannot wash dishes at 9pm after a hospital shift. These are two different problems being treated as one. She is not refusing to do dishes; you are not asking for perfection. The gap is whether 'days off' is a workable schedule when you are looking at the sink all day, every day.",
-      },
-      {
-        label: "Where it collides",
-        tone: "neutral",
-        text: "Her reported 'days off' cycle may mean dishes sit for several days in a row — the exact situation that disrupts your workspace. Her solution may feel reasonable to her while still not solving your problem at all.",
-      },
-      {
-        label: "What to try",
-        tone: "green",
-        items: [
-          "Name the specific standard clearly — one overnight maximum — rather than asking her to 'clean up more' or 'do dishes sooner'. Vague requests are easy to feel you are meeting. A concrete threshold gives both of you something unambiguous to agree to or negotiate around.",
-          "Separate the timeline problem from the late-night washing problem. Ask whether she could rinse and stack dishes before bed — not fully wash them — so the sink is not visually overwhelming during your workday. A quick rinse and stack is much lighter than a full wash and may address your actual concern without requiring her to do the thing she says she cannot do at 9pm.",
-          "Propose a day-of-week anchor instead of a hourly rule — for example, any dishes from Sunday through Tuesday get done by Wednesday, and so on — timed around her known days off. This meets her where she actually is while giving you a predictable limit on how long the sink fills up.",
-        ],
-      },
-      {
-        label: "Start the conversation with",
-        tone: "green",
-        text: "Frame it around what you actually need: that staring at a full sink during your workday is affecting your ability to focus, and you want to find something workable given her schedule. Skip the exact words and go straight to: you need to talk about what a realistic timeline actually is for her, and what would reduce the visual disruption for you during work hours.",
-      },
+    "title": "See what Roommate Court gives you",
+    "expandLabel": "See a real example ↓",
+    "intro": "An actual response to the household disagreement below.",
+    "sampleLabel": "The dispute",
+    "sampleText": "Utilities split evenly three ways when one person is home all day and the other two are not My side: I work from home so I'm here with the heating on while they're both out. I get why they think even splits are simplest, but I'm also not the one who set the thermostat to 22 in November. I'd pay a bigger share of heating if we split internet and water evenly. Their reported side: They say an even split is the only thing that doesn't turn into a monthly argument, and that once you start metering one thing you end up metering everything. One of them also pointed out I use less water since I shower at the gym.",
+    "context": "Real run, November 5, 2026 — the built-in utilities example.",
+    "sections": [
+        {
+            "label": "Understanding the Situation",
+            "tone": "neutral",
+            "text": "Your daytime heating use is relevant, but being home longer does not by itself establish how much extra you cost the household. Temperature and schedule control matter too; you report not choosing 22 degrees. Your housemates reportedly value predictable bills and avoiding ongoing accounting, which are legitimate concerns but do not automatically make equal shares fair. Their reported acknowledgment that you use less water is also relevant to the overall balance. Your willingness to pay more for heating is conditional on equal internet and water shares, not an accepted agreement. Fairness therefore depends on the existing agreement, actual additional costs, shared control and offsets—not simply hours at home or identical payments."
+        },
+        {
+            "label": "A Way Forward",
+            "tone": "neutral",
+            "text": "Discuss your conditional offer as a whole-utilities proposal: a larger heating share only with equal internet and water shares. If everyone wants a change, consider a fixed split for an agreed period rather than monthly usage tracking.\n\nBeing home with heating on does not establish the additional cost or make you solely responsible for shared temperature choices. Their reported preference for simplicity and comment that you use less water also matter; equal shares are simple, but not automatically fair.",
+            "items": [
+                "Before deciding whether to change the split, check whether equal shares were explicitly agreed and whether any conditions or review points were included.",
+                "Before deciding on a heating premium, clarify who controls the temperature and schedule—including the 22°C setting you say you did not choose—and roughly what extra cost daytime heating adds, without requiring individual metering."
+            ]
+        },
+        {
+            "label": "Words You Can Use",
+            "tone": "neutral",
+            "text": "I'd pay a bigger share of heating if we split internet and water evenly. Could we consider a fixed split for an agreed period, rather than tracking everything each month?"
+        }
     ],
-    disclaimer: "Roommate Court only has your account of the conflict, and it says so. It looks for a workable arrangement, not a verdict on who is at fault.",
-  },
+    "disclaimer": "Guidance based on the accounts provided. Use it to consider your options, not as a ruling."
+},
   faq: [
     { q: "How do I get my roommate to do the dishes?",
       a: "Agree on a specific standard rather than 'clean up more' — for example, nothing left in the sink more than one night — and fit it to both schedules. If late evenings are impossible for them, a quick rinse-and-stack or a set catch-up day can work." },
     { q: "How do I bring up a problem with a roommate without a fight?",
       a: "Pick a calm time, describe it as a shared problem, ask how they see it before proposing anything, and suggest a simple system rather than a favor." },
     { q: "What if we've already talked about it and nothing changed?",
-      a: "The request was probably too general. Name the exact standard you need, check what is actually stopping them, and agree a system you can both see working, such as a rota or a set day." },
+      a: "Explain what you tried and what happened. The useful next step depends on whether expectations are unclear, an agreement is being missed, a practical constraint needs addressing, or a firmer boundary or outside support is needed." },
     { q: "Does Roommate Court decide who is right?",
       a: "No. It shows where the two positions actually collide, what is still unknown, and what to try and say, so you can agree something that works for both of you." },
   ],
