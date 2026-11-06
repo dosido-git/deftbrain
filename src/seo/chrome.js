@@ -186,7 +186,12 @@ function getSiteHeaderHTML() {
         </div>
         <details class="site-header-menu">
           <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
-          <nav aria-label="Mobile navigation">${nav}</nav>
+          <nav aria-label="Mobile navigation">${nav}
+            <a href="/#home-problem-search">Find guidance</a>
+            <div class="site-header-menu-settings">
+              <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode">Appearance</button>
+            </div>
+          </nav>
         </details>
       </div>
     </div>

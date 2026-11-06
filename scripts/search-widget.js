@@ -229,10 +229,10 @@ function init() {
   // React pages draw their header after this script runs, and again on every
   // route change: mount each search form as it appears.
   if (window.MutationObserver) new MutationObserver(mountAll).observe(document.body, { childList: true, subtree: true });
-  // ⌘K / Ctrl+K focuses the header's search box.
+  // Prefer the homepage's main search; other pages keep the header shortcut.
   document.addEventListener('keydown', function (e) {
     if (!((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k')) return;
-    var first = document.querySelector('form[data-deft-search] input');
+    var first = document.getElementById('home-problem-search') || document.querySelector('form[data-deft-search] input');
     if (first) { e.preventDefault(); first.focus(); first.select(); }
   });
 }

@@ -58,7 +58,15 @@ function HomeProblemSearch() {
             <input id="home-problem-search" type="search" name="q" required maxLength={500}
               value={query} onChange={e => setQuery(e.target.value)}
               onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-              placeholder={SEARCH_EXAMPLES[example]} />
+              onKeyDown={e => {
+                if (e.key === 'Escape') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setQuery('');
+                }
+              }}
+              aria-keyshortcuts="Meta+K Control+K" placeholder={SEARCH_EXAMPLES[example]} />
+            <span className="db-home-finder-kbd" aria-hidden="true">⌘K</span>
           </div>
           <button type="submit" disabled={!query.trim()}>Find guidance <span aria-hidden="true">→</span></button>
         </div>
@@ -68,7 +76,6 @@ function HomeProblemSearch() {
 }
 
 const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
-const SCRAMBLE_ROTATE = [-12,-7,-3,3,7,12];
 const SCRAMBLE_SCALE = [.92,.98,1.04,1.1];
 // Independent "just landed" tilt for the hover-preview polaroid — deliberately
 // NOT the same set/index math as SCRAMBLE_ROTATE, so a card's photo doesn't
@@ -134,21 +141,12 @@ function ToolScramble({ allTools, onBrowse }) {
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-9 gap-y-7 py-6">
           {shown.map((t,i) => {
-            const rot = SCRAMBLE_ROTATE[i%SCRAMBLE_ROTATE.length];
             const scale = SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length];
             const tilt = SCRAMBLE_TILT[i%SCRAMBLE_TILT.length];
             const accent = SCRAMBLE_COLORS[i%SCRAMBLE_COLORS.length];
             return (
               <Link key={t.id} to={`/${t.id}`} className="group relative block max-w-[210px]">
-                {/* Scatter transform lives on this inner wrapper, not the
-                    Link itself (2026-09-21). A CSS transform always creates
-                    its own stacking context, so putting it on the Link
-                    would seal that tile's whole subtree (text + popup) away
-                    from every sibling — no z-index anywhere could then rank
-                    one tile's content against another's popup. Keeping the
-                    Link itself un-transformed means the plain z-index rule
-                    below actually applies consistently across every tile. */}
-                <span className="flex items-center gap-2" style={{transform:`rotate(${rot}deg) scale(${scale})`}}>
+                <span className="db-scramble-text flex items-center gap-2" style={{'--scramble-scale':scale}}>
                   <span className="text-[20px] flex-shrink-0" aria-hidden="true">{t.icon || '✦'}</span>
                   <span>
                     <b className="block text-sm leading-tight" style={{color:accent}}>{t.tagline}</b>

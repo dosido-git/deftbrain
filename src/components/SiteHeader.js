@@ -91,8 +91,16 @@ export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency
           </div>
           <details className="site-header-menu">
             <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
-            <nav aria-label="Mobile navigation" onClick={e => { e.currentTarget.closest('details').open = false; }}>
+            <nav aria-label="Mobile navigation" onClick={e => { if (e.target.closest('a')) e.currentTarget.closest('details').open = false; }}>
               <NavItems onCategories={onCategories} current={current} />
+              <a href="/#home-problem-search">Find guidance</a>
+              <div className="site-header-menu-settings">
+                <LocaleSelectors dark={isDark} showCurrency={showCurrency} />
+                {onToggleTheme && <button type="button" className="site-header-theme" onClick={onToggleTheme}
+                  aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+                  {isDark ? 'Light mode' : 'Dark mode'}
+                </button>}
+              </div>
             </nav>
           </details>
         </div>
