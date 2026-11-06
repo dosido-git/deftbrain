@@ -386,6 +386,7 @@ function getHomeStaticHTML(categories, tools) {
     `<li style="margin:.3rem 0"><a href="/tools/${e(c.slug)}">${e(c.name)}</a></li>`).join('');
   const links = getHomeToolLinksHTML(tools); // same order as the page: cards, categories, Scramble
   return `<nav aria-label="Primary" style="margin:0 0 1.5rem"><a href="/tools">Tools</a> · <a href="/guides">Guides</a> · <a href="/about">About</a> · <a href="/organizations">Organizations</a></nav>`
+    + '<form role="search" aria-label="Find guidance for your situation" action="/" method="get"><label for="home-problem-search">Describe your problem</label><input id="home-problem-search" type="search" name="q" required maxlength="500" placeholder="My contractor’s quote seems high…"><button type="submit">Find guidance →</button></form>'
     + links.cards
     + `<h2 style="font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a">Explore by category</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`
     + links.scramble;

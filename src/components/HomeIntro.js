@@ -27,6 +27,46 @@ const SERIF = "'Playfair Display', Georgia, serif";
 const SITUATIONS = homeSituations;
 const SITUATIONS_PER_SET = 4;
 
+const SEARCH_EXAMPLES = [
+  'My contractor’s quote seems high…',
+  'I need to prepare for a doctor visit…',
+  'My roommate and I disagree about bills…',
+  'I want to explain something complicated…',
+  'I could use a creative distraction…',
+];
+
+function HomeProblemSearch() {
+  const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+  const [example, setExample] = useState(0);
+
+  useEffect(() => {
+    if (focused || query) return undefined;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const timer = window.setInterval(() => {
+      if (!motion.matches && !document.hidden) setExample(n => (n + 1) % SEARCH_EXAMPLES.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [focused, query]);
+
+  return (
+    <section className="db-home-finder" aria-labelledby="home-search-label" data-db-section="search">
+      <form role="search" aria-label="Find guidance for your situation" action="/" method="get">
+        <label id="home-search-label" htmlFor="home-problem-search">Describe your problem</label>
+        <div className="db-home-finder-controls">
+          <div className="db-home-finder-field">
+            <input id="home-problem-search" type="search" name="q" required maxLength={500}
+              value={query} onChange={e => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+              placeholder={SEARCH_EXAMPLES[example]} />
+          </div>
+          <button type="submit" disabled={!query.trim()}>Find guidance <span aria-hidden="true">→</span></button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
 const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
 const SCRAMBLE_ROTATE = [-12,-7,-3,3,7,12];
 const SCRAMBLE_SCALE = [.92,.98,1.04,1.1];
@@ -223,7 +263,7 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
   // a redesign that reuses a section name ("hero", "closing") starts a clean
   // funnel instead of blending into the old page's. Change it when the page's
   // sections change.
-  return <main className="db-home" id="home-content" data-db-layout="home-2026-10-23">
+  return <main className="db-home" id="home-content" data-db-layout="home-2026-11-06">
     <section className="db-home-hero" aria-labelledby="home-title" data-db-section="hero">
       <div className="db-home-hero-copy">
         <h1 id="home-title">Life doesn’t come with instructions.</h1>
@@ -235,7 +275,7 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
       </div>
     </section>
 
-
+    <HomeProblemSearch />
     <section className="db-home-section" aria-labelledby="home-situations-title" data-db-section="situations">
       <div className="db-home-section-heading">
         <h2 id="home-situations-title">What’s on your mind?</h2>
