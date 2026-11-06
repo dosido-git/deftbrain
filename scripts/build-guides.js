@@ -181,6 +181,21 @@ function renderGuide(spec, siblings) {
   // site-relative paths only. Text is escaped first, so nothing else becomes
   // markup. stripLinks gives the plain text for JSON-LD and meta.
   const rich = (t) => esc(t).replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, (m, label, href) => `<a href="${href}">${label}</a>`);
+  // Authored step text may contain paragraphs and simple Markdown tables.
+  // Escape every cell through rich(); raw HTML remains plain text.
+  const stepBody = (body) => body.split(/\n\s*\n/).map(part => {
+    const lines = part.trim().split('\n');
+    const cells = line => line.trim().slice(1, -1).split('|').map(cell => cell.trim());
+    if (lines.length >= 3 && lines.every(line => /^\|.*\|$/.test(line.trim())) &&
+        cells(lines[1]).every(cell => /^:?-{3,}:?$/.test(cell))) {
+      const head = cells(lines[0]);
+      const rows = lines.slice(2).map(cells);
+      if (rows.every(row => row.length === head.length) && cells(lines[1]).length === head.length) {
+        return `<table class="answer-table"><thead><tr>${head.map(cell => `<th scope="col">${rich(cell)}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(cell => `<td>${rich(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      }
+    }
+    return `<p>${rich(part)}</p>`;
+  }).join('\n');
   const stepsHtml = spec.steps.map((s, i) => {
     // Optional per-step artwork. Raw SVG, NOT escaped — these strings are
     // authored in the spec files, which are ours; nothing here comes from a
@@ -194,7 +209,7 @@ function renderGuide(spec, siblings) {
         <div class="step-num">${i+1}</div>
         <div class="step-body">
           <h2>${esc(s.name)}</h2>${art}
-          <p>${rich(s.body)}</p>
+          ${stepBody(s.body)}
         </div>
       </div>`;
     if (spec.callout && spec.callout.afterStep === i+1) {
