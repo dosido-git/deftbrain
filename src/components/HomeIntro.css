@@ -63,9 +63,20 @@
 button.db-home-text-link { background: none; border: 0; cursor: pointer; font-family: inherit; color: inherit; }
 .db-home-text-link { font-size: 14px; font-weight: 600; text-decoration: underline !important; text-underline-offset: 4px; padding-block: 8px; }
 .db-home-situations { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.db-home-situation { display: flex; flex-direction: row; overflow: hidden; border: 1px solid var(--home-border); border-radius: 12px; background: var(--h-surface); text-decoration: none !important; color: inherit; }
+.db-home-situation { position: relative; display: flex; flex-direction: row; border: 1px solid var(--home-border); border-radius: 12px; background: var(--h-surface); text-decoration: none !important; color: inherit; }
 .db-home-situation:hover { border-color: var(--h-navy); box-shadow: 0 5px 16px var(--h-shadow); }
-.db-home-situation > img { width: 25%; min-width: 72px; object-fit: cover; }
+.db-home-situation > img { width: 25%; min-width: 72px; object-fit: cover; border-start-start-radius: 11px; border-end-start-radius: 11px; }
+.db-home-situation-preview { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .db-home-situation-preview { display: block; position: absolute; z-index: 20; inset-inline-start: 0; bottom: calc(100% + 10px); width: min(240px, 100%); padding: 8px; border: 1px solid var(--home-border); border-radius: 12px; background: var(--h-surface); box-shadow: 0 10px 28px var(--h-shadow); pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 140ms ease, visibility 140ms; }
+  .db-home-situation-preview > img { display: block; width: 100%; height: auto; border-radius: 7px; }
+  .db-home-situation-preview > span { display: block; margin-top: 6px; text-align: center; font-size: 13px; font-weight: 600; }
+  .db-home-situation:hover .db-home-situation-preview,
+  .db-home-situation:focus-visible .db-home-situation-preview { opacity: 1; visibility: visible; transition-delay: 180ms; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-home-situation-preview { transition: none; }
+}
 .db-home-situation-copy { position: relative; flex: 1; min-width: 0; padding-block: 14px; padding-inline: 14px 34px; }
 .db-home-situation h3 { font-size: 18px; }
 .db-home-situation p { margin-block: 6px 0; margin-inline: 0; font-size: 14px; }

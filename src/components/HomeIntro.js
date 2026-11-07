@@ -299,6 +299,11 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
       <div className="db-home-situations" id="home-situations" aria-live="polite">
         {situations.map(item => <Link key={item.toolId} to={`/${item.toolId}`} className="db-home-situation">
           <img src={`/home-scenes/flip-cards/${item.toolId}.jpg`} alt="" loading="lazy" />
+          <span className="db-home-situation-preview" aria-hidden="true">
+            <img src={`/scramble/${item.toolId}.webp`} alt="" loading="lazy"
+              onError={e => { e.currentTarget.parentElement.style.display = 'none'; }} />
+            <span>{byId.get(item.toolId)?.title}</span>
+          </span>
           <div className="db-home-situation-copy">
             <h3>{item.problem}</h3>
             <p>{item.body}</p>
