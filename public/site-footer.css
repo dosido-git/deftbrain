@@ -97,17 +97,20 @@ footer.site-footer { display: block; padding: 0; margin: 0; }
 :root[data-theme="dark"] .site-footer { --sf-bg: #18181b; --sf-line: #27272a; --sf-text: #a1a1aa; --sf-link: #d4d4d8; --sf-link-hover: #f4f4f5; --sf-deft: #e4e4e7; --sf-brain: #fb923c; }
 .site-footer a, .site-footer a * { text-decoration: none !important; }
 .site-footer-inner { max-width: 1280px; margin: 0 auto; padding: 32px 16px 24px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; }
-@media (min-width: 640px) { .site-footer-inner { flex-direction: row; padding-inline: 24px; } }
-@media (min-width: 1024px) { .site-footer-inner { padding-inline: 32px; } }
-.site-footer-brand { display: flex; align-items: center; gap: 12px; }
+@media (min-width: 640px) { .site-footer-inner { padding-inline: 24px; } }
+@media (min-width: 1024px) { .site-footer-inner { flex-direction: row; padding-inline: 32px; gap: 24px; } }
+.site-footer-brand { display: flex; flex-shrink: 0; align-items: center; gap: 12px; }
 .site-footer-brand img { height: 64px; width: auto; object-fit: contain; }
 .site-footer-word { font-size: 14px; font-weight: 600; color: var(--sf-deft); }
 .site-footer-word span { color: var(--sf-brain); }
-.site-footer-end { display: flex; flex-direction: column; align-items: center; gap: 16px; font-size: 14px; color: var(--sf-text); }
-@media (min-width: 640px) { .site-footer-end { flex-direction: row; } }
+.site-footer-end { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 16px; font-size: 14px; color: var(--sf-text); }
+@media (min-width: 1024px) {
+  .site-footer-end { flex-direction: row; }
+  .site-footer-end > span:last-child { flex-shrink: 0; }
+}
 .site-footer-nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 16px; row-gap: 0; }
 .site-footer-nav a { display: inline-block; padding: 6px 0; color: var(--sf-link); transition: color .15s; }
 .site-footer-nav a:hover { color: var(--sf-link-hover); text-decoration: underline !important; text-underline-offset: 4px; }
 .site-footer-dot { display: none; }
-@media (min-width: 640px) { .site-footer-dot { display: inline; } }
+@media (min-width: 1024px) { .site-footer-dot { display: inline; } }
 .site-footer :is(a, button, input):focus-visible, .site-end :is(a, button, input):focus-visible { outline: 3px solid #165b9a; outline-offset: 3px; }

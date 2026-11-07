@@ -85,6 +85,7 @@ button.db-home-text-link { background: none; border: 0; cursor: pointer; font-fa
 .db-home-category-list { display: flex; flex-wrap: wrap; gap: 10px; }
 .db-home-category-list a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 100%; padding: 9px 15px; border: 1px solid var(--h-pill-border); border-radius: 24px; background: var(--h-surface); color: var(--h-navy); font-size: 14px; text-decoration: none !important; }
 .db-home-category-list a:hover { background: var(--h-pill-hover); border-color: var(--h-navy); }
+.db-home-category-list a > [aria-hidden="true"] { font-size: 17px; line-height: 1; }
 .db-home-category-count { color: var(--home-muted); font-size: 12px; }
 .db-home-guide-intro { font-size: 15px; color: var(--home-muted); margin: 20px 0 0; }
 .db-home-guide-intro a { color: var(--h-navy); font-weight: 600; }
