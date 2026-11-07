@@ -1,7 +1,6 @@
 /* ── Site end — the ONE stylesheet for how every page ends (2026-10-04) ──
    Every page on deftbrain.com ends the same way: the page's own content, then
-   one band with the ideas box (left) and the newsletter (right), then the
-   footer, last.
+   one band with the ideas form and a compact newsletter row, then the footer.
      • React pages: src/components/SiteEnd.js + Footer.js; public/index.html
        links this file.
      • Static pages: getSiteEndHTML() + getSiteFooterBar() in
@@ -16,9 +15,8 @@
 :root[data-theme="dark"] .site-end { --se-bg: #09090b; --se-line: #27272a; --se-head: #f4f4f5; --se-body: #a1a1aa; --se-accent: #fb923c;
   --se-input-bg: #18181b; --se-input-line: #3f3f46; --se-input-text: #f4f4f5; --se-btn: #2f6fb0; --se-btn-text: #ffffff; --se-btn-hover: #3b82c4; }
 
-.site-end-inner { max-width: 1280px; margin: 0 auto; padding: 28px 16px; display: grid; grid-template-columns: 1fr; gap: 28px; }
+.site-end-inner { max-width: 1280px; margin: 0 auto; padding: 28px 16px; display: grid; gap: 20px; }
 @media (min-width: 640px) { .site-end-inner { padding-inline: 24px; } }
-@media (min-width: 900px) { .site-end-inner { grid-template-columns: 1fr 1fr; gap: 48px; } }
 @media (min-width: 1024px) { .site-end-inner { padding-inline: 32px; } }
 
 .site-end-part { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
@@ -33,6 +31,47 @@
 .site-end-form button:disabled { opacity: .6; cursor: default; }
 .site-end-msg { margin: 0; min-height: 0; font-size: 14px; font-weight: 500; color: var(--se-head); }
 .site-end-msg:empty { display: none; }
+
+/* The suggestion form leads. Keep the newsletter controls together as the row wraps. */
+.site-end-inner > .site-end-part:first-child .site-end-form {
+  width: 100%;
+  max-width: 42rem;
+}
+
+.site-end-inner > .site-end-part:last-child {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  border-block-start: 1px solid var(--se-line);
+  padding-block-start: 12px;
+}
+
+.site-end-inner > .site-end-part:last-child .site-end-kicker {
+  letter-spacing: .08em;
+}
+
+.site-end-inner > .site-end-part:last-child .site-end-form {
+  flex: 1 1 15rem;
+  max-width: 20rem;
+  margin: 0;
+}
+
+.site-end-inner > .site-end-part:last-child .site-end-form button {
+  border: 1px solid var(--se-input-line);
+  background: transparent;
+  color: var(--se-head);
+  padding-inline: 12px;
+}
+
+.site-end-inner > .site-end-part:last-child .site-end-form button:hover:not(:disabled) {
+  background: var(--se-input-bg);
+}
+
+.site-end-inner > .site-end-part:last-child .site-end-msg {
+  flex-basis: 100%;
+}
+
 .sr-only-se { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
 /* The same look as a boxed card, for IdeaPrompt (src/components/IdeaPrompt.js)

@@ -56,14 +56,10 @@ const UpsellShield = ({ tool }) => {
     sectionTitle:  isDark ? 'text-zinc-50' : 'text-gray-900',
     accentTxt:     isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]',
     // Tool-specific
-    hookBg:        isDark ? 'bg-[#1f2530] border-[#2c3a4a]' : 'bg-[#eef3f8] border-[#d4dde8]',
-    hookText:      isDark ? 'text-zinc-100' : 'text-[#142a43]',
   };
   // Category colours (audit/CONVENTIONS.md "Category-colour pages").
   const sv = schemeStyle(tool, isDark);
   if (sv) Object.assign(c, SCHEME_C, {
-    hookBg:   'bg-[var(--sc-envelope)] border-[var(--sc-line)]',
-    hookText: 'text-[var(--sc-strong)]',
     // Collapsible sections sit straight on the answer card under a rule.
     card:     'bg-transparent !border-x-0 !border-b-0 !rounded-none [&>button]:!px-0 [&_[data-sec-body]]:!px-0',
   });
@@ -259,13 +255,6 @@ const UpsellShield = ({ tool }) => {
             bleeding to the card edges, the ground the "Try an example" pill was
             made for (PF-17c). Screen only. */}
         {renderHeaderRow()}
-
-        {/* Opening hook */}
-        <div className={`${c.hookBg} border rounded-xl p-4 mb-4`}>
-          <p className={`text-sm font-medium ${c.hookText}`}>
-            {t('us_hook')}
-          </p>
-        </div>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_situation')} <span className={c.required}>*</span></label>
