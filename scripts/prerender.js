@@ -386,7 +386,8 @@ function getHomeStaticHTML(categories, tools) {
     `<li style="margin:.3rem 0"><a href="/tools/${e(c.slug)}">${e(c.name)}</a></li>`).join('');
   const links = getHomeToolLinksHTML(tools); // same order as the page: cards, categories, Scramble
   return `<nav aria-label="Primary" style="margin:0 0 1.5rem"><a href="/tools">Tools</a> · <a href="/guides">Guides</a> · <a href="/about">About</a> · <a href="/organizations">Organizations</a></nav>`
-    + '<form role="search" aria-label="Find guidance for your situation" action="/" method="get"><label for="home-problem-search">Describe your problem</label><input id="home-problem-search" type="search" name="q" required maxlength="500" placeholder="My contractor’s quote seems high…"><button type="submit">Find guidance →</button></form>'
+    + '<form role="search" aria-label="Find guidance for your situation" action="/" method="get"><label for="home-problem-search">Describe your problem</label><input id="home-problem-search" type="search" name="q" required maxlength="500" placeholder="My contractor’s quote seems high…"><button type="submit">Find guidance →</button></form><p><strong>Answer a few questions.</strong><br>Get a clearer view of your situation and practical options.</p>'
+    + '<section aria-labelledby="home-example-title"><p>Example · You bring</p><h2 id="home-example-title">“I’m buying a car tomorrow. Last time, they wore me down for 4 hours. The monthly payment seemed manageable—then I realized how much I would actually be paying.”</h2><a href="/UpsellShield">Explore Upsell Shield →</a><p>You get</p><h3>Always negotiate the “out-the-door” price, not a monthly payment.</h3><p>Include taxes, fees, options & add-ons. If financing, ask for the total you’ll repay, including interest, over the full loan term.</p><p>Something you can say</p><blockquote>“Before we discuss monthly payments, please show me the total price with taxes and fees, and list optional extras separately.”</blockquote></section>'
     + links.cards
     + `<h2 style="font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a">Explore by category</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`
     + links.scramble;
@@ -402,7 +403,7 @@ function getHomeToolLinksHTML(tools) {
   const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
   const byId = new Map(tools.map(t => [t.id, t]));
   const cards = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'data', 'homeSituations.json'), 'utf8'))
-    .filter(c => byId.has(c.toolId)).slice(0, 4);
+    .filter(c => byId.has(c.toolId)).slice(0, 6);
   const onCards = new Set(cards.map(c => c.toolId));
   const scramble = (TOOLS_KEEP_LIST.focus || []).filter(id => !onCards.has(id) && byId.get(id)?.tagline).slice(0, 12).map(id => byId.get(id));
   const li = (href, text) => `<li style="margin:.3rem 0"><a href="${e(href)}">${text}</a></li>`;

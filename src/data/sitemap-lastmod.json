@@ -1,18 +1,18 @@
 {
  "homepage": {
-  "hash": "7db576f94f842486bf8e121f5a2dacae63485f3a",
+  "hash": "13b47edfa61db731fa0c7b797497852d378b7feb",
   "lastmod": "2026-11-06"
  },
  "static:about": {
-  "hash": "54ef2f0602ac0ee2444127ebeb726ce987e82785",
+  "hash": "d7945c4762ab68c818e09d550e1a2fbbd8634956",
   "lastmod": "2026-11-06"
  },
  "static:privacy": {
-  "hash": "1512a8c36d1954b76678ab377ede40fe1b6075ac",
+  "hash": "3652a1213b34fef7ce755491db136ce78ddc934d",
   "lastmod": "2026-11-06"
  },
  "static:terms": {
-  "hash": "7d61ee4ff8535a5a980a582389f4ab134780c841",
+  "hash": "61675977e35da847bd86609a8fce86ca4eeae305",
   "lastmod": "2026-11-06"
  },
  "tool:AlternatePath": {

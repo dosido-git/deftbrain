@@ -380,6 +380,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         isDark={isDark}
         onToggleTheme={toggleTheme}
         showCurrency={false}
+        hideSearch={!isSearching && !showCatalog}
         large
         onBrandClick={backToHome}
         onCategories={() => { backToHome(); window.setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }}

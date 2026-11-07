@@ -114,6 +114,6 @@ html { scroll-padding-top: calc(var(--site-header-h, 96px) + 12px); }
   .sh-brand-word { min-width: 0; }
   .sh-brand-tag { font-size: 10px; line-height: 1.25; margin-top: 4px; max-width: 29ch; overflow-wrap: anywhere; }
   .site-header-end { flex: 0 0 auto; margin-inline-start: 0; gap: 0; }
-  .site-header-controls, .site-header-search { display: none; }
+  .site-header-controls { display: none; }
   .site-header-menu nav { width: min(280px, calc(100vw - 32px)); max-height: calc(100dvh - 80px); overflow-y: auto; }
 }

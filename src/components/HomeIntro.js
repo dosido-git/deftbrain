@@ -13,19 +13,10 @@ const MUTED = 'var(--h-muted)';
 const BORDER = 'var(--h-border)';
 const SERIF = "'Playfair Display', Georgia, serif";
 
-// Stable entry points: visitors can finish reading before choosing a tool.
-// Shown four at a time; "Show other situations" steps through the rest
-// (2026-09-27) — variety the visitor asks for, instead of the old cards
-// flipping on their own. The first four are the default set; the rest are
-// the earlier rotation's situations (each has a card photo in
-// public/home-scenes/flip-cards/), in that list's order.
-// The list lives in src/data/homeSituations.json (2026-10-15) so the
-// prerendered home page (scripts/prerender.js) can link the same lines. Its
-// first four are the default set; the fourth is deliberately light (owner,
-// 2026-09-27: DeftBrain isn't only for problems — charter 4.11); Which Life?
-// leads the second set.
+// Six compact starter cards; an Ideas & Diversions option rotates in the last slot.
+// Shared with the static homepage through homeSituations.json.
 const SITUATIONS = homeSituations;
-const SITUATIONS_PER_SET = 4;
+const SITUATIONS_PER_SET = 6;
 
 const SEARCH_EXAMPLES = [
   'My contractor’s quote seems high…',
@@ -71,6 +62,10 @@ function HomeProblemSearch() {
           <button type="submit" disabled={!query.trim()}>Find guidance <span aria-hidden="true">→</span></button>
         </div>
       </form>
+      <div className="db-home-finder-explanation">
+        <p><strong>Answer a few questions.</strong></p>
+        <p>Get a clearer view of your situation and practical options.</p>
+      </div>
     </section>
   );
 }
@@ -135,7 +130,7 @@ function ToolScramble({ allTools, onBrowse }) {
           <div>
             <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore</div>
             <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
-            <p className="mt-1 text-sm max-w-md" style={{color:MUTED}}>Some representative tools.</p>
+            <p className="mt-1 text-sm max-w-md" style={{color:MUTED}}>Find something useful—or unexpected.</p>
           </div>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-sm font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Show other tools</button>
         </div>
@@ -249,11 +244,14 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
   }, []);
   const allSituations = useMemo(() => SITUATIONS.filter(item => byId.has(item.toolId)), [byId]);
   const [situationSet, setSituationSet] = useState(0);
-  // Wraps around the list, so every set is a full four (55 situations don't
-  // divide by 4) and it never runs out.
-  const hasMoreSituations = allSituations.length > SITUATIONS_PER_SET;
-  const situations = Array.from({ length: Math.min(SITUATIONS_PER_SET, allSituations.length) }, (_, k) =>
-    allSituations[(situationSet * SITUATIONS_PER_SET + k) % allSituations.length]);
+  const lightSituations = allSituations.filter(item => byId.get(item.toolId)?.categories?.includes('Ideas & Diversions'));
+  const lightSituation = lightSituations[situationSet % lightSituations.length];
+  const rotatingSituations = allSituations.filter(item => !byId.get(item.toolId)?.categories?.includes('Ideas & Diversions'));
+  const rotatingCount = SITUATIONS_PER_SET - (lightSituation ? 1 : 0);
+  const hasMoreSituations = rotatingSituations.length > rotatingCount || lightSituations.length > 1;
+  const situations = Array.from({ length: Math.min(rotatingCount, rotatingSituations.length) }, (_, k) =>
+    rotatingSituations[(situationSet * rotatingCount + k) % rotatingSituations.length]);
+  if (lightSituation) situations.push(lightSituation);
 
   // Scroll-depth markers (data-db-section, see src/utils/analytics.js) feed the
   // metrics report's "How far down the home page people get". data-db-layout
@@ -274,6 +272,22 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
     </section>
 
     <HomeProblemSearch />
+    <section className="db-home-result-example" aria-labelledby="home-example-title" data-db-section="example">
+      <div className="db-home-result-context">
+        <p className="db-home-result-label">Example · You bring</p>
+        <h2 id="home-example-title">“I’m buying a car tomorrow. Last time, they wore me down for 4 hours. The monthly payment seemed manageable—then I realized how much I would actually be paying.”</h2>
+        <Link to="/UpsellShield" className="db-home-text-link">Explore Upsell Shield <span aria-hidden="true">→</span></Link>
+      </div>
+      <div className="db-home-result-excerpt">
+        <p className="db-home-result-label">You get</p>
+        <h3>Always negotiate the “out-the-door” price, not a monthly payment.</h3>
+        <p className="db-home-result-finding">Include taxes, fees, options & add-ons. If financing, ask for the total you’ll repay, including interest, over the full loan term.</p>
+      </div>
+      <div className="db-home-result-script">
+        <p className="db-home-result-label">Something you can say</p>
+        <blockquote>“Before we discuss monthly payments, please show me the total price with taxes and fees, and list optional extras separately.”</blockquote>
+      </div>
+    </section>
     <section className="db-home-section" aria-labelledby="home-situations-title" data-db-section="situations">
       <div className="db-home-section-heading">
         <h2 id="home-situations-title">What’s on your mind?</h2>

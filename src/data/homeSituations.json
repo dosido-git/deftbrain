@@ -1,5 +1,35 @@
 [
   {
+    "toolId": "PlantRescue",
+    "problem": "My plant looks off and I don’t know why.",
+    "body": "Get a few plausible explanations and what to check first."
+  },
+  {
+    "toolId": "LayoverMaximizer",
+    "problem": "I have hours between flights.",
+    "body": "Find out what you can realistically do."
+  },
+  {
+    "toolId": "BillRescue",
+    "problem": "This bill doesn’t look right.",
+    "body": "Figure out what to question and what to do next."
+  },
+  {
+    "toolId": "BragSheetBuilder",
+    "problem": "I need to talk about my own work.",
+    "body": "Remember it clearly and say it with confidence."
+  },
+  {
+    "toolId": "DifficultTalkCoach",
+    "problem": "I need to have a difficult conversation.",
+    "body": "Think it through before you say it."
+  },
+  {
+    "toolId": "BrainRoulette",
+    "problem": "I want to think about something new.",
+    "body": "Follow your curiosity somewhere unexpected."
+  },
+  {
     "toolId": "LeaseTrapDetector",
     "problem": "Something in my lease looks wrong.",
     "body": "Understand the risk and what to ask."
@@ -10,11 +40,6 @@
     "body": "Walk in knowing what matters."
   },
   {
-    "toolId": "DifficultTalkCoach",
-    "problem": "I need to have a difficult conversation.",
-    "body": "Think it through before you say it."
-  },
-  {
     "toolId": "WrongAnswersOnly",
     "problem": "I could use a laugh.",
     "body": "Get a confidently, beautifully wrong answer."
@@ -23,11 +48,6 @@
     "toolId": "WhichLife",
     "problem": "I want to explore a different path.",
     "body": "See possibilities you haven’t considered."
-  },
-  {
-    "toolId": "BillRescue",
-    "problem": "This bill doesn’t look right.",
-    "body": "Figure out what to question and what to do next."
   },
   {
     "toolId": "FakeReviewDetective",
@@ -48,11 +68,6 @@
     "toolId": "PlainTalk",
     "problem": "I don’t understand this document.",
     "body": "Turn dense language into something usable."
-  },
-  {
-    "toolId": "LayoverMaximizer",
-    "problem": "I have hours between flights.",
-    "body": "Find out what you can realistically do."
   },
   {
     "toolId": "RentersDepositSaver",
@@ -150,19 +165,9 @@
     "body": "Pick up again — without the spoilers."
   },
   {
-    "toolId": "BragSheetBuilder",
-    "problem": "I need to talk about my own work.",
-    "body": "Remember it clearly and say it with confidence."
-  },
-  {
     "toolId": "BrainDumpBuddy",
     "problem": "Everything is stuck in my head at once.",
     "body": "Get it out and find the one next step."
-  },
-  {
-    "toolId": "BrainRoulette",
-    "problem": "I want to think about something new.",
-    "body": "Follow your curiosity somewhere unexpected."
   },
   {
     "toolId": "BrainStateDeejay",
@@ -233,11 +238,6 @@
     "toolId": "NotSoFast",
     "problem": "I got a flat no, and I don’t think it’s final.",
     "body": "Find the appeal, the escalation path, or the conversation nobody explained."
-  },
-  {
-    "toolId": "PlantRescue",
-    "problem": "My plant looks off and I don’t know why.",
-    "body": "Get a few plausible explanations and what to check first."
   },
   {
     "toolId": "RoastMe",

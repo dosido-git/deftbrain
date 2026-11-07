@@ -55,7 +55,7 @@ function NavItems({ onCategories, current }) {
   });
 }
 
-export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency = true, onBrandClick, onCategories, current, large = false }) {
+export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency = true, onBrandClick, onCategories, current, large = false, hideSearch = false }) {
   // Keep --site-header-h (public/site-header.css scroll-padding-top) equal to
   // this pinned header's height, so jumps to a section land below it rather
   // than under it. Same job as the script chrome.js writes for static pages.
@@ -105,10 +105,7 @@ export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency
           </details>
         </div>
       </div>
-      {/* The one search box on every page (2026-10-23) — same markup as
-          getSearchFormHTML() in src/seo/chrome.js; /search/deft-search.js
-          (loaded by public/index.html) mounts it and draws the results. */}
-      <div className="site-header-search">
+      {!hideSearch && <div className="site-header-search">
         <form className="ds-form" role="search" data-deft-search data-tools="4" data-guides="4" action="/tools">
           <div className="ds-box">
             <span aria-hidden="true">⌕</span>
@@ -118,7 +115,7 @@ export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency
           </div>
           <div className="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden />
         </form>
-      </div>
+      </div>}
     </header>
   );
 }
