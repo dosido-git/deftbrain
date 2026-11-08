@@ -242,9 +242,6 @@ export default function AllToolsPage({ allTools = [] }) {
       <section className="at-hero at-shell">
         {/* The search box moved to the site header (2026-10-23); its "All
             matching tools" link still opens /tools?q=…, which filters below. */}
-        <div className="at-hero-top-row">
-          <Link to="/" className="at-home-link">← Home</Link>
-        </div>
         <h1>DeftBrain Toolbox</h1>
         {/* Styled like the homepage's own intro line ("DeftBrain is a
             collection of...") — same size/weight/color/max-width — not
@@ -261,10 +258,13 @@ export default function AllToolsPage({ allTools = [] }) {
             {/* Real links to each category page (/tools/{slug}) for crawlers
                 and new tabs; a plain click filters this page instead. */}
             <a href="/tools" className={`at-chip at-chip-all ${category === 'All' ? 'is-active' : ''}`} aria-current={category === 'All' ? 'true' : undefined}
-              onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory('All'); }}>All</a>
+              onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory('All'); }}>All Tools</a>
             {CATEGORY_META.map(cat => categoryCounts[cat.name] ? (
               <a key={cat.name} href={`/tools/${cat.slug}`} className={`at-chip ${category === cat.name ? 'is-active' : ''}`} aria-current={category === cat.name ? 'true' : undefined}
-                onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory(cat.name); }}>{cat.emoji} {cat.name}</a>
+                onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); chooseCategory(cat.name); }}>
+                <span className="at-chip-icon" aria-hidden="true">{cat.emoji}</span>
+                {cat.name}
+              </a>
             ) : null)}
           </div>
         </div>
@@ -273,8 +273,8 @@ export default function AllToolsPage({ allTools = [] }) {
       <section className="at-shell at-results">
         <div className="at-results-heading">
           <div>
-            {!query.trim() && <h2>{category === 'All' ? 'All' : category}</h2>}
-            <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : category === 'All' ? 'All tools' : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>
+            {!query.trim() && <h2>{category === 'All' ? 'All Tools' : category}</h2>}
+            {(query.trim() || category !== 'All') && <p>{query.trim() ? `${visible.length} possible match${visible.length === 1 ? '' : 'es'} for “${query.trim()}”` : `${visible.length} tool${visible.length === 1 ? '' : 's'}`}</p>}
           </div>
           {(query || category !== 'All') && <button className="at-reset" onClick={() => { setQuery(''); chooseCategory('All'); }}>Clear filters</button>}
         </div>

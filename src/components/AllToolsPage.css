@@ -15,14 +15,12 @@
    its header/search chrome and its hero card (DashBoard.js's `mt-4` before
    <HomeIntro>, measured live: exactly 16px, same at every width since that
    margin isn't responsive there either). */
-.at-hero{padding-top:16px;padding-bottom:14px}
+.at-hero{padding-top:12px;padding-bottom:14px}
 
 /* Home + search live in one row now (owner: Home stays left-justified,
    vertically aligned with the search box, not stacked above everything
    else). wrap so a narrow phone can drop the search box to its own line
    under Home rather than overflowing. */
-.at-hero-top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
-.at-home-link{display:inline-block;color:var(--blue);font-size:12px;font-weight:700;text-decoration:none}
 
 /* Straight port of the homepage's persistent nav search (DashBoard.js) —
    same sizes, same colors, same narrow(220px)-then-expand(420px) behavior,
@@ -58,13 +56,13 @@
 .at-controls-sticky{position:sticky;top:0;z-index:30;background:rgba(250,248,245,.95);backdrop-filter:blur(12px);border-top:1px solid transparent;border-bottom:1px solid var(--line)}
 .at-controls{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:18px}
 .at-category-row{display:flex;align-items:center;gap:7px;min-width:0;flex-wrap:wrap}
-.at-chip{border:1px solid var(--line);background:#fff;color:#514c45;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:750;white-space:nowrap;cursor:pointer}
+.at-chip{border:1px solid var(--line);background:#fff;color:#514c45;border-radius:999px;padding:8px 11px;font-size:14px;font-weight:750;white-space:nowrap;cursor:pointer}
 .at-chip:hover{border-color:#b7aa98}
-a.at-chip{display:inline-block;text-decoration:none !important}
+a.at-chip{display:inline-flex;align-items:center;gap:6px;text-decoration:none !important}
 .at-chip.is-active{background:var(--blue);border-color:var(--blue);color:#fff}
 /* "All" reads larger than the categories beside it (owner, 2026-10-04). */
 .at-chip.at-chip-all{font-size:14px;padding:7px 16px}
-.at-chip span{opacity:.7;margin-left:3px}
+.at-chip-icon{font-size:17px;line-height:1}
 
 .at-results{padding-top:14px;padding-bottom:64px}
 .at-results-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}
@@ -120,7 +118,6 @@ a.at-chip{display:inline-block;text-decoration:none !important}
   .at-site-header-inner{min-height:72px;align-items:flex-start;padding-block:12px}
   .at-header-right{flex-direction:column-reverse;align-items:flex-end;gap:6px}
   .at-nav{gap:14px}
-  .at-hero-top-row{flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:20px}
   .at-nav-search{width:100%}
   .at-nav-search-field{width:100%!important}
   .at-kbd{display:none}
