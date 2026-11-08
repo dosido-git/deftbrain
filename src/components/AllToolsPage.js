@@ -287,7 +287,7 @@ export default function AllToolsPage({ allTools = [] }) {
 
         {guideShelf && guideShelf.guides.length > 0 && (
           <div className="at-guides">
-            <div className="at-results-heading"><h2>{category} guides</h2></div>
+            <div className="at-results-heading"><h2>Guides: {category}</h2></div>
             <ul className="at-guide-list">
               {guideShelf.guides.slice(0, guidesShown).map(g => <li key={g.href}><a href={g.href}>{g.title}</a></li>)}
             </ul>
