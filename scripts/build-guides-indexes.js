@@ -333,7 +333,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
 </head>
 <body>
 
-  ${getSiteHeaderHTML()}
+  ${getSiteHeaderHTML({ current: canonicalPath })}
 `;
 }
 

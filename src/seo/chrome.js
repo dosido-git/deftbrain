@@ -167,9 +167,9 @@ function getSearchFormHTML({ tools = 4, guides = 4, placeholder = 'Search' } = {
 // markup and SiteHeader.js's identical. No language selector: these pages
 // exist in English only. The light/dark switch is wired by
 // scripts/lib/themeSnippet.js via [data-theme-toggle].
-function getSiteHeaderHTML() {
+function getSiteHeaderHTML({ current } = {}) {
   const nav = require('../data/siteNav.json').links
-    .map(l => `<a href="${l.href}">${l.label}</a>`).join('');
+    .map(l => `<a href="${l.href}"${l.href === current ? ' aria-current="page"' : ''}>${l.label}</a>`).join('');
   return `<header class="site-header">
     <div class="site-header-inner">
       <a href="/" class="site-header-brand" aria-label="DeftBrain home">

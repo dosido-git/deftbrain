@@ -126,15 +126,11 @@ function ToolScramble({ allTools, onBrowse }) {
           card's rounded corners. */}
       <div className="absolute inset-0 rounded-2xl overflow-hidden" style={{background:'linear-gradient(120deg,#dff4ff 0%,#eee9ff 35%,#fff2df 68%,#ffe5ee 100%)'}} />
       <div className="relative p-5 sm:p-6">
-        <div className="flex items-end justify-between gap-4 mb-4">
-          <div>
-            <div className="text-[8px] uppercase tracking-[.16em] font-bold text-slate-600">Explore</div>
-            <h2 className="mt-1 text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
-            <p className="mt-1 text-sm max-w-md" style={{color:MUTED}}>Find something useful—or unexpected.</p>
-          </div>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <h2 className="text-[24px] font-bold" style={{fontFamily:SERIF,color:NAVY}}>Tool Scramble</h2>
           <button type="button" onClick={()=>setSeed(s=>s+1)} className="rounded-lg px-3.5 py-2 text-sm font-bold text-white whitespace-nowrap" style={{background:NAVY}}>↻ Show other tools</button>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-9 gap-y-7 py-6">
+        <div className="flex flex-wrap items-center justify-start gap-x-12 gap-y-7 py-6">
           {shown.map((t,i) => {
             const scale = SCRAMBLE_SCALE[i%SCRAMBLE_SCALE.length];
             const tilt = SCRAMBLE_TILT[i%SCRAMBLE_TILT.length];
