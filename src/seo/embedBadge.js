@@ -21,21 +21,22 @@ function renderEmbedBadge(id, theme) {
   const accent = dark ? '#ffc46e' : '#87520d';
   const brand = dark ? '#acd2f4' : '#165b9a';
   const gold = dark ? '#ffc46e' : '#986018';
-  const top = tool ? 6 : 21;
+  const top = tool ? 10 : 27;
   const fontSize = Math.min(23, Math.floor(298 / (title.length * 0.65)));
   const toolRow = tool ? `
-      <path d="M16 65h343" stroke="${accent}" opacity=".35"/>
-      <text x="18" y="91" fill="${foreground}" font-size="21">${escapeXml(tool.icon || '')}</text>
-      <text x="48" y="91" fill="${foreground}" font-size="${fontSize}" font-weight="700">${escapeXml(title)}</text>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="375" height="105" viewBox="0 0 375 105">
+      <path d="M16 88h343" stroke="${accent}" opacity=".35"/>
+      <text x="18" y="114" fill="${foreground}" font-size="21">${escapeXml(tool.icon || '')}</text>
+      <text x="48" y="114" fill="${foreground}" font-size="${fontSize}" font-weight="700">${escapeXml(title)}</text>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="375" height="130" viewBox="0 0 375 130">
       <title>${escapeXml(title)}</title>
-      <rect x="1" y="1" width="373" height="103" rx="16" fill="${background}" stroke="${accent}" stroke-width="2"/>
+      <rect x="1" y="1" width="373" height="128" rx="16" fill="${background}" stroke="${accent}" stroke-width="2"/>
       <g font-family="system-ui,sans-serif">
         <image x="15" y="${top}" width="82" height="54" href="data:image/png;base64,${brain}"/>
-        <text x="105" y="${top + 28}" fill="${brand}" font-size="33" font-weight="800">Deft<tspan fill="${gold}">Brain</tspan></text>
-        <text x="105" y="${top + 43}" fill="${brand}" font-size="13">
-          <tspan x="105">Interactive guidance for life’s awkward,</tspan>
-          <tspan x="105" dy="14">confusing, and curious moments.</tspan>
+        <text x="105" y="${top + 18}" fill="${brand}" font-size="27" font-weight="800">Deft<tspan fill="${gold}">Brain</tspan></text>
+        <text x="105" y="${top + 34}" fill="${brand}" font-size="17">
+          <tspan x="105">Interactive guidance for life’s</tspan>
+          <tspan x="105" dy="19">awkward, confusing, and</tspan>
+          <tspan x="105" dy="19">curious moments.</tspan>
         </text>
         ${toolRow}
       </g>

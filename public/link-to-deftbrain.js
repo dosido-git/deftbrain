@@ -25,12 +25,12 @@
       link.textContent = item.title;
       preview.textContent = item.title;
     } else {
-      const asset = '/embeds/' + encodeURIComponent(item.id) + '/' + theme.querySelector(':checked').value + '.svg?v=2';
+      const asset = '/embeds/' + encodeURIComponent(item.id) + '/' + theme.querySelector(':checked').value + '.svg?v=3';
       const image = document.createElement('img');
       image.src = origin + asset;
       image.alt = item === home ? item.title : item.title + ' · DeftBrain';
-      image.width = format === 'compact' ? 150 : 250;
-      image.height = image.width * 105 / 375;
+      image.width = format === 'compact' ? 180 : 285;
+      image.height = Math.round(image.width * 130 / 375);
       image.referrerPolicy = 'no-referrer';
       link.append(image);
       const localImage = image.cloneNode();

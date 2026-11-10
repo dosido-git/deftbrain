@@ -110,6 +110,7 @@ footer.site-footer { display: block; padding: 0; margin: 0; }
 }
 .site-footer-nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 16px; row-gap: 0; }
 .site-footer-nav a { display: inline-block; padding: 6px 0; color: var(--sf-link); transition: color .15s; }
+.site-footer-nav a[href="/about#link-to-deftbrain"] { font-weight: 700; }
 .site-footer-nav a:hover { color: var(--sf-link-hover); text-decoration: underline !important; text-underline-offset: 4px; }
 .site-footer-dot { display: none; }
 @media (min-width: 1024px) { .site-footer-dot { display: inline; } }
