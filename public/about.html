@@ -172,23 +172,30 @@
     }
     .prose .product-hunt-card a:hover { text-decoration: underline; }
     :root[data-theme="dark"] .product-hunt-card { background: #27272a; border-color: #3f3f46; }
-    .embed-options { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 12px; }
-    .embed-options label, .embed-code-label { display: grid; gap: 4px; }
-    .embed-options label { min-width: 0; }
-    .embed-options input, .embed-options select, #embed-code, #embed-copy {
+    .embed-options { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-block: 8px; }
+    .embed-options fieldset { min-width: 0; border: 0; padding: 0; margin: 0; }
+    .embed-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .embed-pills label { cursor: pointer; }
+    .embed-pills input { position: absolute; opacity: 0; }
+    .embed-pills span, #embed-target, #embed-copy {
+      display: inline-block;
       font: inherit;
-      max-width: 100%;
-      padding: 6px 8px;
+      padding: 4px 8px;
       border: 1px solid GrayText;
-      border-radius: 6px;
+      border-radius: 999px;
       color: CanvasText;
       background: Canvas;
     }
+    .embed-pills input:checked + span { background: #165b9a; color: white; border-color: #165b9a; }
+    .embed-pills input:focus-visible + span { outline: 2px solid currentColor; outline-offset: 2px; }
+    .embed-options fieldset:disabled { opacity: .55; }
     :root[data-theme="dark"] #link-to-deftbrain { color-scheme: dark; }
-    #embed-preview { display: inline-block; margin-block: 4px 12px; }
+    #embed-controls { max-width: 420px; font-size: .875rem; }
+    .embed-preview-strip { background: Canvas; border: 1px solid GrayText; border-radius: 6px; margin-block: 8px; padding: 5px 8px; }
+    #embed-preview { display: inline-block; }
     #embed-preview img { max-width: 100%; height: auto; vertical-align: middle; }
-    #embed-code { width: 100%; box-sizing: border-box; }
-    #embed-copy { margin-top: 8px; cursor: pointer; }
+    #embed-target { max-width: 100%; margin-block: 4px; box-sizing: border-box; }
+    #embed-copy { cursor: pointer; margin-block-end: .65em; }
   </style>
 </head>
 <body>
@@ -283,28 +290,26 @@
         <h2 id="embed-heading">Link to DeftBrain</h2>
         <p>Share DeftBrain or link directly to a tool. Copy the code and paste it into your site’s HTML.</p>
         <div id="embed-controls" hidden>
+          <label for="embed-target">Link to</label>
+          <select id="embed-target"><option value="deftbrain">DeftBrain</option></select>
           <div class="embed-options">
-            <label for="embed-search">Find a tool
-              <input id="embed-search" type="search" disabled>
-            </label>
-            <label for="embed-target">Link destination
-              <select id="embed-target"><option value="deftbrain">DeftBrain homepage</option></select>
-            </label>
-            <label for="embed-format">Format
-              <select id="embed-format">
-                <option value="standard">Standard badge</option>
-                <option value="compact">Compact badge</option>
-                <option value="text">Text link</option>
-              </select>
-            </label>
-            <label for="embed-theme">Badge theme
-              <select id="embed-theme"><option value="light">Light</option><option value="dark">Dark</option></select>
-            </label>
+            <fieldset>
+              <legend>Format</legend>
+              <div class="embed-pills">
+                <label><input type="radio" name="embed-format" value="standard"><span>Standard badge</span></label>
+                <label><input type="radio" name="embed-format" value="compact" checked><span>Compact badge</span></label>
+                <label><input type="radio" name="embed-format" value="text"><span>Text link</span></label>
+              </div>
+            </fieldset>
+            <fieldset id="embed-theme">
+              <legend>Badge theme</legend>
+              <div class="embed-pills">
+                <label><input type="radio" name="embed-theme" value="light" checked><span>Light</span></label>
+                <label><input type="radio" name="embed-theme" value="dark"><span>Dark</span></label>
+              </div>
+            </fieldset>
           </div>
-          <a id="embed-preview" href="/">DeftBrain</a>
-          <label class="embed-code-label" for="embed-code">Embed code
-            <textarea id="embed-code" rows="3" readonly></textarea>
-          </label>
+          <div class="embed-preview-strip"><a id="embed-preview" href="/">DeftBrain</a></div>
           <button id="embed-copy" type="button">Copy embed code</button>
           <span id="embed-status" role="status"></span>
         </div>
