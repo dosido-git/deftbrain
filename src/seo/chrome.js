@@ -168,7 +168,9 @@ function getSearchFormHTML({ tools = 4, guides = 4, placeholder = 'Search' } = {
 // exist in English only. The light/dark switch is wired by
 // scripts/lib/themeSnippet.js via [data-theme-toggle].
 function getSiteHeaderHTML({ current } = {}) {
-  const nav = require('../data/siteNav.json').links
+  const escapeHtml = value => value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const { links, productHuntBadge } = require('../data/siteNav.json');
+  const nav = links
     .map(l => `<a href="${l.href}"${l.href === current ? ' aria-current="page"' : ''}>${l.label}</a>`).join('');
   return `<header class="site-header">
     <div class="site-header-inner">
@@ -196,6 +198,9 @@ function getSiteHeaderHTML({ current } = {}) {
       </div>
     </div>
     <div class="site-header-search">${getSearchFormHTML()}</div>
+    <div class="site-header-badge">
+      <a href="${escapeHtml(productHuntBadge.href)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(productHuntBadge.src)}" alt="${escapeHtml(productHuntBadge.alt)}" width="250" height="54" referrerpolicy="no-referrer"></a>
+    </div>
   </header>
   <script>
   (function(){

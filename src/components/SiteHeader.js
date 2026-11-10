@@ -116,6 +116,12 @@ export default function SiteHeader({ isDark = false, onToggleTheme, showCurrency
           <div className="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden />
         </form>
       </div>}
+      <div className="site-header-badge">
+        <a href={SITE_NAV.productHuntBadge.href} target="_blank" rel="noopener noreferrer">
+          <img src={SITE_NAV.productHuntBadge.src} alt={SITE_NAV.productHuntBadge.alt}
+            width="250" height="54" referrerPolicy="no-referrer" />
+        </a>
+      </div>
     </header>
   );
 }

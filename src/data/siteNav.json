@@ -1,5 +1,10 @@
 {
   "_note": "The site header's and footer's links, in order. Read by src/components/SiteHeader.js and Footer.js (React pages) and getSiteHeaderHTML()/getSiteFooterBar() in src/seo/chrome.js (static pages); styled by public/site-header.css and public/site-footer.css. 'categories' scrolls to the category picker on pages that have one; 'toolFinder' hides while src/data/toolFinderPaused.js says so.",
+  "productHuntBadge": {
+    "href": "https://www.producthunt.com/products/deftbrain?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-deftbrain",
+    "src": "https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1309169&theme=dark&t=1794284141930",
+    "alt": "DeftBrain - Guidance for life’s awkward, confusing & curious moments. | Product Hunt"
+  },
   "links": [
     {
       "label": "Tools",
@@ -60,6 +65,10 @@
       "label": "Pinterest",
       "href": "https://www.pinterest.com/DeftBrainHQ/",
       "external": true
+    },
+    {
+      "label": "Link to DeftBrain",
+      "href": "/about#link-to-deftbrain"
     },
     {
       "label": "Contact",
