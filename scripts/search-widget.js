@@ -123,6 +123,9 @@ function injectCss() {
 }
 
 function renderPanel(res, query, toolLimit, guideLimit) {
+  if (!queryTerms(query).length) {
+    return '<div class="ds-note">Add what you need help with, like “split rent” or “prepare for an interview.”</div>';
+  }
   var q = encodeURIComponent(query);
   var out = [];
   if (isSentence(query)) {

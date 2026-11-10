@@ -588,8 +588,6 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <p className="text-xs mt-1 mb-6" style={{ color: CLR.warm500 }}>
             {isSearching ? 'Try different words' : 'Nothing in this category yet'}
           </p>
-          {isSearching && <GuideMatches query={searchTerm} colors={{ muted: CLR.warm500, border: CLR.sand200, text: CLR.warm800, bg: CLR.surface, link: CLR.navy500 }} />}
-          {isSearching && <IdeaPrompt source="search-zero" query={searchTerm.trim()} />}
         </div>
       )}
 
@@ -663,6 +661,9 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           onToggleFavorite={toggleFavorite} onNavigate={recordRecent}
           showCategory={isSearching || activeCategory === 'All'} />
       )}
+
+      {isSearching && <GuideMatches query={searchTerm} colors={{ muted: CLR.warm500, border: CLR.sand200, text: CLR.warm800, bg: CLR.surface, link: CLR.navy500 }} />}
+      {isSearching && filteredTools.length === 0 && <IdeaPrompt source="search-zero" query={searchTerm.trim()} />}
 
       {/* Demand capture — someone who browsed this far without clicking is
           looking for something the catalog doesn't have. */}

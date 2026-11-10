@@ -1,9 +1,6 @@
 // src/components/GuideMatches.js
 //
-// Home-page search fallback (2026-09-26): shown ONLY when a search finds no
-// tool. The home search is for getting something done, so it lists tools and
-// never guides — but when no tool fits, a guide that covers the situation
-// beats an empty result. Everywhere else (guide pages and hubs) searches both.
+// Guide results accompany matching tools in homepage search.
 //
 // The guide index (/search/guides.json, built by
 // scripts/build-search-assets.js) is fetched the first time this renders,
@@ -42,10 +39,10 @@ export default function GuideMatches({ query, colors }) {
   if (!guides || !guides.length) return null;
 
   return (
-    <div className="max-w-md mx-auto mb-8 text-start">
-      <p className="text-xs font-semibold mb-2" style={{ color: colors.muted }}>
-        No tool fits that yet — these guides cover it:
-      </p>
+    <div className="max-w-xl mt-5 mb-8 text-start">
+      <h2 className="text-sm font-semibold mb-2" style={{ color: colors.muted }}>
+        Matching guides
+      </h2>
       <ul className="space-y-1.5">
         {guides.slice(0, MAX).map(g => (
           <li key={g.href}>

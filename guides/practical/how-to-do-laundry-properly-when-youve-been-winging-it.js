@@ -51,8 +51,8 @@ module.exports = {
       "url": "https://tide.com/en-us/how-to-wash-clothes/how-to-do-laundry"
     },
     {
-      "label": "U.S. Department of Energy: Laundry (Energy Saver)",
-      "url": "https://www.energy.gov/energysaver/appliances-and-electronics/laundry"
+      "label": "ENERGY STAR: Clothes Washers",
+      "url": "https://www.energystar.gov/products/clothes_washers"
     }
   ],
   "cta": {
