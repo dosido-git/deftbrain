@@ -53,6 +53,10 @@ module.exports = {
     {
       "label": "ENERGY STAR: Clothes Washers",
       "url": "https://www.energystar.gov/products/clothes_washers"
+    },
+    {
+      "label": "Everyday Tech Reviews: Estimate what it costs to run an electric dryer",
+      "url": "https://everydaytechreviews.com/electricity-cost-calculator/"
     }
   ],
   "cta": {
@@ -69,6 +73,6 @@ module.exports = {
     "toolName": "LaundroMat"
   },
   "published": "2026-04-29",
-  "modified": "2026-10-09",
+  "modified": "2026-11-10",
   "reviewed": true
 };
