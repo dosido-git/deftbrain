@@ -39,7 +39,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const { startFakeApi, startBackend } = require('./lib/standin');
 
 const ROOT = path.join(__dirname, '..');
@@ -180,6 +180,13 @@ async function main() {
   const routes = routeEndpoints();
   let endpoints = [...new Set([...golden.keys(), ...routes])].filter(e => !SKIP_RE.test(e)).sort();
   if (ONLY.length) endpoints = endpoints.filter(e => ONLY.some(o => e.includes(o)));
+
+  // Roommate Court calls OpenAI directly. Its dedicated suite stubs that
+  // stream, which the Anthropic stand-in below cannot serve.
+  if (endpoints.includes('/api/roommate-court')) {
+    execFileSync(process.execPath, ['--test', 'scripts/test-roommate-luna.cjs'], { cwd: ROOT, stdio: 'inherit' });
+    endpoints = endpoints.filter(endpoint => endpoint !== '/api/roommate-court');
+  }
 
   const api = await startFakeApi(pick, apiCalls);
   let port, child;
