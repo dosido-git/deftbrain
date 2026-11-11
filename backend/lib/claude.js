@@ -8,7 +8,7 @@ const { currentRoute, currentIsTestClient, currentRequestBody } = require('./out
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
 const { withSurge, isSurging, noteUnclearInput, noteDeclined } = require('./surge');
-const { withOutputStandard } = require('./outputStandard');
+const { SHARED_PROMPT_RULES_V3, withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -49,7 +49,7 @@ anthropic.messages.create = function (params, ...rest) {
   if (!params || typeof params !== 'object') return _rawMessagesCreate(params, ...rest);
   const label = params.epistemicLabel;
   const dateLine = params.__dateLine;
-  const { epistemicLabel, __dateLine, ...clean } = params;
+  const { epistemicLabel, sharedPromptVersion, __dateLine, ...clean } = params;
   // Claude Sonnet 5.5 thinks by default, and thinking tokens count against
   // max_tokens — every budget here was tuned on non-thinking 4.6, so a 5.5 call
   // truncates (Heckler Prep 2026-10-30: 6 of 15 passes cut off). Off unless a
@@ -89,10 +89,11 @@ anthropic.messages.create = function (params, ...rest) {
   const marker = rawSystem ? rawSystem.search(VOLATILE_SUFFIX_RE) : -1;
   const stablePart = marker === -1 ? rawSystem : rawSystem.slice(0, marker);
   const volatilePart = marker === -1 ? '' : rawSystem.slice(marker);
-  // Two layers, outermost last: the epistemic contract is universal and sits on
-  // top as the stable cacheable prefix; the v2 output standard sits under it and
-  // applies only to routes that declared it. See lib/outputStandard.js.
-  const stableText = withEpistemics(withOutputStandard(stablePart), label) || ' ';
+  // A rewritten call explicitly selects V3. Other calls keep their legacy
+  // evidence prefix and, where the route declares it, the V2 writing standard.
+  const stableText = sharedPromptVersion === 3
+    ? [SHARED_PROMPT_RULES_V3, stablePart].filter(Boolean).join('\n\n')
+    : withEpistemics(withOutputStandard(stablePart), label) || ' ';
   // The date line rides here, not in stableText — it changes once every 24h,
   // and putting it in the cached block would invalidate EVERY route's cache
   // app-wide once a day (found 2026-09-24 investigating an org-wide cache-hit
@@ -469,6 +470,7 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
         // when absent so every other caller's request shape is unchanged.
         ...(promptOrRequest.tools ? { tools: promptOrRequest.tools } : {}),
         epistemicLabel: label,
+        sharedPromptVersion: promptOrRequest.sharedPromptVersion,
       }
     : {
         // Simple string mode: wrap in messages array. options.system/options.model

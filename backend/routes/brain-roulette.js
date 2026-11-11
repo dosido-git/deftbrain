@@ -1,15 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { answer, onlyKeys, planFirst, planNote } = require('../lib/progressive');
+const { answer, planFirst } = require('../lib/progressive');
 // Brain Roulette's whole appeal is the astonishing claim, and astonishing
 // claims are disproportionately the preliminary ones. This keeps the delight
 // without spending certainty the evidence does not support.
-const CERTAINTY_RULE = `CERTAINTY IS PART OF THE CLAIM. A rabbit hole is worth having only if it is true in the way you imply it is true. Astonishing findings are disproportionately the ones that are preliminary, contested, or drawn from one small study — so the more delightful a claim is, the more carefully you must mark where it actually stands.
-Match the language to the evidence: an established finding can be stated plainly; a contested one says so in the same breath; a single study is described as a single study; a pattern you are extending by analogy is offered as a resemblance and never as a result. Do not smooth these into one confident voice.
-The tell to avoid: a real phenomenon named as though it were a measured, agreed-upon thing, then extended to three other populations as if the extension were also measured. If the extension is your idea rather than a finding, say so — that is more interesting, not less.
-THE CONNECTION HAS TO BE REAL, NOT MERELY GOOD. The whole appeal here is the unexpected link between two things, which is exactly why it is the thing most easily faked: a bridge that SOUNDS load-bearing is as satisfying to read as one that is, and only one of them is true. Do not build the bridge stronger than it is for the sake of the payoff. If the two things are connected by a documented finding, say which finding and who produced it, in enough detail that a curious reader could go and look. If they are connected only by resemblance — a shared shape, a suggestive metaphor, a pattern you noticed — that is genuinely interesting and you may say it, but say that is what it is. What you must never do is dress a resemblance in the clothes of a result. A rabbit hole that collapses when someone checks it costs the reader more than they gained.
-
-This does not mean hedging everything. Hedged prose is dull and this tool is not dull. State solid things solidly. Just do not spend certainty you do not have.`;
+const CERTAINTY_RULE = `State established facts directly. Identify contested claims, preliminary findings, and single studies where they matter.
+When evidence connects two ideas, describe what it shows and identify the source if known. When the connection is an analogy, say what the ideas have in common and keep that comparison distinct from the evidence. Include a connection only if it helps explain the topic.
+Keep the prose conversational and focused on the subject. Describe the evidence and its limits directly. Avoid first-person commentary about choosing, framing, or qualifying the answer.`;
 
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -28,62 +25,44 @@ router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     return res.status(400).json({ error: 'depth is required' });
   }
 
-  const today = new Date();
-  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const month = today.toLocaleDateString('en-US', { month: 'long' });
-
   const activeInterests = isSurprise ? [] : (interests || []);
 
-  const depthInstruction = {
-    quick: 'Respond with a fascinating 2-3 sentence nugget. Punchy, surprising, memorable.',
-    medium: 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection. Include one "wait, really?" moment.',
-    deep: 'Respond with a multi-section exploration (3-4 short sections with short headers wrapped in **bold**). Start with the hook, go deeper into the "why", then land on a surprising connection or implication. About 200-300 words total.',
-  }[depth] || 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection.';
+  const detailLimit = depth === 'quick' ? 0 : depth === 'deep' ? 2 : 1;
+  const detailPrompt = depth === 'deep'
+    ? 'Give each detail a descriptive **bold** heading and at most three short sentences. Each should explain one step or show one implication.'
+    : 'Use up to two short sentences for one example or consequence.';
 
-  const rawPrompt = `You are Brain Roulette — a brilliant, endlessly curious friend who always has the most fascinating thing to say at a dinner party. Your job is to generate a single captivating rabbit hole that the user can't stop thinking about.
+  const discoveryPrompt = `Tell the reader one surprising thing and explain why it happens or how it was discovered. Choose a claim you can explain accurately at the requested depth. If the cause is unsettled, describe what is observed and label proposed explanations as hypotheses.
 
-TODAY'S DATE: ${dateStr}
-CURRENT MONTH: ${month}
+Keep the surprising part specific. Match each general statement to the conditions that make it true, especially when moving from a concrete example to a broader rule. Give the evidence and its limits where the claim appears. Use a demonstration only when its predicted result follows from the setup. Leave timelines, competing hypotheses, and extra examples for the follow-up questions unless one is essential to understanding the discovery.
 
-${activeInterests.length > 0
-  ? `USER'S INTERESTS: ${activeInterests.join(', ')}
-IMPORTANT: Don't just pick ONE interest — find the unexpected INTERSECTION between 2+ of their interests. That's where the magic happens. For example, if they like "History" and "Food", don't just give a history fact or a food fact — find where they collide (e.g., the bizarre diet of Roman gladiators, or how spice trade shaped empires).`
-  : customTopic
-    ? `The user wants to explore: "${customTopic}". Find the most surprising, non-obvious angle on this topic.`
-    : `The user wants a SURPRISE — pick any fascinating topic from any domain. Go wild.`}
+Use the chosen topic or interests as the starting point. Combine interests when there is a clear connection. Otherwise one interest is enough. For a surprise, choose any field. Match the reader's level and avoid topics already covered.
+Reader context: ${JSON.stringify({
+    interests: activeInterests,
+    topic: activeInterests.length ? null : customTopic || null,
+    audience: audienceLevel || 'curious',
+    alreadyCovered: (seenTopics || []).slice(0, 30),
+  })}
 
-AUDIENCE LEVEL: ${audienceLevel || 'curious'}
-DEPTH: ${depthInstruction}
-
-ALREADY COVERED TOPICS (do NOT repeat or closely resemble these):
-${(seenTopics || []).length > 0 ? seenTopics.slice(0, 30).join(', ') : 'None yet — this is their first spin!'}
-
-TIME-AWARENESS: If relevant, connect to something about today's date, this season (${month}), or "on this day in history". This is optional — only if it genuinely adds interest, don't force it.
-
-TONE: Enthusiastic but not corny. Like a smart friend, not a textbook. Use "you" language. Start with something that immediately hooks — no preamble, no "Did you know...?" cliché.
-${CERTAINTY_RULE}
-
-
-Respond ONLY with valid JSON in this exact format:
 {
-  "title": "A short, intriguing title (5-8 words max)",
-  "hook": "The main content, at the requested depth. For paragraph breaks, use JSON newline escapes (\\n), escaped once.",
-  "topic_tag": "A 2-3 word tag for tracking (e.g., 'Roman gladiator diets')",
-  "interest_connections": ["interest1", "interest2"],
+  "hook": "Two or three short sentences. State the discovery, explain it, then stop.",${detailLimit ? `
+  "details": ["Up to ${detailLimit} separate details. ${detailPrompt}"],` : ''}
+  "title": "Write a short, specific title for the claim actually explained above.",
+  "topic_tag": "Short tag for tracking repeat topics",
+  "interest_connections": ["Only supplied interests the discovery actually connects to"]
+}`;
+
+  const followUpPrompt = (plan) => `Offer three distinct questions that take the discovery further. Keep unsettled claims open in the questions and share line. In one plain sentence, explain what is known about the central claim and where the evidence stops. If the discovery uses an analogy, distinguish it from the evidence.
+
+Discovery: ${JSON.stringify({ title: plan.title, hook: plan.hook, audience: audienceLevel || 'curious' })}
+
+{
   "deeper_threads": [
-    {"label": "Thread title (compelling question format). Nothing else.", "prompt_hint": "What to explore if they click Go Deeper — one sentence"},
-    {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"},
-    {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"}
+    {"label": "Question the reader can select", "prompt_hint": "Specific angle to explore"}
   ],
-  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
-  "share_snippet": "A single punchy sentence version perfect for texting a friend — one sentence"
-}
-
-HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
-
-${NO_QUOTE_RULE}
-
-Return ONLY valid JSON.`;
+  "how_solid": {"level": "Exactly one of: established, contested, one study, analogy", "note": "What supports or limits the claim"},
+  "share_snippet": "One declarative sentence that shares the discovery and preserves its essential qualification"
+}`;
 
   try {
     // Progressive (2026-10-16, lib/progressive.js), plan first: the rabbit
@@ -92,14 +71,20 @@ Return ONLY valid JSON.`;
     const call = (content, maxTokens, tag) => callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: maxTokens,
+      sharedPromptVersion: 3,
       messages: [{ role: 'user', content: withLanguage(content, userLanguage) }],
     }, { label: `BrainRoulette1:${tag}` });
     const PLAN = ['title', 'hook', 'topic_tag', 'interest_connections'];
     return await answer(req, res, {
       label: 'brain-roulette',
-      parts: planFirst(PLAN, () => call(onlyKeys(rawPrompt, PLAN), 2500, 'hook'), [
+      parts: planFirst(PLAN, async () => {
+        const { hook, details, ...discovery } = await call(discoveryPrompt, 2500, 'hook');
+        if (typeof hook !== 'string' || !hook.trim()) throw new Error('Missing discovery');
+        const extras = Array.isArray(details) ? details.filter(detail => typeof detail === 'string' && detail.trim()).slice(0, detailLimit) : [];
+        return { ...discovery, hook: [hook, ...extras].join(depth === 'deep' ? '\n\n' : ' ') };
+      }, [
         ['deeper_threads', 'how_solid', 'share_snippet'],
-      ], (keys, i, plan) => call(onlyKeys(rawPrompt, keys) + planNote(plan, ['title', 'hook']), 1500, 'more')),
+      ], (keys, i, plan) => call(followUpPrompt(plan), 1500, 'more')),
       ready: d => Boolean(d.title && d.hook),
       complete: d => Boolean(d.title && d.hook),
     });
@@ -133,7 +118,7 @@ Respond ONLY with valid JSON:
 {
   "title": "Section title — 3-6 words",
   "content": "The deeper exploration at the length requested above",
-  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Identify any analogy or inference that goes beyond the evidence."},
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
     {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"},
@@ -245,7 +230,7 @@ Respond ONLY with valid JSON:
 {
   "title": "Section title (distinct from previous titles) — 3-6 words",
   "content": "The deeper exploration — builds on the chain, goes somewhere new — 2-4 sentences",
-  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Identify any analogy or inference that goes beyond the evidence."},
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
     {"label": "Next thread title (question format). Nothing else.", "prompt_hint": "What to explore — one sentence"},
@@ -415,7 +400,7 @@ Respond ONLY with valid JSON:
 {
   "title": "Step title (matches or refines the planned title) — 3-6 words",
   "content": "The step content — builds the journey arc — 2-4 sentences",
-  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use. Say plainly if the striking part is your extension rather than a finding."},
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use. Identify any analogy or inference that goes beyond the evidence."},
   "mind_blown": "One 'whoa' sentence specific to this step — one sentence",
   "concepts": [
     {
