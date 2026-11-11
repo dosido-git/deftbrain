@@ -37,7 +37,7 @@ router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const depthInstruction = {
     quick: 'Respond with a fascinating 2-3 sentence nugget. Punchy, surprising, memorable.',
     medium: 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection. Include one "wait, really?" moment.',
-    deep: 'Respond with a multi-section exploration (3-4 short sections with bold headers). Start with the hook, go deeper into the "why", then land on a surprising connection or implication. About 200-300 words total.',
+    deep: 'Respond with a multi-section exploration (3-4 short sections with short headers wrapped in **bold**). Start with the hook, go deeper into the "why", then land on a surprising connection or implication. About 200-300 words total.',
   }[depth] || 'Respond with a compelling paragraph (4-6 sentences) that builds to a surprising twist or connection.';
 
   const rawPrompt = `You are Brain Roulette — a brilliant, endlessly curious friend who always has the most fascinating thing to say at a dinner party. Your job is to generate a single captivating rabbit hole that the user can't stop thinking about.
@@ -67,7 +67,7 @@ ${CERTAINTY_RULE}
 Respond ONLY with valid JSON in this exact format:
 {
   "title": "A short, intriguing title (5-8 words max)",
-  "hook": "The main content — the fascinating rabbit hole itself — one sentence",
+  "hook": "The main content, at the requested depth. For paragraph breaks, use JSON newline escapes (\\n), escaped once.",
   "topic_tag": "A 2-3 word tag for tracking (e.g., 'Roman gladiator diets')",
   "interest_connections": ["interest1", "interest2"],
   "deeper_threads": [
@@ -125,14 +125,14 @@ THREAD THEY WANT TO EXPLORE: "${threadLabel}"
 HINT: ${promptHint || threadLabel}
 AUDIENCE LEVEL: ${audienceLevel || 'curious'}
 
-Give them a rich, engaging exploration of this specific thread. Write 150-250 words in a conversational, compelling style. Use bold text for key terms. End with one more surprising connection or implication they probably didn't see coming.
+Give them a rich, engaging exploration of this specific thread. Write 150-250 words in a conversational, compelling style. Wrap key terms in **bold** and use JSON newline escapes (\\n), escaped once, for paragraph breaks. End with one more surprising connection or implication they probably didn't see coming.
 
 ${CERTAINTY_RULE}
 
 Respond ONLY with valid JSON:
 {
   "title": "Section title — 3-6 words",
-  "content": "The deeper exploration — 2-4 sentences",
+  "content": "The deeper exploration at the length requested above",
   "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [

@@ -130,6 +130,14 @@ const HowSolid = ({ data, verified, c, t }) => {
   );
 };
 
+// Normalize model prose at render time so drafts and saved results use the same formatting.
+function renderProse(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/\\n/g, '\n').split(/\*\*([^*\n]+)\*\*/g).map((part, index) =>
+    index % 2 ? <strong key={index}>{part}</strong> : part
+  );
+}
+
 const BrainRoulette = ({ tool }) => {
   const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -898,7 +906,7 @@ const BrainRoulette = ({ tool }) => {
             <div key={idx} className={`p-5 rounded-2xl border ${c.border} mb-3 ${c.card}`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('bro_journey_step_label', { n: js.step_number })}</p>
               <h4 className={`text-base font-bold ${c.text} mb-2`}>{js.title}</h4>
-              <p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{js.content}</p>
+              <p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{renderProse(js.content)}</p>
               <HowSolid data={js.how_solid} verified={verifications[js.title]} c={c} t={t} />
               {js.mind_blown && <div className={`mt-3 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {js.mind_blown}</p></div>}
               {js.concepts?.length > 0 && (
@@ -963,7 +971,7 @@ const BrainRoulette = ({ tool }) => {
                   </span>
                 </div>
                 <h4 className={`text-sm font-bold ${c.text} mb-1`}>{topic.title}</h4>
-                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{topic.content}</p>
+                <p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{renderProse(topic.content)}</p>
                 {topic.interest_connections?.length > 0 && (
                   <div className="flex gap-1 mt-2">{topic.interest_connections.map((ic, j) => <span key={j} className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>
                 )}
@@ -1005,7 +1013,7 @@ const BrainRoulette = ({ tool }) => {
             <div className="px-6 py-5">
               <span className={`text-[15px] font-semibold ${c.labelText}`}>{t('bro_depth_n', { n: 1 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{deeperResults.title}</h3>
-              <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{deeperResults.content}</p>
+              <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{renderProse(deeperResults.content)}</p>
               <HowSolid data={deeperResults.how_solid} verified={verifications[deeperResults.title]} c={c} t={t} />
               {deeperResults.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {deeperResults.mind_blown}</p></div>}
             </div>
@@ -1021,7 +1029,7 @@ const BrainRoulette = ({ tool }) => {
             <div className="px-6 py-5">
               <span className={`text-[15px] font-semibold ${c.labelText}`}>{t('bro_depth_n', { n: idx + 2 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{cr.title}</h3>
-              <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{cr.content}</p>
+              <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{renderProse(cr.content)}</p>
               <HowSolid data={cr.how_solid} verified={verifications[cr.title]} c={c} t={t} />
               {cr.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {cr.mind_blown}</p></div>}
             </div>
@@ -1092,7 +1100,7 @@ const BrainRoulette = ({ tool }) => {
                       <span data-print-hide><Caret open={isExp} className="mt-0.5" /></span>
                       <div className="flex-1 pe-8">
                         <h4 className={`font-bold text-sm mb-1 ${c.textStrong}`}>{item.title}</h4>
-                        {!isExp && <p data-print-hide className={`text-xs leading-relaxed line-clamp-2 ${c.textMuted}`}>{item.hook}</p>}
+                        {!isExp && <p data-print-hide className={`text-xs leading-relaxed line-clamp-2 ${c.textMuted}`}>{renderProse(item.hook)}</p>}
                         {item.interest_connections && <div className="flex gap-1.5 mt-2">{item.interest_connections.map((cn, i) => <span key={i} className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{cn}</span>)}</div>}
                       </div>
                     </div>
@@ -1100,9 +1108,9 @@ const BrainRoulette = ({ tool }) => {
                   <button onClick={e => { e.stopPropagation(); removeSavedItem(item.topic_tag); }} className={`absolute top-3 end-3 text-xs opacity-0 group-hover:opacity-100 ${c.btnGhost} ${c.deleteHover}`}>🗑️</button>
                   {(
                     <div data-sec-body hidden={!(isExp)} className={`px-4 pb-4 border-t ${c.border}`}>
-                      <p className={`text-sm leading-relaxed whitespace-pre-line mt-3 ${c.textSecondary}`}>{item.hook}</p>
-                      {item.deeperResults && <div className={`mt-3 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{item.deeperResults.title}</h5><p className={`text-xs ${c.textSecondary}`}>{item.deeperResults.content}</p>{item.deeperResults.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {item.deeperResults.mind_blown}</p>}</div>}
-                      {item.chainResults?.map((cr, ci) => <div key={ci} className={`mt-2 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`} style={{ marginInlineStart: (ci+1)*4 }}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{cr.title}</h5><p className={`text-xs ${c.textSecondary}`}>{cr.content}</p></div>)}
+                      <p className={`text-sm leading-relaxed whitespace-pre-line mt-3 ${c.textSecondary}`}>{renderProse(item.hook)}</p>
+                      {item.deeperResults && <div className={`mt-3 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{item.deeperResults.title}</h5><p className={`text-xs whitespace-pre-line ${c.textSecondary}`}>{renderProse(item.deeperResults.content)}</p>{item.deeperResults.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {item.deeperResults.mind_blown}</p>}</div>}
+                      {item.chainResults?.map((cr, ci) => <div key={ci} className={`mt-2 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`} style={{ marginInlineStart: (ci+1)*4 }}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{cr.title}</h5><p className={`text-xs whitespace-pre-line ${c.textSecondary}`}>{renderProse(cr.content)}</p></div>)}
                       <div className="mt-3" />
                     </div>
                   )}
@@ -1139,7 +1147,7 @@ const BrainRoulette = ({ tool }) => {
                 {!flashbackFlipped ? (
                   <div className="text-center"><p className="text-white text-sm font-bold mb-2">{t('bro_flashback_prompt')}</p><p className="text-white/90 text-lg font-bold">{flashbackCard.title}</p><p className="text-white/50 text-xs mt-3">{t('bro_flashback_tap_reveal')}</p></div>
                 ) : (
-                  <div><p className={`text-sm leading-relaxed ${c.textSecondary}`}>{flashbackCard.hook}</p>
+                  <div><p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{renderProse(flashbackCard.hook)}</p>
                     {flashbackCard.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {flashbackCard.mind_blown}</p>}
                   </div>
                 )}
@@ -1219,7 +1227,7 @@ const BrainRoulette = ({ tool }) => {
             {sessionHistory.slice(0, 50).map((h, i) => (
               <div key={i} className={`px-4 py-3 ${c.historyRow}`}>
                 <div className="flex items-center justify-between"><h5 className={`text-sm font-semibold ${c.textStrong} flex-1 pe-3`}>{h.title}</h5><span className={`text-[13px] ${c.textMuted}`}>{new Date(h.spunAt).toLocaleDateString()}</span></div>
-                <p className={`text-[13px] ${c.textMuted} line-clamp-1 mt-0.5`}>{h.hook}</p>
+                <p className={`text-[13px] ${c.textMuted} line-clamp-1 mt-0.5`}>{renderProse(h.hook)}</p>
                 {h.interest_connections?.length > 0 && <div className="flex gap-1 mt-1">{h.interest_connections.map((ic, j) => <span key={j} className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>}
               </div>
             ))}
@@ -1433,7 +1441,7 @@ const BrainRoulette = ({ tool }) => {
                 {result.interest_connections?.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{result.interest_connections.map((cn, i) => <span key={i} className="text-[13px] font-boldr bg-white/20 text-white px-2 py-0.5 rounded-full">{cn}</span>)}</div>}
               </div>
               <div className="px-6 py-5">
-                <p className={`text-base leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{result.hook}</p>
+                <p className={`text-base leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{renderProse(result.hook)}</p>
                 <HowSolid data={result.how_solid} verified={verifications[result.title]} c={c} t={t} />
               </div>
               <div className={`px-6 py-4 border-t flex flex-wrap items-center justify-between gap-2 ${c.resultBorder}`}>
