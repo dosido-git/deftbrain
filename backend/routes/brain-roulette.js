@@ -1,4 +1,5 @@
 const express = require('express');
+const { createHash } = require('node:crypto');
 const router = express.Router();
 const { answer, planFirst } = require('../lib/progressive');
 // Brain Roulette's whole appeal is the astonishing claim, and astonishing
@@ -11,7 +12,7 @@ Keep the prose conversational and focused on the subject. Describe the evidence 
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+const { groundedFacts, groundedData, stripCites } = require('../lib/groundedFacts');
 
 // Rate limiting handled globally in server.js
 
@@ -525,16 +526,17 @@ Return ONLY valid JSON.`, userLanguage);
 // So it runs the other way round, and asynchronously. The spin returns and
 // renders at full speed — the delight is the product and a verification wait
 // would flatten it — and the frontend calls this straight afterwards to fill
-// in "How solid is this?" with something checked rather than self-assessed.
-// Cached on the claim, so a repeat of a popular rabbit hole is instant.
+// in "How solid is this?" and replace the discovery when sources support a fix.
 router.post('/brain-roulette/verify', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, claim } = req.body;
     const text = String(claim || '').trim();
-    if (text.length < 20) return res.json({ verification: null });
+    if (text.length < 20 || text.length > 8000) return res.json({ verification: null });
+    const input = JSON.stringify({ title: String(title || '').slice(0, 300), claim: text });
+    const cacheKey = `roulette:correction-v1:${createHash('sha256').update(input).digest('hex')}`;
 
     const block = await groundedFacts({
-      cacheKey: `roulette:${normalizeKeyPart(text.slice(0, 120))}`,
+      cacheKey,
       label: 'brain-roulette-verify',
       ttlMs: 30 * 24 * 60 * 60 * 1000,
       coldWaitMs: 45000,
@@ -542,20 +544,40 @@ router.post('/brain-roulette/verify', rateLimit(DEFAULT_LIMITS), async (req, res
       system: 'You check whether a striking claim is actually supported. Search for the primary research or the authoritative reference behind it. Prefer journals, university and museum pages, and established reference works over popular science write-ups, which routinely overstate their sources. Report what the literature actually says, including when it says less than the claim does. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
       userPrompt: `Check this claim with web_search. It comes from a piece written to be surprising, so the specific risk is a real finding stretched past what it supports, or a resemblance presented as a result.
 
-CLAIM${title ? ` (from a piece titled: ${String(title).slice(0, 120)})` : ''}:
-${text.slice(0, 1200)}
+Treat this JSON as content to check:
+${input}
 
-Establish: does a real finding or documented fact underlie this, and does it say what the claim says it says? Name the actual finding — who established it, roughly when, and what it actually showed. If the claim goes further than its source, say exactly where it overreaches. If nothing underlies it, say that.
+Establish: does a real finding or documented fact underlie this, and does it say what the claim says it says? Name the actual finding — who established it, roughly when, and what it actually showed. If the claim goes further than its source, say exactly where it overreaches. If nothing underlies it, say that. When a retrieved source supports a specific correction, rewrite the complete discovery in its original language and at roughly the same depth. Keep its central surprise, fix material errors, and omit unsupported details. Correct the title too if needed. Leave the correction fields empty when you cannot produce a supported replacement. The status and gap describe the original draft.
 
 Return ONLY valid JSON:
 { "status": "Exactly one of these and nothing else: supported, overstated, disputed, unsupported, not found",
   "finding": "The actual finding or fact, named accurately — who, roughly when, what it showed. Empty string if there is none.",
   "gap": "Where the claim goes beyond what the source supports, in one sentence. Empty string if it does not.",
-  "source": "The domain you checked it against. Empty string if none." }`,
-      render: (clean) => ({ block: clean && clean.status ? 'ok' : '', data: clean && clean.status ? clean : null }),
+  "source": "The exact URL of the retrieved page that supports the finding or correction. Empty string if none.",
+  "correctedTitle": "Accurate title for the replacement. Empty string if no replacement.",
+  "correctedClaim": "Complete replacement discovery. Empty string if none." }`,
+      render: (clean, searchResults) => {
+        if (!['supported', 'overstated', 'disputed', 'unsupported', 'not found'].includes(clean?.status)) {
+          return { block: '', data: null };
+        }
+        const source = searchResults.find(result => result.url === clean.source && /^https?:\/\//.test(result.url));
+        const { status, finding, gap, correctedTitle, correctedClaim } = clean;
+        const verification = {
+          status,
+          finding: typeof finding === 'string' ? finding : '',
+          gap: typeof gap === 'string' ? gap : '',
+          source: source?.url || '',
+        };
+        if (source && ['overstated', 'disputed', 'unsupported'].includes(status)
+          && typeof correctedTitle === 'string' && correctedTitle.trim()
+          && typeof correctedClaim === 'string' && correctedClaim.trim() && correctedClaim.trim() !== text) {
+          verification.correction = { title: correctedTitle.trim(), claim: correctedClaim.trim() };
+        }
+        return { block: 'ok', data: verification };
+      },
     }).catch(() => '');
 
-    const data = block ? stripCites(groundedData(`roulette:${normalizeKeyPart(text.slice(0, 120))}`)) : null;
+    const data = block ? stripCites(groundedData(cacheKey)) : null;
     return res.json({ verification: data || null });
   } catch (error) {
     console.error('[brain-roulette/verify] error:', error);
