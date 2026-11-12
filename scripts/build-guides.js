@@ -492,6 +492,7 @@ ${featuresHtml}
             bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
             if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
             if (newSession) {
+              sessionStorage.setItem('db-landing', location.pathname);
               var q = new URLSearchParams(location.search);
               ref = q.get('utm_source') || q.get('ref') || undefined;
               if (!ref && document.referrer && document.referrer.indexOf(location.hostname) === -1) {
@@ -524,6 +525,9 @@ ${featuresHtml}
           }
           var toolLink = document.querySelector('.cta-block .cta-btn');
           if (toolLink) {
+            var destination = new URL(toolLink.href, location.origin);
+            destination.searchParams.set('from_guide', "/guides/${spec.category}/${spec.slug}");
+            toolLink.href = destination.href;
             var trackToolClick = function () {
               sendMetric({
                 event: 'guide_tool_click',
@@ -539,11 +543,24 @@ ${featuresHtml}
           sendMetric({
             event: 'page_view',
             path: location.pathname,
+            landing: newSession ? location.pathname : undefined,
             ts: now,
             sawGuide: true,
             ref: ref,
-            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from }
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "${spec.cta.toolId}" }
           });
+          var gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+          function trackInteraction(event) {
+            if (!event.isTrusted) return;
+            gestures.forEach(function (type) { window.removeEventListener(type, trackInteraction); });
+            try {
+              if (sessionStorage.getItem('db-int')) return;
+              var landing = sessionStorage.getItem('db-landing');
+              sessionStorage.setItem('db-int', '1');
+              sendMetric({ event: 'interact', path: location.pathname, ref: ref, landing: landing });
+            } catch (e) {}
+          }
+          gestures.forEach(function (type) { window.addEventListener(type, trackInteraction, { passive: true }); });
         })();
       </script>
 

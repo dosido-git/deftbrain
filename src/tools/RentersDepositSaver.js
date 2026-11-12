@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
-import { track } from '../utils/analytics';
+import { prepareResultTracking, track } from '../utils/analytics';
 import { useTheme } from '../hooks/useTheme';
 import Caret from '../components/Caret';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -614,6 +614,7 @@ const RentersDepositSaver = ({ tool }) => {
     // run/complete/error beacons fire — so the main report was never counted.
     // Same three events, same tool key convention (the endpoint).
     const _t0 = Date.now();
+    const observeResult = prepareResultTracking(_t0);
     const TRACK_TOOL = 'renters-deposit-saver/stream';
     track('tool_run', { tool: TRACK_TOOL });
     try {
@@ -661,6 +662,7 @@ const RentersDepositSaver = ({ tool }) => {
           if (event.done) { track('tool_complete', { tool: TRACK_TOOL, ms: Date.now() - _t0 }); continue; }
           if (event.section && event.content) {
             if (!stepped) {
+              observeResult();
               // First section arrived — jump to step 3 with results initialized
               setResults({ [event.section]: event.content });
               setStep(3);
@@ -1433,7 +1435,7 @@ const RentersDepositSaver = ({ tool }) => {
       {/* STEP 3: GENERATED RESULTS                          */}
       {/* ═══════════════════════════════════════════════════ */}
       {step === 3 && results && (
-        <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef}>
+        <div className={`scroll-mt-24 space-y-4 ${sv ? ANSWER_CARD : ''}`} ref={resultsRef} data-metrics-result>
           {sv && <AnswerHeader title={t('your_answer')} />}{/* Section tabs — hidden on print so all sections flow cleanly */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-3 flex flex-wrap items-center gap-1.5 print:hidden`}>
             {streamLoading && (

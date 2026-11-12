@@ -42,6 +42,7 @@ function visitContext() {
     } catch (_) {}
     let ref;
     if (newSession) {
+      sessionStorage.setItem('db-landing', window.location.pathname);
       ref = resolveSource();
       if (ref) { try { sessionStorage.setItem('db-ref', ref); } catch (_) {} }
     }
@@ -61,6 +62,8 @@ function sessionContext() {
   try {
     const ref = sessionStorage.getItem('db-ref');
     if (ref) ctx.ref = ref;
+    const landing = sessionStorage.getItem('db-landing');
+    if (landing) ctx.landing = landing;
     if (sessionStorage.getItem('db-saw-guide')) ctx.sawGuide = true;
   } catch (_) {}
   return ctx;
@@ -97,9 +100,7 @@ function send(payload) {
       path: window.location.pathname,
       ts: Date.now(),
     });
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(ENDPOINT, new Blob([body], { type: 'application/json' }));
-    } else {
+    if (!navigator.sendBeacon || !navigator.sendBeacon(ENDPOINT, new Blob([body], { type: 'application/json' }))) {
       fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,7 +116,115 @@ function send(payload) {
 // Track a named funnel event with optional properties.
 //   track('tool_run', { tool: 'DoctorVisitTranslator' })
 export function track(event, props = {}) {
-  send({ event, props });
+  let firstInSession;
+  if (event === 'tool_run' || event === 'tool_complete') {
+    try {
+      const key = 'db-first-' + event;
+      if (sessionStorage.getItem('db-landing') && !sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        firstInSession = true;
+      }
+    } catch (_) {}
+  }
+  send({ event, props, firstInSession });
+  if (event === 'tool_run' && typeof window !== 'undefined') {
+    const path = window.location.pathname;
+    if (!TOOL_PATH.test(path)) return;
+    try {
+      const viewedAt = Number(sessionStorage.getItem('db-tool-view:' + path));
+      if (viewedAt && oncePerTab('db-tool-run:' + path)) {
+        send({ event: 'tool_session_run', props: { viewedAt } });
+      }
+      const guide = sessionStorage.getItem('db-guide-cta:' + path);
+      if (guide && oncePerTab('db-guide-start:' + path + ':' + guide)) {
+        send({ event: 'guide_tool_start', props: { guide } });
+      }
+    } catch (_) {}
+  }
+}
+
+function oncePerTab(key) {
+  if (sessionStorage.getItem(key)) return false;
+  sessionStorage.setItem(key, '1');
+  return true;
+}
+
+// Use the CTA's own URL tag so attribution survives opening it in a new tab.
+// The tag is consumed on arrival and removed from the shareable URL.
+function rememberGuideLink() {
+  if (!TOOL_PATH.test(window.location.pathname)) return;
+  try {
+    const url = new URL(window.location.href);
+    const guide = url.searchParams.get('from_guide');
+    if (!guide || !/^\/guides\/[a-z0-9-]+\/[a-z0-9-]+$/.test(guide)) return;
+    sessionStorage.setItem('db-guide-cta:' + url.pathname, guide);
+    url.searchParams.delete('from_guide');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+  } catch (_) {}
+}
+
+const RESULT_REGION = '[data-copy-results]:not(:empty), [data-keybox]:not(:empty), [data-metrics-result]:not(:empty)';
+let stopResultTracking;
+let latestResultRequest = 0;
+
+// Called at request start. The returned callback arms visibility tracking
+// just before the caller can render its first answer. Count only new or
+// updated result regions, so a still-visible previous answer isn't sampled.
+export function prepareResultTracking(startedAt) {
+  stopResultTracking?.();
+  const request = ++latestResultRequest;
+  const page = lastPageView;
+  if (!page || typeof MutationObserver === 'undefined' || typeof IntersectionObserver === 'undefined') return () => {};
+  let guide;
+  try { guide = sessionStorage.getItem('db-guide-cta:' + page.path); } catch (_) {}
+  let armed = false;
+  return () => {
+    if (armed || request !== latestResultRequest || lastPageView !== page) return;
+    armed = true;
+    const root = document.querySelector('[data-tool-body]');
+    if (!root) return;
+    const original = new Set(root.querySelectorAll(RESULT_REGION));
+    const visible = new Set();
+    const observed = new Set();
+    const report = () => {
+      if (lastPageView !== page) { stop(); return; }
+      if (document.visibilityState === 'hidden' || ![...visible].some(node => node.isConnected)) return;
+      stop();
+      send({ event: 'tool_result_visible', props: { ms: Date.now() - startedAt } });
+      try {
+        if (guide && oncePerTab('db-guide-result:' + page.path + ':' + guide)) {
+          send({ event: 'guide_tool_result', props: { guide } });
+        }
+      } catch (_) {}
+    };
+    const intersection = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting && entry.intersectionRatio > 0) visible.add(entry.target);
+        else visible.delete(entry.target);
+      }
+      report();
+    }, { threshold: [0, 0.001] });
+    const mutations = new MutationObserver(records => {
+      for (const node of root.querySelectorAll(RESULT_REGION)) {
+        if (observed.has(node)) continue;
+        if (!original.has(node) || records.some(record => node.contains(record.target))) {
+          observed.add(node);
+          intersection.observe(node);
+        }
+      }
+    });
+    const stop = () => {
+      clearTimeout(timeout);
+      mutations.disconnect();
+      intersection.disconnect();
+      document.removeEventListener('visibilitychange', report);
+      if (stopResultTracking === stop) stopResultTracking = undefined;
+    };
+    const timeout = setTimeout(stop, 60_000);
+    stopResultTracking = stop;
+    mutations.observe(root, { childList: true, subtree: true, characterData: true });
+    document.addEventListener('visibilitychange', report);
+  };
 }
 
 // ── Section depth: which parts of a page people actually reach. ──
@@ -191,11 +300,47 @@ function pageView() {
   if (typeof window === 'undefined') return;
   const p = window.location.pathname;
   if (p === lastPath) return;
+  stopResultTracking?.();
   const from = fromPath(lastPath);
   lastPath = p;
-  track('page_view', { ...visitContext(), ...(from ? { from } : {}) });
+  const visit = visitContext();
+  lastPageView = { path: p, entrance: visit.newSession === true, from };
+  let toolViewedAt;
+  if (TOOL_PATH.test(p)) {
+    try {
+      const key = 'db-tool-view:' + p;
+      if (!sessionStorage.getItem(key)) {
+        toolViewedAt = Date.now();
+        sessionStorage.setItem(key, String(toolViewedAt));
+      }
+    } catch (_) {}
+  }
+  track('page_view', { ...visit, ...(from ? { from } : {}), toolViewedAt });
   trackSecondTool(p);
   if (rescanSections) rescanSections();
+}
+
+let lastPageView;
+let lastMissingPageView;
+export function trackMissingPage(path) {
+  const page = lastPageView;
+  if (!page || page.path !== path) return;
+  const props = { entrance: page.entrance, from: page.from };
+  if (page !== lastMissingPageView) {
+    lastMissingPageView = page;
+    track('missing_page', props);
+  }
+  if (page.interacted) return;
+  const gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+  const stop = () => gestures.forEach(type => window.removeEventListener(type, interact));
+  const interact = (event) => {
+    if (!event.isTrusted || lastPageView !== page || page.interacted) return;
+    page.interacted = true;
+    stop();
+    track('missing_page_interact', props);
+  };
+  gestures.forEach(type => window.addEventListener(type, interact, { passive: true }));
+  return stop;
 }
 
 // ── "What did they open next?" ────────────────────────────────────────────
@@ -271,6 +416,7 @@ function armInteractSignal() {
 if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
   window.__dbAnalyticsInit = true;
   operatorFlagFromUrl();
+  rememberGuideLink();
   pageView();
   armInteractSignal();
   rescanSections = armSectionMarkers();

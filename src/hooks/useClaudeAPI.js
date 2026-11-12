@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { track } from '../utils/analytics';
+import { prepareResultTracking, track } from '../utils/analytics';
 import { useLocale } from './useLocale';
 import { beginWait, summarizeRequest, toolFromPath, setWaitSearching } from '../utils/waitSignal';
 import { signalBusy } from '../utils/busySignal';
@@ -45,6 +45,7 @@ export const useClaudeAPI = () => {
     setLoading(true);
     setError(null);
     const _t0 = Date.now();
+    const observeResult = prepareResultTracking(_t0);
     track('tool_run', { tool: endpoint });
     // Page-wide wait signal (utils/waitSignal): drives the "usually takes…"
     // notice and the "answer ready" tab title in the page frame.
@@ -98,6 +99,7 @@ export const useClaudeAPI = () => {
       if (json && typeof json === 'object' && Object.keys(json).length === 1 && typeof json.error === 'string') {
         throw new Error(json.error);
       }
+      observeResult();
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       waitOutcome = 'ok';
       signalBusy('clear');
@@ -124,6 +126,7 @@ export const useClaudeAPI = () => {
     // therefore no alert could ever fire for one. Same three events as
     // callToolEndpoint so they share the dashboard's columns.
     const _t0 = Date.now();
+    const observeResult = prepareResultTracking(_t0);
     track('tool_run', { tool: endpoint });
     // A streaming answer is visible from its first words, so the wait ends
     // there, not when the last word arrives.
@@ -169,11 +172,13 @@ export const useClaudeAPI = () => {
               return;
             }
             if (parsed.chunk) {
+              if (onChunk) observeResult();
               endWait('ok');
               accumulated += parsed.chunk;
               if (onChunk) onChunk(accumulated);
             }
             if (parsed.done) {
+              if (onDone) observeResult();
               // Second arg: server-side validated/repaired object, when the
               // route provides one (e.g. one-percenter) — callers may prefer
               // it over parsing the accumulated text themselves.
@@ -190,6 +195,7 @@ export const useClaudeAPI = () => {
       }
 
       // Stream ended without a done event — treat accumulated as final
+      if (accumulated && onDone) observeResult();
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       endWait('ok');
       if (onDone) onDone(accumulated);
@@ -223,6 +229,7 @@ export const useClaudeAPI = () => {
     setLoading(true);
     setError(null);
     const _t0 = Date.now();
+    const observeResult = prepareResultTracking(_t0);
     track('tool_run', { tool: endpoint });
     // An answer that arrives in parts: the wait note says so instead of a time.
     const endWait = beginWait({ tool: toolFromPath(typeof window !== 'undefined' ? window.location.pathname : ''), summary: summarizeRequest(data), progressive: true });
@@ -261,6 +268,7 @@ export const useClaudeAPI = () => {
       if (!String(response.headers.get('Content-Type') || '').includes('text/event-stream')) {
         latest = await response.json();
         if (latest?.error) throw new Error(latest.error);
+        observeResult();
         onDraft?.(latest);
         signalBusy('clear');
         track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
@@ -283,11 +291,13 @@ export const useClaudeAPI = () => {
           if (f.done === true) gotDone = true;
           if (f.searching) setWaitSearching(f.searching);
           if (f.draft) {
+            if (onDraft) observeResult();
             if (!latest) { endWait('ok'); signalBusy('clear'); setLoading(false); }
             latest = f.draft;
             onDraft?.(f.draft);
           }
           if (f.checked) {
+            if (onChecked) observeResult();
             latest = f.checked;
             gotChecked = true;
             onChecked?.(f.checked, Array.isArray(f.changed) ? f.changed : []);
@@ -296,6 +306,7 @@ export const useClaudeAPI = () => {
       }
       if (!latest) throw new Error('No answer came back. Please try again.');
       if (requireComplete && !gotDone) throw new Error('The answer was interrupted. Please try again.');
+      observeResult();
       // A route with no check (or a skipped one) still finishes: tell the page,
       // so its CheckNote says "Finished" instead of "Still working" forever.
       if (!gotChecked) onChecked?.(latest, null);

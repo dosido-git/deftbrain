@@ -9,6 +9,23 @@ const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacente
 const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
+const { isRealTool } = require('../lib/toolCatalog');
+
+function metricPath(value) {
+  return typeof value === 'string' && /^\/(?!\/)[^?#\s\\]*$/.test(value)
+    ? value.slice(0, 240) : undefined;
+}
+
+function isGuidePath(value) {
+  return typeof value === 'string' && value.length <= 240 && /^\/guides\/[a-z0-9-]+\/[a-z0-9-]+$/.test(value);
+}
+
+function metricTool(path) {
+  if (typeof path !== 'string' || !/^\/[A-Z][A-Za-z0-9]*$/.test(path)) return null;
+  const tool = path.slice(1);
+  return tool === 'ToolFinder' || isRealTool(tool) ? tool : null;
+}
+
 function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
@@ -122,14 +139,40 @@ const METRIC_LIMITS = { perMinute: 60, perDay: 5000 };
 // Funnel events. Body: { event, ...props } (path/ts added client-side).
 router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   if (isExcluded(req)) return res.status(204).end();
-  const { event, path, props, ref, sawGuide } = req.body || {};
+  const { event, path, props, ref, sawGuide, landing, firstInSession } = req.body || {};
   if (!event || typeof event !== 'string') return res.status(204).end();
   if (event === 'guide_tool_click') {
     const tool = props?.tool;
-    if (typeof path === 'string' && path.length <= 240 && /^\/guides\/[a-z0-9-]+\/[a-z0-9-]+$/.test(path)
+    if (isGuidePath(path)
         && typeof tool === 'string' && /^[A-Z][A-Za-z0-9]{0,79}$/.test(tool)) {
       logMetric('event', { event, path, props: { tool } });
     }
+    return res.status(204).end();
+  }
+  if (event === 'guide_tool_start' || event === 'guide_tool_result') {
+    if (metricTool(path) && isGuidePath(props?.guide)) {
+      logMetric('event', { event, path, props: { guide: props.guide } });
+    }
+    return res.status(204).end();
+  }
+  if (event === 'tool_session_run' || event === 'tool_result_visible') {
+    const now = Date.now();
+    const value = event === 'tool_session_run' ? props?.viewedAt : props?.ms;
+    const valid = Number.isSafeInteger(value) && (event === 'tool_session_run'
+      ? value > 0 && value <= now + 60_000
+      : value >= 0 && value <= 86_400_000);
+    if (metricTool(path) && valid) {
+      logMetric('event', { event, path, props: event === 'tool_session_run' ? { viewedAt: value } : { ms: value } });
+    }
+    return res.status(204).end();
+  }
+  if (event === 'missing_page' || event === 'missing_page_interact') {
+    const missingPath = metricPath(path);
+    if (missingPath) logMetric('event', {
+      event, path: missingPath,
+      props: { entrance: props?.entrance === true, from: metricPath(props?.from) },
+      ...(typeof ref === 'string' && ref ? { ref: ref.slice(0, 120) } : {}),
+    });
     return res.status(204).end();
   }
   // One location per session, not per event. Two events qualify, and both are
@@ -147,12 +190,15 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   // UA string itself is never stored on the event — just the three derived
   // labels — matching the "derive then discard" posture locationOf uses for IP.
   const device = isSessionScoped ? deviceInfo(req.headers['user-agent']) : undefined;
+  const landingPath = metricPath(landing);
   logMetric('event', {
     event: event.slice(0, 60),
     path,
     props,
     ...(ref ? { ref: String(ref).slice(0, 120) } : {}),
     ...(sawGuide === true ? { sawGuide: true } : {}),
+    ...(landingPath ? { landing: landingPath } : {}),
+    ...(landingPath && firstInSession === true && ['tool_run', 'tool_complete'].includes(event) ? { firstInSession: true } : {}),
     ...(location ? { location } : {}),
     ...(device ? { device: device.device, os: device.os, browser: device.browser } : {}),
   });
@@ -689,8 +735,31 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 
     // ── per tool ──
     const tools = {};
-    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, left: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
+    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, left: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, viewedSessions: 0, ranSessions: 0, firstVisible: [], ms: [] }; tools[t][k] += (n == null ? 1 : n); };
     for (const e of pv) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'views'); }
+    // Match each first run to the date of its first view, even if the
+    // visitor leaves a tab open past midnight. No session ID is collected.
+    const viewInRange = value => {
+      if (!Number.isSafeInteger(value) || value <= 0 || value > now.getTime()) return false;
+      const viewedAt = new Date(value).toISOString();
+      return !cutoffISO || (viewedAt >= cutoffISO && viewedAt < endISO);
+    };
+    for (const e of allRows) {
+      if (e.kind !== 'event' || !['page_view', 'tool_session_run'].includes(e.event)) continue;
+      const tool = metricTool(e.path);
+      const isView = e.event === 'page_view';
+      if (tool && viewInRange(isView ? e.props?.toolViewedAt : e.props?.viewedAt)) {
+        bump(tool, isView ? 'viewedSessions' : 'ranSessions');
+      }
+    }
+    for (const e of events) {
+      if (e.event !== 'tool_result_visible') continue;
+      const tool = metricTool(e.path);
+      if (tool && Number.isFinite(e.props?.ms)) {
+        bump(tool, 'views', 0);
+        tools[tool].firstVisible.push(e.props.ms);
+      }
+    }
     for (const e of runs) bump(toolOf(e), 'runs');
     for (const e of completes) { const t = toolOf(e); bump(t, 'completes'); if (e.props && e.props.ms) tools[t].ms.push(e.props.ms); }
     for (const e of errors) bump(toolOf(e), isLeftEarly(e) ? 'left' : 'errors');
@@ -705,9 +774,23 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const recentErrors = allRows
       .filter(r => r.kind === 'event' && (r.event === 'tool_error' || r.event === 'tool_render_error'))
       .slice(-10).reverse();
+    const failureKind = e => e.event === 'tool_render_error' ? 'render' : isLeftEarly(e) ? 'left early' : 'server';
+    const failureGroups = new Map();
+    for (const e of [...errors, ...renderErrors]) {
+      const tool = toolOf(e);
+      const kind = failureKind(e);
+      const message = String(e.props?.message || e.props?.where || '—');
+      const key = JSON.stringify([tool, kind, message]);
+      const group = failureGroups.get(key) || { tool, kind, message, count: 0 };
+      group.count++;
+      failureGroups.set(key, group);
+    }
+    const recurringErrorRows = [...failureGroups.values()].filter(group => group.count > 1)
+      .sort((a, b) => a.tool.localeCompare(b.tool) || b.count - a.count)
+      .map(({ tool, kind, message, count }) => `<tr><td>${escH(tool)}</td><td>${kind}</td><td>${count}</td><td>${escH(message)}</td></tr>`).join('');
     const errorRows = recentErrors.map(e => {
       const when = e.at ? new Date(e.at).toLocaleString('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
-      const kind = e.event === 'tool_render_error' ? 'render' : isLeftEarly(e) ? 'left early' : 'server';
+      const kind = failureKind(e);
       const msg = (e.props && (e.props.message || e.props.where)) || '—';
       return `<tr><td>${escH(when)}</td><td>${escH(toolOf(e))}</td><td>${kind}</td><td>${escH(String(msg))}</td></tr>`;
     }).join('');
@@ -723,8 +806,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const sorted = [...ms].sort((a, b) => a - b);
       return Math.round(sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.9) - 1)] / 1000);
     };
+    const averageSeconds = samples => samples.length
+      ? (samples.reduce((sum, ms) => sum + ms, 0) / samples.length / 1000).toFixed(1) + 's'
+      : '—';
     const toolRow = ([t, v]) => {
-        const avgMs = v.ms.length ? Math.round(v.ms.reduce((a, b) => a + b, 0) / v.ms.length / 100) / 10 : null;
+        const runsPerView = v.views ? (v.runs / v.views).toFixed(2) : '—';
+        const sessionRate = v.viewedSessions && v.ranSessions <= v.viewedSessions
+          ? pct(v.ranSessions, v.viewedSessions) + ' (' + v.ranSessions + '/' + v.viewedSessions + ')' : '—';
+        const firstVisible = v.firstVisible.length ? averageSeconds(v.firstVisible) + ' (n=' + v.firstVisible.length + ')' : '—';
         const slowS = slowOf(v.ms);
         const slowTd = slowS == null ? '<td>—</td>' : slowS > SLOW_WARN_S ? `<td style="color:#b91c1c;font-weight:700">${slowS}s</td>` : `<td>${slowS}s</td>`;
         // A render error is louder than a server error: the request looked
@@ -733,7 +822,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           ? `<td style="color:#b91c1c;font-weight:700">${v.renderErrors}</td>`
           : '<td>0</td>';
         const tx = v.thin ? `<td style="color:#b45309;font-weight:700">${v.thin}</td>` : '<td>0</td>';
-        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td>${slowTd}<td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
+        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${runsPerView}</td><td>${sessionRate}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td>${rx}${tx}<td>${escH(firstVisible)}</td><td>${averageSeconds(v.ms)}</td>${slowTd}<td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
       };
     // Tools somebody ran first; tools only viewed fold below (2026-10-04).
     const sortedTools = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs || b[1].views - a[1].views);
@@ -809,13 +898,95 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ? `<tr style="font-weight:600;border-top:2px solid #ccc"><td>total</td><td>${usageTotals.calls}${testNote(usageTotals.testCalls, usageTotals.testUsd)}</td><td>${usageMatchedRuns || '—'}</td><td></td><td></td><td>${fmtK(usageTotals.input)}</td><td>${fmtK(usageTotals.cache_read)}</td><td>${fmtK(usageTotals.cache_write)}</td><td>${fmtK(usageTotals.output)}</td><td>${fmtUsd(usageTotals.usd, usageTotals.unpriced)}</td><td>${usageMatchedRuns && !usageTotals.unpriced ? `$${(usageTotals.usd / usageMatchedRuns).toFixed(3)}` : '—'}</td><td></td></tr>`
       : '';
 
-    // ── sources (session-scoped ref context) ──
-    const srcSessions = {}, srcRuns = {};
-    for (const e of sessions) { const r = (e.props && e.props.ref) || e.ref || 'direct'; srcSessions[r] = (srcSessions[r] || 0) + 1; }
-    for (const e of runs) { const r = e.ref || 'direct'; srcRuns[r] = (srcRuns[r] || 0) + 1; }
-    const srcMax = Math.max(1, ...Object.values(srcSessions));
-    const srcRows = Object.entries(srcSessions).sort((a, b) => b[1] - a[1]).slice(0, 15)
-      .map(([r, n]) => barRow(r, n, srcMax, `${srcRuns[r] || 0} runs`)).join('');
+    // Milestones are counted on the day they occurred. The browser sends
+    // first-run and first-completion flags without assigning a session ID.
+    const sourceOf = e => {
+      const ref = e.ref || e.props?.ref || 'direct';
+      if (typeof ref !== 'string') return 'direct';
+      return /^(?:www\.)?producthunt(?:\.com)?$/i.test(ref) ? 'Product Hunt' : ref;
+    };
+    const sources = new Map();
+    const emptyStages = () => ({ entrances: 0, interacted: 0, started: 0, completed: 0 });
+    const getRow = (map, key, create) => {
+      if (!map.has(key)) map.set(key, create());
+      return map.get(key);
+    };
+    for (const e of events) {
+      const tool = e.event === 'page_view' ? metricTool(e.path) : null;
+      let stage;
+      if (e.event === 'page_view' && e.props?.newSession) stage = 'entrances';
+      if (e.event === 'interact') stage = 'interacted';
+      if (e.event === 'tool_run' && e.firstInSession) stage = 'started';
+      if (e.event === 'tool_complete' && e.firstInSession) stage = 'completed';
+      if (!stage && !tool && e.event !== 'tool_run') continue;
+      const source = getRow(sources, sourceOf(e), () => ({
+        ...emptyStages(), runs: 0, landings: new Map(), tools: new Map(),
+      }));
+      if (e.event === 'tool_run') source.runs++;
+      if (stage) {
+        source[stage]++;
+        const landing = stage === 'entrances' ? e.path : e.landing;
+        if (landing) getRow(source.landings, landing, emptyStages)[stage]++;
+      }
+      if (tool) source.tools.set(tool, (source.tools.get(tool) || 0) + 1);
+    }
+    const stageCells = row => `<td>${row.entrances}</td><td>${row.interacted}</td><td>${row.started}</td><td>${row.completed}</td>`;
+    const srcRows = [...sources.entries()].sort((a, b) => b[1].entrances - a[1].entrances)
+      .map(([name, row]) => {
+        const landings = [...row.landings.entries()].sort((a, b) => b[1].entrances - a[1].entrances)
+          .map(([path, stages]) => `<tr><td>${escH(path)}</td>${stageCells(stages)}</tr>`).join('');
+        const tools = [...row.tools.entries()].sort((a, b) => b[1] - a[1])
+          .map(([tool, count]) => `<tr><td>${escH(tool)}</td><td>${count}</td></tr>`).join('');
+        return `<details class="fold"><summary>${escH(name)} · ${row.entrances} entrances · ${row.interacted} interacted · ${row.runs} tool runs</summary>
+          <table><tr><th>landing page</th><th>entrances</th><th>interacted</th><th>first run</th><th>first response</th></tr>
+          ${landings || '<tr><td colspan="5">No landing pages recorded in this range.</td></tr>'}</table>
+          ${tools ? `<table><tr><th>experience opened</th><th>page views</th></tr>${tools}</table>` : ''}
+        </details>`;
+      }).join('');
+
+    const missing = events.filter(e => e.event === 'missing_page' || e.event === 'missing_page_interact');
+    const missingByPath = new Map();
+    const burstsBySource = new Map();
+    const missingTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit',
+    });
+    for (const e of missing) {
+      const source = sourceOf(e);
+      const from = e.props?.from;
+      const row = getRow(missingByPath, JSON.stringify([e.path, source, from]), () => ({
+        path: e.path, source, from, views: 0, entrances: 0, interacted: 0, last: '',
+      }));
+      if (e.event === 'missing_page_interact') {
+        row.interacted++;
+        continue;
+      }
+      row.views++;
+      if (e.props?.entrance) row.entrances++;
+      if (e.at > row.last) row.last = e.at;
+      if (e.props?.entrance && Number.isFinite(Date.parse(e.at))) {
+        getRow(burstsBySource, source, () => []).push(e);
+      }
+    }
+    const missingRows = [...missingByPath.values()].sort((a, b) => b.views - a.views || b.last.localeCompare(a.last))
+      .map(row => `<tr><td>${escH(row.path)}</td><td>${escH(row.source)}</td><td>${escH(row.from || '—')}</td>
+        <td>${row.views}</td><td>${row.entrances}</td><td>${row.interacted}</td>
+        <td>${row.last ? escH(missingTime.format(new Date(row.last))) : '—'}</td></tr>`).join('');
+    const bursts = [];
+    for (const [source, entries] of burstsBySource) {
+      entries.sort((a, b) => a.at.localeCompare(b.at));
+      let burst;
+      for (const e of entries) {
+        if (!burst || Date.parse(e.at) - Date.parse(burst.start) >= 60_000) {
+          burst = { source, start: e.at, paths: new Set(), count: 0 };
+          bursts.push(burst);
+        }
+        burst.paths.add(e.path);
+        burst.count++;
+      }
+    }
+    const burstRows = bursts.filter(b => b.paths.size >= 3).sort((a, b) => b.start.localeCompare(a.start))
+      .map(b => `<tr><td>${escH(missingTime.format(new Date(b.start)))}</td><td>${escH(b.source)}</td>
+        <td>${b.count}</td><td>${escH([...b.paths].join(', '))}</td></tr>`).join('');
 
     // ── guides ──
     // Guide pages are static HTML and emitted nothing until 2026-08-02, so
@@ -841,15 +1012,22 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const runsFromGuides = runs.filter(e => e.sawGuide).length;
     const guideBeaconLive = guideViews.length > 0;
     const guideToolClicks = events.filter(e => e.event === 'guide_tool_click');
-    const clicksByGuide = new Map();
-    for (const { path, props: { tool } } of guideToolClicks) {
-      const key = `${path} → ${tool}`;
-      const pair = clicksByGuide.get(key) || { path, tool, clicks: 0 };
-      pair.clicks++;
-      clicksByGuide.set(key, pair);
+    const guideHandoffs = new Map();
+    const guidePair = (path, tool) => getRow(guideHandoffs, JSON.stringify([path, tool]), () => ({
+      path, tool, views: 0, clicks: 0, starts: 0, results: 0,
+    }));
+    const guideViewCounts = new Map();
+    for (const e of guideViews) {
+      guideViewCounts.set(e.path, (guideViewCounts.get(e.path) || 0) + 1);
+      if (isGuidePath(e.path) && isRealTool(e.props?.guideTool)) guidePair(e.path, e.props.guideTool).views++;
     }
-    const guideClickRows = [...clicksByGuide.values()].sort((a, b) => b.clicks - a.clicks)
-      .map(({ path, tool, clicks }) => `<tr><td><a href="${escH(path)}">${escH(path)}</a></td><td><a href="/${escH(tool)}">${escH(tool)}</a></td><td>${clicks}</td></tr>`).join('');
+    for (const { path, props: { tool } } of guideToolClicks) guidePair(path, tool).clicks++;
+    for (const e of events) {
+      if (e.event === 'guide_tool_start') guidePair(e.props.guide, metricTool(e.path)).starts++;
+      if (e.event === 'guide_tool_result') guidePair(e.props.guide, metricTool(e.path)).results++;
+    }
+    const guideClickRows = [...guideHandoffs.values()].sort((a, b) => b.clicks - a.clicks || b.views - a.views)
+      .map(({ path, tool, clicks, starts, results }) => `<tr><td><a href="${escH(path)}">${escH(path)}</a></td><td><a href="/${escH(tool)}">${escH(tool)}</a></td><td>${guideViewCounts.get(path) || 0}</td><td>${clicks}</td><td>${starts}</td><td>${results}</td></tr>`).join('');
     const langs = {};
     for (const e of sessions) { const l = (e.props && e.props.lang) || '?'; langs[l] = (langs[l] || 0) + 1; }
     const langRows = Object.entries(langs).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([l, n]) => `<tr><td>${escH(l)}</td><td>${n}</td></tr>`).join('');
@@ -1418,6 +1596,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       })();
     </script>
     <h2 class="sec">2 · Needs attention</h2>
+    <h2>Recurring failures</h2>
+    <p>Failures with the same message and kind, grouped by experience in the selected date range.</p>
+    <table><tr><th>experience</th><th>kind</th><th>count</th><th>message</th></tr>${recurringErrorRows || '<tr><td colspan="4">No recurring failures recorded in this range.</td></tr>'}</table>
     <h2>Recent errors <span style="font-weight:400;font-size:12px;color:#888">(last 10, any date)</span></h2>
     <table><tr><th>when</th><th>tool</th><th>kind</th><th>message</th></tr>${errorRows || '<tr><td colspan=4 style="color:#888">No errors recorded.</td></tr>'}</table>
     <h2>Tool ideas${ideas.length ? ` (${ideas.length})` : ''}</h2>
@@ -1447,21 +1628,30 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools <span style="font-weight:400;font-size:12px;color:#888">— tools somebody ran</span></h2>
     ${slowTools.length ? `<p style="color:#b91c1c;font-size:13px;margin:4px 0 8px">⏱ Slow for visitors (slowest 10% over ${SLOW_WARN_S}s; Safari gives up near 60s): ${slowTools.map(([t, sec, n]) => `<b>${escH(t)}</b> ${sec}s (${n} run${n === 1 ? '' : 's'})`).join(' · ')}</p>` : ''}
-    <table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th>render err</th><th>thin</th><th>avg time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=12 style="color:#888">No data yet.</td></tr>'}</table>
-    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>left early</th><th>render err</th><th>thin</th><th>avg time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
+    <p>Session conversion uses the date of the first tool view and counts the first run from that tab. First-visible timing is measured on instrumented result regions and includes any wait before the result comes into view. Total time measures response completion.</p>
+    <table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>runs per view</th><th>sessions that ran</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th>render err</th><th>thin</th><th>avg to visible result</th><th>avg total time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=15 style="color:#888">No data yet.</td></tr>'}</table>
+    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>runs per view</th><th>sessions that ran</th><th>delivered</th><th>server err</th><th>left early</th><th>render err</th><th>thin</th><th>avg to visible result</th><th>avg total time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
     <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.${guideBeaconLive ? '' : ' <span style="color:#b45309">Guide pages only began reporting on 2026-08-02 — before that this could only ever read 0.</span>'}</p>
     <h3>Clicks from a guide to its linked experience</h3>
-    <p>${guideToolClicks.length} recorded clicks on the main experience link in the selected date range. Repeat clicks count separately.</p>
-    <table><tr><th>guide</th><th>linked experience</th><th>clicks</th></tr>${guideClickRows || '<tr><td colspan="3">No clicks recorded in this range. Earlier traffic is unavailable.</td></tr>'}</table>
+    <p>${guideToolClicks.length} clicks on the main experience link. Views and clicks count repeats. Starts and visible results count once per browser tab for each guide and experience. Events are counted when they happen, and visible results require an instrumented result region.</p>
+    <table><tr><th>guide</th><th>linked experience</th><th>guide views</th><th>clicks</th><th>sessions started</th><th>sessions with visible result</th></tr>${guideClickRows || '<tr><td colspan="6">No guide handoff data recorded in this range.</td></tr>'}</table>
 
     <h2 class="sec">4 · How people find DeftBrain</h2>
-    <h2>Sources (sessions · runs attributed)</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
-    <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Engagement by source</h2>
+    <p>Open a source to see landing pages and experiences opened. Landing-page milestones use the first interaction, run, and response received in a browser-tab session. They are counted when they happen, so they can fall in a later date range than the entrance. Older visits have limited milestone coverage.</p>
+    <p>Direct traffic has no recorded referrer or source tag.</p>
+    ${srcRows || '<p>No source activity recorded in this range.</p>'}
+    <h2>Page not found (404)</h2>
+    <p>Views count the missing-page screen. Entrances are views that started a session. Interactions are gestures recorded on that screen. Earlier ranges may predate this tracking.</p>
+    <table><tr><th>requested path</th><th>source</th><th>previous site page</th><th>views</th><th>entrances</th><th>interactions</th><th>last viewed</th></tr>
+    ${missingRows || '<tr><td colspan="7">No missing-page events recorded in this range.</td></tr>'}</table>
+    ${burstRows ? `<details class="fold"><summary>Bursts of 404 entrances</summary>
+      <p>Three or more distinct paths from the same source within one minute. A burst can contain visits from multiple browsers.</p>
+      <table><tr><th>first seen</th><th>source</th><th>entrances</th><th>paths</th></tr>${burstRows}</table></details>` : ''}
     <h2>Guides <span style="font-weight:400;font-size:12px;color:#888">— 552 pages; 112 indexable, the rest live but noindexed</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Guide pages are static HTML and began reporting on 2026-08-02; earlier windows show nothing regardless of real traffic.</p>
     <h3 style="font-size:14px;margin:12px 0 4px">By category</h3>

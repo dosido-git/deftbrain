@@ -1,16 +1,19 @@
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import IdeaPrompt from './IdeaPrompt';
+import { trackMissingPage } from '../utils/analytics';
 
 const NotFound = ({
   headline = "This page doesn't exist.",
   message = `Unusual, for a site with ${TOOL_COUNT_LABEL} tools — but here we are. Whatever you were actually looking for, one of them probably handles it.`,
 }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { isDark } = useTheme();
+  useEffect(() => trackMissingPage(pathname), [pathname]);
 
   const c = {
     bg:        isDark ? 'bg-zinc-950' : 'bg-[#faf8f5]',
