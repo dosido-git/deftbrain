@@ -124,6 +124,14 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   if (isExcluded(req)) return res.status(204).end();
   const { event, path, props, ref, sawGuide } = req.body || {};
   if (!event || typeof event !== 'string') return res.status(204).end();
+  if (event === 'guide_tool_click') {
+    const tool = props?.tool;
+    if (typeof path === 'string' && path.length <= 240 && /^\/guides\/[a-z0-9-]+\/[a-z0-9-]+$/.test(path)
+        && typeof tool === 'string' && /^[A-Z][A-Za-z0-9]{0,79}$/.test(tool)) {
+      logMetric('event', { event, path, props: { tool } });
+    }
+    return res.status(204).end();
+  }
   // One location per session, not per event. Two events qualify, and both are
   // once-per-session by construction: the new-session page_view, and `interact`
   // (analytics.js fires it exactly once, guarded by sessionStorage). Tagging
@@ -261,7 +269,7 @@ function pct(n, d) { return d ? Math.round((n / d) * 100) + '%' : '—'; }
 function lineChart(days) {
   const W = 720, H = 160, P = 28;
   const max = Math.max(1, ...days.map(d => Math.max(d.views, d.runs)));
-  const x = i => P + (days.length < 2 ? 0 : (i * (W - 2 * P)) / (days.length - 1));
+  const x = i => days.length === 1 ? W / 2 : P + (i * (W - 2 * P)) / (days.length - 1);
   const y = v => H - P - (v * (H - 2 * P)) / max;
   const pts = k => days.map((d, i) => `${x(i).toFixed(1)},${y(d[k]).toFixed(1)}`).join(' ');
   // A polyline needs two points. The past-day range often has one bucket, which
@@ -598,16 +606,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       sinkStatus = { ok: false, detail: 'NOT WRITABLE — file sink is losing events (stdout METRIC lines still captured in Railway logs)' };
     }
 
-    // ── daily series ──
-    const byDay = {};
-    for (const e of events) {
-      const day = dayOf(e); if (!day) continue;
-      byDay[day] = byDay[day] || { day, views: 0, runs: 0, sessions: 0 };
-      if (e.event === 'page_view') { byDay[day].views++; if (e.props && e.props.newSession) byDay[day].sessions++; }
-      if (e.event === 'tool_run') byDay[day].runs++;
-    }
-    const days = Object.values(byDay).sort((a, b) => a.day.localeCompare(b.day)).slice(-90);
-
     // ── headline ──
     const pv = events.filter(e => e.event === 'page_view');
     const sessions = pv.filter(e => e.props && e.props.newSession);
@@ -842,6 +840,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // ── guide→tool crossover + locale + recency ──
     const runsFromGuides = runs.filter(e => e.sawGuide).length;
     const guideBeaconLive = guideViews.length > 0;
+    const guideToolClicks = events.filter(e => e.event === 'guide_tool_click');
+    const clicksByGuide = new Map();
+    for (const { path, props: { tool } } of guideToolClicks) {
+      const key = `${path} → ${tool}`;
+      const pair = clicksByGuide.get(key) || { path, tool, clicks: 0 };
+      pair.clicks++;
+      clicksByGuide.set(key, pair);
+    }
+    const guideClickRows = [...clicksByGuide.values()].sort((a, b) => b.clicks - a.clicks)
+      .map(({ path, tool, clicks }) => `<tr><td><a href="${escH(path)}">${escH(path)}</a></td><td><a href="/${escH(tool)}">${escH(tool)}</a></td><td>${clicks}</td></tr>`).join('');
     const langs = {};
     for (const e of sessions) { const l = (e.props && e.props.lang) || '?'; langs[l] = (langs[l] || 0) + 1; }
     const langRows = Object.entries(langs).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([l, n]) => `<tr><td>${escH(l)}</td><td>${n}</td></tr>`).join('');
@@ -1206,6 +1214,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // window still exists in ledgerByDay for the oldest displayed day's
     // "vs yesterday" delta to compare against.
     const DAILY_DISPLAY_COUNT = 14;
+    const historyDays = ledgerDayList.filter(day => day < todayDay).slice(-DAILY_DISPLAY_COUNT)
+      .map(day => ({ day, views: ledgerByDay[day].views, runs: ledgerByDay[day].runs }));
     const dayRows = ledgerDayList.map(d => {
       const db = ledgerByDay[d];
       const isToday = d === todayDay;
@@ -1444,6 +1454,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
     <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.${guideBeaconLive ? '' : ' <span style="color:#b45309">Guide pages only began reporting on 2026-08-02 — before that this could only ever read 0.</span>'}</p>
+    <h3>Clicks from a guide to its linked experience</h3>
+    <p>${guideToolClicks.length} recorded clicks on the main experience link in the selected date range. Repeat clicks count separately.</p>
+    <table><tr><th>guide</th><th>linked experience</th><th>clicks</th></tr>${guideClickRows || '<tr><td colspan="3">No clicks recorded in this range. Earlier traffic is unavailable.</td></tr>'}</table>
 
     <h2 class="sec">4 · How people find DeftBrain</h2>
     <h2>Sources (sessions · runs attributed)</h2>
@@ -1495,8 +1508,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </div>
     </details>
     <h2 class="sec">7 · History</h2>
-    <details class="fold"><summary>Daily trend chart</summary>
-    <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
+    <details class="fold" open><summary>Daily trend chart</summary>
+    <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(last 14 complete days, independent of the range picker)</span></h2>${historyDays.length ? lineChart(historyDays) : '<p style="color:#888">No completed days with recorded history yet.</p>'}
     </details>
     <details class="fold"><summary>Diagnostics — data store, bot filters, testing without being counted</summary>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>

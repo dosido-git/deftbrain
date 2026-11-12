@@ -515,7 +515,28 @@ ${featuresHtml}
               if (ru.hostname === location.hostname && ru.pathname !== location.pathname) from = ru.pathname.slice(0, 160);
             }
           } catch (e) {}
-          var body = JSON.stringify({
+          function sendMetric(payload) {
+            var body = JSON.stringify(payload);
+            try {
+              if (navigator.sendBeacon && navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }))) return;
+              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+            } catch (e) { /* analytics must never interrupt navigation */ }
+          }
+          var toolLink = document.querySelector('.cta-block .cta-btn');
+          if (toolLink) {
+            var trackToolClick = function () {
+              sendMetric({
+                event: 'guide_tool_click',
+                path: "/guides/${spec.category}/${spec.slug}",
+                props: { tool: "${spec.cta.toolId}" }
+              });
+            };
+            toolLink.addEventListener('click', trackToolClick);
+            toolLink.addEventListener('auxclick', function (e) {
+              if (e.button === 1) trackToolClick();
+            });
+          }
+          sendMetric({
             event: 'page_view',
             path: location.pathname,
             ts: now,
@@ -523,13 +544,6 @@ ${featuresHtml}
             ref: ref,
             props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from }
           });
-          try {
-            if (navigator.sendBeacon) {
-              navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }));
-            } else {
-              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
-            }
-          } catch (e) { /* a broken beacon must never surface to the reader */ }
         })();
       </script>
 
