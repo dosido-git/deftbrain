@@ -200,7 +200,7 @@
   <main>
     <div class="container prose">
 <h1>Privacy Policy</h1>
-<p><strong>Last updated:</strong> November 8, 2026</p>
+<p><strong>Last updated:</strong> November 13, 2026</p>
 <p>This page explains what happens when you use DeftBrain, who else might see what you submit, and what control you have.</p>
 <h2>TL;DR</h2>
 <p>DeftBrain is built to need almost nothing from you. There are no accounts, no advertising, and nothing you type into a tool is stored on our servers. Signing up for the optional newsletter is the one place an email address enters the picture at all—voluntary, and handled by a separate mailing service, not by us (details below). We measure how the site is used in two ways: <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a>, which sets its own cookies, and a small, anonymous analytics system of our own—both described below. Neither ever sees what you type into a tool. Anything you submit to a tool is sent to an AI model to generate a result and the result comes back to your browser. That&#39;s the complete interaction in the typical case.</p>
@@ -235,6 +235,7 @@
 <li>A coarse &quot;have I been here before&quot; flag and a rough recency bucket (new, within a week, within a month, longer)—derived from a timestamp your browser already holds, not from anything we assign you.</li>
 <li>An approximate location—city, region, country—looked up from your IP address at the moment of the request, using a lookup table stored on our own server (no call to any outside service). The IP address itself is used for that one moment, to filter out bots and known cloud-hosting traffic in addition to the location lookup, and then discarded. We do not store your IP address.</li>
 <li>Your browser&#39;s language setting, the site you arrived from if you followed a link here, and which DeftBrain page you were on just before the current one.</li>
+<li>Whether you returned to a tool or guide and what action you took there, such as running the tool or following the guide&#39;s tool link. Your browser keeps up to 200 recently opened tool and guide paths in local storage and sends only the current page, whether it was revisited, and the action.</li>
 </ul>
 <p>What is never recorded: your name, an email address, an account identifier (there is none to record), anything you type into a tool, or any single identifier that would let two separate visits be linked to the same person. No cookie is set for this—the coarse &quot;have I been here before&quot; flag lives in your browser&#39;s own localStorage and is never joined with anything else that could identify you.</p>
 <p>This data is written to a private, append-only log on our own server—never sent to <a href="https://www.google.com/">Google</a>, <a href="https://www.meta.com/">Meta</a>, or any analytics vendor—and is visible only to the operator, behind a private access key. A separate, browser-level opt-out exists: visiting the site with <a href="/?operator=1">?operator=1</a> once turns off every beacon from that browser going forward—and stops <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a> loading in it too (<a href="/?operator=0">?operator=0</a> turns both back on). That mechanism exists so the operator&#39;s own visits don&#39;t skew the numbers, but it works the same way for anyone who uses it.</p>
@@ -320,6 +321,7 @@
 <li>2026-05-01—Initial publication.</li>
 <li>2026-09-25—Updated.</li>
 <li>2026-11-08—Updated.</li>
+<li>2026-11-13—Described how return visits are measured.</li>
 </ul>
 
     </div>

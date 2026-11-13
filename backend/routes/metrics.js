@@ -145,7 +145,7 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
     const tool = props?.tool;
     if (isGuidePath(path)
         && typeof tool === 'string' && /^[A-Z][A-Za-z0-9]{0,79}$/.test(tool)) {
-      logMetric('event', { event, path, props: { tool } });
+      logMetric('event', { event, path, props: { tool, ...(props.revisited === true ? { revisited: true } : {}) } });
     }
     return res.status(204).end();
   }
@@ -162,7 +162,10 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
       ? value > 0 && value <= now + 60_000
       : value >= 0 && value <= 86_400_000);
     if (metricTool(path) && valid) {
-      logMetric('event', { event, path, props: event === 'tool_session_run' ? { viewedAt: value } : { ms: value } });
+      logMetric('event', { event, path, props: {
+        ...(event === 'tool_session_run' ? { viewedAt: value } : { ms: value }),
+        ...(props.revisited === true ? { revisited: true } : {}),
+      } });
     }
     return res.status(204).end();
   }
@@ -656,6 +659,31 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const pv = events.filter(e => e.event === 'page_view');
     const sessions = pv.filter(e => e.props && e.props.newSession);
     const returningSessions = sessions.filter(e => e.props.returning);
+    const returnLandings = new Map();
+    for (const e of returningSessions) {
+      const path = metricPath(e.path);
+      if (path) returnLandings.set(path, (returnLandings.get(path) || 0) + 1);
+    }
+    const returnLandingRows = [...returnLandings.entries()].sort((a, b) => b[1] - a[1])
+      .map(([path, count]) => `<tr><td>${escH(path)}</td><td>${count}</td></tr>`).join('');
+    const revisits = new Map();
+    const revisitStages = new Map([
+      ['page_view', 'views'], ['tool_session_run', 'runs'],
+      ['tool_result_visible', 'results'], ['guide_tool_click', 'clicks'],
+    ]);
+    for (const e of events) {
+      const stage = revisitStages.get(e.event);
+      if (!stage || e.props?.revisited !== true) continue;
+      const guide = isGuidePath(e.path);
+      if (!guide && !metricTool(e.path)) continue;
+      const row = revisits.get(e.path) || { guide, views: 0, runs: 0, results: 0, clicks: 0 };
+      row[stage]++;
+      revisits.set(e.path, row);
+    }
+    const revisitRows = [...revisits.entries()].sort((a, b) => b[1].views - a[1].views)
+      .map(([path, row]) => `<tr><td>${escH(path)}</td><td>${row.views}</td>
+        <td>${row.guide ? '—' : row.runs}</td><td>${row.guide ? '—' : row.results}</td>
+        <td>${row.guide ? row.clicks : '—'}</td></tr>`).join('');
     const runs = events.filter(e => e.event === 'tool_run');
     const completes = events.filter(e => e.event === 'tool_complete');
     const errors = events.filter(e => e.event === 'tool_error');
@@ -1674,6 +1702,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2 class="sec">5 · Do they come back</h2>
     <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
+    <details class="fold" open><summary>Where returning browsers landed</summary>
+      <table><tr><th>landing page</th><th>returning sessions</th></tr>
+      ${returnLandingRows || '<tr><td colspan="2">No returning entrances recorded in this range.</td></tr>'}</table>
+    </details>
+    <details class="fold" open><summary>Tools and guides revisited</summary>
+      <p>A revisit means this browser opened the page in an earlier tab session. Each action counts once per page per tab and is counted on the day it happened. The browser remembers up to 200 pages from visits made after tracking began. Visible results require an instrumented result region.</p>
+      <table><tr><th>page</th><th>revisit sessions</th><th>ran tool</th><th>result came into view</th><th>clicked guide tool link</th></tr>
+      ${revisitRows || '<tr><td colspan="5">No page revisits recorded in this range.</td></tr>'}</table>
+    </details>
     <table><tr><th>recency</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px"><b>This is an approximation, not true cohort retention.</b> It plots the share of each week's sessions that self-reported (via the browser's own localStorage timestamp) as having first visited within the last 7 days — a proxy for "people are coming back within a week," not "of last week's specific visitors, how many came back," which this anonymous, no-persistent-ID design cannot answer. A real cohort number would need a stable (even if anonymous/hashed) per-browser identifier, which nothing here sends today by design.</p>

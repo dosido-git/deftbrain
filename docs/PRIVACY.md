@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 8, 2026
+**Last updated:** November 13, 2026
 
 This page explains what happens when you use DeftBrain, who else might see what you submit, and what control you have.
 
@@ -48,6 +48,7 @@ DeftBrain runs a small home-made analytics system. The goal is narrow: seeing wh
 - A coarse "have I been here before" flag and a rough recency bucket (new, within a week, within a month, longer)—derived from a timestamp your browser already holds, not from anything we assign you.
 - An approximate location—city, region, country—looked up from your IP address at the moment of the request, using a lookup table stored on our own server (no call to any outside service). The IP address itself is used for that one moment, to filter out bots and known cloud-hosting traffic in addition to the location lookup, and then discarded. We do not store your IP address.
 - Your browser's language setting, the site you arrived from if you followed a link here, and which DeftBrain page you were on just before the current one.
+- Whether you returned to a tool or guide and what action you took there, such as running the tool or following the guide's tool link. Your browser keeps up to 200 recently opened tool and guide paths in local storage and sends only the current page, whether it was revisited, and the action.
 
 What is never recorded: your name, an email address, an account identifier (there is none to record), anything you type into a tool, or any single identifier that would let two separate visits be linked to the same person. No cookie is set for this—the coarse "have I been here before" flag lives in your browser's own localStorage and is never joined with anything else that could identify you.
 
@@ -183,3 +184,4 @@ For everything else about DeftBrain: [hello@deftbrain.com](mailto:hello@deftbrai
 - 2026-05-01—Initial publication.
 - 2026-09-25—Updated.
 - 2026-11-08—Updated.
+- 2026-11-13—Described how return visits are measured.

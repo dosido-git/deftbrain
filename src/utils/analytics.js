@@ -3,6 +3,8 @@
 // real people open a tool, run it, and finish. Fire-and-forget: analytics must
 // NEVER throw into or slow down the app.
 
+import { recordPageRevisit } from './returnVisit';
+
 const ENDPOINT = '/api/events';
 
 // Resolve this session's source label. An explicit `?utm_source=` or `?ref=`
@@ -133,7 +135,7 @@ export function track(event, props = {}) {
     try {
       const viewedAt = Number(sessionStorage.getItem('db-tool-view:' + path));
       if (viewedAt && oncePerTab('db-tool-run:' + path)) {
-        send({ event: 'tool_session_run', props: { viewedAt } });
+        send({ event: 'tool_session_run', props: { viewedAt, revisited: wasRevisited(path) } });
       }
       const guide = sessionStorage.getItem('db-guide-cta:' + path);
       if (guide && oncePerTab('db-guide-start:' + path + ':' + guide)) {
@@ -147,6 +149,10 @@ function oncePerTab(key) {
   if (sessionStorage.getItem(key)) return false;
   sessionStorage.setItem(key, '1');
   return true;
+}
+
+function wasRevisited(path) {
+  try { return sessionStorage.getItem('db-revisit:' + path) === '1' || undefined; } catch (_) { return undefined; }
 }
 
 // Use the CTA's own URL tag so attribution survives opening it in a new tab.
@@ -190,7 +196,12 @@ export function prepareResultTracking(startedAt) {
       if (lastPageView !== page) { stop(); return; }
       if (document.visibilityState === 'hidden' || ![...visible].some(node => node.isConnected)) return;
       stop();
-      send({ event: 'tool_result_visible', props: { ms: Date.now() - startedAt } });
+      try {
+        const revisited = wasRevisited(page.path) && oncePerTab('db-revisit-result:' + page.path);
+        send({ event: 'tool_result_visible', props: { ms: Date.now() - startedAt, revisited } });
+      } catch (_) {
+        send({ event: 'tool_result_visible', props: { ms: Date.now() - startedAt } });
+      }
       try {
         if (guide && oncePerTab('db-guide-result:' + page.path + ':' + guide)) {
           send({ event: 'guide_tool_result', props: { guide } });
@@ -306,7 +317,9 @@ function pageView() {
   const visit = visitContext();
   lastPageView = { path: p, entrance: visit.newSession === true, from };
   let toolViewedAt;
+  let revisited;
   if (TOOL_PATH.test(p)) {
+    if (!isOperator()) revisited = recordPageRevisit(p);
     try {
       const key = 'db-tool-view:' + p;
       if (!sessionStorage.getItem(key)) {
@@ -315,7 +328,7 @@ function pageView() {
       }
     } catch (_) {}
   }
-  track('page_view', { ...visit, ...(from ? { from } : {}), toolViewedAt });
+  track('page_view', { ...visit, ...(from ? { from } : {}), toolViewedAt, revisited });
   trackSecondTool(p);
   if (rescanSections) rescanSections();
 }

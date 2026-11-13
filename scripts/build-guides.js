@@ -26,6 +26,7 @@ const { spawnSync } = require('child_process');
 const { getFooterHTML, getToolList, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
+const { recordPageRevisit } = require('../src/utils/returnVisit');
 // A guide's label and breadcrumb name its main tool category and link to that
 // hub (2026-10-24); its own URL keeps its folder.
 const { categoriesForGuide, hubSlugFor } = require('./lib/guideCategories');
@@ -523,16 +524,26 @@ ${featuresHtml}
               fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
             } catch (e) { /* analytics must never interrupt navigation */ }
           }
+          var guidePath = "/guides/${spec.category}/${spec.slug}";
+          var revisited = (${recordPageRevisit.toString()})(guidePath);
           var toolLink = document.querySelector('.cta-block .cta-btn');
           if (toolLink) {
             var destination = new URL(toolLink.href, location.origin);
             destination.searchParams.set('from_guide', "/guides/${spec.category}/${spec.slug}");
             toolLink.href = destination.href;
             var trackToolClick = function () {
+              var revisitClick;
+              try {
+                var clickKey = 'db-revisit-click:' + guidePath;
+                if (sessionStorage.getItem('db-revisit:' + guidePath) === '1' && !sessionStorage.getItem(clickKey)) {
+                  sessionStorage.setItem(clickKey, '1');
+                  revisitClick = true;
+                }
+              } catch (e) {}
               sendMetric({
                 event: 'guide_tool_click',
                 path: "/guides/${spec.category}/${spec.slug}",
-                props: { tool: "${spec.cta.toolId}" }
+                props: { tool: "${spec.cta.toolId}", revisited: revisitClick }
               });
             };
             toolLink.addEventListener('click', trackToolClick);
@@ -547,7 +558,7 @@ ${featuresHtml}
             ts: now,
             sawGuide: true,
             ref: ref,
-            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "${spec.cta.toolId}" }
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "${spec.cta.toolId}", revisited: revisited }
           });
           var gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
           function trackInteraction(event) {
