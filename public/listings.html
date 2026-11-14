@@ -50,7 +50,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Directory listings | DeftBrain</title>
-  <meta name="description" content="Find DeftBrain on Product Hunt, SaaSHub, 1000 Tools, and AlternativeTo.">
+  <meta name="description" content="Find DeftBrain on Product Hunt, SaaSHub, and 1000 Tools.">
   <link rel="canonical" href="https://deftbrain.com/listings">
   <link rel="icon" href="/favicon.ico?v=2">
 
@@ -63,34 +63,14 @@
   <link rel="stylesheet" href="/guides/guide.css">
 
   <style>
+    body { display: flex; flex-direction: column; }
+    main { flex: 1; }
+    .prose h1 { font-size: 2.4rem; line-height: 1.15; margin: 0 0 1rem; }
     main .container { max-width: 740px; margin-inline: auto; padding-block: 24px 48px; }
     .directory-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; list-style: none; padding: 0; margin-block: 16px 24px; }
     .directory-badges a, .directory-badges img { display: block; }
     .directory-badges img { max-width: 100%; height: auto; }
     .directory-badges img[width="250"] { width: 187.5px; }
-    .product-hunt-card {
-      max-width: 500px;
-      margin-top: 1.5rem;
-      padding: 1rem;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      background: #fff;
-    }
-    .product-hunt-card-intro { display: flex; align-items: center; gap: 12px; }
-    .product-hunt-card img { flex: none; border-radius: 8px; object-fit: cover; }
-    .prose .product-hunt-card h3, .prose .product-hunt-card p { margin: 0; }
-    .prose .product-hunt-card a {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 8px 16px;
-      border-radius: 999px;
-      background: #ad382e;
-      color: #fff;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .prose .product-hunt-card a:hover { text-decoration: underline; }
-    :root[data-theme="dark"] .product-hunt-card { background: #27272a; border-color: #3f3f46; }
   </style>
 </head>
 <body>
@@ -123,7 +103,18 @@
       <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
       <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
     </form>
-    <script src="/search/deft-search.js" defer></script>
+    <script src="/search/deft-search.js" defer></script></div>
+  </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
   <main>
     <div class="container prose">
       <h1>Directory listings</h1>
@@ -131,20 +122,7 @@
         <li><a href="https://www.producthunt.com/products/deftbrain?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-deftbrain" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1309169&amp;theme=dark&amp;t=1794284141930" alt="DeftBrain - Guidance for life’s awkward, confusing &amp; curious moments. | Product Hunt" width="250" height="54" loading="lazy" referrerpolicy="no-referrer"></a></li>
         <li><a href="https://www.saashub.com/deftbrain?utm_source=badge&amp;utm_campaign=badge&amp;utm_content=deftbrain&amp;badge_variant=color&amp;badge_kind=approved" target="_blank" rel="noopener noreferrer"><img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="DeftBrain on SaaSHub" style="max-width:150px" referrerpolicy="no-referrer"></a></li>
         <li><a href="https://1000tools.best/projects/deftbrain?utm_source=badge" target="_blank" rel="noopener noreferrer"><img src="https://1000tools.best/1000tools/images/badges/featured-on-light.svg" alt="Featured on 1000 Tools" style="height:44px;width:auto" referrerpolicy="no-referrer"></a></li>
-        <li><a href="https://alternativeto.net/software/deftbrain/about/?utm_source=badge&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://alternativeto.net/static/badges/badge-compact-color.svg" alt="DeftBrain on AlternativeTo" width="171" height="55" referrerpolicy="no-referrer"></a></li>
       </ul>
-      <aside class="product-hunt-card" aria-label="DeftBrain on Product Hunt">
-        <div class="product-hunt-card-intro">
-          <img src="https://ph-files.imgix.net/97f0b828-8275-446d-b6f8-7684ee8cffd3.png?auto=compress,format&amp;codec=mozjpeg&amp;cs=strip&amp;fit=crop&amp;h=80&amp;w=80"
-            alt="" width="64" height="64" loading="lazy" referrerpolicy="no-referrer">
-          <div>
-            <h3>DeftBrain</h3>
-            <p>Guidance for life’s awkward, confusing &amp; curious moments.</p>
-          </div>
-        </div>
-        <a href="https://www.producthunt.com/products/deftbrain?embed=true&amp;utm_source=embed&amp;utm_medium=post_embed"
-          target="_blank" rel="noopener noreferrer">Check it out on Product Hunt →</a>
-      </aside>
     </div>
   </main>
   <footer class="site-footer">
