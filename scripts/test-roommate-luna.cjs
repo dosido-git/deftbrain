@@ -221,7 +221,7 @@ test('decisive uncertainty must have clarification, conditional action or a defe
 function browserHook(wire) {
   const hookFile = process.env.ROOMMATE_HOOK_FILE || path.join(__dirname, '../src/hooks/useClaudeAPI.js');
   const code = fs.readFileSync(hookFile,'utf8').replace(/^import .*;\n/gm,'').replace('export const useClaudeAPI =','const useClaudeAPI =');
-  const sandbox={module:{exports:{}},process:{env:{}},useState:v=>[v,()=>{}],useRef:v=>({current:v}),useLocale:()=>({userLanguage:'en'}),track:()=>{},beginWait:()=>()=>{},summarizeRequest:()=>'',toolFromPath:()=>'',setWaitSearching:()=>{},signalBusy:()=>{},t:k=>k,AbortController,TextDecoder,setTimeout,clearTimeout,fetch:async()=>({ok:true,status:200,headers:{get:()=> 'text/event-stream'},body:new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode(wire));controller.close();}})})};
+  const sandbox={module:{exports:{}},process:{env:{}},useState:v=>[v,()=>{}],useRef:v=>({current:v}),useLocale:()=>({userLanguage:'en'}),track:()=>{},prepareResultTracking:()=>()=>{},beginWait:()=>()=>{},summarizeRequest:()=>'',toolFromPath:()=>'',setWaitSearching:()=>{},signalBusy:()=>{},t:k=>k,AbortController,TextDecoder,setTimeout,clearTimeout,fetch:async()=>({ok:true,status:200,headers:{get:()=> 'text/event-stream'},body:new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode(wire));controller.close();}})})};
   vm.runInNewContext(code+'\nmodule.exports=useClaudeAPI();',sandbox,{filename:hookFile});return sandbox.module.exports;
 }
 const wire = f => 'data: '+JSON.stringify(f)+'\n\n';
