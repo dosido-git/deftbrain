@@ -99,6 +99,8 @@ function getIndex() {
 function assess(endpoint, action, payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
   if (payload.error) return null; // an error response is a different failure, already counted
+  // The deposit-law prefetch acknowledges work without returning a result.
+  if (endpoint === '/api/renters-deposit-saver/rights' && payload.warming === true) return null;
   const expected = getIndex().get(shapeKey(endpoint, action));
   if (!expected || expected.length < MIN_EXPECTED_KEYS) return null;
 

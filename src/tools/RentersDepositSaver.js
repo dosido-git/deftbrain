@@ -291,7 +291,7 @@ const SectionSkeleton = ({ isDark, c, generatingLabel }) => (
 
 
 const RentersDepositSaver = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { pollToolEndpoint, callToolEndpointProgressive, loading, userLanguage, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
@@ -568,10 +568,10 @@ const RentersDepositSaver = ({ tool }) => {
     if (warmedLoc.current.has(k)) return undefined;
     const id = setTimeout(() => {
       warmedLoc.current.add(k);
-      callToolEndpoint('renters-deposit-saver/rights', { location: warmLocation, warm: true }).catch(() => {});
+      pollToolEndpoint('renters-deposit-saver/rights', { location: warmLocation, userLanguage, warm: true }).catch(() => {});
     }, 1200);
     return () => clearTimeout(id);
-  }, [warmLocation, callToolEndpoint]);
+  }, [warmLocation, pollToolEndpoint, userLanguage]);
 
   // ── NEW: Quick rights lookup ──
   const lookupRights = async () => {
@@ -1313,6 +1313,10 @@ const RentersDepositSaver = ({ tool }) => {
                             <li key={i} className="flex items-start gap-1.5">
                               <span className={`${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')} shrink-0`}>•</span>
                               <span>{kr}</span>
+                              {rightsResult.verified_sources?.[i] && (
+                                <a href={rightsResult.verified_sources[i].url} title={rightsResult.verified_sources[i].title}
+                                  target="_blank" rel="noopener noreferrer" className={`shrink-0 ${linkStyle}`}>↗</a>
+                              )}
                             </li>
                           ))}
                         </ul>
@@ -1583,7 +1587,7 @@ const RentersDepositSaver = ({ tool }) => {
               <div className="space-y-2">
                 {results.verified_sources.map((src, i) => (
                   <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className={`block text-sm font-semibold ${linkStyle}`}>
-                    {src.title} ↗
+                    [{i + 1}] {src.title} ↗
                   </a>
                 ))}
               </div>

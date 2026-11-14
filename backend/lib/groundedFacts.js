@@ -240,7 +240,7 @@ function normalizeKeyPart(s) {
 // contract — the caller's hedge rules take over — so this is the same
 // degradation, just without the 25s wait attached to it.
 
-async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, maxUses = 3, system, timeoutMs = 120000, coldWaitMs = 0, force = false }) {
+async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, maxUses = 3, system, sharedPromptVersion, timeoutMs = 120000, coldWaitMs = 0, force = false }) {
   // `force`: a caller that explicitly wants today's evidence (signal-vs-noise
   // "check again with current sources") drops the cached entry first, so the
   // request takes the cold path on purpose. A fetch already in flight is
@@ -259,6 +259,7 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
           callClaudeWithRetry({
             model: MODELS.SMART,
             max_tokens: maxTokens,
+            sharedPromptVersion,
             tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: maxUses }],
             system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
             messages: [{ role: 'user', content: userPrompt }],
