@@ -103,7 +103,7 @@ function lastmodFor(key, hash) {
 
 // Static pages: hash their source files so their dates only move on real edits.
 const staticLastmod = {};
-for (const p of ['about', 'privacy', 'terms']) {
+for (const p of ['about', 'listings', 'privacy', 'terms']) {
   const f = path.join(__dirname, '..', 'public', `${p}.html`);
   staticLastmod[p] = fs.existsSync(f) ? lastmodFor(`static:${p}`, sha(fs.readFileSync(f, 'utf-8'))) : TODAY;
 }
@@ -216,6 +216,7 @@ console.log(`lastmod: ${bumped.length} URL(s) bumped to ${TODAY}; others keep th
 // Extensible: append new entries as they ship (terms, contact, about, etc.)
 const STATIC_PAGES = [
   { loc: `${SITE_URL}/privacy`, changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.privacy },
+  { loc: `${SITE_URL}/listings`, changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.listings },
   { loc: `${SITE_URL}/about`,   changefreq: 'monthly', priority: '0.5', lastmod: staticLastmod.about },
   { loc: `${SITE_URL}/terms`,   changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.terms },
   { loc: `${SITE_URL}/tools`,   changefreq: 'weekly',  priority: '0.6', lastmod: staticLastmod.tools },

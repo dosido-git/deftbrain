@@ -4,16 +4,16 @@
   "lastmod": "2026-11-06"
  },
  "static:about": {
-  "hash": "ee1c51a541430ea3cf5315cc1c7dfb51b658c7f2",
-  "lastmod": "2026-11-10"
+  "hash": "9785573a372132787ceb0dcd581bac661007b096",
+  "lastmod": "2026-11-14"
  },
  "static:privacy": {
-  "hash": "8cb92211976ae0f50f3881c5eb29c461069adb5a",
-  "lastmod": "2026-11-13"
+  "hash": "083535bec9d6fbe872adc9e551d61469491e4255",
+  "lastmod": "2026-11-14"
  },
  "static:terms": {
-  "hash": "d2d85bb03dcff8ac84a62c3509fd9b8a9bba95ce",
-  "lastmod": "2026-11-10"
+  "hash": "9a9870c99d529d4280baec3322b92b66a412573e",
+  "lastmod": "2026-11-14"
  },
  "tool:AlternatePath": {
   "hash": "aa13682709223dde29ef3bd8af68bdce61480a87",
@@ -582,5 +582,9 @@
  "tool:PEP": {
   "hash": "d61ba1cbe8e711b9cd7b81ac3ebde6b6375bbc81",
   "lastmod": "2026-10-27"
+ },
+ "static:listings": {
+  "hash": "aeaa64a38416485749cb7b37a9edf468ffaec441",
+  "lastmod": "2026-11-14"
  }
 }
