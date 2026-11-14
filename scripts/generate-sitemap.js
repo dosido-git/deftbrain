@@ -125,8 +125,12 @@ for (const p of ['about', 'listings', 'privacy', 'terms']) {
 // Tools: hash the serialized tools.js entry (title/description/guide/faq/seo
 // fields — everything that feeds the prerendered page body and meta).
 const toolLastmod = {};
+const relatedToolNextSteps = require('../src/data/related-tool-next-steps.json');
 for (const id of indexableToolIds) {
-  toolLastmod[id] = lastmodFor(`tool:${id}`, sha(JSON.stringify(toolObjects[id])));
+  const toolContent = JSON.stringify(toolObjects[id]);
+  const nextSteps = relatedToolNextSteps[id];
+  const content = nextSteps ? JSON.stringify([toolContent, nextSteps]) : toolContent;
+  toolLastmod[id] = lastmodFor(`tool:${id}`, sha(content));
 }
 
 // Tool category pages (/tools/{slug}, 2026-09-22) — same content-hash

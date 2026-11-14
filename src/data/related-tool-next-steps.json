@@ -1,0 +1,9 @@
+{
+  "BillRescue": ["QuoteCheck"],
+  "FinalWish": ["PaperworkPath"],
+  "GriefGuide": ["PaperworkPath"],
+  "MicroAdventureMapper": ["TripRecon", "SafeWalk"],
+  "NerveCheck": ["GentlePushGenerator"],
+  "PaperworkPath": ["FinalWish"],
+  "TimeWarp": ["AlternatePath"]
+}

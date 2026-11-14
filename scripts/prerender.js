@@ -53,6 +53,8 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png?v=2`;
 // imported by prerender.js, useDocumentHead.js, and generate-og.py.
 // Adding a new tool? Add its slug entry there.
 const TOOL_OG_SLUGS = require(path.join(ROOT, 'src', 'data', 'tool-og-slugs.json'));
+const NEXT_STEPS = require('../src/data/related-tool-next-steps.json');
+const { breadcrumbJsonLd } = require('./lib/breadcrumbJsonLd');
 
 // ── Tools keep-list (SEO concentration, 2026-07) ──
 // Union of focus+keepers = the INDEXABLE tool set. Every other tool page stays
@@ -275,10 +277,11 @@ function loadGuidesByTool() {
 const GENERIC_TAGS = new Set(['planning', 'my boss', 'my manager']);
 
 function relatedTools(tool, all, n = 2) {
+  const curated = (NEXT_STEPS[tool.id] || []).map(id => all.find(t => t.id === id)).filter(Boolean);
   const tags = new Set((tool.tags || []).map(s => s.toLowerCase()).filter(t => !GENERIC_TAGS.has(t)));
   const cats = new Set(tool.categories || []);
-  return all
-    .filter(t => t.id !== tool.id)
+  const matches = all
+    .filter(t => t.id !== tool.id && !curated.includes(t))
     .map(t => {
       const tg = (t.tags || []).map(s => s.toLowerCase()).filter(x => tags.has(x)).length;
       const ct = (t.categories || []).filter(c => cats.has(c)).length;
@@ -286,8 +289,8 @@ function relatedTools(tool, all, n = 2) {
     })
     .filter(x => x.tg >= 2 || (x.tg >= 1 && x.ct >= 1))
     .sort((a, b) => b.score - a.score || a.t.title.localeCompare(b.t.title))
-    .slice(0, n)
     .map(x => x.t);
+  return [...curated, ...matches].slice(0, n);
 }
 
 // Visible "Related tools" block (NOT collapsed, NOT display:none — genuine
@@ -478,7 +481,11 @@ function buildJsonLd({ id, title, description, faq }) {
     const faqJson = JSON.stringify(faqObj, null, 2).replace(/</g, '\\u003c');
     out += `\n    <script type="application/ld+json">${faqJson}</script>`;
   }
-  return out;
+  return out + '\n    ' + breadcrumbJsonLd(SITE_URL, [
+    ['DeftBrain', '/'],
+    ['Tools', '/tools'],
+    [title, `/${id}`],
+  ]);
 }
 
 function injectMeta(template, { id, title, description, tagline, seoTitle, seoDescription, faq }) {

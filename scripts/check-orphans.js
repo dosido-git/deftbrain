@@ -12,15 +12,15 @@
  *
  * This script does a breadth-first crawl of the PRERENDERED build, starting at the
  * homepage, following internal links, and records the shortest click-depth to each
- * page. It then compares the reachable set against every URL declared in the
- * sitemaps. Any sitemap URL not reachable from the homepage is an ORPHAN.
+ * page. It then checks every sitemap URL and every catalog tool for
+ * reachability, including tools that aren't in a sitemap.
  *
  * Run AFTER prerender + guide-index build (it reads build/*.html):
  *   node scripts/check-orphans.js            # summary + fail (exit 1) on orphans
  *   node scripts/check-orphans.js --max-depth 4   # also warn on pages deeper than N
  *   node scripts/check-orphans.js --json
  *
- * Exit 1 if any sitemap URL is orphaned, so it can gate the build.
+ * Exit 1 if any sitemap URL or catalog tool is orphaned, so it can gate the build.
  */
 'use strict';
 
@@ -64,10 +64,10 @@ function normKey(p) {
 function linksIn(file) {
   const html = fs.readFileSync(file, 'utf8');
   const out = new Set();
-  const re = /href\s*=\s*"([^"]+)"/gi;
+  const re = /<a\b[^>]*?\s+href\s*=\s*(["'])(.*?)\1/gi;
   let m;
   while ((m = re.exec(html))) {
-    const href = m[1];
+    const href = m[2];
     if (href.startsWith('/') || href.startsWith(SITE)) {
       const k = normKey(href);
       if (k) out.add(k);
@@ -92,6 +92,12 @@ function sitemapUrls() {
   return urls;
 }
 
+function catalogToolUrls() {
+  const source = fs.readFileSync(path.join(ROOT, 'src', 'data', 'tools.js'), 'utf8');
+  const tools = new Function(source.replace(/\bexport\s+const\b/g, 'const') + '\nreturn tools;')();
+  return tools.map(tool => `/${tool.id}`);
+}
+
 function main() {
   if (!fs.existsSync(path.join(BUILD, 'index.html'))) {
     console.error('check-orphans: build/index.html not found — run the build first.');
@@ -107,7 +113,7 @@ function main() {
     if (!file) continue;
     const d = depth.get(cur);
     for (const next of linksIn(file)) {
-      if (!depth.has(next)) {
+      if (!depth.has(next) && pathToFile(next)) {
         depth.set(next, d + 1);
         queue.push(next);
       }
@@ -117,6 +123,9 @@ function main() {
   const targets = sitemapUrls();
   const reachable = [...targets].filter(u => depth.has(u));
   const orphans = [...targets].filter(u => !depth.has(u));
+  const catalog = catalogToolUrls();
+  const catalogOrphans = catalog.filter(u => !depth.has(u));
+  const failed = orphans.length > 0 || catalogOrphans.length > 0;
 
   // depth histogram over reachable sitemap URLs
   const hist = {};
@@ -124,11 +133,12 @@ function main() {
   const deep = MAX_DEPTH_WARN ? reachable.filter(u => depth.get(u) > MAX_DEPTH_WARN) : [];
 
   if (JSON_OUT) {
-    console.log(JSON.stringify({ total: targets.size, reachable: reachable.length, orphans, hist, deep }, null, 2));
-    process.exit(orphans.length ? 1 : 0);
+    console.log(JSON.stringify({ total: targets.size, reachable: reachable.length, orphans, hist, deep, catalogOrphans }, null, 2));
+    process.exit(failed ? 1 : 0);
   }
 
   console.log(`\ncheck-orphans: ${targets.size} sitemap URLs; ${reachable.length} reachable from homepage, ${orphans.length} orphaned.`);
+  console.log(`Catalog tools: ${catalog.length - catalogOrphans.length}/${catalog.length} reachable from homepage.`);
   console.log('click-depth from homepage (reachable sitemap URLs):');
   for (const d of Object.keys(hist).sort((a, b) => a - b)) console.log(`   ${d} click(s): ${hist[d]}`);
   if (MAX_DEPTH_WARN && deep.length) {
@@ -140,8 +150,9 @@ function main() {
     for (const u of orphans.slice(0, 20)) console.log(`   ${u}`);
     if (orphans.length > 20) console.log(`   …and ${orphans.length - 20} more`);
     console.log('\nFix: link these from an authoritative page (homepage, a hub, or relevant tool pages).');
-    process.exit(1);
   }
+  if (catalogOrphans.length) console.log(`Unreachable catalog tools: ${catalogOrphans.join(', ')}`);
+  if (failed) process.exit(1);
   console.log('\n✅ No orphans — every sitemap URL is reachable from the homepage.');
   process.exit(0);
 }

@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "13b47edfa61db731fa0c7b797497852d378b7feb",
-  "lastmod": "2026-11-06"
+  "hash": "0e6c86cd9647ce55e1b3d8c03587ef6dfe59e9b0",
+  "lastmod": "2026-11-14"
  },
  "static:about": {
   "hash": "9785573a372132787ceb0dcd581bac661007b096",
@@ -28,8 +28,8 @@
   "lastmod": "2026-10-29"
  },
  "tool:BillRescue": {
-  "hash": "1b7f0ed8cb9d8d065ff9b490f47d91b55a0cd1a1",
-  "lastmod": "2026-10-29"
+  "hash": "a74b9b0578a83ecfd5ce4bbe9b6f60eba6161de9",
+  "lastmod": "2026-11-14"
  },
  "tool:BragSheetBuilder": {
   "hash": "7049f6942fda6ccd3f024a7de92847bef8b2f658",
@@ -68,8 +68,8 @@
   "lastmod": "2026-10-08"
  },
  "tool:FinalWish": {
-  "hash": "bb6364da20afc2ed6937952881c9e8452a7f8663",
-  "lastmod": "2026-10-29"
+  "hash": "6f96292807d346a7c6c85e360a31e97509e9ff1f",
+  "lastmod": "2026-11-14"
  },
  "tool:GhostWriter": {
   "hash": "029ce3e40ca3959ddb290b390ab18911863bd472",
@@ -276,8 +276,8 @@
   "lastmod": "2026-10-29"
  },
  "tool:GriefGuide": {
-  "hash": "7b4d6ac5465b37345230f43c4355ff420288fa9e",
-  "lastmod": "2026-10-27"
+  "hash": "b417a4063fb13c66540dfd8fa2cefe1fbe91d9f1",
+  "lastmod": "2026-11-14"
  },
  "tool:CultureBriefing": {
   "hash": "87205a8aa6d77353a3c029ddd06e0cbe5eef2793",
@@ -356,8 +356,8 @@
   "lastmod": "2026-11-05"
  },
  "tool:PaperworkPath": {
-  "hash": "32922684acdf9978f37f58e7c2d4ed41a9988f1c",
-  "lastmod": "2026-10-29"
+  "hash": "54646506450e5f048f2b0eabdde2e5536fe2925b",
+  "lastmod": "2026-11-14"
  },
  "tool:HecklerPrep": {
   "hash": "f6a61fe89fe5ac9b2900f2f329563f8bff303e85",
@@ -392,8 +392,8 @@
   "lastmod": "2026-10-25"
  },
  "tool:NerveCheck": {
-  "hash": "490c97049659e1484890e21a45c73f83081b130d",
-  "lastmod": "2026-10-29"
+  "hash": "226b3103bb2a616c254c3023cd367c2656ec638b",
+  "lastmod": "2026-11-14"
  },
  "tool:ConceptCoach": {
   "hash": "2b9b159767e0e4a3c9db9680e6404c1bd65c4215",
@@ -456,8 +456,8 @@
   "lastmod": "2026-10-27"
  },
  "tool:TimeWarp": {
-  "hash": "a4b744edec5278c3b932b05ba36914c469ddd3a7",
-  "lastmod": "2026-10-27"
+  "hash": "174ffdec1fc1b8903c0527c4ad3e22ac3d40a2f2",
+  "lastmod": "2026-11-14"
  },
  "tool:SocialBatteryAdvisor": {
   "hash": "6cad9879d3d8c141f245b7bec1c570dce4ecf92e",
@@ -556,8 +556,8 @@
   "lastmod": "2026-10-29"
  },
  "tool:MicroAdventureMapper": {
-  "hash": "81daa371c5efe5cafaf5758eb24a4271bb7e2864",
-  "lastmod": "2026-10-27"
+  "hash": "77fb0b2332d53245a89583122fe1ebce0859a0dc",
+  "lastmod": "2026-11-14"
  },
  "tool:BrainDumpBuddy": {
   "hash": "5d4979caa45821f2b3c0ba65ff8feec8581bd2a2",

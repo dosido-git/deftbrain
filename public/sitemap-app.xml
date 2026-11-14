@@ -5,7 +5,7 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://deftbrain.com</loc>
-    <lastmod>2026-11-06</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -113,7 +113,7 @@
   </url>
   <url>
     <loc>https://deftbrain.com/GriefGuide</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -359,7 +359,7 @@
   </url>
   <url>
     <loc>https://deftbrain.com/TimeWarp</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -587,7 +587,7 @@
   </url>
   <url>
     <loc>https://deftbrain.com/FinalWish</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -695,7 +695,7 @@
   </url>
   <url>
     <loc>https://deftbrain.com/BillRescue</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -707,7 +707,7 @@
   </url>
   <url>
     <loc>https://deftbrain.com/MicroAdventureMapper</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -797,13 +797,13 @@
   </url>
   <url>
     <loc>https://deftbrain.com/NerveCheck</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://deftbrain.com/PaperworkPath</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

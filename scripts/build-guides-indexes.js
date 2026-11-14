@@ -29,6 +29,7 @@ const { categoriesForGuide, guideHubs } = require('./lib/guideCategories');
 const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
+const { breadcrumbJsonLd } = require('./lib/breadcrumbJsonLd');
 
 const ROOT       = path.join(__dirname, '..');
 const SPECS_DIR  = path.join(ROOT, 'guides');
@@ -100,7 +101,7 @@ function loadKeepSet() {
 const KEEP_SET = loadKeepSet();
 
 // Shared <head> markup — common to all index pages
-function renderHead({ title, description, canonicalPath, extraStyle = '', search = true }) {
+function renderHead({ title, description, canonicalPath, extraStyle = '', search = true, breadcrumb = '' }) {
   const canonical = `${BASE_URL}${canonicalPath}`;
   return `<!DOCTYPE html>
 <html lang="en">
@@ -114,6 +115,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '', search
   <title>${escHtml(title)}</title>
   <meta name="description" content="${escHtml(description)}">
   <link rel="canonical" href="${escHtml(canonical)}">
+  ${breadcrumb}
 
   <meta property="og:type"        content="website">
   <meta property="og:title"       content="${escHtml(title)}">
@@ -748,6 +750,11 @@ ${foldedHtml}` : '';
     title: `${meta.name} guides — DeftBrain`,
     description: meta.desc,
     canonicalPath: `/guides/${catKey}`,
+    breadcrumb: breadcrumbJsonLd(BASE_URL, [
+      ['DeftBrain', '/'],
+      ['Guides', '/guides'],
+      [meta.name, `/guides/${catKey}`],
+    ]),
     extraStyle: `
       .hub-topic { margin: 2.2rem 0; padding-bottom: 1.4rem; border-bottom: 1px solid #e5e2da; }
       .hub-topic h3 { font-size: 1.15rem; margin-bottom: .4rem; }

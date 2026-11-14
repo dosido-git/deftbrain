@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
+import nextSteps from '../data/related-tool-next-steps.json';
 import { useTheme } from '../hooks/useTheme';
 import { PROTOTYPE_TOOLS, relatedStyle } from '../data/toolSchemes';
 
@@ -64,10 +65,11 @@ function loadGuides() {
 const GENERIC_TAGS = new Set(['planning', 'my boss', 'my manager']);
 
 function relatedTools(tool, all, n = 2) {
+  const curated = (nextSteps[tool.id] || []).map(id => all.find(t => t.id === id)).filter(Boolean);
   const tags = new Set((tool.tags || []).map(s => s.toLowerCase()).filter(t => !GENERIC_TAGS.has(t)));
   const cats = new Set(tool.categories || []);
-  return all
-    .filter(t => t.id !== tool.id)
+  const matches = all
+    .filter(t => t.id !== tool.id && !curated.includes(t))
     .map(t => {
       const tg = (t.tags || []).map(s => s.toLowerCase()).filter(x => tags.has(x)).length;
       const ct = (t.categories || []).filter(c => cats.has(c)).length;
@@ -75,8 +77,8 @@ function relatedTools(tool, all, n = 2) {
     })
     .filter(x => x.tg >= 2 || (x.tg >= 1 && x.ct >= 1))
     .sort((a, b) => b.score - a.score || a.t.title.localeCompare(b.t.title))
-    .slice(0, n)
     .map(x => x.t);
+  return [...curated, ...matches].slice(0, n);
 }
 
 export default function RelatedLinks() {
