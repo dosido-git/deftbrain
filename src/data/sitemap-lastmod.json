@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "0e6c86cd9647ce55e1b3d8c03587ef6dfe59e9b0",
-  "lastmod": "2026-11-14"
+  "hash": "a577bdaba7a6921403094ff9aea5c6aad26a89ac",
+  "lastmod": "2026-11-15"
  },
  "static:about": {
   "hash": "9785573a372132787ceb0dcd581bac661007b096",
@@ -116,8 +116,8 @@
   "lastmod": "2026-10-29"
  },
  "tool:RentersDepositSaver": {
-  "hash": "8d337e722ea9947a1ac68edcbf8f2c2ae825ccd0",
-  "lastmod": "2026-10-29"
+  "hash": "87b7b138163cd055a487f791cd07e9baacc8ddda",
+  "lastmod": "2026-11-15"
  },
  "tool:RoastMe": {
   "hash": "6276a474e90bf248585f3ade7c946f79cecfbc1f",
