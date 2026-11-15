@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) — skipped for owner/dev traffic.
+       Canonical source: scripts/lib/gaSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var op = params.get('operator');
+        if (op === '1') localStorage.setItem('db-operator', '1');
+        else if (op === '0') localStorage.removeItem('db-operator');
+        if (localStorage.getItem('db-operator') === '1') return;
+      } catch (e) {}
+      if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
+
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6';
+      document.head.appendChild(s);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-0MLY19QEW6');
+    })();
+  </script>
+  <!-- Theme — the visitor's saved light/dark choice, before first paint.
+       Canonical source: scripts/lib/themeSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      var root = document.documentElement, theme;
+      try { theme = localStorage.getItem('app-theme'); } catch (e) {}
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', theme);
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-theme-toggle]');
+        if (!btn) return;
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('app-theme', next); } catch (e) {}
+      });
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Security Deposit Laws by State | DeftBrain</title>
+  <meta name="description" content="Security deposit limits, return deadlines and interest rules for all 50 states and DC, with the statute for each. Checked November 2026.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://deftbrain.com/guides/home/security-deposit-laws-by-state">
+
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="Security Deposit Laws by State: Limits, Return Deadlines and Interest (2026)">
+  <meta property="og:description" content="Security deposit limits, return deadlines and interest rules for all 50 states and DC, with the statute for each. Checked November 2026.">
+  <meta property="og:url"         content="https://deftbrain.com/guides/home/security-deposit-laws-by-state">
+  <meta property="og:site_name"   content="DeftBrain">
+  <meta property="og:image"        content="https://deftbrain.com/og/guides/security-deposit-laws-by-state.png">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="article:published_time" content="2026-11-14">
+  <meta property="article:modified_time"  content="2026-11-14">
+  <meta property="article:section"        content="Home &amp; Daily Life">
+
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Security Deposit Laws by State | DeftBrain">
+  <meta name="twitter:description" content="Security deposit limits, return deadlines and interest rules for all 50 states and DC, with the statute for each. Checked November 2026.">
+  <meta name="twitter:image"       content="https://deftbrain.com/og/guides/security-deposit-laws-by-state.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Security Deposit Laws by State: Limits, Return Deadlines and Interest (2026)",
+    "description": "Security deposit limits, return deadlines and interest rules for all 50 states and DC, with the statute for each. Checked November 2026.",
+    "datePublished": "2026-11-14",
+    "dateModified": "2026-11-14",
+    "author": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
+    "publisher": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
+    "mainEntityOfPage": "https://deftbrain.com/guides/home/security-deposit-laws-by-state",
+    "citation": ["https://www.mass.gov/info-details/mass-general-laws-c186-ss-15b", "https://www.nysenate.gov/legislation/laws/GOB/7-108", "https://portal.ct.gov/dob/rental-security-deposits/rental-security-deposits/rental-security-deposits", "https://mgaleg.maryland.gov/2026RS/Statute_Web/grp/8-203.pdf", "https://content.leg.colorado.gov/sites/default/files/renters_rights_-_colorado_law_summary.pdf", "https://law.justia.com/codes/georgia/title-44/chapter-7/article-2/section-44-7-30-1", "https://app.leg.wa.gov/rcw/default.aspx?cite=59.18.280", "https://mylrc.sdlegislature.gov/api/Documents/SessionLaw/300761.pdf?Year=2026", "https://www.legis.iowa.gov/docs/code/2026/562A.12.pdf"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Security Deposit Laws by State: Limits, Return Deadlines and Interest (2026)",
+    "description": "Security deposit limits, return deadlines and interest rules for all 50 states and DC, with the statute for each. Checked November 2026.",
+    "step": [
+      {"@type":"HowToStep","name":"How much can a landlord charge for a security deposit?","text":"About 30 jurisdictions cap the deposit. The most common caps are one month's rent (Massachusetts, New York, Maryland, Alabama, Hawaii and others) and two months' rent (Colorado, Georgia, Iowa, Missouri, Virginia and others). Nevada allows up to three months. The rest set no cap at all, which leaves the amount to the lease.\n\nSeveral caps are recent. Colorado set a two-month cap in August 2023. Georgia capped deposits at two months for leases entered or renewed from July 1, 2024. Maryland cut its cap from two months to one for leases signed from October 1, 2024. In states such as Maryland, New York and Georgia, a refundable pet deposit counts toward the cap rather than on top of it."},
+      {"@type":"HowToStep","name":"How long does a landlord have to return a security deposit?","text":"Deadlines range from 14 days (New York, Hawaii, Nebraska, Vermont, and Alaska in some cases) to 60 days (Alabama, Arkansas and West Virginia). Thirty days is the most common. By the deadline, the landlord must usually either return the full deposit or send an itemized list of deductions with any balance.\n\nWatch when the clock starts. In Texas, Iowa, South Dakota and Wyoming, among others, the deadline runs from when the landlord has your forwarding address, so give it in writing on the day you move out. Some deadlines changed recently: Washington went from 21 to 30 days in July 2023, Connecticut from 30 to 21 days in October 2023, and South Dakota from 14 to 21 days in July 2026. Kentucky and Tennessee set no fixed number of days."},
+      {"@type":"HowToStep","name":"Which states require interest on security deposits?","text":"Interest is the exception. Connecticut, the District of Columbia, Illinois, Maryland, Massachusetts, Minnesota, New Hampshire, New Jersey, New Mexico, New York, North Dakota, Ohio and Pennsylvania require it in at least some cases. Most of them attach conditions, such as a minimum building size (25 or more units in Illinois, 6 or more in New York), a minimum tenancy (two years in Pennsylvania, one year in New Hampshire) or a minimum deposit.\n\nMassachusetts is one of the strictest. The deposit must sit in a separate interest-bearing account at a Massachusetts bank, and interest runs from the first day of the tenancy at 5% a year, or the bank's rate if lower, paid each year or when the tenancy ends. In Florida, interest is owed only if the landlord chooses an interest-bearing account."},
+      {"@type":"HowToStep","name":"What happens if a landlord misses the deadline?","text":"In many states, a landlord who misses the deadline loses the right to keep any part of the deposit, even for real damage. New York, Washington and Iowa all work this way. Many states add a penalty for bad-faith or wrongful withholding. Common amounts are two times the amount withheld (Arizona, Missouri and New Jersey, among others) or three times (Georgia and Maryland). Massachusetts awards three times the deposit plus 5% interest, court costs and attorney's fees for its main violations. Texas presumes bad faith after the deadline passes and allows $100 plus three times the amount wrongfully withheld.\n\nThese penalties usually require a demand letter or a small-claims case. Your strongest evidence is a dated record of the unit's condition at move-in, which is the subject of how to write a move-in condition report."},
+      {"@type":"HowToStep","name":"How do you use your state's rules to get your deposit back?","text":"Start at move-in: photograph every room, note every existing flaw on the condition form, and email both to the landlord. At move-out, give a forwarding address in writing, note the date, and count forward by your state's deadline. If the deadline passes with no refund or itemized list, send a short written demand that cites the statute in the table and the remedy it provides. Many landlords pay at that point.\n\nRenter's Deposit Saver walks you through the move-in record room by room and lists your state's deposit rights in the cover letter to your landlord."}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"DeftBrain","item":"https://deftbrain.com"},
+      {"@type":"ListItem","position":2,"name":"Guides","item":"https://deftbrain.com/guides"},
+      {"@type":"ListItem","position":3,"name":"Home & Daily Life","item":"https://deftbrain.com/guides/home-daily-life"},
+      {"@type":"ListItem","position":4,"name":"Security Deposit Laws by State"}
+    ]
+  }
+  </script>
+
+  <!-- Self-hosted fonts (no third-party request) — see public/fonts/ -->
+  <link rel="stylesheet" href="/fonts/playfair-display/playfair-display.css">
+  <link rel="stylesheet" href="/fonts/dm-sans/dm-sans.css">
+
+  <link rel="stylesheet" href="/guides/guide.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-header-brand" aria-label="DeftBrain home">
+        <img src="/pBrain-r.png" alt="" class="sh-brand-img" height="64">
+        <span class="sh-brand-word">
+          <span class="sh-brand-text">Deft<span>Brain</span></span>
+          <span class="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+        </span>
+      </a>
+      <div class="site-header-end">
+        <nav class="site-header-nav" aria-label="Primary"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a></nav>
+        <div class="site-header-controls">
+          <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+        </div>
+        <details class="site-header-menu">
+          <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a>
+            <a href="/#home-problem-search">Find guidance</a>
+            <div class="site-header-menu-settings">
+              <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode">Appearance</button>
+            </div>
+          </nav>
+        </details>
+      </div>
+    </div>
+    <div class="site-header-search"><form class="ds-form" role="search" data-deft-search data-tools="4" data-guides="4" action="/tools">
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
+      <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
+    </form>
+    <script src="/search/deft-search.js" defer></script></div>
+  </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
+
+
+
+  <main>
+    <div class="container">
+
+      <!-- eyebrow: category name, linked to its hub (see note above renderGuide) -->
+      <div class="eyebrow">
+        <a class="tag" href="/guides/home-daily-life">Home &amp; Daily Life</a>
+        <div class="eyebrow-rule"></div>
+      </div>
+
+      <h1>Security Deposit Laws by State <em>(Limits, Return Deadlines and Interest, 2026)</em></h1>
+
+      <p class="deck">Each state sets its own security deposit rules. About 30 jurisdictions cap the deposit, usually at one or two months&#39; rent. Return deadlines run from 14 to 60 days after move-out, and 13 jurisdictions require interest in some cases. The table covers all 50 states and DC.</p>
+      <ol class="answer-list">
+        <li>Deposit cap: about 30 jurisdictions cap it, usually at 1 or 2 months&#39; rent.</li>
+        <li>Return deadline: 14 to 60 days after move-out; 30 days is most common.</li>
+        <li>Interest: 13 jurisdictions require it, usually with conditions.</li>
+        <li>Missed deadline: many states bar any deductions and add a penalty.</li>
+        <li>Give your forwarding address in writing; some deadlines start from it.</li>
+      </ol>
+      <table class="answer-table">
+        <thead><tr><th scope="col">State</th><th scope="col">Max deposit</th><th scope="col">Return deadline</th><th scope="col">Interest owed?</th><th scope="col">Statute</th></tr></thead>
+        <tbody>
+          <tr><td>Alabama</td><td>1 month (more allowed for pets or added risk)</td><td>60 days</td><td>No</td><td>Ala. Code § 35-9A-201</td></tr>
+          <tr><td>Alaska</td><td>2 months (no cap if rent is over $2,000)</td><td>14 days (30 in some cases)</td><td>No</td><td>AS 34.03.070</td></tr>
+          <tr><td>Arizona</td><td>1.5 months</td><td>14 business days</td><td>No</td><td>A.R.S. § 33-1321</td></tr>
+          <tr><td>Arkansas</td><td>2 months (owners of 5 or fewer units exempt)</td><td>60 days</td><td>No</td><td>Ark. Code § 18-16-305</td></tr>
+          <tr><td>California</td><td>1 month (2 for some small landlords)</td><td>21 days</td><td>No</td><td>Cal. Civ. Code § 1950.5</td></tr>
+          <tr><td>Colorado</td><td>2 months</td><td>30 days (up to 60 if the lease says so)</td><td>No</td><td>C.R.S. §§ 38-12-102.5, 38-12-103</td></tr>
+          <tr><td>Connecticut</td><td>2 months (1 month if tenant is 62+)</td><td>21 days, or 15 days after forwarding address if later</td><td>Yes</td><td>Conn. Gen. Stat. § 47a-21</td></tr>
+          <tr><td>Delaware</td><td>1 month (some exceptions)</td><td>20 days</td><td>No</td><td>25 Del. C. § 5514</td></tr>
+          <tr><td>District of Columbia</td><td>1 month</td><td>45 days</td><td>Yes, conditions apply</td><td>D.C. Code § 42-3502.17</td></tr>
+          <tr><td>Florida</td><td>No cap</td><td>15 days, or 30 days to give notice of a claim</td><td>Only if held in an interest-bearing account</td><td>Fla. Stat. § 83.49</td></tr>
+          <tr><td>Georgia</td><td>2 months (leases from July 1, 2024)</td><td>30 days</td><td>No</td><td>O.C.G.A. §§ 44-7-30.1, 44-7-34</td></tr>
+          <tr><td>Hawaii</td><td>1 month (plus pet deposit up to 1 month)</td><td>14 days</td><td>No</td><td>Haw. Rev. Stat. § 521-44</td></tr>
+          <tr><td>Idaho</td><td>No cap</td><td>21 days (up to 30 if the lease says so)</td><td>No</td><td>Idaho Code § 6-321</td></tr>
+          <tr><td>Illinois</td><td>No statewide cap</td><td>30 days to itemize; 45 days to return</td><td>Yes, buildings of 25+ units</td><td>765 ILCS 710; 765 ILCS 715</td></tr>
+          <tr><td>Indiana</td><td>No cap</td><td>45 days</td><td>No</td><td>Ind. Code § 32-31-3-12</td></tr>
+          <tr><td>Iowa</td><td>2 months</td><td>30 days</td><td>No</td><td>Iowa Code § 562A.12</td></tr>
+          <tr><td>Kansas</td><td>1 month unfurnished, 1.5 furnished (+0.5 with pets)</td><td>30 days</td><td>No</td><td>K.S.A. § 58-2550</td></tr>
+          <tr><td>Kentucky</td><td>No cap</td><td>No fixed deadline</td><td>No</td><td>KRS 383.580</td></tr>
+          <tr><td>Louisiana</td><td>No cap</td><td>1 month</td><td>No</td><td>La. R.S. 9:3251</td></tr>
+          <tr><td>Maine</td><td>2 months</td><td>30 days (21 for a tenancy at will)</td><td>No</td><td>14 M.R.S. §§ 6032, 6033</td></tr>
+          <tr><td>Maryland</td><td>1 month (leases from Oct. 1, 2024)</td><td>45 days</td><td>Yes, deposits of $50+</td><td>Md. Code, Real Prop. § 8-203</td></tr>
+          <tr><td>Massachusetts</td><td>1 month</td><td>30 days</td><td>Yes, 5% a year or the bank&#39;s lower rate</td><td>M.G.L. c. 186, § 15B</td></tr>
+          <tr><td>Michigan</td><td>1.5 months</td><td>30 days</td><td>No</td><td>MCL 554.602, 554.609</td></tr>
+          <tr><td>Minnesota</td><td>No cap</td><td>3 weeks</td><td>Yes, 1% a year</td><td>Minn. Stat. § 504B.178</td></tr>
+          <tr><td>Mississippi</td><td>No cap</td><td>45 days</td><td>No</td><td>Miss. Code § 89-8-21</td></tr>
+          <tr><td>Missouri</td><td>2 months</td><td>30 days</td><td>No</td><td>Mo. Rev. Stat. § 535.300</td></tr>
+          <tr><td>Montana</td><td>No cap</td><td>30 days (10 if no deductions)</td><td>No</td><td>Mont. Code § 70-25-202</td></tr>
+          <tr><td>Nebraska</td><td>1 month (plus pet deposit up to 1/4 month)</td><td>14 days</td><td>No</td><td>Neb. Rev. Stat. § 76-1416</td></tr>
+          <tr><td>Nevada</td><td>3 months</td><td>30 days</td><td>No</td><td>NRS 118A.242</td></tr>
+          <tr><td>New Hampshire</td><td>1 month or $100, whichever is more</td><td>30 days</td><td>Yes, if held 1 year or more</td><td>RSA 540-A:6, 540-A:7</td></tr>
+          <tr><td>New Jersey</td><td>1.5 months</td><td>30 days</td><td>Yes</td><td>N.J.S.A. 46:8-19, 46:8-21.1</td></tr>
+          <tr><td>New Mexico</td><td>1 month for leases under a year</td><td>30 days</td><td>Yes, annual leases with deposits over 1 month</td><td>NMSA § 47-8-18</td></tr>
+          <tr><td>New York</td><td>1 month</td><td>14 days</td><td>Yes, buildings of 6+ units</td><td>N.Y. Gen. Oblig. Law §§ 7-103, 7-108</td></tr>
+          <tr><td>North Carolina</td><td>2 weeks to 2 months, by lease length</td><td>30 days (final accounting within 60 if needed)</td><td>No</td><td>N.C. Gen. Stat. §§ 42-51, 42-52</td></tr>
+          <tr><td>North Dakota</td><td>1 month (2 in some cases)</td><td>30 days</td><td>Yes, tenancies of 9+ months</td><td>N.D.C.C. § 47-16-07.1</td></tr>
+          <tr><td>Ohio</td><td>No cap</td><td>30 days</td><td>Yes, on larger deposits after 6+ months</td><td>Ohio Rev. Code § 5321.16</td></tr>
+          <tr><td>Oklahoma</td><td>No cap</td><td>45 days after written demand</td><td>No</td><td>41 O.S. § 115</td></tr>
+          <tr><td>Oregon</td><td>No cap</td><td>31 days</td><td>No</td><td>ORS 90.300</td></tr>
+          <tr><td>Pennsylvania</td><td>2 months in year 1, then 1 month</td><td>30 days</td><td>Yes, after 2 years</td><td>68 P.S. §§ 250.511a, 250.511b</td></tr>
+          <tr><td>Rhode Island</td><td>1 month</td><td>20 days</td><td>No</td><td>R.I. Gen. Laws § 34-18-19</td></tr>
+          <tr><td>South Carolina</td><td>No cap</td><td>30 days</td><td>No</td><td>S.C. Code § 27-40-410</td></tr>
+          <tr><td>South Dakota</td><td>1 month</td><td>21 days (from July 1, 2026)</td><td>No</td><td>SDCL §§ 43-32-6.1, 43-32-24</td></tr>
+          <tr><td>Tennessee</td><td>No cap</td><td>No fixed deadline</td><td>No</td><td>Tenn. Code § 66-28-301</td></tr>
+          <tr><td>Texas</td><td>No cap</td><td>30 days (after a forwarding address)</td><td>No</td><td>Tex. Prop. Code § 92.103</td></tr>
+          <tr><td>Utah</td><td>No cap</td><td>30 days</td><td>No</td><td>Utah Code § 57-17-3</td></tr>
+          <tr><td>Vermont</td><td>No cap</td><td>14 days</td><td>No</td><td>9 V.S.A. § 4461</td></tr>
+          <tr><td>Virginia</td><td>2 months</td><td>45 days</td><td>No</td><td>Va. Code § 55.1-1226</td></tr>
+          <tr><td>Washington</td><td>No cap</td><td>30 days</td><td>No</td><td>RCW 59.18.280</td></tr>
+          <tr><td>West Virginia</td><td>No cap</td><td>60 days (45 if a new tenant moves in sooner)</td><td>No</td><td>W. Va. Code § 37-6A-2</td></tr>
+          <tr><td>Wisconsin</td><td>No cap</td><td>21 days</td><td>No</td><td>Wis. Stat. § 704.28</td></tr>
+          <tr><td>Wyoming</td><td>No cap</td><td>30 days, or 15 after forwarding address if later</td><td>No</td><td>Wyo. Stat. § 1-21-1208</td></tr>
+        </tbody>
+      </table>
+
+      <p class="meta-line">Updated November 14, 2026 · By the DeftBrain team</p>
+
+      <p class="lede">The table above gives each state&#39;s limit on the deposit, the deadline for returning it, and whether the landlord owes interest, with the statute it comes from. Figures were checked against state statutes and official state sources in November 2026. Most deadlines start when the tenancy ends and you&#39;ve moved out, and several only start once the landlord has your forwarding address in writing.</p>
+      <p class="lede">Cities and counties can add their own rules, and leases signed before a law changed may follow the old rule. Laws change, so check the statute for your state before you rely on a number. This is general information, not legal advice.</p>
+
+      <div class="section-rule"><span>How to do it</span></div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h2>How much can a landlord charge for a security deposit?</h2>
+          <p>About 30 jurisdictions cap the deposit. The most common caps are one month&#39;s rent (Massachusetts, New York, Maryland, Alabama, Hawaii and others) and two months&#39; rent (Colorado, Georgia, Iowa, Missouri, Virginia and others). Nevada allows up to three months. The rest set no cap at all, which leaves the amount to the lease.</p>
+<p>Several caps are recent. Colorado set a two-month cap in August 2023. Georgia capped deposits at two months for leases entered or renewed from July 1, 2024. Maryland cut its cap from two months to one for leases signed from October 1, 2024. In states such as Maryland, New York and Georgia, a refundable pet deposit counts toward the cap rather than on top of it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h2>How long does a landlord have to return a security deposit?</h2>
+          <p>Deadlines range from 14 days (New York, Hawaii, Nebraska, Vermont, and Alaska in some cases) to 60 days (Alabama, Arkansas and West Virginia). Thirty days is the most common. By the deadline, the landlord must usually either return the full deposit or send an itemized list of deductions with any balance.</p>
+<p>Watch when the clock starts. In Texas, Iowa, South Dakota and Wyoming, among others, the deadline runs from when the landlord has your forwarding address, so give it in writing on the day you move out. Some deadlines changed recently: Washington went from 21 to 30 days in July 2023, Connecticut from 30 to 21 days in October 2023, and South Dakota from 14 to 21 days in July 2026. Kentucky and Tennessee set no fixed number of days.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h2>Which states require interest on security deposits?</h2>
+          <p>Interest is the exception. Connecticut, the District of Columbia, Illinois, Maryland, Massachusetts, Minnesota, New Hampshire, New Jersey, New Mexico, New York, North Dakota, Ohio and Pennsylvania require it in at least some cases. Most of them attach conditions, such as a minimum building size (25 or more units in Illinois, 6 or more in New York), a minimum tenancy (two years in Pennsylvania, one year in New Hampshire) or a minimum deposit.</p>
+<p>Massachusetts is one of the strictest. The deposit must sit in a separate interest-bearing account at a Massachusetts bank, and interest runs from the first day of the tenancy at 5% a year, or the bank&#39;s rate if lower, paid each year or when the tenancy ends. In Florida, interest is owed only if the landlord chooses an interest-bearing account.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h2>What happens if a landlord misses the deadline?</h2>
+          <p>In many states, a landlord who misses the deadline loses the right to keep any part of the deposit, even for real damage. New York, Washington and Iowa all work this way. Many states add a penalty for bad-faith or wrongful withholding. Common amounts are two times the amount withheld (Arizona, Missouri and New Jersey, among others) or three times (Georgia and Maryland). Massachusetts awards three times the deposit plus 5% interest, court costs and attorney&#39;s fees for its main violations. Texas presumes bad faith after the deadline passes and allows $100 plus three times the amount wrongfully withheld.</p>
+<p>These penalties usually require a demand letter or a small-claims case. Your strongest evidence is a dated record of the unit&#39;s condition at move-in, which is the subject of <a href="/guides/home/how-to-write-a-move-in-condition-report">how to write a move-in condition report</a>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h2>How do you use your state&#39;s rules to get your deposit back?</h2>
+          <p>Start at move-in: photograph every room, note every existing flaw on the condition form, and email both to the landlord. At move-out, give a forwarding address in writing, note the date, and count forward by your state&#39;s deadline. If the deadline passes with no refund or itemized list, send a short written demand that cites the statute in the table and the remedy it provides. Many landlords pay at that point.</p>
+<p><a href="/RentersDepositSaver">Renter&#39;s Deposit Saver</a> walks you through the move-in record room by room and lists your state&#39;s deposit rights in the cover letter to your landlord.</p>
+        </div>
+      </div>
+
+      <div class="guide-sources">
+        <p class="guide-sources-label">Sources</p>
+        <ul>
+          <li><a href="https://www.mass.gov/info-details/mass-general-laws-c186-ss-15b" rel="noopener" target="_blank">Massachusetts General Laws c. 186, § 15B (Mass.gov)</a></li>
+          <li><a href="https://www.nysenate.gov/legislation/laws/GOB/7-108" rel="noopener" target="_blank">New York General Obligations Law § 7-108 (NY Senate)</a></li>
+          <li><a href="https://portal.ct.gov/dob/rental-security-deposits/rental-security-deposits/rental-security-deposits" rel="noopener" target="_blank">Connecticut Department of Banking: Rental Security Deposits</a></li>
+          <li><a href="https://mgaleg.maryland.gov/2026RS/Statute_Web/grp/8-203.pdf" rel="noopener" target="_blank">Maryland Code, Real Property § 8-203 (Maryland General Assembly)</a></li>
+          <li><a href="https://content.leg.colorado.gov/sites/default/files/renters_rights_-_colorado_law_summary.pdf" rel="noopener" target="_blank">Colorado Legislative Council: Renters&#39; Rights law summary</a></li>
+          <li><a href="https://law.justia.com/codes/georgia/title-44/chapter-7/article-2/section-44-7-30-1" rel="noopener" target="_blank">Georgia Code § 44-7-30.1 (Justia)</a></li>
+          <li><a href="https://app.leg.wa.gov/rcw/default.aspx?cite=59.18.280" rel="noopener" target="_blank">RCW 59.18.280 (Washington State Legislature)</a></li>
+          <li><a href="https://mylrc.sdlegislature.gov/api/Documents/SessionLaw/300761.pdf?Year=2026" rel="noopener" target="_blank">South Dakota Session Laws 2026, ch. 179 (SDCL § 43-32-24)</a></li>
+          <li><a href="https://www.legis.iowa.gov/docs/code/2026/562A.12.pdf" rel="noopener" target="_blank">Iowa Code § 562A.12 (Iowa Legislature)</a></li>
+        </ul>
+      </div>
+
+      <div class="cta-block" data-glyph="🏦">
+        <div class="cta-eyebrow">Try it now — free</div>
+        <p class="cta-headline">Put your state&#39;s deposit rules to work on move-in day</p>
+        <p>Renter&#39;s Deposit Saver walks you through your apartment room by room, generates a formal condition report and photo shot list, and writes the cover letter to your landlord with your state&#39;s deposit rights cited.</p>
+        <div class="cta-features">
+          <span class="cta-feature">Room-by-room walkthrough guidance</span>
+          <span class="cta-feature">Photo shot list</span>
+          <span class="cta-feature">Formal condition report</span>
+          <span class="cta-feature">Landlord cover letter</span>
+          <span class="cta-feature">State-specific deposit rights</span>
+        </div>
+        <a href="/RentersDepositSaver" class="cta-btn">
+          Open Renter&#39;s Deposit Saver →
+        </a>
+        <span class="cta-subtext">No account required to get started.</span>
+      </div>
+
+      <!-- Cite / link block.
+           Guides are the linkable asset — nobody links a form, people link an
+           explainer they found useful — and the audience that would link is the
+           audience that owns a site. Built on all 552 guides, not just the 112
+           indexable ones, so the other 440 are ready the day indexing widens.
+           Vanilla JS: guides are static HTML, no React on this page. -->
+      <div class="cite-box">
+        <p class="cite-title">Found this useful? Link to it.</p>
+        <p class="cite-url" id="cite-url">https://deftbrain.com/guides/home/security-deposit-laws-by-state</p>
+        <div class="cite-actions">
+          <button type="button" class="cite-btn" data-copy="url">Copy link</button>
+          <button type="button" class="cite-btn" data-copy="html">Copy HTML</button>
+          <button type="button" class="cite-btn" data-copy="cite">Copy citation</button>
+        </div>
+        <p class="cite-note">Free to read, no account, no paywall — link away.</p>
+      </div>
+      <script>
+        (function () {
+          var URL_ = "https://deftbrain.com/guides/home/security-deposit-laws-by-state";
+          var TITLE = "Security Deposit Laws by State: Limits, Return Deadlines and Interest (2026)";
+          var MOD = "November 14, 2026";
+          var payload = {
+            url: URL_,
+            html: '<a href="' + URL_ + '">' + TITLE + '</a>',
+            cite: TITLE + '. DeftBrain. Updated ' + MOD + '. ' + URL_
+          };
+          document.querySelectorAll('.cite-btn').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var text = payload[b.getAttribute('data-copy')];
+              var done = function () {
+                var was = b.textContent; b.textContent = 'Copied'; b.classList.add('is-copied');
+                setTimeout(function () { b.textContent = was; b.classList.remove('is-copied'); }, 1600);
+              };
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done, function () {});
+              } else {
+                // Older Safari / non-secure contexts have no async clipboard.
+                var ta = document.createElement('textarea');
+                ta.value = text; ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute'; ta.style.left = '-9999px';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); done(); } catch (e) {}
+                document.body.removeChild(ta);
+              }
+            });
+          });
+        })();
+      </script>
+
+      <!-- Guide analytics beacon.
+           Guides are STATIC HTML — src/utils/analytics.js only runs inside the
+           React app, and there is no /guides route there, so until now 552
+           pages emitted nothing at all. Two consequences: guide readership was
+           entirely invisible, and sawGuide could never be set, which made
+           "Guide → tool crossover" a stat that could only ever report 0.
+           Mirrors analytics.js exactly — same endpoint, same payload shape,
+           same operator opt-out, same privacy posture (no cookies, no
+           identifier ever leaves the browser; the client reports only a
+           boolean and a coarse recency bucket). -->
+      <script>
+        (function () {
+          try {
+            if (localStorage.getItem('db-operator') === '1') return;
+          } catch (e) { /* storage blocked — still send, just without context */ }
+          var now = Date.now(), first = null, returning = false, bucket = 'new';
+          var newSession = false, ref, lang;
+          try {
+            first = parseInt(localStorage.getItem('db-first-seen'), 10) || null;
+            returning = !!first;
+            if (!first) localStorage.setItem('db-first-seen', String(now));
+            var days = first ? Math.floor((now - first) / 86400000) : 0;
+            bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
+            if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
+            if (newSession) {
+              sessionStorage.setItem('db-landing', location.pathname);
+              var q = new URLSearchParams(location.search);
+              ref = q.get('utm_source') || q.get('ref') || undefined;
+              if (!ref && document.referrer && document.referrer.indexOf(location.hostname) === -1) {
+                ref = new URL(document.referrer).hostname;
+              }
+              if (ref) sessionStorage.setItem('db-ref', ref);
+            } else {
+              ref = sessionStorage.getItem('db-ref') || undefined;
+            }
+            // This is the flag the crossover stat needs: set here so a tool run
+            // later in the same session can report that a guide came first.
+            sessionStorage.setItem('db-saw-guide', '1');
+            lang = (navigator.language || '').slice(0, 5) || undefined;
+          } catch (e) { /* private mode — send what we have */ }
+          // Previous DeftBrain page, from the same-origin referrer (path only).
+          // Twin of fromPath() in src/utils/analytics.js.
+          var from;
+          try {
+            if (document.referrer) {
+              var ru = new URL(document.referrer);
+              if (ru.hostname === location.hostname && ru.pathname !== location.pathname) from = ru.pathname.slice(0, 160);
+            }
+          } catch (e) {}
+          function sendMetric(payload) {
+            var body = JSON.stringify(payload);
+            try {
+              if (navigator.sendBeacon && navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }))) return;
+              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+            } catch (e) { /* analytics must never interrupt navigation */ }
+          }
+          var guidePath = "/guides/home/security-deposit-laws-by-state";
+          var revisited = (function recordPageRevisit(path) {
+  try {
+    const tabKey = 'db-revisit:' + path;
+    const recorded = sessionStorage.getItem(tabKey);
+    if (recorded !== null) return undefined;
+
+    const key = 'db-page-history';
+    const history = JSON.parse(localStorage.getItem(key) || '[]');
+    const previous = history.includes(path);
+    localStorage.setItem(key, JSON.stringify(history.filter(entry => entry !== path).slice(-199).concat(path)));
+    sessionStorage.setItem(tabKey, previous ? '1' : '0');
+    return previous || undefined;
+  } catch (_) {
+    return undefined;
+  }
+})(guidePath);
+          var toolLink = document.querySelector('.cta-block .cta-btn');
+          if (toolLink) {
+            var destination = new URL(toolLink.href, location.origin);
+            destination.searchParams.set('from_guide', "/guides/home/security-deposit-laws-by-state");
+            toolLink.href = destination.href;
+            var trackToolClick = function () {
+              var revisitClick;
+              try {
+                var clickKey = 'db-revisit-click:' + guidePath;
+                if (sessionStorage.getItem('db-revisit:' + guidePath) === '1' && !sessionStorage.getItem(clickKey)) {
+                  sessionStorage.setItem(clickKey, '1');
+                  revisitClick = true;
+                }
+              } catch (e) {}
+              sendMetric({
+                event: 'guide_tool_click',
+                path: "/guides/home/security-deposit-laws-by-state",
+                props: { tool: "RentersDepositSaver", revisited: revisitClick }
+              });
+            };
+            toolLink.addEventListener('click', trackToolClick);
+            toolLink.addEventListener('auxclick', function (e) {
+              if (e.button === 1) trackToolClick();
+            });
+          }
+          sendMetric({
+            event: 'page_view',
+            path: location.pathname,
+            landing: newSession ? location.pathname : undefined,
+            ts: now,
+            sawGuide: true,
+            ref: ref,
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "RentersDepositSaver", revisited: revisited }
+          });
+          var gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+          function trackInteraction(event) {
+            if (!event.isTrusted) return;
+            gestures.forEach(function (type) { window.removeEventListener(type, trackInteraction); });
+            try {
+              if (sessionStorage.getItem('db-int')) return;
+              var landing = sessionStorage.getItem('db-landing');
+              sessionStorage.setItem('db-int', '1');
+              sendMetric({ event: 'interact', path: location.pathname, ref: ref, landing: landing });
+            } catch (e) {}
+          }
+          gestures.forEach(function (type) { window.addEventListener(type, trackInteraction, { passive: true }); });
+        })();
+      </script>
+
+      <div class="section-rule"><span>Related situations</span></div>
+      <div class="related-grid">
+        <a href="/guides/home/what-to-photograph-when-moving-into-a-rental" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">What to photograph when moving into a rental — the shot list that saves your deposit</div>
+        </a>
+        <a href="/guides/home/how-to-protect-your-security-deposit-before-you-even-move-in" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">How to protect your security deposit before you even move in</div>
+        </a>
+        <a href="/guides/home/how-to-write-a-move-in-condition-report" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">How to write a move-in condition report that actually holds up later</div>
+        </a>
+        <a href="/guides/home/apartment-move-in-checklist" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">Apartment move-in checklist and the five things that actually matter</div>
+        </a>
+        <a href="/guides/home/what-to-do-when-you-and-your-roommate-arent-speaking" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">roommate cold war</div>
+        </a>
+      </div>
+
+
+    </div>
+  </main>
+
+<section class="site-end" aria-label="Ideas and newsletter">
+    <div class="site-end-inner">
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128161; Missing something?</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Suggest a tool. We read every suggestion, and the best become new tools.</p>
+        <form class="site-end-form" id="db-idea-form">
+          <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
+          <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
+          <button id="db-idea-btn" type="submit">Send</button>
+        </form>
+        <p class="site-end-msg" id="db-idea-msg" role="status"></p>
+      </div>
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128238; Newsletter</p>
+        <p class="site-end-text"><strong>One useful tool a month</strong> &mdash; the one worth knowing about before life demands it.</p>
+        <form class="site-end-form" id="db-cap-form">
+          <label class="sr-only-se" for="db-cap-email">Email address</label>
+          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email">
+          <button id="db-cap-btn" type="submit">Subscribe</button>
+        </form>
+        <p class="site-end-msg" id="db-cap-msg" role="status"></p>
+      </div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    function wire(formId, btnId, msgId, label, send, done, resetAfter){
+      var f=document.getElementById(formId); if(!f) return;
+      f.addEventListener('submit', function(e){
+        e.preventDefault();
+        var btn=document.getElementById(btnId), msg=document.getElementById(msgId);
+        btn.disabled=true; btn.textContent='Sending\u2026';
+        send().then(function(x){
+          if(x.ok){
+            f.style.display='none'; msg.textContent=done(x.d);
+            if(resetAfter) setTimeout(function(){ f.reset(); f.style.display=''; msg.textContent=''; btn.disabled=false; btn.textContent=label; }, resetAfter);
+          }
+          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; }
+        }).catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; });
+      });
+    }
+    function post(url, body){
+      return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok&&(d.ok!==false),d:d};});});
+    }
+    wire('db-idea-form','db-idea-btn','db-idea-msg','Send',
+      function(){ return post('/api/idea',{problem:document.getElementById('db-idea-input').value.trim(),source:'site-end',path:location.pathname}); },
+      function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; }, 6000);
+    wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
+      function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
+      function(d){ return d&&d.already ? 'You\u2019re already on the list. Bruce admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });
+  })();
+  </script>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">
+        <img src="/pBrain-r.png" alt="" height="64">
+        <span class="site-footer-word">Deft<span>Brain</span></span>
+      </a>
+      <div class="site-footer-end">
+        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://www.pinterest.com/DeftBrainHQ/" target="_blank" rel="me noopener noreferrer">Pinterest</a><a href="/about#link-to-deftbrain">Link to DeftBrain</a><a href="mailto:hello@deftbrain.com">Contact</a></nav>
+        <span class="site-footer-dot" aria-hidden="true">·</span>
+        <span>© 2026 DeftBrain · deftbrain.com</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

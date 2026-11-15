@@ -24,6 +24,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { stripLinks } = require('../src/utils/inlineLinks');
 
 const ROOT = path.join(__dirname, '..');
 const FONTS_DIR = path.join(__dirname, 'fonts');
@@ -128,7 +129,7 @@ const C = { paper: '#f7f4ef', ink: '#1a1816', ink2: '#4a4640', muted: '#6b6760',
 const el = (type, style, children) => ({ type, props: { style: { display: 'flex', ...style }, children } });
 
 function firstSentences(text, max) {
-  const clean = String(text || '').replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, '$1').replace(/\s+/g, ' ').trim();
+  const clean = stripLinks(String(text || '')).replace(/\s+/g, ' ').trim();
   if (clean.length <= max) return clean;
   const parts = clean.match(/[^.!?]+[.!?]+/g) || [clean];
   let out = '';

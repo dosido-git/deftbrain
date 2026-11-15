@@ -24,6 +24,15 @@ import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import { PROTOTYPE_TOOLS, schemeStyle } from '../data/toolSchemes';
 import Caret from './Caret';
+import { linkParts } from '../utils/inlineLinks';
+
+// [label](/path) and [label](https://...) links in answers — the same parser
+// the static pages use (src/utils/inlineLinks.js), so both show the same links.
+function withLinks(text, linkClass) {
+  return linkParts(text).map((p, i) => (p.text !== undefined ? p.text : (
+    <a key={i} href={p.href} className={linkClass} {...(p.external ? { target: '_blank', rel: 'noopener' } : {})}>{p.label}</a>
+  )));
+}
 
 export default function ToolFaq() {
   const { pathname } = useLocation();
@@ -44,6 +53,7 @@ export default function ToolFaq() {
     a: isDark ? 'text-zinc-400' : 'text-[#4b5563]',
     border: isDark ? 'border-zinc-800' : 'border-[#e7e2d9]',
   };
+  const linkStyle = PROTOTYPE_TOOLS.has(seg) ? 'text-[var(--sc-accent)] hover:text-[var(--sc-strong)] underline underline-offset-2' : isDark ? 'text-[#7fb3e0] hover:text-[#a9cdef] underline underline-offset-2' : 'text-[#142a43] hover:text-[#142a43] underline underline-offset-2';
 
   return (
     PROTOTYPE_TOOLS.has(seg) ? (
@@ -57,7 +67,7 @@ export default function ToolFaq() {
             {faq.map((f, i) => (
               <div key={i}>
                 <dt className="text-sm font-bold text-[var(--sc-strong)] mb-1">{f.q}</dt>
-                <dd className={`text-sm leading-relaxed ${c.a}`}>{f.a}</dd>
+                <dd className={`text-sm leading-relaxed ${c.a}`}>{withLinks(f.a, linkStyle)}</dd>
               </div>
             ))}
           </dl>
@@ -73,7 +83,7 @@ export default function ToolFaq() {
           {faq.map((f, i) => (
             <div key={i}>
               <dt className={`text-sm font-bold ${c.q} mb-1`}>{f.q}</dt>
-              <dd className={`text-sm leading-relaxed ${c.a}`}>{f.a}</dd>
+              <dd className={`text-sm leading-relaxed ${c.a}`}>{withLinks(f.a, linkStyle)}</dd>
             </div>
           ))}
         </dl>

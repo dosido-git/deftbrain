@@ -27,6 +27,7 @@ const { getFooterHTML, getToolList, getSiteHeaderHTML } = require('../src/seo/ch
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 const { recordPageRevisit } = require('../src/utils/returnVisit');
+const { linksToHtml, stripLinks } = require('../src/utils/inlineLinks');
 // A guide's label and breadcrumb name its main tool category and link to that
 // hub (2026-10-24); its own URL keeps its folder.
 const { categoriesForGuide, hubSlugFor } = require('./lib/guideCategories');
@@ -174,14 +175,16 @@ function renderGuide(spec, siblings) {
 
   // JSON-LD steps — JSON.stringify handles quote/unicode escaping correctly
   const stepsJsonLd = spec.steps
-    .map(s => `      {"@type":"HowToStep","name":${jsonLd(s.name)},"text":${jsonLd(s.body.replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, '$1'))}}`)
+    .map(s => `      {"@type":"HowToStep","name":${jsonLd(s.name)},"text":${jsonLd(stripLinks(s.body))}}`)
     .join(',\n');
 
   // Body: steps with optional callout inserted after step N
-  // Inline links in step bodies and ledes (2026-10-05): [label](/path) —
-  // site-relative paths only. Text is escaped first, so nothing else becomes
-  // markup. stripLinks gives the plain text for JSON-LD and meta.
-  const rich = (t) => esc(t).replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, (m, label, href) => `<a href="${href}">${label}</a>`);
+  // Inline links in step bodies and ledes: [label](/path) for site pages,
+  // [label](https://...) for outside sites (new tab, rel="noopener"). Parsed
+  // by src/utils/inlineLinks.js, shared with the tool pages; every segment is
+  // escaped, so nothing else becomes markup. stripLinks gives the plain text
+  // for JSON-LD and meta.
+  const rich = (t) => linksToHtml(t, esc);
   // Authored step text may contain paragraphs and simple Markdown tables.
   // Escape every cell through rich(); raw HTML remains plain text.
   const stepBody = (body) => body.split(/\n\s*\n/).map(part => {

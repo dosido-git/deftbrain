@@ -55,6 +55,7 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png?v=2`;
 const TOOL_OG_SLUGS = require(path.join(ROOT, 'src', 'data', 'tool-og-slugs.json'));
 const NEXT_STEPS = require('../src/data/related-tool-next-steps.json');
 const { breadcrumbJsonLd } = require('./lib/breadcrumbJsonLd');
+const { linksToHtml } = require('../src/utils/inlineLinks');
 
 // ── Tools keep-list (SEO concentration, 2026-07) ──
 // Union of focus+keepers = the INDEXABLE tool set. Every other tool page stays
@@ -428,6 +429,16 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+// Inline [label](/path) and [label](https://...) links in FAQ answers come
+// from src/utils/inlineLinks.js, shared with ToolFaq.js and build-guides.js.
+// JSON-LD keeps them as <a> with absolute URLs (Google allows <a> in answers).
+function richText(str) {
+  return linksToHtml(str, escapeHtml, { style: 'color:#165b9a' });
+}
+function jsonLdText(str) {
+  return linksToHtml(str, x => x, { base: SITE_URL, newTab: false });
+}
+
 // Per-tool structured data. The CRA shell ships a single site-level
 // WebApplication block (correct for the homepage); without this, every tool
 // page would inherit that identical block and tell crawlers it's the same app.
@@ -475,7 +486,7 @@ function buildJsonLd({ id, title, description, faq }) {
       mainEntity: faq.map(f => ({
         '@type': 'Question',
         name: String(f.q),
-        acceptedAnswer: { '@type': 'Answer', text: String(f.a) },
+        acceptedAnswer: { '@type': 'Answer', text: jsonLdText(f.a) },
       })),
     };
     const faqJson = JSON.stringify(faqObj, null, 2).replace(/</g, '\\u003c');
@@ -639,7 +650,7 @@ function buildBodyContent({ title, tagline, description, guide, primer, faq, exa
   if (Array.isArray(faq) && faq.length) {
     const items = faq.map(f =>
       `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .3rem;color:#0f172a">${e(String(f.q))}</h3>`
-      + `<p style="line-height:1.6;margin:0">${e(String(f.a))}</p>`).join('');
+      + `<p style="line-height:1.6;margin:0">${richText(String(f.a))}</p>`).join('');
     out.push(`<h2 style="${H2}">Questions people ask</h2>${items}`);
   }
 
