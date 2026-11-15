@@ -628,6 +628,7 @@ h1            { animation-delay: .10s; }
 .answer-table { width: 100%; border-collapse: collapse; margin: 4px 0 20px; font-size: 14px; color: var(--ink2); }
 .answer-table th, .answer-table td { text-align: start; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .answer-table th { font-weight: 600; color: var(--ink); }
+.answer-table caption { caption-side: top; text-align: start; padding: 0 10px 8px; font-size: 13px; font-weight: 600; color: var(--ink2); }
 .step-body p a, .lede a { color: var(--deft-blue, #165b9a); text-decoration: underline; text-underline-offset: 2px; }
 :root[data-theme="dark"] .step-body p a, :root[data-theme="dark"] .lede a { color: #85afd6; }
 

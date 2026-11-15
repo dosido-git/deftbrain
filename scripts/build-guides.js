@@ -104,6 +104,12 @@ function validate(spec, source) {
   if (!/^[a-z0-9-]+$/.test(spec.category)) throw new Error(`${source}: category must be lowercase kebab-case`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(spec.published)) throw new Error(`${source}: published must be YYYY-MM-DD`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(spec.modified))  throw new Error(`${source}: modified must be YYYY-MM-DD`);
+  // answerTable.asOf (optional): the date the table's figures were last
+  // checked, shown as a caption so readers can judge how current it is.
+  if (spec.answerTable && spec.answerTable.asOf !== undefined &&
+      !/^\d{4}-\d{2}-\d{2}$/.test(spec.answerTable.asOf)) {
+    throw new Error(`${source}: answerTable.asOf must be YYYY-MM-DD`);
+  }
   if (!Array.isArray(spec.ledes) || spec.ledes.length < 1) {
     throw new Error(`${source}: must have ≥1 lede paragraph`);
   }
@@ -235,7 +241,7 @@ function renderGuide(spec, siblings) {
   const answerHtml = (spec.answerList && spec.answerList.length
     ? `      <ol class="answer-list">\n${spec.answerList.map(x => `        <li>${esc(x)}</li>`).join('\n')}\n      </ol>\n`
     : '') + (spec.answerTable && spec.answerTable.rows
-    ? `      <table class="answer-table">\n        <thead><tr>${spec.answerTable.head.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr></thead>\n        <tbody>\n${spec.answerTable.rows.map(r => `          <tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('\n')}\n        </tbody>\n      </table>\n`
+    ? `      <table class="answer-table">\n${spec.answerTable.asOf ? `        <caption>Current as of ${formatDate(spec.answerTable.asOf)}</caption>\n` : ''}        <thead><tr>${spec.answerTable.head.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr></thead>\n        <tbody>\n${spec.answerTable.rows.map(r => `          <tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('\n')}\n        </tbody>\n      </table>\n`
     : '');
   // Sources (2026-10-08, GEO pass): where a guide states a rule, a deadline or
   // a medical fact, the page names the primary source it relies on — the

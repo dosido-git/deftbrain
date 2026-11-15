@@ -6,8 +6,8 @@ module.exports = {
   "titleHtml": "Security Deposit Laws by State <em>(Limits, Return Deadlines and Interest, 2026)</em>",
   "shortTitle": "Security Deposit Laws by State",
   "navTitle": "Security deposit laws by state",
-  "description": "Security deposit limits, return deadlines and interest rules for all 50 states and DC, with the statute for each. Checked November 2026.",
-  "deck": "Each state sets its own security deposit rules. About 30 jurisdictions cap the deposit, usually at one or two months' rent. Return deadlines run from 14 to 60 days after move-out, and 13 jurisdictions require interest in some cases. The table covers all 50 states and DC.",
+  "description": "Security deposit limits, return deadlines and interest rules for all 50 states, DC and Puerto Rico, with the law for each. Current as of November 14, 2026.",
+  "deck": "Each state sets its own security deposit rules. About 30 jurisdictions cap the deposit, usually at one or two months' rent. Return deadlines run from 14 to 60 days after move-out, and 13 jurisdictions require interest in some cases. The table covers all 50 states, DC and Puerto Rico.",
   "answerList": [
     "Deposit cap: about 30 jurisdictions cap it, usually at 1 or 2 months' rent.",
     "Return deadline: 14 to 60 days after move-out; 30 days is most common.",
@@ -298,6 +298,13 @@ module.exports = {
         "68 P.S. §§ 250.511a, 250.511b"
       ],
       [
+        "Puerto Rico",
+        "No cap",
+        "No fixed deadline (set by the lease)",
+        "No",
+        "P.R. Civil Code (Act 55-2020)"
+      ],
+      [
         "Rhode Island",
         "1 month",
         "20 days",
@@ -381,10 +388,11 @@ module.exports = {
         "No",
         "Wyo. Stat. § 1-21-1208"
       ]
-    ]
+    ],
+    "asOf": "2026-11-14"
   },
   "ledes": [
-    "The table above gives each state's limit on the deposit, the deadline for returning it, and whether the landlord owes interest, with the statute it comes from. Figures were checked against state statutes and official state sources in November 2026. Most deadlines start when the tenancy ends and you've moved out, and several only start once the landlord has your forwarding address in writing.",
+    "The table above gives each state's limit on the deposit, the deadline for returning it, and whether the landlord owes interest, with the law it comes from. Figures were checked against state statutes and official sources and are current as of November 14, 2026. Most deadlines start when the tenancy ends and you've moved out, and several only start once the landlord has your forwarding address in writing.",
     "Cities and counties can add their own rules, and leases signed before a law changed may follow the old rule. Laws change, so check the statute for your state before you rely on a number. This is general information, not legal advice."
   ],
   "steps": [
@@ -394,7 +402,7 @@ module.exports = {
     },
     {
       "name": "How long does a landlord have to return a security deposit?",
-      "body": "Deadlines range from 14 days (New York, Hawaii, Nebraska, Vermont, and Alaska in some cases) to 60 days (Alabama, Arkansas and West Virginia). Thirty days is the most common. By the deadline, the landlord must usually either return the full deposit or send an itemized list of deductions with any balance.\n\nWatch when the clock starts. In Texas, Iowa, South Dakota and Wyoming, among others, the deadline runs from when the landlord has your forwarding address, so give it in writing on the day you move out. Some deadlines changed recently: Washington went from 21 to 30 days in July 2023, Connecticut from 30 to 21 days in October 2023, and South Dakota from 14 to 21 days in July 2026. Kentucky and Tennessee set no fixed number of days."
+      "body": "Deadlines range from 14 days (New York, Hawaii, Nebraska, Vermont, and Alaska in some cases) to 60 days (Alabama, Arkansas and West Virginia). Thirty days is the most common. By the deadline, the landlord must usually either return the full deposit or send an itemized list of deductions with any balance.\n\nWatch when the clock starts. In Texas, Iowa, South Dakota and Wyoming, among others, the deadline runs from when the landlord has your forwarding address, so give it in writing on the day you move out. Some deadlines changed recently: Washington went from 21 to 30 days in July 2023, Connecticut from 30 to 21 days in October 2023, and South Dakota from 14 to 21 days in July 2026. Kentucky and Tennessee set no fixed number of days. Puerto Rico has no deposit statute at all: under its 2020 Civil Code, the lease sets the amount and the return terms, and a landlord must return the deposit if the tenant has met the lease."
     },
     {
       "name": "Which states require interest on security deposits?",
