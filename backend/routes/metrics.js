@@ -136,6 +136,9 @@ const METRIC_LIMITS = { perMinute: 60, perDay: 5000 };
 // Sink moved to lib/metricsSink so middleware can write to it too (the
 // completeness observer has no business importing a route module).
 
+// web-vitals metric → Google's "good" threshold (ms; CLS unitless).
+const WEB_VITALS = { FCP: 1800, LCP: 2500, CLS: 0.1, TTFB: 800, FID: 100 };
+
 // Funnel events. Body: { event, ...props } (path/ts added client-side).
 router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   if (isExcluded(req)) return res.status(204).end();
@@ -166,6 +169,21 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
         ...(event === 'tool_session_run' ? { viewedAt: value } : { ms: value }),
         ...(props.revisited === true ? { revisited: true } : {}),
       } });
+    }
+    return res.status(204).end();
+  }
+  // Real-visitor load times (web-vitals, once per page load). Name and value
+  // are whitelisted and bounded: this endpoint is public. Device is derived
+  // from the UA like the session labels; the UA itself is not stored.
+  if (event === 'web_vital') {
+    const name = props?.name, value = props?.value;
+    if (WEB_VITALS[name] && typeof value === 'number' && Number.isFinite(value)
+        && value >= 0 && value <= (name === 'CLS' ? 100 : 120_000)) {
+      logMetric('event', {
+        event, path: metricPath(path),
+        props: { name, value: name === 'CLS' ? Math.round(value * 1000) / 1000 : Math.round(value) },
+        device: deviceInfo(req.headers['user-agent']).device,
+      });
     }
     return res.status(204).end();
   }
@@ -1496,6 +1514,26 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const osRows = Object.entries(osCounts).sort((a, b) => b[1] - a[1]).map(([k, n]) => barRow(k, n, osMax, pct(n, deviceKnown))).join('');
     const browserRows = Object.entries(browserCounts).sort((a, b) => b[1] - a[1]).map(([k, n]) => barRow(k, n, browserMax, pct(n, deviceKnown))).join('');
 
+    // ── Real-visitor load times: p75 per metric and device (Google judges a
+    // page by its 75th percentile). Path decides page type. ──
+    const pageType = (path) => !path ? 'other' : path === '/' ? 'home' : path.startsWith('/guides') ? 'guide' : metricTool(path) ? 'tool' : 'other';
+    const quantile = (xs, q) => { const a = [...xs].sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; };
+    const vitalGroups = {};
+    for (const e of events) {
+      if (e.event !== 'web_vital' || !e.props || !WEB_VITALS[e.props.name]) continue;
+      const k = `${e.props.name}|${e.device || 'Other'}|${pageType(e.path)}`;
+      (vitalGroups[k] = vitalGroups[k] || []).push(e.props.value);
+    }
+    const fmtVital = (name, v) => name === 'CLS' ? v.toFixed(2) : v >= 1000 ? (v / 1000).toFixed(1) + ' s' : Math.round(v) + ' ms';
+    const vitalRows = Object.entries(vitalGroups)
+      .sort(([a], [b]) => Object.keys(WEB_VITALS).indexOf(a.split('|')[0]) - Object.keys(WEB_VITALS).indexOf(b.split('|')[0]) || a.localeCompare(b))
+      .map(([k, xs]) => {
+        const [name, device, type] = k.split('|');
+        const p75 = quantile(xs, 0.75);
+        const good = p75 <= WEB_VITALS[name];
+        return `<tr><td>${escH(name)}</td><td>${escH(device)}</td><td>${escH(type)}</td><td style="color:${good ? '#1a7f37' : '#b42318'};font-weight:600">${escH(fmtVital(name, p75))}</td><td>${escH(fmtVital(name, quantile(xs, 0.5)))}</td><td>${xs.length}</td></tr>`;
+      }).join('');
+
     const ideaRows = ideas.slice(-50).reverse().map(r =>
       `<tr><td>${escH(r.problem || '')}</td><td>${escH(r.source || '')}</td><td>${escH(r.query || '')}</td><td style="white-space:nowrap">${escH((r.at || '').slice(0, 10))}</td><td><button type="button" class="idea-dismiss" data-at="${escH(r.at || '')}" title="Hide this idea from the report">Dismiss</button></td></tr>`
     ).join('');
@@ -1699,6 +1737,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">OS</h3><table>${osRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
       <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">Browser</h3><table>${browserRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
     </div>
+    <h2>Load times (real visitors)</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Measured in visitors' browsers, once per page load (recorded since 2026-11-16). The 75th percentile is what Google judges; green = within its &ldquo;good&rdquo; line (first paint 1.8 s, largest paint 2.5 s, server response 0.8 s, first input 100 ms, layout shift 0.1). Small counts swing widely.</p>
+    <table><tr><th>metric</th><th>device</th><th>page</th><th>p75</th><th>median</th><th>n</th></tr>${vitalRows || '<tr><td colspan=6 style="color:#888">No data yet.</td></tr>'}</table>
     <h2 class="sec">5 · Do they come back</h2>
     <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
