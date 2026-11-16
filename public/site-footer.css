@@ -8,7 +8,7 @@
    Footer links come from src/data/siteNav.json. Colors follow
    html[data-theme], set the same way on both kinds of page. */
 
-.site-end { --se-bg: #f2ece1; --se-line: #e8e1d5; --se-head: #1a2e44; --se-body: #5a544a; --se-accent: #9a6420;
+.site-end { --se-bg: #f2ece1; --se-line: #e8e1d5; --se-head: #1a2e44; --se-body: #5a544a; --se-accent: #925f1e; /* 4.6:1 on --se-bg for the 11px kicker */
   --se-input-bg: #ffffff; --se-input-line: #d8d0c2; --se-input-text: #1a2e44; --se-btn: #1a2e44; --se-btn-text: #ffffff; --se-btn-hover: #165b9a;
   background: var(--se-bg); border-top: 1px solid var(--se-line);
   font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; }
@@ -91,7 +91,7 @@
    (max-w-7xl, brand left, links · copyright right, stacked and centered
    below 640px). `footer.site-footer` beats guide.css's generic footer rule. */
 footer.site-footer { display: block; padding: 0; margin: 0; }
-.site-footer { --sf-bg: #faf8f5; --sf-line: #e8e1d5; --sf-text: #5a544a; --sf-link: #165b9a; --sf-link-hover: #1a2e44; --sf-deft: #165b9a; --sf-brain: #c8872e;
+.site-footer { --sf-bg: #faf8f5; --sf-line: #e8e1d5; --sf-text: #5a544a; --sf-link: #165b9a; --sf-link-hover: #1a2e44; --sf-deft: #165b9a; --sf-brain: #986723; /* 4.6:1 on --sf-bg; brand #c8872e is 2.9:1 at 14px */
   background: var(--sf-bg); border-top: 1px solid var(--sf-line);
   font-family: Inter, -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; }
 :root[data-theme="dark"] .site-footer { --sf-bg: #18181b; --sf-line: #27272a; --sf-text: #a1a1aa; --sf-link: #d4d4d8; --sf-link-hover: #f4f4f5; --sf-deft: #e4e4e7; --sf-brain: #fb923c; }
