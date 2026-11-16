@@ -1,19 +1,19 @@
 {
  "homepage": {
-  "hash": "a577bdaba7a6921403094ff9aea5c6aad26a89ac",
-  "lastmod": "2026-11-15"
+  "hash": "17e16a75dff9d7f7c477498bc5d1f6b79d7faec7",
+  "lastmod": "2026-11-16"
  },
  "static:about": {
-  "hash": "9785573a372132787ceb0dcd581bac661007b096",
-  "lastmod": "2026-11-14"
+  "hash": "a9cc621debfbc8d21b032c82bcb40e4b225b6709",
+  "lastmod": "2026-11-16"
  },
  "static:privacy": {
-  "hash": "083535bec9d6fbe872adc9e551d61469491e4255",
-  "lastmod": "2026-11-14"
+  "hash": "a7828cd32e51386ef7f9d8ee1969407fa178f4f1",
+  "lastmod": "2026-11-16"
  },
  "static:terms": {
-  "hash": "9a9870c99d529d4280baec3322b92b66a412573e",
-  "lastmod": "2026-11-14"
+  "hash": "29faf75f6e65189012430302d5032ec34bfd6b21",
+  "lastmod": "2026-11-16"
  },
  "tool:AlternatePath": {
   "hash": "aa13682709223dde29ef3bd8af68bdce61480a87",
@@ -584,7 +584,11 @@
   "lastmod": "2026-10-27"
  },
  "static:listings": {
-  "hash": "222e3d6c6886ff5e01171f8cfb9cc7b56127808b",
+  "hash": "671def86b6d05ec012fdff779e247b4e591b0fe6",
+  "lastmod": "2026-11-16"
+ },
+ "static:contact": {
+  "hash": "48f2b20ee27b136603845190d3bd01add4532d66",
   "lastmod": "2026-11-16"
  }
 }

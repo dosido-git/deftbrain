@@ -103,7 +103,7 @@ function lastmodFor(key, hash) {
 
 // Static pages: hash their source files so their dates only move on real edits.
 const staticLastmod = {};
-for (const p of ['about', 'listings', 'privacy', 'terms']) {
+for (const p of ['about', 'contact', 'listings', 'privacy', 'terms']) {
   const f = path.join(__dirname, '..', 'public', `${p}.html`);
   staticLastmod[p] = fs.existsSync(f) ? lastmodFor(`static:${p}`, sha(fs.readFileSync(f, 'utf-8'))) : TODAY;
 }
@@ -225,7 +225,7 @@ const STATIC_PAGES = [
   { loc: `${SITE_URL}/terms`,   changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.terms },
   { loc: `${SITE_URL}/tools`,   changefreq: 'weekly',  priority: '0.6', lastmod: staticLastmod.tools },
   { loc: `${SITE_URL}/organizations`, changefreq: 'monthly', priority: '0.5', lastmod: staticLastmod.organizations },
-  // Future: { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3' },
+  { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.contact },
 ];
 
 // Tool category pages (/tools/{slug}) — same priority tier as the guide hubs

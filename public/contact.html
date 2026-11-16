@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) — skipped for owner/dev traffic.
+       Canonical source: scripts/lib/gaSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var op = params.get('operator');
+        if (op === '1') localStorage.setItem('db-operator', '1');
+        else if (op === '0') localStorage.removeItem('db-operator');
+        if (localStorage.getItem('db-operator') === '1') return;
+      } catch (e) {}
+      if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
+
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6';
+      document.head.appendChild(s);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-0MLY19QEW6');
+    })();
+  </script>
+  <!-- Theme — the visitor's saved light/dark choice, before first paint.
+       Canonical source: scripts/lib/themeSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      var root = document.documentElement, theme;
+      try { theme = localStorage.getItem('app-theme'); } catch (e) {}
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', theme);
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-theme-toggle]');
+        if (!btn) return;
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('app-theme', next); } catch (e) {}
+      });
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Contact | DeftBrain</title>
+  <meta name="description" content="How to reach DeftBrain: email for questions, feedback, privacy requests, and organizations. A person reads every message.">
+  <link rel="canonical" href="https://deftbrain.com/contact">
+  <link rel="icon" href="/favicon.ico?v=2">
+
+
+
+  <!-- Self-hosted fonts (no third-party request) — see public/fonts/ -->
+  <link rel="stylesheet" href="/fonts/playfair-display/playfair-display.css">
+  <link rel="stylesheet" href="/fonts/dm-sans/dm-sans.css">
+
+  <link rel="stylesheet" href="/guides/guide.css">
+
+  <style>
+    body { display: flex; flex-direction: column; }
+    main { flex: 1; }
+    .prose h1 { font-family: Georgia, serif; font-size: 1.5rem; font-weight: 400; line-height: 1.25; margin: 0 0 1rem; }
+    main .container { max-width: 740px; margin-inline: auto; padding-block: 24px 48px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-header-brand" aria-label="DeftBrain home">
+        <img src="/pBrain-r.png" alt="" class="sh-brand-img" height="64">
+        <span class="sh-brand-word">
+          <span class="sh-brand-text">Deft<span>Brain</span></span>
+          <span class="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+        </span>
+      </a>
+      <div class="site-header-end">
+        <nav class="site-header-nav" aria-label="Primary"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a></nav>
+        <div class="site-header-controls">
+          <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+        </div>
+        <details class="site-header-menu">
+          <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a>
+            <a href="/#home-problem-search">Find guidance</a>
+            <div class="site-header-menu-settings">
+              <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode">Appearance</button>
+            </div>
+          </nav>
+        </details>
+      </div>
+    </div>
+    <div class="site-header-search"><form class="ds-form" role="search" data-deft-search data-tools="4" data-guides="4" action="/tools">
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
+      <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
+    </form>
+    <script src="/search/deft-search.js" defer></script></div>
+  </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
+  <main>
+    <div class="container prose">
+      <h1>Contact</h1>
+      <p>DeftBrain is run by a small team, and a person reads every message.</p>
+      <ul style="padding-inline-start:1.25rem;line-height:1.7">
+        <li><strong>Questions, feedback, or something that didn’t work:</strong> <a href="mailto:hello@deftbrain.com">hello@deftbrain.com</a></li>
+        <li><strong>Privacy requests:</strong> <a href="mailto:privacy@deftbrain.com">privacy@deftbrain.com</a> (see the <a href="/privacy">privacy policy</a>)</li>
+        <li><strong>Using DeftBrain at your organization:</strong> <a href="mailto:Org@deftbrain.com">Org@deftbrain.com</a> (see <a href="/organizations">DeftBrain for organizations</a>)</li>
+      </ul>
+      <p>If you’re writing about a result, include the tool’s name and what you entered, so we can see what happened.</p>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">
+        <img src="/pBrain-r.png" alt="" height="64">
+        <span class="site-footer-word">Deft<span>Brain</span></span>
+      </a>
+      <div class="site-footer-end">
+        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://www.pinterest.com/DeftBrainHQ/" target="_blank" rel="me noopener noreferrer">Pinterest</a><a href="/about#link-to-deftbrain">Link to DeftBrain</a><a href="/contact">Contact</a></nav>
+        <span class="site-footer-dot" aria-hidden="true">·</span>
+        <span>© 2026 DeftBrain · deftbrain.com</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

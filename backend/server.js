@@ -9,6 +9,7 @@ const { rateLimit, DEFAULT_LIMITS, GAME_LIMITS, POLL_LIMITS } = require('./lib/r
 const { observeJson } = require('./lib/completeness');
 
 const app = express();
+app.disable('x-powered-by'); // don't advertise the stack
 const PORT = process.env.PORT || 3001;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
@@ -177,6 +178,7 @@ if (IS_PRODUCTION) {
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     next();
   });
 }

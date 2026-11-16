@@ -351,6 +351,20 @@ function getToolHubsHTML(guides) {
 // visual consistency. Links a tool page to a few of its own guides so authority
 // flows from the (higher-authority) tool pages into the guides cluster. Capped at
 // `n` and only rendered when the tool actually has guides, to keep the footer tidy.
+// A tool with no related guides/tools/hubs (DriveHome, ToolFinder) otherwise
+// prerenders with zero links — a crawl dead end. Point it at its category
+// page(s) and /tools instead.
+let CATEGORY_SLUGS = null;
+function getCategoryFallbackHTML(tool) {
+  if (!CATEGORY_SLUGS) CATEGORY_SLUGS = new Map(loadCategoryMeta().map(c => [c.name, c.slug]));
+  const links = tool.categories
+    .filter(name => CATEGORY_SLUGS.has(name))
+    .map(name => `<a href="/tools/${CATEGORY_SLUGS.get(name)}" style="color:#165b9a;text-decoration:none;font-weight:500">More ${escapeHtml(name)} tools</a>`)
+    .concat(`<a href="/tools" style="color:#165b9a;text-decoration:none;font-weight:500">All tools</a>`)
+    .join(' · ');
+  return `<nav class="db-related" aria-label="More tools" style="margin:0 0 20px">${links}</nav>`;
+}
+
 function getRelatedGuidesHTML(guides, n = 4) {
   if (!guides || !guides.length) return '';
   const links = guides.slice(0, n)
@@ -654,10 +668,10 @@ function buildBodyContent({ title, tagline, description, guide, primer, faq, exa
     out.push(`<h2 style="${H2}">Questions people ask</h2>${items}`);
   }
 
-  return `<div class="seo-prerender" style="max-width:760px;margin:0 auto;padding:2rem 1.25rem;`
+  return `<main class="seo-prerender" style="max-width:760px;margin:0 auto;padding:2rem 1.25rem;`
     + `font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1e293b">\n  `
     + out.join('\n  ')
-    + `\n</div>`;
+    + `\n</main>`;
 }
 
 // Inject the static content INTO #root (React replaces it on mount — see above).
@@ -757,7 +771,7 @@ async function main() {
       const relatedBlocks = getRelatedGuidesHTML(guidesByTool[tool.id])
         + getRelatedHTML(relatedTools(tool, tools))
         + getToolHubsHTML(guidesByTool[tool.id]);
-      const html = stripToolIndex(injectBody(injectMeta(template, tool), tool, relatedBlocks));
+      const html = stripToolIndex(injectBody(injectMeta(template, tool), tool, relatedBlocks || getCategoryFallbackHTML(tool)));
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
@@ -773,7 +787,7 @@ async function main() {
   // every tool is one more link away (2026-10-04).
   try {
     const homepageHtml = stripToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${HOME_H1(`${Math.floor(tools.length / 10) * 10}+`)}${getHomeStaticHTML(loadCategoryMeta(), tools)}</div>`));
+      template.replace('<div id="root"></div>', `<div id="root"><main>${HOME_H1(`${Math.floor(tools.length / 10) * 10}+`)}${getHomeStaticHTML(loadCategoryMeta(), tools)}</main><footer><a href="/about">About</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></footer></div>`));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage)');
     succeeded++;
