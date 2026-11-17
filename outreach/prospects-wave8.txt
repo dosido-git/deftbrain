@@ -1,0 +1,36 @@
+# Wave 8 (2026-11-16): pages linking to the retired California Tenants guide (dca.ca.gov/publications/landlordbook/)
+# Seed: sec-deposit.shtml
+https://www.sdcba.org/?pg=Landlord
+https://csoproperties.com/tenants/
+https://www.mesaproperties.net/blog/how-to-make-sure-you-get-100-of-your-rental-deposit-back-when-moving-out-of-your-rental
+https://www.reluctantlandlord.net/planning-a-move-out-in-california/
+https://mendescompany.com/san-diego-security-deposit-rules-what-owners-get-wrong/
+https://www.sanfranciscoinjurylawyerblog.com/california-security-deposit-laws/
+http://www.landlord.com/security-deposit-law-guide.htm
+https://home.howstuffworks.com/real-estate/buying-home/landlord.htm
+# Seed: checklist.pdf
+https://www.findlaw.com/state/california-law/california-security-deposit-limits.html
+# Seed: catenant.pdf
+https://www.oaklandca.gov/files/assets/city/v/1/housing-comm-dev/documents/rap/packet_tenant-packet_en_8.1.pdf
+http://m.sfsheriff.com/faqs.html
+https://goodmigrations.com/city-guides/los-angeles/housing/
+https://www.findlaw.com/state/california-law/california-leases-and-rental-agreements-laws.html
+https://www.olsenlawapc.com/business-law/california-landlord-tenant-law/
+https://www.fairhousingsantabarbara.com/legal-community-goverment-resources
+https://solanobar.org/resources/
+https://www.oxy.edu/student-life/rehs/living-campus/signing-lease-your-rights
+https://thestudentsublet.com/blog/student-housing-san-diego-guide
+https://real-estate.laws.com/california-landlord-tenant-law
+# Seed: index.shtml
+https://www.fresno.gov/planning/housing-community-development/housing-services/
+https://managecasa.com/articles/california-landlord-tenant-laws
+https://www.biola.edu/ochs/landlord
+https://www.turnoverla.com/guides/normal-wear-and-tear-california
+http://www.bizieladie.com/self-help
+https://alanhorwitzlaw.com/resources
+https://www.hlawrealty.com/free-legal-resources
+https://www.sigrentals.com/helpful-links
+https://www.awadlawyers.com/llp/links-awad-lawyers.php
+https://www.pgalawfirm.com/legal-information-court-websites-good-links/
+https://rhc-pm.com/tenants/
+https://uph.managebuilding.com/Resident/public/custom/23
