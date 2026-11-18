@@ -44,6 +44,7 @@ DeftBrain has:
 DeftBrain runs a small home-made analytics system. The goal is narrow: seeing which tools get used and completed. We record the following events anonymously. No name, account or identifying information is attached to any of them:
 
 - That a page loaded, a tool ran, and whether it finished or errored.
+- Once per visit, that someone clicked, tapped, typed, scrolled or kept the page open for 15 seconds—so we can tell people apart from automated visitors. Browsers that report they are automated send nothing.
 - Which section of a long page someone scrolled to, and which of several result variants (if a tool offers more than one) was opened.
 - A coarse "have I been here before" flag and a rough recency bucket (new, within a week, within a month, longer)—derived from a timestamp your browser already holds, not from anything we assign you.
 - An approximate location—city, region, country—looked up from your IP address at the moment of the request, using a lookup table stored on our own server (no call to any outside service). The IP address itself is used for that one moment, to filter out bots and known cloud-hosting traffic in addition to the location lookup, and then discarded. We do not store your IP address.
