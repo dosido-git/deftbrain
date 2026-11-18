@@ -317,6 +317,12 @@
           try {
             if (localStorage.getItem('db-operator') === '1') return;
           } catch (e) { /* storage blocked — still send, just without context */ }
+          // Scripted browsers: twin of isAutomated() in src/utils/analytics.js.
+          try {
+            if (navigator.webdriver === true
+              || (Array.isArray(navigator.languages) && navigator.languages.length === 0)
+              || !window.screen || screen.width === 0 || screen.height === 0) return;
+          } catch (e) {}
           var now = Date.now(), first = null, returning = false, bucket = 'new';
           var newSession = false, ref, lang;
           try {
@@ -325,7 +331,11 @@
             if (!first) localStorage.setItem('db-first-seen', String(now));
             var days = first ? Math.floor((now - first) / 86400000) : 0;
             bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
-            if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
+            if (!sessionStorage.getItem('db-sess')) {
+              sessionStorage.setItem('db-sess', '1');
+              if (returning) sessionStorage.setItem('db-returning', '1');
+              newSession = true;
+            }
             if (newSession) {
               sessionStorage.setItem('db-landing', location.pathname);
               var q = new URLSearchParams(location.search);
@@ -400,6 +410,8 @@
               if (e.button === 1) trackToolClick();
             });
           }
+          var human;
+          try { human = sessionStorage.getItem('db-int') === '1' || undefined; } catch (e) {}
           sendMetric({
             event: 'page_view',
             path: location.pathname,
@@ -407,20 +419,41 @@
             ts: now,
             sawGuide: true,
             ref: ref,
-            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "NameStorm", revisited: revisited }
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "NameStorm", revisited: revisited, human: human }
           });
+          // A person: first gesture, or 15s of the page being visible (twin of
+          // armInteractSignal in src/utils/analytics.js).
           var gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
-          function trackInteraction(event) {
-            if (!event.isTrusted) return;
+          var visibleMs = 0, since = document.visibilityState === 'visible' ? Date.now() : 0, stayTimer;
+          function markHuman(how) {
             gestures.forEach(function (type) { window.removeEventListener(type, trackInteraction); });
+            document.removeEventListener('visibilitychange', onVisibility);
+            clearTimeout(stayTimer);
             try {
               if (sessionStorage.getItem('db-int')) return;
               var landing = sessionStorage.getItem('db-landing');
+              var sessReturning = sessionStorage.getItem('db-returning') === '1';
               sessionStorage.setItem('db-int', '1');
-              sendMetric({ event: 'interact', path: location.pathname, ref: ref, landing: landing });
+              sendMetric({ event: 'interact', path: location.pathname, ref: ref, landing: landing,
+                props: { how: how, returning: sessReturning, bucket: sessReturning ? bucket : 'new' } });
             } catch (e) {}
           }
+          function trackInteraction(event) {
+            if (!event.isTrusted) return;
+            markHuman('gesture');
+          }
+          function scheduleStay() {
+            clearTimeout(stayTimer);
+            stayTimer = setTimeout(function () { markHuman('stay'); }, Math.max(0, 15000 - visibleMs));
+          }
+          function onVisibility() {
+            if (document.visibilityState === 'visible') { since = Date.now(); scheduleStay(); }
+            else { if (since) visibleMs += Date.now() - since; since = 0; clearTimeout(stayTimer); }
+          }
+          try { if (sessionStorage.getItem('db-int')) return; } catch (e) {}
           gestures.forEach(function (type) { window.addEventListener(type, trackInteraction, { passive: true }); });
+          document.addEventListener('visibilitychange', onVisibility);
+          if (since) scheduleStay();
         })();
       </script>
 

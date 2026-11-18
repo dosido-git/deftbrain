@@ -40,7 +40,11 @@ function visitContext() {
     const bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
     let newSession = false;
     try {
-      if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
+      if (!sessionStorage.getItem('db-sess')) {
+        sessionStorage.setItem('db-sess', '1');
+        if (returning) sessionStorage.setItem('db-returning', '1');
+        newSession = true;
+      }
     } catch (_) {}
     let ref;
     if (newSession) {
@@ -93,8 +97,19 @@ function isOperator() {
   try { return localStorage.getItem('db-operator') === '1'; } catch (_) { return false; }
 }
 
+// Scripted browsers announce themselves: webdriver set, no languages, or a
+// zero-size screen. Real visitors never match, so their beacons are dropped
+// outright (2026-11-18). Twin of the check in scripts/build-guides.js.
+function isAutomated() {
+  try {
+    return navigator.webdriver === true
+      || (Array.isArray(navigator.languages) && navigator.languages.length === 0)
+      || !window.screen || window.screen.width === 0 || window.screen.height === 0;
+  } catch (_) { return false; }
+}
+
 function send(payload) {
-  if (isOperator()) return;
+  if (isOperator() || isAutomated()) return;
   try {
     const body = JSON.stringify({
       ...sessionContext(),
@@ -328,7 +343,9 @@ function pageView() {
       }
     } catch (_) {}
   }
-  track('page_view', { ...visit, ...(from ? { from } : {}), toolViewedAt, revisited });
+  let human;
+  try { human = sessionStorage.getItem('db-int') === '1' || undefined; } catch (_) {}
+  track('page_view', { ...visit, ...(from ? { from } : {}), toolViewedAt, revisited, human });
   trackSecondTool(p);
   if (rescanSections) rescanSections();
 }
@@ -410,20 +427,43 @@ export function resetVariants() {
 // headless bots with browser UAs, prefetches, link-preview renderers — never
 // send it, so "interactive sessions" on the dashboard ≈ sessions with a human
 // behind them. Behavioral, so it catches what UA and IP filters can't. ──
+// Since 2026-11-18 it also fires after STAY_MS of the page being visible, so a
+// person who reads without touching anything counts; bots rarely wait that long.
+// It carries returning/bucket so the report can count returning PEOPLE, and
+// every later page_view carries human:true so views can be counted the same way.
+const STAY_MS = 15000;
 function armInteractSignal() {
   try {
     if (sessionStorage.getItem('db-int')) return;
   } catch (_) { return; }
-  const fire = () => {
+  const gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+  let visibleMs = 0, since = document.visibilityState === 'visible' ? Date.now() : 0, timer;
+  const fire = (how) => {
     try {
       if (sessionStorage.getItem('db-int')) return;
       sessionStorage.setItem('db-int', '1');
     } catch (_) { return; }
-    ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(t => window.removeEventListener(t, fire));
-    track('interact');
+    gestures.forEach(t => window.removeEventListener(t, onGesture));
+    document.removeEventListener('visibilitychange', onVisibility);
+    clearTimeout(timer);
+    let returning, bucket;
+    try {
+      const first = parseInt(localStorage.getItem('db-first-seen'), 10) || 0;
+      const days = first ? Math.floor((Date.now() - first) / 86400000) : 0;
+      returning = sessionStorage.getItem('db-returning') === '1';
+      bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
+    } catch (_) {}
+    track('interact', { how, returning, bucket });
   };
-  ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(t =>
-    window.addEventListener(t, fire, { passive: true }));
+  const onGesture = (e) => { if (!e || e.isTrusted !== false) fire('gesture'); };
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(() => fire('stay'), Math.max(0, STAY_MS - visibleMs)); };
+  const onVisibility = () => {
+    if (document.visibilityState === 'visible') { since = Date.now(); schedule(); }
+    else { if (since) visibleMs += Date.now() - since; since = 0; clearTimeout(timer); }
+  };
+  gestures.forEach(t => window.addEventListener(t, onGesture, { passive: true }));
+  document.addEventListener('visibilitychange', onVisibility);
+  if (since) schedule();
 }
 
 if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {

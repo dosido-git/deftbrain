@@ -139,6 +139,10 @@ const METRIC_LIMITS = { perMinute: 60, perDay: 5000 };
 // web-vitals metric → Google's "good" threshold (ms; CLS unitless).
 const WEB_VITALS = { FCP: 1800, LCP: 2500, CLS: 0.1, TTFB: 800, FID: 100 };
 
+// From this moment `interact` carries returning/bucket and page_views carry
+// props.human; before it, returning came from the session's first page_view.
+const HUMAN_SIGNAL_SINCE = '2026-11-18T18:00:00.000Z';
+
 // Funnel events. Body: { event, ...props } (path/ts added client-side).
 router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   if (isExcluded(req)) return res.status(204).end();
@@ -608,13 +612,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const ystStart = backDays(todayStart, 1);
     const todayISO = todayStart.toISOString();
     const ystSliceEndISO = new Date(ystStart.getTime() + elapsedMs).toISOString();
+    // A view by a likely person: one per interact (the page it fired on) plus
+    // every view flagged human after it. Same rule as the day-by-day ledger.
+    const isPersonView = e => e.event === 'interact' || (e.event === 'page_view' && !!(e.props && e.props.human));
     const countIn = (from, to, pred) => allRows.filter(r => r.kind === 'event' && (r.at || '') >= from && (r.at || '') < to && pred(r)).length;
     const todaySoFar = {
-      views: countIn(todayISO, now.toISOString(), e => e.event === 'page_view'),
-      sessions: countIn(todayISO, now.toISOString(), e => e.event === 'page_view' && e.props && e.props.newSession),
+      views: countIn(todayISO, now.toISOString(), isPersonView),
+      sessions: countIn(todayISO, now.toISOString(), e => e.event === 'interact'),
       runs: countIn(todayISO, now.toISOString(), e => e.event === 'tool_run'),
-      prevViews: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'page_view'),
-      prevSessions: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'page_view' && e.props && e.props.newSession),
+      prevViews: countIn(ystStart.toISOString(), ystSliceEndISO, isPersonView),
+      prevSessions: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'interact'),
       prevRuns: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'tool_run'),
       hours: Math.max(1, Math.round(elapsedMs / 3600000)),
     };
@@ -622,12 +629,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // exact mistake the comment above says todaySoFar avoids: its delta used
     // to compare today's partial hours against ALL of yesterday, so it read
     // as a ~100% crash every single morning regardless of actual traffic.
-    // Reuses todaySoFar's already-computed same-elapsed-hours counts; only
-    // 'interactive' needs its own count since todaySoFar doesn't track it.
+    // Reuses todaySoFar's already-computed same-elapsed-hours counts.
     const todaySoFarPrevBucket = {
       views: todaySoFar.prevViews,
       sessions: todaySoFar.prevSessions,
-      interactive: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'interact'),
       runs: todaySoFar.prevRuns,
     };
 
@@ -1256,8 +1261,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     }
     const ledgerDayList = daysBetween(ledgerStartDay, todayDay);
 
+    const pageNameOf = (path) => {
+      const seg = (path || '').split('/')[1];
+      return (seg && /^[A-Z]/.test(seg)) ? seg : (path || '(unknown)');
+    };
     function emptyBucket() {
-      return { views: 0, sessions: 0, interactive: 0, returning: 0, runs: 0,
+      return { views: 0, sessions: 0, returning: 0, runs: 0,
         completes: 0, errors: 0, renderErrors: 0, taken: 0, bucket1_7: 0,
         pages: {}, entries: {}, froms: {}, tools: {} };
     }
@@ -1267,10 +1276,31 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const day = dayOf(e);
       const b = ledgerByDay[day];
       if (!b) continue; // older than the ledger window
-      if (e.event === 'page_view') {
+      // People only (2026-11-18): a session counts once it sends `interact`
+      // (a gesture, or 15s visible since that date). The page it happened on
+      // is that session's first counted view; later views carry props.human.
+      // Views before the human flag existed count only that one page.
+      if (e.event === 'interact') {
+        b.sessions++;
         b.views++;
-        const seg = (e.path || '').split('/')[1];
-        const pageName = (seg && /^[A-Z]/.test(seg)) ? seg : (e.path || '(unknown)');
+        const pageName = pageNameOf(e.path);
+        b.pages[pageName] = (b.pages[pageName] || 0) + 1;
+        const landName = pageNameOf(e.landing || e.path);
+        const en = b.entries[landName] || (b.entries[landName] = { n: 0, src: {} });
+        en.n++;
+        const src = e.ref || 'direct';
+        en.src[src] = (en.src[src] || 0) + 1;
+        if (e.props && e.props.returning === true) b.returning++;
+        if (e.props && e.props.bucket === '1-7d') b.bucket1_7++;
+      } else if (e.event === 'page_view') {
+        // Before HUMAN_SIGNAL_SINCE, returning came from the session's first view.
+        if (e.props && e.props.newSession && (e.at || '') < HUMAN_SIGNAL_SINCE) {
+          if (e.props.returning) b.returning++;
+          if (e.props.bucket === '1-7d') b.bucket1_7++;
+        }
+        if (!(e.props && e.props.human)) continue;
+        b.views++;
+        const pageName = pageNameOf(e.path);
         b.pages[pageName] = (b.pages[pageName] || 0) + 1;
         // The DeftBrain page they were on just before (props.from, sent since
         // 2026-09-25). Tool pages fold to their id like pageName does.
@@ -1281,21 +1311,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           const fm = b.froms[pageName] || (b.froms[pageName] = {});
           fm[fromName] = (fm[fromName] || 0) + 1;
         }
-        if (e.props && e.props.newSession) {
-          // This view opened the session, so the visitor arrived here from
-          // outside the site. Its source is the session's ref (a referring
-          // host or ?utm_source/?ref), else direct. Views that did NOT open a
-          // session came from another DeftBrain page — which one isn't recorded.
-          const en = b.entries[pageName] || (b.entries[pageName] = { n: 0, src: {} });
-          en.n++;
-          const src = e.props.ref || e.ref || 'direct';
-          en.src[src] = (en.src[src] || 0) + 1;
-          b.sessions++;
-          if (e.props.returning) b.returning++;
-          if (e.props.bucket === '1-7d') b.bucket1_7++;
-        }
-      } else if (e.event === 'interact') { b.interactive++; }
-      else if (e.event === 'tool_run') { b.runs++; b.tools[toolOf(e)] = (b.tools[toolOf(e)] || 0) + 1; }
+      } else if (e.event === 'tool_run') { b.runs++; b.tools[toolOf(e)] = (b.tools[toolOf(e)] || 0) + 1; }
       else if (e.event === 'tool_complete') { b.completes++; }
       else if (e.event === 'tool_error') { if (!isLeftEarly(e)) b.errors++; }
       else if (e.event === 'tool_render_error') { b.renderErrors++; }
@@ -1307,7 +1323,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const out = emptyBucket();
       for (const d of dayStrs) {
         const b = ledgerByDay[d]; if (!b) continue;
-        out.views += b.views; out.sessions += b.sessions; out.interactive += b.interactive;
+        out.views += b.views; out.sessions += b.sessions;
         out.returning += b.returning; out.runs += b.runs; out.completes += b.completes;
         out.errors += b.errors; out.renderErrors += b.renderErrors; out.taken += b.taken;
         out.bucket1_7 += b.bucket1_7;
@@ -1420,7 +1436,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         `<td><b>${b.delivered}</b></td>` +
         `<td>${b.taken}</td>` +
         `<td>${b.returning}</td>` +
-        `<td>${b.interactive}${deltaPct(b.interactive, prevBucket, 'interactive')}</td>` +
         `<td>${b.runs}${deltaPct(b.runs, prevBucket, 'runs')}</td>` +
         `<td>${fmtPct1(b.delivered, b.sessions)}</td>` +
         `<td style="color:#888">${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
@@ -1563,7 +1578,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         <tr><td style="white-space:nowrap"><b>delivered</b></td><td>Runs that came back AND displayed without crashing.</td></tr>
         <tr><td style="white-space:nowrap"><b>took it with them</b></td><td>Copy, print or share clicks on a result.</td></tr>
         <tr><td style="white-space:nowrap"><b>return visitors</b></td><td>Sessions from a browser that has visited DeftBrain before — any earlier visit, even earlier the same day. Cleared browser data looks new.</td></tr>
-        <tr><td style="white-space:nowrap"><b>interactive</b></td><td>Sessions where someone clicked, tapped, typed or scrolled at least once. The best guess at "a real person" — bots load pages but rarely do this.</td></tr>
+        <tr><td style="white-space:nowrap"><b>interactive</b></td><td>Sessions where someone clicked, tapped, typed or scrolled at least once, or (since Nov 18, 2026) kept the page open and visible for 15 seconds. The best guess at "a real person" — bots load pages but rarely do either. Browsers that announce they are automated send nothing at all.</td></tr>
         <tr><td style="white-space:nowrap"><b>tool runs</b></td><td>Times someone pressed a tool's main button and it asked for an answer — counted when the request starts, so failures count too. Follow-ups and "go deeper" buttons are extra runs.</td></tr>
         <tr><td style="white-space:nowrap"><b>sessions</b></td><td>Visits. One browser tab from its first DeftBrain page until it closes. A new tab is a new session. No one is identified.</td></tr>
         <tr><td style="white-space:nowrap"><b>page views</b></td><td>How many times a page loaded. One person opening five pages = 5.</td></tr>
@@ -1574,15 +1589,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </details>
     <h2 class="sec">1 · At a glance <span class="secsub">today and the days before it — click a day for its pages and tools</span></h2>
     <h2>Day by day <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs. These tables count likely people only: probable bots are left out of sessions, views and returning.</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. Probable bots are left out.">sessions</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${dayRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       <details class="fold"><summary>Weekly and monthly totals</summary>
       <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th></tr>${weekRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. Probable bots are left out.">sessions</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${weekRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th></tr>${monthRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. Probable bots are left out.">sessions</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${monthRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       </details>
     </div>
     <script>
