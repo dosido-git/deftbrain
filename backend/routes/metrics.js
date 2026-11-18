@@ -1266,7 +1266,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       return (seg && /^[A-Z]/.test(seg)) ? seg : (path || '(unknown)');
     };
     function emptyBucket() {
-      return { views: 0, sessions: 0, returning: 0, runs: 0,
+      return { views: 0, sessions: 0, allSessions: 0, returning: 0, runs: 0,
         completes: 0, errors: 0, renderErrors: 0, taken: 0, bucket1_7: 0,
         pages: {}, entries: {}, froms: {}, tools: {} };
     }
@@ -1293,6 +1293,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         if (e.props && e.props.returning === true) b.returning++;
         if (e.props && e.props.bucket === '1-7d') b.bucket1_7++;
       } else if (e.event === 'page_view') {
+        if (e.props && e.props.newSession) b.allSessions++;  // every visit, bots included — shown as "of N"
         // Before HUMAN_SIGNAL_SINCE, returning came from the session's first view.
         if (e.props && e.props.newSession && (e.at || '') < HUMAN_SIGNAL_SINCE) {
           if (e.props.returning) b.returning++;
@@ -1323,7 +1324,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const out = emptyBucket();
       for (const d of dayStrs) {
         const b = ledgerByDay[d]; if (!b) continue;
-        out.views += b.views; out.sessions += b.sessions;
+        out.views += b.views; out.sessions += b.sessions; out.allSessions += b.allSessions;
         out.returning += b.returning; out.runs += b.runs; out.completes += b.completes;
         out.errors += b.errors; out.renderErrors += b.renderErrors; out.taken += b.taken;
         out.bucket1_7 += b.bucket1_7;
@@ -1438,7 +1439,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         `<td>${b.returning}</td>` +
         `<td>${b.runs}${deltaPct(b.runs, prevBucket, 'runs')}</td>` +
         `<td>${fmtPct1(b.delivered, b.sessions)}</td>` +
-        `<td style="color:#888">${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
+        `<td>${b.sessions} <span style="color:#999;font-size:11px" title="all visits, likely bots included">of ${b.allSessions}</span>${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
         `<td style="color:#888">${b.views}${deltaPct(b.views, prevBucket, 'views')}</td></tr>`;
     }
 
@@ -1589,15 +1590,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </details>
     <h2 class="sec">1 · At a glance <span class="secsub">today and the days before it — click a day for its pages and tools</span></h2>
     <h2>Day by day <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs. These tables count likely people only: probable bots are left out of sessions, views and returning.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs. These tables count likely people only: probable bots are left out of interactive, views and returning; "of N" after the interactive count is every visit, likely bots included.</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. Probable bots are left out.">sessions</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${dayRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. &quot;of N&quot; is every visit, likely bots included.">interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${dayRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       <details class="fold"><summary>Weekly and monthly totals</summary>
       <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. Probable bots are left out.">sessions</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${weekRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. &quot;of N&quot; is every visit, likely bots included.">interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${weekRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. Probable bots are left out.">sessions</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${monthRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. &quot;of N&quot; is every visit, likely bots included.">interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${monthRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       </details>
     </div>
     <script>
