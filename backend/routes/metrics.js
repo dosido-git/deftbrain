@@ -1398,7 +1398,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const d = Math.round(((cur - prev) / prev) * 100);
       if (d === 0) return ' <span style="color:#999;font-size:11px">±0%</span>';
       const up = d > 0;
-      return ` <span style="color:${up ? '#15803d' : '#b91c1c'};font-size:11px;font-weight:600">${up ? '▲' : '▼'}${Math.abs(d)}%</span>`;
+      // Show the baseline: a bare % read as a comparison with the row below (owner, 2026-11-18).
+      return ` <span style="color:${up ? '#15803d' : '#b91c1c'};font-size:11px;font-weight:600">${up ? '▲' : '▼'}${Math.abs(d)}%</span>` +
+        ` <span style="color:#999;font-size:11px">vs ${prev}</span>`;
     };
     const anomalyBadge = (flags) => flags.length
       ? ` <span title="${escH(flags.join('; '))}" style="color:#b45309;cursor:help">⚠️</span>` : '';
@@ -1572,7 +1574,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </details>
     <h2 class="sec">1 · At a glance <span class="secsub">today and the days before it — click a day for its pages and tools</span></h2>
     <h2>Day by day <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days). ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs.</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
       <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>interactive</th><th>runs</th><th>delivered/session</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th></tr>${dayRowsHtml || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table></div>
