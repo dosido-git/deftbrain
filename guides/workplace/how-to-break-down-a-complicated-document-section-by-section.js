@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Break Down a Complicated Document Section by Section",
   "titleHtml": "How to Break Down a Complicated Document <em>Section by Section</em>",
   "shortTitle": "Break Down a Complicated Document",
+  "searchTitle": "How to Understand a Complicated Document | Get the Point Fast",
   "navTitle": "How to break down a complicated document section by section",
   "description": "Trying to read it all at once is the trap. Here's a five-step section-by-section method that gets you from 'I have no idea what this says' to 'I can act on this' in about an hour.",
   "deck": "Break down a complicated document by first reading only each section's opening and closing paragraphs, then working through one section at a time: what it claims, why, and what changes if it's wrong. Write two plain-language sentences per section, take breaks, and reread your notes together at the end.",

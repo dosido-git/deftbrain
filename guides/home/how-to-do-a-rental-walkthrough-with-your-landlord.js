@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Do a Rental Walkthrough With Your Landlord (Without It Becoming Adversarial)",
   "titleHtml": "How to Do a Rental Walkthrough With Your Landlord <em>(Without It Becoming Adversarial)</em>",
   "shortTitle": "How to Do a Rental Walkthrough With Your Landlord",
+  "searchTitle": "Rental Walkthrough Checklist | Protect Yourself on Move-In Day",
   "navTitle": "How to do a rental walkthrough with your landlord without it becoming adversarial",
   "description": "A joint walkthrough with the landlord is the strongest documentation you can get — but it requires specific preparation to be useful. Here's how to do it without making the landlord defensive or letting them rush through it.",
   "deck": "To do a rental walkthrough with your landlord, bring your own room-by-room checklist, photograph as you go, ask 'should we note this?' rather than declaring damage, and get a written list of conditions signed by both of you before you finish. If the landlord rushes, ask calmly for more time.",

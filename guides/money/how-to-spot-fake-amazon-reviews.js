@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot Fake Amazon Reviews",
   "titleHtml": "How to Spot Fake <em>Amazon Reviews</em>",
   "shortTitle": "Spot Fake Amazon Reviews",
+  "searchTitle": "How to Spot Fake Amazon Reviews | Shop With Confidence",
   "navTitle": "spot fake amazon reviews",
   "description": "How to spot fake Amazon reviews: rating distribution, review timing, the low reviews, copy-pasted phrases and reviewer profiles.",
   "deck": "To spot fake Amazon reviews, look at the shape of the ratings rather than the average, sort by date to find bursts, read the one- and two-star reviews first, search for repeated phrases, and check whether a few reviewers have histories that look like real people.",

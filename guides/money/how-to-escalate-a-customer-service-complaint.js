@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Escalate a Customer Service Complaint",
   "titleHtml": "How to Escalate <em>a Customer Service Complaint</em>",
   "shortTitle": "Escalate Customer Service",
+  "searchTitle": "How to Escalate a Complaint | Get Someone to Fix It",
   "navTitle": "escalate a customer service complaint",
   "description": "How to escalate a customer service complaint, step by step: when to ask for a supervisor, put it in writing, contact an executive or a regulator, and use a chargeback.",
   "deck": "To escalate a customer service complaint, move up one step at a time: a documented first contact, then a supervisor, then a written complaint to the company, then an executive email plus a regulator complaint, and finally a chargeback or small claims. Keep names, dates and reference numbers throughout.",

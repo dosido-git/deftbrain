@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know if an Opportunity Is Worth the Time",
   "titleHtml": "How to Know if an Opportunity <em>Is Worth the Time</em>",
   "shortTitle": "Is the Opportunity Worth the Time?",
+  "searchTitle": "Is This Opportunity Worth It | Say Yes to the Right Things",
   "navTitle": "is the opportunity worth the time",
   "description": "Some opportunities pay off enormously. Some are expensive distractions disguised as opportunities. Here is how to tell the difference before you commit.",
   "deck": "An opportunity is worth the time when its concrete payoff, such as money, a specific introduction or a new skill, beats what the same hours would do for your top priority. Estimate the real time cost, and be wary of vague benefits and heavy flattery.",

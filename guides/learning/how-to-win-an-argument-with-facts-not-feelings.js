@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Win an Argument With Facts, Not Feelings",
   "titleHtml": "How to Win an Argument <em>With Facts, Not Feelings</em>",
   "shortTitle": "Win With Facts",
+  "searchTitle": "How to Win an Argument With Facts | Persuade Without Losing Your Cool",
   "navTitle": "win with facts not feelings",
   "description": "Most arguments are lost on bad facts. Here is how to argue from solid ground — and why winning the argument and being right are different things.",
   "deck": "To argue with facts, focus on the single fact your case depends on, name its source, concede what's true on the other side, and notice when the disagreement is really about values, which facts can't settle. Check your key fact before the conversation, not during it.",

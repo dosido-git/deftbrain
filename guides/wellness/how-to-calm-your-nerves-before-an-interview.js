@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Calm Your Nerves Before an Interview",
   "titleHtml": "How to Calm Your Nerves <em>Before an Interview</em>",
   "shortTitle": "Calm Pre-Interview Nerves",
+  "searchTitle": "Interview Nerves | Walk In Calm and Confident",
   "navTitle": "calm interview nerves",
   "description": "The hour before an interview is the worst hour. Here is a structure for it that actually settles you down.",
   "deck": "To calm interview nerves, put your notes away about thirty minutes before, move your body briefly, breathe slowly with a longer out-breath, say the realistic worst case out loud, and pick one steady sentence to walk in with. The aim is to arrive steady, not nerve-free.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Brainstorm Names That Are Not Terrible",
   "titleHtml": "How to Brainstorm Names <em>That Are Not Terrible</em>",
   "shortTitle": "Brainstorm Without Terrible",
+  "searchTitle": "How to Brainstorm Names | Find One You Love",
   "navTitle": "brainstorm without terrible",
   "description": "The reason most naming brainstorms produce nothing usable. And the structural change that fixes it.",
   "deck": "Brainstorm names by giving the session inputs instead of a blank page: generate in several style buckets, add an artificial constraint, borrow naming patterns (not words) from names you admire, include someone outside your industry, and reread the list the next day before choosing.",

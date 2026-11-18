@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Plan a Multi-Course Meal Without Everything Going Sideways",
   "titleHtml": "How to Plan a Multi-Course Meal <em>Without Everything Going Sideways</em>",
   "shortTitle": "Plan a Multi-Course Meal",
+  "searchTitle": "How to Plan a Multi-Course Meal | Impress Without Panic",
   "navTitle": "plan a multi-course meal",
   "description": "The starter is cold. The main is overcooked. Here is how to sequence a multi-course meal so the rhythm feels right.",
   "deck": "To plan a multi-course meal, choose courses that don't all need the oven at once, write the schedule backward from the time you sit down, do as much as possible the day before, have one course fully ready before guests arrive, and leave a short pause between courses.",

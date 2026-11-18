@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Sleep in an Airport During a Long Layover",
   "titleHtml": "How to Sleep in an Airport <em>During a Long Layover</em>",
   "shortTitle": "Sleep in an Airport",
+  "searchTitle": "How to Sleep in an Airport | Rest Easy Between Flights",
   "navTitle": "sleep in an airport",
   "description": "How to sleep in an airport on a long layover: the right airport and spot, the gear that helps, alarms you won't sleep through, and when to pay.",
   "deck": "To sleep in an airport, check its reputation for sleeping first, sleep airside after security in a quiet area, and bring an eye mask, earplugs, a good pillow and a layer. Set several alarms well before boarding. If you must function tomorrow, a lounge or transit hotel is worth it.",

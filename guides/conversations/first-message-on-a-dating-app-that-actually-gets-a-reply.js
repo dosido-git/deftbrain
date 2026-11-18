@@ -5,6 +5,7 @@ module.exports = {
   "title": "First Message on a Dating App That Actually Gets a Reply",
   "titleHtml": "First Message on a Dating App That Actually Gets a Reply",
   "shortTitle": "First Dating App Message That Gets a Reply",
+  "searchTitle": "Dating App Opening Lines | Get Replies, Not Silence",
   "navTitle": "First message on a dating app that actually gets a reply",
   "description": "How to write a first dating-app message that gets a reply: one specific detail from their profile, one real question, under three sentences.",
   "deck": "A first dating-app message that gets a reply mentions one specific thing from their profile and asks a real question about it, in two or three sentences. Skip 'hey', compliments on looks and apologies. For example: 'Was the book in your third photo good, or did you give up?'",

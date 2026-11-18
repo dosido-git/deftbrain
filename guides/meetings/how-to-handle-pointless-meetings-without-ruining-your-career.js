@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle Pointless Meetings Without Ruining Your Career",
   "titleHtml": "How to Handle Pointless Meetings <em>Without Ruining Your Career</em>",
   "shortTitle": "Handle Pointless Meetings",
+  "searchTitle": "Pointless Meetings | Spend Your Time on Real Work",
   "navTitle": "How to handle pointless meetings without ruining your career",
   "description": "How to handle pointless meetings without hurting your career: pick battles by who called it, trim before declining, and decline on capacity.",
   "deck": "To handle pointless meetings without hurting your career, pick your battles by who called the meeting, ask to shorten one before declining it, make the ones you must attend more useful, and decline on capacity ('I'm heads-down on the launch') rather than on the meeting's quality.",

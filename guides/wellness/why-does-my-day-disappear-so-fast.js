@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why does my day disappear so fast?",
   "titleHtml": "Why does my day <em>disappear so fast?</em>",
   "shortTitle": "Why days disappear",
+  "searchTitle": "Where Does the Day Go | Slow Your Days Down",
   "navTitle": "why days disappear",
   "description": "Why your day disappears so fast: task switching, communication, recovery after meetings, interruptions, and the afternoon energy drop.",
   "deck": "Your day disappears because much of it goes to things you don't count: switching between tasks, messages and email, winding down after meetings, and refocusing after interruptions, each costing more than its clock time. By afternoon your energy has also dropped, so later hours buy less focused work.",

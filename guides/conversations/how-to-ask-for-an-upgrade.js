@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask for an Upgrade Without Being Annoying About It",
   "titleHtml": "How to Ask for an Upgrade <em>Without Being Annoying About It</em>",
   "shortTitle": "Ask for an Upgrade",
+  "searchTitle": "How to Ask for an Upgrade | Fly or Stay Better for Less",
   "navTitle": "ask for an upgrade",
   "description": "How to ask for a hotel, flight or rental-car upgrade: the right moment, the right phrasing, a small reason, and how to take a no.",
   "deck": "Ask for an upgrade while the agent is looking at your booking, before anything is assigned, and phrase it as a question: 'By any chance is there a better room available?' Give a small, true reason, be warm, and accept a no gracefully.",

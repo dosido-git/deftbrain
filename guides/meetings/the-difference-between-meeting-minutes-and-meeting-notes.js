@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Difference Between Meeting Minutes and Meeting Notes (And Which One You Need)",
   "titleHtml": "The Difference Between Meeting Minutes and Meeting Notes <em>(And Which One You Need)</em>",
   "shortTitle": "Meeting Minutes vs Meeting Notes",
+  "searchTitle": "Meeting Minutes vs Notes | Capture What Matters",
   "navTitle": "The difference between meeting minutes and meeting notes and which one you need",
   "description": "The difference between meeting minutes and meeting notes, which one your meeting needs, and how to avoid a hybrid that fails at both.",
   "deck": "Meeting minutes are a formal record of who attended, what was decided and what was voted on, kept as an official account. Meeting notes are a working document of actions, owners and open questions for the people doing the work. Choose by audience; avoid a hybrid that does neither job.",

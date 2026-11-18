@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know if a Friendship Is Over or Just Dormant",
   "titleHtml": "How to Know if a Friendship Is Over <em>or Just Dormant</em>",
   "shortTitle": "Friendship Over or Just Dormant?",
+  "searchTitle": "Is My Friendship Over | Know Whether to Let Go or Reach Out",
   "navTitle": "friendship over or just dormant",
   "description": "How to know if a friendship is over or just dormant: send one light message, read how they reply, follow up once, and accept seasonal friendships.",
   "deck": "To tell whether a friendship is over or just dormant, stop reading the silence and send one light, low-stakes message. A reply that engages with what you said and asks something back suggests dormant. No reply after one later follow-up means let it rest, without blame.",

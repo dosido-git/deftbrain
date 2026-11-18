@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Understand Medical Jargon (Without a Medical Dictionary)",
   "titleHtml": "How to Understand Medical Jargon <em>(Without a Medical Dictionary)</em>",
   "shortTitle": "How to Understand Medical Jargon",
+  "searchTitle": "Medical Jargon | Understand Your Care in Plain English",
   "navTitle": "How to understand medical jargon without a medical dictionary",
   "description": "Medical terminology is a code with predictable rules. Once you know the rules, most words you encounter become roughly readable on first contact.",
   "deck": "Most medical terms are built from a prefix, a root and a suffix taken from Latin or Greek. Split an unfamiliar word into its parts (hyper-lipid-emia: high fat in the blood), learn about a dozen common prefixes and suffixes, and watch for words that mean 'we don't know'.",

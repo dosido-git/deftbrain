@@ -5,6 +5,7 @@ module.exports = {
   "title": "Professional Instagram Caption Examples (For When LinkedIn Voice Won't Work)",
   "titleHtml": "Professional Instagram Caption Examples <em>(For When LinkedIn Voice Won&#39;t Work)</em>",
   "shortTitle": "Professional Instagram Caption Examples",
+  "searchTitle": "Professional Instagram Captions | Look Polished Online",
   "navTitle": "Professional Instagram caption examples for when LinkedIn voice won't work",
   "description": "How to write professional Instagram captions that don't read like a press release: lead with value, add one human detail, and write real sentences.",
   "deck": "A professional Instagram caption leads with what the post is about rather than 'We're excited to share', includes one human detail, and uses full sentences instead of corporate fragments. Mention the link in bio once, at the end, and match the caption's tone to your photos.",

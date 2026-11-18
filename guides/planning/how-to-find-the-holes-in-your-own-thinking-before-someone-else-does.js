@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find the Holes in Your Own Thinking Before Someone Else Does",
   "titleHtml": "How to Find the Holes in Your Own Thinking <em>Before Someone Else Does</em>",
   "shortTitle": "Find Holes in Your Own Thinking First",
+  "searchTitle": "How to Find Flaws in Your Thinking | Catch Blind Spots Early",
   "navTitle": "How to find the holes in your own thinking before someone else does",
   "description": "Your thinking has holes. So does everyone's. Five steps for finding the ones in yours before they get pointed out by someone with bigger stakes than you'd like.",
   "deck": "To find holes in your own thinking, write the strongest case against your conclusion, ask a few people who think differently what worries them, name the question you've been avoiding, and decide what evidence would change your mind. Then set a stopping point so checking doesn't replace deciding.",

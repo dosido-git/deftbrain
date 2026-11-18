@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Say When Someone Interrupts You in a Meeting",
   "titleHtml": "What to Say When Someone <em>Interrupts You in a Meeting</em>",
   "shortTitle": "When Someone Interrupts You",
+  "searchTitle": "How to Handle Being Interrupted | Finish Your Point With Confidence",
   "navTitle": "what to say when someone interrupts you in a meeting",
   "description": "Five lines for reclaiming the floor without making it weird. Specific phrasing for the interrupter, the chair, and the room.",
   "deck": "When someone interrupts you in a meeting, you can calmly say 'Let me finish that thought', acknowledge their point and ask to come back to it, ask the chair to let you finish, name the interruption plainly for repeat offenders, or send a short follow-up note with your point afterward.",

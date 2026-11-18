@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Answer a Question When You Don't Know the Answer",
   "titleHtml": "How to Answer a Question <em>When You Don't Know the Answer</em>",
   "shortTitle": "How to Answer When You Don't Know",
+  "searchTitle": "What to Say When You Don't Know the Answer | Keep Your Credibility",
   "navTitle": "answer when you don't know",
   "description": "Bluffing gets caught. Freezing kills credibility. Here is the structure for a real answer when you are stumped — one that buys you respect instead of losing it.",
   "deck": "When you don't know the answer to a question, say so plainly without apologizing, share the part you can address, name what you'd need to answer properly, commit to a specific follow-up with a date, and then move on cleanly to the next question.",

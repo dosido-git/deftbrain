@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Is My Plant Turning Yellow (And Which Yellow Is the One That Matters)",
   "titleHtml": "Why Is My Plant Turning Yellow <em>(And Which Yellow Is the One That Matters)</em>",
   "shortTitle": "Why Is My Plant Turning Yellow",
+  "searchTitle": "Plant Leaves Turning Yellow | Find the Cause and Fix It",
   "navTitle": "Why is my plant turning yellow and which yellow is the one that matters",
   "description": "Yellowing leaves can mean five different things. The pattern of the yellow — which leaves, where on the leaf, how fast — tells you which one. Once you can read it, the answer is usually obvious.",
   "deck": "A plant turning yellow is most often a watering problem, usually too much water. The pattern tells you more: only the oldest lower leaves suggests normal aging; yellowing across the plant suggests watering; yellow between green veins suggests a nutrient shortage; sudden mass yellowing suggests shock.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Cancel a Subscription That Won't Let You Cancel (And When It's Actually Illegal)",
   "titleHtml": "How to Cancel a Subscription That Won&#39;t Let You Cancel <em>(And When It&#39;s Actually Illegal)</em>",
   "shortTitle": "How to Cancel a Subscription That Won't Let You Cancel",
+  "searchTitle": "How to Cancel a Subscription | Stop Paying for What You Don't Use",
   "navTitle": "How to cancel a subscription that won't let you cancel and when it's actually illegal",
   "description": "How to cancel a subscription that makes leaving hard: cancel in writing, skip retention offers, dispute continued charges, and what federal and state law still require after the FTC click-to-cancel rule was struck down.",
   "deck": "To cancel a subscription that resists, cancel in writing by chat or email, decline retention offers, and keep confirmation. If charges continue, ask your card issuer to stop them and dispute in writing. The FTC click-to-cancel rule was struck down in 2025, but other federal and state laws still apply.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Past 'No' When It's Not Actually Final (And the Tells That Reveal Which Kind You Got)",
   "titleHtml": "How to Get Past &#39;No&#39; When It&#39;s Not Actually Final <em>(And the Tells That Reveal Which Kind You Got)</em>",
   "shortTitle": "How to Get Past No When It's Not Actually Final",
+  "searchTitle": "How to Get Past No | Find the Yes Behind the No",
   "navTitle": "How to get past no when it's not actually final and the tells that reveal which kind you got",
   "description": "Most institutional 'no' answers are first-tier no, not real no. Knowing the difference — and the specific moves that bypass first-tier no — is the entire skill of navigating bureaucratic systems.",
   "deck": "To get past a no that may not be final, notice whether the person lacks authority to say yes, ask who in the organization can, ask them to record the refusal and reason, try another agent later, and accept a no that cites a specific rule and survives escalation.",

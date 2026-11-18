@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Do My Bike Brakes Squeak?",
   "titleHtml": "Why Do My <em>Bike Brakes Squeak?</em>",
   "shortTitle": "Why Bike Brakes Squeak",
+  "searchTitle": "Bike Brakes Squeaking | Ride in Peace and Quiet",
   "navTitle": "why bike brakes squeak",
   "description": "Why bike brakes squeak and how to fix it: contamination, glazed pads, caliper alignment, worn pads and bent rotors, in the order to check.",
   "deck": "Bike brakes usually squeak because oil or grime has contaminated the pads or rotor. Other causes are glazed pads, a misaligned caliper, pads worn to the metal, and a bent rotor. Clean the rotor with isopropyl alcohol first; replace oil-soaked or worn-through pads.",

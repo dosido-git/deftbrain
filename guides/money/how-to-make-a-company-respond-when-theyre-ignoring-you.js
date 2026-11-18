@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make a Company Respond When They Are Ignoring You",
   "titleHtml": "How to Make a Company Respond <em>When They Are Ignoring You</em>",
   "shortTitle": "Make Company Respond to You",
+  "searchTitle": "Company Ignoring Complaint | Get the Response You Deserve",
   "navTitle": "make a company respond when ignoring you",
   "description": "Five pressure points that work in sequence. Each one increases the cost to the company of continuing to ignore you.",
   "deck": "To make a company respond when it ignores you, switch to a dated written letter, file a complaint with the right regulator and tell the company, email an executive, post a factual public message if it is consumer-facing, and use a chargeback or small claims if money is owed.",

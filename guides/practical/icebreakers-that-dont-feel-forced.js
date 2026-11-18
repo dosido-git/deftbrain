@@ -5,6 +5,7 @@ module.exports = {
   "title": "Icebreakers That Do Not Feel Forced",
   "titleHtml": "Icebreakers <em>That Do Not Feel Forced</em>",
   "shortTitle": "Icebreakers Without the Cringe",
+  "searchTitle": "Icebreaker Questions | Get Everyone Talking",
   "navTitle": "icebreakers without the cringe",
   "description": "Icebreakers that don't feel forced: objects, small tasks on arrival, room layout, seeded topics, and why to skip the share-a-fun-fact circle.",
   "deck": "Icebreakers that don't feel forced are ones guests barely notice: an unusual object to react to, a small job on arrival, food and drinks placed so people cross the room, and a question seeded in one conversation that spreads. Skip the circle where everyone shares a fun fact.",

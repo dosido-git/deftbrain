@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot a Logical Fallacy in Real Time",
   "titleHtml": "How to Spot <em>a Logical Fallacy in Real Time</em>",
   "shortTitle": "Spot Fallacies in Real Time",
+  "searchTitle": "Identify Logical Fallacies | Catch Bad Arguments on the Spot",
   "navTitle": "How to spot a logical fallacy in real time during a live argument",
   "description": "Knowing fallacies on a list is one thing; catching them mid-conversation is another. Here are five fallacies that show up most in live arguments — and the verbal tells that flag them.",
   "deck": "To spot fallacies mid-conversation, listen for tells: a shift to your motives (ad hominem), a more extreme restatement of your view (straw man), only two options offered (false dilemma), a name replacing reasoning (appeal to authority), and new demands once old ones are met (moving the goalposts).",

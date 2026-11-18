@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to look for in an NDA before signing",
   "titleHtml": "What to look for in an NDA <em>before signing</em>",
   "shortTitle": "Reading NDAs",
+  "searchTitle": "What to Look for in an NDA | Sign Without Worry",
   "navTitle": "reading NDAs",
   "description": "A practical guide to reading non-disclosure agreements — what they should and should not say, and what to push back on.",
   "deck": "Before signing an NDA, check whether it is mutual or one-way, how broadly 'confidential information' is defined, how long the obligation lasts, whether the standard exclusions are there (already known, public, independently developed, legally required), and whether noncompete or nonsolicitation terms are hidden inside.",

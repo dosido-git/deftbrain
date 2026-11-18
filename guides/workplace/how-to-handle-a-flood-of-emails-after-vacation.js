@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle a Flood of Emails After Vacation (Without Undoing the Vacation)",
   "titleHtml": "How to Handle a Flood of Emails After Vacation <em>(Without Undoing the Vacation)</em>",
   "shortTitle": "Emails After Vacation",
+  "searchTitle": "Catching Up on Emails After Vacation | Get Back to Inbox Zero Fast",
   "navTitle": "How to handle the post-vacation email flood without undoing the trip",
   "description": "Two hundred unread. The trip you just took is in danger of evaporating in your first hour back. Here's how to face a flooded inbox without re-entering work in panic mode.",
   "deck": "To handle a flood of emails after vacation, wait until your first work morning, spend the first hour sorting rather than replying, archive bulk mail by sender, read only the latest message in each thread, and send one short just-back note to the few that matter.",

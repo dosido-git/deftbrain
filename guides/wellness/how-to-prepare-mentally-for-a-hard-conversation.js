@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prepare Mentally for a Hard Conversation",
   "titleHtml": "How to Prepare Mentally <em>for a Hard Conversation</em>",
   "shortTitle": "Prep for a Hard Talk",
+  "searchTitle": "How to Prepare for a Hard Conversation | Walk In Steady and Clear",
   "navTitle": "prep for a hard conversation",
   "description": "The conversation is tonight. You have been dreading it for a week. Here is how the last hour can actually help.",
   "deck": "To prepare for a hard conversation, write down the one outcome you most want, prepare an opening sentence rather than a script, note the one or two points you won't give up, plan for the three likeliest reactions, and expect it to take more than one talk.",

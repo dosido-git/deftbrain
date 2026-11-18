@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Cold Email That Gets a Response (Without Sounding Like a Sales Template)",
   "titleHtml": "How to Write a Cold Email That Gets a Response <em>(Without Sounding Like a Sales Template)</em>",
   "shortTitle": "How to Write a Cold Email That Gets a Response",
+  "searchTitle": "How to Write a Cold Email | Get the Reply You Want",
   "navTitle": "How to write a cold email that gets a response without sounding like a sales template",
   "description": "Most cold emails fail in the first sentence. The fix isn't being more compelling — it's being more specific. Here's the structure that earns a reply.",
   "deck": "A cold email that gets a response opens with one specific reason you're writing to this person, skips the paragraph about yourself, makes one small, specific request, cuts everything else, and is followed up once after about a week.",

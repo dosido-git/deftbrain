@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read a Lease Before Signing It (Without Missing Anything That Matters)",
   "titleHtml": "How to Read a Lease Before Signing It <em>(Without Missing Anything That Matters)</em>",
   "shortTitle": "How to Read a Lease Before Signing It",
+  "searchTitle": "How to Read a Lease | Sign Without Surprises",
   "navTitle": "How to read a lease before signing it without missing anything that matters",
   "description": "A 30-page lease isn't designed to be read — it's designed to make every clause look equal. Here's the order to read it in, and what to actually pay attention to.",
   "deck": "To read a lease before signing, start with the move-out sections (early termination, deposit return, cleaning standards), list every fee and dollar amount, look for clauses that waive rights the law gives you, question vague standards, and note the rules you'll live with daily. Ask about anything unclear before signing.",

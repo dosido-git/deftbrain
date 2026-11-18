@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Move Your Body When You're Sick, Sore, or Hungover",
   "titleHtml": "How to Move Your Body <em>When You're Sick, Sore, or Hungover</em>",
   "shortTitle": "Movement When Sick or Sore",
+  "searchTitle": "Should You Exercise When Sick or Rest | Move Without Making It Worse",
   "navTitle": "movement when sick or sore",
   "description": "How to move your body when you're sick, sore or hungover: when gentle movement helps, when to rest, and the above-the-neck rule for colds.",
   "deck": "When you're sore, gentle movement such as walking usually helps. With a mild cold above the neck only, light activity is generally fine. With fever, body aches, chest symptoms or stomach illness, rest. When hungover, rehydrate and walk rather than train. Stop if you feel worse.",

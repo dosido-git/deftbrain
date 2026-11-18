@@ -5,6 +5,7 @@ module.exports = {
   "title": "Last-Minute Gift Ideas That Don't Look Last-Minute",
   "titleHtml": "Last-Minute Gift Ideas <em>(That Don't Look Last-Minute)</em>",
   "shortTitle": "Last-Minute Gifts That Land",
+  "searchTitle": "Last-Minute Gift Ideas | Look Like You Planned Ahead",
   "navTitle": "last-minute gifts that land",
   "description": "You forgot. Or it slipped. Here's how to put together a gift in the next two hours that reads as intentional, not desperate.",
   "deck": "A last-minute gift looks intentional when it's a small themed kit rather than one random object, comes from a shop with a story (a bakery, a bookstore), favors consumables over durables, includes a longer handwritten card, and, if needed, a specific written plan for something later.",

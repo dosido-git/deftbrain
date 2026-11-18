@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why am I always behind even when I'm working all day?",
   "titleHtml": "Why am I always behind <em>even when I'm working all day?</em>",
   "shortTitle": "Behind despite working all day",
+  "searchTitle": "Always Behind at Work | Finally Catch Up",
   "navTitle": "behind despite working all day",
   "description": "An honest answer for the person who works long hours and still feels behind — what specifically is producing the gap between effort and output.",
   "deck": "You can work all day and stay behind when new work arrives faster than you finish it, you're absorbing other people's tasks, meetings and messages eat the day, estimates run optimistic, or the workload simply exceeds the hours. More effort alone won't close those gaps.",

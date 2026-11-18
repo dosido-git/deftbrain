@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Rebuild a Friendship That's Gone Quiet (Without Being Awkward)",
   "titleHtml": "How to Rebuild a Friendship That's Gone Quiet <em>(Without Being Awkward)</em>",
   "shortTitle": "Rebuild a Quiet Friendship",
+  "searchTitle": "How to Rebuild a Friendship | Bring Back What You Had",
   "navTitle": "rebuild a quiet friendship",
   "description": "How to rebuild a friendship that's gone quiet: small visible contact first, a short message, a weekly rhythm, and a slow build to meeting up.",
   "deck": "To rebuild a friendship that has gone quiet, come back gradually: be visible first through small reactions, send one short message, keep light contact about once a week, and build toward a call or coffee over several weeks. Expect the friendship to take a slightly different shape.",

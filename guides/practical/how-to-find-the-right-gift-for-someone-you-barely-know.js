@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find the Right Gift for Someone You Barely Know",
   "titleHtml": "How to Find the Right Gift <em>(For Someone You Barely Know)</em>",
   "shortTitle": "Gifts for People You Barely Know",
+  "searchTitle": "Gifts for Someone You Barely Know | Give Something Thoughtful",
   "navTitle": "gifts for people you barely know",
   "description": "New coworker, partner's relative, secret-santa stranger. Here's how to give a gift that lands without faking intimacy you don't have.",
   "deck": "For someone you barely know, a good gift is a high-quality version of something most people use (chocolate, a candle, good olive oil), matched to the occasion, ideally with a small story behind it, at a modest price, and with a short, warm card.",

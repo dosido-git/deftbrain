@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to make a major life decision without regretting it",
   "titleHtml": "How to make a major life decision <em>without regretting it</em>",
   "shortTitle": "Major decisions without regret",
+  "searchTitle": "Major Life Decisions | Move Forward Without Regret",
   "navTitle": "major decisions without regret",
   "description": "A method for thinking through a life-altering decision in a way that respects both the analysis and the gut — and minimizes the kind of regret that comes from skipping one or the other.",
   "deck": "To make a major life decision you're less likely to regret, identify the real question beneath the surface one, imagine both paths in equal detail, notice your gut reaction after each, deliberate most on the irreversible parts, and stop relitigating once you've chosen.",

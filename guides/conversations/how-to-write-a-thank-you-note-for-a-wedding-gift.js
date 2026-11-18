@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Thank-You Note for a Wedding Gift",
   "titleHtml": "How to Write a Thank-You Note <em>(For a Wedding Gift)</em>",
   "shortTitle": "Wedding Thank-You Notes",
+  "searchTitle": "Wedding Gift Thank You Notes | Show Real Gratitude",
   "navTitle": "wedding thank-you notes",
   "description": "You have 80 of these to write. Here's the structure that makes each one feel personal — without taking three weekends.",
   "deck": "A good wedding gift thank-you note names the specific gift, says how you'll use it, adds one personal line about the guest, and closes warmly. Build one template with those personal slots and write in small batches. Etiquette guides suggest sending within three months.",

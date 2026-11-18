@@ -5,6 +5,7 @@ module.exports = {
   "title": "Free Things to Do Near You (That Are Actually Worth Doing)",
   "titleHtml": "Free Things to Do Near You <em>(That Are Actually Worth Doing)</em>",
   "shortTitle": "Free Things to Do Near You",
+  "searchTitle": "Free Things to Do Near Me | Have Fun Without Spending a Dime",
   "navTitle": "free things to do near me",
   "description": "Most free-things-to-do lists are filler. Here is how to find the ones that hold up — and how to make a free afternoon feel like a real outing.",
   "deck": "To find free things to do near you that are worth it, look for dated events rather than standing destinations, check your city's parks, library and visitor-bureau calendars, walk a neighborhood you don't know, pair two free things into one outing, and bring good coffee instead of your phone.",

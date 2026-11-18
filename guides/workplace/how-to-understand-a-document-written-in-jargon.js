@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to understand a document written in jargon",
   "titleHtml": "How to understand a document <em>written in jargon</em>",
   "shortTitle": "Documents in jargon",
+  "searchTitle": "How to Understand Jargon | Cut Through the Confusion",
   "navTitle": "documents in jargon",
   "description": "A method for cracking documents that are written in specialist vocabulary — academic, legal, technical, medical — when you are not the specialist.",
   "deck": "To understand a document full of jargon, build a short glossary of its recurring terms before reading, read the summary or conclusion first, restate each paragraph in your own words, follow the shape of the argument, and ask someone in the field to check your understanding.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to know if you sound aggressive without meaning to",
   "titleHtml": "How to know if you sound aggressive <em>without meaning to</em>",
   "shortTitle": "Sound aggressive without meaning to",
+  "searchTitle": "Why Do I Sound Aggressive | Sound Firm, Not Harsh",
   "navTitle": "sound aggressive accidentally",
   "description": "A practical method for figuring out whether your written communication is coming across as more intense than you intend — and what specific habits create that effect.",
   "deck": "To check whether you sound aggressive in writing, reread your messages aloud in a flat voice, count the bare commands, look for openers like 'so' or 'actually', soften how you give criticism, and ask someone outside the situation how your messages read.",

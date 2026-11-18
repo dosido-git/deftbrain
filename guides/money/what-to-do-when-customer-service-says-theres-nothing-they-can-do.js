@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When Customer Service Says There's Nothing They Can Do (Because That's Almost Never True)",
   "titleHtml": "What to Do When Customer Service Says There&#39;s Nothing They Can Do <em>(Because That&#39;s Almost Never True)</em>",
   "shortTitle": "What to Do When Customer Service Says There's Nothing They Can Do",
+  "searchTitle": "Customer Service Says Nothing They Can Do | Find the Way Past No",
   "navTitle": "What to do when customer service says there's nothing they can do",
   "description": "'There's nothing we can do' is almost always shorthand for 'there's nothing I'm authorized to do.' The actual response options are larger, and accessing them requires a few specific moves the agent won't volunteer.",
   "deck": "When customer service says there's nothing they can do, it often means nothing that agent is authorized to do. Ask who in the company has that authority, ask about exception or hardship processes, write to the executive office, and use regulators, card disputes or small claims if internal routes fail.",

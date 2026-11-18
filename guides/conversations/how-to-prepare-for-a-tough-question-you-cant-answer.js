@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to prepare for a tough question you cannot answer",
   "titleHtml": "How to prepare for a tough question you cannot answer",
   "shortTitle": "Prep for the question you cannot answer",
+  "searchTitle": "Tough Question You Can't Answer | Keep Your Credibility Intact",
   "navTitle": "Prep for the question you cannot answer",
   "description": "You know the question is coming. You know you do not have a good answer. Here is what to do, instead of pretending the question will not happen.",
   "deck": "To prepare for a question you can't answer well, stop hunting for a clever answer, find the one true, concrete thing you can say, write an honest bridge to firmer ground, practice it aloud until it sounds calm, and when it's asked, answer briefly and stop talking.",

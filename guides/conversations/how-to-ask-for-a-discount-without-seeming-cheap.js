@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask for a Discount Without Seeming Cheap",
   "titleHtml": "How to Ask for a Discount <em>Without Seeming Cheap</em>",
   "shortTitle": "Ask for a Discount",
+  "searchTitle": "How to Ask for a Discount | Save Money Without Feeling Cheap",
   "navTitle": "ask for a discount",
   "description": "There is a way to ask that preserves your dignity and the relationship. Here is the script.",
   "deck": "Ask for a discount by showing real interest first, then asking whether there is any flexibility on the price, giving an external reason such as a lower price elsewhere or buying several items, and knowing your walk-away price. A polite, specific ask reads as a serious buyer.",

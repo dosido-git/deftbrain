@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Substitute for an Ingredient You Are Missing",
   "titleHtml": "What to Substitute <em>for an Ingredient You Are Missing</em>",
   "shortTitle": "Ingredient Substitutes",
+  "searchTitle": "Ingredient Substitutes | Cook With What You Have",
   "navTitle": "ingredient substitutes",
   "description": "You are halfway through cooking and out of buttermilk, eggs, baking powder, or whatever else. Here is the framework for finding a substitute that actually works — not just any swap somebody on the internet suggests.",
   "deck": "To substitute a missing ingredient, work out what job it does (acid, fat, moisture, lift, thickening or flavor) and pick a swap that does the same job. For example, 1 tablespoon lemon juice or vinegar plus milk to 1 cup replaces buttermilk; 2 tablespoons flour replaces 1 tablespoon cornstarch.",

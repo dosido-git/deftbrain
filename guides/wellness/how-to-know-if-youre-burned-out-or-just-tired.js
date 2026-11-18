@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If You're Burned Out or Just Tired",
   "titleHtml": "How to Know If You're Burned Out <em>(Or Just Tired)</em>",
   "shortTitle": "Burned Out or Just Tired?",
+  "searchTitle": "Burnout or Just Tired | Know When to Rest",
   "navTitle": "burned out or just tired?",
   "description": "Tired is a state. Burnout is a trajectory. Here's how to tell which one you're in — and what to do differently for each.",
   "deck": "Tiredness usually lifts with rest; burnout doesn't. If a real weekend off leaves you restored, you were tired. If you return to the same low within hours, enjoyment has faded, work feels pointless, and it has been building for months, burnout is more likely.",

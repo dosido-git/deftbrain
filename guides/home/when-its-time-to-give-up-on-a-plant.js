@@ -5,6 +5,7 @@ module.exports = {
   "title": "When It's Time to Give Up on a Plant (And Why It's Not a Failure)",
   "titleHtml": "When It&#39;s Time to Give Up on a Plant <em>(And Why It&#39;s Not a Failure)</em>",
   "shortTitle": "When It's Time to Give Up on a Plant",
+  "searchTitle": "When to Give Up on a Plant | Know When to Let Go",
   "navTitle": "When it's time to give up on a plant and why it's not a failure",
   "description": "Some plants can't be saved, and trying to save them anyway is a kind of low-grade dread that lasts for months. Here's how to recognize when the right move is to stop.",
   "deck": "Give up on a plant when nothing alive remains (stems brown through, roots black and mushy), when a month or more of corrected care brings no new growth, or when the species does not suit your space. Replacing it with a better match is reasonable, not a failure.",

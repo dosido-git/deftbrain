@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Protect Your Security Deposit Before You Even Move In (The 90 Minutes That Save You $1,000)",
   "titleHtml": "How to Protect Your Security Deposit Before You Even Move In <em>(The 90 Minutes That Save You $1,000)</em>",
   "shortTitle": "How to Protect Your Security Deposit Before You Even Move In",
+  "searchTitle": "How to Protect Your Security Deposit | Get Your Money Back at Move-Out",
   "navTitle": "How to protect your security deposit before you even move in",
   "description": "Many security deposit disputes turn on move-in records. Photograph the empty unit, complete the condition form, email both to your landlord, and test every fixture in the first week.",
   "deck": "To protect your security deposit, document the unit before you move in: photograph every room and existing flaw, list every imperfection on the condition form, email the photos and list to your landlord within a day or two, and test every fixture, reporting problems in writing within the first week.",

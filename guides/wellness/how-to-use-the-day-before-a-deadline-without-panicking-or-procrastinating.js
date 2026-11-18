@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Use the Day Before a Deadline Without Panicking or Procrastinating",
   "titleHtml": "How to Use the Day Before a Deadline <em>Without Panicking or Procrastinating</em>",
   "shortTitle": "The Day Before a Deadline",
+  "searchTitle": "Day Before Deadline | Finish Strong, Not Frazzled",
   "navTitle": "day before deadline",
   "description": "The deadline is tomorrow. The work is mostly done but not finished. Here is how to use today productively without burning out or freezing up.",
   "deck": "The day before a deadline, list exactly what's left, do the parts that might uncover more work first and polish last, set a time after which you only review, stop by early evening, and check with fresh eyes in the morning. If it won't fit, cut early.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Escalate When the Official Answer Is No (The External Paths Most People Don't Know Exist)",
   "titleHtml": "How to Escalate When the Official Answer Is No <em>(The External Paths Most People Don&#39;t Know Exist)</em>",
   "shortTitle": "How to Escalate When the Official Answer Is No",
+  "searchTitle": "What to Do When the Answer Is No | Turn No Into Yes",
   "navTitle": "How to escalate when the official answer is no and the external paths most people don't know exist",
   "description": "How to escalate after a company says no: the right regulator, chargebacks, small claims court, and attorney-general and BBB complaints.",
   "deck": "When a company's final answer is no, go outside it. In the US, complain to the regulator for that industry (the CFPB for banks and cards, the FCC for telecoms), dispute card payments with your issuer, consider small claims court, and file with your state attorney general.",

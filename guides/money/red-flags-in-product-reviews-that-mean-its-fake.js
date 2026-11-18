@@ -5,6 +5,7 @@ module.exports = {
   "title": "Red Flags in Product Reviews That Mean It's Fake",
   "titleHtml": "Red Flags in Product Reviews <em>(That Mean It's Fake)</em>",
   "shortTitle": "Red Flags That Mean Fake",
+  "searchTitle": "Fake Review Red Flags | Spot Fakes in Seconds",
   "navTitle": "red flags that mean fake",
   "description": "Red flags that a product review is fake: generic praise, repeated full product names, competitor knocks, review bursts, and suspiciously targeted claims.",
   "deck": "Red flags of a fake product review include generic praise with no specific use, the full brand name repeated, a competitor named and run down, a reviewer with a burst of unrelated five-star reviews, and pointed attention to a rival product flaw. One flag means little; several together are telling.",

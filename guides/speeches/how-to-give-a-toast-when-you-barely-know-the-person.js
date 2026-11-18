@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Give a Toast When You Barely Know the Person Being Toasted",
   "titleHtml": "How to Give a Toast <em>When You Barely Know the Person Being Toasted</em>",
   "shortTitle": "How to Give a Toast When You Barely Know Them",
+  "searchTitle": "Wedding Speech for Someone You Don't Know Well | Say Something Warm and Real",
   "navTitle": "How to give a toast when you barely know the person being toasted",
   "description": "You've been asked to toast someone you don't really know. Pretending otherwise is the trap. Five steps for a short, honest, well-received toast that doesn't try to fake closeness.",
   "deck": "To toast someone you barely know, say plainly how you know them, offer the fresh impression only a newcomer has, credit any borrowed story, and keep it to about a minute. If you were asked because of your role, a brief ceremonial toast fits better.",

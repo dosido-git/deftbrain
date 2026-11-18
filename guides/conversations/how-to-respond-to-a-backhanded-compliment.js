@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Respond to a Backhanded Compliment",
   "titleHtml": "How to Respond to <em>a Backhanded Compliment</em>",
   "shortTitle": "Respond to Backhanded Compliments",
+  "searchTitle": "What to Say to a Backhanded Compliment | Have the Perfect Reply Ready",
   "navTitle": "respond to a backhanded compliment",
   "description": "How to respond to a backhanded compliment: five responses from light to direct, and which moment each one fits.",
   "deck": "To respond to a backhanded compliment, pick a move from light to direct: ask 'What do you mean by that?' with real curiosity, say 'Thanks, I think', repeat the phrase back flatly, accept only the compliment, or with repeat offenders, calmly say it came across as criticism.",

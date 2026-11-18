@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Choose Between Two Good Options",
   "titleHtml": "How to Choose Between <em>Two Good Options</em>",
   "shortTitle": "Choosing Between Two Good Options",
+  "searchTitle": "Choosing Between Two Options | Choose Without Regret",
   "navTitle": "How to choose between two good options when both look right",
   "description": "When both options are good, the comparison stops working — there's no clearly worse choice to eliminate. Here's how to break a tie between two viable paths without flipping a coin.",
   "deck": "To choose between two good options, compare downsides instead of upsides, notice which future you already picture yourself in, favor the option that closes fewer doors, ask which path you'd wonder about later, and flip a coin to see how you feel about the result.",

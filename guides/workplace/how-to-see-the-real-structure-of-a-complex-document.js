@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to see the real structure of a complex document",
   "titleHtml": "How to see <em>the real structure</em> of a complex document",
   "shortTitle": "Real structure of documents",
+  "searchTitle": "How to Understand a Complex Document | See the Big Picture Fast",
   "navTitle": "real structure of documents",
   "description": "How to read a long, complex document by its structure: map it first, set aside boilerplate, read the sections that matter, and follow cross-references.",
   "deck": "To see the structure of a complex document, map it before reading: skim the headings and the first sentence of each section, set aside boilerplate like definitions and governing law, read the substantive sections closely, follow every cross-reference, then summarize what the document does in three sentences.",

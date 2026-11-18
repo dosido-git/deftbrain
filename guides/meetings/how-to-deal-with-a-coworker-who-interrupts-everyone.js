@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Deal With a Coworker Who Interrupts Everyone",
   "titleHtml": "How to Deal With a Coworker <em>Who Interrupts Everyone</em>",
   "shortTitle": "Coworker Who Interrupts",
+  "searchTitle": "How to Deal With a Coworker Who Constantly Interrupts | Get Your Voice Back",
   "navTitle": "How to deal with a coworker who interrupts everyone in meetings",
   "description": "Some coworkers don't take over the floor — they take it from you, mid-sentence. Here's how to handle the chronic interrupter without making it a fight or a complaint.",
   "deck": "To handle a coworker who interrupts, calmly say 'let me finish the thought', return to your point after they pause, bridge with 'and' rather than 'but', and if it's a pattern, mention it privately and kindly. Don't interrupt them back.",

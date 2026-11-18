@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Research a Big Purchase Before Buying (Without Losing a Whole Weekend to It)",
   "titleHtml": "How to Research a Big Purchase Before Buying <em>(Without Losing a Whole Weekend to It)</em>",
   "shortTitle": "How to Research a Big Purchase",
+  "searchTitle": "How to Research a Big Purchase | Spend Big Without Regret",
   "navTitle": "How to research a big purchase before buying without losing a whole weekend to it",
   "description": "Endless reviews, contradictory forums, marketing dressed up as journalism. Here's the structured way to make a confident call without going down the rabbit hole.",
   "deck": "To research a big purchase efficiently, write down your needs and dealbreakers first, find specialist reviewers instead of top search results, read negative reviews for repeated problems, stop once a few independent sources agree, and set a decision deadline. Watch for undisclosed affiliate or sponsored content.",

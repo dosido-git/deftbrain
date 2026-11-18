@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Interpret Your Own Dreams (Without Symbol Lists)",
   "titleHtml": "How to Interpret Your Own Dreams <em>(Without Symbol Lists)</em>",
   "shortTitle": "Interpret Your Dreams Yourself",
+  "searchTitle": "How to Interpret Your Dreams | Understand Your Own Mind",
   "navTitle": "interpret your dreams yourself",
   "description": "Generic dream dictionaries don't work because dreams are personal. Here's how to read your own — using the meaning your own life provides.",
   "deck": "To interpret your own dreams, write them down on waking, note your own associations with the people, places and objects in them, track how the feeling changed, and ask what in your life has the same shape. Treat any reading as reflection, not fact.",

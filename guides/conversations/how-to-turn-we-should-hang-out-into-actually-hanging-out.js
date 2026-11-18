@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Turn \"We Should Hang Out\" into Actually Hanging Out",
   "titleHtml": "How to Turn \"We Should Hang Out\" <em>(Into Actually Hanging Out)</em>",
   "shortTitle": "Turn \"Should\" Into Plans",
+  "searchTitle": "We Should Hang Out | Turn Talk Into Real Plans",
   "navTitle": "turn 'should' into plans",
   "description": "Both of you mean it. Neither of you ever schedules anything. Here's how to break the loop without making it weird.",
   "deck": "To turn 'we should hang out' into an actual plan, propose specific dates and times (two options work well), suggest the activity yourself, skip apologizing for how long it's been, and if it doesn't happen, try once more a few weeks later.",

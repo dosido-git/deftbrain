@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to say when someone is gaslighting you over text",
   "titleHtml": "What to say when someone is gaslighting you over text",
   "shortTitle": "Gaslighting over text",
+  "searchTitle": "How to Respond to Gaslighting | Trust Your Own Reality",
   "navTitle": "Gaslighting over text",
   "description": "\"That never happened.\" \"You are remembering it wrong.\" \"You are too sensitive.\" Here is how to respond when someone is rewriting reality in your messages.",
   "deck": "When someone over text insists things you remember didn't happen, stop trying to prove the facts, describe their pattern rather than labeling them, say how it affects you and stop typing, refuse to reopen settled issues, and if it keeps happening, step away from text and reconsider the terms.",

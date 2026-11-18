@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write Resume Bullets for the Job You Actually Did (Not the Title You Had)",
   "titleHtml": "How to Write Resume Bullets <em>for the Job You Actually Did</em>",
   "shortTitle": "Resume Bullets for the Job You Actually Did",
+  "searchTitle": "Resume Bullets | Show What You Really Did",
   "navTitle": "How to write resume bullets for the job you actually did vs the title you had",
   "description": "Most people write resume bullets that match their title rather than their actual work. Five steps for bullets that reflect the scope you really had — without overstating.",
   "deck": "Write résumé bullets around the work you actually did, not your title: open with an action verb and the result, show above-title scope with verbs like led and coordinated rather than claiming authority you didn't have, replace vague verbs like 'helped,' and add a number or comparison to each.",

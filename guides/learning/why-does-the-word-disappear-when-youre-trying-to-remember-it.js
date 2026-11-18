@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does the Word Disappear When You Are Trying to Remember It?",
   "titleHtml": "Why Does the Word Disappear <em>When You Are Trying to Remember It?</em>",
   "shortTitle": "Why Words Disappear",
+  "searchTitle": "Why Can't I Remember Words | Understand Your Memory Slips",
   "navTitle": "why words disappear when searching",
   "description": "Trying harder to remember a word often makes it worse. Here is what is happening cognitively, and how to actually retrieve words you almost have.",
   "deck": "A word disappears when you're trying to remember it because you can access its meaning but not its sound. This tip-of-the-tongue state is normal, becomes more common with age, and often resolves if you try similar sounds, approach from a different angle, or briefly switch tasks.",

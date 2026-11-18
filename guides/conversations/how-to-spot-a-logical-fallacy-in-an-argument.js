@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to spot a logical fallacy in an argument",
   "titleHtml": "How to spot a logical fallacy in an argument",
   "shortTitle": "Spot a fallacy",
+  "searchTitle": "How to Spot a Logical Fallacy | Win Arguments Fairly",
   "navTitle": "Spot a fallacy",
   "description": "Their argument feels off but you cannot say why. Here is how to name the move they just pulled, fast enough to actually use it.",
   "deck": "To spot a logical fallacy as it happens, listen for a conclusion bigger than the evidence, a jump from one example to a rule, an attack on the person instead of the claim, and a false choice between two options. You don't need the names; describe the gap out loud.",

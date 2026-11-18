@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get a Medical Bill Reduced When They Say It's Final (It Almost Never Actually Is)",
   "titleHtml": "How to Get a Medical Bill Reduced When They Say It&#39;s Final <em>(It Almost Never Actually Is)</em>",
   "shortTitle": "How to Get a Medical Bill Reduced When They Say It's Final",
+  "searchTitle": "Medical Bill Reduction | Lower It Even After They Say No",
   "navTitle": "How to get a medical bill reduced when they say it's final and it almost never actually is",
   "description": "A medical bill called final can often still be reduced: reapplying for financial assistance, benchmarked settlement offers, billing advocates, the trade-offs of collections, and when bankruptcy is worth discussing.",
   "deck": "A 'final' medical bill can often still be reduced. Reapply for financial assistance with fuller documentation, offer a lump sum benchmarked to what insurers or Medicare pay, ask a billing advocate for help on large bills, and, if the debt is unmanageable, talk to a bankruptcy attorney.",

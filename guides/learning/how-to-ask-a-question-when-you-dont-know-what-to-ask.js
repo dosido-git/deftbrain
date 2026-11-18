@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask a Question When You Do Not Even Know What to Ask",
   "titleHtml": "How to Ask a Question <em>When You Do Not Even Know What to Ask</em>",
   "shortTitle": "When You Cannot Ask",
+  "searchTitle": "How to Understand Without Asking | Figure It Out on Your Own",
   "navTitle": "cannot form the question",
   "description": "The hardest learning moments are the ones where you cannot even articulate what you do not understand. Here is how to extract a useful question from that fog.",
   "deck": "When you don't know what to ask, find the last point you understood and the sentence right after it, write a guess at what's happening there, say what you'd be able to do if you understood, and then ask that small, specific question, however obvious it seems.",

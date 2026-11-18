@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why does my writing feel cold even when I'm being friendly?",
   "titleHtml": "Why does my writing feel cold <em>even when I'm being friendly?</em>",
   "shortTitle": "Writing reads cold despite friendly",
+  "searchTitle": "Why Does My Writing Sound Cold | Let Your Warmth Come Through",
   "navTitle": "writing reads cold",
   "description": "Why your emails and texts sound cold when you're friendly in person, and how to add warmth: names, a friendly opener, a warm sign-off.",
   "deck": "Your writing feels cold because in person your face and voice supply the warmth, and in writing they don't, so it has to be added on purpose. Use names and personal references, keep a friendly opening line, sign off warmly, and reread sent messages as a stranger would.",

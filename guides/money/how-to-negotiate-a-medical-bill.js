@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Negotiate a Medical Bill",
   "titleHtml": "How to <em>Negotiate a Medical Bill</em>",
   "shortTitle": "Negotiate a Medical Bill",
+  "searchTitle": "How to Negotiate a Medical Bill | Keep More of Your Money",
   "navTitle": "negotiate a medical bill",
   "description": "A five-step negotiation script for the call. The exact phrases that work, and the ones that close the door.",
   "deck": "To negotiate a medical bill, call billing and say you want to resolve the account, ask them to explain each charge, ask what discounts or financial assistance apply, make a specific lump-sum or monthly offer you can afford, and get the agreement in writing before paying anything.",

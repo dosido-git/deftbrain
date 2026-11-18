@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to steelman an argument you disagree with",
   "titleHtml": "How to steelman an argument you disagree with",
   "shortTitle": "Steelman an argument",
+  "searchTitle": "How to Steelman an Argument | Argue Fair and Win Respect",
   "navTitle": "Steelman an argument",
   "description": "You can demolish their dumbest version. Anyone can. Here is how to find and engage with the strongest version of the position you think is wrong.",
   "deck": "To steelman an argument you disagree with, find how its most thoughtful supporters explain it, identify the value it protects, state it aloud in their terms without hedging, admit the part you can't easily refute, and then respond to that strongest version rather than a weak one.",

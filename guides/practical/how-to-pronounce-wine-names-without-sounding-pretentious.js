@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Pronounce Wine Names Without Sounding Pretentious",
   "titleHtml": "How to Pronounce Wine Names <em>Without Sounding Pretentious</em>",
   "shortTitle": "Wine Names Without Pretension",
+  "searchTitle": "How to Pronounce Wine Names | Order Wine Like a Pro",
   "navTitle": "wine names without pretension",
   "description": "How to pronounce French and other wine names without sounding pretentious: normal speed, the right stress, no forced accent, and asking when unsure.",
   "deck": "To pronounce wine names without sounding pretentious, say the name at normal speed, get the stressed syllable right (French names usually stress the last one) and let the rest be close enough, skip the exaggerated accent, match the room, and ask the server if unsure.",

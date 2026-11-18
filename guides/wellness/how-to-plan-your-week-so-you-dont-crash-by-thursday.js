@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Plan Your Week So You Do Not Crash by Thursday",
   "titleHtml": "How to Plan Your Week <em>So You Do Not Crash by Thursday</em>",
   "shortTitle": "No Thursday Crash",
+  "searchTitle": "How to Plan Your Week | Make It to Friday Strong",
   "navTitle": "avoid the thursday crash",
   "description": "Most weeks crash on Thursday because the social load front-loaded into Monday and Tuesday. Here is how to redistribute the week so the energy lasts.",
   "deck": "To avoid a midweek crash, plan energy across the whole week rather than day by day: cap demanding social events, spread them out instead of stacking them, put heavy plans before lighter days, and protect at least one unscheduled evening. The same events in a different order cost less.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When Your Mind Won't Stop Racing (At 11 PM, At Your Desk, In Line)",
   "titleHtml": "What to Do When Your Mind Won&#39;t Stop Racing <em>(At 11 PM, At Your Desk, In Line)</em>",
   "shortTitle": "What to Do When Your Mind Won't Stop Racing",
+  "searchTitle": "Racing Thoughts | Find Some Quiet",
   "navTitle": "What to do when your mind won't stop racing at 11 PM, at your desk, in line",
   "description": "It's not that you're thinking about one big thing. It's that you're thinking about forty small things at once. Here's how to interrupt the loop, fast.",
   "deck": "When your mind won't stop racing, write the thoughts down as fast as they come, in fragments and without editing. Circle the ones that repeat, write one small next step for each, then close the note without rereading it. Getting the list out of your head lets it stop circling.",

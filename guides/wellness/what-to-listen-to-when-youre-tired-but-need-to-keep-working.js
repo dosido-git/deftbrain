@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Listen to When You're Tired but Need to Keep Working (Without Crashing Harder Later)",
   "titleHtml": "What to Listen to When You&#39;re Tired but Need to Keep Working <em>(Without Crashing Harder Later)</em>",
   "shortTitle": "What to Listen to When Tired but Working",
+  "searchTitle": "Music for When You're Tired | Stay Alert Without Burning Out",
   "navTitle": "What to listen to when you're tired but need to keep working without crashing harder later",
   "description": "Energetic music will get you through the next hour but you'll pay for it. Here's how to use music to extend tired focus without making the crash worse.",
   "deck": "When you're tired but have to keep working, choose warm, familiar, mid-tempo music rather than high-energy tracks, use it to get you to a real break, cap the session, and plan an early night. Music can make tired work more bearable, but it can't replace rest.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to do when you have 1000+ unread emails",
   "titleHtml": "What to do when you have <em>1000+ unread emails</em>",
   "shortTitle": "Inbox bankruptcy",
+  "searchTitle": "1000 Unread Emails | Get Back in Control",
   "navTitle": "1000 unread emails",
   "description": "A method for the specific situation where your inbox has grown to a size where you cannot possibly read it all — and what to do to recover without dropping anything important.",
   "deck": "With 1,000 or more unread emails, declare email bankruptcy: archive (don't delete) everything older than about 30 days, message the few people you know are waiting, triage the last month quickly, and set up filters so bulk mail doesn't pile up again. Archived mail stays searchable.",

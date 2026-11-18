@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to do anything when you can't get started",
   "titleHtml": "How to do anything <em>when you can't get started</em>",
   "shortTitle": "Can't get started",
+  "searchTitle": "How to Get Started When You Feel Overwhelmed | Get Moving Today",
   "navTitle": "can't get started",
   "description": "A method for the specific paralysis where you know what to do, you have time to do it, and you cannot make yourself begin.",
   "deck": "When you can't get started, change your physical state first (stand, walk, drink water), shrink the first step until it's almost silly, commit to only two minutes, or work alongside another person. If the morning is gone, use the afternoon instead of writing off the day.",

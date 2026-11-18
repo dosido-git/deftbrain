@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why You Cannot Focus Before Something Stressful",
   "titleHtml": "Why You Cannot Focus <em>Before Something Stressful</em>",
   "shortTitle": "Pre-Stress Focus",
+  "searchTitle": "Can't Focus Before a Stressful Event | Calm Your Mind and Get Things Done",
   "navTitle": "cant focus before stress",
   "description": "It is not laziness. The brain has a specific reason for going offline before high-stakes events. Here is what is happening — and how to work with it.",
   "deck": "It's hard to focus before something stressful because part of your attention stays on the event and your body is on mild alert, which disrupts demanding work more than simple tasks. Plan for it: choose lighter tasks, use the short windows when focus returns, and stop blaming yourself.",

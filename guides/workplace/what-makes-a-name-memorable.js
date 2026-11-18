@@ -5,6 +5,7 @@ module.exports = {
   "title": "What Makes a Name Memorable (and What Just Sounds Memorable to You)",
   "titleHtml": "What Makes a Name Memorable <em>(and What Just Sounds Memorable to You)</em>",
   "shortTitle": "What Makes a Name Memorable",
+  "searchTitle": "What Makes a Name Memorable | Make Yours Unforgettable",
   "navTitle": "what makes a name memorable",
   "description": "There is a real list of properties memorable names share. Here is what it actually is — and what is just survivor bias.",
   "deck": "Memorable names tend to be concrete enough to picture, distinct from competitors' names, easy to say, and rhythmic when spoken. Length matters less than pronounceability, and spelling is a separate test from memorability: it decides whether people can type the name, not whether they recall it.",

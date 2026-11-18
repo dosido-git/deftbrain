@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Say When There's an Awkward Silence (Without Forcing It)",
   "titleHtml": "What to Say When There&#39;s an Awkward Silence <em>(Without Forcing It)</em>",
   "shortTitle": "What to Say When There's an Awkward Silence",
+  "searchTitle": "How to Fill an Awkward Silence | Keep the Conversation Flowing",
   "navTitle": "What to say when there's an awkward silence without forcing it",
   "description": "What to say when there's an awkward silence: use what's around you, ask sideways questions, return to what they said, or name the pause lightly.",
   "deck": "To break an awkward silence, comment on something you can both see, ask a sideways question like 'What's the last thing you watched that was actually good?', return to something they said earlier, or lightly admit the pause. With people you're close to, letting a silence sit is fine.",

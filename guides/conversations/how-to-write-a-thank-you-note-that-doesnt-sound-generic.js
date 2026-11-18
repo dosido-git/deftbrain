@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Thank-You Note That Doesn't Sound Generic",
   "titleHtml": "How to Write a Thank-You Note <em>(That Doesn't Sound Generic)</em>",
   "shortTitle": "Non-Generic Thank-You Notes",
+  "searchTitle": "How to Write a Thank You Note | Make Them Feel Appreciated",
   "navTitle": "non-generic thank-you notes",
   "description": "The standard thank-you template makes every note read the same. Here's how to write one that actually sounds like you wrote it.",
   "deck": "A thank-you note stops sounding generic when it opens with the specific gift or gesture, names what made it thoughtful, says how you've used it, adds one warm line about the person, and ends briefly. Specific beats eloquent.",

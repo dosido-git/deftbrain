@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to get dressed when you can't decide",
   "titleHtml": "How to get dressed <em>when you can't decide</em>",
   "shortTitle": "Dressed when you can't decide",
+  "searchTitle": "What Should I Wear Today | Get Dressed in Minutes",
   "navTitle": "get dressed when you can't decide",
   "description": "A method for breaking out of decision paralysis at the closet — when the problem is not what to wear but the inability to commit to anything.",
   "deck": "When you can't decide what to wear, stop browsing, choose one constraint (warm, comfortable, not too dressy) to narrow the options, give yourself thirty seconds to pick from what's left, don't reopen the choice once dressed, and pick tomorrow's outfit the evening before.",

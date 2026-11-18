@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Explain Your Job to Your Family at Thanksgiving (Without Glazing Anyone Over)",
   "titleHtml": "How to Explain Your Job to Your Family at Thanksgiving <em>(Without Glazing Anyone Over)</em>",
   "shortTitle": "How to Explain Your Job at Thanksgiving",
+  "searchTitle": "How to Explain Your Job to Family | End the Blank Stares at Dinner",
   "navTitle": "How to explain your job to your family at Thanksgiving without glazing anyone over",
   "description": "Your aunt asked what you do for a living. Your usual answer is too vague or too technical. Here's how to land a version that actually means something.",
   "deck": "To explain your job to family, skip the title and say what you do as a verb ('I decide which features get built'), tie it to something they've used, tell one short story from the work, name one part that's harder than it looks, and then ask them a question.",

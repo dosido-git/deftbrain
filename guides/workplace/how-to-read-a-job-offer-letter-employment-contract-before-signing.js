@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to read a job offer letter or employment contract before signing",
   "titleHtml": "How to read a job offer letter <em>before signing</em>",
   "shortTitle": "Read a job offer before signing",
+  "searchTitle": "What to Look for in a Job Offer | Sign Knowing What You Get",
   "navTitle": "read offer before signing",
   "description": "A specific method for understanding what you are actually agreeing to in a job offer or employment contract — before you sign and before you negotiate.",
   "deck": "Before signing a job offer or employment contract, confirm every promised pay item is in writing, read the at-will and termination terms, check any noncompete or nonsolicitation clause, review the intellectual property assignment, and note what's missing, such as severance or how disputes are handled.",

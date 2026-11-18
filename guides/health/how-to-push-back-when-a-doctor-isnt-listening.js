@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Push Back When a Doctor Isn't Listening (Without Burning the Visit)",
   "titleHtml": "How to Push Back When a Doctor Isn&#39;t Listening <em>(Without Burning the Visit)</em>",
   "shortTitle": "How to Push Back When a Doctor Isn't Listening",
+  "searchTitle": "Doctor Not Listening | Be Heard at Your Next Visit",
   "navTitle": "How to push back when a doctor isn't listening without burning the visit",
   "description": "There's a way to push back that gets you the workup you came for, and there's a way that gets you a defensive doctor and an even shorter visit. The difference is the wording.",
   "deck": "To push back when a doctor isn't listening, slow the visit down, repeat back what you heard and name what doesn't fit, ask what else it could be, and make one specific request, such as a named test or referral. If they decline, ask for that decision in your notes.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Pronounce Names From Languages You Do Not Speak",
   "titleHtml": "How to Pronounce Names <em>From Languages You Do Not Speak</em>",
   "shortTitle": "Names From Other Languages",
+  "searchTitle": "How to Pronounce Foreign Names | Say Every Name With Respect",
   "navTitle": "names from other languages",
   "description": "How to pronounce names from languages you don't speak: look it up first, aim for the real sounds, skip the accent, practice, and ask once.",
   "deck": "To pronounce a name from a language you don't speak, look it up before you need it (the person's own recording, a pronunciation site, or someone who knows them), aim for the real sounds rather than an anglicized version, skip any put-on accent, practice aloud, and invite one correction.",

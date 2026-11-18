@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Negotiate With a Car Salesman (Without Getting Played)",
   "titleHtml": "How to Negotiate With a Car Salesman <em>(Without Getting Played)</em>",
   "shortTitle": "How to Negotiate With a Car Salesman",
+  "searchTitle": "How to Negotiate With a Car Salesman | Drive Off With a Fair Deal",
   "navTitle": "How to negotiate with a car salesman without getting played",
   "description": "Car negotiation isn't really negotiation — it's a structured game with predictable moves on their side and a small set of correct responses on yours.",
   "deck": "To negotiate with a car salesperson, settle the out-the-door price before discussing monthly payments, keep your trade-in separate with an outside offer in hand, arrange financing in advance, question every add-on, and be ready to leave. The FTC advises focusing on total cost, not the monthly payment.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot the Highest-Leverage Thing You Could Be Doing",
   "titleHtml": "How to Spot the Highest-Leverage Thing <em>You Could Be Doing</em>",
   "shortTitle": "Spot the Highest-Leverage Move",
+  "searchTitle": "Highest Leverage Work | Focus on What Moves the Needle",
   "navTitle": "highest-leverage thing to do",
   "description": "Most of your time goes to things with low yield. Here is how to find the small set of activities that produce most of the results, and shift your time toward them.",
   "deck": "To find your highest-leverage activity, look back at a period when you got real results and list what produced them, compare each activity's results with its time cost, and look for the bottleneck that holds everything else back. Shift time from low-yield work, not from rest, and recheck each quarter.",

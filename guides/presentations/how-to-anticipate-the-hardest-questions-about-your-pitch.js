@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Anticipate the Hardest Questions About Your Pitch",
   "titleHtml": "How to Anticipate the Hardest Questions <em>About Your Pitch</em>",
   "shortTitle": "Anticipate the Hardest Pitch Questions",
+  "searchTitle": "Tough Pitch Questions | Win Over Any Investor",
   "navTitle": "anticipate the hardest pitch questions",
   "description": "Investors and decision-makers ask the same hard questions over and over. Here is how to surface yours before the meeting, and prepare for them honestly.",
   "deck": "To anticipate the hardest questions about your pitch, start with the question you hope nobody asks, list your three biggest assumptions and how you'd defend them, prepare a fair answer on competitors, know how every number on your slides was calculated, and rehearse with someone willing to be tough.",

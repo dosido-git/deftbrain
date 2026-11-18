@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Your Closest Friendships Fade (Even When Nothing Went Wrong)",
   "titleHtml": "Why Your Closest Friendships Fade <em>(Even When Nothing Went Wrong)</em>",
   "shortTitle": "Why Close Friendships Fade Quietly",
+  "searchTitle": "Why Close Friendships Fade | Hold On to Friends Who Matter",
   "navTitle": "why close friendships fade quietly",
   "description": "Most friendships don't end. They quietly stop. Here's what's actually causing the fade — and what would prevent it.",
   "deck": "Close friendships often fade without any falling-out because the shared context that held them together (a job, a neighborhood, a routine) disappears, both people wait for the other to reach out, and the everyday maintenance stops. Naming which friendships matter and building new routines can prevent the drift.",

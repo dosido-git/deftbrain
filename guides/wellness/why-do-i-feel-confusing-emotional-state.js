@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Do I Feel Two Things at Once?",
   "titleHtml": "Why Do I <em>Feel Two Things at Once?</em>",
   "shortTitle": "Why Do I Feel Two Things at Once?",
+  "searchTitle": "Mixed Emotions | Make Sense of How You Feel",
   "navTitle": "Why do I feel two things at once that seem to contradict each other",
   "description": "Why you can feel two emotions at once, like relief and grief: why mixed feelings happen, words for them, and how to live with them.",
   "deck": "You can feel two things at once, such as relief and grief or pride and embarrassment, because most situations contain more than one thing to respond to. Mixed feelings are normal. Name both rather than forcing one word, don't decide which is the real one, and let them coexist.",

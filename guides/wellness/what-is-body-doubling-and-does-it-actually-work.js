@@ -5,6 +5,7 @@ module.exports = {
   "title": "What is body doubling, and does it actually work?",
   "titleHtml": "What is body doubling, <em>and does it actually work?</em>",
   "shortTitle": "What is body doubling",
+  "searchTitle": "What Is Body Doubling | Get More Done With Company",
   "navTitle": "what is body doubling",
   "description": "What body doubling is, why many people find it helps with avoided tasks, whether virtual sessions work, and its limits.",
   "deck": "Body doubling means working alongside another person who is also working, in person or by video, with little interaction. Many people say it helps them start and stick with avoided tasks; it's popular in ADHD communities, though the evidence is mostly first-hand reports. It won't decide what you work on.",

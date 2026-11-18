@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write Meeting Notes That People Actually Read",
   "titleHtml": "How to Write Meeting Notes <em>That People Actually Read</em>",
   "shortTitle": "How to Write Meeting Notes That People Actually Read",
+  "searchTitle": "How to Write Meeting Notes | Notes People Actually Read",
   "navTitle": "How to write meeting notes that people actually read",
   "description": "Most meeting notes get sent, opened once, and forgotten. The notes that actually get read share a structural shape — and it's not the chronological summary most people default to. Five steps for notes that get used.",
   "deck": "Meeting notes get read when decisions and action items come first, each action has an owner and deadline, items nobody claimed are flagged as unassigned, the whole thing reads in about three minutes, and casual meetings get a short message instead of formal notes.",

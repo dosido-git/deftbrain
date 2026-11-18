@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Talk About with Someone You Barely Know (Beyond Weather and Work)",
   "titleHtml": "What to Talk About with Someone You Barely Know <em>(Beyond Weather and Work)</em>",
   "shortTitle": "What to Talk About with Someone You Barely Know",
+  "searchTitle": "What to Talk About With Strangers | Connect With Anyone, Easily",
   "navTitle": "What to talk about with someone you barely know beyond weather and work",
   "description": "What to talk about with someone you barely know, beyond weather and work: ask about choices, share first, follow the friction, and invite more.",
   "deck": "With someone you barely know, ask about things they chose, like a show, hobby or trip, rather than job and hometown. Share a small moment of your own first, follow up on the tricky part of their answers, ask questions with no right answer, and invite more after short replies.",

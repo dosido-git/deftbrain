@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know if Your Business Idea Is Actually Going to Work",
   "titleHtml": "How to Know if Your Business Idea <em>Is Actually Going to Work</em>",
   "shortTitle": "Know if Your Business Idea Will Work",
+  "searchTitle": "Will My Business Idea Work | Find Out Before You Invest",
   "navTitle": "How to know if your business idea is actually going to work",
   "description": "You can't know with certainty before you start. You can know whether the question itself is the right one, what assumptions you're making, and what would change your mind. Five steps for an honest read.",
   "deck": "You can't know for certain that a business idea will work, but you can define success in numbers and dates, list the strongest objections, check which assumptions rest only on optimism, and run the smallest experiment that would change your mind, with the pass mark set beforehand.",

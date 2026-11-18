@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to tell if a text is passive-aggressive or just short",
   "titleHtml": "How to tell if a text is passive-aggressive or just short",
   "shortTitle": "Passive-aggressive or just short?",
+  "searchTitle": "Is This Text Passive-Aggressive | Stop Overthinking Short Replies",
   "navTitle": "Passive-aggressive or just short?",
   "description": "They sent \"k.\" Or \"fine.\" Or no period at all where they usually use one. Here is how to tell whether they are upset or just driving.",
   "deck": "To tell whether a short text is passive-aggressive or just short, compare it with how this person usually texts, notice how quickly it came, consider what just happened between you, and look for missing warmth they normally include. If you're still unsure, ask lightly rather than 'are you mad?'",

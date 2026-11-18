@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Fact-Check Something You Read Online",
   "titleHtml": "How to Fact-Check <em>Something You Read Online</em>",
   "shortTitle": "Fact-Check Anything",
+  "searchTitle": "How to Fact-Check Online | Share Only What's True",
   "navTitle": "fact-check something online",
   "description": "You saw a confident claim online and you are not sure if it is true. Here is the three-minute version of fact-checking it yourself, plus when to escalate to a deeper check.",
   "deck": "To fact-check something online, search a distinctive phrase from the claim in quotation marks, trace it to its original source, add 'fact check' to your search to see if professional checkers have covered it, and confirm the date and context still apply. Read what other sites say about a source.",

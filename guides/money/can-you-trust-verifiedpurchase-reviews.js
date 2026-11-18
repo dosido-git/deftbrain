@@ -5,6 +5,7 @@ module.exports = {
   "title": "Can You Trust Verified-Purchase Reviews?",
   "titleHtml": "Can You Trust <em>Verified-Purchase Reviews?</em>",
   "shortTitle": "Are Verified Reviews Trustworthy?",
+  "searchTitle": "Can You Trust Verified Purchase Reviews | Buy With Confidence",
   "navTitle": "are verified reviews trustworthy?",
   "description": "The verified-purchase badge is supposed to mean \"this person actually bought it.\" Here's why it's only partly true — and how to read it.",
   "deck": "You can trust a verified-purchase badge only partly: it confirms a transaction happened, not that the review is independent or honest. Paid and free-product reviews can still carry the badge. Treat it as one filter, then check the reviewer's history, timing and the spread of ratings.",

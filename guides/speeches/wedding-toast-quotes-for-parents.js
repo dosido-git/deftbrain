@@ -5,6 +5,7 @@ module.exports = {
   "title": "Wedding Toast Quotes for Parents (Real Ones, and How to Use One)",
   "titleHtml": "Wedding Toast Quotes for Parents <em>(Real Ones, and How to Use One)</em>",
   "shortTitle": "Wedding Toast Quotes for Parents",
+  "searchTitle": "Wedding Toast for Parents | Say What's in Your Heart",
   "navTitle": "wedding toast quotes for parents",
   "description": "Real, sourced wedding toast quotes for the mother or father of the bride or groom, plus how to choose one that fits your child, check it, and place it in the toast.",
   "deck": "Good quotes for a parent's wedding toast are short, verifiable, and lead into something about your child, such as George Eliot's lines on two souls joined for life or Kahlil Gibran's parents as bows, children as living arrows. One quote is usually enough.",

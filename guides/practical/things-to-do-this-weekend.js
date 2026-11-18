@@ -5,6 +5,7 @@ module.exports = {
   "title": "Things to Do This Weekend (When You Are Sick of Your Usual)",
   "titleHtml": "Things to Do This Weekend <em>(When You Are Sick of Your Usual)</em>",
   "shortTitle": "Things to Do This Weekend",
+  "searchTitle": "Things to Do This Weekend | Make the Most of Your Days Off",
   "navTitle": "things to do this weekend",
   "description": "How to find something to do that is not the same restaurant, the same park, the same Saturday you have lived nine times this year.",
   "deck": "To find something new to do this weekend, decide the mood first (active or quiet, busy or calm), set a time and budget limit, pick a part of town you don't know, anchor the day with one fixed plan, and leave the house early before the day drifts.",

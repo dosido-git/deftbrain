@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Recognize Sales Manipulation Tactics (Before They Work on You)",
   "titleHtml": "How to Recognize Sales Manipulation Tactics <em>(Before They Work on You)</em>",
   "shortTitle": "How to Recognize Sales Manipulation Tactics",
+  "searchTitle": "Sales Manipulation Tactics | Buy on Your Own Terms",
   "navTitle": "How to recognize sales manipulation tactics before they work on you",
   "description": "Sales manipulation isn't a list of tricks — it's a small set of moves that all feel like normal conversation when they're working. Here's how to spot them while they're happening.",
   "deck": "Common sales manipulation tactics are artificial deadlines, false either-or choices that hide the option to not buy, pivots from numbers to feelings, a ladder of small agreements, and one-sided friendliness. Spotting them lets you slow down, take time, and decide on your own schedule.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is a College Degree Still Worth It?",
   "titleHtml": "Is a College Degree <em>Still Worth It?</em>",
   "shortTitle": "Is College Worth It?",
+  "searchTitle": "Is a College Degree Worth It | Decide With the Full Picture",
   "navTitle": "Is a college degree still worth it — the realistic answer",
   "description": "The 'college isn't worth it' takes are loud. The data is more nuanced. Here's the honest financial frame — when a degree pays off and when it doesn't.",
   "deck": "For most people a college degree still pays off: in 2025, US workers with a bachelor's degree had median weekly earnings of $1,578 versus $966 with only a high school diploma, and lower unemployment. But the return varies widely by school, cost, field and the alternatives available.",

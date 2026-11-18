@@ -5,6 +5,7 @@ module.exports = {
   "title": "What they actually meant by \"we need to talk\"",
   "titleHtml": "What they actually meant by &ldquo;we need to talk&rdquo;",
   "shortTitle": "\"We need to talk\"",
+  "searchTitle": "What Does We Need to Talk Mean | Calm the Dread Before the Talk",
   "navTitle": "\"We need to talk\"",
   "description": "What 'we need to talk' usually means: what the medium and the surrounding messages tell you, why not to ask in advance, and how to walk in.",
   "deck": "'We need to talk' is usually less serious by text than in person, and the messages around it say more than the phrase. Amid everyday logistics it's often practical; after a tense exchange it's more likely about the relationship. Don't press for the topic; open with 'What's on your mind?'",

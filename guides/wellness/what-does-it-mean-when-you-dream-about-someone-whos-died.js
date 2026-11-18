@@ -5,6 +5,7 @@ module.exports = {
   "title": "What Does It Mean When You Dream About Someone Who's Died?",
   "titleHtml": "What Does It Mean When You Dream About <em>Someone Who's Died?</em>",
   "shortTitle": "Dreams About People Who've Died",
+  "searchTitle": "Dreaming About Someone Who Died | Find Comfort in Your Dreams",
   "navTitle": "dreams about people who've died",
   "description": "These dreams aren't a message from them. But they aren't nothing, either. Here's what your mind is usually doing — and why it matters.",
   "deck": "Dreaming about someone who has died is common and is usually part of how the mind processes loss. Studies of bereaved people find these dreams are often comforting, sometimes distressing. Whatever they mean to you, they draw on your memories of the person and what you're living through now.",

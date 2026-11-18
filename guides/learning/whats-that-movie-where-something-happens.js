@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find That Movie Where Something Specific Happened",
   "titleHtml": "How to Find That Movie <em>Where Something Specific Happened</em>",
   "shortTitle": "Find the Movie",
+  "searchTitle": "Find a Movie by Plot | Finally Name That Movie",
   "navTitle": "find a movie from a detail",
   "description": "How to find a movie when you only remember a scene: the unique details, the era, actors or directors, and where to ask.",
   "deck": "To find a movie from one scene you remember, list the unusual details rather than the generic ones, narrow the era (color, phones, cars), and search a film database by actor or director if you remember either. Communities such as r/tipofmytongue are good at identifying films from fragments.",

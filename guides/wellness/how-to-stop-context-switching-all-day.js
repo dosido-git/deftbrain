@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Stop Context-Switching All Day (When Your Job Is Built On It)",
   "titleHtml": "How to Stop Context-Switching All Day <em>(When Your Job Is Built On It)</em>",
   "shortTitle": "How to Stop Context-Switching All Day",
+  "searchTitle": "How to Stop Multitasking | Get More Done With Less Stress",
   "navTitle": "How to stop context-switching all day when your job is built on it",
   "description": "You finish the day exhausted, with little to show. The cause isn't laziness — it's a hundred small mental gear-shifts. Here's how to cut the cost.",
   "deck": "To cut context switching, target your two or three costliest transitions, protect one or two 30- to 45-minute focus windows a day, batch messages into a few set check-in times, tell colleagues when you check, and accept that some days will simply be reactive.",

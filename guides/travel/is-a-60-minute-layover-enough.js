@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is a 60-Minute Layover Enough? (When It Works and When It Is a Gamble)",
   "titleHtml": "Is a 60-Minute Layover Enough? <em>(When It Works and When It Is a Gamble)</em>",
   "shortTitle": "Is a 60-Minute Layover Enough?",
+  "searchTitle": "Is a 60-Minute Layover Enough | Fly With Less Worry",
   "navTitle": "is a 60 minute layover enough",
   "description": "Is a 60-minute layover enough? Usually for a domestic connection on one ticket, rarely for an international arrival into the U.S. Here is what decides it.",
   "deck": "A 60-minute layover is usually enough for a domestic connection on one ticket, especially in the same terminal without checked bags. It's usually too short arriving internationally into the US, where you clear immigration and customs and recheck bags, and risky on separate tickets.",

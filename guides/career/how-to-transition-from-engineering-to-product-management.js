@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Transition From Engineering to Product Management",
   "titleHtml": "How to Transition From <em>Engineering to Product Management</em>",
   "shortTitle": "Engineering to PM",
+  "searchTitle": "Engineer to Product Manager | Make the Switch With a Clear Plan",
   "navTitle": "How to transition from engineering to product management",
   "description": "How to transition from software engineering to product management: test the work first, use your technical credibility, move internally, and expect to start junior.",
   "deck": "To move from engineering to product management, first try PM work in your current job, such as writing a spec or running a customer interview. Then use your technical credibility as the bridge, move internally if your company allows it, and expect to be a junior PM for a while.",

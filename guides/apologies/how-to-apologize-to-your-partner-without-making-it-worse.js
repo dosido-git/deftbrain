@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Apologize to Your Partner Without Making It Worse",
   "titleHtml": "How to Apologize to Your Partner <em>Without Making It Worse</em>",
   "shortTitle": "How to Apologize to Your Partner Without Making It Worse",
+  "searchTitle": "How to Apologize to Your Partner | Repair It Instead of Reigniting It",
   "navTitle": "How to apologize to your partner without making it worse",
   "description": "The apology that goes wrong with a partner usually fails in the same way: it's defensive, it pivots to your feelings about being wrong, or it tries to fix in the moment when they need you to sit with it first. Five steps for the apology that actually lands.",
   "deck": "To apologize to your partner without making it worse, find out what actually hurt, apologize with no 'but', keep the focus on their experience rather than your guilt, and hold off on fixes until they feel heard. For a repeat, talk about changing the pattern.",

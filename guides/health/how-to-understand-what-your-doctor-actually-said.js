@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Understand What Your Doctor Actually Said (After You Already Left)",
   "titleHtml": "How to Understand What Your Doctor Actually Said <em>(After You Already Left)</em>",
   "shortTitle": "How to Understand What Your Doctor Actually Said",
+  "searchTitle": "What Did My Doctor Say | Leave Knowing What Comes Next",
   "navTitle": "How to understand what your doctor actually said after you already left",
   "description": "How to understand what your doctor said after the visit: use the after-visit summary, translate the terms, sort what you heard, and ask the right follow-up.",
   "deck": "To understand what your doctor said, read the after-visit summary or visit notes in your patient portal rather than relying on memory. List the terms you don't know, translate each into what it means for you, sort everything into diagnosis, treatment, outlook and follow-up, then ask about the rest.",

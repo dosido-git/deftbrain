@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Recover When Your Presentation Goes Off the Rails",
   "titleHtml": "How to Recover <em>When Your Presentation Goes Off the Rails</em>",
   "shortTitle": "Recover Live",
+  "searchTitle": "When a Presentation Goes Wrong | Recover Smoothly",
   "navTitle": "recover from a presentation disaster",
   "description": "Tech failure, a question that derails everything, a hostile audience member, blanking mid-slide. Here is how to recover gracefully when the presentation is sideways.",
   "deck": "To recover when a presentation goes wrong, keep talking if the technology fails, bookmark a derailing question for later, pause openly and check your notes if you blank, and with a hostile question, acknowledge the fair part, answer narrowly and offer to continue afterward. Calm matters more than the glitch.",

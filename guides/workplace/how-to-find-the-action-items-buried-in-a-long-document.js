@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to find the action items buried in a long document",
   "titleHtml": "How to find <em>the action items buried in a long document</em>",
   "shortTitle": "Find buried action items",
+  "searchTitle": "Find Action Items in a Document | Never Miss a To-Do",
   "navTitle": "find buried action items",
   "description": "A method for the specific problem of pulling out the things you actually have to do from a document that buried them in pages of context, throat-clearing, and FYI material.",
   "deck": "To find action items in a long document, search for request verbs (review, sign, submit, confirm, respond), then for dates and deadlines, then for direct address such as 'you are required to.' Pin each hit to a person and a deadline, and keep a one-page list of the real actions.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to manage email overload",
   "titleHtml": "How to manage <em>email overload</em>",
   "shortTitle": "Manage email overload",
+  "searchTitle": "Email Overload | Take Control of Your Inbox",
   "navTitle": "manage email overload",
   "description": "A practical method for handling an inbox that has more incoming volume than you can possibly read carefully — without dropping the things that actually matter.",
   "deck": "To manage email overload, stop aiming to read everything: check email in a few set blocks a day, sort each message into delete, do (if it takes under two minutes), defer or delegate, filter predictable senders automatically, and keep routine replies to a couple of sentences.",

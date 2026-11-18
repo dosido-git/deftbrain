@@ -5,6 +5,7 @@ module.exports = {
   "title": "What \"Let's Take This Offline\" Actually Means in a Meeting (And When to Push Back)",
   "titleHtml": "What \"Let's Take This Offline\" Actually Means in a Meeting <em>(And When to Push Back)</em>",
   "shortTitle": "What \"Let's Take This Offline\" Means",
+  "searchTitle": "What Does Let's Take This Offline Mean | Understand the Subtext",
   "navTitle": "What does lets take this offline mean in a meeting and when to push back",
   "description": "What 'let's take this offline' means in a meeting: a real sidebar, the wrong audience, conflict avoidance or a shutdown — and when to push back.",
   "deck": "'Let's take this offline' means continue the discussion outside the meeting. It can be a genuine sidebar for an off-agenda topic or a few people, a way to avoid an uncomfortable disagreement, or a way to shut down a challenge. If no follow-up gets scheduled, ask for a specific time.",

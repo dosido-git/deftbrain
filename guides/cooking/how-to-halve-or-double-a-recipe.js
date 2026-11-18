@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Halve or Double a Recipe Without Ruining It",
   "titleHtml": "How to Halve or Double a Recipe <em>Without Ruining It</em>",
   "shortTitle": "Scale a Recipe",
+  "searchTitle": "How to Halve a Recipe | Get the Same Great Result",
   "navTitle": "halve or double a recipe",
   "description": "Most things in a recipe scale linearly. Some do not. Here is what to multiply, what to leave alone, and which ingredients break recipes when you scale them up or down.",
   "deck": "To halve or double a recipe, multiply the main ingredients and liquids by the same factor, add salt and strong spices gradually and taste, and match the pan to the new volume. For cakes and other baked goods, making separate batches is often more reliable than one scaled batch.",

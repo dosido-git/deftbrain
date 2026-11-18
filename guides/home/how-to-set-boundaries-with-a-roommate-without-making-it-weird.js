@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Set Boundaries with a Roommate Without Making It Weird",
   "titleHtml": "How to Set Boundaries <em>Without Making It Weird</em>",
   "shortTitle": "Set Roommate Boundaries",
+  "searchTitle": "Roommate Boundaries | Live Together in Peace",
   "navTitle": "set roommate boundaries",
   "description": "How to set boundaries with a roommate without making it weird: a specific behavior, your need, a small request, and room to respond.",
   "deck": "To set a boundary with a roommate, name the specific behavior rather than a vague feeling, frame it as your need ('I need the kitchen quiet after 9:30 on weeknights'), and make the request small enough to say yes to. Then stop talking and let them respond.",

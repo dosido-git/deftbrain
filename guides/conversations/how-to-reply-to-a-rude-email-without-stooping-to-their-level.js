@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Reply to a Rude Email (Without Stooping to Their Level)",
   "titleHtml": "How to Reply to a Rude Email <em>(Without Stooping to Their Level)</em>",
   "shortTitle": "How to Reply to a Rude Email",
+  "searchTitle": "How to Reply to a Rude Email | Respond With Grace and Strength",
   "navTitle": "How to reply to a rude email without stooping to their level",
   "description": "The reply that wins isn't the one that matches their tone — it's the one that makes their tone look like the choice it was. Five moves for replying to email rudeness without becoming the next problem in the thread.",
   "deck": "To reply to a rude email without stooping to their level, wait a few hours, open neutrally, answer only the substance, and be slightly more formal and thorough than usual. If the rudeness is a pattern, raise the tone separately and calmly, outside that thread.",

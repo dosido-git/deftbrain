@@ -5,6 +5,7 @@ module.exports = {
   "title": "How Long Does It Take to Learn Data Analysis for a Career Change?",
   "titleHtml": "How Long Does It Take to <em>Learn Data Analysis for a Career Change?</em>",
   "shortTitle": "Time to Learn Data Analysis",
+  "searchTitle": "How Long to Learn Data Analysis | Plan Your Path With Realistic Timelines",
   "navTitle": "How long does it take to learn data analysis for a career change",
   "description": "How long it takes to learn data analysis for a career change: a realistic 6 to 18 months, what decides the timeline, and how long the job search adds.",
   "deck": "Learning data analysis well enough to change careers often takes six months to a year and a half, plus several months of job searching. Your starting skills, how quickly you move from tools to analytical thinking, whether you build real projects, and which entry role you target shape the timeline.",

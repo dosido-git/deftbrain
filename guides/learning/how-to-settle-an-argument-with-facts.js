@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Settle an Argument With Facts",
   "titleHtml": "How to Settle an Argument <em>With Facts</em>",
   "shortTitle": "Settle an Argument",
+  "searchTitle": "How to Settle an Argument | End the Debate for Good",
   "navTitle": "settle an argument with facts",
   "description": "You and someone you care about are arguing about something where there is an actual factual answer. Here is how to find that answer together without making the argument worse.",
   "deck": "To settle a factual argument with someone you care about, first agree on exactly what you disagree about, choose one neutral source and look at it together, accept the answer quickly if it goes against you, and recognize when the question is genuinely contested rather than settled.",

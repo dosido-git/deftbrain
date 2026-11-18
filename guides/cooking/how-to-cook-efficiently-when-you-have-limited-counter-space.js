@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Cook Efficiently When You Have Almost No Counter Space",
   "titleHtml": "How to Cook Efficiently <em>When You Have Almost No Counter Space</em>",
   "shortTitle": "Cooking in a Tiny Kitchen",
+  "searchTitle": "Small Kitchen Cooking | Make Big Meals in Small Spaces",
   "navTitle": "cooking with limited counter space",
   "description": "Three feet of counter is not actually a barrier to cooking real meals. Here is how to make it work.",
   "deck": "To cook well with little counter space, work in sequence instead of prepping everything at once, wash as you go, use the stovetop and sink as extra surfaces, and choose one-pan recipes. Prep produce before raw meat, or wash the board in between.",

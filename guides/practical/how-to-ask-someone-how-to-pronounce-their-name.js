@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask Someone How to Pronounce Their Name",
   "titleHtml": "How to Ask Someone <em>How to Pronounce Their Name</em>",
   "shortTitle": "Ask About Their Name",
+  "searchTitle": "How to Ask Someone How to Pronounce Their Name | Get It Right Without Embarrassment",
   "navTitle": "ask about their name",
   "description": "Pronouncing a name wrong for months is worse than the awkward question. Here is how to ask without making it weird.",
   "deck": "To ask how someone pronounces their name, ask early and directly ('How do you pronounce your name?'), have them say it again slowly, repeat it back to check, and ask once more later if you're unsure. Skip apologetic lead-ins that make them reassure you.",

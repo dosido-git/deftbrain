@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Is My Cat Throwing Up Undigested Food? The 5 Real Reasons",
   "titleHtml": "Why Is My Cat Throwing Up Undigested Food? <em>The 5 Real Reasons</em>",
   "shortTitle": "Why Is My Cat Throwing Up Undigested Food?",
+  "searchTitle": "Cat Throwing Up Undigested Food | Know When to Worry",
   "navTitle": "Why is my cat throwing up undigested food the 5 real reasons",
   "description": "Undigested food coming back up is one of the most common cat-owner concerns — and the causes are a small, knowable set. Five reasons cats throw up undigested food, from 'fix the bowl' to 'see the vet today.'",
   "deck": "Cats most often bring up undigested food because they eat too fast, which slow-feeder bowls fix. Other causes are hairballs, food sensitivity, and passive regurgitation, which can signal an esophagus problem. Vomiting more than once a week, or with weight loss, lethargy or blood, needs a vet.",

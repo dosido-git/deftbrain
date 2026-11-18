@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Schedule a Week So You're Not Constantly Switching Gears",
   "titleHtml": "How to Schedule a Week So You&#39;re Not Constantly Switching Gears",
   "shortTitle": "How to Schedule a Week Without Constant Switching",
+  "searchTitle": "How to Avoid Context Switching | Focus Longer, Stress Less",
   "navTitle": "How to schedule a week so you're not constantly switching gears",
   "description": "How to schedule your week to avoid constant context switching: loose day themes, two protected mornings, clustered meetings, and a Friday catch-all.",
   "deck": "To schedule a week without constant switching, give each day a loose theme, protect two mornings for focused work, cluster meetings into afternoons that already have some, and leave Friday afternoon for small leftovers. When the plan breaks, restore the pattern instead of rebuilding the week.",

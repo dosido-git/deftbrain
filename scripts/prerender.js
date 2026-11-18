@@ -187,6 +187,7 @@ function loadTools() {
       tagline:        (t.tagline || '').trim(),
       description:    (t.description || DEFAULT_DESCRIPTION).trim(),
       seoTitle:       t.seoTitle || '',
+      searchTitle:    t.searchTitle || '',
       seoDescription: t.seoDescription || '',
       guide:          t.guide || null,
       primer:         t.primer || null,
@@ -513,14 +514,16 @@ function buildJsonLd({ id, title, description, faq }) {
   ]);
 }
 
-function injectMeta(template, { id, title, description, tagline, seoTitle, seoDescription, faq }) {
+function injectMeta(template, { id, title, description, tagline, seoTitle, searchTitle, seoDescription, faq }) {
   // Title leads with the distinctive tool NAME (kept for tabs/history/bookmarks
   // and branded search), then the keyword phrase: "Name — seoTitle" (or
   // "Name — tagline"). Skip the prefix if seoTitle already contains the name.
   // MUST match the runtime title in src/components/ToolRenderer.js.
-  const pageTitle = seoTitle
+  // searchTitle (2026-11-18) is the whole search-result title, "Keyword | Benefit",
+  // used as written; the name-first rule below covers tools without one.
+  const pageTitle = searchTitle || (seoTitle
     ? (seoTitle.includes(title) ? seoTitle : `${title} — ${seoTitle}`)
-    : (tagline ? `${title} — ${tagline}` : title);
+    : (tagline ? `${title} — ${tagline}` : title));
   const fullTitle = `${pageTitle} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}/${id}`;
   const ogImage   = getOgImage(id);

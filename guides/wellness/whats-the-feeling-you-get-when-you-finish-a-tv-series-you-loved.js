@@ -5,6 +5,7 @@ module.exports = {
   "title": "What's the Feeling You Get When You Finish a TV Series You Loved?",
   "titleHtml": "What's the Feeling You Get When You <em>Finish a TV Series You Loved?</em>",
   "shortTitle": "Post-TV-Series Feeling",
+  "searchTitle": "Sad After Finishing a TV Show | Feel Better About the Ending",
   "navTitle": "What's the feeling you get when you finish a TV series you loved",
   "description": "It's grief, but for fictional people. It's loneliness, but for a world that didn't exist. The feeling has names in some languages and almost-names in English. Here's the longer version.",
   "deck": "The empty feeling after finishing a series you loved is often called post-series depression, an informal term rather than a diagnosis. It's a mix of grief for characters you felt attached to, nostalgia, and the loss of something to look forward to. It usually fades within days.",

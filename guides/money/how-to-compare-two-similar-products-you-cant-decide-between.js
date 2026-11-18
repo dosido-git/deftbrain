@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Compare Two Similar Products You Can't Decide Between",
   "titleHtml": "How to Compare Two Similar Products You Can&#39;t Decide Between",
   "shortTitle": "How to Compare Two Products You Can't Decide Between",
+  "searchTitle": "How to Compare Products | Pick the Right One the First Time",
   "navTitle": "How to compare two similar products you can't decide between",
   "description": "Both have great reviews. The differences are real but small. The decision keeps stalling. Here's the framework that makes the call instead of letting it linger.",
   "deck": "To choose between two similar products, list only the differences that matter for your use, weight each by how often it would affect you, picture which flaw would bother you in three months, notice which one you already lean toward, and check the return policy so the choice feels reversible.",

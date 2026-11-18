@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Get the Person Who Is Impossible to Shop For",
   "titleHtml": "What to Get the Person <em>(Who Is Impossible to Shop For)</em>",
   "shortTitle": "Gifts for the Impossible Person",
+  "searchTitle": "Gifts for Hard to Shop For People | Finally Nail the Gift",
   "navTitle": "gifts for the impossible person",
   "description": "Some people are hard to shop for because of preference. Some because of personality. Different problem, different fix. Here's how to tell.",
   "deck": "For someone impossible to shop for, first work out why: precise taste calls for exact specifics, minimalists appreciate consumables, people who buy everything get the indulgence they wouldn't justify, those without strong interests get time with you, and 'don't get me anything' means something very small.",

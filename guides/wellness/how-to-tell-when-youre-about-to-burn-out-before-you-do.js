@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell When You Are About to Run Out of Energy Before You Do",
   "titleHtml": "How to Tell When You Are About to <em>Run Out of Energy</em> Before You Do",
   "shortTitle": "Catch the Crash Early",
+  "searchTitle": "Signs You Are About to Crash | Catch the Crash Early",
   "navTitle": "catch the crash early",
   "description": "Energy crashes never feel sudden in retrospect. Here are the early signals that you are heading for one — and how to act on them before you are stuck on the couch for two days.",
   "deck": "Early signs that you're running out of energy include a shorter fuse with small things, losing interest in things you usually enjoy, waking tired despite enough sleep, and a week full of social and work commitments you haven't added up. Spotting them early lets you cut back before you crash.",

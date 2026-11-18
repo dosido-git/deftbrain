@@ -5,6 +5,7 @@ module.exports = {
   "title": "Date Ideas for Introverts (That Aren't Just \"Stay Home\")",
   "titleHtml": "Date Ideas for Introverts <em>(That Aren't Just \"Stay Home\")</em>",
   "shortTitle": "Introvert Dates Beyond Home",
+  "searchTitle": "Date Ideas for Introverts | Enjoy a Date That Feels Like You",
   "navTitle": "introvert dates beyond home",
   "description": "Crowds drain you. So do most date defaults. Here's how to plan something out in the world that doesn't bleed your battery before dessert.",
   "deck": "Good dates for introverts happen in quieter places with fewer transitions: venues where you can hear each other, one or two stops rather than four, activities with built-in structure such as a museum or class, an earlier start time, and a planned ending so you don't have to call it.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prioritize When Everything Feels Urgent",
   "titleHtml": "How to Prioritize <em>(When Everything Feels Urgent)</em>",
   "shortTitle": "Prioritize When Everything's Urgent",
+  "searchTitle": "How to Prioritize When Everything Is Urgent | Know What Matters Most",
   "navTitle": "prioritize when everything's urgent",
   "description": "How to prioritize when everything feels urgent: list it all, judge each task by its consequence, keep three, and start with the biggest.",
   "deck": "When everything feels urgent, list every task in one place, write what realistically happens if each isn't done today, and sort by the size of that consequence rather than the deadline. Keep the top three for today, tell anyone affected about the rest, and start with the highest-consequence task.",

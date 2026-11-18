@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Come Up With a Business Name (When You Are Stuck)",
   "titleHtml": "How to Come Up With a Business Name <em>(When You Are Stuck)</em>",
   "shortTitle": "Come Up With a Business Name",
+  "searchTitle": "How to Come Up With a Business Name | Find One That Sticks",
   "navTitle": "come up with a business name",
   "description": "Most naming guides give you exercises. Here is the actual structured approach that surfaces good names.",
   "deck": "To come up with a business name, write a plain-language brief first, list words adjacent to what you do rather than synonyms, try several naming styles, generate a long list without editing, then check survivors for domain, trademark conflicts, meaning in other languages and how they sound aloud.",

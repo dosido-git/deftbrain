@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Cook One Meal for Guests With Different Dietary Needs",
   "titleHtml": "How to Cook One Meal <em>for Guests With Different Dietary Needs</em>",
   "shortTitle": "Cooking for Mixed Diets",
+  "searchTitle": "Recipes for Different Diets | Feed Everyone Happily",
   "navTitle": "cooking for mixed dietary needs",
   "description": "Vegetarian, gluten-free, dairy-free, picky kid. Here is how to feed a table without making four meals.",
   "deck": "To cook one meal for guests with different dietary needs, serve it as separate components (base, proteins, vegetables, sauces), make the default version fit the most restricted diet, label each dish with its allergens, and ask guests about restrictions a week ahead. Keep allergen foods apart from the start.",

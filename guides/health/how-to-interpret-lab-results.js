@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Interpret Lab Results (When the Doctor Hasn't Called Yet)",
   "titleHtml": "How to Interpret Lab Results <em>(When the Doctor Hasn&#39;t Called Yet)</em>",
   "shortTitle": "How to Interpret Lab Results",
+  "searchTitle": "How to Interpret Lab Results | Know What Your Numbers Mean",
   "navTitle": "How to interpret lab results when the doctor hasn't called yet",
   "description": "Patient portals deliver lab results to you before the doctor sees them. Here's how to read what's there well enough to know whether to wait, ask, or act.",
   "deck": "To read lab results before your doctor calls, check what the test was ordered for, compare each value with the reference range printed beside it, and look for patterns across related values. A single slightly flagged value is common in healthy people. Anything marked critical needs a call now.",

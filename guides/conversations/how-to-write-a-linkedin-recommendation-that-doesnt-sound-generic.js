@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a LinkedIn Recommendation That Doesn't Sound Generic",
   "titleHtml": "How to Write a LinkedIn Recommendation <em>(That Doesn't Sound Generic)</em>",
   "shortTitle": "Non-Generic LinkedIn Rec",
+  "searchTitle": "LinkedIn Recommendation Examples | Write One That Truly Stands Out",
   "navTitle": "non-generic linkedin rec",
   "description": "How to write a LinkedIn recommendation that isn't generic: how you worked together, one quality shown through one moment, and the role they'd excel in.",
   "deck": "To write a LinkedIn recommendation that doesn't sound generic, open with how you worked together, choose one quality and show it with a short, specific moment, avoid stock phrases like 'team player', and end with the kind of role they'd excel in. Three to five sentences is enough.",

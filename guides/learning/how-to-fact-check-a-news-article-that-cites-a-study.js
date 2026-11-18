@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Fact-Check a News Article That Cites a Study",
   "titleHtml": "How to Fact-Check a News Article <em>That Cites a Study</em>",
   "shortTitle": "Fact-Check the News",
+  "searchTitle": "How to Fact-Check a Study in the News | Know if the Headline Is True",
   "navTitle": "fact-check news that cites a study",
   "description": "News articles routinely overstate what a study found. Here is how to find the original paper, compare it to the article, and tell whether you have been told the truth.",
   "deck": "To fact-check a news article about a study, find the original paper, compare its abstract with the article's wording, check how big the effect was, and confirm who was studied (people, animals or cells). Watch for 'proves' where the paper says 'is associated with'.",

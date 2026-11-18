@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does My Plant Have Brown Leaf Tips (And When It's a Real Problem)",
   "titleHtml": "Why Does My Plant Have Brown Leaf Tips <em>(And When It&#39;s a Real Problem)</em>",
   "shortTitle": "Why Does My Plant Have Brown Leaf Tips",
+  "searchTitle": "Brown Leaf Tips | Get Your Plant Healthy Again",
   "navTitle": "Why does my plant have brown leaf tips and when it's a real problem",
   "description": "Brown leaf tips are mostly a moisture story — but the moisture issue isn't usually what people think. Five causes, ranked by likelihood, and how to tell which one is yours.",
   "deck": "Brown leaf tips usually mean the leaf edges are losing water faster than the roots can supply it. The most common causes are low indoor humidity, salts or fluoride from tap water or fertilizer, and swings between very dry and soaked soil. Some species, like spider plants, get them easily.",

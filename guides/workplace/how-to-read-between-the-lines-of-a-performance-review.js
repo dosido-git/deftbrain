@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to read between the lines of a performance review",
   "titleHtml": "How to read between the lines <em>of a performance review</em>",
   "shortTitle": "Reading between the lines",
+  "searchTitle": "Reading Between the Lines of a Performance Review | Know Where You Stand",
   "navTitle": "read between the lines",
   "description": "A method for understanding what your performance review is actually saying — including the parts your manager could not put in writing.",
   "deck": "To read between the lines of a performance review, look past the rating to how specific the praise is, whether skills are called 'developing,' and how the growth areas compare with the strengths in length and detail. Then ask your manager what would change the picture.",

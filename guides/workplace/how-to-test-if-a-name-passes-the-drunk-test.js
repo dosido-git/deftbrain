@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Test If a Name Passes the Drunk Test",
   "titleHtml": "How to Test If a Name <em>Passes the Drunk Test</em>",
   "shortTitle": "The Drunk Test",
+  "searchTitle": "Business Name Drunk Test | Pick a Name Anyone Can Say",
   "navTitle": "drunk test",
   "description": "How to run the drunk test on a brand name: say it over noise, test five cold listeners, read their substitutions, and fix or drop it.",
   "deck": "The drunk test checks whether someone half-listening can hear your name, spell it and find you. Record it said casually over background noise, ask people who've never heard it to type what they heard, and note what they type instead. Some names can be fixed; some should go.",

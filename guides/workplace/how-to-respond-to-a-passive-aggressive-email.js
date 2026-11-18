@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Respond to a Passive-Aggressive Email Professionally (Without Matching the Energy)",
   "titleHtml": "How to Respond to a Passive-Aggressive Email <em>Without Matching the Energy</em>",
   "shortTitle": "How to Respond to a Passive-Aggressive Email",
+  "searchTitle": "How to Respond to a Passive-Aggressive Email | Stay Professional and In Control",
   "navTitle": "How to respond to a passive-aggressive email professionally without matching the energy",
   "description": "Passive-aggressive emails work by smuggling hostility past plausible deniability. The response that lands is the one that addresses the smuggled content without picking up the deniability. Five steps for not getting played.",
   "deck": "To respond to a passive-aggressive email, answer the real request as if it were sincere, skip the edge, and don't quote their phrasing back. Handle one email in writing; raise a repeated pattern in conversation. If there's no actual request underneath, no reply may be needed.",

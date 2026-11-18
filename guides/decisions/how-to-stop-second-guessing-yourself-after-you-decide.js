@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to stop second-guessing yourself after you decide",
   "titleHtml": "How to stop second-guessing yourself after you decide",
   "shortTitle": "Stop second-guessing",
+  "searchTitle": "How to Stop Second-Guessing Yourself | Own Your Decisions",
   "navTitle": "Stop second-guessing",
   "description": "You picked. Then you spent the next two hours wondering if you should have picked the other thing. Here is how to actually let the decision land.",
   "deck": "To stop second-guessing a decision, mark a specific moment when it becomes final, notice the what-if thought without arguing with it, stop researching the options you didn't pick, remind yourself why your choice was good enough, and turn your attention to what comes next.",

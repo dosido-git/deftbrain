@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to read a long policy update without losing your mind",
   "titleHtml": "How to read a long policy update <em>without losing your mind</em>",
   "shortTitle": "Read long policy updates",
+  "searchTitle": "How to Read a Policy Document | Know What Changed for You",
   "navTitle": "read policy updates",
   "description": "A method for reading the long policy update that just landed in your inbox without giving up halfway through and without missing the parts that matter.",
   "deck": "To read a long policy update, look for what changed rather than rereading everything: use any summary of changes, then scan for new duties, fees, restrictions and data uses, arbitration or class-action waivers, and any deadline or 'continued use means acceptance' clause.",

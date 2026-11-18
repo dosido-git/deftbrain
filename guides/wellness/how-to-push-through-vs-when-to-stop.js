@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Push Through vs When to Stop",
   "titleHtml": "How to Push Through <em>(vs When to Stop)</em>",
   "shortTitle": "Push Through or Stop?",
+  "searchTitle": "Push Through Fatigue or Rest | Know When to Stop",
   "navTitle": "push through or stop?",
   "description": "Sometimes pushing is the right call and sometimes it's how you crash. Here's how to tell the difference in the moment, before the cost compounds.",
   "deck": "Push through when there's a real recovery window after the deadline, the strain is limited to things like sleep and exercise, and an hour's break still refreshes you. Stop when you're making unusual mistakes, rest no longer helps, or the next deadline lands right after this one.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "White Noise vs Brown Noise vs Pink Noise: Which One Actually Helps You Focus",
   "titleHtml": "White Noise vs Brown Noise vs Pink Noise: <em>Which One Actually Helps You Focus</em>",
   "shortTitle": "White vs Brown vs Pink Noise",
+  "searchTitle": "White vs Brown vs Pink Noise | Pick the Sound That Helps You",
   "navTitle": "white noise vs brown vs pink noise",
   "description": "Three flavors of static, three different effects on your brain. Here's which one masks what, and how to pick the right one for your situation.",
   "deck": "White noise has equal energy across all frequencies and sounds bright and hissy. Pink noise is weighted toward lower frequencies and sounds like steady rain. Brown noise is deeper still, like a distant waterfall. Brighter noise masks sharper sounds; deeper noise masks rumbles. Many people combine two.",

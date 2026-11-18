@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Is Airport Food So Expensive (And Why It's Not Just the Rent)",
   "titleHtml": "Why Is Airport Food So Expensive <em>(And Why It&#39;s Not Just the Rent)</em>",
   "shortTitle": "Why Is Airport Food So Expensive",
+  "searchTitle": "Why Is Airport Food So Expensive | Eat Smarter When You Fly",
   "navTitle": "Why is airport food so expensive and why it's not just the rent",
   "description": "Why airport food costs more than the same food in town: concession fees, limited competition, security logistics, labor costs and captive customers, plus how airport street-pricing rules cap the markup.",
   "deck": "Airport food is expensive because concessions pay the airport a share of sales, face little competition, bring every delivery through security, often pay higher labor costs, and serve customers who cannot leave. Many airports cap prices at local street prices plus a set margin, but it still usually costs more.",

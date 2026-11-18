@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spend Your Free Time When You Want a Career Change",
   "titleHtml": "How to Spend Your Free Time <em>When You Want a Career Change</em>",
   "shortTitle": "Free Time for a Career Change",
+  "searchTitle": "Preparing for a Career Change | Make Your Free Time Count",
   "navTitle": "free time for a career change",
   "description": "Ten hours a week is not nothing. Here is how to spend it on the highest-leverage moves toward a different career, without quitting first.",
   "deck": "If you want a career change while keeping your job, spend free time on things that produce evidence: a concrete project in the new field, close learning from one person on that path, small paid work there, and a twelve-month checkpoint to review progress.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How Much to Tip Your Hairstylist (and the Other Salon Awkwardness)",
   "titleHtml": "How Much to Tip Your Hairstylist <em>(and the Other Salon Awkwardness)</em>",
   "shortTitle": "Tipping Your Hairstylist",
+  "searchTitle": "How Much to Tip a Hairstylist | Tip Right, Without Awkwardness",
   "navTitle": "tip your hairstylist",
   "description": "What is standard, what counts as generous, what to do if there is also a shampoo person — and what to do when the haircut was bad.",
   "deck": "In the US, a typical hairstylist tip is 15 to 20 percent of the pre-tax service price, with 20 percent common for good service. Tip a separate shampoo person or assistant a few dollars. If the cut was bad, a modest tip plus asking for a fix usually works better.",

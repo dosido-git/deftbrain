@@ -16,6 +16,7 @@
 export const tools = [
 {
   id: "MentalHealthNavigator",
+  searchTitle: "Mental Health Support Options | Find Help That Fits You",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -107,6 +108,7 @@ export const tools = [
 },
 {
   id: "GriefGuide",
+  searchTitle: "Coping With Grief | Gentle Support When It Hurts",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -208,6 +210,7 @@ export const tools = [
 },
 {
   id: "ConceptCoach",
+  searchTitle: "Business Idea Validation | Know Before You Bet Your Savings",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -290,6 +293,7 @@ export const tools = [
 },
 {
   id: "SleepArchitect",
+  searchTitle: "How to Sleep Better | Wake Up Rested",
   modified: "2026-09-11",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -371,6 +375,7 @@ export const tools = [
 },
 {
   id: "CultureBriefing",
+  searchTitle: "Cultural Etiquette | Travel Like a Welcome Guest",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -462,6 +467,7 @@ export const tools = [
 },
 {
   id: "ContractDecoder",
+  searchTitle: "Contract Review | Sign Knowing What You Agreed To",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -559,6 +565,7 @@ export const tools = [
 },
 {
   id: "ScamRadar",
+  searchTitle: "Is This a Scam | Protect Your Money and Peace of Mind",
   modified: "2026-09-11",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -651,6 +658,7 @@ export const tools = [
 {
   modified: "2026-04-24",
   id: "DoctorVisitPrep",
+  searchTitle: "Questions to Ask Your Doctor | Leave With Answers, Not Regrets",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -789,6 +797,7 @@ export const tools = [
 {
   modified: "2026-08-25",
   id: "DriveHome",
+  searchTitle: "Too Tired to Drive | Make the Safe Call Tonight",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -881,6 +890,7 @@ export const tools = [
 {
   modified: "",
   id: "ToolFinder",
+  searchTitle: "Help With a Problem | Know Exactly Where to Start",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -964,6 +974,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "FutureProof",
+  searchTitle: "Is My Job Future Proof | Face What's Coming With a Plan",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1040,6 +1051,7 @@ export const tools = [
 {
   modified: "",
   id: "MarkupDetective",
+  searchTitle: "Why Does It Cost So Much | Know When You're Overpaying",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1149,6 +1161,7 @@ export const tools = [
 {
   modified: "2026-09-11",
   id: "SignalVsNoise",
+  searchTitle: "Fact Check a Claim | Know What's Actually True",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1228,6 +1241,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "BreakMyPlan",
+  searchTitle: "Pre-Mortem Analysis | Find the Cracks Before They Cost You",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1306,6 +1320,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "SmallChangeBigDifference",
+  searchTitle: "Small Change, Big Difference | Feel Better Without Overhauling Your Life",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1389,6 +1404,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "BeliefStressTest",
+  searchTitle: "Test Your Beliefs | Know What You Really Think",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1462,6 +1478,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "GetNoticed",
+  searchTitle: "How to Get Noticed at Work | Get Seen for the Work You Do",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1527,6 +1544,7 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "BeforeHello",
+  searchTitle: "Networking Tips | Reach Out Feeling Ready, Not Awkward",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1598,6 +1616,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "NotSoFast",
+  searchTitle: "How to Appeal a Denial | Don't Take No for an Answer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1713,6 +1732,7 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "TruthBomb",
+  searchTitle: "Should I Tell Someone a Secret | Lift the Weight Off Your Chest",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1800,6 +1820,7 @@ export const tools = [
 {
   modified: "",
   id: "AnalogyEngine",
+  searchTitle: "Analogy Generator | Make Anything Click for Anyone",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1888,6 +1909,7 @@ export const tools = [
 {
   modified: "",
   id: "ColdOpenCraft",
+  searchTitle: "Cold Outreach Message | Messages People Actually Answer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1954,6 +1976,7 @@ export const tools = [
 {
   modified: "",
   id: "ToastWriter",
+  searchTitle: "Wedding and Engagement Toasts | Give a Toast They'll Remember",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2026,6 +2049,7 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "HobbyMatch",
+  searchTitle: "Hobby Ideas | Find Something You'll Love Doing",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2111,6 +2135,7 @@ export const tools = [
 {
   modified: "",
   id: "ProcedureProbe",
+  searchTitle: "Questions to Ask Before Surgery | Say Yes or No With Confidence",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2231,6 +2256,7 @@ export const tools = [
 {
   modified: "2026-09-14",
   id: "UpsellShield",
+  searchTitle: "High Pressure Sales Tactics | Buy on Your Terms, Not Theirs",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2321,6 +2347,7 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "HecklerPrep",
+  searchTitle: "How to Handle Tough Questions | Stay Calm When They Push Back",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2395,6 +2422,7 @@ export const tools = [
 {
   modified: "",
   id: "PartyArchitect",
+  searchTitle: "Party Planning | Host a Party People Talk About",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2480,6 +2508,7 @@ export const tools = [
 {
   modified: "2026-09-14",
   id: "WhereDidTheTimeGo",
+  searchTitle: "Where Did My Day Go | Take Back Your Time",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2576,6 +2605,7 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "Giftology",
+  searchTitle: "Gift Ideas for Hard to Shop For | Give a Gift They'll Love",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2648,6 +2678,7 @@ export const tools = [
 {
   modified: "",
   id: "AwkwardSilenceFiller",
+  searchTitle: "Conversation Starters | Never Freeze Up Mid-Conversation",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2737,6 +2768,7 @@ export const tools = [
 {
   modified: "2026-08-22",
   id: "TipOfTongue",
+  searchTitle: "Tip of the Tongue Finder | End the \"What Was It Called?\" Itch",
 
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2816,6 +2848,7 @@ export const tools = [
 {
   modified: "",
   id: "MagicMouth",
+  searchTitle: "How to Ask for a Refund or Upgrade | Ask Boldly and Hear Yes More Often",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2900,6 +2933,7 @@ export const tools = [
 {
   modified: "",
   id: "NameThatFeeling",
+  searchTitle: "Name That Feeling | Feel Understood, Even by Yourself",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2973,6 +3007,7 @@ export const tools = [
 {
   modified: "2026-09-14",
   id: "WhatsMyVibe",
+  searchTitle: "Tone Checker | Sound the Way You Mean To",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3054,6 +3089,7 @@ export const tools = [
 {
   modified: "",
   id: "TheRunthrough",
+  searchTitle: "Presentation Run-Through | Nail Your Talk on the Day",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3130,6 +3166,7 @@ export const tools = [
 {
   modified: "",
   id: "WhichLife",
+  searchTitle: "Choosing Between Two Paths | Choose the Life That Feels Right",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3211,6 +3248,7 @@ export const tools = [
 {
   modified: "",
   id: "ComebackCooker",
+  searchTitle: "Comeback Generator | Stop Replaying It and Say It Better",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3285,6 +3323,7 @@ export const tools = [
 {
   modified: "2026-08-22",
   id: "AlternatePath",
+  searchTitle: "Alternate History Generator | Rewrite History Just for Fun",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3387,6 +3426,7 @@ export const tools = [
   // BEFORE deciding whether the story actually broke its own logic.
   modified: "2026-09-06",
   id: "PlotHoleFinder",
+  searchTitle: "Plot Holes in Any Movie or Show | Win the Movie-Night Debate",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3457,6 +3497,7 @@ export const tools = [
 {
   modified: "",
   id: "FanTheory",
+  searchTitle: "Fan Theories | See Your Favorite Story in a New Light",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3527,6 +3568,7 @@ export const tools = [
 {
   modified: "",
   id: "RoastMe",
+  searchTitle: "Roast My Resume | Laugh, Then Make It Better",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3607,6 +3649,7 @@ export const tools = [
 {
   modified: "2026-09-14",
   id: "TimeWarp",
+  searchTitle: "Historical Figures in Modern Times | A Good Laugh Across the Ages",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3680,6 +3723,7 @@ export const tools = [
 {
   modified: "",
   id: "WrongAnswersOnly",
+  searchTitle: "Wrong Answers Only | A Guaranteed Laugh",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3767,6 +3811,7 @@ export const tools = [
   // the Crash for that boundary.
   modified: "2026-09-11",
   id: "SocialBatteryAdvisor",
+  searchTitle: "Social Battery | Socialize Without Burning Out",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3832,6 +3877,7 @@ export const tools = [
 {
   modified: "2026-03-24",
   id: "PronounceItRight",
+  searchTitle: "How to Pronounce It Right | Say It Right the First Time",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -3907,6 +3953,7 @@ export const tools = [
 {
   modified: "",
   id: "TheDebrief",
+  searchTitle: "Meeting Notes to Action Items | Never Lose a Follow-Up",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4021,6 +4068,7 @@ export const tools = [
 {
   modified: "2026-09-13",
   id: "HeartOfTheMatter",
+  searchTitle: "Summarize a Lecture | Get the Big Ideas in Minutes",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4088,6 +4136,7 @@ export const tools = [
 {
   modified: "",
   id: "TheWholeStory",
+  searchTitle: "How to Explain a Gap in Employment | Tell Your Story With Confidence",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4194,6 +4243,7 @@ export const tools = [
 {
   modified: "2026-09-12",
   id: "DocumentDetective",
+  searchTitle: "Explain This Document | Find What Matters to You, Fast",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4271,6 +4321,7 @@ export const tools = [
 {
   modified: "",
   id: "ContextCollapse",
+  searchTitle: "How Does This Message Come Across | Hit Send Without the Worry",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4364,6 +4415,7 @@ export const tools = [
 {
   modified: "",
   id: "Bookmark",
+  searchTitle: "Spoiler Free Summary | Jump Back In Without Spoilers",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4439,6 +4491,7 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "DecoderRing",
+  searchTitle: "What Does This Text Mean | Stop Overthinking Their Message",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4528,6 +4581,7 @@ export const tools = [
 {
   modified: "",
   id: "DecisionPrism",
+  searchTitle: "Decision Making Tool | Choose With Clarity, Not Dread",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4603,6 +4657,7 @@ export const tools = [
 {
   modified: "",
   id: "MiseEnPlace",
+  searchTitle: "Recipes With Ingredients I Have | Dinner From What You Already Have",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4705,6 +4760,7 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "GhostWriter",
+  searchTitle: "Recommendation Letter Generator | Write the Letter They Deserve",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4806,6 +4862,7 @@ export const tools = [
 {
   modified: "",
   id: "CaptionMagic",
+  searchTitle: "Instagram Caption Generator | Post Without Staring at a Blank Box",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4873,6 +4930,7 @@ export const tools = [
 {
   modified: "2026-09-05",
 id: "PEP",
+searchTitle: "Low Energy Activities | Feel Good About What You Can Do",
 // Preamble — the four questions a new visitor has, in order.
 // `give` states the input burden before the form; see ToolPageWrapper.
 // FOCUSED REBUILD, 2026-09-05 (installed from an owner-supplied rewrite —
@@ -4947,6 +5005,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BatchFlow",
+  searchTitle: "Task Batching | Get More Done With Less Switching",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5021,6 +5080,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "LazyWorkoutAdapter",
+  searchTitle: "Low Energy Workout | Move Even on Your Worst Days",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5096,6 +5156,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-10",
   id: "ArgueSmarter",
+  searchTitle: "Debate Practice | Walk In Ready for Any Argument",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5188,6 +5249,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "ResearchDecoder",
+  searchTitle: "Explain a Research Paper | Know What the Study Really Says",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5261,6 +5323,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "ReadTheRoom",
+  searchTitle: "How to Read the Room | Feel at Ease in Any Social Setting",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5331,6 +5394,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "MoneyDiplomat",
+  searchTitle: "Money Etiquette | Handle Awkward Money Moments Gracefully",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5418,6 +5482,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-11",
   id: "SkillGapMap",
+  searchTitle: "Skill Gap Analysis | Change Careers With a Clear Path",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5494,6 +5559,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "HistoryToday",
+  searchTitle: "Historical Parallels | Make Sense of Today's News",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5590,6 +5656,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BragSheetBuilder",
+  searchTitle: "Brag Sheet Generator | Get Credit for Everything You Did",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5683,6 +5750,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "LayoverMaximizer",
+  searchTitle: "Layover Planner | Turn Waiting Into Exploring",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5777,6 +5845,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "TheFinalWord",
+  searchTitle: "Settle an Argument | Finally Know Who's Right",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5858,6 +5927,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "NameAudit",
+  searchTitle: "Business Name Checker | Pick a Name You Won't Regret",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5929,6 +5999,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "NameStorm",
+  searchTitle: "Business Name Generator | Find a Name That Sticks",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6010,6 +6081,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "GratitudeDebtClearer",
+  searchTitle: "Thank You Note Writer | Finally Send That Thank-You",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6081,6 +6153,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "DifficultTalkCoach",
+  searchTitle: "Difficult Conversations | Say It Calmly and Be Heard",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6174,6 +6247,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "ComplaintEscalationWriter",
+  searchTitle: "Complaint Letter | Get the Company to Make It Right",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6272,6 +6346,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "PlainTalk",
+  searchTitle: "Plain English Translator | Understand Anything You're Handed",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6386,6 +6461,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "FocusSoundArchitect",
+  searchTitle: "White Noise for Focus | Tune Out Distractions",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6451,6 +6527,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-08-26",
   id: "FocusPocus",
+  searchTitle: "Focus Timer | Work Hard, Then Actually Stop",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6520,6 +6597,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "DecisionCoach",
+  searchTitle: "Help Me Decide | Finally Get Unstuck",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6598,6 +6676,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "SixDegreesOfMe",
+  searchTitle: "Hidden Connections | See How Your Life Fits Together",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6674,6 +6753,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-10",
   id: "BrainRoulette",
+  searchTitle: "Random Rabbit Hole Generator | Fall Into Something Fascinating",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6748,6 +6828,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "FinalWish",
+  searchTitle: "End of Life Planning Checklist | Peace of Mind for Your Family",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6818,6 +6899,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-08",
   id: "BikeMedic",
+  searchTitle: "Bike Repair Help | Fix It Yourself and Ride Today",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -6902,6 +6984,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-06",
   id: "PlantRescue",
+  searchTitle: "What's Wrong With My Plant | Bring Your Plant Back to Life",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   // V2 REWRITE, 2026-09-06: replaced a forced diagnosis (single primary_problem,
@@ -6998,6 +7081,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "ConflictCoach",
+  searchTitle: "How to Respond to an Angry Text | Reply Without Regret",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7075,6 +7159,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-13",
   id: "TaskAvalancheBreaker",
+  searchTitle: "How to Start a Big Project | Finally Get Started",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7153,6 +7238,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-06",
   id: "PetBehaviorDecoder",
+  searchTitle: "Pet Behavior Problems | Know When to Worry and When to Relax",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   // V2 REWRITE, 2026-09-05, then FULL RENAME 2026-09-06 (PetWeirdnessDecoder
@@ -7254,6 +7340,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "FakeReviewDetective",
+  searchTitle: "Fake Review Checker | Buy With Confidence",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7361,6 +7448,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BeforeTheCrash",
+  searchTitle: "Burnout Warning Signs | Catch It Before It Catches You",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7437,6 +7525,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "DreamPatternSpotter",
+  searchTitle: "Recurring Dreams Meaning | Understand What Keeps Coming Back",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7507,6 +7596,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "MeetingHijackStopper",
+  searchTitle: "Meeting Agenda Builder | Meetings That End on Time",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7590,6 +7680,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "DoctorVisitTranslator",
+  searchTitle: "Medical Terms in Plain English | Finally Understand Your Results",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7698,6 +7789,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "EmailUrgencyTriager",
+  searchTitle: "Email Prioritization | Tame Your Inbox Today",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7770,6 +7862,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "LeaseTrapDetector",
+  searchTitle: "Lease Red Flags | Sign Without Nasty Surprises",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -7945,6 +8038,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "FriendshipFadeAlerter",
+  searchTitle: "Why Friendships Fade | Keep the Friends You Love Close",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8022,6 +8116,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-11",
   id: "TripRecon",
+  searchTitle: "Sensory Friendly Travel | Go Places Without the Overwhelm",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8102,6 +8197,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "LeverageLogic",
+  searchTitle: "Negotiation Leverage | Negotiate From Strength",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8187,6 +8283,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "JustifyMyMeeting",
+  searchTitle: "Should This Be a Meeting | Win Back Hours of Your Week",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8265,6 +8362,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "RecipeChaosSolver",
+  searchTitle: "Ingredient Substitutions | Save Dinner Mid-Recipe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8344,6 +8442,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BillRescue",
+  searchTitle: "Can't Pay Bills | Breathe Easier About What You Owe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8457,6 +8556,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "Mend",
+  searchTitle: "How to Apologize | Make Things Right Again",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8571,6 +8671,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "MicroAdventureMapper",
+  searchTitle: "Micro Adventure Ideas | Make Any Free Hour an Adventure",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8642,6 +8743,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-10",
   id: "DateNight",
+  searchTitle: "Date Night Ideas | A Memorable Night on Your Budget",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8722,6 +8824,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-10",
   id: "ChaosPilot",
+  searchTitle: "Task Prioritization | Know Exactly What to Tackle First",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8816,6 +8919,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "VirtualBodyDouble",
+  searchTitle: "Body Doubling | Focus Like Someone's Right There",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8907,6 +9011,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "WaitingModeLiberator",
+  searchTitle: "Waiting Mode | Get Your Day Back",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -8994,6 +9099,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BrainDumpBuddy",
+  searchTitle: "Brain Dump Organizer | Clear Your Head in Minutes",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9095,6 +9201,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-11",
   id: "GentlePushGenerator",
+  searchTitle: "Comfort Zone Challenges | Grow a Little Braver Each Day",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9175,6 +9282,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BrainStateDeejay",
+  searchTitle: "Focus Music | The Right Soundtrack for Your Mood",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9251,6 +9359,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-14",
   id: "VelvetHammer",
+  searchTitle: "Rewrite Email Professionally | Stay Firm Without Burning Bridges",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9332,6 +9441,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "MissingLink",
+  searchTitle: "How to Understand Difficult Concepts | Finally Get It",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9441,6 +9551,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "BuyWise",
+  searchTitle: "Should I Buy It | Spend Without Regret",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9517,6 +9628,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-03-24",
   id: "SafeWalk",
+  searchTitle: "Safety Tips for Walking Alone | Walk Home Feeling Safer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9596,6 +9708,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "RoommateCourt",
+  searchTitle: "Roommate Disputes | Keep the Peace at Home",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9669,6 +9782,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "RentersDepositSaver",
+  searchTitle: "Move In Checklist for Tenants | Get Your Full Deposit Back",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9751,6 +9865,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "LaundroMat",
+  searchTitle: "Stain Removal Guide | Save Your Favorite Clothes",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9834,6 +9949,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "NerveCheck",
+  searchTitle: "How to Calm Nerves | Walk In Calm and Confident",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -9920,6 +10036,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-07-21",
   id: "PaperworkPath",
+  searchTitle: "Life Admin Checklist | Handle Big Changes Without Missing a Step",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -10005,6 +10122,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-07-15",
   id: "QuoteCheck",
+  searchTitle: "Car Repair Estimate | Pay a Fair Price, Not a Padded One",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -10089,6 +10207,7 @@ tagline: "Take command of your available energy",
 },
 {
   id: "TicketTackler",
+  searchTitle: "Fight a Parking Ticket | Don't Pay a Ticket You Shouldn't",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -10170,6 +10289,7 @@ tagline: "Take command of your available energy",
 {
   modified: "",
   id: "WhatsThatMean",
+  searchTitle: "What's That Mean | Never Feel Lost in a Conversation",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -10239,6 +10359,7 @@ tagline: "Take command of your available energy",
 {
   modified: "2026-09-11",
   id: "SomeoneSaidItBetter",
+  searchTitle: "Quotes for Hard Times | Find the Words When You Can't",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {

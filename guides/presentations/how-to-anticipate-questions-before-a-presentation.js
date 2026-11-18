@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Anticipate Questions Before a Presentation",
   "titleHtml": "How to Anticipate Questions <em>Before a Presentation</em>",
   "shortTitle": "Anticipate Q&A",
+  "searchTitle": "How to Anticipate Presentation Questions | Never Get Caught Off Guard",
   "navTitle": "anticipate audience questions",
   "description": "The Q&A often determines how the presentation lands. Here is how to predict the questions you will actually get and rehearse the answers.",
   "deck": "To anticipate questions before a presentation, find your weakest claim, list who will be in the room and what each person cares about, prepare a one-line answer to 'why not the alternative?', and rehearse short answers out loud so they come out in two or three sentences.",

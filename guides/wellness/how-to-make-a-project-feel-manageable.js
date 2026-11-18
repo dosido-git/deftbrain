@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to make a project feel manageable",
   "titleHtml": "How to make a project <em>feel manageable</em>",
   "shortTitle": "Make a project feel manageable",
+  "searchTitle": "How to Make a Project Manageable | Feel in Control Again",
   "navTitle": "make project manageable",
   "description": "A method for changing how a project feels, not just what it is — because the feeling is doing more work than the actual scope.",
   "deck": "To make a project feel manageable, write down its actual scope, find the one part you're dreading, recall a similar project you finished, plan only the first week, and describe it out loud to someone. These shrink how big it feels without changing the work itself.",

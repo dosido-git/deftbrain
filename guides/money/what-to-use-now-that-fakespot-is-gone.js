@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Use Now That Fakespot Is Gone",
   "titleHtml": "What to Use Now That <em>Fakespot</em> Is Gone",
   "shortTitle": "What to Use Now That Fakespot Is Gone",
+  "searchTitle": "Fakespot Alternatives | Keep Spotting Fake Reviews",
   "navTitle": "What to use now that Fakespot is gone",
   "description": "What to use now that Fakespot is gone: what actually replaced it, which extensions to be wary of, and a two-minute manual check for fake reviews.",
   "deck": "Mozilla shut down Fakespot in 2025, and no free tool now gives the same one-glance grade. Check any replacement extension before installing it, and use a quick manual check on any site: read the most recent and lowest-rated reviews, look for bursts, and confirm reviews are about this exact product.",

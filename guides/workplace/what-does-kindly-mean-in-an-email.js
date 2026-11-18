@@ -5,6 +5,7 @@ module.exports = {
   "title": "What \"Kindly\" Actually Means at the Start of an Email (And Why It Lands So Differently)",
   "titleHtml": "What \"Kindly\" Actually Means at the Start of an Email <em>(And Why It Lands So Differently)</em>",
   "shortTitle": "What \"Kindly\" Means in an Email",
+  "searchTitle": "What Does Kindly Mean in an Email | Read the Tone Correctly",
   "navTitle": "What does kindly mean at the start of an email and why it lands differently",
   "description": "What 'kindly' means in an email: usually just 'please', sometimes a polite nudge or a cooler tone — and how to tell which from the context.",
   "deck": "'Kindly' at the start of an email usually just means 'please,' especially from writers for whom it is the standard polite form, as in Indian English. It can also signal mild annoyance, so in a follow-up or from someone usually informal, it may mean impatience or new formality.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Your Energy Crashes Always Come at the Worst Time",
   "titleHtml": "Why Your Energy Crashes <em>Always Come at the Worst Time</em>",
   "shortTitle": "Worst-Time Crashes",
+  "searchTitle": "Energy Crashes | See Them Coming",
   "navTitle": "worst-time energy crashes",
   "description": "The crash always seems to land on the day with the wedding, the deadline, or the in-laws. Here is why that is not a coincidence — and what to actually do about it.",
   "deck": "Energy crashes tend to land on big days because those days, and the days before them, carry the heaviest load: travel, family, late nights, broken routines. Mark predictable peak weeks in advance, add nothing extra to them, and keep a light day on either side.",

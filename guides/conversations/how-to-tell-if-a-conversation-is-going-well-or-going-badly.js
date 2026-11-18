@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If a Conversation Is Going Well or Going Badly",
   "titleHtml": "How to Tell If a Conversation Is <em>Going Well or Going Badly</em>",
   "shortTitle": "How is the Conversation Going",
+  "searchTitle": "Is the Conversation Going Well | Read the Signals Right",
   "navTitle": "how a conversation is going",
   "description": "You can usually tell whether a conversation is working in the first ninety seconds. Here are the specific signals — and what to do when you read them.",
   "deck": "A conversation is usually going well when the other person's answers are as long as your questions, they ask things back, they face you, and their eye contact stays with you. Short answers, no questions and glances elsewhere suggest changing topic or ending it warmly.",

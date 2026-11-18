@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Am I Tired All the Time Even When I Sleep Enough",
   "titleHtml": "Why Am I Tired All the Time <em>Even When I Sleep Enough</em>",
   "shortTitle": "Tired Despite Sleeping Enough",
+  "searchTitle": "Why Am I Always Tired | Get Your Energy Back",
   "navTitle": "tired despite enough sleep",
   "description": "Sleep recovers physical fatigue. A lot of modern exhaustion is not physical. Here is what is actually draining you.",
   "deck": "Constant tiredness despite enough sleep can come from poor sleep quality, stress, depression, or medical causes such as anemia, thyroid problems, diabetes or sleep apnea, and also from mental, social and emotional load that sleep doesn't fix. See a doctor if rest doesn't relieve it.",

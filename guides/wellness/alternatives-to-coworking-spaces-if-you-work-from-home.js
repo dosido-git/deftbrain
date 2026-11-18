@@ -5,6 +5,7 @@ module.exports = {
   "title": "Alternatives to Coworking Spaces If You Work From Home",
   "titleHtml": "Alternatives to Coworking Spaces <em>If You Work From Home</em>",
   "shortTitle": "Alternatives to Coworking",
+  "searchTitle": "Coworking Space Alternatives | Work Better From Home",
   "navTitle": "Alternatives to coworking spaces if you work from home",
   "description": "Coworking spaces are expensive. Coffee shops are unreliable. Here are five working alternatives that produce similar focus benefits — without the membership fee.",
   "deck": "Good alternatives to a coworking space are the public library, a regular coffee shop that suits laptop work, a recurring video work session with a friend, a work-only spot at home, and online focus sessions with a partner. Each copies part of what coworking provides, for little or nothing.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prepare for a Presentation in a Week",
   "titleHtml": "How to Prepare for a Presentation <em>in a Week</em>",
   "shortTitle": "One-Week Prep",
+  "searchTitle": "How to Prepare for a Presentation | Be Ready on Time",
   "navTitle": "one week to prepare",
   "description": "How to prepare a presentation in one week: a day-by-day plan — write first, then slides, a timed run-through, revision and questions, a final rehearsal.",
   "deck": "To prepare a presentation in a week, write the talk before building slides (days 1–2), build slides that support rather than repeat it (days 3–4), do a timed run-through aloud (day 5), fix weak spots and prepare for questions (day 6), and do one full rehearsal (day 7).",

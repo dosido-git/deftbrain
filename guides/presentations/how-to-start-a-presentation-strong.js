@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Start a Presentation Strong",
   "titleHtml": "How to Start a Presentation <em>Strong</em>",
   "shortTitle": "Open Strong",
+  "searchTitle": "How to Start a Presentation | Grab Their Attention Fast",
   "navTitle": "start a presentation strong",
   "description": "The first 60 seconds determine whether the audience leans in or checks their phones. Here is what works for a strong opener — and what to avoid.",
   "deck": "To start a presentation strong, skip the long self-introduction and agenda slide, open with a hook (a question, a surprising fact or a clear stake), say why it matters to this audience specifically, and reach your first real point within about 90 seconds.",

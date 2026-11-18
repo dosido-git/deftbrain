@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to track time without obsessing over it",
   "titleHtml": "How to track time <em>without obsessing over it</em>",
   "shortTitle": "Track time without obsessing",
+  "searchTitle": "How to Track Your Time | Know Where It Goes Without Obsessing",
   "navTitle": "track time without obsessing",
   "description": "A practical, light-touch method for getting useful data about where your time goes — without becoming a person who logs every fifteen minutes for the rest of your life.",
   "deck": "To track time without obsessing, log one normal week, use four or five broad categories, write a line at each natural transition rather than in real time, don't change your behavior while tracking, then review the totals once, make one or two changes, and stop.",

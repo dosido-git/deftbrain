@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to think through a job offer when you're torn",
   "titleHtml": "How to think through a job offer <em>when you're torn</em>",
   "shortTitle": "Job offer when you're torn",
+  "searchTitle": "Should I Take the Job Offer | Say Yes or No With Confidence",
   "navTitle": "job offer when torn",
   "description": "How to think through a job offer when you're torn: separate excitement from the comparison, imagine a bad week, remove the money, and ask a former employee.",
   "deck": "When you're torn on a job offer, let the thrill of being wanted fade first. Imagine your first bad week in the new job, ask whether you'd take it at your current salary, talk to someone who has done the role, and notice whether declining brings relief or panic.",

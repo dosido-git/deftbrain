@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot What's Actually Changed in a Terms of Service Update",
   "titleHtml": "How to Spot What's Actually Changed in a <em>Terms of Service Update</em>",
   "shortTitle": "What Changed in a ToS Update",
+  "searchTitle": "Terms of Service Changes | Know What Changed for You",
   "navTitle": "How to spot what's actually changed in a terms of service update",
   "description": "The email said 'we're updating our terms.' The PDF is 31 pages. Here's how to find the four things they actually changed — without reading the 27 pages that are identical to last time.",
   "deck": "To see what changed in a terms of service update, read the company's summary of changes, then compare the old and new versions with a free text-comparison tool. Focus on data, billing, dispute resolution and content rights, look for an opt-out window, and decide before the effective date.",

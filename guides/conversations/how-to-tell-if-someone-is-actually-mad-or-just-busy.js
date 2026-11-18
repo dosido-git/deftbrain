@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to tell if someone is actually mad or just busy",
   "titleHtml": "How to tell if someone is actually mad or just busy",
   "shortTitle": "Mad or just busy?",
+  "searchTitle": "Is Someone Mad at Me or Just Busy | Ease Your Mind Fast",
   "navTitle": "Mad or just busy?",
   "description": "How to tell if someone is mad at you or just busy: general versus targeted silence, the tone of what they do send, and what they stop asking about.",
   "deck": "To tell whether someone is mad or just busy, check whether they've gone quiet with everyone or only you, whether their short messages still sound like them, and whether they've stopped asking about your news. Send something light rather than 'are you mad at me?', then wait.",

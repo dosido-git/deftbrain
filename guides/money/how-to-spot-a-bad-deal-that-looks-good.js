@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot a Bad Deal That Looks Good (Before You Click Buy)",
   "titleHtml": "How to Spot a Bad Deal That Looks Good <em>(Before You Click Buy)</em>",
   "shortTitle": "How to Spot a Bad Deal That Looks Good",
+  "searchTitle": "How to Spot a Bad Deal | Keep Your Money Safe",
   "navTitle": "How to spot a bad deal that looks good before you click buy",
   "description": "How to spot a bad deal before you buy: check the brand, read low reviews first, watch review timing, compare photos, and read the return policy.",
   "deck": "To spot a bad deal that looks good, search the brand outside the marketplace, read the low reviews first, look for reviews bunched into a few weeks, compare the photos for inconsistencies, and read the return policy for overseas returns or restocking fees before you buy.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Catch Up on a Video Game After a Long Break (Without Spoilers)",
   "titleHtml": "How to Catch Up on a Video Game After a Long Break <em>(Without Spoilers)</em>",
   "shortTitle": "How to Catch Up on a Video Game After a Long Break",
+  "searchTitle": "Getting Back Into Video Games | Pick Up Right Where You Left Off",
   "navTitle": "How to catch up on a video game after a long break without spoilers",
   "description": "You stopped playing six months ago. You don't remember the controls, the quest, or where you were going. Here's how to drop back in without restarting.",
   "deck": "To return to a game after a long break, relearn the controls in a low-stakes area first, find a recap that stops at your save point, check your quest log and recent inventory, do one small encounter before the next big story beat, and continue rather than restarting.",

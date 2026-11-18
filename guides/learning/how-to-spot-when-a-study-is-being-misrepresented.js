@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot When a Study Is Being Misrepresented",
   "titleHtml": "How to Spot When a Study <em>Is Being Misrepresented</em>",
   "shortTitle": "Spot Misrepresentation",
+  "searchTitle": "Misleading Studies | Spot the Spin Instantly",
   "navTitle": "spot a misrepresented study",
   "description": "There are about six common ways studies get misrepresented in news, social media, and policy debates. Here are the patterns to watch for.",
   "deck": "A study is often misrepresented when 'associated with' becomes 'causes', results from a narrow group or from animals are applied to everyone, one positive outcome is highlighted while others were null, or the authors' stated limitations disappear. Compare the article with the paper's abstract and limitations.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "What Those Laundry Symbols Actually Mean",
   "titleHtml": "What Those Laundry Symbols <em>Actually Mean</em>",
   "shortTitle": "Laundry Symbols Decoded",
+  "searchTitle": "Laundry Symbols | Wash Everything the Right Way",
   "navTitle": "laundry symbols decoded",
   "description": "Care labels look like a hieroglyphic test. Here is the small set of symbols that actually matter, what each one tells you, and how to skip the ones that don't.",
   "deck": "Laundry symbols use five shapes: a tub for washing (dots show temperature, lines show a gentler cycle), a triangle for bleach, a square for drying (a circle inside means tumble dry), an iron for ironing, and a circle for professional cleaning. An X through any symbol means don't.",

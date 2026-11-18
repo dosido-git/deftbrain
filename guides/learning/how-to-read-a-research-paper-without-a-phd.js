@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read a Research Paper Without a PhD",
   "titleHtml": "How to Read a Research Paper <em>Without a PhD</em>",
   "shortTitle": "Read a Paper",
+  "searchTitle": "How to Read a Research Paper | Understand Any Study",
   "navTitle": "read a research paper",
   "description": "Academic papers are not written for you, but you can extract what you need from one in fifteen minutes if you read in the right order. Here is the order — and what to skip.",
   "deck": "To read a research paper without specialist training, read the abstract twice, look at the figures and their captions, skim the methods for study type and sample size, and read the limitations in the discussion. You can skip most of the introduction and references on a first pass.",

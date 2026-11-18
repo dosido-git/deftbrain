@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Say at a Memorial Service When You're Not a Writer",
   "titleHtml": "What to Say at a Memorial Service <em>When You&#39;re Not a Writer</em>",
   "shortTitle": "What to Say at a Memorial Service",
+  "searchTitle": "What to Say at a Memorial Service | Find the Right Words for Goodbye",
   "navTitle": "What to say at a memorial service when you're not a writer",
   "description": "You don't have to be a writer to speak at a memorial. You have to be honest, brief, and present. Five steps for finding what to say when the assignment is bigger than your usual register.",
   "deck": "At a memorial service, a few plain minutes are enough: say how you knew the person, tell one specific true story, name what it showed about them, and say what you'll miss. Polished writing isn't needed, and you can decline or have someone read for you.",

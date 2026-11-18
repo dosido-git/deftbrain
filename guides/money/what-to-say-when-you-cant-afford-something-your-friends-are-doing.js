@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Say When You Cannot Afford Something Your Friends Are Doing",
   "titleHtml": "What to Say When You Cannot Afford Something <em>Your Friends Are Doing</em>",
   "shortTitle": "When You Cannot Afford It",
+  "searchTitle": "Can't Afford It | Find Options That Fit Your Budget",
   "navTitle": "cannot afford what friends are doing",
   "description": "The trip, the dinner, the concert, the gift. Here is how to say no without lying or making it heavy.",
   "deck": "When you can't afford something your friends are doing, say so plainly and briefly ('I can't swing this one'), offer an alternative you can afford, don't over-apologize, keep showing up to cheaper plans, and if the gap is ongoing, talk with one close friend about lower-cost things to do together.",

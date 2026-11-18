@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle a Venmo Request That Is Wrong (Without Burning the Friendship)",
   "titleHtml": "How to Handle a Venmo Request <em>That Is Wrong</em>",
   "shortTitle": "Wrong Venmo Request",
+  "searchTitle": "Wrong Venmo Request | Fix It Without Losing Money",
   "navTitle": "wrong venmo request",
   "description": "The amount is too high. The split is wrong. Maybe they double-counted you. Here is how to push back without making it weird.",
   "deck": "To handle a wrong Venmo request, decline it with a friendly note rather than ignoring it, show your math (I only had pancakes and coffee, so closer to $22?), and offer to send that amount now. For tiny gaps, paying may be simpler; for a repeated pattern, talk once.",

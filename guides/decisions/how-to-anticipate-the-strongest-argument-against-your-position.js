@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Anticipate the Strongest Argument Against Your Position",
   "titleHtml": "How to Anticipate <em>the Strongest Argument Against Your Position</em>",
   "shortTitle": "Anticipate the Strongest Counter",
+  "searchTitle": "Counterarguments | Answer Their Best Point First",
   "navTitle": "How to anticipate the strongest argument against your position before it's made",
   "description": "Steelmanning your own opposition is a skill, not an instinct. Here's the five-step method for predicting the strongest case a smart opponent would make — before they make it.",
   "deck": "To anticipate the strongest argument against your position, read the most serious person who disagrees in their own words, state why a reasonable person holds their view, find the assumption your view depends on, ask which facts would weaken it, and then try to answer that best version.",

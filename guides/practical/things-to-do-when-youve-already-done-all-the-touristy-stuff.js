@@ -5,6 +5,7 @@ module.exports = {
   "title": "Things to Do in Your City When You Have Already Done All the Touristy Stuff",
   "titleHtml": "Things to Do in Your City <em>When You Have Already Done All the Touristy Stuff</em>",
   "shortTitle": "Beyond the Tourist Stuff",
+  "searchTitle": "Things to Do in Your City | See the Places Locals Love",
   "navTitle": "beyond the tourist stuff",
   "description": "You have seen the landmarks, eaten at the famous restaurants, walked the main park. Here is how to find the second layer of your own city.",
   "deck": "When you've done your city's tourist sights, search for niche interests like an enthusiast (best record store, best matcha), read local weekend listings rather than visitor sites, walk neighborhoods you only drive through, ask baristas and bartenders where they go, and plan days around a theme.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Name a Startup When All the Good Names Are Taken",
   "titleHtml": "How to Name a Startup <em>When All the Good Names Are Taken</em>",
   "shortTitle": "When Good Names Are Taken",
+  "searchTitle": "How to Name a Startup | Stand Out in a Crowded Market",
   "navTitle": "good names already taken",
   "description": "The .com is gone, the obvious words are claimed. Here is how the people naming new companies right now actually do it.",
   "deck": "When the obvious names are taken, look in places with more room: words from other languages, compounds of two short words, a real name plus a modifier, or an ordinary word used as a metaphor. Avoid forcing a taken name with odd spellings, and check trademarks before committing.",

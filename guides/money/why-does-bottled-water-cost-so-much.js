@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does Bottled Water Cost So Much (When the Stuff in It Is Basically Free)",
   "titleHtml": "Why Does Bottled Water Cost So Much <em>(When the Stuff in It Is Basically Free)</em>",
   "shortTitle": "Why Does Bottled Water Cost So Much",
+  "searchTitle": "Why Is Bottled Water So Expensive | Know What You're Paying For",
   "navTitle": "Why does bottled water cost so much when the stuff in it is basically free",
   "description": "Why bottled water costs so much when the water is nearly free: packaging, heavy transport, branding, and the premium charged where you can't shop around.",
   "deck": "Bottled water costs so much because you're paying almost entirely for things other than the water: the bottle, label and cap, transporting heavy cases and shelf space, the brand, and the seller's margin, which is highest where you have no alternative, such as airports, stadiums and hotel minibars.",

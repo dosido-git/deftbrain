@@ -5,6 +5,7 @@ module.exports = {
   "title": "Can a Landlord Keep Your Security Deposit (And When You Can Fight It)",
   "titleHtml": "Can a Landlord Keep Your Security Deposit <em>(And When You Can Fight It)</em>",
   "shortTitle": "Can a Landlord Keep Your Security Deposit",
+  "searchTitle": "Can a Landlord Keep Your Deposit | Get What You're Owed",
   "navTitle": "Can a landlord keep your security deposit and when you can fight it",
   "description": "Most security deposit withholding is partial, and a meaningful share of it is challengeable. Here's how to tell which part of yours is real and which part is worth a letter.",
   "deck": "A landlord can keep a security deposit only for allowed costs, usually unpaid rent, damage beyond normal wear and tear, and sometimes cleaning, and must usually send an itemized statement by a state deadline, such as 14 days in New York or 21 in California. Unjustified deductions can be challenged.",

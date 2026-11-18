@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know When to Leave a Party",
   "titleHtml": "How to Know <em>When to Leave a Party</em>",
   "shortTitle": "When to Leave",
+  "searchTitle": "How to Know When to Leave a Party | Exit Gracefully, Every Time",
   "navTitle": "when to leave a party",
   "description": "Stay too long and the night sours; leave too early and you miss the best part. Here are the actual signals that the right time has arrived — and how to leave gracefully.",
   "deck": "A good time to leave a party is shortly after its peak, while you're still enjoying yourself: when conversations start repeating, people check their phones and sit down, and the host stops circulating. Find the host, thank them briefly and go, with an exit line ready in advance.",

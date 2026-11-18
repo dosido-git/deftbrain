@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Time a Meal So Everything Is Ready at the Same Time",
   "titleHtml": "How to Time a Meal So Everything Is Ready <em>at the Same Time</em>",
   "shortTitle": "Time a Meal Right",
+  "searchTitle": "Meal Timing | Serve Everything Hot and on Time",
   "navTitle": "time a meal right",
   "description": "The hardest part of cooking is not any one dish. It is getting all of them to the table hot. Here is the method.",
   "deck": "To get every dish ready at once, start the longest-cooking dish first, write the schedule backward from the time you plate, fit quick dishes into the slow dish's downtime, finish dishes that hold well early, and warm the plates. Time everything around the dish that can't wait.",

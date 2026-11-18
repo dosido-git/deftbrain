@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Study When You Have Hours of Recorded Content to Get Through",
   "titleHtml": "How to Study When You Have <em>Hours of Recorded Content</em> to Get Through",
   "shortTitle": "Hours of Recordings",
+  "searchTitle": "How to Summarize Long Videos | Get the Gist Without the Hours",
   "navTitle": "hours of recorded lectures",
   "description": "Twelve unwatched lecture recordings, an exam in five days. Here is the triage process for getting through hours of content without watching it all — and without missing what matters.",
   "deck": "When you have hours of recorded lectures and little time, get the transcripts first, map each lecture to the topics on the exam, skim every transcript for key points, watch only the most important lectures closely, and spend the time you save quizzing yourself rather than rewatching.",

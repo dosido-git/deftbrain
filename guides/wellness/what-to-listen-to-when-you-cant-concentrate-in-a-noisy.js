@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Listen To When You Cannot Concentrate in a Noisy Environment",
   "titleHtml": "What to Listen To When You Cannot Concentrate <em>in a Noisy Environment</em>",
   "shortTitle": "Focus Sound for Noisy Environments",
+  "searchTitle": "Focus Sounds for Work | Block Out the Chaos",
   "navTitle": "focus sound for noisy environments",
   "description": "Open-plan office, busy café, shared apartment. When the room is loud, regular focus music does not cut it. Here is how to mask aggressively without fatigue.",
   "deck": "In a noisy place, use steady noise rather than music: brown noise as a base for low rumbles, a quieter layer of pink noise or rain for voices, no lyrics, and noise-canceling headphones so the volume can stay safe. Take short quiet breaks every hour.",

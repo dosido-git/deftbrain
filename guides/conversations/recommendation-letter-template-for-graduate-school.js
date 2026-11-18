@@ -5,6 +5,7 @@ module.exports = {
   "title": "Recommendation Letter Template for Graduate School",
   "titleHtml": "Recommendation Letter Template <em>(For Graduate School)</em>",
   "shortTitle": "Grad School Recommendation",
+  "searchTitle": "Grad School Recommendation Letter | Help Them Get Accepted",
   "navTitle": "grad school recommendation template",
   "description": "Grad school letters have specific conventions and reviewers who read hundreds. Here's the template that works — and the parts everyone gets wrong.",
   "deck": "A graduate school recommendation letter usually has five parts: your relationship to the applicant and your standing, a headline judgment with a concrete comparison, one specific scholarly anecdote, evidence they can do independent research, and a clear endorsement that honestly notes an area for growth.",

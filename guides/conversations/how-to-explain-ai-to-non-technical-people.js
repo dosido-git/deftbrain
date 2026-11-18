@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Explain AI to Non-Technical People (Without Sounding Like a Textbook)",
   "titleHtml": "How to Explain AI to Non-Technical People <em>(Without Sounding Like a Textbook)</em>",
   "shortTitle": "How to Explain AI to Non-Technical People",
+  "searchTitle": "How to Explain AI Simply | Make Tech Talk Make Sense",
   "navTitle": "How to explain AI to non-technical people without sounding like a textbook",
   "description": "Your audience doesn't need the architecture diagram. They need to know what it does, when it's wrong, and why it matters to them. Here's how to deliver that.",
   "deck": "To explain AI to non-technical people, start with what it does ('it drafts emails'), use an analogy from their own world, say plainly what it gets wrong, give them one sentence they can repeat, and stop once their question is answered.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to respond to an angry text without making it worse",
   "titleHtml": "How to respond to an angry text without making it worse",
   "shortTitle": "Angry texts",
+  "searchTitle": "Angry Text Message Reply | Cool Things Down, Not Up",
   "navTitle": "Angry texts",
   "description": "How to respond to an angry text without escalating: wait twenty minutes, find the real hurt, acknowledge first, answer one point, and move off text.",
   "deck": "To respond to an angry text without making it worse, wait about twenty minutes, look for the hurt beneath the anger, and open by acknowledging their feeling rather than defending yourself. Address the single most important point, and suggest a call or meeting if it deserves a real conversation.",

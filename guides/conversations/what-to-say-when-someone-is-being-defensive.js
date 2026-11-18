@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Say When Someone Is Being Defensive (And Why Pushing Harder Makes It Worse)",
   "titleHtml": "What to Say When Someone Is Being Defensive <em>(And Why Pushing Harder Makes It Worse)</em>",
   "shortTitle": "What to Say When Someone Is Being Defensive",
+  "searchTitle": "How to Talk to a Defensive Person | Get Through Without a Fight",
   "navTitle": "What to say when someone is being defensive and why pushing harder makes it worse",
   "description": "What to say when someone gets defensive: stop explaining, acknowledge the feeling, return with questions, and know when to pause the conversation.",
   "deck": "When someone gets defensive, stop re-explaining and acknowledge the feeling first: 'I can see this is frustrating.' Once things calm down, return to the point with questions rather than statements, don't argue about their defensiveness, and if they can't engage today, pause and come back later.",

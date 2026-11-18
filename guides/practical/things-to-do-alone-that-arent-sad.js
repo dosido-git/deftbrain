@@ -5,6 +5,7 @@ module.exports = {
   "title": "Things to Do Alone That Are Not Sad",
   "titleHtml": "Things to Do Alone <em>That Are Not Sad</em>",
   "shortTitle": "Things to Do Alone",
+  "searchTitle": "Things to Do Alone | Enjoy Your Own Company",
   "navTitle": "things to do alone",
   "description": "Solo outings can be excellent — but only if you pick the right ones. Here is the difference.",
   "deck": "Solo outings feel good when you choose places where many people go alone (museums, bookstores, trails, matinees), activities that absorb you, a book or sketchbook for pauses, and treat it as a real plan. Start with easy ones, like a weekday museum visit, and build from there.",

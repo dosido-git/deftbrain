@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If You've Actually Won an Argument",
   "titleHtml": "How to Know If You've <em>Actually Won an Argument</em>",
   "shortTitle": "Did I Actually Win?",
+  "searchTitle": "Did I Win the Argument | Know Where You Really Stand",
   "navTitle": "How to know if you've actually won an argument or just out-talked someone",
   "description": "Winning an argument and out-talking someone look similar in the moment and feel different a week later. Here's how to tell which one you did — and why it matters.",
   "deck": "You've actually won an argument if the other person changed their view rather than just stopped arguing, could restate your position fairly, you shifted a little too, they later describe it as useful, and your case would still hold up in writing.",

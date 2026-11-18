@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find the Original Study a News Article Is Talking About",
   "titleHtml": "How to Find <em>the Original Study</em> a News Article Is Talking About",
   "shortTitle": "Find the Source Paper",
+  "searchTitle": "Find the Original Study | Get the Real Source",
   "navTitle": "find the original study",
   "description": "News articles rarely link directly to the studies they cite. Here is how to find the actual paper in under five minutes — and what to do when the article does not name the study.",
   "deck": "To find the study a news article describes, search the lead author's name with a specific term on Google Scholar or PubMed, check the named journal's recent issues, search a quoted phrase to find the press release, or search recent papers by topic and date.",

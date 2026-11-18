@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get a Recap of a Show Without Spoilers (For the Part You Haven't Watched Yet)",
   "titleHtml": "How to Get a Recap of a Show Without Spoilers <em>(For the Part You Haven&#39;t Watched Yet)</em>",
   "shortTitle": "How to Get a Recap of a Show Without Spoilers",
+  "searchTitle": "TV Show Recaps | Catch Up Without Ruining It",
   "navTitle": "How to get a recap of a show without spoilers for the part you haven't watched yet",
   "description": "How to get a recap of a TV show without spoilers: your exact stopping point, what counts as a spoiler, a bounded recap, and why to avoid wikis.",
   "deck": "To get a show recap without spoilers, name your exact stopping point (season and episode), decide what counts as a spoiler for you, and look for what's been established so far rather than what happens next. Avoid wikis, which mention later events, and watch an episode before chasing more detail.",

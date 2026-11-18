@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Back into a Show You Abandoned (Without Restarting from Scratch)",
   "titleHtml": "How to Get Back into a Show You Abandoned <em>(Without Restarting from Scratch)</em>",
   "shortTitle": "How to Get Back into a Show You Abandoned",
+  "searchTitle": "Getting Back Into a TV Show | Enjoy It All Over Again",
   "navTitle": "How to get back into a show you abandoned without restarting from scratch",
   "description": "You stopped two seasons ago. You don't remember any character names. Restarting feels like punishment. Here's how to drop back in without re-watching 30 hours.",
   "deck": "To get back into a show you abandoned, pin down exactly where you stopped, read a recap that ends at that episode, rewatch only the last episode you saw, then keep going and accept some confusion in the first episode back. Rewatching from the start is rarely needed.",

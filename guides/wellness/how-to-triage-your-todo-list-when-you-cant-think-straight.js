@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Triage Your To-Do List When You Can't Think Straight",
   "titleHtml": "How to Triage Your To-Do List <em>(When You Can't Think Straight)</em>",
   "shortTitle": "Triage When You Can't Think",
+  "searchTitle": "Brain Fog Triage | Get the Essentials Done",
   "navTitle": "triage when you can't think",
   "description": "Decision-making is broken right now. Here's how to triage anyway — using rules instead of judgment, until your head clears.",
   "deck": "When you can't think straight, triage with rules instead of judgment: do time-locked tasks first, then anything blocking someone else, then anything under five minutes. Decide or delete items older than three days, and group what's left by type so you can work through one kind at a time.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Smallest Possible First Step for Writing a Book",
   "titleHtml": "The Smallest Possible First Step <em>for Writing a Book</em>",
   "shortTitle": "First Step to Write a Book",
+  "searchTitle": "How to Start Writing a Book | Write the First Page Today",
   "navTitle": "The smallest possible first step for writing a book",
   "description": "You've wanted to write a book for years. You haven't started. Here's the smallest possible first step — under five minutes, no decisions — that gets the project from imagined to begun.",
   "deck": "The smallest first step for writing a book is to open a blank document, name it with a working title and save it. Then, in short sessions, write one sentence on what it's about, list five things it should contain, write 200 rough words, and schedule the next 200.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to know if you're ready for the next level",
   "titleHtml": "How to know if you're <em>ready for the next level</em>",
   "shortTitle": "Ready for the next level",
+  "searchTitle": "Am I Ready for a Promotion | Know When to Make Your Move",
   "navTitle": "ready for next level",
   "description": "An honest read on whether you are ready for promotion or a step up — what the actual signals are, and how to know when to push for it.",
   "deck": "You're likely ready for the next level when you already do parts of that job, your manager describes you in next-level terms, and people a level up treat you as a peer. Ask your manager what's left to show; if you've shown it, ask about timing.",

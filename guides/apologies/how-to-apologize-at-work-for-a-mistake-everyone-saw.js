@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Apologize at Work for a Mistake Everyone Saw (Without Making It Your Whole Identity)",
   "titleHtml": "How to Apologize at Work for a Mistake Everyone Saw <em>(Without Making It Your Whole Identity)</em>",
   "shortTitle": "How to Apologize at Work for a Mistake Everyone Saw",
+  "searchTitle": "How to Apologize at Work | Recover Your Reputation Fast",
   "navTitle": "How to apologize at work for a mistake everyone saw without making it your whole identity",
   "description": "A public work mistake has different rules than a private one. The audience is bigger, the stakes are reputation, and over-apologizing is its own failure mode. Five steps for owning it cleanly and moving forward.",
   "deck": "To apologize for a public work mistake, acknowledge it directly and early, apologize once to the people actually affected, keep it brief and specific, and show a visible change that prevents a repeat. Then stop bringing it up; repeated apologies can make the mistake bigger than it was.",

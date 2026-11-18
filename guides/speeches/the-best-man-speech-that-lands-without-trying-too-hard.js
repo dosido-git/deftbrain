@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Best Man Speech That Lands Without Trying Too Hard",
   "titleHtml": "The Best Man Speech <em>That Lands Without Trying Too Hard</em>",
   "shortTitle": "The Best Man Speech That Lands",
+  "searchTitle": "Best Man Speech | Win the Room Effortlessly",
   "navTitle": "The best man speech that lands without trying too hard",
   "description": "The trying-too-hard tell in a best man speech is opening with a joke. Five steps for a speech that gets laughs without chasing them, and that the groom remembers for the right reasons.",
   "deck": "A best man speech tends to land when it opens with something specific instead of a stock joke, tells stories that reveal the groom, gives about a third of its time to the couple, and ends on a sincere toast. Four to five minutes is plenty.",

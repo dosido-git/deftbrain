@@ -5,6 +5,7 @@ module.exports = {
   "title": "Best Music for Deep Focus (When You Actually Need to Concentrate, Not Just Vibe)",
   "titleHtml": "Best Music for Deep Focus <em>(When You Actually Need to Concentrate, Not Just Vibe)</em>",
   "shortTitle": "Best Music for Deep Focus",
+  "searchTitle": "Music for Deep Focus | Get in the Zone Fast",
   "navTitle": "Best music for deep focus when you actually need to concentrate, not just vibe",
   "description": "The 'lo-fi to study to' playlist isn't always the answer. The right focus music depends on the kind of attention the task needs. Here's how to choose.",
   "deck": "The best music for deep focus is usually instrumental, predictable and familiar, at low volume. Lyrics interfere most with reading and writing. Looping one album often works better than a shuffled playlist. Test any choice on real work, because responses to music vary between people.",

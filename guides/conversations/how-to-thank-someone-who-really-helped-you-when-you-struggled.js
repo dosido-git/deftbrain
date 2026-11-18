@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Thank Someone Who Really Helped You When You Struggled",
   "titleHtml": "How to Thank Someone Who <em>Really Helped You When You Struggled</em>",
   "shortTitle": "Thanking Someone Who Was There",
+  "searchTitle": "Thank You for Being There Messages | Say What Their Support Meant",
   "navTitle": "thanking someone who was there",
   "description": "When the help was big, the standard thank-you note feels small. Here's how to write something that matches the weight of what they did.",
   "deck": "To thank someone who helped you through a hard time, name the specific moments they showed up, say what difference it made, don't offer to repay it, briefly acknowledge you weren't easy to support, and pick a form that fits, such as a letter or conversation.",

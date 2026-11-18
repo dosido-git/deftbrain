@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Walk Away From a High-Pressure Sale (Even When You're Almost Convinced)",
   "titleHtml": "How to Walk Away From a High-Pressure Sale <em>(Even When You&#39;re Almost Convinced)</em>",
   "shortTitle": "How to Walk Away From a High-Pressure Sale",
+  "searchTitle": "High-Pressure Sales | Walk Away on Your Terms",
   "navTitle": "How to walk away from a high-pressure sale even when you're almost convinced",
   "description": "The hardest sales to walk away from aren't the ones you hate — they're the ones you've started to like. Here's how to leave anyway, when leaving is the right move.",
   "deck": "To walk away from a high-pressure sale you've started to like, treat feeling convinced as the cue to pause, say you'd like 24 hours to decide, watch how the seller reacts, and ignore the time you've already spent. A genuine offer usually survives a night's sleep.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If a Bill Is a Mistake or Just Confusing",
   "titleHtml": "How to Tell If a Bill Is <em>a Mistake or Just Confusing</em>",
   "shortTitle": "Bill Mistake or Confusing",
+  "searchTitle": "My Bill Is Wrong | Know Before You Pay",
   "navTitle": "tell if a bill is a mistake or just confusing",
   "description": "Quick checks that separate a confusing bill from a wrong one: compare with your agreement, check dates and proration, ask before disputing, and question the specific line.",
   "deck": "To tell a billing mistake from a confusing bill, compare it with your last statement and your agreement, check service dates and proration, and ask what a charge is for before disputing. Charges that do not match your agreement or dates are likely errors; question just those lines.",

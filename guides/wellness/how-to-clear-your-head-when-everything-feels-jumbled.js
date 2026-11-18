@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Clear Your Head When Everything Feels Jumbled (And You Can't Even Tell What's Wrong)",
   "titleHtml": "How to Clear Your Head When Everything Feels Jumbled <em>(And You Can&#39;t Even Tell What&#39;s Wrong)</em>",
   "shortTitle": "How to Clear Your Head When Everything Feels Jumbled",
+  "searchTitle": "How to Clear Your Head | Think Clearly Again",
   "navTitle": "How to clear your head when everything feels jumbled and you can't even tell what's wrong",
   "description": "It's not a specific problem. It's a low hum of everything-at-once. Here's the sequence that pulls the hum apart into something you can actually address.",
   "deck": "To clear a jumbled head, name the state first, then list the separate things bothering you without analyzing them. Deal with the few that have a quick action attached, write down the rest in a sentence each, and accept that some background hum will remain.",

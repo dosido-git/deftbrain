@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Is This Topic So Hard to Understand?",
   "titleHtml": "Why Is This Topic <em>So Hard to Understand?</em>",
   "shortTitle": "Why Is It Hard",
+  "searchTitle": "Why Is This So Hard to Understand | Make It Easier to Grasp",
   "navTitle": "why is this topic so hard",
   "description": "Some topics are not actually hard — they are just badly taught. Others are genuinely hard for specific structural reasons. Here is how to tell which kind of difficulty you are facing.",
   "deck": "A topic usually feels hard for one of four reasons: it depends on prerequisites you haven't built, it's abstract with no concrete picture, the standard explanation doesn't suit you, or unfamiliar jargon hides simple ideas. Each has a different fix: backfill, concrete examples, another teacher, or a glossary.",

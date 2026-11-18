@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If an Email Is Actually Urgent",
   "titleHtml": "How to Know If an Email Is <em>Actually Urgent</em>",
   "shortTitle": "Is This Email Actually Urgent?",
+  "searchTitle": "Is This Email Urgent | Stop Panicking Over Your Inbox",
   "navTitle": "How to tell if an email is actually urgent or just loud",
   "description": "The subject line says URGENT. The body has three exclamation points. Your stomach flips. Here's how to read past the volume and tell whether anything actually has to happen today.",
   "deck": "An email is actually urgent when something concrete happens if you don't reply soon: a meeting, a deadline or a decision that depends on it. Ignore capitals and exclamation points, find the real deadline, check whose urgency it is, and ask what changes if you answer tomorrow instead.",

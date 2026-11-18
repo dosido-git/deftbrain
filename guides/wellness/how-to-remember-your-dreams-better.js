@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Remember Your Dreams Better",
   "titleHtml": "How to Remember Your Dreams <em>(Better)</em>",
   "shortTitle": "Remember Your Dreams Better",
+  "searchTitle": "How to Remember Dreams | Recall More Every Morning",
   "navTitle": "remember your dreams better",
   "description": "Dream recall is mostly mechanical, not mystical. Here's the small set of habits that turn faint impressions into recoverable memories.",
   "deck": "To remember dreams better, lie still for a minute when you wake before reaching for anything, decide before sleep that you want to remember, keep paper or a phone within reach, write down fragments rather than a story, and reread your notes soon after waking.",

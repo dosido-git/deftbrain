@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is My Dog Sick or Just Tired? How to Tell the Difference",
   "titleHtml": "Is My Dog Sick or Just Tired? <em>How to Tell the Difference</em>",
   "shortTitle": "Is My Dog Sick or Just Tired?",
+  "searchTitle": "Is My Dog Sick or Tired | Ease Your Worry Fast",
   "navTitle": "Is my dog sick or just tired how to tell the difference",
   "description": "Is your dog sick or just tired? How engagement, appetite, overnight recovery and clusters of symptoms tell the difference, plus the emergencies.",
   "deck": "A tired dog still engages: eyes follow you, the tail thumps, they eat, if slowly, and they're normal after a night's rest. A sick dog withdraws, loses interest in food, is still off the next day, or has several symptoms together. Abnormal gums or collapse need a vet now.",

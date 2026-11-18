@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to make solo deep work less lonely",
   "titleHtml": "How to make solo deep work <em>less lonely</em>",
   "shortTitle": "Solo deep work less lonely",
+  "searchTitle": "Lonely Working From Home | Feel Less Alone at Your Desk",
   "navTitle": "solo work less lonely",
   "description": "How to make solo deep work less lonely: one conversation a day, silent coworking, getting out twice, a peer who does the same work.",
   "deck": "To make solo deep work less lonely, have one real conversation each day, try silent video coworking, get out of the house twice a day, and find a peer doing similar work to swap progress with. Some loneliness is a normal cost of working alone, not a failure.",

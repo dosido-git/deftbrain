@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle Rude Comments from Family at Holidays",
   "titleHtml": "How to Handle Rude Comments from Family <em>at Holidays</em>",
   "shortTitle": "Rude Family Holiday Comments",
+  "searchTitle": "Rude Family Comments at Holidays | Keep Your Cool at the Table",
   "navTitle": "handle rude comments from family at holidays",
   "description": "Five responses to the comment about your weight, your job, your relationship status, or your choices. None of them require a fight.",
   "deck": "When family makes a rude comment at a holiday, calm options include a flat 'Oh' that leaves it hanging, an honest 'that isn't landing the way you meant', a curious question about why they said it, or a change of topic. Choosing your line in advance helps most.",

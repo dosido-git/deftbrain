@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If You Are an Introvert or Just Low on Energy",
   "titleHtml": "How to Know If You Are an Introvert <em>or Just Low on Energy</em>",
   "shortTitle": "Introvert or Just Tired?",
+  "searchTitle": "Introvert Low Energy | Know What You Really Need",
   "navTitle": "introvert or just tired",
   "description": "You used to like people more than you do now. The difference between a stable introvert preference and temporary depletion matters for what you do about it.",
   "deck": "Introversion is a long-standing preference; depletion is a recent change. If you've always preferred small groups and quiet recovery, that's temperament. If you recently stopped enjoying people, even low-key time with a close friend, and rest doesn't bring it back, look at what changed.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Set a Meeting Agenda That Actually Works",
   "titleHtml": "How to Set a Meeting Agenda <em>That Actually Works</em>",
   "shortTitle": "Set a Meeting Agenda That Works",
+  "searchTitle": "Meeting Agenda Template | Make Every Meeting Count",
   "navTitle": "How to set a meeting agenda that actually works",
   "description": "Most meeting agendas are a list of topics that pretend to be a plan. Here's how to write one that runs the meeting for you — items, outcomes, owners, time.",
   "deck": "A meeting agenda works when each item names a desired outcome ('Decide Q3 launch order', not 'Discuss roadmap'), has a time limit and an owner, goes out about a day ahead with any reading, and leaves a little slack for discussions that run long.",

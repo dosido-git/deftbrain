@@ -5,6 +5,7 @@ module.exports = {
   "title": "What jobs will be in demand in 5 years?",
   "titleHtml": "What jobs will be <em>in demand in 5 years?</em>",
   "shortTitle": "In-demand jobs in 5 years",
+  "searchTitle": "Jobs in Demand in 5 Years | Plan Your Next Move Wisely",
   "navTitle": "jobs in demand 5 years",
   "description": "What jobs will be in demand in five years: healthcare, skilled trades, AI integration roles, care work and energy-transition jobs — and why.",
   "deck": "Jobs projected to grow fastest include healthcare roles such as nurse practitioners and physical therapist assistants, data scientists and information security analysts, and solar and wind technicians. Healthcare and social assistance is expected to add the most jobs, while office and administrative support roles are projected to shrink.",

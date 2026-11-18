@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Stay Active on a Really Busy Week",
   "titleHtml": "How to Stay Active <em>on a Really Busy Week</em>",
   "shortTitle": "Stay Active on a Busy Week",
+  "searchTitle": "How to Stay Active When Busy | Move More on Busy Days",
   "navTitle": "stay active on a busy week",
   "description": "When the calendar is jammed, the right answer is not a heroic workout. Here is how to keep movement in a week where nothing else fits.",
   "deck": "On a busy week, swap the workout goal for short bursts of movement through the day, keep one five-minute slot you won't cancel, walk during calls, choose easy mobility over hard training when sleep is short, and aim to maintain fitness rather than build it. Short bouts count.",

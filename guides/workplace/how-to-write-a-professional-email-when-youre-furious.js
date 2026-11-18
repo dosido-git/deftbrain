@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Professional Email When You're Actually Furious",
   "titleHtml": "How to Write a Professional Email <em>When You&#39;re Actually Furious</em>",
   "shortTitle": "How to Write a Professional Email When You're Furious",
+  "searchTitle": "How to Write a Professional Angry Email | Say It Without Regret",
   "navTitle": "How to write a professional email when you're actually furious",
   "description": "The professional email written from a furious place is a different animal from the one written from a calm one. Five steps for getting from rage to a message that lands without leaking the rage into it.",
   "deck": "To write a professional email when you're furious, draft the angry version privately to find what you want, wait at least an hour, then rewrite from scratch around the issue, its impact and your request. Match firmness to the situation, and consider whether a conversation would work better.",

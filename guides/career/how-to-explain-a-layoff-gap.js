@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Explain a Layoff Gap (On Your Résumé and Out Loud)",
   "titleHtml": "How to Explain a Layoff Gap <em>(On Your Résumé and Out Loud)</em>",
   "shortTitle": "How to Explain a Layoff Gap",
+  "searchTitle": "How to Explain a Layoff in an Interview | Answer With Confidence, Not Shame",
   "navTitle": "how to explain a layoff gap",
   "description": "How to explain a layoff gap on your résumé and in interviews: one honest line, a fifteen-second answer, and what recruiters actually listen for.",
   "deck": "To explain a layoff gap, list the real dates, add one line such as 'Position eliminated in company-wide restructuring,' and keep the spoken answer to about fifteen seconds: what happened, what you've done since, and why this role. A short, calm, true answer usually lets the conversation move on.",

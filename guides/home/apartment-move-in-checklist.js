@@ -5,6 +5,7 @@ module.exports = {
   "title": "Apartment Move-In Checklist (The Five Things That Actually Matter)",
   "titleHtml": "Apartment Move-In Checklist <em>(The Five Things That Actually Matter)</em>",
   "shortTitle": "Apartment Move-In Checklist",
+  "searchTitle": "Apartment Move-In Checklist | Protect Your Deposit From Day One",
   "navTitle": "Apartment move-in checklist and the five things that actually matter",
   "description": "Apartment move-in checklist: the five things that matter on move-in day — damage photos, the inspection form, testing systems, day-one setup — and what can wait.",
   "deck": "An apartment move-in checklist needs five things: photograph existing damage before furniture arrives, complete and return the move-in condition form promptly, test every appliance and fixture and report faults in writing, set up utilities, renter's insurance and contacts on day one, and leave the rest for later.",

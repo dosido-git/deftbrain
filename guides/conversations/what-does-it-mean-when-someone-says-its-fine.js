@@ -5,6 +5,7 @@ module.exports = {
   "title": "What does it mean when someone says \"it's fine\"",
   "titleHtml": "What does it mean when someone says &ldquo;it's fine&rdquo;",
   "shortTitle": "When they say \"it's fine\"",
+  "searchTitle": "What Does It's Fine Mean | Know When Fine Isn't Fine",
   "navTitle": "When they say \"it's fine\"",
   "description": "What 'it's fine' really means: the signs of a genuine yes, the signs it isn't fine, and the one question to ask when you're not sure.",
   "deck": "'It's fine' usually means yes when it comes with more words or they carry on normally, and may mean no when it stands alone, sounds forced ('Sure!'), or the conversation goes flat. 'Fine, given everything' is a reluctant but real yes. If unsure, ask once and listen.",

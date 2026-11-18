@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Retirement Speech for Someone You Actually Like",
   "titleHtml": "How to Write a Retirement Speech <em>for Someone You Actually Like</em>",
   "shortTitle": "How to Write a Retirement Speech",
+  "searchTitle": "Retirement Speech | Honor Their Career With Heart",
   "navTitle": "How to write a retirement speech for someone you actually like",
   "description": "Most retirement speeches sound like the speaker pulled a template off the company intranet. The ones that land are the ones where the speaker actually liked the person leaving. Five steps for getting the affection into the speech.",
   "deck": "A good retirement speech for someone you like skips the career summary and tells one small, specific moment that shows what working with them was like. Speak of them in the present tense, close on what they made possible, and keep the focus on them.",

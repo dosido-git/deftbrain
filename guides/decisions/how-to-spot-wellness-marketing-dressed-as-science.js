@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot Wellness Marketing Dressed Up as Science",
   "titleHtml": "How to Spot Wellness Marketing <em>Dressed Up as Science</em>",
   "shortTitle": "Wellness Marketing",
+  "searchTitle": "Wellness Marketing | See Through the Science-Speak",
   "navTitle": "spot fake wellness science",
   "description": "Most wellness products use the language of science to sell things that science does not actually support. Here are the patterns that reveal marketing pretending to be evidence.",
   "deck": "Wellness marketing dressed as science usually cites a real study that tested a different dose, form or outcome, leans on credentials from an unrelated field, implies results from a cellular mechanism, or presents testimonials as data. Check whether the evidence matches the exact product claim.",

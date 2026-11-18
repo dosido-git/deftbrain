@@ -5,6 +5,7 @@ module.exports = {
   "title": "Weird Dog Behaviors, Explained (And When to Actually Worry)",
   "titleHtml": "Weird Dog Behaviors, Explained <em>(And When to Actually Worry)</em>",
   "shortTitle": "Weird Dog Behaviors, Explained",
+  "searchTitle": "Weird Dog Behavior | Understand Your Dog Better",
   "navTitle": "Weird dog behaviors explained and when to actually worry",
   "description": "Your dog just did the thing again. Some weird behaviors are wiring; a few are actually telling you something is wrong. Five common patterns explained, plus the one you genuinely can't ignore.",
   "deck": "Most odd dog behaviors, such as eating grass, chasing tails, staring at nothing or eating poop, are harmless when occasional. A sudden change is what matters: frantic grass-eating with drooling, obsessive spinning, new fearfulness at home. A dog pressing its head against a wall needs a vet the same day.",

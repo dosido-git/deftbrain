@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Move Forward on a Project That's Been Stuck for Months",
   "titleHtml": "How to Move Forward on a Project <em>That's Been Stuck for Months</em>",
   "shortTitle": "Project Stuck for Months",
+  "searchTitle": "Project Stuck for Months | Finally Move It Forward",
   "navTitle": "How to move forward on a project that's been stuck for months",
   "description": "Long-stuck projects don't just need momentum — they need a different intervention. Here's how to diagnose why a project has been stuck this long, and the moves that get it moving.",
   "deck": "To restart a project stuck for months, find the moment it stopped, check whether the goal still matters, name the specific blocker, make the first session back deliberately small, and commit to one time-boxed session (say 90 minutes this week) before deciding whether to continue or close it.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If Your Name Is Too Similar to an Existing Brand",
   "titleHtml": "How to Tell If Your Name Is <em>Too Similar to an Existing Brand</em>",
   "shortTitle": "Too Similar to an Existing Brand?",
+  "searchTitle": "Is My Business Name Taken | Avoid Legal Headaches",
   "navTitle": "too similar to existing brand",
   "description": "A trademark search is not enough. Here is the broader test for whether a name is going to cause confusion — or a lawsuit.",
   "deck": "A name is too similar to an existing brand if customers could confuse the two: the names look, sound or mean alike and the products are related. Search the USPTO database for close and sound-alike marks, search online, and weigh the other company's size before committing.",

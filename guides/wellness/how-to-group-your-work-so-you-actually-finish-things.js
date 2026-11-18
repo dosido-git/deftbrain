@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Group Your Work So You Actually Finish Things (Instead of Just Starting Them)",
   "titleHtml": "How to Group Your Work So You Actually Finish Things <em>(Instead of Just Starting Them)</em>",
   "shortTitle": "How to Group Your Work So You Actually Finish Things",
+  "searchTitle": "How to Group Work Tasks | Finish What You Start",
   "navTitle": "How to group your work so you actually finish things instead of just starting them",
   "description": "You start ten things and finish two. The problem isn't motivation — it's grouping. Here's how to structure work so completion happens, not just activity.",
   "deck": "To finish more of what you start, group work by stage rather than topic, schedule a regular block just for finishing, limit how many nearly-done items you allow, leave a one-line note on what to do next whenever you stop, and define 'done' before you begin.",

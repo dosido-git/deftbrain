@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When You Are Panicking Right Before the Event",
   "titleHtml": "What to Do When You Are Panicking <em>Right Before the Event</em>",
   "shortTitle": "Panicking Right Before",
+  "searchTitle": "How to Calm Anxiety Before a Big Event | Feel Steady When It Counts",
   "navTitle": "panicking right before event",
   "description": "Five minutes out, full panic, no time to fix anything substantively. Here is the SOS sequence that actually works in the moment.",
   "deck": "When panic hits minutes before an event, splash cold water on your face, breathe out slowly for a few breaths, name things you can see around you, walk for a minute, and go in nervous rather than waiting to feel calm. Nerves usually settle once things start.",

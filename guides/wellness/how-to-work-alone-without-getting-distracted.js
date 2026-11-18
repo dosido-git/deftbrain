@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Work Alone Without Getting Distracted",
   "titleHtml": "How to Work Alone <em>Without Getting Distracted</em>",
   "shortTitle": "Work Alone Without Distraction",
+  "searchTitle": "How to Avoid Distractions | Get Deep Work Done",
   "navTitle": "How to work alone without getting distracted constantly",
   "description": "How to work from home without getting distracted: phone in another room, one browser window, a plain workspace, one task, and scheduled breaks.",
   "deck": "To work alone without distraction, change your environment rather than relying on willpower: put your phone in another room, use one browser window with only the tabs you need, keep your workspace plain, have one task open at a time, and schedule set times for checking messages.",

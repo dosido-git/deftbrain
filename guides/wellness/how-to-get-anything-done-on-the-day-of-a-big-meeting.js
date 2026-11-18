@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Anything Done on the Day of a Big Meeting",
   "titleHtml": "How to Get Anything Done <em>on the Day of a Big Meeting</em>",
   "shortTitle": "Day-of Productivity",
+  "searchTitle": "Productivity on Meeting Days | Get Real Work Done Anyway",
   "navTitle": "productivity day of a big meeting",
   "description": "You have a 3pm presentation. The morning is wide open. Somehow you do nothing useful with it. Here is why — and what to actually plan for that kind of day.",
   "deck": "On the day of a big meeting, plan for divided attention: choose familiar tasks over new or hard work, break the time into 30- to 60-minute pieces, set a fixed time to switch from work to preparation, and leave a 15- to 30-minute buffer before the meeting starts.",

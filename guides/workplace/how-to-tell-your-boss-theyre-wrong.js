@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell Your Boss They're Wrong (Without Burning Anything Down)",
   "titleHtml": "How to Tell Your Boss They&#39;re Wrong <em>(Without Burning Anything Down)</em>",
   "shortTitle": "How to Tell Your Boss They're Wrong",
+  "searchTitle": "How to Tell Your Boss They're Wrong | Speak Up and Stay Respected",
   "navTitle": "How to tell your boss they're wrong without burning anything down",
   "description": "You can see the problem clearly. The hard part is saying so. A practical, step-by-step approach to pushing back on your manager — professionally, and without blowing up your career.",
   "deck": "To tell your boss they're wrong, raise it privately rather than in front of others, open with a question, stick to facts and data rather than judgments, anticipate their likely objections, and rehearse your first sentence. The aim is a conversation about the problem, not a contest.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Politely Decline a Meeting (Without Looking Like You're Hiding)",
   "titleHtml": "How to Politely Decline a Meeting <em>(Without Looking Like You're Hiding)</em>",
   "shortTitle": "Decline a meeting",
+  "searchTitle": "How to Decline a Meeting | Protect Your Calendar Politely",
   "navTitle": "How to politely decline a meeting",
   "description": "How to politely decline a meeting: thank them, name the goal, offer input instead, keep the reason short, don't apologize, and decline early.",
   "deck": "To decline a meeting politely, reply early, thank the organizer and acknowledge the meeting's goal, then offer something in place of attending: written input, an update, or a colleague better placed to go. Keep the reason short, since 'I have a conflict' is usually enough, and skip the apology.",

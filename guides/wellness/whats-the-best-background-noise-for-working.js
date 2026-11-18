@@ -5,6 +5,7 @@ module.exports = {
   "title": "What's the Best Background Noise for Working (And Why It Depends on the Task)",
   "titleHtml": "What's the Best Background Noise for Working <em>(And Why It Depends on the Task)</em>",
   "shortTitle": "Best Background Noise for Working",
+  "searchTitle": "Background Noise for Working | Focus Anywhere",
   "navTitle": "best background noise for working",
   "description": "There is no single best. Spreadsheets need different audio than writing. Match the sound to the task and the room and you'll stop fighting your environment.",
   "deck": "The best background noise depends on the task and the room. For writing, coding or dense reading, use steady noise or instrumental music without lyrics. Repetitive work tolerates more energy, even lyrics. Noisy rooms need heavier masking, such as brown or pink noise. Pick a default for each task type.",

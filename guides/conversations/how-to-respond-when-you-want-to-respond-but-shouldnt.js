@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Respond When You Want to Fire Back but Shouldn't (Without Making It Worse)",
   "titleHtml": "How to Respond When You Want to Fire Back but Shouldn&#39;t <em>(Without Making It Worse)</em>",
   "shortTitle": "How to Respond When You Want to Respond But Shouldn't",
+  "searchTitle": "When Not to Respond | Know When Silence Wins",
   "navTitle": "How to respond when you want to respond but shouldn't",
   "description": "What to do when you want to send an angry reply but shouldn't: put the phone down, write it elsewhere, ask one question, and send less.",
   "deck": "When you want to fire back but shouldn't, put the phone down physically, then write the reply somewhere it can't be sent, like a notes app. Before sending anything, ask whether it's the message you'd want them to remember. If a reply can't wait, keep it short and factual.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to spot manipulative clauses in any contract",
   "titleHtml": "How to spot <em>manipulative clauses in any contract</em>",
   "shortTitle": "Spot manipulative clauses",
+  "searchTitle": "Manipulative Contract Clauses | Sign Without Getting Trapped",
   "navTitle": "spot manipulative clauses",
   "description": "A practical method for catching the clauses in any contract that are written to disadvantage you — without needing to be a lawyer.",
   "deck": "Clauses that unfairly favor one side usually show up as uneven remedies for breach, rights to change the terms later, mandatory arbitration with a class-action waiver, one-sided indemnification, and 'sole discretion' language. Read each obligation in both directions, and ask for balance, notice or an exit where it's missing.",

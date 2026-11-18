@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a LinkedIn Post Without Sounding Fake (Or Like an Inspirational Speaker)",
   "titleHtml": "How to Write a LinkedIn Post Without Sounding Fake <em>(Or Like an Inspirational Speaker)</em>",
   "shortTitle": "How to Write a LinkedIn Post Without Sounding Fake",
+  "searchTitle": "How to Write a LinkedIn Post | Sound Like Yourself, Not a Robot",
   "navTitle": "How to write a LinkedIn post without sounding fake or like an inspirational speaker",
   "description": "Most LinkedIn posts read as performance because the platform rewards a specific cadence. Here's how to be visible without joining the cult of broetry.",
   "deck": "To write a LinkedIn post that doesn't sound fake, open with your point instead of a dramatic hook, use normal paragraphs, describe the lesson at its real size, end on your strongest sentence rather than an engagement question, and accept that your voice may reach fewer people at first.",

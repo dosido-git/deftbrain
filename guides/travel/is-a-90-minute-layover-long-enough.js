@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is a 90-Minute Layover Long Enough? (It Depends on These Five Things)",
   "titleHtml": "Is a 90-Minute Layover Long Enough? <em>(It Depends on These Five Things)</em>",
   "shortTitle": "Is a 90-Minute Layover Enough?",
+  "searchTitle": "Is a 90-Minute Layover Enough | Book With Confidence",
   "navTitle": "is a 90-minute layover enough",
   "description": "Sometimes 90 minutes is plenty. Sometimes it is impossible. Here are the five variables that decide which side you are on, and how to do the math before you book.",
   "deck": "A 90-minute layover is usually plenty for a domestic connection and often enough internationally when your bags are checked through. It's tight when you must clear customs and recheck bags, as on arrival into the US, or change terminals at a large hub, and risky on separate tickets.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Do I Keep Having the Same Dream?",
   "titleHtml": "Why Do I Keep Having <em>the Same Dream?</em>",
   "shortTitle": "Why Recurring Dreams?",
+  "searchTitle": "Recurring Dreams | Understand Why They Keep Coming",
   "navTitle": "why recurring dreams?",
   "description": "Recurring dreams are usually pointing at something — but not what the dream-symbol books say. Here's how to read your own.",
   "deck": "Recurring dreams often return during periods that feel similar to when they first appeared, such as stress, evaluation or feeling stuck. To understand yours, notice when it returns, name its main feeling, your role in it, and what never changes. Frequent distressing nightmares are worth raising with a doctor.",

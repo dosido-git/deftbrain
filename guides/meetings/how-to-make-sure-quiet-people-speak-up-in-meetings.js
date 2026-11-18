@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make Sure Quiet People Speak Up in Meetings",
   "titleHtml": "How to Make Sure Quiet People <em>Speak Up in Meetings</em>",
   "shortTitle": "Get Quiet People to Speak",
+  "searchTitle": "Getting Quiet People to Speak Up | Hear Every Good Idea",
   "navTitle": "How to make sure quiet people speak up in meetings",
   "description": "The smartest insight in the room is often inside the person who hasn't said anything. Here's how to draw out the quiet people without putting them on the spot.",
   "deck": "To help quiet people speak up in meetings, ask by topic instead of by name, wait several seconds after a question before filling the silence, give people a heads-up beforehand when you want their view, use round-robins sparingly, and acknowledge contributions specifically.",

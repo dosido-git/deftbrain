@@ -5,6 +5,7 @@ module.exports = {
   "title": "Weird Cat Behaviors, Explained (And When to Actually Worry)",
   "titleHtml": "Weird Cat Behaviors, Explained <em>(And When to Actually Worry)</em>",
   "shortTitle": "Weird Cat Behaviors, Explained",
+  "searchTitle": "Weird Cat Behavior | Understand Your Cat Better",
   "navTitle": "Weird cat behaviors explained and when to actually worry",
   "description": "Weird cat behaviors explained — wall-staring, hiding, grooming, eating odd things, night yowling — and the change-from-normal rule for when to worry.",
   "deck": "Most odd cat behavior, such as staring at walls, hiding and night-time noise, is normal: cats sense sounds, smells and movement people miss. What matters is change. Over-grooming with bald patches, new or constant hiding, eating non-food items, or an older cat newly yowling at night need a vet.",

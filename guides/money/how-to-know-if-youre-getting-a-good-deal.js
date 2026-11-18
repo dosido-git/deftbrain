@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If You're Getting a Good Deal (When Everything's Marketed as One)",
   "titleHtml": "How to Know If You&#39;re Getting a Good Deal <em>(When Everything&#39;s Marketed as One)</em>",
   "shortTitle": "How to Know If You're Getting a Good Deal",
+  "searchTitle": "Is This a Good Deal | Buy Without Second-Guessing",
   "navTitle": "How to know if you're getting a good deal when everything's marketed as one",
   "description": "Every price online claims to be a discount. Most aren't. Here's how to figure out the real value of what's in front of you, fast.",
   "deck": "To know if you're getting a good deal, ignore the advertised discount and check the price history, compare the same item at two or three other retailers, work out the unit price for things you buy repeatedly, and ask whether you'd pay this price with no sale banner.",

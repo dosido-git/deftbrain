@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to make a decision when everything feels equally bad",
   "titleHtml": "How to make a decision when everything feels equally bad",
   "shortTitle": "When all options feel bad",
+  "searchTitle": "Choosing Between Bad Options | Find the Least-Bad Path Forward",
   "navTitle": "When all options feel bad",
   "description": "You are choosing between options that all kind of suck. Here is how to pick anyway, instead of waiting for a good option to magically appear.",
   "deck": "When every option feels bad, accept that you're choosing which loss to take, rule out losses you can't reverse first, ask which option you'd regret skipping in five years, set a decision deadline, and then commit fully to the path you choose.",

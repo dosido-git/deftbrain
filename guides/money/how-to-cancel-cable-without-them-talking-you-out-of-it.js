@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Cancel Cable Without Them Talking You Out of It (And Why the Call Is Designed to Stop You)",
   "titleHtml": "How to Cancel Cable Without Them Talking You Out of It <em>(And Why the Call Is Designed to Stop You)</em>",
   "shortTitle": "How to Cancel Cable Without Them Talking You Out of It",
+  "searchTitle": "How to Cancel Cable | Cancel Without the Runaround",
   "navTitle": "How to cancel cable without them talking you out of it",
   "description": "Cable cancellation calls are some of the most aggressively-trained retention conversations in any industry. The good news: the playbook is small, predictable, and easy to defeat once you know it.",
   "deck": "To cancel cable without being talked out of it, decide your outcome before calling, repeat one sentence such as 'I'd like to cancel today, please,' decline offers unless they match a price you set in advance, and get a confirmation number, an effective date and written confirmation before hanging up.",

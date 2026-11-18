@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Recommendation Letter for a Coworker",
   "titleHtml": "How to Write a Recommendation Letter <em>(For a Coworker)</em>",
   "shortTitle": "Recommendation for a Coworker",
+  "searchTitle": "Recommendation Letter for a Coworker | Show What Makes Them Great",
   "navTitle": "recommendation for a coworker",
   "description": "You worked with them, but you weren't their manager. Here's how to write a letter that's specific, credible, and actually helps.",
   "deck": "To write a recommendation letter for a coworker, open with how you worked alongside them, describe what you saw up close in collaboration, compare them with peers rather than reports, say plainly what you can't speak to, and end with a specific endorsement such as wanting them on your team.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle Hostile Questions in a Presentation",
   "titleHtml": "How to Handle Hostile Questions <em>in a Presentation</em>",
   "shortTitle": "Handle Hostile Questions in Presentations",
+  "searchTitle": "Handling Difficult Questions in a Presentation | Stay Calm Under Pressure",
   "navTitle": "handle hostile questions in a presentation",
   "description": "How to handle hostile questions in a presentation: pause, answer the real concern, don't debate, keep your tone, and have a graceful exit.",
   "deck": "To handle a hostile question in a presentation, pause before answering, name the legitimate concern underneath ('the real question is whether these numbers hold up'), answer it briefly, and don't get drawn into a debate. Stay calmer than the questioner, and offer to continue afterward if they won't yield.",

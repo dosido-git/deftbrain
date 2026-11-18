@@ -5,6 +5,7 @@ module.exports = {
   "title": "What \"K.\" Actually Means in a Text (And Why the Period Changes Everything)",
   "titleHtml": "What \"K.\" Actually Means in a Text <em>(And Why the Period Changes Everything)</em>",
   "shortTitle": "What \"K.\" Means in a Text",
+  "searchTitle": "What Does K Mean in a Text | Stop Overthinking One Letter",
   "navTitle": "What does k period mean in a text and why the period changes everything",
   "description": "'k' and 'K.' look almost identical and mean completely different things. Five contexts that decode what 'K.' is actually doing — and why the period is doing most of the work.",
   "deck": "'K.' with a period usually reads as more final or cooler than a plain 'k', because in texting a period can signal closure or curtness. It can mean the conversation is over, mild distance or real annoyance. What you sent just before, and how they usually text, tell you which.",

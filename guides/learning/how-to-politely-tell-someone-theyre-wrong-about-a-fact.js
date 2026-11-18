@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Politely Tell Someone They Are Wrong About a Fact",
   "titleHtml": "How to Politely Tell Someone <em>They Are Wrong About a Fact</em>",
   "shortTitle": "Polite Correction",
+  "searchTitle": "How to Tell Someone They Are Wrong Politely | Correct Them Without the Fight",
   "navTitle": "politely correct someone",
   "description": "A friend, family member, or colleague says something factually wrong. Here is how to correct them without making them feel ambushed — and when to let it go.",
   "deck": "To politely correct someone's facts, first decide whether the error matters, correct them privately when you can, frame it as curiosity ('I'd heard differently, let's check'), and if you must correct in public, lead with the source rather than the person. Check that you're right first.",

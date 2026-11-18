@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to know if you'll regret saying no to something",
   "titleHtml": "How to know if you'll <em>regret saying no</em>",
   "shortTitle": "Will I regret saying no",
+  "searchTitle": "Will I Regret Saying No | Say No Without Second-Guessing",
   "navTitle": "regret saying no",
   "description": "A method for evaluating whether the opportunity you are about to decline is one you will think about for years — or one you will forget about in a week.",
   "deck": "You're more likely to regret saying no if the opportunity is unique, if you can't name a specific reason for declining, or if a slightly more confident version of you would say yes. Imagine hearing about it five years from now and notice your reaction.",

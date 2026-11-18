@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Break a Lease Legally (Without Wrecking Your Rental History)",
   "titleHtml": "How to Break a Lease Legally <em>(Without Wrecking Your Rental History)</em>",
   "shortTitle": "How to Break a Lease Legally",
+  "searchTitle": "How to Break a Lease | Move Out Without Paying for It",
   "navTitle": "How to break a lease legally without wrecking your rental history",
   "description": "There are clean exits and there are messy ones. Most renters assume they have to take the messy one — and most of the time, they don't.",
   "deck": "To break a lease legally, first check whether a law lets you end it early, such as the federal Servicemembers Civil Relief Act or state protections for domestic violence survivors or uninhabitable units. Otherwise, read your early-termination clause, offer a replacement tenant, and negotiate a written release with your landlord.",

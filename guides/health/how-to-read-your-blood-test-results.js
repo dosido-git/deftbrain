@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read Your Blood Test Results (Without Panicking About Every Number)",
   "titleHtml": "How to Read Your Blood Test Results <em>(Without Panicking About Every Number)</em>",
   "shortTitle": "How to Read Your Blood Test Results",
+  "searchTitle": "How to Read Blood Test Results | Understand Your Health at a Glance",
   "navTitle": "How to read your blood test results without panicking about every number",
   "description": "How to read blood test results: what the reference range and H/L flags mean, which out-of-range values are usually harmless, and which need a call.",
   "deck": "To read blood test results, compare each value with the reference range the lab prints beside it, not just the H or L flag. Slightly out-of-range results are common and often explained by hydration, a recent meal or exercise. Patterns across related values, and large deviations, matter more.",

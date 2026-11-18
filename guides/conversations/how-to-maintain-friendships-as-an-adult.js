@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Maintain Friendships as an Adult (When You Have No Time)",
   "titleHtml": "How to Maintain Friendships as an Adult <em>(When You Have No Time)</em>",
   "shortTitle": "How to Maintain Adult Friendships",
+  "searchTitle": "How to Maintain Adult Friendships | Keep Your People Close",
   "navTitle": "maintain friendships as an adult",
   "description": "The advice to just make plans is useless if you cannot remember who you are overdue with. Here is the system that actually works for busy people.",
   "deck": "To maintain friendships as a busy adult, move the remembering out of your head: list the people who matter most, set a realistic contact frequency for each, count real contact rather than likes, skip the apology when overdue, and pause during hard stretches instead of quitting.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Scheduled Rest Never Feels Like Enough",
   "titleHtml": "Why Scheduled Rest <em>Never Feels Like Enough</em>",
   "shortTitle": "When Rest Feels Empty",
+  "searchTitle": "Rest That Doesn't Feel Restful | Find Rest That Recharges You",
   "navTitle": "when rest feels empty",
   "description": "You took the day off. You did nothing. You still feel tired Monday morning. Here is why scheduled rest often fails — and how to make it actually restorative.",
   "deck": "Scheduled rest often fails because it fills with low-grade input like scrolling and checking email, because it's the wrong kind of rest for what drained you, or because worry about Monday leaks into it. Shorter rest with real disconnection often restores more than a long, distracted day off.",

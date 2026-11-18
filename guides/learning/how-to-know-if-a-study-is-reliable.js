@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If a Study Is Reliable",
   "titleHtml": "How to Know If a Study <em>Is Reliable</em>",
   "shortTitle": "Is a Study Reliable",
+  "searchTitle": "Is This Study Reliable | Trust Only Solid Research",
   "navTitle": "is a study reliable",
   "description": "Most studies that get headlines should not. Here is how to tell a solid study from a weak one in about three minutes — without needing to be a statistician.",
   "deck": "A study is more reliable when it involved many people, used a strong design such as a randomized trial, found an effect large enough to matter, has been replicated by other teams, and states conclusions that match its data. Small, single, animal-only or sponsor-funded studies deserve more caution.",

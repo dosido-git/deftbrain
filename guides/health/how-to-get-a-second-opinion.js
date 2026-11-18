@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get a Second Opinion (Without Awkwardness or Wasted Time)",
   "titleHtml": "How to Get a Second Opinion <em>(Without Awkwardness or Wasted Time)</em>",
   "shortTitle": "How to Get a Second Opinion",
+  "searchTitle": "How to Get a Second Opinion | Feel Sure About Your Care",
   "navTitle": "How to get a second opinion without awkwardness or wasted time",
   "description": "How to get a medical second opinion without awkwardness: telling your doctor, the kind you need, the records to bring, and what to ask.",
   "deck": "To get a second opinion, tell your doctor you want one (you don't need permission), decide whether the diagnosis or the treatment plan needs checking, and send the second doctor your actual records. Ask whether they agree and why. Medicare Part B covers second opinions before non-emergency surgery.",

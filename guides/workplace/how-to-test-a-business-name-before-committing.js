@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Test a Business Name Before You Commit to It",
   "titleHtml": "How to Test a Business Name <em>Before You Commit to It</em>",
   "shortTitle": "Test Before Committing",
+  "searchTitle": "How to Test a Business Name | Choose With Confidence",
   "navTitle": "test before committing",
   "description": "How to test a business name before you commit: the radio test, other languages, trademark and company searches, next-day recall, and how it looks written.",
   "deck": "To test a business name, check whether people can spell it after only hearing it, what it means in other languages, whether companies or trademarks already use it, whether people recall it a day later, and how it looks as a domain, a hashtag and in capitals.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Do Binaural Beats Actually Work for Focus, or Is It Hype?",
   "titleHtml": "Do Binaural Beats Actually Work for Focus, <em>or Is It Hype?</em>",
   "shortTitle": "Do Binaural Beats Actually Work?",
+  "searchTitle": "Do Binaural Beats Work | Know Before You Press Play",
   "navTitle": "do binaural beats work for focus",
   "description": "Do binaural beats work for focus? What they are, what the research actually shows, why headphones matter, and how to test them on yourself.",
   "deck": "Binaural beats may help focus a little for some people, but the evidence is mixed. A 2019 meta-analysis found a moderate average effect; a 2023 review found the brainwave explanation behind them inconsistent. They need stereo headphones. Testing them on yourself is the practical answer.",

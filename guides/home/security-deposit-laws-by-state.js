@@ -5,6 +5,7 @@ module.exports = {
   "title": "Security Deposit Laws by State: Limits, Return Deadlines and Interest (2026)",
   "titleHtml": "Security Deposit Laws by State <em>(Limits, Return Deadlines and Interest, 2026)</em>",
   "shortTitle": "Security Deposit Laws by State",
+  "searchTitle": "Security Deposit Laws by State | Know Your Rights as a Renter",
   "navTitle": "Security deposit laws by state",
   "description": "Security deposit limits, return deadlines and interest rules for all 50 states, DC and Puerto Rico, with the law for each. Current as of November 14, 2026.",
   "deck": "Each state sets its own security deposit rules. About 30 jurisdictions cap the deposit, usually at one or two months' rent. Return deadlines run from 14 to 60 days after move-out, and 13 jurisdictions require interest in some cases. The table covers all 50 states, DC and Puerto Rico.",

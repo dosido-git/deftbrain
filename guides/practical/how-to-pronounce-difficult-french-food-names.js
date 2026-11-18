@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Pronounce Difficult French Food Names",
   "titleHtml": "How to Pronounce <em>Difficult French Food Names</em>",
   "shortTitle": "French Food Names",
+  "searchTitle": "How to Pronounce French Foods | Order With Confidence",
   "navTitle": "french food names",
   "description": "The menu is in French. The waiter is waiting. Here is the system that gets you through it without faking.",
   "deck": "To pronounce French food names, drop most final consonants (pinot is pee-NOH), put the stress on the last syllable, soften the R rather than using an American one, and hold nasal vowels instead of sounding a full N. When unsure, asking the server is fine.",

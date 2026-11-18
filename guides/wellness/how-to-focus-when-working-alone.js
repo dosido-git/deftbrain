@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to focus when working alone",
   "titleHtml": "How to focus <em>when working alone</em>",
   "shortTitle": "Focus when working alone",
+  "searchTitle": "How to Focus While Working From Home | Stay On Task All Day",
   "navTitle": "focus when working alone",
   "description": "A practical method for getting real work done when there is no boss in the room, no colleague at the next desk, and no obvious external pressure to start.",
   "deck": "To focus when working alone, make the first step tiny, set yourself a deadline, add some kind of company (a video co-working session or a café), plan breaks in advance, and decide beforehand what you'll do when you get stuck. You're rebuilding the structure an office used to provide.",

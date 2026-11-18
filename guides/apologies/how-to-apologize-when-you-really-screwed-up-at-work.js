@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Apologize When You Really Screwed Up at Work (Without Making It Worse)",
   "titleHtml": "How to Apologize When You Really Screwed Up at Work <em>(Without Making It Worse)</em>",
   "shortTitle": "How to Apologize When You Really Screwed Up at Work",
+  "searchTitle": "How to Apologize for a Big Mistake at Work | Keep Their Trust After You Slip",
   "navTitle": "How to apologize when you really screwed up at work without making it worse",
   "description": "When the mistake is real and the impact is real, the apology has to match. Five steps for owning a serious work mistake in a way that rebuilds trust instead of eroding it further.",
   "deck": "To apologize for a serious work mistake, own it in the active voice, name the specific impact on the people affected, apologize without a 'but', and offer concrete repair with a timeline. Save explanations for later and keep the focus on their harm, not your distress.",

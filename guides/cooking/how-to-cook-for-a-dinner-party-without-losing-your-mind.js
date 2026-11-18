@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Cook for a Dinner Party Without Losing Your Mind",
   "titleHtml": "How to Cook for a Dinner Party <em>Without Losing Your Mind</em>",
   "shortTitle": "Cook for a Dinner Party",
+  "searchTitle": "Dinner Party Cooking | Host Without the Stress",
   "navTitle": "cook for a dinner party",
   "description": "How to cook for a dinner party and enjoy it: a mostly make-ahead menu, prep and cleanup done early, the table set by 4 p.m., and time with your guests.",
   "deck": "To cook for a dinner party without stress, choose a menu that's mostly finished before guests arrive, with no more than one dish in the oven, finish prep and dishes beforehand, set the table by mid-afternoon, and plan the first half hour around your guests rather than the stove.",

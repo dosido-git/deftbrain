@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Respond to a Mean Text From Family (When You Can't Just Block Them)",
   "titleHtml": "How to Respond to a Mean Text From Family <em>(When You Can&#39;t Just Block Them)</em>",
   "shortTitle": "How to Respond to a Mean Text From Family",
+  "searchTitle": "Mean Text From Family | Protect Your Peace and the Relationship",
   "navTitle": "How to respond to a mean text from family when you can't just block them",
   "description": "How to respond to a mean text from a family member: whether to reply, keeping to this message, 'I' language, and holding a boundary without an ultimatum.",
   "deck": "To respond to a mean text from family, first decide whether and when to reply; sometimes not replying is right. If you reply, answer only this message, not the family history, use 'I' language without apologizing for yourself, and state any limit without an ultimatum.",

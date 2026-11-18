@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to figure out what career to switch to",
   "titleHtml": "How to figure out <em>what career to switch to</em>",
   "shortTitle": "What career to switch to",
+  "searchTitle": "What Career Should I Switch To | Find Work That Fits You Better",
   "navTitle": "what career to switch to",
   "description": "How to figure out what career to switch to when nothing obvious calls: what to leave, when you felt engaged, ten conversations, small trials.",
   "deck": "To figure out what career to switch to, name exactly what you want to leave, list the moments at work you felt most engaged, talk to people in several fields about their real days, and test promising options in small ways. Aim for a good-enough direction, not a perfect calling.",

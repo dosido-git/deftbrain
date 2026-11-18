@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When Your Party Is Dying",
   "titleHtml": "What to Do <em>When Your Party Is Dying</em>",
   "shortTitle": "Save a Dying Party",
+  "searchTitle": "How to Save a Dying Party | Bring Back the Fun",
   "navTitle": "save a dying party",
   "description": "What to do when your party is dying: change the room, add something new, reshuffle the groups, create a shared moment — or close gracefully.",
   "deck": "When a party is dying, change the physical space (lighting, music, an opened door), add one new thing such as food or a quick game, break up stale clusters with small tasks, and for a deep lull create a shared moment like a toast. Sometimes a graceful close is better.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Music That Actually Helps You Work vs Distracts You (How to Tell the Difference Quickly)",
   "titleHtml": "Music That Actually Helps You Work vs Distracts You <em>(How to Tell the Difference Quickly)</em>",
   "shortTitle": "Music That Helps vs Distracts",
+  "searchTitle": "Does Music Help You Focus | Pick a Soundtrack That Works",
   "navTitle": "Music that actually helps you work vs distracts you — how to tell the difference",
   "description": "Some music feels great and ruins your concentration. Other music feels boring and is exactly right. Here's how to spot the difference in two minutes.",
   "deck": "Music is helping your work if you stop noticing it. It's distracting you if you notice individual songs, keep checking what's playing, are actively enjoying it, or your work keeps starting and stopping. Steady, familiar, lyric-free music usually works best; sometimes no music works better still.",

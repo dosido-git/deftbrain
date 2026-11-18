@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Avoid Buyer's Remorse (Before You Buy, Not After)",
   "titleHtml": "How to Avoid Buyer&#39;s Remorse <em>(Before You Buy, Not After)</em>",
   "shortTitle": "How to Avoid Buyer's Remorse",
+  "searchTitle": "How to Avoid Buyer's Remorse | Buy Only What You'll Love",
   "navTitle": "How to avoid buyer's remorse before you buy, not after",
   "description": "The remorse usually comes from one of three predictable mistakes — and you can catch all three before you click buy. Here's the pre-purchase check.",
   "deck": "To avoid buyer's remorse, check a purchase against your real routine before you buy: picture using it on an ordinary day, look at how often you use similar things you own, name a specific use, wait a couple of days on emotional purchases, and confirm the return policy.",

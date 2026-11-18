@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to describe your feelings when you don't have the words",
   "titleHtml": "How to describe your feelings <em>when you don't have the words</em>",
   "shortTitle": "Describe feelings without words",
+  "searchTitle": "How to Describe Feelings | Feel Understood",
   "navTitle": "describe feelings",
   "description": "A method for putting words around an emotional state when the standard vocabulary does not fit — useful for therapy, for hard conversations, and for understanding yourself.",
   "deck": "When you can't name a feeling, describe it another way: where you feel it in your body, what triggered it, what it's like (a comparison or metaphor), and its qualities, such as intensity, weight and direction. A description without a single label is still accurate and useful.",

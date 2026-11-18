@@ -5,6 +5,7 @@ module.exports = {
   "title": "Should I Learn AI in 2026?",
   "titleHtml": "Should I <em>Learn AI in 2026?</em>",
   "shortTitle": "Should I Learn AI?",
+  "searchTitle": "Should I Learn AI | Know Where Your Time Pays Off",
   "navTitle": "Should I learn AI in 2026 — what's the realistic case",
   "description": "The hype is loud and the actual answer depends on three things: what you mean by 'learn AI,' what you'd do with it, and where you are in your career. Here's the realistic frame.",
   "deck": "Most people benefit from learning to use AI tools well in their own field; far fewer need to become AI engineers. Decide which kind of learning you mean, favor durable skills like evaluating tools over any one product, pair it with your expertise, and reassess as your industry adopts it.",

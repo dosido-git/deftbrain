@@ -5,6 +5,7 @@ module.exports = {
   "title": "Emotions I Don't Have a Word For",
   "titleHtml": "Emotions <em>I Don't Have a Word For</em>",
   "shortTitle": "Emotions Without a Word",
+  "searchTitle": "Words for Emotions | Name What You're Feeling",
   "navTitle": "Emotions I don't have a word for — and the languages that named them",
   "description": "English has fewer words for feelings than you'd think. Here are five common emotional experiences with no English name — and the words from other languages that nailed them.",
   "deck": "Several common feelings lack a single English word but are named elsewhere: saudade (Portuguese, longing for someone absent), Sehnsucht (German, yearning for something undefined), mono no aware (Japanese, wistfulness at impermanence), l'esprit de l'escalier (French, the too-late comeback) and hygge (Danish, cozy contentment).",

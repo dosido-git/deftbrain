@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Dispute a Bill You Do Not Recognize",
   "titleHtml": "How to Dispute a Bill <em>You Do Not Recognize</em>",
   "shortTitle": "Dispute an Unrecognized Bill",
+  "searchTitle": "Unrecognized Charge | Get Your Money Back",
   "navTitle": "dispute a bill you do not recognize",
   "description": "How to dispute a bill or charge you don't recognize: the 60-day deadline for card charges, what to send in writing, and when to escalate.",
   "deck": "To dispute a bill you don't recognize, find the deadline, dispute it in writing, and don't pay the disputed amount while it's investigated. For a US credit card charge, you have 60 days from the statement it first appeared on to send the issuer a written dispute.",

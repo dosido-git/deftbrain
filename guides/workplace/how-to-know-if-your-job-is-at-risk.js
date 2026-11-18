@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to know if your job is at risk",
   "titleHtml": "How to know <em>if your job is at risk</em>",
   "shortTitle": "Is your job at risk?",
+  "searchTitle": "Is My Job at Risk | Prepare Before It's Too Late",
   "navTitle": "is your job at risk",
   "description": "An honest diagnostic for whether your specific role is at risk from automation, restructuring, or industry decline — and what to do about it.",
   "deck": "Your job may be at risk if much of your time goes to routine, procedural tasks, your employer is restructuring or buying tools around work like yours, or your industry is shrinking. Check each of those, ask former colleagues where they landed, and keep a backup plan.",

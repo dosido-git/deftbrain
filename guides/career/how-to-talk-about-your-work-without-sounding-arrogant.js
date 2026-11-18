@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Talk About Your Work Without Sounding Arrogant",
   "titleHtml": "How to Talk About Your Work <em>Without Sounding Arrogant</em>",
   "shortTitle": "How to Talk About Your Work Without Sounding Arrogant",
+  "searchTitle": "How to Talk About Your Accomplishments | Get Noticed Without Bragging",
   "navTitle": "How to talk about your work without sounding arrogant",
   "description": "The fear of sounding arrogant is what produces self-descriptions that don't land. Five steps for talking about your work in a way that's credible, accurate, and confident — without crossing the line.",
   "deck": "To talk about your work without sounding arrogant, describe specific outcomes instead of praising yourself, say 'we' for shared work and 'I' for what you owned, use concrete numbers rather than superlatives, and mention what you learned. If you usually undersell, describe yourself as you'd describe a colleague.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Stop Your Hands From Shaking Before a Presentation",
   "titleHtml": "How to Stop Your Hands From Shaking <em>Before a Presentation</em>",
   "shortTitle": "Stop Hands Shaking",
+  "searchTitle": "Shaking Hands When Anxious | Stay Steady On Stage",
   "navTitle": "stop hands shaking",
   "description": "How to stop your hands shaking before a presentation: burn off the adrenaline, clench and release, hold something, skip caffeine, and start talking.",
   "deck": "Shaking hands before a presentation come from adrenaline. To settle them, use big muscles in the minutes before (squats, a brisk flight of stairs) or clench and release your fists. Skip caffeine beforehand, hold a clicker or the lectern, and expect it to ease once you start.",

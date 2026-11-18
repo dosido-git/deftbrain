@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If It's Bugs or Disease on Your Plant (Because the Treatments Are Different)",
   "titleHtml": "How to Tell If It&#39;s Bugs or Disease on Your Plant <em>(Because the Treatments Are Different)</em>",
   "shortTitle": "How to Tell If It's Bugs or Disease on Your Plant",
+  "searchTitle": "Plant Pests and Diseases | Treat the Real Problem Fast",
   "navTitle": "How to tell if it's bugs or disease on your plant because the treatments are different",
   "description": "The same spotted, sticky, distressed leaf can be caused by tiny insects or by fungal infection — and treating one as the other will make things worse. Telling them apart takes a closer look than most people give it.",
   "deck": "To tell bugs from disease on a plant, look closely at leaf undersides and stems for insects, webbing or sticky honeydew. Pests leave irregular damage and debris; diseases tend to cause spots with defined edges, halos or rings. Isolate the plant while you work it out, because the treatments differ.",

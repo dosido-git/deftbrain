@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Check Before a Long Ride",
   "titleHtml": "What to Check <em>Before a Long Ride</em>",
   "shortTitle": "Pre-Ride Checklist",
+  "searchTitle": "Pre-Ride Bike Check | Ride Without Worry",
   "navTitle": "what to check before a long ride",
   "description": "A six-point pre-ride scan that takes three minutes and prevents the kind of mechanical that ends your day forty miles from the car.",
   "deck": "Before a long bike ride, check five things: tire pressure and condition, that the wheels are secured tightly, that both brakes bite firmly without rubbing, that every gear shifts cleanly, and that the stem, headset, seatpost and saddle don't move. It takes a few minutes.",

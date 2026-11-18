@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why is it so hard to name what I'm feeling?",
   "titleHtml": "Why is it so hard <em>to name what I'm feeling?</em>",
   "shortTitle": "Hard to name feelings",
+  "searchTitle": "Hard to Name Feelings | Feel Less Confused Inside",
   "navTitle": "hard to name feelings",
   "description": "An honest exploration of why naming your own feelings is so difficult — and what is actually going on when the words refuse to come.",
   "deck": "Naming your own feelings is hard because many people grew up with a small emotional vocabulary, one feeling can sit on top of another, close self-observation changes what you're observing, and turning sensations into words is a learned skill. It improves with gentle, regular practice.",

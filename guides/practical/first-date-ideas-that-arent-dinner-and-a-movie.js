@@ -5,6 +5,7 @@ module.exports = {
   "title": "First Date Ideas That Aren't Dinner and a Movie",
   "titleHtml": "First Date Ideas <em>(That Aren't Dinner and a Movie)</em>",
   "shortTitle": "First Dates Beyond Dinner-and-a-Movie",
+  "searchTitle": "First Date Ideas | Make a Great First Impression",
   "navTitle": "first dates beyond dinner-and-a-movie",
   "description": "Sit-down dinner is high-stakes for a stranger. A movie blocks talking. Here's the kind of first date that gives you both a real read.",
   "deck": "Good first dates give you something to talk about, an easy exit, and some movement: coffee followed by a short walk, an hour-long activity like mini-golf or a market, a small museum or single exhibit, or a walk to a specific destination. Avoid anything long and ticketed.",

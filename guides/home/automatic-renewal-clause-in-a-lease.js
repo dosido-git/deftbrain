@@ -5,6 +5,7 @@ module.exports = {
   "title": "Automatic Renewal Clause in a Lease (What It Means and the Deadline That Matters)",
   "titleHtml": "Automatic Renewal Clause in a Lease <em>(What It Means and the Deadline That Matters)</em>",
   "shortTitle": "Automatic Renewal Clause in a Lease",
+  "searchTitle": "Lease Automatic Renewal Clause | Avoid Getting Locked In",
   "navTitle": "automatic renewal clause in a lease",
   "description": "What an automatic renewal clause in a lease means, the wording to look for, the notice deadline that decides whether you can leave, and the state rules.",
   "deck": "An automatic renewal clause in a lease keeps the lease going after its end date, month to month or for a new term, unless one side gives written notice by a set deadline, often 30 to 60 days before the end. Missing it can commit you to another full year.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "What skills do I need to become a product manager?",
   "titleHtml": "What skills do I need to <em>become a product manager?</em>",
   "shortTitle": "Skills to become a PM",
+  "searchTitle": "Product Manager Skills | Know What to Learn Next",
   "navTitle": "skills to become a PM",
   "description": "An honest breakdown of the skills that actually matter for product management — what hiring managers look for, what the job descriptions overstate, and what nobody mentions until you are doing the work.",
   "deck": "To become a product manager you need clear communication across engineers, designers, executives and customers; decision-making with incomplete information; enough technical literacy to follow design discussions; specific, firsthand knowledge of customer problems; and comfort with metrics, basic SQL and A/B tests. You don't need to code.",

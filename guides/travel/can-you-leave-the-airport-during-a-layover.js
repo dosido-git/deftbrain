@@ -5,6 +5,7 @@ module.exports = {
   "title": "Can You Leave the Airport During a Layover? (When It Is Worth It and When It Is Not)",
   "titleHtml": "Can You Leave the Airport During a Layover? <em>(When It Is Worth It and When It Is Not)</em>",
   "shortTitle": "Can You Leave During a Layover?",
+  "searchTitle": "Can You Leave the Airport on a Layover | Explore Without Missing Your Flight",
   "navTitle": "leave airport during layover",
   "description": "Can you leave the airport during a layover? The visa and transit rules, the time you need, what to plan, and what to do with bags.",
   "deck": "You can leave the airport on a layover if your passport and visa allow entry to that country (always on domestic trips; on international ones only where transit rules allow) and there's enough time. Allow two to three hours to get back through check-in and security, and plan one thing.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Exercise When You Have Zero Motivation",
   "titleHtml": "How to Exercise <em>When You Have Zero Motivation</em>",
   "shortTitle": "Exercise With Zero Motivation",
+  "searchTitle": "How to Exercise With No Motivation | Move Even When You Don't Want To",
   "navTitle": "exercise with zero motivation",
   "description": "Motivation is not the goal. Action is. Here is how to exercise on the days when wanting to is not going to happen — without lying to yourself.",
   "deck": "To exercise with no motivation, stop waiting to feel like it, make the workout tiny (two to five minutes), attach it to something you already do daily, remove obstacles in advance, and track only whether you moved. Short bouts count: the CDC says any physical activity is better than none.",

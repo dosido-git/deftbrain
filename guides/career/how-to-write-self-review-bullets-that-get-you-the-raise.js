@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write Self-Review Bullets That Get You the Raise",
   "titleHtml": "How to Write Self-Review Bullets <em>That Get You the Raise</em>",
   "shortTitle": "How to Write Self-Review Bullets That Get the Raise",
+  "searchTitle": "Self-Review Examples | Make Your Case for a Raise",
   "navTitle": "How to write self-review bullets that get you the raise",
   "description": "How to write self-review bullets that support a raise or promotion: outcomes instead of activity, numbers or proxies, and what your manager values.",
   "deck": "Self-review bullets that support a raise describe what changed because of your work, not the activity: 'cut support tickets 40%' rather than 'led the redesign.' Give each a number or a proxy, match them to what your manager and their manager value, and go deep on two or three areas.",

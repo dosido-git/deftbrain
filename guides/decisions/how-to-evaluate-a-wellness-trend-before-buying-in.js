@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Evaluate a Wellness Trend Before Buying In",
   "titleHtml": "How to Evaluate a Wellness Trend <em>Before Buying In</em>",
   "shortTitle": "Evaluate Before You Buy",
+  "searchTitle": "Wellness Trends | Spend Only on What Helps",
   "navTitle": "evaluate a wellness trend",
   "description": "Cold plunges, fasting, peptides, the latest superfood. Before you spend the money or change your routine, here are the questions that separate a real innovation from another fad.",
   "deck": "Before buying into a wellness trend, check whether the underlying idea is long established, whether the promised effect is realistically modest, whether its loudest promoters sell related products, and whether you can try a cheap, low-risk version first. Ask your doctor before anything that could interact with medicines.",

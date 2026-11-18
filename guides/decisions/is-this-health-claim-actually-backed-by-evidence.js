@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is This Health Claim Actually Backed by Evidence?",
   "titleHtml": "Is This Health Claim <em>Actually Backed by Evidence?</em>",
   "shortTitle": "Backed by Evidence?",
+  "searchTitle": "Is This Health Claim True | Protect Your Health and Wallet",
   "navTitle": "is the evidence real",
   "description": "A confident claim is not the same as a well-evidenced one. Here is how to tell when a health claim is supported by real science, when it is hype, and when it is somewhere in between.",
   "deck": "A health claim is well backed when several independent studies, ideally randomized trials, find the same result, the effect is big enough to matter in absolute terms, and the research isn't funded only by people who profit from it. One small or observational study is a starting point, not proof.",

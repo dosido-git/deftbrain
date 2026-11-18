@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know if You'll Make Your Connection",
   "titleHtml": "How to Know <em>if You'll Make Your Connection</em>",
   "shortTitle": "Will You Make Your Connection?",
+  "searchTitle": "Will I Make My Connection | Know Whether to Run or Relax",
   "navTitle": "will you make your connection",
   "description": "Once your incoming flight is in the air, the math changes. Here is how to assess your real connection odds in real time — and what to do if they are tight.",
   "deck": "To know if you'll make a connection, check the live gate in the airline app, subtract taxi time and the boarding cutoff (often 15 to 20 minutes before departure) from the layover, and tell a flight attendant early if it's tight. If you'll miss it, rebook before landing.",

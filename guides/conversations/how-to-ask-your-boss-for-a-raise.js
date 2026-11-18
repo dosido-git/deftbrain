@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask Your Boss for a Raise (the Conversation, Not the Strategy)",
   "titleHtml": "How to Ask Your Boss for a Raise <em>(the Conversation, Not the Strategy)</em>",
   "shortTitle": "Ask Your Boss for a Raise",
+  "searchTitle": "How to Ask for a Raise | Walk In Ready to Win",
   "navTitle": "ask your boss for a raise",
   "description": "You have done the homework. Now you need the actual sentences. Here is what to say, when to say it, and what to do when they push back.",
   "deck": "To ask for a raise, book a one-on-one with a clear subject, open with what you've delivered, state one specific number and stop talking. If your boss says they'll get back to you, ask for a timeline and what they need, and leave without softening the ask.",

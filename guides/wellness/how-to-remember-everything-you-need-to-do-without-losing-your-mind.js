@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Remember Everything You Need to Do (Without Losing Your Mind in the Process)",
   "titleHtml": "How to Remember Everything You Need to Do <em>(Without Losing Your Mind in the Process)</em>",
   "shortTitle": "How to Remember Everything Without Losing Your Mind",
+  "searchTitle": "How to Remember Everything | Stop Dropping the Ball",
   "navTitle": "How to remember everything you need to do without losing your mind in the process",
   "description": "How to remember everything you need to do: one capture spot, quick notes, a five-minute daily review, dated reminders, and forgiving the gaps.",
   "deck": "To keep track of everything you need to do, use one capture place only, jot things down in seconds and tidy them later, review the list for five minutes once a day, put not-yet-due items in a dated reminder, and when the system lapses, pick it back up.",

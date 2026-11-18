@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is Silence Actually Better Than Ambient Noise for Focus?",
   "titleHtml": "Is Silence Actually Better <em>(Than Ambient Noise for Focus?)</em>",
   "shortTitle": "Silence vs Ambient Noise",
+  "searchTitle": "Silence vs Background Noise | Find What Works for You",
   "navTitle": "silence vs ambient noise",
   "description": "The advice goes both ways. Here's when silence wins, when ambient wins, and how to know which you need right now.",
   "deck": "Neither is always better. Quiet tends to suit reading, writing and learning, where sound competes for attention. Low background sound can help with lighter or repetitive work, or when you're restless and silence feels loud. Research suggests moderate noise can aid creative thinking. Test both on your own work.",

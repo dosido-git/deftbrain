@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Recommendation Letter",
   "titleHtml": "How to Write a <em>Recommendation Letter</em>",
   "shortTitle": "Write a Recommendation Letter",
+  "searchTitle": "How to Write a Recommendation Letter | Help Them Land the Opportunity",
   "navTitle": "write a recommendation letter",
   "description": "Most recommendation letters sound the same and say nothing. Here's the structure that gets the person hired or admitted.",
   "deck": "A strong recommendation letter says how you know the person and for how long, gives a clear overall judgment early, tells one specific story that shows their qualities, compares them honestly with a real peer group, and briefly addresses any obvious question a reader might have.",

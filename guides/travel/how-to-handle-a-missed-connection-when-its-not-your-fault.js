@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle a Missed Connection When It Is Not Your Fault",
   "titleHtml": "How to Handle a Missed Connection <em>When It Is Not Your Fault</em>",
   "shortTitle": "Missed Connection Recovery",
+  "searchTitle": "Missed Connecting Flight | Get Back on Track Fast",
   "navTitle": "handle a missed connection",
   "description": "Bad weather, mechanical delays, late inbound flights — when the airline made you miss it, you have specific rights and specific moves. Here is the order of operations.",
   "deck": "If the airline caused your missed connection, rebook in the app before joining the line, call the airline while you queue, and ask for what it owes you. The ten largest US airlines commit to free rebooking and meals for delays they cause, and most to hotels. Keep every receipt.",

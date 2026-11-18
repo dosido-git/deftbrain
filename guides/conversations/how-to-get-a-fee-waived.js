@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get a Fee Waived",
   "titleHtml": "How to Get a Fee Waived",
   "shortTitle": "Get a Fee Waived",
+  "searchTitle": "How to Get a Fee Waived | Keep Your Money Where It Belongs",
   "navTitle": "get a fee waived",
   "description": "Late fee, overdraft fee, early-termination fee, surprise charge. Here is the call script that gets it removed.",
   "deck": "To get a fee waived, call rather than email, name the charge and ask whether they can waive it as a one-time courtesy, and give a short honest reason, such as a first occurrence. If the answer is no, politely ask whether a supervisor can make an exception.",

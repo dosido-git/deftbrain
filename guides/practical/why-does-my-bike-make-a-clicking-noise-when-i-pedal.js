@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does My Bike Make a Clicking Noise When I Pedal?",
   "titleHtml": "Why Does My Bike <em>Click When I Pedal?</em>",
   "shortTitle": "Bike Click When Pedaling",
+  "searchTitle": "Bike Clicking When Pedaling | Fix the Noise Fast",
   "navTitle": "why bike makes a clicking noise when pedaling",
   "description": "A pedal-cadence click is almost always one of five things. The diagnostic order to find the source without taking the whole bike apart.",
   "deck": "A click in time with your pedaling usually comes from the pedals, cleat bolts, loose chainring bolts, the crank or bottom bracket, or the saddle and seatpost. Check them in that order: remove, grease and retighten the pedals first, since the left pedal is reverse-threaded.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Split Household Chores Fairly",
   "titleHtml": "How to Split Household Chores <em>Fairly</em>",
   "shortTitle": "Split Chores Fairly",
+  "searchTitle": "How to Split Chores Fairly | End the Chore Wars",
   "navTitle": "split chores fairly",
   "description": "A fair chore split is not a 50/50 split — it is a split where neither person feels exploited. Here is the framework that gets you there, plus the chores most people forget to count.",
   "deck": "To split household chores fairly, list every chore including the invisible ones, estimate the time each takes per week, let each person pick what they prefer, then balance total time rather than number of tasks. Put recurring chores on a shared calendar so no one person has to notice everything.",

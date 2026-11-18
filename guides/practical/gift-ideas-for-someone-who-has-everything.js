@@ -5,6 +5,7 @@ module.exports = {
   "title": "Gift Ideas for Someone Who Has Everything",
   "titleHtml": "Gift Ideas for Someone Who <em>Has Everything</em>",
   "shortTitle": "Gifts for the Person Who Has Everything",
+  "searchTitle": "Gift Ideas for Someone Who Has Everything | Still Surprise Them",
   "navTitle": "gifts for the person who has everything",
   "description": "When they buy what they want for themselves, the answer isn't a more expensive object. It's a different kind of gift entirely.",
   "deck": "For someone who has everything, skip pricier objects and try a different kind of gift: a small luxury they wouldn't buy themselves, something only your knowledge of them could pick, an experience you share, a one-of-a-kind or handmade item, or a donation to a cause they care about.",

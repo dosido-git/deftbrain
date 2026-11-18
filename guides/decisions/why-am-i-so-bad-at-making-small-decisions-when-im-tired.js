@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why am I so bad at making small decisions when I m tired",
   "titleHtml": "Why am I so bad at making small decisions when I m tired",
   "shortTitle": "Tired-brain decision freeze",
+  "searchTitle": "Decision Fatigue | Make Small Choices Easy Again",
   "navTitle": "Tired-brain decision freeze",
   "description": "You can run a whole project at work and then completely freeze on which sock drawer to open. Here is what is actually happening, and what to do about it.",
   "deck": "Small decisions get hard when you're tired because exhaustion makes every choice feel effortful, and evening is when trivial choices pile up. Pre-decide recurring choices like meals and clothes, hand in-the-moment choices to a coin or a friend, and treat the freeze as tiredness, not a character flaw.",

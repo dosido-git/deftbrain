@@ -5,6 +5,7 @@ module.exports = {
   "title": "Things to Say on a First Date When Conversation Stalls (Without Sounding Rehearsed)",
   "titleHtml": "Things to Say on a First Date When Conversation Stalls <em>(Without Sounding Rehearsed)</em>",
   "shortTitle": "Things to Say on a First Date When Conversation Stalls",
+  "searchTitle": "First Date Conversation Topics | Keep the Spark Going",
   "navTitle": "Things to say on a first date when conversation stalls without sounding rehearsed",
   "description": "Twenty minutes in. The chemistry's there but the topics are running out. Here's how to find the next thread without resorting to interview questions.",
   "deck": "When first-date conversation stalls, move from background questions to taste ('what do you love about where you live?'), share a small, light confession, go back to something they mentioned earlier, comment on the place you're in, and if it has run its course, end on a high note.",

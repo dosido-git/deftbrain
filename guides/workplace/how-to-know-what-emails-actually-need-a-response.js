@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to know what emails actually need a response",
   "titleHtml": "How to know <em>what emails actually need a response</em>",
   "shortTitle": "Emails that need replies",
+  "searchTitle": "Which Emails Need a Response | Answer Only What Matters",
   "navTitle": "emails that need replies",
   "description": "A diagnostic for telling which emails actually require your reply and which are informational, social, or noise — so you can stop responding to everything.",
   "deck": "An email needs a response when it asks you a direct question or request, is addressed to you rather than copying you, or needs a decision only you can make. FYIs, CC copies, thank-yous and 'sounds good' threads usually don't.",

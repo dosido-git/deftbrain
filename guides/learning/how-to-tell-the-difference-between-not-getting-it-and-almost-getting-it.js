@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell the Difference Between Not Getting It and Almost Getting It",
   "titleHtml": "How to Tell <em>\"I Do Not Get This\"</em> from <em>\"I Almost Get This\"</em>",
   "shortTitle": "How Stuck Are You",
+  "searchTitle": "Am I Stuck | Find Where to Restart",
   "navTitle": "almost getting it vs not",
   "description": "There is a meaningful difference between concepts you almost understand and concepts you genuinely do not. The fix for each is different. Here is how to tell which is which.",
   "deck": "You almost get a concept if you can start a one-sentence explanation or roughly predict the next step of a worked example; you don't get it if you can't start either. Almost-getting-it needs more varied practice. Not getting it usually means a prerequisite is missing.",

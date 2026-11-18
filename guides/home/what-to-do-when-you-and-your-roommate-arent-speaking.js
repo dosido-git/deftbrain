@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When You and Your Roommate Are Not Speaking",
   "titleHtml": "What to Do When You and Your Roommate <em>Are Not Speaking</em>",
   "shortTitle": "Roommate Cold War",
+  "searchTitle": "Roommate Silent Treatment | Clear the Air at Home",
   "navTitle": "roommate cold war",
   "description": "What to do when you and your roommate aren't speaking: repair or peace, making the first move, a low-stakes opener, and one real conversation.",
   "deck": "When you and your roommate are not speaking, first decide whether you want to repair the friendship or just live peacefully until the lease ends. Then make the first move even if it is not your turn, open with something low-stakes, and have one real conversation, not repeated digs.",

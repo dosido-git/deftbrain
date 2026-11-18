@@ -5,6 +5,7 @@ module.exports = {
   "title": "Best Ambient Sounds for Studying (Without Putting You to Sleep)",
   "titleHtml": "Best Ambient Sounds for Studying <em>(Without Putting You to Sleep)</em>",
   "shortTitle": "Best Ambient Sounds for Studying",
+  "searchTitle": "Ambient Sounds for Studying | Focus Longer With Less Effort",
   "navTitle": "best ambient sounds for studying",
   "description": "Coffee shop sounds, rain, library noise, nature loops — what each one does, when each one helps, and how to keep ambient audio from lulling you out of focus.",
   "deck": "The best ambient sounds for studying are steady, low-event ones: brown, pink or white noise, steady rain, or quiet café chatter with no distinguishable words. Masking sounds cover interruptions; atmosphere sounds add company. If a sound makes you drowsy or grabs your attention, switch.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does Multitasking Make Me So Tired (When I'm Not Doing Anything Hard)",
   "titleHtml": "Why Does Multitasking Make Me So Tired <em>(When I&#39;m Not Doing Anything Hard)</em>",
   "shortTitle": "Why Does Multitasking Make Me So Tired",
+  "searchTitle": "Why Multitasking Is Exhausting | Get Your Energy Back",
   "navTitle": "Why does multitasking make me so tired when I'm not doing anything hard",
   "description": "You spent the day in low-stakes meetings and emails, and you're more wiped out than after deep work. Here's what your brain was actually doing — and how to stop.",
   "deck": "Multitasking is tiring because each switch between tasks costs mental effort, even when the tasks are easy. A day of small meetings and emails can mean dozens of switches. Reduce the number of projects you touch per day, batch email, and recover with one sustained activity.",

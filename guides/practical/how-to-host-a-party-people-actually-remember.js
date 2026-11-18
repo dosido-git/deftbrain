@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Host a Party People Actually Remember",
   "titleHtml": "How to Host a Party <em>People Actually Remember</em>",
   "shortTitle": "Host a Memorable Party",
+  "searchTitle": "How to Host a Party | Throw One People Remember",
   "navTitle": "host a memorable party",
   "description": "Memorable parties are not the ones with the best food or the most expensive drinks. Here is what they actually have in common.",
   "deck": "Memorable parties are planned around flow, not budget: a warm arrival with a drink in hand, small conversation prompts in the room, one planned high point about an hour or two in, an early nudge to mix groups, and a deliberate ending.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If You Are Being Included or Just Politely Tolerated",
   "titleHtml": "How to Tell If You Are Being <em>Included or Just Politely Tolerated</em>",
   "shortTitle": "Included or Tolerated",
+  "searchTitle": "Do I Belong in This Group | Know Where You're Truly Welcome",
   "navTitle": "included or tolerated",
   "description": "Not every \"yeah, come along\" is genuine. Here are the signals that distinguish real inclusion from polite tolerance — without making yourself paranoid about it.",
   "deck": "You're likely being included, not just tolerated, when people start conversations with you, ask follow-up questions about what you say, explain inside jokes to bring you in, and get in touch afterward. One awkward event isn't a verdict; look for the pattern across a few.",

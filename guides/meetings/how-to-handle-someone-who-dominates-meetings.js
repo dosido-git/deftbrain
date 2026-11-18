@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle Someone Who Dominates Meetings",
   "titleHtml": "How to Handle Someone Who <em>Dominates Meetings</em>",
   "shortTitle": "Handle a Meeting Dominator",
+  "searchTitle": "How to Handle Meeting Hogs | Give Everyone a Turn",
   "navTitle": "How to handle someone who dominates meetings",
   "description": "One person is taking up most of the air. Everyone else has stopped talking. Here's how to redirect cleanly — without making it personal, and without becoming the next problem.",
   "deck": "To handle someone who dominates meetings, step in at a breath with thanks, invite a specific other person by name, point to the agenda's time limit, offer the dominant speaker a follow-up channel for the rest of their ideas, and keep later redirects equally light.",

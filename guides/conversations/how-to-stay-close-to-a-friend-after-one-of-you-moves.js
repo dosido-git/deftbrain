@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Stay Close to a Friend After One of You Moves",
   "titleHtml": "How to Stay Close to a Friend <em>(After One of You Moves)</em>",
   "shortTitle": "Stay Close After Someone Moves",
+  "searchTitle": "Long Distance Friendship | Stay Close Across the Miles",
   "navTitle": "stay close after someone moves",
   "description": "Long-distance friendships fail by drifting, not by fighting. Here's how to keep one alive when the casual stuff is gone.",
   "deck": "To stay close after a friend moves, replace casual run-ins with a regular call, send small low-effort messages between calls, share how you're really doing rather than just news, visit in person when you can, and accept that the friendship will take a new shape.",

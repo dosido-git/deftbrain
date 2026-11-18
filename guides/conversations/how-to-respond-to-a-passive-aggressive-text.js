@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to respond to a passive-aggressive text",
   "titleHtml": "How to respond to a passive-aggressive text",
   "shortTitle": "Passive-aggressive texts",
+  "searchTitle": "Passive-Aggressive Text Replies | Answer Calmly, Without Taking the Bait",
   "navTitle": "Passive-aggressive texts",
   "description": "How to respond to a passive-aggressive text without taking the bait: name what you felt, decide what you want, and answer the subtext calmly.",
   "deck": "To respond to a passive-aggressive text, first name what you felt and what you want from the exchange. Reply calmly to the subtext ('It sounds like something's bothering you. Want to talk?'), avoid 'Are you mad at me?', and send only what you'd be fine with them screenshotting.",

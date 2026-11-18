@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Push Back on Bank Fees (And Actually Get Them Refunded)",
   "titleHtml": "How to Push Back on Bank Fees <em>(And Actually Get Them Refunded)</em>",
   "shortTitle": "How to Push Back on Bank Fees",
+  "searchTitle": "How to Get Bank Fees Waived | Stop Paying for Nothing",
   "navTitle": "How to push back on bank fees and actually get them refunded",
   "description": "How to push back on bank fees and get them refunded: call, ask directly, use 'as a courtesy', know the fee-specific asks, and escalate calmly.",
   "deck": "To get a bank fee refunded, call rather than using chat, ask for the refund directly instead of arguing the fee was unfair, and if they hesitate, ask for it as a courtesy. Banks often waive an occasional fee for customers in good standing. If not, ask for a supervisor.",

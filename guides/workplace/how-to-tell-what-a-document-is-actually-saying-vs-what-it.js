@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell What a Document Is Actually Saying (vs. What It Sounds Like)",
   "titleHtml": "How to Tell What a Document Is Actually Saying <em>(vs. What It Sounds Like)</em>",
   "shortTitle": "What a Document Is Actually Saying",
+  "searchTitle": "What Is This Document Saying | Understand It in Minutes",
   "navTitle": "How to tell what a document is actually saying versus what it sounds like",
   "description": "Some documents are designed to read favorably and decide unfavorably. Here's how to read past the tone and find what the words actually commit to — or don't.",
   "deck": "To tell what a document actually commits to, separate firm verbs (will, shall) from soft ones (intend, may, aim to), read the conditions attached to each promise, notice carefully worded non-denials, and list the questions it should answer but doesn't. The commitments are in the wording, not the tone.",

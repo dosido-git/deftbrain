@@ -5,6 +5,7 @@ module.exports = {
   "title": "Splitting Rent With Different Room Sizes (Three Fair Methods, With the Math)",
   "titleHtml": "Splitting Rent With Different Room Sizes <em>(Three Fair Methods, With the Math)</em>",
   "shortTitle": "Splitting Rent With Different Room Sizes",
+  "searchTitle": "How to Split Rent With Different Room Sizes | Split It Fairly, Stay Friends",
   "navTitle": "splitting rent with different room sizes",
   "description": "Three fair ways to split rent when bedrooms differ in size: by bedroom size, shared space evenly plus bedrooms by size, or by features and bids, with the math.",
   "deck": "When bedrooms differ in size, roommates usually split rent one of three ways: by bedroom size alone, by splitting shared space evenly and bedrooms by size, or by adjusting for features like a private bathroom. The second is common because everyone uses the kitchen and living room equally.",

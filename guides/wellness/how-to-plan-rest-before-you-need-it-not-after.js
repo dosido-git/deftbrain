@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Plan Rest Before You Need It, Not After",
   "titleHtml": "How to Plan Rest <em>Before</em> You Need It, Not After",
   "shortTitle": "Plan Rest Before You Need It",
+  "searchTitle": "How to Plan Rest | Recharge Before You Run Out",
   "navTitle": "plan rest before you need it",
   "description": "Rest after a crash is recovery — slow, expensive, and largely involuntary. Rest before a crash is maintenance — cheap, fast, and effective. Here is how to switch modes.",
   "deck": "To rest before you crash, book a rest block before the week fills, set a weekly minimum of recovery time, schedule a light day after every demanding one, match the kind of rest to what drained you, and place rest ahead of busy stretches you can see coming.",

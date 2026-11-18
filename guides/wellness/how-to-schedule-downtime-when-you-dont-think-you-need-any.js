@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Schedule Downtime When You Do Not Think You Need Any",
   "titleHtml": "How to Schedule Downtime <em>When You Do Not Think You Need Any</em>",
   "shortTitle": "Downtime When You Feel Fine",
+  "searchTitle": "Rest When You Don't Feel Tired | Stay Ahead of Burnout",
   "navTitle": "downtime when you feel fine",
   "description": "You feel fine. You have momentum. The week is full and you like it that way. This is exactly when scheduling downtime matters most. Here is how to do it without sabotaging the run.",
   "deck": "Schedule downtime by rule rather than feeling: one unscheduled half-day a week, even during a good run. Choose low-input activities if sitting still bores you, and treat small signs like irritability or skipped routines as cues to rest before tiredness shows up.",

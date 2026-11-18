@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Remember a Word That Is on the Tip of Your Tongue",
   "titleHtml": "How to Remember a Word <em>That Is on the Tip of Your Tongue</em>",
   "shortTitle": "Find the Word",
+  "searchTitle": "Word on the Tip of Your Tongue | Find It in Seconds",
   "navTitle": "find a forgotten word",
   "description": "A word you know is right there in your head — you can almost feel its shape — and you cannot retrieve it. Here is how to actually get to it instead of giving up.",
   "deck": "To retrieve a word on the tip of your tongue, write down whatever partial clues you have (first letter, number of syllables, sound), list similar words, describe the meaning in several ways, try words that start with similar sounds, and if it still won't come, switch tasks briefly.",

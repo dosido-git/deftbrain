@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Push Back on an Unreasonable Email Without Burning the Bridge",
   "titleHtml": "How to Push Back on an Unreasonable Email <em>Without Burning the Bridge</em>",
   "shortTitle": "How to Push Back on an Unreasonable Email",
+  "searchTitle": "How to Push Back on an Email | Hold Your Ground Professionally",
   "navTitle": "How to push back on an unreasonable email without burning the bridge",
   "description": "Pushing back in writing is harder than pushing back in person — there's no tone, no read on the room, no chance to adjust mid-sentence. Five steps for declining or challenging a request in email without making the relationship worse than the request was.",
   "deck": "To push back on an unreasonable email, reply once you're calm, restate the request in your own words, say exactly which part doesn't work and why, and offer a workable alternative. If the request is in bad faith or crosses an ethical line, a firmer answer may fit.",

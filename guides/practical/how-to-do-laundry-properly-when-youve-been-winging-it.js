@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Do Laundry Properly When You've Been Winging It",
   "titleHtml": "How to Do Laundry Properly <em>When You've Been Winging It</em>",
   "shortTitle": "How to Do Laundry Properly",
+  "searchTitle": "How to Do Laundry | Get It Right Every Wash",
   "navTitle": "how to do laundry properly",
   "description": "Throwing everything in on cold and hoping for the best mostly works, until it doesn't. Here is the small set of rules that actually matters.",
   "deck": "Laundry basics that prevent most problems: separate whites from colors and heavy items from delicates, wash new dark clothes alone at first, default to cold water, measure detergent to the line for your load size, follow care labels on anything hard to replace, and air-dry what you'd hate to lose.",

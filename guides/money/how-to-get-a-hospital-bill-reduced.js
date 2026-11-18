@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get a Hospital Bill Reduced",
   "titleHtml": "How to Get a <em>Hospital Bill Reduced</em>",
   "shortTitle": "Reduce a Hospital Bill",
+  "searchTitle": "How to Reduce a Hospital Bill | Pay Less for Your Care",
   "navTitle": "get a hospital bill reduced",
   "description": "Five tactics that actually work, in the order they work in. Itemized bill first, financial assistance second, negotiation last.",
   "deck": "To get a hospital bill reduced, ask for an itemized bill and check it for errors, apply for the hospital's financial assistance, ask about a self-pay or prompt-pay discount, then offer a specific lump sum in writing. Agree to a payment plan last, and get every agreement in writing.",

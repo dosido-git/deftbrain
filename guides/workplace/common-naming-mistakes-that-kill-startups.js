@@ -5,6 +5,7 @@ module.exports = {
   "title": "Common Naming Mistakes That Kill Startups (and How to Avoid Them)",
   "titleHtml": "Common Naming Mistakes <em>That Kill Startups</em>",
   "shortTitle": "Naming Mistakes",
+  "searchTitle": "Business Naming Mistakes | Choose a Name That Lasts",
   "navTitle": "naming mistakes",
   "description": "The pattern is more predictable than founders realize. Here are the seven mistakes that show up over and over.",
   "deck": "The naming mistakes that hurt startups most are a spelling people can't guess from hearing it, wordplay only the founders understand, a name tied to one product, a domain that isn't the obvious one, and a name already buried in search results by someone else.",

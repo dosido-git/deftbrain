@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is it too late to learn coding?",
   "titleHtml": "Is it too late <em>to learn coding?</em>",
   "shortTitle": "Too late to learn coding",
+  "searchTitle": "Is It Too Late to Learn Coding | Start With Confidence",
   "navTitle": "too late to code",
   "description": "An honest answer to whether learning to code in 2026 is still worth it — given AI, given market changes, given how much your starting point has shifted.",
   "deck": "It isn't too late to learn coding, but what it leads to has changed. Entry-level software jobs are harder to land than a few years ago, while coding as an add-on to another field is more useful than ever. Code plus deep knowledge of one area is the durable bet.",

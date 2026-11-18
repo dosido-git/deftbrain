@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Turn a Transcript into a Study Guide",
   "titleHtml": "How to Turn a Transcript <em>Into a Study Guide</em>",
   "shortTitle": "Transcript to Study Guide",
+  "searchTitle": "Transcript to Study Notes | Turn Notes Into Grades",
   "navTitle": "transcript to study guide",
   "description": "A transcript is a wall of text. A study guide is structured for review. Here is the process for converting one into the other — what to keep, what to cut, and what structure to impose.",
   "deck": "To turn a transcript into a study guide, set up headings first (definitions, processes, comparisons, examples, likely questions), then sort the transcript into them: copy definitions in the lecturer's wording, rewrite processes as numbered steps, put comparisons in tables, and write questions you answer from memory.",

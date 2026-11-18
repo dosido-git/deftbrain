@@ -5,6 +5,7 @@ module.exports = {
   "title": "New Hobbies to Try (When the Usual Suggestions Don't Fit)",
   "titleHtml": "New Hobbies to Try <em>(When the Usual Suggestions Don't Fit)</em>",
   "shortTitle": "New Hobbies to Try",
+  "searchTitle": "New Hobbies to Try | Discover Your Next Passion",
   "navTitle": "new hobbies to try",
   "description": "The same recommendations show up everywhere: yoga, painting, photography. Here is how to find hobbies that actually fit your specific situation.",
   "deck": "To find a new hobby that fits, decide what you want from it (calm, a project, the outdoors, people), filter by your real time and budget, look next to interests you already have, check that local groups exist if needed, and pick one you can start tonight.",

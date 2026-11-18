@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to dress for unpredictable weather",
   "titleHtml": "How to dress for <em>unpredictable weather</em>",
   "shortTitle": "Dress for unpredictable weather",
+  "searchTitle": "What to Wear in Unpredictable Weather | Stay Comfortable All Day",
   "navTitle": "dress for unpredictable weather",
   "description": "A practical approach for dressing when the day might be cold and rainy, then warm and sunny, then cold and rainy again — without ending up either soaked or sweating.",
   "deck": "To dress for unpredictable weather, wear layers that can each stand on their own, dress for the coolest part of the day and carry lighter pieces in a bag, choose footwear for the worst likely conditions, and keep a compact umbrella with you.",

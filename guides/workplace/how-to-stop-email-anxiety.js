@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to stop email anxiety",
   "titleHtml": "How to stop <em>email anxiety</em>",
   "shortTitle": "Stop email anxiety",
+  "searchTitle": "Email Anxiety | Open Your Inbox Without Dread",
   "navTitle": "stop email anxiety",
   "description": "A practical approach to the specific anxiety that follows you all day because of the unread emails you have not gotten to — and how to make it stop.",
   "deck": "To ease email anxiety, turn off email notifications, check email in a few set windows, ask what would really happen if a message waited until tomorrow, and find out what response time is actually expected. If the dread persists, the cause may be workload or expectations rather than the inbox.",

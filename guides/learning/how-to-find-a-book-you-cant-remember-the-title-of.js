@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find a Book You Read Once But Cannot Remember the Title",
   "titleHtml": "How to Find a Book <em>You Read Once But Cannot Remember</em>",
   "shortTitle": "Find the Book",
+  "searchTitle": "Find a Book by Description | Finally Find That Book",
   "navTitle": "find a book from memory",
   "description": "You read it years ago. You remember the plot but not the title. Here is how to identify it from what you do remember — and which databases are best for the search.",
   "deck": "To find a book whose title you've forgotten, post what you remember to a book-identification community such as r/whatsthatbook, search unusual plot details together, narrow by when you read it and the genre, browse similar authors, and ask a librarian, who often handles exactly this request.",

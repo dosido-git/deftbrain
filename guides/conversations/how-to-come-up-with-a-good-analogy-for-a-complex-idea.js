@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Come Up with a Good Analogy for a Complex Idea (When Nothing's Coming to Mind)",
   "titleHtml": "How to Come Up with a Good Analogy for a Complex Idea <em>(When Nothing's Coming to Mind)</em>",
   "shortTitle": "How to Come Up with a Good Analogy",
+  "searchTitle": "How to Come Up With an Analogy | Make Any Idea Click",
   "navTitle": "How to come up with a good analogy for a complex idea when nothing's coming to mind",
   "description": "How to come up with a good analogy for a complex idea: find the one feature that matters, search the listener's world, and say where it breaks.",
   "deck": "To come up with a good analogy, reduce the idea to the one feature doing the explaining, then find that feature in something your listener knows well. Check it works in reverse, say where it breaks, and let the listener make the last connection.",

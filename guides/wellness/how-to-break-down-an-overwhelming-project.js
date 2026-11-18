@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to break down an overwhelming project",
   "titleHtml": "How to break down <em>an overwhelming project</em>",
   "shortTitle": "Break down a big project",
+  "searchTitle": "How to Break Down a Big Project | Make It Manageable Today",
   "navTitle": "break down big project",
   "description": "A practical method for taking a project that exists as one giant unmanageable blob in your head and turning it into a sequence of small, doable steps.",
   "deck": "To break down an overwhelming project, list every part without editing, group the parts into a few phases, find the first concrete action in the first phase, pad your time estimates, and schedule only the next few actions. A first action should take about fifteen minutes.",

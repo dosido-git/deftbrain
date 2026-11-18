@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Brain Dump Everything in Your Head (Without Making It Worse)",
   "titleHtml": "How to Brain Dump Everything in Your Head <em>(Without Making It Worse)</em>",
   "shortTitle": "How to Brain Dump Everything in Your Head",
+  "searchTitle": "How to Brain Dump | Clear Your Mind for Real",
   "navTitle": "How to brain dump everything in your head without making it worse",
   "description": "A bad brain dump leaves you with a long list and the same anxiety. A good one ends with one clear next step. Here's how to do the second version.",
   "deck": "A useful brain dump has three stages: write down everything in your head without judging it, sort what you wrote by type (tasks, decisions, worries, ideas), then choose one small next step. Stopping after the first stage leaves you with a long list and the same anxiety.",

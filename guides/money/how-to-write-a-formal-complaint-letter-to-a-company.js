@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Formal Complaint Letter to a Company (That Doesn't Get Filed in the 'Crank' Pile)",
   "titleHtml": "How to Write a Formal Complaint Letter to a Company <em>(That Doesn&#39;t Get Filed in the &#39;Crank&#39; Pile)</em>",
   "shortTitle": "How to Write a Formal Complaint Letter to a Company",
+  "searchTitle": "Formal Complaint Letter | Get the Company to Listen",
   "navTitle": "How to write a formal complaint letter to a company that doesn't get filed in the crank pile",
   "description": "How to write a formal complaint letter a company will act on: the outcome first, dated facts, the policy or law you rely on, and a reply deadline.",
   "deck": "A formal complaint letter should open with the outcome you want, then give a dated record: what happened, when, who you dealt with and reference numbers. Name the policy or law your request rests on, ask for a written reply by a set date, and keep the tone neutral.",

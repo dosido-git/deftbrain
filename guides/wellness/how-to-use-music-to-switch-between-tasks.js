@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Use Music to Switch Between Tasks (Without Carrying the Last One With You)",
   "titleHtml": "How to Use Music to Switch Between Tasks <em>(Without Carrying the Last One With You)</em>",
   "shortTitle": "How to Use Music to Switch Between Tasks",
+  "searchTitle": "Music for Switching Tasks | Shift Gears Faster",
   "navTitle": "How to use music to switch between tasks without carrying the last one with you",
   "description": "Coming out of a hard meeting and into deep work, or finishing creative work to start admin — the bridge takes longer than you think. Music can shorten it.",
   "deck": "To use music to switch tasks, pick one short track you play only when changing modes, choose one that sounds like the work you're moving into, get up and move while it plays, keep your phone and inbox closed, and use a second track to end the workday.",

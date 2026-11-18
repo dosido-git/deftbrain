@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When You Have Too Much to Do and You Freeze",
   "titleHtml": "What to Do When You Have Too Much to Do <em>(And You Freeze)</em>",
   "shortTitle": "When You Freeze From Too Much",
+  "searchTitle": "What to Do When You Have Too Much to Do | Get Moving Again",
   "navTitle": "when you freeze from too much",
   "description": "Freezing isn't laziness — it's overload. Here's how to break out of it in the next fifteen minutes, even when nothing feels possible.",
   "deck": "When you freeze under too much to do, move for two minutes, finish one tiny task even if it's not on the list, do a few more before trying to plan, tell one person you're stuck, then pick the easiest real task and lower the bar for what counts.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prepare for Q&A After a Thesis Defense or Dissertation",
   "titleHtml": "How to Prepare for Q&amp;A After a Thesis Defense <em>or Dissertation</em>",
   "shortTitle": "Prepare for Thesis Defense Q&A",
+  "searchTitle": "Thesis Defense Questions | Walk In Calm and Prepared",
   "navTitle": "thesis defense Q&A prep",
   "description": "Defense Q&A is its own beast. Here is what committees actually probe for, and how to prepare for the hardest questions without spiraling into months of anxiety.",
   "deck": "To prepare for thesis defense Q&A, expect questions on why you chose your methods, know your limitations as well as your contributions, skim your committee members' recent work, practice a structured 'I don't know', and cap your preparation time so anxiety doesn't fill the weeks.",

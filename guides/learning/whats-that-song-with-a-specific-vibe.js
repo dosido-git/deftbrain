@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find That Song You Half-Remember",
   "titleHtml": "How to Find That Song <em>You Half-Remember</em>",
   "shortTitle": "Find the Song",
+  "searchTitle": "How to Find a Song You Can't Remember the Name Of | Get It Out of Your Head",
   "navTitle": "find a song from memory",
   "description": "How to find a song you half-remember: humming apps for a melody, quoted lyric searches, era-and-mood descriptions, and where you heard it.",
   "deck": "To find a song you half-remember, match the method to your memory: hum the tune into Google's hum-to-search or SoundHound, search a remembered lyric in quotation marks plus 'lyrics', or describe the era and mood. Where you heard it (a show, an ad, a playlist) narrows it fast.",

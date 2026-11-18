@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to think about a decision when both paths feel right",
   "titleHtml": "How to think about a decision <em>when both paths feel right</em>",
   "shortTitle": "When both paths feel right",
+  "searchTitle": "How to Make a Decision Between Two Choices | Pick Your Path With Peace",
   "navTitle": "both paths feel right",
   "description": "A method for the specific decision-paralysis where neither option is wrong — it's just that both feel correct, and you cannot find a tiebreaker.",
   "deck": "When both paths feel right, stop searching for the correct answer, since there may not be one. Name the value each path serves, notice which value you've neglected lately, use a coin flip to surface your preference, and then commit fully to the path you choose.",

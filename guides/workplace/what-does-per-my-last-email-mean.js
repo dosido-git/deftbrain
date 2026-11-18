@@ -5,6 +5,7 @@ module.exports = {
   "title": "What “Per My Last Email” Means—and How to Respond",
   "titleHtml": "What “Per My Last Email” Means <em>—and How to Respond</em>",
   "shortTitle": "What \"Per My Last Email\" Means",
+  "searchTitle": "What Does Per My Last Email Mean | Reply Without Losing Your Cool",
   "navTitle": "What does per my last email mean and how to respond without escalating",
   "description": "Understand “per my last email,” consider the context, and choose a clear response. Includes example replies and alternatives for your own follow-up.",
   "deck": "“Per my last email” means “as I said in my previous email.” It points back to information already shared. It can sound impatient, but the phrase alone doesn’t establish intent. Check the earlier message, identify what still needs answering, and respond to that.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Rescue a Meal That Is Going Wrong",
   "titleHtml": "How to Rescue a Meal <em>That Is Going Wrong</em>",
   "shortTitle": "Rescue a Meal",
+  "searchTitle": "How to Fix Cooking Mistakes | Save Dinner in Minutes",
   "navTitle": "rescue a meal in progress",
   "description": "Mid-cook, you can tell the meal is heading sideways — bland, burnt, dry, watery. Here is how to assess the situation honestly and pick the rescue path before guests arrive.",
   "deck": "To rescue a meal going wrong, stop adding things, taste, and name the main problem. Then match the fix: acid then salt for bland, reducing or a cornstarch slurry for watery, resting and sauce for dry. If nothing fits the time left, switch to a quick backup.",

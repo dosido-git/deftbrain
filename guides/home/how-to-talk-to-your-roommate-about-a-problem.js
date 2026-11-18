@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Talk to Your Roommate About a Problem",
   "titleHtml": "How to Talk to Your Roommate <em>About a Problem</em>",
   "shortTitle": "Talk to Your Roommate",
+  "searchTitle": "How to Talk to Your Roommate | Fix It Without a Fight",
   "navTitle": "talk to your roommate",
   "description": "How to talk to your roommate about a problem without a fight: pick the time, make it shared, ask first, and agree a system rather than a favor.",
   "deck": "To talk to a roommate about a problem, pick a calm moment, not the moment it bothers you; describe it as a shared problem; ask how they see it before proposing anything; and suggest a simple system, like whoever cooks, the other does dishes, rather than a favor.",

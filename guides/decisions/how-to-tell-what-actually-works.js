@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell What Actually Works",
   "titleHtml": "How to Tell What <em>Actually Works</em>",
   "shortTitle": "What Actually Works",
+  "searchTitle": "How to Tell What Actually Works | Spend Time on What Pays Off",
   "navTitle": "what actually works",
   "description": "In any field — diet, exercise, finance, productivity — most things people swear by do not actually do much. Here is how to find the small set of things that do.",
   "deck": "To tell what actually works in a field like diet, fitness or productivity, start with the basics experts on every side agree on, ask which group each contested claim was tested on, be wary of claims more certain than the evidence, and try changes on a small scale first.",

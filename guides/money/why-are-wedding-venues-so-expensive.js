@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Are Wedding Venues So Expensive (And Why the Word 'Wedding' Doubles the Price)",
   "titleHtml": "Why Are Wedding Venues So Expensive <em>(And Why the Word &#39;Wedding&#39; Doubles the Price)</em>",
   "shortTitle": "Why Are Wedding Venues So Expensive",
+  "searchTitle": "Why Are Wedding Venues So Expensive | Plan Your Day Without Overpaying",
   "navTitle": "Why are wedding venues so expensive and why the word wedding doubles the price",
   "description": "Why wedding venues cost so much: longer event days, peak-date demand, required catering packages and event-type pricing, and which parts of the price are usually negotiable.",
   "deck": "Wedding venues are expensive because weddings use more staff time, setup and liability than many events, demand concentrates on popular Saturdays and seasons, venues often require their own caterers and bar, and some price weddings higher. The date and the package are usually most negotiable.",

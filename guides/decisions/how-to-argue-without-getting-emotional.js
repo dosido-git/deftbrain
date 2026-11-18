@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Argue Without Getting Emotional",
   "titleHtml": "How to Argue <em>Without Getting Emotional</em>",
   "shortTitle": "Argue Without Getting Emotional",
+  "searchTitle": "How to Argue Without Getting Emotional | Stay Calm and Make Your Point",
   "navTitle": "How to argue without getting emotional or losing your composure",
   "description": "The goal isn't suppressing feelings — it's keeping them from running the argument. Here's how to stay clear-headed when an argument gets heated, without faking calm you don't have.",
   "deck": "To argue without getting emotional, notice body signals like a tight jaw or fast breathing before they reach your voice, pause before replying, name the feeling calmly, separate the claim from your sense of self, and take an explicit break if the argument overheats.",

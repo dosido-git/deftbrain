@@ -5,6 +5,7 @@ module.exports = {
   "title": "Workouts You Can Do When You're Exhausted (And Why They Still Work)",
   "titleHtml": "Workouts You Can Do When You're Exhausted <em>(And Why They Still Work)</em>",
   "shortTitle": "Workouts When Exhausted",
+  "searchTitle": "Best Workouts When Tired | Stay Active on Low-Energy Days",
   "navTitle": "workouts when exhausted",
   "description": "When you are wiped, the standard workout is the wrong workout. Here is what your body actually responds to on low-energy days, and why it counts.",
   "deck": "When you're exhausted, do two minutes of gentle movement instead of a full workout: easy stretches, a slow walk, or wall pushes. If even that's too much, a few minutes of slow breathing still helps you recover. Skip anything that needs gear or a change of clothes. It still counts.",

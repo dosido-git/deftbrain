@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does Everything Cost So Much More Than It Used To (It's Not Just Inflation)",
   "titleHtml": "Why Does Everything Cost So Much More Than It Used To <em>(It&#39;s Not Just Inflation)</em>",
   "shortTitle": "Why Does Everything Cost So Much More Than It Used To",
+  "searchTitle": "Why Is Everything So Expensive | Make Sense of Rising Prices",
   "navTitle": "Why does everything cost so much more than it used to and it's not just inflation",
   "description": "The receipt feels wrong, but the wrongness isn't only inflation. It's a stack of separate forces, each adding a few percent — and once you can name them, the receipt becomes legible.",
   "deck": "Everything costs more than it used to mainly because of cumulative inflation, which the Consumer Price Index measures. Other forces add to how it feels: smaller packages at the same price, cheaper versions disappearing, prices that change with demand, and fees added at checkout instead of shown up front.",

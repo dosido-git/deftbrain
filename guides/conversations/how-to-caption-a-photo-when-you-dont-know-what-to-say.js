@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Caption a Photo When You Don't Know What to Say",
   "titleHtml": "How to Caption a Photo When You Don&#39;t Know What to Say",
   "shortTitle": "How to Caption a Photo When Stuck",
+  "searchTitle": "Photo Caption Ideas | Never Stare at a Blank Caption Again",
   "navTitle": "How to caption a photo when you don't know what to say",
   "description": "The photo is good. Your brain is empty. You've been staring at the post screen for ten minutes. Here's how to find a caption without forcing it.",
   "deck": "When you can't think of a caption, decide what the post is for first, then caption from the photo's smallest specific detail or write one plain observation about the moment. If nothing fits after a real try, posting with no caption is a legitimate choice.",

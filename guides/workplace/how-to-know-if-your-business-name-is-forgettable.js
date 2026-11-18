@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If Your Business Name Is Forgettable",
   "titleHtml": "How to Know If Your Business Name <em>Is Forgettable</em>",
   "shortTitle": "Is Your Name Forgettable?",
+  "searchTitle": "Is My Business Name Forgettable | Pick a Name People Remember",
   "navTitle": "is your name forgettable",
   "description": "The tests that reveal whether your name will stick — and the difference between a name people forget and a name people remember.",
   "deck": "A business name is forgettable if people can't recall it a day after hearing it. Test it directly: tell a few people the name, ask for it the next day, check whether it brings an image to mind, and say it aloud for clear, distinct sounds.",

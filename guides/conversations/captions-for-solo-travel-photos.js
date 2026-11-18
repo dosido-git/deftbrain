@@ -5,6 +5,7 @@ module.exports = {
   "title": "Captions for Solo Travel Photos (That Don't Sound Like a Travel Brand)",
   "titleHtml": "Captions for Solo Travel Photos <em>(That Don&#39;t Sound Like a Travel Brand)</em>",
   "shortTitle": "Captions for Solo Travel Photos",
+  "searchTitle": "Solo Travel Captions | Post Your Adventures in Style",
   "navTitle": "Captions for solo travel photos that don't sound like a travel brand",
   "description": "The 'wandering soul' caption has been overused since 2017. Here's how to write a travel caption that sounds like a real person had a real day.",
   "deck": "A good solo travel caption describes one specific moment from the trip, often with a small thing that went wrong, mentions traveling alone once at most, and skips stock phrases like 'wanderlust' or 'this place changed me'. Write it, then cut it to about half.",

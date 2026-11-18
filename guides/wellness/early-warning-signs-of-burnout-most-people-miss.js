@@ -5,6 +5,7 @@ module.exports = {
   "title": "Early Warning Signs of Burnout Most People Miss",
   "titleHtml": "Early Warning Signs of Burnout <em>(Most People Miss)</em>",
   "shortTitle": "Burnout Signs People Miss",
+  "searchTitle": "Early Signs of Burnout | Catch It Before It Catches You",
   "navTitle": "burnout signs people miss",
   "description": "By the time you feel exhausted, you're months past the early signs. Here are the ones that come first — quiet, easy to dismiss, and the most actionable.",
   "deck": "Early signs of burnout are often small: you stop starting things, small decisions feel heavy, noise bothers you more, you quietly hope for cancellations, and unwinding after work takes longer. They can appear before the exhaustion and cynicism the WHO uses to define burnout.",

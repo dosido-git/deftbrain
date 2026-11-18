@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to translate a confusing document into plain language",
   "titleHtml": "How to translate a confusing document <em>into plain language</em>",
   "shortTitle": "Translate confusing documents",
+  "searchTitle": "Plain Language Translation | Understand Any Document",
   "navTitle": "translate confusing documents",
   "description": "A method for taking a document that was clearly not written for you and figuring out what it actually says, in language you would use yourself.",
   "deck": "To translate a confusing document into plain language, name what kind of document it is, find its structure before reading the prose, rewrite hard sentences one at a time in everyday words, pull out who must do what by when, and note what it leaves unsaid.",

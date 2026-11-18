@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to power through tasks you've been avoiding",
   "titleHtml": "How to power through <em>tasks you've been avoiding</em>",
   "shortTitle": "Power through avoided tasks",
+  "searchTitle": "How to Start a Task You've Been Procrastinating | Finally Check Them Off",
   "navTitle": "power through avoided tasks",
   "description": "A specific method for finally doing the thing you have been putting off — when willpower has not worked, when reminders are no longer reminders, when the avoidance has become the problem.",
   "deck": "To finally do a task you've been avoiding, name what you're really avoiding, shrink the first step until it's trivial, commit to ten minutes on a timer, work on it next to another person, and skip the self-criticism about how long it took.",

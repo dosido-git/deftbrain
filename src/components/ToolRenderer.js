@@ -96,9 +96,10 @@ const ToolRenderer = ({ college }) => {
     // branded search keep it), then the keyword phrase: "Name — seoTitle" (or
     // "Name — tagline"). Skip the prefix if seoTitle already contains the name.
     // MUST match the static prerender title in scripts/prerender.js (injectMeta).
-    title: toolData?.seoTitle
+    // searchTitle, when set, is the whole title as written (see prerender.js).
+    title: toolData?.searchTitle || (toolData?.seoTitle
       ? (toolData.seoTitle.includes(toolData.title) ? toolData.seoTitle : `${toolData.title} — ${toolData.seoTitle}`)
-      : (toolData?.tagline ? `${toolData.title} — ${toolData.tagline}` : toolData?.title),
+      : (toolData?.tagline ? `${toolData.title} — ${toolData.tagline}` : toolData?.title)),
     description: toolData?.seoDescription || toolData?.description,
     canonicalPath: toolId ? `/${toolId}` : undefined,
     ogImageSlug: TOOL_OG_SLUGS[toolId],

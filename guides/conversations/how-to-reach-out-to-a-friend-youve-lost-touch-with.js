@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Reach Out to a Friend You've Lost Touch With (Without Making It Weird)",
   "titleHtml": "How to Reach Out to a Friend You've Lost Touch With <em>(Without Making It Weird)</em>",
   "shortTitle": "Reach Out to a Lost-Touch Friend",
+  "searchTitle": "Reconnecting With an Old Friend | Pick Up Where You Left Off",
   "navTitle": "reach out to a lost-touch friend",
   "description": "How to reach out to a friend you've lost touch with: skip the apology, lead with a specific hook, keep it short, and give them time to reply.",
   "deck": "To reach out to a friend you've lost touch with, skip the apology and send two or three sentences with a specific hook, like a shared memory or something that reminded you of them, plus a small open door. Use your usual medium and allow a few days.",

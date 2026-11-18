@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read a School Newsletter or HOA Notice Efficiently",
   "titleHtml": "How to Read a <em>School Newsletter or HOA Notice</em> Efficiently",
   "shortTitle": "Read a Newsletter or HOA Notice",
+  "searchTitle": "How to Read HOA Documents | Get the Point in Seconds",
   "navTitle": "How to read a school newsletter or HOA notice efficiently",
   "description": "Most of it is for someone else. A small fraction will land you in trouble if missed. Here's how to skim community communications and catch the parts that affect you.",
   "deck": "To read a school newsletter or HOA notice efficiently, skim for what pins it to you (your child's grade, your street, your committee), read every date and dollar amount, look for 'mandatory' and 'required,' skip sections for other audiences, and put dates on your calendar before closing it.",

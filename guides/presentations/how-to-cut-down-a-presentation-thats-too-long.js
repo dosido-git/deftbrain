@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Cut Down a Presentation That Is Too Long",
   "titleHtml": "How to Cut Down a Presentation <em>That Is Too Long</em>",
   "shortTitle": "Cut It Shorter",
+  "searchTitle": "How to Shorten a Presentation | Keep Them Hooked",
   "navTitle": "cut down a long presentation",
   "description": "How to cut a presentation that's too long: trim the setup, keep one example, merge slides, cut your favorite part, and re-time it aloud.",
   "deck": "To cut a presentation that runs long, cut setup and background first, keep one example per point, merge slides that make the same point, and consider dropping the section you most enjoyed preparing. Re-time it out loud after each round of cuts, since paper estimates run short.",

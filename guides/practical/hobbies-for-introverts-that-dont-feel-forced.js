@@ -5,6 +5,7 @@ module.exports = {
   "title": "Hobbies for Introverts That Don't Feel Forced",
   "titleHtml": "Hobbies for Introverts <em>That Don't Feel Forced</em>",
   "shortTitle": "Hobbies for Introverts",
+  "searchTitle": "Hobbies for Introverts | Enjoy Time on Your Own Terms",
   "navTitle": "hobbies for introverts",
   "description": "Hobbies for introverts that don't feel forced: what makes a hobby restorative alone, with examples, and why it should feel like recovery, not work.",
   "deck": "Good hobbies for introverts are better alone rather than merely possible alone, fully absorb your attention (drawing, pottery, fermenting, puzzles, gardening), don't depend on an audience, and can start at home without planning. Treat the time as recovery rather than productivity.",

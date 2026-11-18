@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Understand a Hard Concept When Explanations Do Not Click",
   "titleHtml": "How to Understand a Hard Concept <em>When Explanations Do Not Click</em>",
   "shortTitle": "When Explanations Fail",
+  "searchTitle": "When Explanations Don't Work | Make It Finally Click",
   "navTitle": "when explanations do not click",
   "description": "You read three explanations of the same idea and none of them landed. The problem is usually not the explanation — it is a missing prerequisite. Here is how to find it.",
   "deck": "When explanations of a concept don't click, find the exact sentence where you lose the thread, list what that sentence assumes you already know, test yourself on each assumed idea, learn the one you can't explain, and then return to the original explanation.",

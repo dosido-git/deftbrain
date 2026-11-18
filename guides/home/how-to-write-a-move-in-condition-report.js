@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Move-In Condition Report (That Actually Holds Up Later)",
   "titleHtml": "How to Write a Move-In Condition Report <em>(That Actually Holds Up Later)</em>",
   "shortTitle": "How to Write a Move-In Condition Report",
+  "searchTitle": "Move-In Condition Report | Proof That Protects Your Deposit",
   "navTitle": "How to write a move-in condition report that actually holds up later",
   "description": "A condition report is a legal document, not a casual list. Writing one that protects you means including specific details that vague reports leave out — and the difference is what gets your deposit back.",
   "deck": "To write a move-in condition report that holds up, give each flaw a location and approximate size, link each note to a numbered photo, write see notes instead of ticking good condition for rooms with flaws, then sign, date, copy and email it, asking for confirmation.",

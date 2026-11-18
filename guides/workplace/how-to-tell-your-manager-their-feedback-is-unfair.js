@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell Your Manager Their Feedback Feels Unfair (Without Sounding Defensive)",
   "titleHtml": "How to Tell Your Manager Their Feedback Feels Unfair <em>(Without Sounding Defensive)</em>",
   "shortTitle": "How to Tell Your Manager Their Feedback Feels Unfair",
+  "searchTitle": "Unfair Feedback From Manager | Respond Without Hurting Your Career",
   "navTitle": "How to tell your manager their feedback feels unfair",
   "description": "Unfair feedback stings twice — once when you hear it, and again every time you replay it. Here's how to push back on it calmly, with evidence, and without looking like you can't take criticism.",
   "deck": "To tell your manager feedback feels unfair, separate the facts from the judgment, ask for a specific example, bring records such as emails or messages, and frame your response around accuracy rather than fairness. Afterward, write a short recap of what was discussed and agreed.",

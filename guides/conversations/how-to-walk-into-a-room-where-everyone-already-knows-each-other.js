@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Walk Into a Room Where Everyone Already Knows Each Other",
   "titleHtml": "How to Walk Into a Room <em>Where Everyone Already Knows Each Other</em>",
   "shortTitle": "Walk Into a Closed Group",
+  "searchTitle": "How to Join a Group Conversation | Join In Without the Awkwardness",
   "navTitle": "walk into a closed group",
   "description": "You are the only outsider at the party, the dinner, or the office holiday event. Here is how to enter, find a way in, and leave on a high — without faking it.",
   "deck": "When you walk into a room where everyone knows each other, stay near the host at first so they can introduce you, ask how people know each other, offer a little context about yourself, ask about inside jokes rather than faking them, and let the group bring you in gradually.",

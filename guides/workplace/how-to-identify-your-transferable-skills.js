@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to identify your transferable skills",
   "titleHtml": "How to identify <em>your transferable skills</em>",
   "shortTitle": "Identify transferable skills",
+  "searchTitle": "Transferable Skills | Show What You Can Already Do",
   "navTitle": "identify transferable skills",
   "description": "A method for figuring out which of your current skills will travel to a new role or industry — and how to talk about them so a new employer recognizes their value.",
   "deck": "To identify your transferable skills, describe your recent work in plain language without jargon, group it into recurring abilities (aligning people, explaining complex ideas, managing a process), find the terms the target field uses for them, back each with a specific story, and ask someone in that field what lands.",

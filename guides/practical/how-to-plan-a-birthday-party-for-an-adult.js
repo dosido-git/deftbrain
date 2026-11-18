@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Plan a Birthday Party for an Adult",
   "titleHtml": "How to Plan a Birthday Party <em>for an Adult</em>",
   "shortTitle": "Adult Birthday Party",
+  "searchTitle": "Adult Birthday Party Ideas | Celebrate in Style",
   "navTitle": "adult birthday party",
   "description": "Adult birthdays sit in an awkward space between dinner-with-friends and themed event. Here is how to plan one that is neither.",
   "deck": "To plan an adult birthday party, build the night around an activity rather than just a meal, invite people who'll enjoy each other, plan one moment such as a short toast, think about arrivals and the ending, and match the energy to what the birthday person wants.",

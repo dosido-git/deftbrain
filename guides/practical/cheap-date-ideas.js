@@ -5,6 +5,7 @@ module.exports = {
   "title": "Cheap Date Ideas (That Don't Feel Cheap)",
   "titleHtml": "Cheap Date Ideas <em>(That Don't Feel Cheap)</em>",
   "shortTitle": "Cheap Dates That Don't Feel Cheap",
+  "searchTitle": "Cheap Date Ideas | Have Fun Without Spending Much",
   "navTitle": "cheap dates that don't feel cheap",
   "description": "The good cheap dates aren't compromise versions of expensive ones — they're a different shape entirely. Here's how to find them.",
   "deck": "Cheap dates that don't feel cheap include trying something you're both bad at (mini-golf, a public chess board), visiting places on their free days, making food the activity, going to free local events, and ending the night at a specific spot rather than just heading home.",

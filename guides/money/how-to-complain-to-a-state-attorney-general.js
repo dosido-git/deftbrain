@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Complain to a State Attorney General",
   "titleHtml": "How to Complain to a <em>State Attorney General</em>",
   "shortTitle": "Complain to State AG",
+  "searchTitle": "Complaint to the Attorney General | Get Your Case Heard",
   "navTitle": "complain to a state attorney general",
   "description": "When customer service has failed and you have real consumer harm, your state AG can move what the company will not. The five-part filing that gets results.",
   "deck": "To complain to a state attorney general, use the consumer complaint form on your state AG website (USA.gov and NAAG link to every state). Give a short timeline, name the law if you know it, attach documents, and state the outcome you want. The office may mediate.",

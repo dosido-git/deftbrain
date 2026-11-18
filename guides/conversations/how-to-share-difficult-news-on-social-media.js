@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Share Difficult News on Social Media (Without Regretting It)",
   "titleHtml": "How to Share Difficult News on Social Media <em>(Without Regretting It)</em>",
   "shortTitle": "Sharing Hard News Online",
+  "searchTitle": "How to Share Bad News on Social Media | Share Hard News With Care",
   "navTitle": "sharing hard news online",
   "description": "Layoff, diagnosis, breakup, loss. The audience is wider than you think. Here's how to write the post you won't regret.",
   "deck": "To share difficult news on social media, decide first what you won't share, lead with the plain fact rather than your feelings, tell people what kind of response you want, reread it as a distant acquaintance would, and wait a day before posting if you can.",

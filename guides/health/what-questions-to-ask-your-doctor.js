@@ -5,6 +5,7 @@ module.exports = {
   "title": "What Questions to Ask Your Doctor (And Which Ones Actually Get You Answers)",
   "titleHtml": "What Questions to Ask Your Doctor <em>(And Which Ones Actually Get You Answers)</em>",
   "shortTitle": "What Questions to Ask Your Doctor",
+  "searchTitle": "List of Questions to Ask Your Doctor | Leave With Answers, Not Regrets",
   "navTitle": "What questions to ask your doctor and which ones actually get you answers",
   "description": "Most patient question lists are too generic to land. The questions that get you specific, useful answers are the ones that bypass the doctor's autopilot.",
   "deck": "The questions that get useful answers are specific: what is most likely and what else could it be, what should make you call back sooner, how will you know the treatment is working, and is there anything not being checked that should be. Write them down before the visit.",

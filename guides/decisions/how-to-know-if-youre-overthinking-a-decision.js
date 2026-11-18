@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If You're Overthinking a Decision",
   "titleHtml": "How to Know If You're <em>Overthinking a Decision</em>",
   "shortTitle": "Am I Overthinking This?",
+  "searchTitle": "Am I Overthinking | Quiet the Loop in Your Head",
   "navTitle": "How to know if you're overthinking a decision",
   "description": "Some decisions deserve more thought; most of the ones you're agonizing over don't. Here are five signs you've crossed from useful deliberation into useless rumination — and how to stop.",
   "deck": "You're probably overthinking a decision if you keep weighing the same factors, the stakes feel bigger than the realistic worst case, more research has stopped changing your view, you're rehearsing how to defend the choice, or part of you already knows the answer.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Decide Between Multiple Side Projects (When You Cannot Do Them All)",
   "titleHtml": "How to Decide Between Multiple Side Projects <em>(When You Cannot Do Them All)</em>",
   "shortTitle": "Decide Between Side Projects",
+  "searchTitle": "Choosing Between Side Projects | Focus on the One That Matters",
   "navTitle": "decide between side projects",
   "description": "Three exciting ideas, ten hours a week. Here is how to pick the one with the highest leverage, instead of doing all three poorly.",
   "deck": "To choose between side projects, favor the one that uses skills you already have, produces something beyond itself (skills, audience, contacts), and fits your real hours once you've doubled your time estimate. Commit to it for a fixed period, and write the others down as a queue for later.",

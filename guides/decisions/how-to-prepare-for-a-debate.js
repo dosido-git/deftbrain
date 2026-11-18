@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prepare for a Debate",
   "titleHtml": "How to Prepare <em>for a Debate</em>",
   "shortTitle": "Prepare for a Debate",
+  "searchTitle": "How to Prepare for a Debate | Walk In Ready to Win",
   "navTitle": "How to prepare for a debate — five steps used by competitive debaters",
   "description": "How to prepare for a debate the way competitive debaters do: a one-paragraph case, the three strongest objections, prepared responses, and solid evidence.",
   "deck": "To prepare for a debate, write your case as one tight paragraph, then spend at least as long on the other side: predict the three strongest objections, write a response to each, check every source says what you claim, and rehearse aloud the moments most likely to go wrong.",

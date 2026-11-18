@@ -5,6 +5,7 @@ module.exports = {
   "title": "Funny Captions for Couples Photos (That Aren't Cringey or Forced)",
   "titleHtml": "Funny Captions for Couples Photos <em>(That Aren&#39;t Cringey or Forced)</em>",
   "shortTitle": "Funny Captions for Couples Photos",
+  "searchTitle": "Funny Couple Captions | Make Your Friends Laugh Out Loud",
   "navTitle": "Funny captions for couples photos that aren't cringey or forced",
   "description": "The line between actually funny and trying-too-hard is thin. Here's how to land the joke without making your friends wince at the post.",
   "deck": "A funny couples caption usually works when it is one line built on a specific, slightly odd detail about your relationship, with the joke aimed at yourself rather than your partner. Skip earnest 'my person' phrasing and familiar quote formats, and don't follow the joke with a sentimental paragraph.",

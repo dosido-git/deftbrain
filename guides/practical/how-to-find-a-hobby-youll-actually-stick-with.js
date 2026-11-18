@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Find a Hobby You'll Actually Stick With",
   "titleHtml": "How to Find a Hobby <em>You'll Actually Stick With</em>",
   "shortTitle": "Find a Hobby You'll Stick With",
+  "searchTitle": "How to Find a Hobby | Find One You'll Stick With",
   "navTitle": "find a hobby you'll stick with",
   "description": "How to find a hobby you'll actually stick with: an early payoff, short sessions, visible progress, no public commitment, and an eight-week trial.",
   "deck": "To find a hobby you'll stick with, choose one that's enjoyable early rather than months in, fits into ten-minute pockets instead of scheduled blocks, and shows you clear progress. Keep it to yourself at first, and give it about eight weeks before deciding, since early sessions often feel awkward.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to switch careers to tech",
   "titleHtml": "How to <em>switch careers to tech</em>",
   "shortTitle": "Switch careers to tech",
+  "searchTitle": "How to Switch to a Tech Career | Land Your First Tech Role",
   "navTitle": "switch careers to tech",
   "description": "A practical roadmap for moving into a tech role from a non-tech background — what to actually learn, what to skip, and how long it really takes.",
   "deck": "To switch careers into tech, choose one specific role, list the skills you already have that carry over, learn the one or two technical skills it can't do without, build small public projects that show them, and expect it to take a year or more alongside a job.",

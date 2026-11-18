@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to figure out your default communication tone",
   "titleHtml": "How to figure out <em>your default communication tone</em>",
   "shortTitle": "Your default communication tone",
+  "searchTitle": "Communication Style Test | Know How You Really Come Across",
   "navTitle": "default communication tone",
   "description": "A practical method for identifying the tonal pattern that runs through everything you write — and what other people learn about you from it without realizing.",
   "deck": "To find your default communication tone, compare samples of your writing from three settings, list the words and phrases you repeat, name the emotional register you write in, notice what you avoid, and ask three people who receive your messages how you come across.",

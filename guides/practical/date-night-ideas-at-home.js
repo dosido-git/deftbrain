@@ -5,6 +5,7 @@ module.exports = {
   "title": "Date Night Ideas at Home (That Aren't a Movie)",
   "titleHtml": "Date Night Ideas at Home <em>(That Aren't a Movie)</em>",
   "shortTitle": "At-Home Dates Beyond Movies",
+  "searchTitle": "Date Night at Home | Make Home Feel Special",
   "navTitle": "at-home dates beyond movies",
   "description": "The default home date is a movie and takeout — fine, but unmemorable. Here's how to build a real evening without leaving the apartment.",
   "deck": "To make a date night at home feel different from a regular evening, change the lighting, cook one specific dish together, pick a theme, replace the movie with something you both do (a game, a puzzle, a project), and end with a small ritual like tea or a short walk.",

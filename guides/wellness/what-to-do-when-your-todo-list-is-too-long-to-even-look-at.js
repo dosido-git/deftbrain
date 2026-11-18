@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to do when your to-do list is too long to even look at",
   "titleHtml": "What to do when your to-do list is <em>too long to even look at</em>",
   "shortTitle": "To-do list too long",
+  "searchTitle": "To Do List Too Long | Make It Doable",
   "navTitle": "list too long to look at",
   "description": "A method for the specific dread of opening your task manager and seeing dozens of items, all overdue, all undone — and the way back to a list you can actually use.",
   "deck": "When your to-do list is too long to face, start a fresh list with only what's active now and move the rest to a someday list. Separate must-dos from should-dos, cap the length, pick the next doable action, and check the list at set times.",

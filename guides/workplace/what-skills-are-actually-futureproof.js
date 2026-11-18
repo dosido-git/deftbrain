@@ -5,6 +5,7 @@ module.exports = {
   "title": "What skills are actually future-proof?",
   "titleHtml": "What skills are <em>actually future-proof?</em>",
   "shortTitle": "Truly future-proof skills",
+  "searchTitle": "Future-Proof Skills | Invest in Skills That Last",
   "navTitle": "future-proof skills",
   "description": "An honest answer to which skills are actually durable across the next decade — separating fundamentals that hold from trends that will not.",
   "deck": "The most durable skills combine technology and judgment: working well with AI and data, clear writing, understanding and persuading people, building things from scratch, and deep expertise where judgment or relationships matter. Employers surveyed by the World Economic Forum expect much of today's skill mix to change by 2030.",

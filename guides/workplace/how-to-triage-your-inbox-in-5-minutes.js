@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to triage your inbox in 5 minutes",
   "titleHtml": "How to triage your inbox <em>in 5 minutes</em>",
   "shortTitle": "Triage inbox in 5 minutes",
+  "searchTitle": "How to Triage Your Inbox | Clear It in Five Minutes",
   "navTitle": "triage inbox fast",
   "description": "A specific protocol for opening your inbox, identifying the urgent stuff, and closing the inbox — all in five minutes, several times a day.",
   "deck": "To triage your inbox in five minutes, sort by sender or thread, scan only the sender and subject lines, open just the messages that look urgent, answer those that take two minutes or less and schedule the rest, then close the inbox. Repeat a few times a day.",

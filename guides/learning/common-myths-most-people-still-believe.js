@@ -5,6 +5,7 @@ module.exports = {
   "title": "Common Myths Most People Still Believe",
   "titleHtml": "Common Myths <em>Most People Still Believe</em>",
   "shortTitle": "Widely-Believed Myths",
+  "searchTitle": "Common Myths | Never Get Fooled Again",
   "navTitle": "common myths debunked",
   "description": "Some \"facts\" everyone knows are not actually true. Here are the ones that come up most often in conversation, plus how to spot a myth before you spread it.",
   "deck": "Common myths many people still believe include that the Great Wall of China is visible from space with the naked eye, that cracking your knuckles causes arthritis, that sugar makes children hyperactive, and that Salem's accused witches were burned. A quick check of a primary or expert source catches most.",

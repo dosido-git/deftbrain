@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read Product Reviews Critically",
   "titleHtml": "How to Read Product Reviews <em>(Critically)</em>",
   "shortTitle": "Read Reviews Critically",
+  "searchTitle": "How to Read Product Reviews | Shop Smarter Every Time",
   "navTitle": "read reviews critically",
   "description": "Most people read reviews to confirm what they already want to believe. Here's how to actually use them — to predict your own experience.",
   "deck": "To read product reviews critically, start with the three-star reviews, give more weight to reviewers whose needs match yours, look at the type of problems people report rather than how many, discount the most extreme opinions, and favor reviews that compare the product with alternatives.",

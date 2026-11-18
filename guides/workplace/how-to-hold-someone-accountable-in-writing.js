@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Hold Someone Accountable in Writing Without Making It Personal",
   "titleHtml": "How to Hold Someone Accountable in Writing <em>Without Making It Personal</em>",
   "shortTitle": "How to Hold Someone Accountable in Writing",
+  "searchTitle": "How to Hold Someone Accountable in the Workplace | Get Results Without the Drama",
   "navTitle": "How to hold someone accountable in writing without making it personal",
   "description": "Accountability in writing is documentation, not punishment. Five steps for raising a real issue with a colleague in writing — clear enough that nothing is ambiguous, professional enough that the relationship survives.",
   "deck": "To hold someone accountable in writing, describe what happened rather than the person, name the specific commitment with dates, open with the impact, and ask what got in the way instead of lecturing. Writing suits repeat or multi-party issues; a first slip usually belongs in conversation.",

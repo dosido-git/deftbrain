@@ -175,7 +175,10 @@ function renderGuide(spec, siblings) {
   const h1Html    = spec.titleHtml || esc(spec.title);
   // <title> tag: use shortTitle if full title + suffix would exceed 70 chars.
   // og:title keeps the full title — social cards have no length constraint.
-  const metaTitle = (spec.title.length + TITLE_SUFFIX.length) > MAX_TITLE_LEN
+  // searchTitle (2026-11-18), when set, is the search-result title as written
+  // ("Keyword | Benefit"); it is deliberately allowed past MAX_TITLE_LEN.
+  const metaTitle = spec.searchTitle ? spec.searchTitle + TITLE_SUFFIX
+    : (spec.title.length + TITLE_SUFFIX.length) > MAX_TITLE_LEN
     ? spec.shortTitle + TITLE_SUFFIX
     : spec.title + TITLE_SUFFIX;
 

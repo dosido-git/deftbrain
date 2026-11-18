@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask for a Refund and Actually Get One",
   "titleHtml": "How to Ask for a Refund <em>and Actually Get One</em>",
   "shortTitle": "Ask for a Refund (and Get It)",
+  "searchTitle": "How to Ask for a Refund | Get Your Money Back",
   "navTitle": "ask for a refund",
   "description": "The script, the angle, and the small framing choices that turn a 'sorry, no' into a refund.",
   "deck": "To get a refund, state what you want first, then give specific facts about what went wrong. Frame it as a defect or delivery failure rather than a return, ask once and wait, and if refused, ask who can approve an exception. Card buyers can also dispute billing errors.",

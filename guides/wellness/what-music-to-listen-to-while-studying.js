@@ -5,6 +5,7 @@ module.exports = {
   "title": "What Music to Listen to While Studying (That Actually Helps Instead of Distracting)",
   "titleHtml": "What Music to Listen to While Studying <em>(That Actually Helps Instead of Distracting)</em>",
   "shortTitle": "What Music to Listen to While Studying",
+  "searchTitle": "Music for Studying | Remember More, Stress Less",
   "navTitle": "What music to listen to while studying that actually helps instead of distracting",
   "description": "What music to listen to while studying: no lyrics for word-heavy work, tempo matched to the task, familiar tracks, low volume, and a ready-made playlist.",
   "deck": "The best study music depends on the task. For reading, writing or memorizing, choose music without lyrics, since words compete with what you're learning. Pick familiar music over new, keep the volume just high enough to cover background noise, and set up the playlist before you start.",

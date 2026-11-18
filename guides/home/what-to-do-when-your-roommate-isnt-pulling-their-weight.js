@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When Your Roommate Is Not Pulling Their Weight",
   "titleHtml": "What to Do When Your Roommate <em>Is Not Pulling Their Weight</em>",
   "shortTitle": "Roommate Slacking",
+  "searchTitle": "Lazy Roommate | Get Them to Pitch In",
   "navTitle": "roommate not pulling weight",
   "description": "You have been doing more than your share for weeks. Bringing it up feels passive-aggressive but staying quiet feels like a trap. Here is the structured way out.",
   "deck": "When your roommate isn't pulling their weight, track who does what for a week or two, raise it once directly with specifics, agree a written chore split, and decide privately what you'll do if it doesn't hold. A specific, forward-looking request works better than repeated hints.",

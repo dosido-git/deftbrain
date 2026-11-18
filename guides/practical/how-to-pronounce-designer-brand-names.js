@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Pronounce Designer Brand Names",
   "titleHtml": "How to Pronounce <em>Designer Brand Names</em>",
   "shortTitle": "Designer Brand Names",
+  "searchTitle": "How to Pronounce Designer Brands | Say It Like an Insider",
   "navTitle": "designer brand names",
   "description": "Hermès is not her-MEZ. Givenchy is not gee-VEN-chee. Here is the field guide to the brand names that everyone gets wrong.",
   "deck": "Common designer names: Hermès is air-MEZZ (silent H, final S sounded), Givenchy is zhee-vahn-SHEE, Versace is ver-SAH-chay, Bottega Veneta is boh-TAY-gah VEH-neh-tah, and Comme des Garçons is kom day gar-SOHN. French names often stress the end; Italian names sound every vowel.",

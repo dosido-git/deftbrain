@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make Small Talk Without Being Annoying (or Bored)",
   "titleHtml": "How to Make Small Talk <em>(Without Being Annoying or Bored)</em>",
   "shortTitle": "How to Make Small Talk Without Being Annoying",
+  "searchTitle": "How to Make Small Talk | Chat Easily With Anyone",
   "navTitle": "How to make small talk without being annoying or bored",
   "description": "Small talk fails when you treat it like a script. Here's how to do the social-friction version that actually feels like talking to a human.",
   "deck": "Good small talk starts with a real observation instead of a stock phrase, asks about specific things that invite a story, reacts to the answers, reads whether the other person wants to talk, and has a clean exit line ready. It only needs to be slightly warmer than the script.",

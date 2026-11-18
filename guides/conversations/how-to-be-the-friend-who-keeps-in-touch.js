@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Be the Friend Who Keeps in Touch (When That Has Never Been You)",
   "titleHtml": "How to Be the Friend Who Keeps in Touch <em>(When That Has Never Been You)</em>",
   "shortTitle": "Be the Friend Who Keeps in Touch",
+  "searchTitle": "How to Keep in Touch With Friends | Stay Close Without the Guilt",
   "navTitle": "be the friend who keeps in touch",
   "description": "Some people are naturally great at this. Most of us are not. Here is how to install the habit if it does not come naturally — without becoming exhausting.",
   "deck": "To become the friend who keeps in touch, stop relying on memory: list people with the date you last reached out, pick a realistic frequency for each, send short messages that need no reply, do it in one weekly block, and restart after a missed week.",

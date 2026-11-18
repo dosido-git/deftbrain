@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If a Show Is Worth Picking Back Up (Or Just Letting It Go)",
   "titleHtml": "How to Know If a Show Is Worth Picking Back Up <em>(Or Just Letting It Go)</em>",
   "shortTitle": "How to Know If a Show Is Worth Picking Back Up",
+  "searchTitle": "Is This Show Worth Watching | Spend Your Watch Time Wisely",
   "navTitle": "How to know if a show is worth picking back up or just letting it go",
   "description": "You stopped for a reason — or maybe you didn't. The honest question is whether the version you'd return to is the version you originally liked. Here's how to tell.",
   "deck": "A show is worth picking back up if you stopped because life got busy rather than during a slump, recent viewers say it still delivers what you liked, and one test episode holds your attention. If you only want to have seen it, a recap may do.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read an Insurance Policy You Actually Need",
   "titleHtml": "How to Read an Insurance Policy <em>You Actually Need</em>",
   "shortTitle": "How to Read an Insurance Policy",
+  "searchTitle": "How to Read an Insurance Policy | Know What You're Covered For",
   "navTitle": "How to read an insurance policy you actually need to understand",
   "description": "The policy is sixty pages. The claim is what you'll care about. Here's how to read auto, home, or renters insurance so you know what you're covered for — before you need it.",
   "deck": "To read a home, renters or auto insurance policy, start with the declarations page, note your deductible and coverage limits, read the exclusions, check whether it covers named perils only or all perils except exclusions, and make sure the limits and sublimits match what you actually own.",

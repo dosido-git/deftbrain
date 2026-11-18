@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read an Itemized Hospital Bill (Line by Line, Without a Medical Degree)",
   "titleHtml": "How to Read an Itemized Hospital Bill <em>(Line by Line, Without a Medical Degree)</em>",
   "shortTitle": "How to Read an Itemized Hospital Bill",
+  "searchTitle": "How to Read an Itemized Hospital Bill | Catch Charges You Shouldn't Pay",
   "navTitle": "how to read an itemized hospital bill",
   "description": "How to read an itemized hospital bill: what each column means, the billing errors that show up most often, and how to check it against your insurer's EOB.",
   "deck": "To read an itemized hospital bill, match each line's date, revenue code, CPT or HCPCS code, units and charge to the care you received, then compare what you're asked to pay with your insurer's Explanation of Benefits. Duplicate lines, wrong units and services you never received are common errors.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Keep a Conversation Going When It's Dying (Without Tap-Dancing)",
   "titleHtml": "How to Keep a Conversation Going When It&#39;s Dying <em>(Without Tap-Dancing)</em>",
   "shortTitle": "How to Keep a Conversation Going",
+  "searchTitle": "How to Keep a Conversation Going | Never Run Out of Things to Say",
   "navTitle": "How to keep a conversation going when it's dying without tap-dancing",
   "description": "You can feel the energy draining. You don't want to perform — but you also don't want it to end here. Here's how to redirect a fading conversation cleanly.",
   "deck": "To revive a dying conversation, stop adding new topics and go deeper on the most interesting thing they said, hand them the lead with an open question, refer to something specific from before, or name the lull lightly. Sometimes the better move is to end on a good note.",

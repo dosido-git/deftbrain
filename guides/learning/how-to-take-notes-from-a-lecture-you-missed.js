@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Take Notes from a Lecture You Missed",
   "titleHtml": "How to Take Notes <em>from a Lecture You Missed</em>",
   "shortTitle": "Notes from a Missed Lecture",
+  "searchTitle": "Missed a Lecture | Catch Up Without Falling Behind",
   "navTitle": "notes from a missed lecture",
   "description": "You missed class. The recording is up. Here is the fastest way to turn 90 minutes of lecture you did not attend into the same notes the people who showed up have.",
   "deck": "To catch up on a lecture you missed, download the transcript, skim it to map the topics and key moments, watch only those parts of the recording closely, build notes from definitions, examples and flagged points, and finish by testing yourself from memory.",

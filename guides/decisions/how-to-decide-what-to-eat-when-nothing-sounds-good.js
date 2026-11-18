@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to decide what to eat when nothing sounds good",
   "titleHtml": "How to decide what to eat when nothing sounds good",
   "shortTitle": "Nothing sounds good",
+  "searchTitle": "What Should I Eat | Satisfy Your Cravings Fast",
   "navTitle": "Nothing sounds good",
   "description": "You are hungry. You have rejected sixteen options. Here is how to actually land on something, instead of eating cereal at 9:47 because you waited too long.",
   "deck": "When nothing sounds good, stop asking what you want and ask what you'd have been happy to see appear twenty minutes ago. Rule out whole categories instead of single dishes, aim for good enough, fall back on a recent meal you liked, and order before a new objection arrives.",

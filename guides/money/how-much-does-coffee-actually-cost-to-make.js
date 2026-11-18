@@ -5,6 +5,7 @@ module.exports = {
   "title": "How Much Does Coffee Actually Cost to Make (When You're Paying $6 for It)",
   "titleHtml": "How Much Does Coffee Actually Cost to Make <em>(When You&#39;re Paying $6 for It)</em>",
   "shortTitle": "How Much Does Coffee Actually Cost to Make",
+  "searchTitle": "How Much Does Coffee Cost to Make | Know What You're Really Paying",
   "navTitle": "How much does coffee actually cost to make when you're paying $6 for it",
   "description": "The coffee in your $6 latte costs about 20 cents. Everything else you're paying for is real — but it's not what you think it is.",
   "deck": "The coffee in a $6 latte usually costs the café well under a dollar, including the beans. Most of the price pays for labor, rent, equipment and overhead, plus a modest margin. That is why the same drink costs more on a busy downtown corner than on a quiet street.",

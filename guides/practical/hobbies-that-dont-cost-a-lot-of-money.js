@@ -5,6 +5,7 @@ module.exports = {
   "title": "Hobbies That Don't Cost a Lot of Money (And Stay That Way)",
   "titleHtml": "Hobbies That Don't Cost a Lot of Money <em>(And Stay That Way)</em>",
   "shortTitle": "Cheap Hobbies That Stay Cheap",
+  "searchTitle": "Cheap Hobbies | Have Fun Without the Cost",
   "navTitle": "hobbies that don't cost a lot of money",
   "description": "Many free hobbies have an expensive trap door six months in. Here is how to pick ones that actually stay cheap, and how to know which ones will not.",
   "deck": "Hobbies that stay cheap have a small gear set you buy once (drawing, hiking, chess, cooking), free infrastructure like libraries and parks, and communities that aren't gear-focused. Be wary of hobbies with an upgrade culture, such as photography or cycling, and set a written monthly cap.",

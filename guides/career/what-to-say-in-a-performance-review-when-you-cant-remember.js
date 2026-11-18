@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Say in a Performance Review When You Can't Remember What You Did",
   "titleHtml": "What to Say in a Performance Review <em>When You Can&#39;t Remember What You Did</em>",
   "shortTitle": "Performance Review When You Can't Remember",
+  "searchTitle": "Self Evaluation Examples | Write It Even When You Can't Remember",
   "navTitle": "What to say in a performance review when you can't remember what you did",
   "description": "You did a year of work. You can remember three things. Five steps for reconstructing what you actually did from the artifacts you've already created — without the panic.",
   "deck": "If you can't remember what you did all year, rebuild it from records: scroll back through your calendar, messages, sent email, project tracker, code history and documents, list everything, rank it by impact, and rewrite each item as an outcome. If the list is thin, discuss that honestly.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Send a Group Text That Won't Be Misread (By Anyone in the Group)",
   "titleHtml": "How to Send a Group Text That Won&#39;t Be Misread <em>(By Anyone in the Group)</em>",
   "shortTitle": "How to Send a Group Text That Won't Be Misread",
+  "searchTitle": "Group Text Etiquette | Get Everyone on the Same Page",
   "navTitle": "How to send a group text that won't be misread by anyone in the group",
   "description": "How to send a group text that reads the same way to everyone: state the purpose, drop the sarcasm, don't single anyone out, and check for double meanings.",
   "deck": "To send a group text that won't be misread, state its purpose in the first sentence, skip sarcasm unless everyone reliably gets it, and don't single out one person. Reread for lines that could be taken two ways, and use punctuation and emoji to make your tone clear.",

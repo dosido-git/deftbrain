@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why You Feel Drained After Every Social Event Even When You Enjoyed It",
   "titleHtml": "Why You Feel Drained <em>Even When You Enjoyed It</em>",
   "shortTitle": "Drained After a Good Time",
+  "searchTitle": "Exhausted After Socializing | Recharge Without Guilt",
   "navTitle": "drained after a good event",
   "description": "You had fun. You like the people. You came home and collapsed for two hours and could barely speak to anyone the next morning. Here is why enjoyment and depletion are not the same — and what to do about it.",
   "deck": "You can feel drained after a social event you enjoyed because enjoyment and energy are separate: sustained attention, conversation and reading people take effort however good the company. Track both, plan an easy morning after big events, and learn which kinds of events cost you most.",

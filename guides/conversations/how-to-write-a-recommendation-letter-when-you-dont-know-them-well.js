@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Recommendation Letter When You Don't Know Them Well",
   "titleHtml": "How to Write a Recommendation Letter <em>(When You Don't Know Them Well)</em>",
   "shortTitle": "Recommend Someone You Barely Know",
+  "searchTitle": "Recommendation Letter for Someone You Don't Know Well | Write It Honestly and Helpfully",
   "navTitle": "recommend someone you barely know",
   "description": "Saying yes was the easy part. Now you have to write something credible from limited material. Here's how to do it without faking depth.",
   "deck": "When you don't know someone well, a credible recommendation letter states the limited contact plainly, describes one specific thing you saw them do, endorses only qualities you actually observed, recommends them for a specific kind of role, and, if a stronger letter-writer exists, honestly suggests that person.",

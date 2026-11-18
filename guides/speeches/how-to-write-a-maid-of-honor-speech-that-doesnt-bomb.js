@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Maid of Honor Speech That Doesn't Bomb",
   "titleHtml": "How to Write a Maid of Honor Speech <em>That Doesn&#39;t Bomb</em>",
   "shortTitle": "How to Write a Maid of Honor Speech That Doesn't Bomb",
+  "searchTitle": "Maid of Honor Speech | Make Them Laugh and Cry",
   "navTitle": "How to write a maid of honor speech that doesn't bomb",
   "description": "The maid of honor speech that lands isn't the one with the most stories or the cleverest line — it's the one that picks the right single moment and lets it do the work. Five steps for a speech the room will remember.",
   "deck": "A maid of honor speech that lands usually opens on one specific moment, builds on a single story about the bride, bridges to her partner, and finishes in about three to five minutes. Leave out exes, inside jokes, and anything the grandparents or her boss wouldn't follow.",

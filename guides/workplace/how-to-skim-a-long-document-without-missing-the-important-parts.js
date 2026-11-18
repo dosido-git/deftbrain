@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to skim a long document without missing the important parts",
   "titleHtml": "How to skim a long document <em>without missing the important parts</em>",
   "shortTitle": "Skim long documents",
+  "searchTitle": "How to Skim Long Readings | Save Hours of Reading",
   "navTitle": "skim long documents",
   "description": "A method for reading a long document fast — extracting what actually applies to you while not getting blindsided by something you skipped.",
   "deck": "To skim a long document safely, first decide what could need action from you, then scan for words like must, required, deadline and penalty, and for every date and dollar amount. Read only sections that match your situation, then write down what you must do and by when.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Belated Thank-You Note (Without Making It Weird)",
   "titleHtml": "How to Write a Belated Thank-You Note <em>(Without Making It Weird)</em>",
   "shortTitle": "Belated Thank-Yous",
+  "searchTitle": "Late Thank You Notes | It's Not Too Late to Say Thanks",
   "navTitle": "belated thank-yous",
   "description": "It's been months. Sending now feels almost worse than not sending. Here's how to write the late note in a way that lands warmly anyway.",
   "deck": "A belated thank-you note works when you acknowledge the delay in one line, skip the excuses, say how the gift or help has actually been part of your life since, add a current question about them, and send it without endless rereading. Late is still better than never.",

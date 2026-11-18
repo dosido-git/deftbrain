@@ -5,6 +5,7 @@ module.exports = {
   "title": "Thoughtful Gifts Under $50 That Don't Feel Cheap",
   "titleHtml": "Thoughtful Gifts Under $50 <em>(That Don't Feel Cheap)</em>",
   "shortTitle": "Thoughtful Under $50",
+  "searchTitle": "Gifts Under $50 | Give Something Special on a Budget",
   "navTitle": "thoughtful under $50",
   "description": "The trick isn't finding cheap things that look expensive. It's finding things where the value isn't priced in dollars.",
   "deck": "Gifts under $50 feel thoughtful when the value isn't measured in price: the best version of something small (olive oil, chocolate, tea), something local with a story, two related items as a small kit, something made with effort, and careful presentation with a real card.",

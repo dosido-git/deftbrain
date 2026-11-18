@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Write in a Cold Pitch When You Have No Credentials (Yet)",
   "titleHtml": "What to Write in a Cold Pitch When You Have No Credentials <em>(Yet)</em>",
   "shortTitle": "Cold Pitch When You Have No Credentials",
+  "searchTitle": "How to Pitch Yourself With No Experience | Get a Yes on Potential Alone",
   "navTitle": "What to write in a cold pitch when you have no credentials yet",
   "description": "No portfolio, no published work, no degree in the field. Here's how to write a pitch that earns a yes anyway — by leaning into what you do have.",
   "deck": "A cold pitch without credentials works by showing rather than claiming: do a small piece of the work for them, give concrete evidence of the effort you've already put in, offer a low-risk first project, skip apologizing for being new, and pitch places that hire newer people.",

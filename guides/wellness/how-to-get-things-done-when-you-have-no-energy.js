@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Things Done When You Have No Energy",
   "titleHtml": "How to Get Things Done <em>When You Have No Energy</em>",
   "shortTitle": "Get Things Done With No Energy",
+  "searchTitle": "How to Be Productive With No Energy | Get Things Done Anyway",
   "navTitle": "get things done with no energy",
   "description": "Pushing harder does not work when the tank is empty. Here is what does.",
   "deck": "When you have no energy, skip the hardest task, pick one small thing that fits the energy you have, cut its scope, and stop after one win. Water or a few minutes outside can buy a little clarity. If tiredness lasts weeks despite rest, see a doctor.",

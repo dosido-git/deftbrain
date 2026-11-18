@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Message Someone on LinkedIn You Don't Know (Without It Going Straight to Their Trash)",
   "titleHtml": "How to Message Someone on LinkedIn You Don&#39;t Know <em>(Without It Going Straight to Their Trash)</em>",
   "shortTitle": "How to Message Someone on LinkedIn You Don't Know",
+  "searchTitle": "How to Message a Stranger on LinkedIn | Get a Reply From Someone New",
   "navTitle": "How to message someone on LinkedIn you don't know without it going to their trash",
   "description": "LinkedIn DMs have become a wasteland of bad cold outreach. Here's how to write one that gets read — and replied to — instead of immediately dismissed.",
   "deck": "To message a stranger on LinkedIn, open with a specific reference to their work, say plainly that you don't know them, make one small, bounded request, keep your credentials to a line, and use the short connection note to introduce yourself before sending the full message.",

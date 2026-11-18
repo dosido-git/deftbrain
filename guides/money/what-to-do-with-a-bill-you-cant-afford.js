@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do With a Bill You Can't Afford (Before It Becomes a Bigger Problem)",
   "titleHtml": "What to Do With a Bill You Can&#39;t Afford <em>(Before It Becomes a Bigger Problem)</em>",
   "shortTitle": "What to Do With a Bill You Can't Afford",
+  "searchTitle": "Can't Afford a Bill | Breathe Easier About What You Owe",
   "navTitle": "What to do with a bill you can't afford before it becomes a bigger problem",
   "description": "The instinct is to ignore it and hope it goes away. The math is the opposite — bills get worse with time, but they get worse along a predictable timeline that gives you specific moves at each stage.",
   "deck": "If you can't afford a bill, contact the company before the due date and ask about hardship programs, extensions or payment plans. If you can't pay everything, protect housing, utilities and food first. Avoid high-cost borrowing, and consider a nonprofit credit counselor if unaffordable bills are becoming a pattern.",

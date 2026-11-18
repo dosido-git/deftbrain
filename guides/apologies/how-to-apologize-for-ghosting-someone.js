@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Apologize for Ghosting Someone (And Not Make It Weirder)",
   "titleHtml": "How to Apologize for Ghosting Someone <em>(And Not Make It Weirder)</em>",
   "shortTitle": "How to Apologize for Ghosting Someone",
+  "searchTitle": "How to Apologize for Ghosting | Reconnect Without the Awkwardness",
   "navTitle": "How to apologize for ghosting someone and not make it weirder",
   "description": "How to apologize for ghosting someone without making it weirder: keep it short, give the real reason, and don't ask for forgiveness or a reply.",
   "deck": "To apologize for ghosting someone, send two or three sentences that name the silence, give the honest reason (even 'I avoided it'), and say they needn't reply. First consider whether contact is welcome, and if they answer, don't go quiet again.",

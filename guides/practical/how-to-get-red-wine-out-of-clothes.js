@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Red Wine Out of Clothes (Even After It Has Dried)",
   "titleHtml": "How to Get Red Wine Out of Clothes <em>(Even After It Has Dried)</em>",
   "shortTitle": "Red Wine Out of Clothes",
+  "searchTitle": "How to Get Red Wine Out of Clothes | Save Your Favorite Outfit",
   "navTitle": "red wine out of clothes",
   "description": "Red wine sets fast but is not as permanent as it looks. Here is what actually works on fresh and set-in stains, with the supplies you already have.",
   "deck": "To get red wine out of clothes, blot (don't rub), flush from the back with cold water, then treat with a mix of liquid dish soap and 3% hydrogen peroxide on white or colorfast fabric. Soak dried stains first, wash cool, and air-dry until the stain is fully gone.",

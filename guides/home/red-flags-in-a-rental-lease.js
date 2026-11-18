@@ -5,6 +5,7 @@ module.exports = {
   "title": "Red Flags in a Rental Lease (And What They're Actually Telling You)",
   "titleHtml": "Red Flags in a Rental Lease <em>(And What They&#39;re Actually Telling You)</em>",
   "shortTitle": "Red Flags in a Rental Lease",
+  "searchTitle": "Red Flags in a Rental Lease | Spot Trouble Before You Sign",
   "navTitle": "Red flags in a rental lease and what they're actually telling you",
   "description": "Some lease clauses are inconvenient. Others are warnings about who you're about to spend a year with. Here's how to tell the difference.",
   "deck": "Red flags in a rental lease include clauses that waive your legal rights, unexplained or open-ended fees, repair clauses that shift major costs to you, landlord entry 'at any time' without notice, and a document where every term favors one side. Ask about them before signing; some may be unenforceable.",

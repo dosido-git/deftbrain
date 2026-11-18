@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Do When Your Manager Asks \"What Did We Decide?\" and You Can't Remember",
   "titleHtml": "What to Do When Your Manager Asks <em>&quot;What Did We Decide?&quot;</em> and You Can&#39;t Remember",
   "shortTitle": "When Your Manager Asks 'What Did We Decide?'",
+  "searchTitle": "What Did We Decide | Always Have the Answer",
   "navTitle": "What to do when your manager asks what did we decide and you can't remember",
   "description": "It's the question with no good wrong answer. Five steps for handling it gracefully — without bluffing, without panicking, and without having the same problem next quarter.",
   "deck": "When your manager asks what was decided and you can't remember, don't guess. Say you'll check and reply within a set time, search the notes, chat threads, calendar and transcript, ask a peer who was there, write the answer down, and say so if nothing was actually decided.",

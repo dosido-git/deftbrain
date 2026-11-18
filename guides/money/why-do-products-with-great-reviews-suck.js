@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Do Products with Great Reviews Suck?",
   "titleHtml": "Why Do Products <em>(with Great Reviews)</em> Suck?",
   "shortTitle": "Why Great-Review Products Suck",
+  "searchTitle": "Why Great Reviews Lie | Stop Getting Burned by Ratings",
   "navTitle": "why great-review products suck",
   "description": "It's not just fake reviews. Here are the structural reasons real five-star products disappoint — and how to read past them.",
   "deck": "Products with great reviews can disappoint because many reviews are written soon after purchase, before problems appear; ratings reflect expectations for the price; reviewers often use the product in easier conditions than yours; and reviews can carry over from older versions. Fake reviews are only part of it.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make a Hard Decision When You Keep Going Back and Forth",
   "titleHtml": "How to Make a Hard Decision <em>When You Keep Going Back and Forth</em>",
   "shortTitle": "Going Back and Forth",
+  "searchTitle": "Can't Make a Decision | Stop Going Back and Forth",
   "navTitle": "How to make a hard decision when you keep going back and forth",
   "description": "Going back and forth isn't a sign you need more information — it's usually a sign that the decision is roughly a tie. Here's the five-step move out of the loop.",
   "deck": "If you keep going back and forth, the options are probably close, so the choice matters less than it feels. Name the two values the loop alternates between, look for a deeper question underneath, favor the option that's easier to undo, and set a deadline to decide.",

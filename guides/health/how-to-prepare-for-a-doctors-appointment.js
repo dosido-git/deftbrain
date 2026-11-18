@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prepare for a Doctor's Appointment (Without Forgetting What You Came For)",
   "titleHtml": "How to Prepare for a Doctor&#39;s Appointment <em>(Without Forgetting What You Came For)</em>",
   "shortTitle": "How to Prepare for a Doctor's Appointment",
+  "searchTitle": "How to Prepare for a Doctor's Appointment | Make Every Minute Count",
   "navTitle": "How to prepare for a doctor's appointment without forgetting what you came for",
   "description": "A 15-minute visit goes fast. The difference between a useful one and a wasted one is almost always what you brought with you — written down, before you walked in.",
   "deck": "To prepare for a doctor's appointment, write down your top concerns with the most important first, keep a short log of each symptom, bring every medicine and supplement you take, write your questions down, and decide what a successful visit looks like. Bringing someone to take notes helps.",

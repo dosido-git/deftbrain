@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Schedule Tasks Based on Your Energy Levels",
   "titleHtml": "How to Schedule Tasks <em>Based on Your Energy Levels</em>",
   "shortTitle": "Schedule by Energy Levels",
+  "searchTitle": "Schedule Tasks by Energy Level | Work With Your Body, Not Against It",
   "navTitle": "schedule by energy levels",
   "description": "Most calendars schedule by what time slot is free. Here is how to schedule by what kind of energy that slot will have.",
   "deck": "To schedule by energy, spend a few days noting when you feel sharp and when you feel foggy, put demanding work in your sharpest hours and routine work in your low ones, block your best hours before meetings fill them, and adjust when a week doesn't go as planned.",

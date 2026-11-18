@@ -5,6 +5,7 @@ module.exports = {
   "title": "How Do I Know If My Dog Is Sick? The Signs That Actually Matter",
   "titleHtml": "How Do I Know If My Dog Is Sick? <em>The Signs That Actually Matter</em>",
   "shortTitle": "How Do I Know If My Dog Is Sick?",
+  "searchTitle": "Is My Dog Sick | Know When to Call the Vet",
   "navTitle": "How do I know if my dog is sick the signs that actually matter",
   "description": "How to tell if your dog is sick: changes in appetite, toilet habits and engagement, physical checks like gum color, and the emergencies that can't wait.",
   "deck": "A dog is likely sick when appetite, toilet habits, energy or engagement change for a day or more, or gum color changes. One skipped meal in a bright dog is usually nothing. Pale, white or blue gums, collapse, a swollen belly with retching, or labored breathing need a vet now.",

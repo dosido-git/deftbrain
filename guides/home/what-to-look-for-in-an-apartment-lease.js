@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Look For in an Apartment Lease (Beyond Just the Rent)",
   "titleHtml": "What to Look For in an Apartment Lease <em>(Beyond Just the Rent)</em>",
   "shortTitle": "What to Look For in an Apartment Lease",
+  "searchTitle": "What to Look for in a Lease | Sign With Confidence",
   "navTitle": "What to look for in an apartment lease beyond just the rent",
   "description": "The rent number is the easy part. The five clauses that actually shape the next twelve months of your life are buried somewhere on pages eight through fourteen.",
   "deck": "Beyond the rent, look in an apartment lease for what the rent includes and which fees are extra, the term, renewal and notice rules, the security deposit amount and return terms, daily-life rules on pets, guests and changes, and anything missing, such as how repair requests and rent increases work.",

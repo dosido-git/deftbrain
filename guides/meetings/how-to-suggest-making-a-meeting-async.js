@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Suggest Making a Meeting Async",
   "titleHtml": "How to Suggest <em>Making a Meeting Async</em>",
   "shortTitle": "How to Suggest a Meeting Go Async",
+  "searchTitle": "How to Suggest an Async Update | Save Everyone an Hour",
   "navTitle": "How to suggest making a meeting async without ruffling feathers",
   "description": "How to suggest making a recurring meeting async: frame it around their time, propose a specific format, suggest a trial, and ask privately.",
   "deck": "To suggest making a meeting async, message the organizer privately the day before, frame it around their time, and propose a specific format, such as a three-bullet update in the team channel by Tuesday at 5pm. Acknowledge what the meeting provides and suggest a two-week trial.",

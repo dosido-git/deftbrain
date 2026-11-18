@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to read a software license agreement before clicking accept",
   "titleHtml": "How to read a software license <em>before clicking accept</em>",
   "shortTitle": "Software license agreements",
+  "searchTitle": "Software License Agreements | Know What You're Agreeing To",
   "navTitle": "software license agreements",
   "description": "A practical method for actually reading the software license agreements you click through every week — at least the parts that matter — without spending an hour on each one.",
   "deck": "To read a software license agreement quickly, search for a few terms: data, share and sell for privacy; arbitration and class action for disputes; license for what you're allowed to do; your content for ownership; and terminate or delete for what happens when you leave.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Remember a Book You Read Years Ago (Without Re-Reading It)",
   "titleHtml": "How to Remember a Book You Read Years Ago <em>(Without Re-Reading It)</em>",
   "shortTitle": "How to Remember a Book Without Re-Reading It",
+  "searchTitle": "How to Remember a Book | Keep What You Read",
   "navTitle": "How to remember a book you read years ago without re-reading it",
   "description": "You loved it. You can barely remember the plot. Re-reading isn't an option. Here's how to recover what you got from it without going back to page one.",
   "deck": "To recall a book you read years ago without rereading it, write down what you still remember, read a short summary, reread a few key passages such as the ending, skim thoughtful reviews, and decide whether you need the whole book or just something to say about it.",

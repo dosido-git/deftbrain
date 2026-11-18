@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to De-escalate a Fight Over Text (Before It Turns Into Something Worse)",
   "titleHtml": "How to De-escalate a Fight Over Text <em>(Before It Turns Into Something Worse)</em>",
   "shortTitle": "How to De-escalate a Fight Over Text",
+  "searchTitle": "How to De-escalate an Argument | Calm It Down Before It Blows Up",
   "navTitle": "How to de-escalate a fight over text before it turns into something worse",
   "description": "Text fights escalate fast because the medium strips out everything except the words. The same medium that broke it can fix it — but only if you change what you're sending in a specific way.",
   "deck": "To de-escalate a fight over text, slow down your replies, acknowledge their point before defending yours, and ask 'what would help right now?' instead of 'why are you mad?'. If it keeps getting worse, suggest a call, and notice whether the fight is really about something underneath.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Plan a Project So It Doesn't Fail in the Obvious Ways",
   "titleHtml": "How to Plan a Project <em>So It Doesn&#39;t Fail in the Obvious Ways</em>",
   "shortTitle": "Plan a Project So It Doesn't Fail Obviously",
+  "searchTitle": "How to Plan a Project | Avoid the Obvious Mistakes",
   "navTitle": "How to plan a project so it doesn't fail in the obvious ways",
   "description": "Most failed projects fail in ways the team should have seen coming. Five steps for surfacing the failure modes you can already see — before they become the post-mortem.",
   "deck": "To keep a project from failing in obvious ways, run a pre-mortem: imagine it has already failed and write why. Separate project-specific risks from generic ones, list the assumptions behind each line of the plan, mitigate the top three, and have an outsider read it.",

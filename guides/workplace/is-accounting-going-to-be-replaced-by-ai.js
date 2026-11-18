@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is accounting going to be replaced by AI?",
   "titleHtml": "Is accounting <em>going to be replaced by AI?</em>",
   "shortTitle": "Is accounting safe from AI",
+  "searchTitle": "Will AI Replace Accountants | Plan Your Career With Clarity",
   "navTitle": "is accounting AI-safe",
   "description": "Is accounting going to be replaced by AI? Which accounting work is being automated, which is durable, and how to move toward the safer work.",
   "deck": "AI is unlikely to replace accounting as a profession, but it is automating parts of it. Data entry, categorization and routine reconciliation are most exposed. Judgment work such as complex transactions, tax advice and client relationships is much harder to automate, and accountant jobs are still projected to grow.",

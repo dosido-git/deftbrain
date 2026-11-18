@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Argue Better",
   "titleHtml": "How to <em>Argue Better</em>",
   "shortTitle": "How to Argue Better",
+  "searchTitle": "How to Argue Better | Win More Arguments Fairly",
   "navTitle": "How to argue better — five rules that change how you reason",
   "description": "Most people argue to win, which is why most arguments produce nothing. Five rules that change how you reason in disagreement — and reliably leave you smarter on the other side.",
   "deck": "To argue better, restate the other person's view in its strongest form before you reply, respond to the argument rather than the person, concede points you can't answer, find the layer where you actually disagree, and treat a clearer shared picture as the goal rather than winning.",

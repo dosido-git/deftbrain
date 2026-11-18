@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Reconnect with Someone Before You Ask Them for a Favor",
   "titleHtml": "How to Reconnect with Someone <em>(Before You Ask Them for a Favor)</em>",
   "shortTitle": "Reconnect Before the Ask",
+  "searchTitle": "Reconnect Before Asking for a Favor | Ask Without Feeling Like a User",
   "navTitle": "reconnect before the ask",
   "description": "Showing up after years of silence to ask for an introduction or a recommendation lands badly. Here's how to do it right — over months, not minutes.",
   "deck": "To reconnect before asking a favor, start well ahead of the need, make early contact about them, be useful before you ask, send the request as its own clearly separate message, and make it specific with an easy way to say no.",

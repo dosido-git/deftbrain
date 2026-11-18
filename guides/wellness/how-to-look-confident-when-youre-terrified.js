@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Look Confident When You Are Terrified",
   "titleHtml": "How to Look Confident <em>When You Are Terrified</em>",
   "shortTitle": "Look Confident When Terrified",
+  "searchTitle": "How to Look Confident | Fake It Until You Feel It",
   "navTitle": "look confident when terrified",
   "description": "There are real, specific physical signals of confidence. Here are the ones audiences actually read — and the ones they do not.",
   "deck": "To look confident when you're scared, slow down, especially at the start; stand still with your weight on both feet; speak at your natural lower pitch rather than louder; hold eye contact with one person for a full sentence; and let your hands move naturally instead of choreographing them.",

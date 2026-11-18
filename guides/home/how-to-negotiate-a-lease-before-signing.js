@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Negotiate a Lease Before Signing (Without Losing the Apartment)",
   "titleHtml": "How to Negotiate a Lease Before Signing <em>(Without Losing the Apartment)</em>",
   "shortTitle": "How to Negotiate a Lease Before Signing",
+  "searchTitle": "How to Negotiate Rent | Pay Less Before You Sign",
   "navTitle": "How to negotiate a lease before signing without losing the apartment",
   "description": "How to negotiate a lease before signing without losing the apartment: when to ask, what to ask for, how to phrase it, and getting it in writing.",
   "deck": "Yes, you can negotiate a lease before signing, and that is when your leverage is highest. Pick the two or three changes that matter most, such as a fee, a deposit term or a clause removing a standard right. Ask as questions, and get agreed changes written into the lease.",

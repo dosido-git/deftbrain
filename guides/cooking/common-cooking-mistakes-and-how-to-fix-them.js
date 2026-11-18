@@ -5,6 +5,7 @@ module.exports = {
   "title": "Common Cooking Mistakes and How to Fix Them",
   "titleHtml": "Common Cooking Mistakes <em>and How to Fix Them</em>",
   "shortTitle": "Common Mistakes",
+  "searchTitle": "Common Cooking Mistakes | Cook With Confidence",
   "navTitle": "common cooking mistakes",
   "description": "The five most common cooking mistakes that ruin meals, and the simple fix for each: crowded pans, cold meat, late salt, opening the oven, not tasting.",
   "deck": "Common home-cooking mistakes include crowding the pan, cooking meat without checking its temperature, salting only at the end, opening the oven repeatedly, and not tasting as you go. The fixes: cook in batches, use a thermometer, salt in layers, use the oven light, and taste before serving.",

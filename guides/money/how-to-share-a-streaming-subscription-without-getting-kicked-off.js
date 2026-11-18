@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Share a Streaming Subscription Without Getting Kicked Off",
   "titleHtml": "How to Share a Streaming Subscription <em>Without Getting Kicked Off</em>",
   "shortTitle": "Share a Subscription",
+  "searchTitle": "How to Share a Subscription | Split the Cost Without the Drama",
   "navTitle": "share a streaming subscription",
   "description": "Streaming services have cracked down on password sharing but still allow legitimate household sharing. Here is how to set yours up correctly so nobody gets locked out.",
   "deck": "To share a streaming subscription without getting locked out, set up the account at the home where most viewing happens, have household members sign in on that home network now and then, and pay for any official sharing add-on for people who live elsewhere, such as Netflix's extra-member slots.",

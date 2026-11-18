@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to build outfits from what you already own",
   "titleHtml": "How to build outfits <em>from what you already own</em>",
   "shortTitle": "Outfits from what you own",
+  "searchTitle": "How to Put Outfits Together From Your Own Closet | Look Great Without Shopping",
   "navTitle": "outfits from what you own",
   "description": "A method for finding new combinations in a closet you already have — without buying anything, and without falling into the trap of always wearing the same three things.",
   "deck": "To build new outfits from your existing closet, sort everything by category, find the neutral pieces that connect unworn items to the rest, try one new combination a week, photograph outfits that work, and let go of pieces that haven't been worn in a year.",

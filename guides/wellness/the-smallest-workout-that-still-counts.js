@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Smallest Workout That Still Counts",
   "titleHtml": "The Smallest Workout <em>That Still Counts</em>",
   "shortTitle": "Smallest Workout That Counts",
+  "searchTitle": "Short Workouts | Make Every Minute Count",
   "navTitle": "smallest workout that counts",
   "description": "Two minutes of movement is not nothing. Here is what the research says about minimum effective doses, and how to make a tiny workout actually deliver.",
   "deck": "Very short workouts do count. Studies show brief stair-climbing bursts improved fitness, a single hard set builds strength in beginners, and two to five minutes of light walking after eating lowers blood sugar. The CDC says any activity beats none, and short sessions add up.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Learn a Subject When You Have Fallen Behind",
   "titleHtml": "How to Learn a Subject <em>When You Have Fallen Behind</em>",
   "shortTitle": "When You are Behind",
+  "searchTitle": "How to Catch Up in a Class | Get Back on Track Fast",
   "navTitle": "fallen behind in class",
   "description": "You missed the foundation and now every new lecture builds on something you do not have. Here is how to catch up without re-doing the whole course.",
   "deck": "To catch up after falling behind, start from the current material and trace which earlier concepts it depends on, learn the two or three that keep recurring properly, skip topics the course no longer uses, and book one focused session with a classmate, TA or tutor with specific questions.",

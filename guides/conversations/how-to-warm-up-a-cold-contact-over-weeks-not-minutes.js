@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Warm Up a Cold Contact Over Weeks, Not Minutes",
   "titleHtml": "How to Warm Up a Cold Contact <em>(Over Weeks, Not Minutes)</em>",
   "shortTitle": "Warming Cold Contacts Slowly",
+  "searchTitle": "How to Warm Up a Cold Contact | Build Connections That Last",
   "navTitle": "warming cold contacts slowly",
   "description": "Cold outreach gets cold responses. Here's the slow-build approach that turns strangers into people who actually want to hear from you.",
   "deck": "To warm up a cold contact, engage thoughtfully with their public work for a few weeks, find a genuine connection point, make your first message give something rather than ask, don't request a meeting yet, and be patient with slow replies.",

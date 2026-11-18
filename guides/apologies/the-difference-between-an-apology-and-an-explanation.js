@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Difference Between an Apology and an Explanation (And Why It Matters)",
   "titleHtml": "The Difference Between an Apology and an Explanation <em>(And Why It Matters)</em>",
   "shortTitle": "Apology vs Explanation",
+  "searchTitle": "Apology vs Explanation | Say Sorry Without Sounding Defensive",
   "navTitle": "The difference between an apology and an explanation and why it matters",
   "description": "The difference between an apology and an explanation, the 'but' test for telling them apart, and how to give both without one cancelling the other.",
   "deck": "An apology takes ownership of harm; an explanation describes why something happened. Offered together, especially joined by 'but', the explanation sounds like an excuse. If your sorry only works with a 'but', it's an explanation. When you owe both, apologize first and explain separately.",

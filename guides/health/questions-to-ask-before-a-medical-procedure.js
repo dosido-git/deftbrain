@@ -5,6 +5,7 @@ module.exports = {
   "title": "Questions to Ask Before a Medical Procedure (Before You Say Yes)",
   "titleHtml": "Questions to Ask Before a Medical Procedure <em>(Before You Say Yes)</em>",
   "shortTitle": "Questions to Ask Before a Medical Procedure",
+  "searchTitle": "Questions to Ask Before a Procedure | Go In Informed and Confident",
   "navTitle": "Questions to ask before a medical procedure, before you say yes",
   "description": "The questions to ask before agreeing to a medical procedure: why now, the alternatives, the risks for you, the doctor's experience, recovery, and cost.",
   "deck": "Before a procedure, ask what it involves and is meant to change, why now and what happens if you wait, what the alternatives are, the common and serious risks for someone like you, how often the team does it, what recovery looks like, and what it will cost you.",

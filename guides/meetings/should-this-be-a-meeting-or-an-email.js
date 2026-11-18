@@ -5,6 +5,7 @@ module.exports = {
   "title": "Should This Be a Meeting or an Email?",
   "titleHtml": "Should This Be a Meeting <em>or an Email?</em>",
   "shortTitle": "Should This Be a Meeting?",
+  "searchTitle": "Meeting or Email | Save Time for Everyone",
   "navTitle": "Should this be a meeting or an email — how to decide",
   "description": "You're about to put a meeting on someone's calendar. Stop. Here's a five-question test that catches the meetings that should never have existed.",
   "deck": "It should be a meeting only if a group decision needs live back-and-forth from the people invited. If it's sharing information, could be done in writing without losing substance, or only some invitees need to contribute, send an email or message, or hold a shorter, smaller meeting.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make a Decision When You Don't Have Enough Information",
   "titleHtml": "How to Make a Decision <em>When You Don't Have Enough Information</em>",
   "shortTitle": "Decide With Incomplete Info",
+  "searchTitle": "Decision Making With Incomplete Information | Act Without Waiting Forever",
   "navTitle": "How to make a decision when you don't have enough information",
   "description": "How to make a decision when you don't have enough information: separate missing facts from real uncertainty, test cheaply, and choose what fails gracefully.",
   "deck": "To decide without enough information, separate facts you could still get from uncertainty no one can resolve, think in ranges of outcomes rather than one prediction, run the cheapest experiment available, prefer the option whose worst case you can survive, and set a deadline.",

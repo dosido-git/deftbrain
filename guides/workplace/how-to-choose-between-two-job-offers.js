@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Choose Between Two Job Offers (When Both Look Good)",
   "titleHtml": "How to Choose Between Two Job Offers <em>(When Both Look Good)</em>",
   "shortTitle": "Choose Between Two Job Offers",
+  "searchTitle": "Choosing Between Two Job Offers | Pick the One You Won't Regret",
   "navTitle": "choose between two job offers",
   "description": "Salary is not the right comparison. Career trajectory, leverage on your current skills, and what each option gives you next are. Here is the framework.",
   "deck": "To choose between two good job offers, look past day-one salary to where each role leaves you in three years: which builds on your current skills, who your manager and teammates would be, and which opens more doors. If they still tie, consider which would stretch you more.",

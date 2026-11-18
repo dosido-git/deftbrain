@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Read a Room Before Walking In",
   "titleHtml": "How to Read a Room <em>Before Walking In</em>",
   "shortTitle": "Read a Room",
+  "searchTitle": "Read a Room Before Walking In | Walk In Knowing the Mood",
   "navTitle": "read a room",
   "description": "The first ten seconds in a room set the next two hours. Here is how to read what is happening before you commit to a vibe — and what to look for that most people miss.",
   "deck": "To read a room as you walk in, check how people are grouped (tight pairs or open circles), whether the noise level fits the number of people, how the host looks, and who is on the edges. Then match the room's energy before bringing your own.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to prep for a meeting where you'll get pushback",
   "titleHtml": "How to prep for a meeting where you'll get pushback",
   "shortTitle": "Prep for pushback",
+  "searchTitle": "Meeting Where You'll Get Pushback | Walk In Prepared and Calm",
   "navTitle": "Prep for pushback",
   "description": "You know the question that will tank you. You also know you have not answered it yet. Here is how to actually be ready, instead of hoping nobody asks.",
   "deck": "To prepare for a meeting where you'll get pushback, write down the actual decision being made, list what each person in the room is worried about, write the questions you least want to hear, draft an honest answer to each, and rehearse aloud with someone playing the skeptic.",

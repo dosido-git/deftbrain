@@ -5,6 +5,7 @@ module.exports = {
   "title": "What \"Let's Table This\" Actually Means in a Meeting (And When It's a No)",
   "titleHtml": "What \"Let's Table This\" Actually Means in a Meeting <em>(And When It's a No)</em>",
   "shortTitle": "What \"Let's Table This\" Means",
+  "searchTitle": "What Does Let's Table This Mean | Know Where Things Stand",
   "navTitle": "What does lets table this mean in a meeting and when its a no",
   "description": "'Let's table this' usually means defer — but sometimes it means no, sometimes it means dead, and in the UK it means the opposite. Five contexts and how to tell which one you got.",
   "deck": "In American meetings, 'let's table this' means postpone the topic, though it can also be a soft no or a quiet way to drop it. In British usage, 'table' usually means the opposite: put it forward for discussion. A deferral with a date is usually real.",

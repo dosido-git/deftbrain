@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Back on Someone's Radar Without Being Weird About It",
   "titleHtml": "How to Get Back on Someone's Radar <em>(Without Being Weird About It)</em>",
   "shortTitle": "Back on Their Radar, Subtly",
+  "searchTitle": "How to Stay on Someone's Mind | Stay Remembered Without Being Pushy",
   "navTitle": "back on their radar, subtly",
   "description": "You don't need a dramatic comeback. You need a slow, low-pressure return that doesn't telegraph effort. Here's the playbook.",
   "deck": "To get back on someone's radar without being weird, build low-pressure presence before any direct ask: show up where they already are, react lightly to what they share, send useful things with no request attached, speak well of them to mutual contacts, and reach out when a natural opening appears.",

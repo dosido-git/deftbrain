@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Say No to Your Boss (Without Burning a Bridge)",
   "titleHtml": "How to Say No to Your Boss <em>(Without Burning a Bridge)</em>",
   "shortTitle": "How to Say No to Your Boss",
+  "searchTitle": "How to Say No to Your Boss | Keep Your Boundaries and Your Job",
   "navTitle": "How to say no to your boss without burning a bridge",
   "description": "Saying no to your manager isn't insubordination — it's scope management. A practical guide to declining requests in a way that shows judgment, not reluctance.",
   "deck": "To say no to your boss, take a moment before answering, confirm what's being asked, and name the tradeoff: what would slip if you took this on. Let your manager choose the priority, offer a smaller or later version, and deliver reliably on what you do accept.",

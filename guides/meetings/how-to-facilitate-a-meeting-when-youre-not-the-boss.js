@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Facilitate a Meeting When You're Not the Boss",
   "titleHtml": "How to Facilitate a Meeting <em>When You're Not the Boss</em>",
   "shortTitle": "Facilitate Without Authority",
+  "searchTitle": "How to Lead When You're Not in Charge | Earn Respect in the Room",
   "navTitle": "How to facilitate a meeting when you're not the most senior person",
   "description": "You've been asked to run a meeting that has more senior people in it than you. Here's how to facilitate without authority — without overstepping, and without losing the room.",
   "deck": "To facilitate a meeting with more senior people in it, get the most senior person to approve the agenda beforehand, redirect by pointing to the agenda rather than yourself, ask questions instead of giving directives, acknowledge senior voices before redirecting them, and close with named owners.",

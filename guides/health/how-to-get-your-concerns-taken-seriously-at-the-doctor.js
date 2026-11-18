@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Your Concerns Taken Seriously at the Doctor (Without Being Dismissed)",
   "titleHtml": "How to Get Your Concerns Taken Seriously at the Doctor <em>(Without Being Dismissed)</em>",
   "shortTitle": "How to Get Your Concerns Taken Seriously at the Doctor",
+  "searchTitle": "Doctor Not Taking Me Seriously | Get the Care You Deserve",
   "navTitle": "How to get your concerns taken seriously at the doctor without being dismissed",
   "description": "Being heard at a doctor's appointment isn't about being more assertive. It's about giving them the specific things their training teaches them to take seriously.",
   "deck": "To be taken seriously at the doctor, lead with how the symptom affects your daily life, say what you have already tried, ask what else it could be and what should be ruled out, and ask for that reasoning in your notes. If two visits change nothing, see another doctor.",

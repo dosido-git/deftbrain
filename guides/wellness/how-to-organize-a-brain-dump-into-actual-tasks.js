@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Organize a Brain Dump into Actual Tasks (Without It Becoming Another Mess)",
   "titleHtml": "How to Organize a Brain Dump into Actual Tasks <em>(Without It Becoming Another Mess)</em>",
   "shortTitle": "How to Organize a Brain Dump into Actual Tasks",
+  "searchTitle": "How to Organize a Brain Dump | Turn Chaos Into a Plan",
   "navTitle": "How to organize a brain dump into actual tasks without it becoming another mess",
   "description": "How to organize a brain dump into real tasks: cross out the stale, sort fragments into four kinds, write next actions, and park the rest.",
   "deck": "To turn a brain dump into tasks, cross out anything no longer relevant, sort the rest into tasks, decisions, worries and ideas, rewrite each task as a specific next action, and keep decisions and worries on separate lists. Treat the result as a snapshot, not a permanent system.",

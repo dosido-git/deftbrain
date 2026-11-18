@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to figure out where your time actually goes",
   "titleHtml": "How to figure out <em>where your time actually goes</em>",
   "shortTitle": "Where time actually goes",
+  "searchTitle": "Where Does My Time Go | Take Back Your Hours",
   "navTitle": "where time actually goes",
   "description": "A method for tracing your real day — including the parts you do not remember and would not have logged — without turning into a person who tracks their time obsessively.",
   "deck": "To find out where your time goes, write down what you did and when it ended for one or two typical days, including the in-between gaps. Compare that with your earlier guess, look for categories you didn't expect, and make one structural change rather than many resolutions.",

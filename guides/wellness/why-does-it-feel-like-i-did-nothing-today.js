@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why does it feel like I did nothing today?",
   "titleHtml": "Why does it feel like I <em>did nothing today?</em>",
   "shortTitle": "Felt like I did nothing today",
+  "searchTitle": "Feeling Like I Did Nothing Today | See What You Really Accomplished",
   "navTitle": "felt like I did nothing",
   "description": "Why it feels like you did nothing today after a busy day: outputs versus inputs, reactive work, multitasking memory, and the unfinished task.",
   "deck": "A busy day can feel like nothing because you count finished outputs, while much of it went to inputs and reactive work that leave nothing to point to. Constant switching blurs your memory, and one unfinished task outweighs ten finished ones. Maintenance days still count.",

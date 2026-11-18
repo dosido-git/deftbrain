@@ -5,6 +5,7 @@ module.exports = {
   "title": "How do I sound to people who don't know me?",
   "titleHtml": "How do I sound to people <em>who don't know me?</em>",
   "shortTitle": "How I sound to strangers",
+  "searchTitle": "How Do I Come Across to Others | See Yourself Through New Eyes",
   "navTitle": "sound to strangers",
   "description": "A method for figuring out the first impression your writing makes on someone who has no other information — your bio, your cold outreach, your first email, your dating-app profile, your LinkedIn.",
   "deck": "To learn how you sound to strangers, reread your writing as if someone else wrote it, notice the signals your word choice and length send, read it on a phone the way a stranger would, and ask someone from your real audience to describe the writer in three adjectives.",

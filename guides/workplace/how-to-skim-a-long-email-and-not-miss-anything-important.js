@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to skim a long email and not miss anything important",
   "titleHtml": "How to skim a long email <em>and not miss anything important</em>",
   "shortTitle": "Skim long emails",
+  "searchTitle": "How to Skim Emails | Never Miss What Matters",
   "navTitle": "skim long emails",
   "description": "A method for processing the email that is way too long without spending fifteen minutes on it or missing the one thing that needed your attention.",
   "deck": "To skim a long email, read the first sentence and the last paragraph, then look for question marks, request phrases like 'can you' and 'let me know,' and any dates. If it's still unclear what the sender wants, ask one specific question rather than rereading it three times.",

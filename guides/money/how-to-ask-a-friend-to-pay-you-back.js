@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask a Friend to Pay You Back (Without Making It Weird)",
   "titleHtml": "How to Ask a Friend to Pay You Back <em>(Without Making It Weird)</em>",
   "shortTitle": "Ask a Friend to Pay Back",
+  "searchTitle": "How to Ask a Friend to Pay You Back | Get Your Money and Keep the Friend",
   "navTitle": "ask a friend to pay back",
   "description": "How to ask a friend to pay you back without making it weird: a short text, the exact amount, a payment link, and one follow-up.",
   "deck": "To ask a friend to pay you back, send a short, friendly text with the exact amount, what it was for, and your payment link: Just the $40 from drinks at McKinley's, here's my Venmo. No reply in a week? Send one follow-up, then decide whether to let it go.",

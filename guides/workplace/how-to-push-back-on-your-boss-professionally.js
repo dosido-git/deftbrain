@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Push Back on a Decision That's Already Been Made",
   "titleHtml": "How to Push Back on a Decision <em>That&#39;s Already Been Made</em>",
   "shortTitle": "How to Push Back on a Decision Already Made",
+  "searchTitle": "Push Back on a Decision | Be Heard Even After It's Decided",
   "navTitle": "How to push back professionally when the decision is already made",
   "description": "How to push back on a decision your boss has already made: when it's worth reopening, how to frame it, and what to do if the answer is still no.",
   "deck": "To push back on a decision that's already made, first decide whether it's worth reopening, then bring new information rather than the old argument. Frame it as a risk the plan didn't cover, propose an adjustment instead of a reversal, and if the answer is still no, commit fully.",

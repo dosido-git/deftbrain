@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Spot Billing Errors on a Statement",
   "titleHtml": "How to Spot <em>Billing Errors on a Statement</em>",
   "shortTitle": "Spot Billing Errors",
+  "searchTitle": "How to Spot Billing Errors | Stop Paying for Mistakes",
   "navTitle": "spot billing errors on a statement",
   "description": "The five things to look for on any statement — medical, utility, credit card, subscription. Most errors are visible if you know where to look.",
   "deck": "To spot billing errors on a statement, compare it with last month's, question any vague charge, look for duplicates, match every line to something you actually used or bought, and check the math. Dispute credit card errors in writing within 60 days of the statement.",

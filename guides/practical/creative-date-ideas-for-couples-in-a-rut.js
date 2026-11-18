@@ -5,6 +5,7 @@ module.exports = {
   "title": "Creative Date Ideas for Couples in a Rut",
   "titleHtml": "Creative Date Ideas <em>(For Couples in a Rut)</em>",
   "shortTitle": "Dates for Couples in a Rut",
+  "searchTitle": "Creative Date Ideas | Bring the Spark Back",
   "navTitle": "dates for couples in a rut",
   "description": "When you've done all your usual things, the answer isn't trying harder at the same shape — it's a different shape. Here's how to find one.",
   "deck": "To break a date-night rut, change the shape rather than trying harder: swap who plans, go somewhere that isn't a date spot, add an unusual constraint, do something that requires teamwork like a dance class, or take a short trip somewhere nearby you've never been.",

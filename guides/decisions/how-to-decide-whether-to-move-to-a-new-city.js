@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to decide whether to move to a new city",
   "titleHtml": "How to decide whether to <em>move to a new city</em>",
   "shortTitle": "Whether to move cities",
+  "searchTitle": "Should I Move to a New City | Decide With Confidence",
   "navTitle": "whether to move",
   "description": "How to decide whether to move to a new city: moving toward versus away, visiting in the worst month, what you'd give up, and how long settling in takes.",
   "deck": "To decide whether to move to a new city, check whether you're moving toward something or only away, visit in its worst month, list exactly what you'd give up, expect friendships to take months to build, and write down beforehand what would show it was the wrong move.",

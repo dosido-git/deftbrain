@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Respond to \"You’re Being Too Sensitive\"",
   "titleHtml": "How to Respond to <em>\"You’re Being Too Sensitive\"</em>",
   "shortTitle": "Respond to \"Too Sensitive\"",
+  "searchTitle": "How to Respond to You're Too Sensitive | Stand Up for Your Feelings",
   "navTitle": "respond to youre being too sensitive",
   "description": "The phrase is designed to shut you down. Five responses that put the focus back on what was actually said.",
   "deck": "When someone says you're being too sensitive, you can decline the label and restate your point, ask what they'd say if you weren't sensitive, concede that you might be while noting the behavior still matters, name the deflection, or end the discussion with your point intact.",

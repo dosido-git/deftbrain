@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Reach Out to Someone You Admire (Without It Coming Off as Fan Mail)",
   "titleHtml": "How to Reach Out to Someone You Admire <em>(Without It Coming Off as Fan Mail)</em>",
   "shortTitle": "How to Reach Out to Someone You Admire",
+  "searchTitle": "How to Reach Out to Someone You Admire | Make a First Impression That Lasts",
   "navTitle": "How to reach out to someone you admire without it coming off as fan mail",
   "description": "There's a way to reach out that earns engagement and a way that earns a polite 'thanks!' Here's how to send the kind they actually want to reply to.",
   "deck": "To reach out to someone you admire, lead with a specific thought their work sparked rather than how much it means to you, offer something useful if you can, ask one specific question worth answering, don't ask for time in the first message, and be fine with no reply.",

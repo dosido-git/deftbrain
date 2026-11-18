@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If a Plant Is Overwatered or Underwatered (When the Symptoms Look Identical)",
   "titleHtml": "How to Tell If a Plant Is Overwatered or Underwatered <em>(When the Symptoms Look Identical)</em>",
   "shortTitle": "How to Tell If a Plant Is Overwatered or Underwatered",
+  "searchTitle": "Overwatered vs Underwatered Plant | Save Your Plant This Week",
   "navTitle": "How to tell if a plant is overwatered or underwatered when the symptoms look identical",
   "description": "How to tell if a plant is overwatered or underwatered: soil two inches down, leaf texture, the stem base and the roots, plus drainage problems.",
   "deck": "To tell if a plant is overwatered or underwatered, check the soil about two inches down: soggy means too much water, dry means too little. Crispy leaf edges suggest underwatering; soft yellow leaves and a soft, dark stem base suggest overwatering. If unsure, check the roots.",

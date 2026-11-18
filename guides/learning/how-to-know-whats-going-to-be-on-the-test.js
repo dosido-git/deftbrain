@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know What Is Actually Going to Be on the Test",
   "titleHtml": "How to Know <em>What Is Actually Going to Be on the Test</em>",
   "shortTitle": "What Is on the Test",
+  "searchTitle": "What Will Be on the Test | Study Smarter, Not Longer",
   "navTitle": "what is on the test",
   "description": "Professors signal what they will test. Most students miss the signals. Here are the patterns to listen for in lecture and the way to extract them from a transcript after the fact.",
   "deck": "You can often predict what's on a test by noting what the professor explicitly flags, what they repeat in different words, what they warn students get wrong, and which worked examples they walk through. Then practice answering those points as questions in the exam's format.",

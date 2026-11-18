@@ -5,6 +5,7 @@ module.exports = {
   "title": "Do Dogs Just Vomit Sometimes? Yes — But Here's When It Matters",
   "titleHtml": "Do Dogs Just Vomit Sometimes? <em>Yes — But Here's When It Matters</em>",
   "shortTitle": "Do Dogs Just Vomit Sometimes?",
+  "searchTitle": "Dog Throwing Up | Know When It's Normal",
   "navTitle": "Do dogs just vomit sometimes yes but heres when it matters",
   "description": "Healthy dogs vomit occasionally and most one-off episodes mean nothing. Five reasons dogs throw up, ordered from 'totally normal' to 'go to the ER tonight,' plus the rule for telling them apart.",
   "deck": "Healthy dogs vomit occasionally, and one episode in a dog that's otherwise bright and eating is usually nothing. Call the vet if vomiting repeats, lasts beyond a day or comes with lethargy, blood or appetite loss. A swollen belly with unproductive retching, or a suspected toxin, is an emergency.",

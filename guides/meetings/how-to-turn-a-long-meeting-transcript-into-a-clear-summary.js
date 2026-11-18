@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Turn a Long Meeting Transcript Into a Clear Summary",
   "titleHtml": "How to Turn a Long Meeting Transcript <em>Into a Clear Summary</em>",
   "shortTitle": "How to Turn a Transcript Into a Clear Summary",
+  "searchTitle": "Meeting Transcript Summary | Get the Key Points in Minutes",
   "navTitle": "How to turn a long meeting transcript into a clear summary",
   "description": "A 14,000-word transcript isn't a summary, even compressed. Five steps for distilling a long meeting transcript into something colleagues can actually use.",
   "deck": "To turn a long meeting transcript into a useful summary, distill rather than compress: pull out decisions as standalone bullets, list action items with owners and deadlines (flagging any without), record unresolved disagreements plainly, and check with attendees when the transcript can't show what was meant.",

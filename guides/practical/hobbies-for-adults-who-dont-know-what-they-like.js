@@ -5,6 +5,7 @@ module.exports = {
   "title": "Hobbies for Adults Who Don't Know What They Like Anymore",
   "titleHtml": "Hobbies for Adults <em>Who Don't Know What They Like Anymore</em>",
   "shortTitle": "Hobbies When You Don't Know What You Like",
+  "searchTitle": "Hobbies for Adults | Rediscover What You Enjoy",
   "navTitle": "hobbies when you don't know what you like",
   "description": "Years of work and obligation can erase your sense of what you actually enjoy. Here is how to rediscover preferences when the slate is genuinely blank.",
   "deck": "If you don't know what you like anymore, stop searching for the right hobby and run small experiments: try three cheap, short activities, notice which one you think about afterward, revisit interests from earlier in life, give a dull-sounding option two sessions, and count small pleasures as hobbies.",

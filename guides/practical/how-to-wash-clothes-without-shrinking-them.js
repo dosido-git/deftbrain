@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Wash Clothes Without Shrinking Them",
   "titleHtml": "How to Wash Clothes <em>Without Shrinking Them</em>",
   "shortTitle": "How to Wash Without Shrinking",
+  "searchTitle": "How to Wash Clothes Without Shrinking | Keep Clothes Fitting Right",
   "navTitle": "wash clothes without shrinking",
   "description": "How to wash clothes without shrinking them: cold water, a gentle cycle, no dryer for delicate items, sweaters in a mesh bag, and the care label.",
   "deck": "To avoid shrinking clothes, wash natural fibers in cold water, use a wool or delicate cycle or hand-wash wool, cashmere and silk, and air-dry anything you'd hate to lose. Woolmark advises washing sweaters inside out or in a laundry bag and drying knitwear flat. Follow the care label.",

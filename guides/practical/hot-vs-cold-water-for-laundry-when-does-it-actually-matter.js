@@ -5,6 +5,7 @@ module.exports = {
   "title": "Hot vs Cold Water for Laundry: When Does It Actually Matter?",
   "titleHtml": "Hot vs Cold Water for Laundry: <em>When Does It Actually Matter?</em>",
   "shortTitle": "Hot vs Cold Laundry Water",
+  "searchTitle": "Hot or Cold Water for Laundry | Keep Your Clothes Looking New",
   "navTitle": "hot vs cold laundry water",
   "description": "Cold is the right default for almost everything. Here is the short list of cases where the temperature actually changes the outcome — and why.",
   "deck": "Cold water cleans most everyday laundry well with today's detergents and uses far less energy. Hot water matters mainly for killing dust mites in bedding (the AAAAI suggests 130°F), sanitizing items used by someone sick, and brightening grayed whites. Use cold for blood and protein stains, and for wool.",

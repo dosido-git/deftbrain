@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If Something Is Overpriced (Without Being a Pricing Nerd)",
   "titleHtml": "How to Tell If Something Is Overpriced <em>(Without Being a Pricing Nerd)</em>",
   "shortTitle": "How to Tell If Something Is Overpriced",
+  "searchTitle": "Is This Overpriced | Pay What It's Really Worth",
   "navTitle": "How to tell if something is overpriced without being a pricing nerd",
   "description": "Most prices are some combination of fair markup and pure extraction. Telling the difference is a learnable skill — five questions that let you read the tag without doing a spreadsheet.",
   "deck": "To tell if something is overpriced, compare it with the same item elsewhere, separate the item from the setting or brand, look for mandatory fees missing from the headline price, and notice whether you have alternatives. Prices run highest where walking away is hard.",

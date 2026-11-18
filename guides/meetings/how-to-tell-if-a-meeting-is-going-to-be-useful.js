@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If a Meeting Is Going to Be Useful",
   "titleHtml": "How to Tell If a Meeting Is <em>Going to Be Useful</em>",
   "shortTitle": "Will This Meeting Be Useful?",
+  "searchTitle": "Is This Meeting Worth It | Protect Your Time",
   "navTitle": "How to tell if a meeting is going to be useful before it happens",
   "description": "You can usually tell in thirty seconds whether a meeting will produce anything. Here are the five signals — visible on the invite — that separate useful from calendar tax.",
   "deck": "A meeting is likely to be useful if the invite has an agenda with a stated outcome, there's a real decision to make, the invite list is limited to people who'll contribute, the length fits the topic, and a recurring meeting still produces results rather than running on habit.",

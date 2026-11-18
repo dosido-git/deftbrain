@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make a Regular Weekend Feel Like a Small Vacation",
   "titleHtml": "How to Make a Regular Weekend Feel Like <em>a Small Vacation</em>",
   "shortTitle": "Weekend as a Mini-Vacation",
+  "searchTitle": "Staycation Ideas | Feel Refreshed Without Traveling",
   "navTitle": "weekend as small vacation",
   "description": "You cannot take a real trip every month. You can make a Saturday feel like a real break with a few small reframes.",
   "deck": "To make a regular weekend feel like a small vacation, batch errands into one block, change your setting even briefly, eat one unhurried meal you wouldn't have on a weekday, put your phone away for a stretch, and set a Sunday cutoff for work email.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Do I Dream About People I Haven't Seen in Years?",
   "titleHtml": "Why Do I Dream About People <em>(I Haven't Seen in Years?)</em>",
   "shortTitle": "Dreams About Distant People",
+  "searchTitle": "Dreaming About Old Friends | Understand What Your Mind Is Saying",
   "navTitle": "dreams about distant people",
   "description": "Why you dream about people you haven't seen in years: what the person usually stands for, and how to work out what the dream points to.",
   "deck": "Dreams about people you haven't seen in years are often less about them than about a trait you associate with them, a period of your life, or something left unfinished. Ask which fits, and who in your life now shows the same trait, before deciding to get in touch.",

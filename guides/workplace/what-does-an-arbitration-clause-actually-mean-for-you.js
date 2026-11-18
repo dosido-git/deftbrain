@@ -5,6 +5,7 @@ module.exports = {
   "title": "What does an arbitration clause actually mean for you?",
   "titleHtml": "What does an arbitration clause <em>actually mean for you?</em>",
   "shortTitle": "Arbitration clauses explained",
+  "searchTitle": "Arbitration Clause | Know What You're Giving Up",
   "navTitle": "arbitration clauses",
   "description": "An honest explanation of what mandatory arbitration clauses actually do — what rights you give up, when it might be okay, and when to push back.",
   "deck": "An arbitration clause means disputes go to a private arbitrator instead of court: no jury, limited appeals, usually confidential results. Most also bar you from joining class actions. Some clauses allow a short opt-out window, and federal law exempts sexual harassment and assault claims.",

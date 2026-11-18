@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Know If Your Message Will Be Misinterpreted Before You Send It",
   "titleHtml": "How to Know If Your Message Will Be Misinterpreted <em>(Before You Send It)</em>",
   "shortTitle": "Catch Misreadings Before You Send",
+  "searchTitle": "How Will My Message Be Read | Catch Mix-Ups Before You Send",
   "navTitle": "catch misreadings before you send",
   "description": "How to know if a text or email will be misinterpreted before you send it: tone shifts, ambiguous lines, missing pieces, and the bad-mood reread.",
   "deck": "To tell whether a message will be misread, check for a tone shift partway through, any sentence that could mean two things, and what's missing, such as a greeting. Reread it as the recipient on a bad day, add the context they lack, then cut it back down.",

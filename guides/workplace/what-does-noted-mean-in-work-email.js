@@ -5,6 +5,7 @@ module.exports = {
   "title": "What \"Noted\" Actually Means in a Work Email (And What to Say Back)",
   "titleHtml": "What \"Noted\" Actually Means in a Work Email <em>(And What to Say Back)</em>",
   "shortTitle": "What \"Noted\" Means in a Work Email",
+  "searchTitle": "What Does Noted Mean in an Email | Know if They're Annoyed",
   "navTitle": "What does noted mean in a work email and what to say back",
   "description": "Someone replied 'Noted.' to your email and your brain freezes. Four contexts, what each one really means, and how to respond — including the one that's actually a flag.",
   "deck": "'Noted' in a work email usually means 'received, nothing more needed.' Depending on context it can also mean the sender disagrees but won't argue in writing, acknowledges a criticism without committing to act, or wants the thread to end. Compare it with what you sent and how they usually write.",

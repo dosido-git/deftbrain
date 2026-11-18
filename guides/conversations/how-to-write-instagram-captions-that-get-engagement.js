@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write Instagram Captions That Get Engagement (Without Sounding Like an Influencer)",
   "titleHtml": "How to Write Instagram Captions That Get Engagement <em>(Without Sounding Like an Influencer)</em>",
   "shortTitle": "How to Write Instagram Captions That Get Engagement",
+  "searchTitle": "Instagram Captions for Engagement | Get More Likes and Comments",
   "navTitle": "How to write Instagram captions that get engagement without sounding like an influencer",
   "description": "Engagement isn't about hashtags or trends. It's about giving people a small reason to react. Here's the structure that works for normal accounts.",
   "deck": "Instagram captions get more engagement when they add what the photo doesn't show, put the strongest line first, leave a specific, easy opening for people to respond, and sound like you rather than an influencer. A few relevant hashtags are enough; Instagram now caps posts at five.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Revive a Dying Plant (When You're Not Sure It's Worth Saving)",
   "titleHtml": "How to Revive a Dying Plant <em>(When You&#39;re Not Sure It&#39;s Worth Saving)</em>",
   "shortTitle": "How to Revive a Dying Plant",
+  "searchTitle": "How to Revive a Dying Plant | Bring It Back to Green",
   "navTitle": "How to revive a dying plant when you're not sure it's worth saving",
   "description": "How to tell whether a dying houseplant can be saved, what to cut back, which problem to fix first, how long recovery takes, and when replacing it makes more sense.",
   "deck": "To revive a dying plant, look for anything still alive (firm stems, healthy roots, buds), cut away dead tissue, fix the most likely cause first, usually watering or light, then leave it alone for a few weeks. If nothing alive remains, or nothing grows for months, replacing it is reasonable.",

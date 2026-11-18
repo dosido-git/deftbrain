@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Plan Around Low-Energy Days",
   "titleHtml": "How to Plan Around <em>Low-Energy Days</em>",
   "shortTitle": "Plan Around Low-Energy Days",
+  "searchTitle": "Planning Around Low-Energy Days | Get Through Without the Guilt",
   "navTitle": "plan around low-energy days",
   "description": "Some days have eight hours of focus. Some have ninety minutes. Here is how to plan when the tank is low.",
   "deck": "On a low-energy day, rate your actual energy honestly, cut the list to what must happen today, do the single most important item first, schedule a midday break before you crash, and drop or defer the rest openly. Plan for the day you have, not the one you wanted.",

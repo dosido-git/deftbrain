@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to File a Complaint with the BBB",
   "titleHtml": "How to File <em>a Complaint with the BBB</em>",
   "shortTitle": "File a BBB Complaint",
+  "searchTitle": "How to File a BBB Complaint | Get the Company to Respond",
   "navTitle": "file a complaint with the bbb",
   "description": "BBB complaints work for some companies and do nothing for others. The five-step filing that maximizes leverage where it exists.",
   "deck": "To file a BBB complaint, look up the business on bbb.org, use the complaint form on its profile, write a short factual summary with dates and the outcome you want, and attach documents. The BBB asks the business to respond within 14 days but cannot force a resolution.",

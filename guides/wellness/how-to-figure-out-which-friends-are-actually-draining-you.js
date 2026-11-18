@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Figure Out Which Friends Are Actually Draining You",
   "titleHtml": "How to Figure Out <em>Which Friends Are Draining You</em>",
   "shortTitle": "Draining Friendships",
+  "searchTitle": "Draining Friendships | Protect Your Energy",
   "navTitle": "who is draining you",
   "description": "Some friends restore your energy. Some take from it. Most people cannot name which is which until they audit. Here is how to do that without feeling like a bad friend.",
   "deck": "To tell which friends drain you, notice how you feel an hour later and the next morning, not during. Look at who you perform for, whether conversations run one way, and whether a hard patch is temporary. Then adjust how often and how long you meet.",

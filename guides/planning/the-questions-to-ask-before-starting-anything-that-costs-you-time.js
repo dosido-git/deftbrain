@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Questions to Ask Before Starting Anything That Costs You Time",
   "titleHtml": "The Questions to Ask <em>Before Starting Anything That Costs You Time</em>",
   "shortTitle": "Questions Before Anything That Costs Time",
+  "searchTitle": "Is It Worth My Time | Spend Your Time Wisely",
   "navTitle": "The questions to ask before starting anything that costs you time",
   "description": "Time spent is the cost you can't get back. Five questions to ask before committing real time to anything — and the meta-question for when the questions themselves are the problem.",
   "deck": "Before committing serious time, ask: what does success look like, with a number and a date? What's the cheapest version I could try first? What am I counting on that I don't control? What would failure cost, and how would I feel? And have I been asking these too long?",

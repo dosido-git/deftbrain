@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why do people misread my texts as rude?",
   "titleHtml": "Why do people <em>misread my texts as rude?</em>",
   "shortTitle": "Texts misread as rude",
+  "searchTitle": "Why Do My Texts Sound Rude | Sound as Warm as You Mean",
   "navTitle": "texts misread as rude",
   "description": "Why your texts come across as rude: short replies, periods, blunt questions, sarcasm and missing emoji, and the small changes that fix each one.",
   "deck": "Texts get read as rude because short replies, a period on a casual message, blunt questions, sarcasm and missing emoji carry tone you didn't intend. Text strips out your voice and face, so 'ok.' can sound annoyed. A few extra words or a softener usually helps.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Describe Your Symptoms to a Doctor (So They Can Actually Help You)",
   "titleHtml": "How to Describe Your Symptoms to a Doctor <em>(So They Can Actually Help You)</em>",
   "shortTitle": "How to Describe Your Symptoms to a Doctor",
+  "searchTitle": "How to Describe Symptoms to a Doctor | Get the Right Diagnosis Sooner",
   "navTitle": "How to describe your symptoms to a doctor so they can actually help you",
   "description": "How to describe your symptoms to a doctor so they can help: when it started, comparisons, frequency, duration and intensity, and what changes it.",
   "deck": "Describe symptoms by saying when they started and what came just before, comparing the sensation to something familiar, giving how often, how long and how bad separately, naming what makes it better or worse, and saying how it affects your daily life in plain words.",

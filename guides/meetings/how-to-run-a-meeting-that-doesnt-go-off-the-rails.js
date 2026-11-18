@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Run a Meeting That Doesn't Go Off the Rails",
   "titleHtml": "How to Run a Meeting That <em>Doesn't Go Off the Rails</em>",
   "shortTitle": "Run a Meeting That Stays on Track",
+  "searchTitle": "How to Run a Meeting | Meetings People Want to Attend",
   "navTitle": "How to run a meeting that doesn't go off the rails",
   "description": "A good meeting is built before it starts and steered while it runs. Here's the five-step practice — agenda, opening, intervention, close — that produces actual decisions.",
   "deck": "To keep a meeting on track, send the agenda with desired outcomes the day before, open by stating what must be decided, give each item a time limit, redirect tangents early, and close by reading out decisions, action items and owners by name.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to defend a position without getting defensive",
   "titleHtml": "How to defend a position without getting defensive",
   "shortTitle": "Defend without being defensive",
+  "searchTitle": "How to Not Be Defensive | Hold Your Ground and Stay Calm",
   "navTitle": "Defend without being defensive",
   "description": "You can feel your face getting hot. Your tone just shifted. Here is how to hold your ground without sounding like you are losing it.",
   "deck": "To defend a position without getting defensive, notice your body's early warning sign and pause, restate their objection in your own words, concede the part that's fair, say 'I see it differently' rather than 'you're wrong', and ask a question when you feel the urge to deliver a knockout line.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Deal With a Retention Specialist (Without Getting Talked Into Staying)",
   "titleHtml": "How to Deal With a Retention Specialist <em>(Without Getting Talked Into Staying)</em>",
   "shortTitle": "How to Deal With a Retention Specialist",
+  "searchTitle": "Retention Specialist Tactics | Cancel Without Being Talked Out of It",
   "navTitle": "How to deal with a retention specialist without getting talked into staying",
   "description": "Retention specialists aren't customer service. They're a separate role with a different job — and the job is keeping you. Knowing the difference changes how the call goes.",
   "deck": "To deal with a retention specialist, recognize the handoff, state that you want to cancel today, skip giving reasons, ask whether any offer adds a commitment beyond the current billing cycle, and stay polite but firm. Their role is keeping customers, so the call goes faster when you don't negotiate.",

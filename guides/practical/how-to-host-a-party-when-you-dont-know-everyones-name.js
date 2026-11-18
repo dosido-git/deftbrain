@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Host a Party When You Do Not Know Everyone's Name",
   "titleHtml": "How to Host a Party <em>When You Do Not Know Everyone's Name</em>",
   "shortTitle": "Host With Mixed Groups",
+  "searchTitle": "Hosting a Party Full of Strangers | Make Everyone Feel Welcome",
   "navTitle": "host with mixed groups",
   "description": "Mixed-group parties are where most hosts lose control. Here is how to engineer the mixing instead of leaving it to chance.",
   "deck": "To host a party where guests don't know each other, start mixing at arrival before cliques form, introduce people with a specific hook rather than a job title, plan one move that gets everyone changing places, use low-key shared activities, and connect pairs of guests, then step away.",

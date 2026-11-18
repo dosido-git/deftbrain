@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Ask If a Meeting Can Be Canceled",
   "titleHtml": "How to Ask If a Meeting <em>Can Be Canceled</em>",
   "shortTitle": "Ask to Cancel a Meeting",
+  "searchTitle": "How to Cancel a Meeting Politely | Win Back Your Calendar",
   "navTitle": "How to ask if a meeting can be canceled — without making it weird",
   "description": "Sometimes a meeting genuinely doesn't need to happen, and you're the one who notices. Here's how to ask the organizer to cancel it without making it weird, political, or personal.",
   "deck": "To ask whether a meeting can be canceled, point to what has changed ('the design question was settled on Thursday'), phrase it as a question so the organizer decides, send it a day or two ahead, offer a shorter alternative, and avoid calling the meeting pointless.",

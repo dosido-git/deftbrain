@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Message That Lands the Same Way for Your Boss and Your Friend",
   "titleHtml": "How to Write a Message That Lands the Same Way <em>(For Your Boss and Your Friend)</em>",
   "shortTitle": "Messages That Work for Multiple Audiences",
+  "searchTitle": "Writing for Different Audiences | One Message Everyone Gets",
   "navTitle": "messages that work for multiple audiences",
   "description": "Your message will be read by people with different relationships to you. Here's how to find the version that doesn't read wrong to any of them.",
   "deck": "To write one message that reads well to your boss and your friends, list the people who'll read it, use words that mean the same to all of them, reread it as your most formal and most casual reader, and cut inside references.",

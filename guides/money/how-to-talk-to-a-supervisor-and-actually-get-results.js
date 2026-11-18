@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Talk to a Supervisor and Actually Get Results (Most People Do This Wrong)",
   "titleHtml": "How to Talk to a Supervisor and Actually Get Results <em>(Most People Do This Wrong)</em>",
   "shortTitle": "How to Talk to a Supervisor and Actually Get Results",
+  "searchTitle": "How to Talk to a Supervisor | Get Results, Not the Runaround",
   "navTitle": "How to talk to a supervisor and actually get results most people do this wrong",
   "description": "'I want to speak to a supervisor' is the most over-used and under-effective escalation phrase in consumer life. The supervisor call is a real lever — but only when used in a specific way most callers miss.",
   "deck": "To get results from a supervisor, first get the refusal reason noted and ask about alternatives. Then ask for someone who can make exceptions, give them a reason they can defend, state exactly what you want, and ask whether it is within their authority.",

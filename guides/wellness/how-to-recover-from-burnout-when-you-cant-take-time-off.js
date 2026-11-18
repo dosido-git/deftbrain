@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Recover from Burnout When You Can't Take Time Off",
   "titleHtml": "How to Recover from Burnout <em>(When You Can't Take Time Off)</em>",
   "shortTitle": "Recover Without Time Off",
+  "searchTitle": "How to Recover From Burnout Without Time Off | Feel Like Yourself Again",
   "navTitle": "recover without time off",
   "description": "Sabbaticals aren't an option for most people. Here's how to actually rebuild capacity inside your existing schedule — slowly, but really.",
   "deck": "To recover from burnout without time off, cut at least one draining commitment, protect one non-productive hour most days, remove small daily stressors first, shrink obligations into smaller chosen versions, and expect recovery to take months. If you're struggling to function, talk to a doctor.",

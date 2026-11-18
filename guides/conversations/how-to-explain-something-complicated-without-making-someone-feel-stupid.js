@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Explain Something Complicated (Without Making the Other Person Feel Stupid)",
   "titleHtml": "How to Explain Something Complicated <em>(Without Making the Other Person Feel Stupid)</em>",
   "shortTitle": "How to Explain Something Without Making Them Feel Stupid",
+  "searchTitle": "How to Explain Something Without Being Condescending | Teach Without Talking Down",
   "navTitle": "How to explain something complicated without making the other person feel stupid",
   "description": "How to explain something complicated without being condescending: start from what they know, put the difficulty in the topic, and check understanding properly.",
   "deck": "To explain something complicated without making someone feel stupid, start from what they already know, say 'we' about the hard parts, and call the topic hard rather than the person slow. Ask 'where does this get fuzzy?' instead of 'does that make sense?', and let them finish your thoughts.",

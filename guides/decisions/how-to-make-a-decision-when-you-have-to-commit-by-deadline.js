@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make a Decision When You Have to Commit by a Deadline",
   "titleHtml": "How to Make a Decision <em>When You Have to Commit by a Deadline</em>",
   "shortTitle": "Decide Before the Deadline",
+  "searchTitle": "Decision Deadline | Decide in Time, Without Panic",
   "navTitle": "How to make a decision when you have to commit by a deadline",
   "description": "How to make a good decision under a deadline: stop researching, decide on paper, test the worst case, ask one experienced person, and commit.",
   "deck": "When you must decide by a deadline, stop gathering new information, make a fast first call on paper with three reasons, and test it against the realistic worst case. Ask one person who has made this kind of decision, then commit when the deadline arrives and stop reopening the choice.",

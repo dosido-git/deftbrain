@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Stop Wasting the Morning Before an Afternoon Appointment",
   "titleHtml": "How to Stop Wasting the Morning <em>Before an Afternoon Appointment</em>",
   "shortTitle": "Reclaim the Morning",
+  "searchTitle": "Morning Routine | Start Your Day on Your Terms",
   "navTitle": "stop wasting morning before appointment",
   "description": "A 2pm doctor visit, a 4pm meeting, a 6pm flight. The day before vaporizes. Here is how to actually use it without pretending it is a normal workday.",
   "deck": "Before an afternoon appointment, plan to use about half the morning, choose portable self-contained tasks, do the most important one first, and stop well before you need to leave so you have a real buffer. Planning for less usually gets more done than planning a full day.",

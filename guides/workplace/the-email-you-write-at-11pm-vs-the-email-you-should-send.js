@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Email You Write at 11pm vs. The Email You Should Send in the Morning",
   "titleHtml": "The Email You Write at 11pm vs. <em>The Email You Should Send in the Morning</em>",
   "shortTitle": "The 11pm Email vs the Morning Email",
+  "searchTitle": "When to Send an Email | Send It at the Right Time",
   "navTitle": "The email you write at 11pm vs the email you should send in the morning",
   "description": "The 11pm email and the 8am email are written by different people, even when both are you. Five steps for using the difference rather than fighting it — write the late-night version, but send the morning one.",
   "deck": "The email you write at 11pm is useful for working out what you want, but it's rarely the one to send. Save it as a draft, reread it in the morning, rewrite rather than lightly edit, read it aloud before sending, and consider whether any email is needed.",

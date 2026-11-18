@@ -5,6 +5,7 @@ module.exports = {
   "title": "Is This Actually Urgent, or Am I Panicking?",
   "titleHtml": "Is This Actually Urgent <em>(Or Am I Panicking?)</em>",
   "shortTitle": "Actually Urgent or Panicking?",
+  "searchTitle": "Is It Urgent or Am I Panicking | Calm Down and Act Wisely",
   "navTitle": "actually urgent or panicking?",
   "description": "Real urgency and panic-urgency feel identical from the inside. Here's how to tell them apart in 60 seconds — before you act.",
   "deck": "To tell real urgency from panic, ask what specifically happens if you don't act within the hour, whether the deadline is stated or only implied, whether only you can do it, and whether your body is driving the alarm. Then choose a response window: now, today or this week.",

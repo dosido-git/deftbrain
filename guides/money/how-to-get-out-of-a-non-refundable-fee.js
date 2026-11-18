@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Get Out of a Non-Refundable Fee (When the Word 'Non-Refundable' Isn't Actually Binding)",
   "titleHtml": "How to Get Out of a Non-Refundable Fee <em>(When the Word &#39;Non-Refundable&#39; Isn&#39;t Actually Binding)</em>",
   "shortTitle": "How to Get Out of a Non-Refundable Fee",
+  "searchTitle": "Non-Refundable Fees | Get Some of Your Money Back",
   "navTitle": "How to get out of a non-refundable fee when the word non-refundable isn't actually binding",
   "description": "'Non-refundable' is what companies call fees they hope you'll accept without question. It's not a legal status, and the actual rules about when these fees stick are much narrower than the marketing suggests.",
   "deck": "You can sometimes recover a 'non-refundable' fee, especially when the company didn't deliver what it promised. Frame the request around that failure, ask what costs the fee covered, dispute card payments with your issuer, and use the regulator for that industry. Fees for services actually provided usually stand.",

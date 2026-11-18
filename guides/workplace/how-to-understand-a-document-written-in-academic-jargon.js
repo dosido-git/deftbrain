@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Understand a Document Written in Academic Jargon",
   "titleHtml": "How to Understand a Document <em>Written in Academic Jargon</em>",
   "shortTitle": "Read Academic Jargon",
+  "searchTitle": "How to Understand Academic Writing | Read Research With Ease",
   "navTitle": "How to understand a document written in academic jargon",
   "description": "Academic writing is dense by training, not by accident. Here's how to read papers, abstracts, and reports written in academic register — and find the actual finding underneath.",
   "deck": "To understand an academic paper, start with the last paragraph of the introduction, find the key figure or table and read its caption, look up terms only when you can't follow without them, read the discussion for the authors' interpretation, and notice hedging words that signal how confident they are.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Figure Out What to Do First When You're Overwhelmed",
   "titleHtml": "How to Figure Out What to Do First <em>(When You're Overwhelmed)</em>",
   "shortTitle": "What to Do First When Overwhelmed",
+  "searchTitle": "What to Do First When Overwhelmed | Find Your Starting Point",
   "navTitle": "what to do first when overwhelmed",
   "description": "Overwhelm freezes you because it makes everything feel equally important. Here's how to break the tie — and start, in the next ten minutes.",
   "deck": "When you're overwhelmed, close the full list, write down the three tasks that come to mind first, and start the one with the smallest first move. Work for twenty minutes, then look again. The aim is to break the freeze, not find the perfect order.",

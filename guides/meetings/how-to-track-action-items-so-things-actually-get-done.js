@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Track Action Items So Things Actually Get Done",
   "titleHtml": "How to Track Action Items <em>So Things Actually Get Done</em>",
   "shortTitle": "How to Track Action Items",
+  "searchTitle": "How to Track Action Items | Get Things Done After the Meeting",
   "navTitle": "How to track action items so things actually get done",
   "description": "Most action items don't fail because no one wrote them down. They fail because no one wrote them down in the right place, with the right ownership, in a way that survives the next meeting. Five steps for action items that actually get done.",
   "deck": "To make meeting action items get done, move each one into the owner's own task system, give every item one named owner, a specific deadline and a definition of done, separate real commitments from passing ideas, check for items recurring across meetings, and escalate items that are really unmade decisions.",

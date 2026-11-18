@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to set a boundary over text without being rude",
   "titleHtml": "How to set a boundary over text without being rude",
   "shortTitle": "Boundaries over text",
+  "searchTitle": "How to Set Boundaries Over Text | Say No Kindly and Clearly",
   "navTitle": "Boundaries over text",
   "description": "You finally need to tell them no, or stop, or not anymore. You do not want to be cold. You also do not want to keep doing this. Here is the message.",
   "deck": "To set a boundary over text without being rude, describe the specific change rather than using the word 'boundary', name the behavior instead of judging the person, give at most one short reason, say what you are still happy to do, and repeat yourself once if they push back.",

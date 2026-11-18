@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Batch Similar Tasks to Save Time (Without Becoming a Spreadsheet)",
   "titleHtml": "How to Batch Similar Tasks to Save Time <em>(Without Becoming a Spreadsheet)</em>",
   "shortTitle": "How to Batch Similar Tasks to Save Time",
+  "searchTitle": "How to Batch Tasks | Save Hours Every Week",
   "navTitle": "How to batch similar tasks to save time without becoming a spreadsheet",
   "description": "You've heard 'batch your tasks' a hundred times. The actual mechanism is more specific, and most attempts fail in the same predictable way. Here's the version that holds.",
   "deck": "To batch tasks well, group work by the kind of thinking it needs (writing, deciding, admin) rather than by topic, protect your costliest transitions, size batches to the time you really have, and guard the first few minutes. Leave urgent work and anything blocking others out.",

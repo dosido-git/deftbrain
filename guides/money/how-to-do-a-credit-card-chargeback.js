@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Do a Credit Card Chargeback",
   "titleHtml": "How to Do a <em>Credit Card Chargeback</em>",
   "shortTitle": "Do a Credit Card Chargeback",
+  "searchTitle": "How to Do a Chargeback | Recover What You Paid",
   "navTitle": "do a credit card chargeback",
   "description": "A chargeback is the nuclear option, but only if you use it correctly. The five-step process and the deadlines that decide whether you win.",
   "deck": "To do a credit card chargeback, first ask the merchant in writing for a refund, gather receipts and correspondence, then file a dispute with your card issuer, ideally online. Billing errors must be disputed in writing within 60 days of the statement. Answer any issuer follow-up promptly.",

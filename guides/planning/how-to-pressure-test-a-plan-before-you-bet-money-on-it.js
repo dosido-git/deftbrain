@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Pressure-Test a Plan Before You Bet Money on It",
   "titleHtml": "How to Pressure-Test a Plan <em>Before You Bet Money on It</em>",
   "shortTitle": "How to Pressure-Test a Plan",
+  "searchTitle": "How to Pressure-Test a Plan | Bet With Confidence",
   "navTitle": "How to pressure-test a plan before you bet money on it",
   "description": "Most plans look better than they are because the person who wrote them is also the person evaluating them. Five steps for finding the weak points before the money goes in.",
   "deck": "To pressure-test a plan before investing, list every assumption (including ones that feel like facts), sort them by how costly they'd be to reverse, test the expensive ones cheaply first, and write kill criteria with dates before any money goes in. Stop testing once results no longer change the decision.",

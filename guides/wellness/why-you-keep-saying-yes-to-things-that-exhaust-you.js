@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why You Keep Saying Yes to Things That Exhaust You",
   "titleHtml": "Why You Keep Saying Yes <em>to Things That Exhaust You</em>",
   "shortTitle": "Stop Saying Yes",
+  "searchTitle": "Saying Yes Too Much | Protect Your Time and Energy",
   "navTitle": "why you keep saying yes",
   "description": "You committed to another thing you knew would drain you. Here is why the yes-reflex keeps firing — and how to interrupt it without becoming someone who flakes.",
   "deck": "You keep saying yes because you picture a future self with more energy, saying no in the moment feels harder than saying yes, and you have no clear limit on your weekly commitments. Buy time before answering, set a weekly cap, and practice declining kindly.",

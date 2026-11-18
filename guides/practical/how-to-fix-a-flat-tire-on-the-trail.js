@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Fix a Flat Tire on the Trail",
   "titleHtml": "How to Fix a Flat Tire <em>on the Trail</em>",
   "shortTitle": "Fix a Flat on the Trail",
+  "searchTitle": "How to Fix a Flat Bike Tire | Get Rolling Again",
   "navTitle": "fix a flat tire on the trail",
   "description": "The trailside flat-fix protocol: find the cause before you patch, or you will flat again in five miles.",
   "deck": "To fix a bike flat on the trail, remove the wheel, lever one side of the tire off, pull the tube, and find the cause inside the tire or rim strip before fitting a new tube. Add a little air, seat the tire by hand, and inflate gradually.",

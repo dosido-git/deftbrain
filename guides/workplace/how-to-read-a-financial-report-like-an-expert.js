@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to read a financial report like an expert",
   "titleHtml": "How to read a financial report <em>like an expert</em>",
   "shortTitle": "Read financial reports",
+  "searchTitle": "How to Read a Financial Report | Understand the Numbers That Matter",
   "navTitle": "read financial reports",
   "description": "A practical method for reading a financial report so you can actually understand what is happening at a company — not just what they want you to think.",
   "deck": "To read a financial report, start with the three core statements (balance sheet, income statement, cash flow statement), check operating cash flow against reported profit, read the notes for assumptions and risks, compare several years, and compare the company with its peers before reading management's own interpretation.",

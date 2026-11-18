@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Split a Bill Fairly When You Ate or Drank Less",
   "titleHtml": "How to Split a Bill Fairly <em>When You Ate or Drank Less</em>",
   "shortTitle": "Splitting When You Ate Less",
+  "searchTitle": "How to Split a Bill | Pay Only for What You Had",
   "navTitle": "split a bill when you ate less",
   "description": "You had the salad. They had three drinks each. Here is how to handle the split without being the table's accountant or eating the cost.",
   "deck": "To split a bill fairly when you ate or drank less, agree on the split before ordering; if you forgot, quietly tell whoever is paying your actual share. Cover your items plus tax, tip and a little extra, and pick a small gap you will simply absorb.",

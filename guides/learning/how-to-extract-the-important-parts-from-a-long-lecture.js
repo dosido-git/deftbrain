@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Extract the Important Parts from a Long Lecture",
   "titleHtml": "How to Extract <em>the Important Parts</em> from a Long Lecture",
   "shortTitle": "Extract What Matters",
+  "searchTitle": "How to Summarize a Lecture | Keep What Matters, Skip the Rest",
   "navTitle": "extract what matters from a lecture",
   "description": "Most of a lecture is not testable. Here is how to find the 20% that is — the signals professors use to flag what really matters, and how to compress two hours of talking into one page of notes.",
   "deck": "To pull the important parts from a long lecture, listen for explicit signals like 'make sure you know this', track ideas the lecturer repeats, mark every comparison between two terms, copy worked examples with their exact steps, and then turn those points into questions you answer without notes.",

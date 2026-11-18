@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to start when everything feels too big",
   "titleHtml": "How to start <em>when everything feels too big</em>",
   "shortTitle": "Start when everything feels too big",
+  "searchTitle": "What to Do When Everything Feels Too Much | Take the First Small Step",
   "navTitle": "start when too big",
   "description": "A method for getting moving on a project that has grown so large in your head that even thinking about it produces dread.",
   "deck": "To start a project that feels too big, stop picturing the whole thing, name the smallest unambiguous first action, set things up so starting tomorrow takes almost no effort, work for fifteen minutes on a timer, and aim for small daily progress rather than catching up.",

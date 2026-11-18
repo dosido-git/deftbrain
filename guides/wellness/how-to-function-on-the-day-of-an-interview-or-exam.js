@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Function on the Day of an Interview, Exam, or Doctor Appointment",
   "titleHtml": "How to Function <em>on the Day of an Interview, Exam, or Doctor Appointment</em>",
   "shortTitle": "Function on Big Days",
+  "searchTitle": "How to Function on a Big Day | Stay Steady When It Matters",
   "navTitle": "function on the big day",
   "description": "High-stakes day with hours to fill before the event. Here is how to be in good shape when it starts — without the morning leaving you depleted before you walk in.",
   "deck": "On the day of an interview, exam or appointment, eat as you normally would but not right before, take a short walk, do one brief absorbing task to warm up, and stop preparing about an hour before. How you feel walking in matters more than a last review.",

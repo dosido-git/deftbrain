@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to stay accountable when no one is watching",
   "titleHtml": "How to stay accountable <em>when no one is watching</em>",
   "shortTitle": "Accountable when alone",
+  "searchTitle": "How to Stay Accountable | Keep Your Promises to Yourself",
   "navTitle": "accountable when alone",
   "description": "A method for keeping commitments to yourself when there is no boss, no team, and no external pressure — just a task and the version of you that may or may not do it.",
   "deck": "To stay accountable to yourself, tell one person what you'll do today and report back, make the commitment small and specific, track whether you showed up rather than the results, make the task easier to start than its distractions, and restart quickly after a missed day.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Handle Pre-Existing Damage in a Rental (Without Inheriting Someone Else's Charges)",
   "titleHtml": "How to Handle Pre-Existing Damage in a Rental <em>(Without Inheriting Someone Else&#39;s Charges)</em>",
   "shortTitle": "How to Handle Pre-Existing Damage in a Rental",
+  "searchTitle": "Pre-Existing Damage in a Rental | Don't Pay for Someone Else's Damage",
   "navTitle": "How to handle pre-existing damage in a rental without inheriting someone else's charges",
   "description": "Pre-existing damage in a rental usually means damage from prior tenants that the landlord didn't fix and is hoping to charge the next tenant for. The defense is documentation — and a specific kind of communication that makes inheritance impossible.",
   "deck": "To handle pre-existing damage in a rental, photograph and describe it on move-in day, note it on the condition report, ask the landlord in writing to repair anything broken, and leave it unpatched. If charged for it at move-out, send your dated records and cite your state deposit law.",

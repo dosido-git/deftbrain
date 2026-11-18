@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Is My Bike Chain Skipping (And the Three Things That Almost Always Fix It)",
   "titleHtml": "Why Is My Bike Chain Skipping <em>(And the Three Things That Almost Always Fix It)</em>",
   "shortTitle": "Why Is My Bike Chain Skipping",
+  "searchTitle": "Bike Chain Skipping | Get a Smooth Ride Back",
   "navTitle": "Why is my bike chain skipping and the three things that almost always fix it",
   "description": "A skipping chain is one of the most common bike problems and one of the easiest to diagnose. The cause is almost always one of three things — and once you know which, the fix is usually quick.",
   "deck": "A bike chain usually skips for one of three reasons: shift-cable tension is off, the chain (and often the cassette) is worn, or the rear derailleur hanger is bent. Check cable tension with the barrel adjuster first, then measure chain wear with a chain checker, then inspect the hanger.",

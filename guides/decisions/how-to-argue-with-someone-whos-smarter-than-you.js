@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Argue With Someone Who's Smarter Than You",
   "titleHtml": "How to Argue With <em>Someone Who's Smarter Than You</em>",
   "shortTitle": "Arguing With Smarter People",
+  "searchTitle": "How to Argue With Someone Smarter Than You | Hold Your Own With Anyone",
   "navTitle": "How to argue with someone who's smarter than you without losing your nerve",
   "description": "Asymmetric arguments are different from symmetric ones. Here's how to hold your own — or update productively — when the other person is faster, more credentialed, or more experienced.",
   "deck": "When arguing with someone smarter or more experienced, slow the pace, ask questions instead of making bold claims, notice when fluency is standing in for accuracy, concede small points freely, and change your mind openly if they turn out to be right.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Prepare for Tough Interview Questions (Without Memorizing Answers)",
   "titleHtml": "How to Prepare for Tough Interview Questions <em>(Without Memorizing Answers)</em>",
   "shortTitle": "Prepare for Tough Interview Questions",
+  "searchTitle": "Tough Interview Questions | Answer Like a Top Candidate",
   "navTitle": "prepare for tough interview questions",
   "description": "Memorized answers sound memorized. Here is how to prepare for hard questions in a way that lets you stay flexible — without freezing when the wording shifts.",
   "deck": "To prepare for tough interview questions without memorizing answers, build a bank of six to eight real work stories you know well, work out what each question is really testing, practice the questions you dread most, prepare a structured 'I don't know', and rehearse out loud.",

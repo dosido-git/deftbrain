@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Say No to a Timeshare Presentation (And Actually Get Out)",
   "titleHtml": "How to Say No to a Timeshare Presentation <em>(And Actually Get Out)</em>",
   "shortTitle": "How to Say No to a Timeshare Presentation",
+  "searchTitle": "How to Get Out of a Timeshare Presentation | Walk Away With Your Wallet",
   "navTitle": "How to say no to a timeshare presentation and actually get out",
   "description": "The timeshare presentation is engineered to outlast your willingness to refuse. Here's how to leave on time without buying, signing, or being ground down.",
   "deck": "To say no to a timeshare presentation, decide before you arrive that you will not buy, state your time limit at the start, answer every pitch with one sentence, and stand up when time is up to collect the promised gift. If you sign, check your cancellation period at once.",

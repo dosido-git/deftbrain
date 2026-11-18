@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Stay Top of Mind with Someone You Barely Know",
   "titleHtml": "How to Stay Top of Mind <em>(With Someone You Barely Know)</em>",
   "shortTitle": "Staying Top of Mind",
+  "searchTitle": "How to Stay Top of Mind | Be Remembered When It Counts",
   "navTitle": "staying top of mind",
   "description": "You met once. They were great. You'd like to be on their list when something comes up. Here's the light-touch system that does that.",
   "deck": "To stay top of mind with someone you've met once, follow up within a couple of weeks with something specific, engage occasionally with what they share, send something useful now and then with no ask, acknowledge their big moments, and keep any eventual request light.",

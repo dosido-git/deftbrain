@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Identify Hidden Costs in a Service Agreement",
   "titleHtml": "How to Identify Hidden Costs <em>in a Service Agreement</em>",
   "shortTitle": "Hidden Costs in a Service Agreement",
+  "searchTitle": "Hidden Costs in a Service Agreement | Avoid Surprise Charges",
   "navTitle": "How to identify hidden costs in a service agreement before you sign",
   "description": "The headline price is what they want you to remember. The fine print is where the real cost lives. Here's how to find every fee, escalator, and 'as needed' charge.",
   "deck": "Hidden costs in a service agreement usually sit in five places: separate fees (setup, processing, maintenance), automatic price-increase clauses, termination and early-exit terms, open-ended 'as needed' or 'then-current rates' pricing, and per-user or per-transaction charges that grow with your use. Ask for a sample invoice before signing.",

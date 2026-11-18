@@ -5,6 +5,7 @@ module.exports = {
   "title": "The Perfect Comeback You Thought of Three Hours Too Late",
   "titleHtml": "The Perfect Comeback You Thought of <em>Three Hours Too Late</em>",
   "shortTitle": "The Late Perfect Comeback",
+  "searchTitle": "Comebacks You Think of Too Late | Have the Reply Ready Next Time",
   "navTitle": "perfect comeback you thought of three hours too late",
   "description": "Why the perfect comeback comes hours too late, and a five-step way to close the loop: exact words, what stung, a few versions, and send-or-file.",
   "deck": "Thinking of the perfect comeback hours later is common enough to have a name. To let it go, write down exactly what they said, name what stung, draft a few replies in different tones, then send one only if the situation will repeat; otherwise keep it for next time.",

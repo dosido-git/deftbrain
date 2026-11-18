@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why Does Every Expert Contradict Every Other Expert?",
   "titleHtml": "Why Does Every Expert <em>Contradict Every Other Expert?</em>",
   "shortTitle": "Why Experts Disagree",
+  "searchTitle": "Why Experts Disagree | Know Who to Believe",
   "navTitle": "why experts contradict each other",
   "description": "Experts in any popular field seem to constantly contradict each other. Here is what is actually going on — and how to extract a useful answer despite the noise.",
   "deck": "Experts seem to contradict each other because public debate focuses on unsettled details while broad agreement goes unmentioned, because advice tested on one group gets applied to everyone, and because the loudest voices aren't always the most expert. Start from institutional consensus and ask who each claim was tested on.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "What's the difference between jealousy and envy?",
   "titleHtml": "What's the difference between <em>jealousy and envy?</em>",
   "shortTitle": "Jealousy vs envy",
+  "searchTitle": "Jealousy vs Envy | Understand What You're Feeling",
   "navTitle": "jealousy vs envy",
   "description": "An honest distinction between two feelings that get conflated constantly — and why getting them right helps you understand what you are actually feeling.",
   "deck": "Envy is wanting something someone else has; jealousy is fearing you'll lose something you have to someone else. Envy involves two parties, jealousy usually three. Merriam-Webster notes the two often overlap in everyday use, but only 'jealous' carries the sense of protecting what's yours.",

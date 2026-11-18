@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell If Your Bike Needs a Tune-Up",
   "titleHtml": "How to Tell If Your Bike <em>Needs a Tune-Up</em>",
   "shortTitle": "Bike Tune-Up Signs",
+  "searchTitle": "Does My Bike Need a Tune-Up | Ride Smoother and Safer",
   "navTitle": "tell if your bike needs a tune-up",
   "description": "Six signs your bike is overdue. Most are cheap if you catch them early and expensive if you wait.",
   "deck": "Your bike likely needs a tune-up if the chain skips under load or measures worn on a chain checker, shifting hesitates or overshoots, brakes squeal constantly or grab, new clicks or creaks appear, or the handlebar, headset or seat moves. Catching these early usually costs less than waiting.",

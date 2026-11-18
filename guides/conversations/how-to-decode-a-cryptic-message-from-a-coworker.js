@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to decode a cryptic message from a coworker",
   "titleHtml": "How to decode a cryptic message from a coworker",
   "shortTitle": "Cryptic coworker messages",
+  "searchTitle": "Cryptic Message From a Coworker | Stop Guessing What They Meant",
   "navTitle": "Cryptic coworker messages",
   "description": "\"Got a sec?\" \"Can you ping me when you're free?\" \"Quick question.\" Here is how to tell whether to panic, prepare, or ignore.",
   "deck": "To read a vague coworker message like 'got a sec?', look at the channel it came through, how this person usually writes and when it was sent, then reply with a specific time to talk. Most vague messages are routine; asking 'what's up?' first ends the guessing.",

@@ -5,6 +5,7 @@ module.exports = {
   "title": "What's the word for the feeling when you secretly enjoy someone else's failure?",
   "titleHtml": "What's the word for the feeling <em>when you secretly enjoy someone else's failure?</em>",
   "shortTitle": "Enjoying someone's failure",
+  "searchTitle": "Word for Enjoying Someone's Misfortune | Name That Guilty Feeling",
   "navTitle": "word for enjoying failure",
   "description": "The word for secretly enjoying someone else's failure: schadenfreude — what it means, where it comes from, similar words, and why it's so common.",
   "deck": "The word for enjoying someone else's misfortune is schadenfreude, from the German Schaden (harm) and Freude (joy). It's common, it's different from wishing someone harm, and it often arises when someone's success seemed undeserved. Dutch has a similar word, leedvermaak. Naming it isn't approving of it.",

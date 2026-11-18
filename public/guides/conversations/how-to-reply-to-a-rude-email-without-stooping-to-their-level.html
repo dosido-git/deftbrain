@@ -49,7 +49,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>How to Reply to a Rude Email | DeftBrain</title>
+  <title>How to Reply to a Rude Email | Respond With Grace and Strength | DeftBrain</title>
   <meta name="description" content="The reply that wins isn&#39;t the one that matches their tone — it&#39;s the one that makes their tone look like the choice it was. Five moves for replying to email rudeness without becoming the next problem in the thread.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://deftbrain.com/guides/conversations/how-to-reply-to-a-rude-email-without-stooping-to-their-level">
@@ -67,7 +67,7 @@
   <meta property="article:section"        content="Conversations">
 
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="How to Reply to a Rude Email | DeftBrain">
+  <meta name="twitter:title"       content="How to Reply to a Rude Email | Respond With Grace and Strength | DeftBrain">
   <meta name="twitter:description" content="The reply that wins isn&#39;t the one that matches their tone — it&#39;s the one that makes their tone look like the choice it was. Five moves for replying to email rudeness without becoming the next problem in the thread.">
   <meta name="twitter:image"       content="https://deftbrain.com/og/guides/how-to-reply-to-a-rude-email-without-stooping-to-their-level.png">
 
@@ -321,6 +321,7 @@
             bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
             if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
             if (newSession) {
+              sessionStorage.setItem('db-landing', location.pathname);
               var q = new URLSearchParams(location.search);
               ref = q.get('utm_source') || q.get('ref') || undefined;
               if (!ref && document.referrer && document.referrer.indexOf(location.hostname) === -1) {
@@ -344,21 +345,76 @@
               if (ru.hostname === location.hostname && ru.pathname !== location.pathname) from = ru.pathname.slice(0, 160);
             }
           } catch (e) {}
-          var body = JSON.stringify({
+          function sendMetric(payload) {
+            var body = JSON.stringify(payload);
+            try {
+              if (navigator.sendBeacon && navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }))) return;
+              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+            } catch (e) { /* analytics must never interrupt navigation */ }
+          }
+          var guidePath = "/guides/conversations/how-to-reply-to-a-rude-email-without-stooping-to-their-level";
+          var revisited = (function recordPageRevisit(path) {
+  try {
+    const tabKey = 'db-revisit:' + path;
+    const recorded = sessionStorage.getItem(tabKey);
+    if (recorded !== null) return undefined;
+
+    const key = 'db-page-history';
+    const history = JSON.parse(localStorage.getItem(key) || '[]');
+    const previous = history.includes(path);
+    localStorage.setItem(key, JSON.stringify(history.filter(entry => entry !== path).slice(-199).concat(path)));
+    sessionStorage.setItem(tabKey, previous ? '1' : '0');
+    return previous || undefined;
+  } catch (_) {
+    return undefined;
+  }
+})(guidePath);
+          var toolLink = document.querySelector('.cta-block .cta-btn');
+          if (toolLink) {
+            var destination = new URL(toolLink.href, location.origin);
+            destination.searchParams.set('from_guide', "/guides/conversations/how-to-reply-to-a-rude-email-without-stooping-to-their-level");
+            toolLink.href = destination.href;
+            var trackToolClick = function () {
+              var revisitClick;
+              try {
+                var clickKey = 'db-revisit-click:' + guidePath;
+                if (sessionStorage.getItem('db-revisit:' + guidePath) === '1' && !sessionStorage.getItem(clickKey)) {
+                  sessionStorage.setItem(clickKey, '1');
+                  revisitClick = true;
+                }
+              } catch (e) {}
+              sendMetric({
+                event: 'guide_tool_click',
+                path: "/guides/conversations/how-to-reply-to-a-rude-email-without-stooping-to-their-level",
+                props: { tool: "ConflictCoach", revisited: revisitClick }
+              });
+            };
+            toolLink.addEventListener('click', trackToolClick);
+            toolLink.addEventListener('auxclick', function (e) {
+              if (e.button === 1) trackToolClick();
+            });
+          }
+          sendMetric({
             event: 'page_view',
             path: location.pathname,
+            landing: newSession ? location.pathname : undefined,
             ts: now,
             sawGuide: true,
             ref: ref,
-            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from }
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "ConflictCoach", revisited: revisited }
           });
-          try {
-            if (navigator.sendBeacon) {
-              navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }));
-            } else {
-              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
-            }
-          } catch (e) { /* a broken beacon must never surface to the reader */ }
+          var gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+          function trackInteraction(event) {
+            if (!event.isTrusted) return;
+            gestures.forEach(function (type) { window.removeEventListener(type, trackInteraction); });
+            try {
+              if (sessionStorage.getItem('db-int')) return;
+              var landing = sessionStorage.getItem('db-landing');
+              sessionStorage.setItem('db-int', '1');
+              sendMetric({ event: 'interact', path: location.pathname, ref: ref, landing: landing });
+            } catch (e) {}
+          }
+          gestures.forEach(function (type) { window.addEventListener(type, trackInteraction, { passive: true }); });
         })();
       </script>
 
@@ -450,7 +506,7 @@
         <span class="site-footer-word">Deft<span>Brain</span></span>
       </a>
       <div class="site-footer-end">
-        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://www.pinterest.com/DeftBrainHQ/" target="_blank" rel="me noopener noreferrer">Pinterest</a><a href="mailto:hello@deftbrain.com">Contact</a></nav>
+        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://www.pinterest.com/DeftBrainHQ/" target="_blank" rel="me noopener noreferrer">Pinterest</a><a href="/about#link-to-deftbrain">Link to DeftBrain</a><a href="/contact">Contact</a></nav>
         <span class="site-footer-dot" aria-hidden="true">·</span>
         <span>© 2026 DeftBrain · deftbrain.com</span>
       </div>

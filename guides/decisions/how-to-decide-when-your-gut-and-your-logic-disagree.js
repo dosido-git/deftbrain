@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Decide When Your Gut and Your Logic Disagree",
   "titleHtml": "How to Decide When Your Gut <em>and Your Logic Disagree</em>",
   "shortTitle": "When Gut Disagrees With Logic",
+  "searchTitle": "Gut Feeling vs Logic | Trust Yourself Again",
   "navTitle": "How to decide when your gut and your logic are pulling in different directions",
   "description": "When the analysis says one thing and the gut says another, neither is automatically right. Here's how to figure out which signal to trust — and what each is picking up on.",
   "deck": "When your gut and your logic disagree, ask what the gut is reacting to specifically, check whether it's fear or a real signal, look for weak assumptions in the analysis, search for a third option, and as a tiebreaker lean on instinct about people and analysis about numbers.",

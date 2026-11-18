@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Write a Thank-You Email After an Interview",
   "titleHtml": "How to Write a Thank-You Email <em>(After an Interview)</em>",
   "shortTitle": "Post-Interview Thank-Yous",
+  "searchTitle": "Thank You Email After Interview | Stay Top of Mind With the Hiring Team",
   "navTitle": "post-interview thank-yous",
   "description": "It's the easiest competitive edge you have. Here's the structure that makes the email work — and the parts everyone gets wrong.",
   "deck": "A good post-interview thank-you email has a plain subject line, one sentence of thanks, a paragraph that adds something new to the conversation, a brief answer to any concern that came up, and a closing that refers to something specific you discussed. Send it within a day.",

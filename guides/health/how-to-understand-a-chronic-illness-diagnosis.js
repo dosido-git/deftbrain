@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Understand a Chronic Illness Diagnosis (When You're Newly Diagnosed)",
   "titleHtml": "How to Understand a Chronic Illness Diagnosis <em>(When You&#39;re Newly Diagnosed)</em>",
   "shortTitle": "How to Understand a Chronic Illness Diagnosis",
+  "searchTitle": "New Chronic Illness | Feel Less Lost After the News",
   "navTitle": "How to understand a chronic illness diagnosis when you're newly diagnosed",
   "description": "A chronic diagnosis isn't one piece of information — it's a stack of decisions, terms, and protocols that all arrive in a single visit. Here's how to unpack it without trying to learn everything at once.",
   "deck": "To understand a new chronic illness diagnosis, separate what the condition is from what to expect, find out which parts you can influence, learn what your medicine does, and learn your monitoring schedule. Get the details of your own case from your doctor before reading widely online.",

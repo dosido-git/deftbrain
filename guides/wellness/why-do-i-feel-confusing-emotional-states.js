@@ -5,6 +5,7 @@ module.exports = {
   "title": "Why do I feel emotions I cannot name?",
   "titleHtml": "Why do I feel <em>emotions I cannot name?</em>",
   "shortTitle": "Emotions you cannot name",
+  "searchTitle": "Why Can't I Identify My Emotions | Put Words to What You Feel",
   "navTitle": "unnameable emotions",
   "description": "An honest exploration of why some feelings refuse to fit into clear words — and why that does not mean something is wrong with you.",
   "deck": "Feelings can be hard to name because many are blends of several emotions, everyday vocabulary covers only a few basic states, and some experiences are newer than the words for them. Describing the mix or the body sensation often works when a single label doesn't.",

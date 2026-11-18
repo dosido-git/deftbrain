@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Tell Your Boss a Deadline Is Unrealistic (Before It's Too Late)",
   "titleHtml": "How to Tell Your Boss a Deadline Is Unrealistic <em>(Before It&#39;s Too Late)</em>",
   "shortTitle": "How to Tell Your Boss a Deadline Is Unrealistic",
+  "searchTitle": "Unrealistic Deadline | Set Expectations Without Conflict",
   "navTitle": "How to tell your boss a deadline is unrealistic",
   "description": "How to tell your boss a deadline is unrealistic: raise it early, show the math, offer what can ship, flag dependencies, and confirm the new plan in writing.",
   "deck": "To tell your boss a deadline is unrealistic, raise it early and bring numbers: the estimated work against the time available. Offer what can be delivered by the date, name dependencies outside your control, and confirm the agreed plan in a short written recap.",

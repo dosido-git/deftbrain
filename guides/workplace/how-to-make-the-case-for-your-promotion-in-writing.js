@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Make the Case for Your Promotion in Writing",
   "titleHtml": "How to Make the Case <em>for Your Promotion in Writing</em>",
   "shortTitle": "How to Make the Case for Your Promotion",
+  "searchTitle": "Promotion Case in Writing | Get the Title You've Earned",
   "navTitle": "How to make the case for your promotion in writing",
   "description": "How to write a promotion case: evidence you already work at the next level, patterns not events, measurable impact, and answering objections.",
   "deck": "A written promotion case argues that you already work at the next level, not that you had a good year. Build it around what the role above requires, show repeated patterns rather than one-off wins, state what changed because of you, and answer likely objections in advance.",

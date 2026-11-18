@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Explain Inflation to a Kid (Without Boring Them or Lying)",
   "titleHtml": "How to Explain Inflation to a Kid <em>(Without Boring Them or Lying)</em>",
   "shortTitle": "How to Explain Inflation to a Kid",
+  "searchTitle": "How to Explain Inflation to a Kid | Answer Their Questions With Ease",
   "navTitle": "How to explain inflation to a kid without boring them or lying",
   "description": "They asked why a candy bar costs more than it used to. The economist's answer loses them in 30 seconds. Here's how to make it click in two minutes.",
   "deck": "Explain inflation to a kid with something they already trade, like cards or game coins: if everyone suddenly had far more of them, each one would buy less. Then bridge in one sentence to money and prices, answer the follow-up honestly, and stop when they're satisfied.",

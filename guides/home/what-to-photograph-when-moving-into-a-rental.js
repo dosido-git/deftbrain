@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to Photograph When Moving Into a Rental (The Shot List That Saves Your Deposit)",
   "titleHtml": "What to Photograph When Moving Into a Rental <em>(The Shot List That Saves Your Deposit)</em>",
   "shortTitle": "What to Photograph When Moving Into a Rental",
+  "searchTitle": "Move-In Photos Checklist | Never Pay for Damage You Didn't Do",
   "navTitle": "What to photograph when moving into a rental — the shot list that saves your deposit",
   "description": "The move-in shot list that protects a security deposit: wide shots and close-ups of each room, inside appliances and cabinets, floors, walls and corners, plus video and meter readings.",
   "deck": "When moving into a rental, photograph each room with a wide shot and then close-ups of every flaw, the inside of every appliance, cabinet and closet, floors and walls at an angle, and corners and edges. Add a slow video walkthrough and photos of utility meters on day one.",

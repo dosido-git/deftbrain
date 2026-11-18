@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to stop decision paralysis when you're burned out",
   "titleHtml": "How to stop decision paralysis when you're burned out",
   "shortTitle": "Burnout decision paralysis",
+  "searchTitle": "Decision Paralysis | Get Unstuck, Even When Exhausted",
   "navTitle": "Burnout decision paralysis",
   "description": "You have made 200 small decisions today and you cannot make a 201st. Here is how to break the freeze, instead of waiting for it to lift on its own.",
   "deck": "To break decision paralysis when you're burned out, treat it as exhaustion rather than a character flaw, shrink the choice to its real stakes, hand it to a coin or a friend, take only the first small action, and stop reviewing the choice once it's made.",

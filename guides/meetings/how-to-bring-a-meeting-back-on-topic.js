@@ -5,6 +5,7 @@ module.exports = {
   "title": "How to Bring a Meeting Back on Topic",
   "titleHtml": "How to Bring a Meeting <em>Back on Topic</em>",
   "shortTitle": "Bring a Meeting Back on Topic",
+  "searchTitle": "How to Keep a Meeting on Track | End on Time, Every Time",
   "navTitle": "How to bring a meeting back on topic without making it awkward",
   "description": "The discussion has drifted. You're now seven minutes into a tangent and the original question is forgotten. Here's how to redirect cleanly — without sounding like the meeting cop.",
   "deck": "To bring a meeting back on topic, refer to the original question rather than criticizing the tangent, acknowledge the tangent and park it for later, say 'we' instead of 'you', point to the time left, and redirect the same calm way each time it drifts.",

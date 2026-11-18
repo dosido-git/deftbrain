@@ -5,6 +5,7 @@ module.exports = {
   "title": "What to actually pay attention to in a benefits packet",
   "titleHtml": "What to actually pay attention to <em>in a benefits packet</em>",
   "shortTitle": "Benefits packet essentials",
+  "searchTitle": "How to Read a Benefits Package | Get Every Benefit You're Owed",
   "navTitle": "benefits packet essentials",
   "description": "A practical guide for the annual open-enrollment benefits packet — what is worth your time, what to ignore, and what people most often miss until it costs them.",
   "deck": "In a benefits packet, focus on the yearly total cost of each medical plan (premium plus deductible and expected care), any HSA option, the 401(k) match and vesting schedule, and what happens if you miss the deadline. Supplemental insurance add-ons deserve skepticism unless you have a specific need.",
