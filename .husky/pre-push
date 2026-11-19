@@ -60,6 +60,9 @@ node scripts/generate-guides-sitemap.js --check
 # were, and the false policy went back live for four days.
 node scripts/build-privacy.js --check
 
+# /faq pages are generated from faq/pages.js (same reason as privacy above).
+node scripts/build-faq.js --check
+
 # Gate 8 — every rename in audit/RENAMES.md has a server-side 301. Recall →
 # TheCrux shipped with a CLIENT-side alias only, which a crawler never reaches:
 # the server 404s first and the React redirect never runs. /Recall returned 404

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) — skipped for owner/dev traffic.
+       Canonical source: scripts/lib/gaSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var op = params.get('operator');
+        if (op === '1') localStorage.setItem('db-operator', '1');
+        else if (op === '0') localStorage.removeItem('db-operator');
+        if (localStorage.getItem('db-operator') === '1') return;
+      } catch (e) {}
+      if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
+
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6';
+      document.head.appendChild(s);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-0MLY19QEW6');
+    })();
+  </script>
+  <!-- Theme — the visitor's saved light/dark choice, before first paint.
+       Canonical source: scripts/lib/themeSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      var root = document.documentElement, theme;
+      try { theme = localStorage.getItem('app-theme'); } catch (e) {}
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', theme);
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-theme-toggle]');
+        if (!btn) return;
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('app-theme', next); } catch (e) {}
+      });
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Can a landlord keep your deposit for unpaid utilities?</title>
+  <meta name="description" content="Sometimes, mostly when the bill is owed to the landlord under your lease. A utility account in your own name is a debt to the utility company, not to the landlord.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://deftbrain.com/faq/can-a-landlord-keep-your-deposit-for-unpaid-utilities">
+
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="Can a landlord keep your deposit for unpaid utilities?">
+  <meta property="og:description" content="Sometimes, mostly when the bill is owed to the landlord under your lease. A utility account in your own name is a debt to the utility company, not to the landlord.">
+  <meta property="og:url"         content="https://deftbrain.com/faq/can-a-landlord-keep-your-deposit-for-unpaid-utilities">
+  <meta property="og:site_name"   content="DeftBrain">
+  <meta property="article:modified_time" content="2026-11-19">
+
+  <link rel="stylesheet" href="/fonts/playfair-display/playfair-display.css">
+  <link rel="stylesheet" href="/fonts/dm-sans/dm-sans.css">
+  <link rel="stylesheet" href="/guides/guide.css">
+  <style>
+    .faq-more { margin: 40px 0 0; }
+    .faq-more ul { padding-inline-start: 1.2rem; line-height: 1.8; }
+    .faq-more a, .lede a { color: var(--deft-blue, #165b9a); text-decoration: underline; text-underline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-header-brand" aria-label="DeftBrain home">
+        <img src="/pBrain-r.png" alt="" class="sh-brand-img" height="64">
+        <span class="sh-brand-word">
+          <span class="sh-brand-text">Deft<span>Brain</span></span>
+          <span class="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+        </span>
+      </a>
+      <div class="site-header-end">
+        <nav class="site-header-nav" aria-label="Primary"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a></nav>
+        <div class="site-header-controls">
+          <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+        </div>
+        <details class="site-header-menu">
+          <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a>
+            <a href="/#home-problem-search">Find guidance</a>
+            <div class="site-header-menu-settings">
+              <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode">Appearance</button>
+            </div>
+          </nav>
+        </details>
+      </div>
+    </div>
+    <div class="site-header-search"><form class="ds-form" role="search" data-deft-search data-tools="4" data-guides="4" action="/tools">
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
+      <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
+    </form>
+    <script src="/search/deft-search.js" defer></script></div>
+  </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
+
+  <main>
+    <div class="container">
+
+      <div class="eyebrow">
+        <a class="tag" href="/guides/home/security-deposit-laws-by-state">Security deposits · Quick answer</a>
+        <div class="eyebrow-rule"></div>
+      </div>
+
+      <h1>Can a landlord keep your deposit for unpaid utilities?</h1>
+
+      <p class="deck">Sometimes, mostly when the bill is owed to the landlord under your lease. A utility account in your own name is a debt to the utility company, not to the landlord.</p>
+
+      <p class="meta-line">Updated November 19, 2026 · By the DeftBrain team</p>
+
+      <p class="lede">New York lets a landlord keep deposit money for unpaid utility charges payable directly to the landlord under the lease.</p>
+      <p class="lede">Massachusetts allows deductions for unpaid water charges, alongside unpaid rent, certain tax increases and damage. Other utilities are not on its list.</p>
+      <p class="lede">In Texas, a landlord may deduct charges the tenant is legally liable for under the lease, so the lease wording decides it.</p>
+      <p class="lede">Rules differ by state: the <a href="/guides/home/security-deposit-laws-by-state">security deposit laws by state</a> table lists yours. To record the unit's condition at move-in and make your case at move-out, there's <a href="/RentersDepositSaver">Renter's Deposit Saver</a>.</p>
+
+      <div class="guide-sources">
+        <p class="guide-sources-label">Sources</p>
+        <ul>
+          <li><a href="https://www.nysenate.gov/legislation/laws/GOB/7-108" rel="noopener" target="_blank">New York General Obligations Law § 7-108 (NY Senate)</a></li>
+          <li><a href="https://malegislature.gov/Laws/GeneralLaws/PartII/TitleI/Chapter186/Section15B" rel="noopener" target="_blank">Massachusetts General Laws ch. 186 § 15B (Massachusetts Legislature)</a></li>
+          <li><a href="https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm" rel="noopener" target="_blank">Texas Property Code, Chapter 92 (Texas Legislature)</a></li>
+        </ul>
+      </div>
+
+      <div class="faq-more">
+        <p class="guide-sources-label">More deposit questions</p>
+        <ul>
+          <li><a href="/faq/can-a-landlord-charge-for-lost-keys">Can a landlord charge for lost keys?</a></li>
+          <li><a href="/faq/can-a-landlord-charge-for-mold">Can a landlord charge for mold?</a></li>
+          <li><a href="/faq/can-a-landlord-keep-your-deposit-if-you-never-move-in">Can a landlord keep your deposit if you never move in?</a></li>
+          <li><a href="/faq/can-a-landlord-keep-your-deposit-if-you-are-evicted">Can a landlord keep your deposit if you are evicted?</a></li>
+          <li><a href="/faq/can-a-landlord-charge-for-pest-control">Can a landlord charge for pest control?</a></li>
+          <li><a href="/faq/can-a-landlord-charge-for-oven-cleaning">Can a landlord charge for oven cleaning?</a></li>
+          <li><a href="/faq/can-a-landlord-charge-for-broken-appliances">Can a landlord charge for broken appliances?</a></li>
+          <li><a href="/faq/can-a-landlord-charge-for-water-damage">Can a landlord charge for water damage?</a></li>
+          <li><a href="/faq/can-a-landlord-charge-you-for-something-not-in-the-lease">Can a landlord charge you for something not in the lease?</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+<section class="site-end" aria-label="Ideas and newsletter">
+    <div class="site-end-inner">
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128161; Missing something?</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Suggest a tool. We read every suggestion, and the best become new tools.</p>
+        <form class="site-end-form" id="db-idea-form">
+          <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
+          <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
+          <button id="db-idea-btn" type="submit">Send</button>
+        </form>
+        <p class="site-end-msg" id="db-idea-msg" role="status"></p>
+      </div>
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128238; Newsletter</p>
+        <p class="site-end-text"><strong>One useful tool a month</strong> &mdash; the one worth knowing about before life demands it.</p>
+        <form class="site-end-form" id="db-cap-form">
+          <label class="sr-only-se" for="db-cap-email">Email address</label>
+          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email">
+          <button id="db-cap-btn" type="submit">Subscribe</button>
+        </form>
+        <p class="site-end-msg" id="db-cap-msg" role="status"></p>
+      </div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    function wire(formId, btnId, msgId, label, send, done, resetAfter){
+      var f=document.getElementById(formId); if(!f) return;
+      f.addEventListener('submit', function(e){
+        e.preventDefault();
+        var btn=document.getElementById(btnId), msg=document.getElementById(msgId);
+        btn.disabled=true; btn.textContent='Sending\u2026';
+        send().then(function(x){
+          if(x.ok){
+            f.style.display='none'; msg.textContent=done(x.d);
+            if(resetAfter) setTimeout(function(){ f.reset(); f.style.display=''; msg.textContent=''; btn.disabled=false; btn.textContent=label; }, resetAfter);
+          }
+          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; }
+        }).catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; });
+      });
+    }
+    function post(url, body){
+      return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok&&(d.ok!==false),d:d};});});
+    }
+    wire('db-idea-form','db-idea-btn','db-idea-msg','Send',
+      function(){ return post('/api/idea',{problem:document.getElementById('db-idea-input').value.trim(),source:'site-end',path:location.pathname}); },
+      function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; }, 6000);
+    wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
+      function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
+      function(d){ return d&&d.already ? 'You\u2019re already on the list. Bruce admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });
+  })();
+  </script>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">
+        <img src="/pBrain-r.png" alt="" height="64">
+        <span class="site-footer-word">Deft<span>Brain</span></span>
+      </a>
+      <div class="site-footer-end">
+        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://www.pinterest.com/DeftBrainHQ/" target="_blank" rel="me noopener noreferrer">Pinterest</a><a href="/about#link-to-deftbrain">Link to DeftBrain</a><a href="/contact">Contact</a></nav>
+        <span class="site-footer-dot" aria-hidden="true">·</span>
+        <span>© 2026 DeftBrain · deftbrain.com</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
