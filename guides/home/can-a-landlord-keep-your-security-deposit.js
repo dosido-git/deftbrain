@@ -23,7 +23,7 @@ module.exports = {
   "steps": [
     {
       "name": "What can a landlord deduct from a security deposit?",
-      "body": "Generally: unpaid rent, damage beyond normal wear and tear, and in some states cleaning needed to return the unit to its move-in level of cleanliness. Repainting after years of normal living, replacing carpet that simply aged, or fixing a previous tenant's damage usually doesn't qualify. Each deduction should connect to something the law in your state allows."
+      "body": "Generally: unpaid rent, damage beyond normal wear and tear, and in some states cleaning needed to return the unit to its move-in level of cleanliness. Repainting after years of normal living, replacing carpet that simply aged, or fixing a previous tenant's damage usually doesn't qualify. Each deduction should connect to something the law in your state allows.\n\nQuestions about a specific charge: can a landlord charge for [nail holes](/guides/home/can-a-landlord-charge-for-nail-holes), [painting after you move out](/guides/home/can-a-landlord-charge-for-painting-after-you-move-out), [carpet cleaning](/guides/home/can-a-landlord-charge-for-carpet-cleaning), [professional cleaning](/guides/home/can-a-landlord-charge-for-professional-cleaning), [blinds](/guides/home/can-a-landlord-charge-for-blinds), [light bulbs](/guides/home/can-a-landlord-charge-for-light-bulbs), [changing the locks](/guides/home/can-a-landlord-charge-for-changing-the-locks), [dead grass](/guides/home/can-a-landlord-charge-for-dead-grass) or [the landlord's own labor](/guides/home/can-a-landlord-charge-for-their-own-labor)? And can a landlord keep the deposit [if the property is sold](/guides/home/can-a-landlord-keep-your-deposit-if-the-property-is-sold), [if one tenant moves out](/guides/home/can-a-landlord-keep-your-deposit-if-one-tenant-moves-out) or [if the tenant dies](/guides/home/can-a-landlord-keep-a-security-deposit-if-the-tenant-dies)?"
     },
     {
       "name": "Does a landlord have to give you an itemized list of deductions?",
@@ -71,6 +71,6 @@ module.exports = {
     "toolName": "Lease Trap Detector"
   },
   "published": "2026-04-27",
-  "modified": "2026-10-09",
+  "modified": "2026-11-18",
   "reviewed": true
 };

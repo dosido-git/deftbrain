@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) — skipped for owner/dev traffic.
+       Canonical source: scripts/lib/gaSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var op = params.get('operator');
+        if (op === '1') localStorage.setItem('db-operator', '1');
+        else if (op === '0') localStorage.removeItem('db-operator');
+        if (localStorage.getItem('db-operator') === '1') return;
+      } catch (e) {}
+      if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
+
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0MLY19QEW6';
+      document.head.appendChild(s);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-0MLY19QEW6');
+    })();
+  </script>
+  <!-- Theme — the visitor's saved light/dark choice, before first paint.
+       Canonical source: scripts/lib/themeSnippet.js (see there for why). -->
+  <script>
+    (function () {
+      var root = document.documentElement, theme;
+      try { theme = localStorage.getItem('app-theme'); } catch (e) {}
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', theme);
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('[data-theme-toggle]');
+        if (!btn) return;
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('app-theme', next); } catch (e) {}
+      });
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Can a Landlord Charge for Carpet Cleaning | Stop Routine Cleaning Charges | DeftBrain</title>
+  <meta name="description" content="Washington bars carpet-cleaning deductions without documented excess wear, and California bars professional carpet-cleaning charges unless necessary. Stains are different.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://deftbrain.com/guides/home/can-a-landlord-charge-for-carpet-cleaning">
+
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="Can a Landlord Charge for Carpet Cleaning After You Move Out?">
+  <meta property="og:description" content="Washington bars carpet-cleaning deductions without documented excess wear, and California bars professional carpet-cleaning charges unless necessary. Stains are different.">
+  <meta property="og:url"         content="https://deftbrain.com/guides/home/can-a-landlord-charge-for-carpet-cleaning">
+  <meta property="og:site_name"   content="DeftBrain">
+  <meta property="og:image"        content="https://deftbrain.com/og/guides/can-a-landlord-charge-for-carpet-cleaning.png">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="article:published_time" content="2026-11-18">
+  <meta property="article:modified_time"  content="2026-11-18">
+  <meta property="article:section"        content="Home &amp; Daily Life">
+
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Can a Landlord Charge for Carpet Cleaning | Stop Routine Cleaning Charges | DeftBrain">
+  <meta name="twitter:description" content="Washington bars carpet-cleaning deductions without documented excess wear, and California bars professional carpet-cleaning charges unless necessary. Stains are different.">
+  <meta name="twitter:image"       content="https://deftbrain.com/og/guides/can-a-landlord-charge-for-carpet-cleaning.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Can a Landlord Charge for Carpet Cleaning After You Move Out?",
+    "description": "Washington bars carpet-cleaning deductions without documented excess wear, and California bars professional carpet-cleaning charges unless necessary. Stains are different.",
+    "datePublished": "2026-11-18",
+    "dateModified": "2026-11-18",
+    "author": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
+    "publisher": {"@type":"Organization","name":"DeftBrain","url":"https://deftbrain.com"},
+    "mainEntityOfPage": "https://deftbrain.com/guides/home/can-a-landlord-charge-for-carpet-cleaning",
+    "citation": ["https://app.leg.wa.gov/rcw/default.aspx?cite=59.18.280", "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1950.5", "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Can a Landlord Charge for Carpet Cleaning After You Move Out?",
+    "description": "Washington bars carpet-cleaning deductions without documented excess wear, and California bars professional carpet-cleaning charges unless necessary. Stains are different.",
+    "step": [
+      {"@type":"HowToStep","name":"Can a landlord charge for routine carpet cleaning?","text":"Not in Washington unless the landlord documents wear beyond ordinary use, and not in California unless the cleaning is reasonably necessary to return the carpet to its move-in condition. In other states, worn traffic paths and the general dinginess of a lived-on carpet are normal wear and tear, which deposit laws bar landlords from charging."},
+      {"@type":"HowToStep","name":"Can a lease require professional carpet cleaning?","text":"In California, a landlord can't require you to pay for professional carpet cleaning unless it's reasonably necessary to restore the move-in condition, apart from ordinary wear and tear. Other states may enforce a cleaning clause if the charge is reasonable, but a lease still can't make ordinary wear into damage. Check the clause and your state's deposit law before paying."},
+      {"@type":"HowToStep","name":"Can a landlord charge for carpet stains or pet damage?","text":"Yes, at a reasonable cost. Stains, burns, tears and pet damage go beyond ordinary use; Texas, for example, excludes deterioration from negligence, carelessness, accident or abuse from normal wear and tear. Washington limits the charge to repairing the damaged portion when the damage doesn't cover the whole item, so a stained corner supports spot treatment or a patch rather than new carpet everywhere."},
+      {"@type":"HowToStep","name":"Can a landlord make you pay to replace old carpet?","text":"Not for normal aging. California bars charges for ordinary wear and tear, including its cumulative effects across more than one tenancy, so a carpet worn out over years of renters can't be billed to the last one. When carpet is truly damaged, the charge should be a reasonable amount to restore its condition at the start of your tenancy, not the price of new carpet."},
+      {"@type":"HowToStep","name":"How do you dispute a carpet charge?","text":"Ask for the itemized statement and the invoice; in Washington, the landlord must also document wear beyond ordinary use. Compare the charge with your move-in photos of the carpet, especially any stains already there. Then reply in writing with your state's statute from the security deposit laws by state table."}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"DeftBrain","item":"https://deftbrain.com"},
+      {"@type":"ListItem","position":2,"name":"Guides","item":"https://deftbrain.com/guides"},
+      {"@type":"ListItem","position":3,"name":"Home & Daily Life","item":"https://deftbrain.com/guides/home-daily-life"},
+      {"@type":"ListItem","position":4,"name":"Can a Landlord Charge for Carpet Cleaning"}
+    ]
+  }
+  </script>
+
+  <!-- Self-hosted fonts (no third-party request) — see public/fonts/ -->
+  <link rel="stylesheet" href="/fonts/playfair-display/playfair-display.css">
+  <link rel="stylesheet" href="/fonts/dm-sans/dm-sans.css">
+
+  <link rel="stylesheet" href="/guides/guide.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-header-brand" aria-label="DeftBrain home">
+        <img src="/pBrain-r.png" alt="" class="sh-brand-img" height="64">
+        <span class="sh-brand-word">
+          <span class="sh-brand-text">Deft<span>Brain</span></span>
+          <span class="sh-brand-tag"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span>
+        </span>
+      </a>
+      <div class="site-header-end">
+        <nav class="site-header-nav" aria-label="Primary"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a></nav>
+        <div class="site-header-controls">
+          <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+        </div>
+        <details class="site-header-menu">
+          <summary aria-label="Navigation menu"><span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation"><a href="/tools">Tools</a><a href="/#categories">Categories</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a>
+            <a href="/#home-problem-search">Find guidance</a>
+            <div class="site-header-menu-settings">
+              <button type="button" class="site-header-theme" data-theme-toggle aria-label="Switch between light and dark mode">Appearance</button>
+            </div>
+          </nav>
+        </details>
+      </div>
+    </div>
+    <div class="site-header-search"><form class="ds-form" role="search" data-deft-search data-tools="4" data-guides="4" action="/tools">
+      <div class="ds-box"><span aria-hidden="true">⌕</span><input class="ds-input" type="search" name="q" autocomplete="off" placeholder="Search" role="combobox" aria-autocomplete="list" aria-label="Search tools and guides" aria-expanded="false" aria-controls="ds-panel" aria-keyshortcuts="Meta+K Control+K"><span class="ds-kbd" aria-hidden="true">⌘K</span></div>
+      <div class="ds-panel" id="ds-panel" role="region" aria-label="Search results" hidden></div>
+    </form>
+    <script src="/search/deft-search.js" defer></script></div>
+  </header>
+  <script>
+  (function(){
+    // Keep --site-header-h (public/site-header.css scroll-padding-top) equal
+    // to the pinned header's height, so jumps land below it, not under it.
+    var h=document.querySelector('.site-header'); if(!h) return;
+    function set(){ document.documentElement.style.setProperty('--site-header-h', h.getBoundingClientRect().height+'px'); }
+    set();
+    if(window.ResizeObserver) new ResizeObserver(set).observe(h); else window.addEventListener('resize', set);
+  })();
+  </script>
+
+
+
+  <main>
+    <div class="container">
+
+      <!-- eyebrow: category name, linked to its hub (see note above renderGuide) -->
+      <div class="eyebrow">
+        <a class="tag" href="/guides/home-daily-life">Home &amp; Daily Life</a>
+        <div class="eyebrow-rule"></div>
+      </div>
+
+      <h1>Can a Landlord Charge for Carpet Cleaning <em>After You Move Out?</em></h1>
+
+      <p class="deck">Not for routine cleaning after normal use in some states. Washington bars carpet-cleaning deductions unless the landlord documents wear beyond ordinary use, and California bars charges for professional carpet cleaning unless it&#39;s reasonably necessary to restore the move-in condition. Stains and pet damage are different.</p>
+      <ol class="answer-list">
+        <li>Washington: no carpet-cleaning deduction without documented excess wear.</li>
+        <li>California: professional carpet cleaning only if reasonably necessary.</li>
+        <li>Worn carpet from normal walking is wear and tear.</li>
+        <li>Stains, burns and pet damage can be charged.</li>
+        <li>Old carpet can&#39;t be replaced at your expense for normal aging.</li>
+      </ol>
+
+      <p class="meta-line">Updated November 18, 2026 · By the DeftBrain team</p>
+
+      <p class="lede">Carpet cleaning is one of the most common deposit deductions, and two states address it by name. Washington&#39;s deposit law says no deposit may be withheld for carpet cleaning unless the landlord documents wear to the carpet beyond ordinary use. California bars requiring a tenant to pay for professional carpet cleaning unless it&#39;s reasonably necessary to restore the move-in condition, not counting ordinary wear and tear.</p>
+      <p class="lede">Elsewhere, the general rule applies: no charges for normal wear and tear, and a reasonable cost for real damage. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.</p>
+
+      <div class="section-rule"><span>How to do it</span></div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h2>Can a landlord charge for routine carpet cleaning?</h2>
+          <p>Not in Washington unless the landlord documents wear beyond ordinary use, and not in California unless the cleaning is reasonably necessary to return the carpet to its move-in condition. In other states, worn traffic paths and the general dinginess of a lived-on carpet are normal wear and tear, which deposit laws bar landlords from charging.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h2>Can a lease require professional carpet cleaning?</h2>
+          <p>In California, a landlord can&#39;t require you to pay for professional carpet cleaning unless it&#39;s reasonably necessary to restore the move-in condition, apart from ordinary wear and tear. Other states may enforce a cleaning clause if the charge is reasonable, but a lease still can&#39;t make ordinary wear into damage. Check the clause and your state&#39;s deposit law before paying.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h2>Can a landlord charge for carpet stains or pet damage?</h2>
+          <p>Yes, at a reasonable cost. Stains, burns, tears and pet damage go beyond ordinary use; Texas, for example, excludes deterioration from negligence, carelessness, accident or abuse from normal wear and tear. Washington limits the charge to repairing the damaged portion when the damage doesn&#39;t cover the whole item, so a stained corner supports spot treatment or a patch rather than new carpet everywhere.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h2>Can a landlord make you pay to replace old carpet?</h2>
+          <p>Not for normal aging. California bars charges for ordinary wear and tear, including its cumulative effects across more than one tenancy, so a carpet worn out over years of renters can&#39;t be billed to the last one. When carpet is truly damaged, the charge should be a reasonable amount to restore its condition at the start of your tenancy, not the price of new carpet.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h2>How do you dispute a carpet charge?</h2>
+          <p>Ask for the itemized statement and the invoice; in Washington, the landlord must also document wear beyond ordinary use. Compare the charge with your move-in photos of the carpet, especially any stains already there. Then reply in writing with your state&#39;s statute from the <a href="/guides/home/security-deposit-laws-by-state">security deposit laws by state</a> table.</p>
+        </div>
+      </div>
+
+      <div class="guide-sources">
+        <p class="guide-sources-label">Sources</p>
+        <ul>
+          <li><a href="https://app.leg.wa.gov/rcw/default.aspx?cite=59.18.280" rel="noopener" target="_blank">RCW 59.18.280 (Washington State Legislature)</a></li>
+          <li><a href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&amp;sectionNum=1950.5" rel="noopener" target="_blank">California Civil Code § 1950.5 (California Legislative Information)</a></li>
+          <li><a href="https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm" rel="noopener" target="_blank">Texas Property Code, Chapter 92 (Texas Legislature)</a></li>
+        </ul>
+      </div>
+
+      <div class="cta-block" data-glyph="🏦">
+        <div class="cta-eyebrow">Try it now — free</div>
+        <p class="cta-headline">Make your move-in record the evidence that settles it</p>
+        <p>Renter&#39;s Deposit Saver walks you through the unit room by room, gives you a photo shot list and a formal condition report, and writes a cover letter to your landlord with your state&#39;s deposit rights cited.</p>
+        <div class="cta-features">
+          <span class="cta-feature">Room-by-room walkthrough guidance</span>
+          <span class="cta-feature">Photo shot list</span>
+          <span class="cta-feature">Formal condition report</span>
+          <span class="cta-feature">Landlord cover letter</span>
+          <span class="cta-feature">State-specific deposit rights</span>
+        </div>
+        <a href="/RentersDepositSaver" class="cta-btn">
+          Open Renter&#39;s Deposit Saver →
+        </a>
+        <span class="cta-subtext">No account required to get started.</span>
+      </div>
+
+      <!-- Cite / link block.
+           Guides are the linkable asset — nobody links a form, people link an
+           explainer they found useful — and the audience that would link is the
+           audience that owns a site. Built on all 552 guides, not just the 112
+           indexable ones, so the other 440 are ready the day indexing widens.
+           Vanilla JS: guides are static HTML, no React on this page. -->
+      <div class="cite-box">
+        <p class="cite-title">Found this useful? Link to it.</p>
+        <p class="cite-url" id="cite-url">https://deftbrain.com/guides/home/can-a-landlord-charge-for-carpet-cleaning</p>
+        <div class="cite-actions">
+          <button type="button" class="cite-btn" data-copy="url">Copy link</button>
+          <button type="button" class="cite-btn" data-copy="html">Copy HTML</button>
+          <button type="button" class="cite-btn" data-copy="cite">Copy citation</button>
+        </div>
+        <p class="cite-note">Free to read, no account, no paywall — link away.</p>
+      </div>
+      <script>
+        (function () {
+          var URL_ = "https://deftbrain.com/guides/home/can-a-landlord-charge-for-carpet-cleaning";
+          var TITLE = "Can a Landlord Charge for Carpet Cleaning After You Move Out?";
+          var MOD = "November 18, 2026";
+          var payload = {
+            url: URL_,
+            html: '<a href="' + URL_ + '">' + TITLE + '</a>',
+            cite: TITLE + '. DeftBrain. Updated ' + MOD + '. ' + URL_
+          };
+          document.querySelectorAll('.cite-btn').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var text = payload[b.getAttribute('data-copy')];
+              var done = function () {
+                var was = b.textContent; b.textContent = 'Copied'; b.classList.add('is-copied');
+                setTimeout(function () { b.textContent = was; b.classList.remove('is-copied'); }, 1600);
+              };
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done, function () {});
+              } else {
+                // Older Safari / non-secure contexts have no async clipboard.
+                var ta = document.createElement('textarea');
+                ta.value = text; ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute'; ta.style.left = '-9999px';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); done(); } catch (e) {}
+                document.body.removeChild(ta);
+              }
+            });
+          });
+        })();
+      </script>
+
+      <!-- Guide analytics beacon.
+           Guides are STATIC HTML — src/utils/analytics.js only runs inside the
+           React app, and there is no /guides route there, so until now 552
+           pages emitted nothing at all. Two consequences: guide readership was
+           entirely invisible, and sawGuide could never be set, which made
+           "Guide → tool crossover" a stat that could only ever report 0.
+           Mirrors analytics.js exactly — same endpoint, same payload shape,
+           same operator opt-out, same privacy posture (no cookies, no
+           identifier ever leaves the browser; the client reports only a
+           boolean and a coarse recency bucket). -->
+      <script>
+        (function () {
+          try {
+            if (localStorage.getItem('db-operator') === '1') return;
+          } catch (e) { /* storage blocked — still send, just without context */ }
+          // Scripted browsers: twin of isAutomated() in src/utils/analytics.js.
+          try {
+            if (navigator.webdriver === true
+              || (Array.isArray(navigator.languages) && navigator.languages.length === 0)
+              || !window.screen || screen.width === 0 || screen.height === 0) return;
+          } catch (e) {}
+          var now = Date.now(), first = null, returning = false, bucket = 'new';
+          var newSession = false, ref, lang;
+          try {
+            first = parseInt(localStorage.getItem('db-first-seen'), 10) || null;
+            returning = !!first;
+            if (!first) localStorage.setItem('db-first-seen', String(now));
+            var days = first ? Math.floor((now - first) / 86400000) : 0;
+            bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
+            if (!sessionStorage.getItem('db-sess')) {
+              sessionStorage.setItem('db-sess', '1');
+              if (returning) sessionStorage.setItem('db-returning', '1');
+              newSession = true;
+            }
+            if (newSession) {
+              sessionStorage.setItem('db-landing', location.pathname);
+              var q = new URLSearchParams(location.search);
+              ref = q.get('utm_source') || q.get('ref') || undefined;
+              if (!ref && document.referrer && document.referrer.indexOf(location.hostname) === -1) {
+                ref = new URL(document.referrer).hostname;
+              }
+              if (ref) sessionStorage.setItem('db-ref', ref);
+            } else {
+              ref = sessionStorage.getItem('db-ref') || undefined;
+            }
+            // This is the flag the crossover stat needs: set here so a tool run
+            // later in the same session can report that a guide came first.
+            sessionStorage.setItem('db-saw-guide', '1');
+            lang = (navigator.language || '').slice(0, 5) || undefined;
+          } catch (e) { /* private mode — send what we have */ }
+          // Previous DeftBrain page, from the same-origin referrer (path only).
+          // Twin of fromPath() in src/utils/analytics.js.
+          var from;
+          try {
+            if (document.referrer) {
+              var ru = new URL(document.referrer);
+              if (ru.hostname === location.hostname && ru.pathname !== location.pathname) from = ru.pathname.slice(0, 160);
+            }
+          } catch (e) {}
+          function sendMetric(payload) {
+            var body = JSON.stringify(payload);
+            try {
+              if (navigator.sendBeacon && navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }))) return;
+              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+            } catch (e) { /* analytics must never interrupt navigation */ }
+          }
+          var guidePath = "/guides/home/can-a-landlord-charge-for-carpet-cleaning";
+          var revisited = (function recordPageRevisit(path) {
+  try {
+    const tabKey = 'db-revisit:' + path;
+    const recorded = sessionStorage.getItem(tabKey);
+    if (recorded !== null) return undefined;
+
+    const key = 'db-page-history';
+    const history = JSON.parse(localStorage.getItem(key) || '[]');
+    const previous = history.includes(path);
+    localStorage.setItem(key, JSON.stringify(history.filter(entry => entry !== path).slice(-199).concat(path)));
+    sessionStorage.setItem(tabKey, previous ? '1' : '0');
+    return previous || undefined;
+  } catch (_) {
+    return undefined;
+  }
+})(guidePath);
+          var toolLink = document.querySelector('.cta-block .cta-btn');
+          if (toolLink) {
+            var destination = new URL(toolLink.href, location.origin);
+            destination.searchParams.set('from_guide', "/guides/home/can-a-landlord-charge-for-carpet-cleaning");
+            toolLink.href = destination.href;
+            var trackToolClick = function () {
+              var revisitClick;
+              try {
+                var clickKey = 'db-revisit-click:' + guidePath;
+                if (sessionStorage.getItem('db-revisit:' + guidePath) === '1' && !sessionStorage.getItem(clickKey)) {
+                  sessionStorage.setItem(clickKey, '1');
+                  revisitClick = true;
+                }
+              } catch (e) {}
+              sendMetric({
+                event: 'guide_tool_click',
+                path: "/guides/home/can-a-landlord-charge-for-carpet-cleaning",
+                props: { tool: "RentersDepositSaver", revisited: revisitClick }
+              });
+            };
+            toolLink.addEventListener('click', trackToolClick);
+            toolLink.addEventListener('auxclick', function (e) {
+              if (e.button === 1) trackToolClick();
+            });
+          }
+          var human;
+          try { human = sessionStorage.getItem('db-int') === '1' || undefined; } catch (e) {}
+          sendMetric({
+            event: 'page_view',
+            path: location.pathname,
+            landing: newSession ? location.pathname : undefined,
+            ts: now,
+            sawGuide: true,
+            ref: ref,
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang, from: from, guideTool: "RentersDepositSaver", revisited: revisited, human: human }
+          });
+          // A person: first gesture, or 15s of the page being visible (twin of
+          // armInteractSignal in src/utils/analytics.js).
+          var gestures = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+          var visibleMs = 0, since = document.visibilityState === 'visible' ? Date.now() : 0, stayTimer;
+          function markHuman(how) {
+            gestures.forEach(function (type) { window.removeEventListener(type, trackInteraction); });
+            document.removeEventListener('visibilitychange', onVisibility);
+            clearTimeout(stayTimer);
+            try {
+              if (sessionStorage.getItem('db-int')) return;
+              var landing = sessionStorage.getItem('db-landing');
+              var sessReturning = sessionStorage.getItem('db-returning') === '1';
+              sessionStorage.setItem('db-int', '1');
+              sendMetric({ event: 'interact', path: location.pathname, ref: ref, landing: landing,
+                props: { how: how, returning: sessReturning, bucket: sessReturning ? bucket : 'new' } });
+            } catch (e) {}
+          }
+          function trackInteraction(event) {
+            if (!event.isTrusted) return;
+            markHuman('gesture');
+          }
+          function scheduleStay() {
+            clearTimeout(stayTimer);
+            stayTimer = setTimeout(function () { markHuman('stay'); }, Math.max(0, 15000 - visibleMs));
+          }
+          function onVisibility() {
+            if (document.visibilityState === 'visible') { since = Date.now(); scheduleStay(); }
+            else { if (since) visibleMs += Date.now() - since; since = 0; clearTimeout(stayTimer); }
+          }
+          try { if (sessionStorage.getItem('db-int')) return; } catch (e) {}
+          gestures.forEach(function (type) { window.addEventListener(type, trackInteraction, { passive: true }); });
+          document.addEventListener('visibilitychange', onVisibility);
+          if (since) scheduleStay();
+        })();
+      </script>
+
+      <div class="section-rule"><span>Related situations</span></div>
+      <div class="related-grid">
+        <a href="/guides/home/can-a-landlord-charge-for-professional-cleaning" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">Can a landlord charge for professional cleaning</div>
+        </a>
+        <a href="/guides/home/can-a-landlord-charge-for-changing-the-locks" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">Can a landlord charge for changing the locks</div>
+        </a>
+        <a href="/guides/home/can-a-landlord-charge-for-light-bulbs" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">Can a landlord charge for light bulbs</div>
+        </a>
+        <a href="/guides/home/can-a-landlord-charge-for-painting-after-you-move-out" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">Can a landlord charge for painting after you move out</div>
+        </a>
+        <a href="/guides/home/can-a-landlord-charge-for-dead-grass" class="related-card">
+          <div class="rel-cat">Home &amp; Daily Life</div>
+          <div class="rel-title">Can a landlord charge for dead grass</div>
+        </a>
+      </div>
+
+
+    </div>
+  </main>
+
+<section class="site-end" aria-label="Ideas and newsletter">
+    <div class="site-end-inner">
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128161; Missing something?</p>
+        <p class="site-end-text"><strong>Didn&rsquo;t find what you need?</strong> Suggest a tool. We read every suggestion, and the best become new tools.</p>
+        <form class="site-end-form" id="db-idea-form">
+          <label class="sr-only-se" for="db-idea-input">What are you trying to deal with?</label>
+          <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?">
+          <button id="db-idea-btn" type="submit">Send</button>
+        </form>
+        <p class="site-end-msg" id="db-idea-msg" role="status"></p>
+      </div>
+      <div class="site-end-part">
+        <p class="site-end-kicker">&#128238; Newsletter</p>
+        <p class="site-end-text"><strong>One useful tool a month</strong> &mdash; the one worth knowing about before life demands it.</p>
+        <form class="site-end-form" id="db-cap-form">
+          <label class="sr-only-se" for="db-cap-email">Email address</label>
+          <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email">
+          <button id="db-cap-btn" type="submit">Subscribe</button>
+        </form>
+        <p class="site-end-msg" id="db-cap-msg" role="status"></p>
+      </div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    function wire(formId, btnId, msgId, label, send, done, resetAfter){
+      var f=document.getElementById(formId); if(!f) return;
+      f.addEventListener('submit', function(e){
+        e.preventDefault();
+        var btn=document.getElementById(btnId), msg=document.getElementById(msgId);
+        btn.disabled=true; btn.textContent='Sending\u2026';
+        send().then(function(x){
+          if(x.ok){
+            f.style.display='none'; msg.textContent=done(x.d);
+            if(resetAfter) setTimeout(function(){ f.reset(); f.style.display=''; msg.textContent=''; btn.disabled=false; btn.textContent=label; }, resetAfter);
+          }
+          else { msg.textContent=(x.d&&x.d.error)||'Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; }
+        }).catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent=label; });
+      });
+    }
+    function post(url, body){
+      return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok&&(d.ok!==false),d:d};});});
+    }
+    wire('db-idea-form','db-idea-btn','db-idea-msg','Send',
+      function(){ return post('/api/idea',{problem:document.getElementById('db-idea-input').value.trim(),source:'site-end',path:location.pathname}); },
+      function(){ return '\uD83D\uDE4F Got it \u2014 thank you.'; }, 6000);
+    wire('db-cap-form','db-cap-btn','db-cap-msg','Subscribe',
+      function(){ return post('/api/subscribe',{email:document.getElementById('db-cap-email').value,source:location.pathname}); },
+      function(d){ return d&&d.already ? 'You\u2019re already on the list. Bruce admires the enthusiasm.' : 'Check your inbox \u2014 confirm the email and you\u2019re in.'; });
+  })();
+  </script>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <a href="/" class="site-footer-brand" aria-label="DeftBrain — home">
+        <img src="/pBrain-r.png" alt="" height="64">
+        <span class="site-footer-word">Deft<span>Brain</span></span>
+      </a>
+      <div class="site-footer-end">
+        <nav class="site-footer-nav" aria-label="Footer"><a href="/tools">All Tools</a><a href="/ToolFinder">Find a Tool</a><a href="/guides">Guides</a><a href="/organizations">Organizations</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://www.pinterest.com/DeftBrainHQ/" target="_blank" rel="me noopener noreferrer">Pinterest</a><a href="/about#link-to-deftbrain">Link to DeftBrain</a><a href="/contact">Contact</a></nav>
+        <span class="site-footer-dot" aria-hidden="true">·</span>
+        <span>© 2026 DeftBrain · deftbrain.com</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

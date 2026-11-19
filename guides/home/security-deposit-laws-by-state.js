@@ -411,7 +411,7 @@ module.exports = {
     },
     {
       "name": "What happens if a landlord misses the deadline?",
-      "body": "In many states, a landlord who misses the deadline loses the right to keep any part of the deposit, even for real damage. New York, Washington and Iowa all work this way. Many states add a penalty for bad-faith or wrongful withholding. Common amounts are two times the amount withheld (Arizona, Missouri and New Jersey, among others) or three times (Georgia and Maryland). Massachusetts awards three times the deposit plus 5% interest, court costs and attorney's fees for its main violations. Texas presumes bad faith after the deadline passes and allows $100 plus three times the amount wrongfully withheld.\n\nThese penalties usually require a demand letter or a small-claims case. Your strongest evidence is a dated record of the unit's condition at move-in, which is the subject of [how to write a move-in condition report](/guides/home/how-to-write-a-move-in-condition-report)."
+      "body": "In many states, a landlord who misses the deadline loses the right to keep any part of the deposit, even for real damage. New York, Washington and Iowa all work this way. Many states add a penalty for bad-faith or wrongful withholding. Common amounts are two times the amount withheld (Arizona, Missouri and New Jersey, among others) or three times (Georgia and Maryland). Massachusetts awards three times the deposit plus 5% interest, court costs and attorney's fees for its main violations. Texas presumes bad faith after the deadline passes and allows $100 plus three times the amount wrongfully withheld.\n\nThese penalties usually require a demand letter or a small-claims case. Your strongest evidence is a dated record of the unit's condition at move-in, which is the subject of [how to write a move-in condition report](/guides/home/how-to-write-a-move-in-condition-report).\n\nQuestions about a specific charge: can a landlord charge for [nail holes](/guides/home/can-a-landlord-charge-for-nail-holes), [painting after you move out](/guides/home/can-a-landlord-charge-for-painting-after-you-move-out), [carpet cleaning](/guides/home/can-a-landlord-charge-for-carpet-cleaning), [professional cleaning](/guides/home/can-a-landlord-charge-for-professional-cleaning), [blinds](/guides/home/can-a-landlord-charge-for-blinds), [light bulbs](/guides/home/can-a-landlord-charge-for-light-bulbs), [changing the locks](/guides/home/can-a-landlord-charge-for-changing-the-locks), [dead grass](/guides/home/can-a-landlord-charge-for-dead-grass) or [the landlord's own labor](/guides/home/can-a-landlord-charge-for-their-own-labor)? And can a landlord keep the deposit [if the property is sold](/guides/home/can-a-landlord-keep-your-deposit-if-the-property-is-sold), [if one tenant moves out](/guides/home/can-a-landlord-keep-your-deposit-if-one-tenant-moves-out) or [if the tenant dies](/guides/home/can-a-landlord-keep-a-security-deposit-if-the-tenant-dies)?"
     },
     {
       "name": "How do you use your state's rules to get your deposit back?",
@@ -471,6 +471,6 @@ module.exports = {
     "toolName": "Renter's Deposit Saver"
   },
   "published": "2026-11-14",
-  "modified": "2026-11-14",
+  "modified": "2026-11-18",
   "reviewed": true
 };
