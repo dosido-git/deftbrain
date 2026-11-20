@@ -33,6 +33,7 @@ const { buildGuideShelves } = require('./lib/guideShelves');
 const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
+const { linksToHtml } = require('../src/utils/inlineLinks');
 
 const ROOT      = path.join(__dirname, '..');
 const BUILD_DIR = path.join(ROOT, 'build', 'tools');
@@ -60,6 +61,10 @@ function loadModuleData(relPath, exportName) {
 
 function loadCategories() {
   return loadModuleData(path.join('src', 'data', 'categoryMeta.js'), 'CATEGORY_META');
+}
+
+function loadOverviews() {
+  return loadModuleData(path.join('src', 'data', 'categoryOverviews.js'), 'CATEGORY_OVERVIEWS');
 }
 
 function loadTools() {
@@ -168,6 +173,14 @@ function renderHead({ title, description, canonicalPath }) {
     @media(max-width:1050px){.tcp-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:760px){.tcp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}.tcp-card-copy{padding:12px;min-height:102px}.tcp-card h2{font-size:14px}}
     @media(max-width:470px){.tcp-grid{grid-template-columns:1fr}.tcp-card{display:grid;grid-template-columns:42% 58%;min-height:140px}.tcp-card-image-wrap{aspect-ratio:auto;height:100%}.tcp-card-copy{min-height:0;display:flex;flex-direction:column;justify-content:center}}
+    .tcp-about{margin-top:48px;max-width:720px;font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.65;color:var(--tcp-navy)}
+    .tcp-about h2{font-family:Georgia,'Times New Roman',serif;font-size:25px;line-height:1.25;margin:0 0 14px;color:var(--tcp-navy)}
+    .tcp-about p{margin:0 0 14px}
+    .tcp-about a{color:var(--tcp-blue);text-decoration:underline;text-underline-offset:2px}
+    .tcp-sources{margin-top:20px;font-size:13px;color:var(--tcp-muted)}
+    .tcp-sources-label{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:11px;margin:0 0 6px}
+    .tcp-sources ul{margin:0;padding-inline-start:1.1rem}
+    .tcp-sources a{color:var(--tcp-muted)}
     .tcp-guides{margin-top:48px;font-family:'DM Sans',system-ui,sans-serif}
     .tcp-guides h2{font-family:Georgia,'Times New Roman',serif;font-size:25px;margin:0 0 14px;color:var(--tcp-navy)}
     .tcp-page{--gl-ink:var(--tcp-navy);--gl-link:var(--tcp-blue);--gl-muted:var(--tcp-muted);--gl-line:var(--tcp-line)}${GUIDE_LIST_STYLE}
@@ -186,6 +199,31 @@ ${getFooterHTML()}
 </html>`;
 }
 
+// The topic overview, between the tools and the guides (owner, 2026-11-20):
+// the category page is the topic's pillar. Kept below the grid so the page
+// still opens on the heading and the tools (owner, 2026-10-04).
+function renderOverview(ov, toolIds) {
+  if (!ov) return '';
+  for (const p of ov.paras) {
+    for (const m of p.matchAll(/\]\(\/([A-Za-z]+)\)/g)) {
+      if (!toolIds.has(m[1])) throw new Error(`categoryOverviews: link to unknown tool /${m[1]}`);
+    }
+  }
+  const sources = ov.sources && ov.sources.length ? `
+        <div class="tcp-sources">
+          <p class="tcp-sources-label">Sources</p>
+          <ul>
+${ov.sources.map(s => `            <li><a href="${escHtml(s.url)}" rel="noopener" target="_blank">${escHtml(s.label)}</a></li>`).join('\n')}
+          </ul>
+        </div>` : '';
+  return `
+      <section class="tcp-about" aria-labelledby="tcp-about-h">
+        <h2 id="tcp-about-h">${escHtml(ov.heading)}</h2>
+${ov.paras.map(p => `        <p>${linksToHtml(p, escHtml)}</p>`).join('\n')}${sources}
+      </section>
+`;
+}
+
 // The category's related guides, under its tools (2026-10-05) — the same list
 // the /tools page shows for the category (scripts/lib/guideShelves.js).
 function renderGuides(meta, shelf) {
@@ -198,7 +236,7 @@ ${guideListHtml(shelf.guides, '        ')}
 `;
 }
 
-function renderCategoryPage(meta, toolsInCat, guideShelf) {
+function renderCategoryPage(meta, toolsInCat, guideShelf, overview, toolIds) {
   const sorted = [...toolsInCat].sort((a, b) => a.title.localeCompare(b.title));
   const cardsHtml = sorted.map(t => {
     const image = hasScrambleArt(t.id)
@@ -236,7 +274,7 @@ function renderCategoryPage(meta, toolsInCat, guideShelf) {
 ${cardsHtml}
       </div>
 
-${renderGuides(meta, guideShelf)}
+${renderOverview(overview, toolIds)}${renderGuides(meta, guideShelf)}
       <p class="tcp-outro"><a href="/ToolFinder">Try Tool Finder →</a></p>
 
     </div>
@@ -254,6 +292,8 @@ function main() {
   if (!tools.length) { console.warn('  ⚠ No tools found in tools.js.'); return; }
 
   const guideShelves = buildGuideShelves(tools, categoriesFor);
+  const overviews = loadOverviews();
+  const toolIds = new Set(tools.map(t => t.id));
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 
   let count = 0;
@@ -265,7 +305,7 @@ function main() {
 
     const dir = path.join(BUILD_DIR, meta.slug);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'index.html'), renderCategoryPage(meta, toolsInCat, guideShelf), 'utf8');
+    fs.writeFileSync(path.join(dir, 'index.html'), renderCategoryPage(meta, toolsInCat, guideShelf, overviews[meta.name], toolIds), 'utf8');
     console.log(`  ✓ build/tools/${meta.slug}/index.html — ${toolsInCat.length} tools`);
     count++;
   }
