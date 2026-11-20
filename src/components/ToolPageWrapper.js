@@ -11,9 +11,12 @@ import { ensurePrintStyles } from './printStyles';
 import SiteHeader from './SiteHeader';
 import './ToolPageSiteStyle.css';
 import { schemeStyle, schemeCategory } from '../data/toolSchemes';
+import { CATEGORY_META } from '../data/categoryMeta';
 import { SectionGroup } from './CategoryStyle';
 import { PRINT_HEADER_LOGO, PRINT_FOOTER_BRAND } from '../utils/printBranding';
 import { toolTagline } from '../utils/toolTagline';
+
+const categorySlug = (name) => CATEGORY_META.find(cm => cm.name === name)?.slug;
 
 // Site style (2026-09-27). Every tool page wears the home page's frame: its
 // header (SiteHeader — brand + definition, nav, locale controls, light/dark
@@ -268,7 +271,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               <div className="space-y-1.5">
                 {/* Category on the left, Bookmark top right. */}
                 <div className="flex items-center justify-between gap-3 relative">
-                  <p className="text-sm text-[var(--sc-accent)]">Category: {schemeCategory(detectedTool)}</p>
+                  {/* Links to the category page, the topic pillar (owner, 2026-11-20). Plain
+                      <a>: category pages are static, not SPA routes. Mirrored in prerender.js. */}
+                  <p className="text-sm text-[var(--sc-accent)]">Category: {categorySlug(schemeCategory(detectedTool))
+                    ? <a href={`/tools/${categorySlug(schemeCategory(detectedTool))}`} className="underline underline-offset-2 decoration-1 hover:no-underline">{schemeCategory(detectedTool)}</a>
+                    : schemeCategory(detectedTool)}</p>
                   <button data-print-hide onClick={handleBookmarkHint}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--sc-border,var(--sc-accent))] text-[var(--sc-accent)] text-sm hover:bg-[var(--sc-field)]"
                     aria-label="Bookmark this tool" title="Bookmark this tool">

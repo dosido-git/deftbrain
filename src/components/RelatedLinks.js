@@ -20,6 +20,7 @@ import { tools } from '../data/tools';
 import nextSteps from '../data/related-tool-next-steps.json';
 import { useTheme } from '../hooks/useTheme';
 import { PROTOTYPE_TOOLS, relatedStyle } from '../data/toolSchemes';
+import { CATEGORY_META } from '../data/categoryMeta';
 
 // Fetch the guides manifest once, cached at module scope across navigations.
 let _cache = null;
@@ -130,10 +131,13 @@ export default function RelatedLinks() {
     </nav>
   ));
 
-  // Category slugs are all single lowercase words, so the display name is just
-  // the capitalised slug — no second copy of CATEGORY_META to drift.
-  const hubName = (cat) => cat.charAt(0).toUpperCase() + cat.slice(1);
-  const hubLinks = (cats) => cats.map(cat => ({ href: `/guides/${cat}`, text: `${hubName(cat)} guides` }));
+  // The tool's own category page(s) — the topic pillar (owner, 2026-11-20).
+  // Replaced links to guide-folder hubs, most of which now redirect.
+  // Mirrors getToolHubsHTML in prerender.js.
+  const pillarLinks = (tool) => (tool.categories || [])
+    .map(name => CATEGORY_META.find(cm => cm.name === name))
+    .filter(Boolean).slice(0, 2)
+    .map(cm => ({ href: `/tools/${cm.slug}`, text: `${cm.name} tools and guides` }));
 
   let body = null;
 
@@ -151,16 +155,12 @@ export default function RelatedLinks() {
       .slice(0, 4)
       .map(g => ({ href: `/guides/${g.category}/${g.slug}`, text: g.title }));
     const relTools = relatedTools(tool, tools).map(t => ({ href: `/${t.id}`, text: t.title }));
-    // The hub(s) this tool's own guides live in — topically relevant by
-    // construction, never hand-mapped. Mirrors getToolHubsHTML in prerender.js.
-    const toolHubs = hubLinks(
-      [...new Set(guides.filter(g => g.toolId === tool.id).map(g => g.category))].slice(0, 3)
-    );
+    const toolHubs = pillarLinks(tool);
     body = (
       <>
         <Block label="Related guides" links={relGuides} />
         <Block label="Related tools" links={relTools} />
-        {toolHubs.length > 0 && <Block label="Browse more guides" links={toolHubs} />}
+        {toolHubs.length > 0 && <Block label="More on this topic" links={toolHubs} />}
       </>
     );
   }

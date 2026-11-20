@@ -383,6 +383,10 @@ h2 {
   border-color: var(--accent2);
   background: var(--warm);
 }
+.related-grid:has(+ .related-pillar) { margin-bottom: 16px; }
+.related-pillar { margin: 0 0 48px; font-size: 14px; }
+.related-pillar a { color: var(--deft-blue); text-decoration: none; font-weight: 600; }
+.related-pillar a:hover { text-decoration: underline; }
 .rel-cat {
   font-size: 10px;
   font-weight: 500;

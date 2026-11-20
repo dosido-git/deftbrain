@@ -624,6 +624,8 @@ ${featuresHtml}
       <div class="related-grid">
 ${relatedCards}
       </div>
+      <!-- Up-link to the topic's pillar: the tool category page (owner, 2026-11-20). -->
+      <p class="related-pillar"><a href="/tools/${hubSlug}">All ${esc(mainCat)} tools and guides &rarr;</a></p>
 
 
     </div>

@@ -319,30 +319,18 @@ function getRelatedHTML(related) {
 // redirects told Google these pages matter while the link graph said they did
 // not. These two blocks resolve that contradiction.
 //
-// Names are read from build-guides-indexes.js rather than restated here, so a
-// renamed category cannot silently desync the two files.
-function loadHubNames() {
-  try {
-    const src = fs.readFileSync(path.join(__dirname, 'build-guides-indexes.js'), 'utf8');
-    const block = src.slice(src.indexOf('const CATEGORY_META'), src.indexOf('\n};', src.indexOf('const CATEGORY_META')));
-    const out = {};
-    for (const m of block.matchAll(/(\w+):\s*\{\s*\n\s*name:\s*'([^']+)'/g)) out[m[1]] = m[2];
-    return out;
-  } catch { return {}; }
-}
-const HUB_NAMES = loadHubNames();
-
-// Tool page → the hub(s) its own guides live in. Derived from the guides
-// themselves, so the link is always topically relevant and never hand-mapped.
-function getToolHubsHTML(guides) {
-  if (!guides || !guides.length) return '';
-  const cats = [...new Set(guides.map(g => g.category))].filter(c => HUB_NAMES[c]).slice(0, 3);
-  if (!cats.length) return '';
-  const links = cats
-    .map(c => `<a href="/guides/${c}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(HUB_NAMES[c])} guides &rarr;</a>`)
+// Tool page → its own category page(s), the topic pillar (owner, 2026-11-20).
+// Replaced links to guide-folder hubs (HUB_NAMES had stopped parsing, so the
+// block was silently empty). Mirrors pillarLinks in RelatedLinks.js.
+function getToolHubsHTML(tool) {
+  if (!CATEGORY_SLUGS) CATEGORY_SLUGS = new Map(loadCategoryMeta().map(c => [c.name, c.slug]));
+  const names = (tool.categories || []).filter(n => CATEGORY_SLUGS.has(n)).slice(0, 2);
+  if (!names.length) return '';
+  const links = names
+    .map(n => `<a href="/tools/${CATEGORY_SLUGS.get(n)}" style="color:#165b9a;text-decoration:none;font-weight:600">${escapeHtml(n)} tools and guides &rarr;</a>`)
     .join('\n        ');
-  return `<nav class="db-tool-hubs" aria-label="Browse more guides" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Browse more guides</h2>
+  return `<nav class="db-tool-hubs" aria-label="More on this topic" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">More on this topic</h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>
@@ -611,12 +599,16 @@ function stripToolIndex(html) {
 // INSIDE #root: the app mounts with createRoot().render(), which REPLACES the
 // container's contents on load — so there's no hydration mismatch; React simply
 // swaps this for the live app. Keep in sync with ToolPageWrapper's guide layout.
-function buildBodyContent({ title, tagline, description, guide, primer, faq, exampleOutput }) {
+function buildBodyContent({ title, tagline, description, guide, primer, faq, exampleOutput, categories }) {
   const e = escapeHtml;
   const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
   const LI = 'margin:.4rem 0;line-height:1.55';
   const out = [];
 
+  // Category label linked to its pillar page, as on the live tool header (ToolPageWrapper.js).
+  if (!CATEGORY_SLUGS) CATEGORY_SLUGS = new Map(loadCategoryMeta().map(c => [c.name, c.slug]));
+  const cat = (categories || []).find(n => CATEGORY_SLUGS.has(n));
+  if (cat) out.push(`<p style="font-size:.875rem;margin:0 0 .25rem">Category: <a href="/tools/${CATEGORY_SLUGS.get(cat)}" style="color:#165b9a">${e(cat)}</a></p>`);
   out.push(`<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">${e(title)}</h1>`);
   if (tagline)     out.push(`<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">${e(tagline)}</p>`);
   if (description) out.push(`<p style="line-height:1.6;margin:0 0 1rem">${e(description)}</p>`);
@@ -773,7 +765,7 @@ async function main() {
       // Same order and headings as <RelatedLinks>: guides, tools, hubs.
       const relatedBlocks = getRelatedGuidesHTML(guidesByTool[tool.id])
         + getRelatedHTML(relatedTools(tool, tools))
-        + getToolHubsHTML(guidesByTool[tool.id]);
+        + getToolHubsHTML(tool);
       const html = stripToolIndex(injectBody(injectMeta(template, tool), tool, relatedBlocks || getCategoryFallbackHTML(tool)));
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
