@@ -59,7 +59,8 @@ const OLD_HUB_REDIRECTS = {
   'work-meetings': 'career', // merged into Career and Business, 2026-10-27
   'self-reflection': 'health-wellness', // dropped, 2026-10-27
   tasks: 'home-daily-life', // dropped, 2026-10-27
-  'ideas-imagination': 'just-for-fun', // merged into Ideas & Diversions, 2026-10-27
+  'ideas-imagination': 'ideas-diversions', // merged into Ideas & Diversions, 2026-10-27
+  'just-for-fun': 'ideas-diversions', // slug renamed, 2026-11-20
   workplace: 'career',
 };
 

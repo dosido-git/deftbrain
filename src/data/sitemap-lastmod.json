@@ -231,10 +231,6 @@
   "hash": "d7a2ece223d7b5f114fdb634909f9ae8d87b3f53",
   "lastmod": "2026-11-20"
  },
- "category:just-for-fun": {
-  "hash": "b8e22659d2ed9d8dfcfb4b5c56a71fc5798a6b3a",
-  "lastmod": "2026-11-20"
- },
  "category:self-reflection": {
   "hash": "9ba9874709b7134ce9379229a082b4b2ee269473",
   "lastmod": "2026-10-06"
@@ -590,5 +586,9 @@
  "static:contact": {
   "hash": "b5df160a661ee803c56e582ebafed3c6748e9e76",
   "lastmod": "2026-11-16"
+ },
+ "category:ideas-diversions": {
+  "hash": "dba18275dbd1fbb1fb42476e91a8f818d74e104c",
+  "lastmod": "2026-11-20"
  }
 }

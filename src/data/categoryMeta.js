@@ -48,8 +48,8 @@ export const CATEGORY_META = [
     example: 'I’m stuck on a concept and don’t know why.',
     desc: "Research, concepts that aren't clicking, and making sense of something unfamiliar." },
   // Just for Fun renamed and Ideas & Imagination merged in (owner, 2026-10-27);
-  // the slug stays 'just-for-fun' so its address does not change.
-  { name: 'Ideas & Diversions',  emoji: '🧩', tag: 'diversions', sub: 'ideas · imagination · play', slug: 'just-for-fun',
+  // slug renamed from 'just-for-fun' (owner, 2026-11-20); the old address 301s here.
+  { name: 'Ideas & Diversions',  emoji: '🧩', tag: 'diversions', sub: 'ideas · imagination · play', slug: 'ideas-diversions',
     example: 'I know it. I just can’t remember it.',
     desc: "Naming things, testing an idea, hobbies, shows and games, and small adventures worth a detour." },
   { name: 'Decisions',           emoji: '🧭', tag: 'veer', sub: 'decisions · direction · choices', slug: 'decisions',

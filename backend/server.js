@@ -722,7 +722,7 @@ app.get('/organizations', (req, res) => {
 const TOOL_CATEGORIES = [
   'home-daily-life', 'travel-events', 'relationships', 'money', 'career',
   'health-wellness', 'conversations', 'learning',
-  'just-for-fun', 'decisions',
+  'ideas-diversions', 'decisions',
 ];
 // Work & Meetings merged into Career and Business (owner, 2026-10-27).
 app.get('/tools/work-meetings', (req, res) => res.redirect(301, '/tools/career'));
@@ -730,7 +730,9 @@ app.get('/tools/work-meetings', (req, res) => res.redirect(301, '/tools/career')
 app.get('/tools/self-reflection', (req, res) => res.redirect(301, '/tools/home-daily-life'));
 app.get('/tools/tasks', (req, res) => res.redirect(301, '/tools/home-daily-life'));
 // Ideas & Imagination merged into Ideas & Diversions (owner, 2026-10-27).
-app.get('/tools/ideas-imagination', (req, res) => res.redirect(301, '/tools/just-for-fun'));
+app.get('/tools/ideas-imagination', (req, res) => res.redirect(301, '/tools/ideas-diversions'));
+// Ideas & Diversions slug renamed from just-for-fun (owner, 2026-11-20).
+app.get('/tools/just-for-fun', (req, res) => res.redirect(301, '/tools/ideas-diversions'));
 TOOL_CATEGORIES.forEach(slug => {
   app.get(`/tools/${slug}`, (req, res) => {
     sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'tools', slug, 'index.html'));

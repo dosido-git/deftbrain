@@ -72,12 +72,12 @@
   "lastmod": "2026-10-24"
  },
  "_index": {
-  "hash": "4b1cb0f8872c310c2ab4a138cd59d157c5edf9f4",
-  "lastmod": "2026-11-19"
+  "hash": "10b28f8db17260694765b7cd3fdc67634a65e8f7",
+  "lastmod": "2026-11-20"
  },
  "_by-tool": {
-  "hash": "707402e11ad6efd7405036a76275c23d7fc5e930",
-  "lastmod": "2026-11-19"
+  "hash": "77c432c6d6f225d2eb0e03557ae71d3d7b51901c",
+  "lastmod": "2026-11-20"
  },
  "home-daily-life": {
   "hash": "994cab4c5738e83ea53bf30a0d7d85b3f153a72b",
@@ -99,10 +99,6 @@
   "hash": "5fb51cdab065949dc8fd19887c8016d23cb936d3",
   "lastmod": "2026-11-18"
  },
- "just-for-fun": {
-  "hash": "bea919ea1ddfbf763a1f5a26460d69504a927a89",
-  "lastmod": "2026-11-18"
- },
  "self-reflection": {
   "hash": "5a55ac356a6da04ced73ab1182c2f8317fdd5151",
   "lastmod": "2026-10-25"
@@ -114,5 +110,9 @@
  "tasks": {
   "hash": "a5efa252d613a1c784b229d70b8fd54426c01fc1",
   "lastmod": "2026-10-25"
+ },
+ "ideas-diversions": {
+  "hash": "74b9e926cbd53099089ec5cd9af7b89fff4216c9",
+  "lastmod": "2026-11-20"
  }
 }
