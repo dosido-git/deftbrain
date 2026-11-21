@@ -900,13 +900,6 @@ app.get(['/.well-known/security.txt', '/security.txt'], (req, res) => {
   res.type('text/plain').sendFile(SECURITY_TXT);
 });
 
-// The CBCT archive's address is shared by hand, often retyped in lowercase;
-// static serving is case-sensitive, so send any other casing to the real name.
-app.get(/^\/djlowercbct\.zip$/i, (req, res, next) => {
-  if (req.path === '/djLowerCBCT.zip') return next();
-  res.redirect(301, '/djLowerCBCT.zip');
-});
-
 // ── Serve static build assets ──
 // Hoisted out of the IS_PRODUCTION block so /guides/{category}/{slug} works
 // in dev too (so we can locally test the guide URLs we just enabled).
