@@ -16,6 +16,9 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 const { NO_QUOTE_RULE } = require('../lib/factCheck');
+const { checkLinks, linkFactsBlock, warmRdap } = require('../lib/urlSignals');
+
+if (process.env.NODE_ENV !== 'test') warmRdap();
 
 function cleanString(value, max = 4000) {
   if (typeof value !== 'string') return '';
@@ -290,6 +293,25 @@ through a character substitution."
 
 
 Prefer observable wording.
+
+LINK CHECKS. When the supplied material includes a LINK CHECKS block, those
+lines were computed by code from the link text and public domain-registration
+records — the links were never opened. Treat each line as OBSERVED fact and
+explain in plain words what it means for this message (the text before an
+"@" is not where a link goes; a shortener hides the destination; punycode can
+display as familiar letters). A domain registered in the last few weeks is a
+warning sign worth naming. An older registration date, or a link with no
+warning signs in its text, does NOT show the site is safe or genuine — say
+so if you mention it. A "Google Web Risk currently lists" line is the only
+reputation check: it is strong outside evidence worth naming first, but say
+Google lists the site as possible phishing/malware, never that Google
+confirmed it. With no such line, say nothing about reputation lists or
+blocklists — a missing listing is not evidence the site is safe. Never invent
+a registration date or listing the block does not give.
+
+When the material is only a link with no message around it, base the read on
+the link text and LINK CHECKS, say what a link on its own can and cannot show,
+and ask for where it came from if that would change the read.
 
 Do not visit or interact with supplied links unless the product has a
 dedicated safe verification capability.
@@ -1061,12 +1083,16 @@ router.post('/scam-radar/stream', rateLimit(DEFAULT_LIMITS), async (req, res) =>
     }
 
     const interactionLabel = INTERACTION_LABELS[interactionStatus] || INTERACTION_LABELS.none;
+    // Link facts computed in code (lib/urlSignals.js), domain ages looked up
+    // side by side, each capped at 2s; cached for a day.
+    const links = await checkLinks(`${messageText}\n${senderContext}`);
+    const linkFacts = linkFactsBlock(links);
 
     const supplied = `MESSAGE:
 ---
 ${messageText}
 ---
-${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${interactionLabel}${interactionStatus === 'other' && interactionOther ? ` — ${interactionOther}` : ''}`;
+${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${interactionLabel}${interactionStatus === 'other' && interactionOther ? ` — ${interactionOther}` : ''}${linkFacts ? `\n\n${linkFacts}` : ''}`;
 
     // Progressive (2026-10-16, lib/progressive.js): four section passes at
     // once — the verdict first, then the concerns, the steps, and the
@@ -1093,7 +1119,9 @@ ${senderContext ? `SENDER OR CONTEXT: ${senderContext}\n` : ''}ALREADY DONE: ${i
       ], (keys, i, plan) => pass(keys, i + 1, plan)),
       // Run AFTER the guard, not before (and on every draft): the guard's
       // repair pass can blank a flagged field instead of substituting it.
-      finish: d => stripEmptyItems(structuredClone(d)),
+      // link_checks: code's own findings, added after the strip (a signal's
+      // fields are never blank) and never seen or rewritten by the guard.
+      finish: d => ({ ...stripEmptyItems(structuredClone(d)), ...(links.length ? { link_checks: links } : {}) }),
       ready: d => Boolean(d.verdict),
       complete: d => Boolean(d.verdict),
       check: async (parsed) => {

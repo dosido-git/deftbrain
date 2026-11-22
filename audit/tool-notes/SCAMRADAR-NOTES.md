@@ -295,6 +295,44 @@ the verdict stayed `LIKELY_SCAM` with a confidently-worded explanation.
 `npm run check:golden scam-radar` → 3/3 PASS, no golden re-record needed
 (no schema change, only prompt wording).
 
+## Link checks (2026-11-22)
+
+Links (and sender email domains) in the message or sender field are checked
+in code by `backend/lib/urlSignals.js` before the model runs; the findings go
+to the model as a LINK CHECKS block (prompt section of the same name) and to
+the page as `link_checks` (added in `finish`, after the strip, so the guard
+never sees or rewrites it). Rendered as a "Link checks" section after "Why
+this looks concerning", one line per signal via `scam_link_<code>`.
+
+- **Signals:** userinfo before "@", IP host, punycode, known shortener,
+  unusual port, brand in name/subdomain, brand lookalike (digit swap or one
+  edit), deep subdomains, http, domain registered ≤90 days ago. Sources are
+  in the file header. A domain whose own label IS the brand (amazon.de) is
+  never flagged, so no list of official domains has to be kept true.
+- **Domain age:** RDAP straight from the registry named in IANA's bootstrap
+  file (no rdap.org middleman, which Cloudflare caps at 10 req/10s). Fixed
+  hosts, no redirects followed, domain in the path only — SSRF-safe. 2s cap
+  per lookup, all links side by side, cached a day; bootstrap warmed at
+  route load. Typical warm lookup ~70ms.
+- **Never opens the link.** No reputation/blocklist check is done and the
+  prompt forbids claiming one.
+- **Google Web Risk** (owner's key, `GOOGLE_WEB_RISK_KEY`, local `.env` +
+  Railway): Lookup API per link, side by side with RDAP, 2s cap, cached until
+  Google's `expireTime` (misses 10 min). Signals `google_phishing` /
+  `google_malware` / `google_unwanted`, always hedged ("possible"), with the
+  "Advisory provided by Google" link Safe Browsing's display rules require.
+  No key or any error → skipped silently, never reported as "safe".
+  Free to 100k calls/month, then $0.50/1k.
+  Verified live 2026-11-22 against Google's test page
+  (testsafebrowsing.appspot.com/s/phishing.html): read named the listing first,
+  hedged, guard PASS. A new key returned 403 for a few minutes before working.
+- **Not added:** URLhaus (malware downloads only, no phishing; commercial use
+  points to paid Spamhaus), suspicious-TLD lists (no stable source).
+- **Self-check:** `node backend/lib/urlSignals.js`.
+- **Verified:** one live EN call (brand-in-subdomain link) — the read named
+  the real domain and its registration date without calling it fraudulent;
+  canned-backend browser check in EN + ES. Golden not re-recorded.
+
 ## Audit fixes locked here (2026-07-14) — kept for history, both reconfirmed live 2026-09-09
 
 1. **🐛 DOWN in ALL 12 non-English languages — 500 every call.** The guard
