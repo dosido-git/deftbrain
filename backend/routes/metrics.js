@@ -216,10 +216,14 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   // labels — matching the "derive then discard" posture locationOf uses for IP.
   const device = isSessionScoped ? deviceInfo(req.headers['user-agent']) : undefined;
   const landingPath = metricPath(landing);
+  // `interact` is the likely-person session record, but only the session's
+  // first page_view carries props.lang; Accept-Language's first tag is the
+  // same value navigator.language reports.
+  const acceptLang = String(req.headers['accept-language'] || '').split(',')[0].trim().slice(0, 5);
   logMetric('event', {
     event: event.slice(0, 60),
     path,
-    props,
+    props: event === 'interact' && props && typeof props === 'object' && !props.lang && acceptLang ? { ...props, lang: acceptLang } : props,
     ...(ref ? { ref: String(ref).slice(0, 120) } : {}),
     ...(sawGuide === true ? { sawGuide: true } : {}),
     ...(landingPath ? { landing: landingPath } : {}),
@@ -679,12 +683,18 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     }
 
     // ── headline ──
-    const pv = events.filter(e => e.event === 'page_view');
-    const sessions = pv.filter(e => e.props && e.props.newSession);
-    const returningSessions = sessions.filter(e => e.props.returning);
+    // Likely people only (owner, 2026-11-21): every count in this report
+    // leaves out visits that never clicked, typed, scrolled or stayed 15s.
+    // A session is one `interact`; a view is isPersonView. Events carry no
+    // session id, so this is the only join available.
+    const pv = events.filter(isPersonView);
+    const sessions = events.filter(e => e.event === 'interact');
+    const allVisits = events.filter(e => e.event === 'page_view' && e.props && e.props.newSession).length;
+    // `interact` carries returning only since HUMAN_SIGNAL_SINCE.
+    const returningSessions = sessions.filter(e => e.props && e.props.returning);
     const returnLandings = new Map();
     for (const e of returningSessions) {
-      const path = metricPath(e.path);
+      const path = metricPath(e.landing || e.path);
       if (path) returnLandings.set(path, (returnLandings.get(path) || 0) + 1);
     }
     const returnLandingRows = [...returnLandings.entries()].sort((a, b) => b[1] - a[1])
@@ -747,7 +757,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // page's first marker across a stretch with no markers at all (the 09-16
     // redesign dropped them until 09-27). Markers from before layouts were
     // tagged count only when no tagged layout exists yet.
-    const markerEvents = events.filter(e => e.event === 'section_view' && e.at);
+    // Markers carry props.human since 2026-11-21 (analytics.js holds them
+    // until `interact`); untagged ones may be bots and are left out.
+    const markerEvents = events.filter(e => e.event === 'section_view' && e.at && e.props && e.props.human);
     const newestTagged = markerEvents.reduce((best, e) =>
       e.props && e.props.layout && (!best || e.at > best.at) ? e : best, null);
     const currentLayout = newestTagged ? newestTagged.props.layout : null;
@@ -957,16 +969,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       return /^(?:www\.)?producthunt(?:\.com)?$/i.test(ref) ? 'Product Hunt' : ref;
     };
     const sources = new Map();
-    const emptyStages = () => ({ entrances: 0, interacted: 0, started: 0, completed: 0 });
+    const emptyStages = () => ({ entrances: 0, started: 0, completed: 0 });
     const getRow = (map, key, create) => {
       if (!map.has(key)) map.set(key, create());
       return map.get(key);
     };
     for (const e of events) {
-      const tool = e.event === 'page_view' ? metricTool(e.path) : null;
+      const tool = isPersonView(e) ? metricTool(e.path) : null;
       let stage;
-      if (e.event === 'page_view' && e.props?.newSession) stage = 'entrances';
-      if (e.event === 'interact') stage = 'interacted';
+      if (e.event === 'interact') stage = 'entrances';
       if (e.event === 'tool_run' && e.firstInSession) stage = 'started';
       if (e.event === 'tool_complete' && e.firstInSession) stage = 'completed';
       if (!stage && !tool && e.event !== 'tool_run') continue;
@@ -976,26 +987,26 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       if (e.event === 'tool_run') source.runs++;
       if (stage) {
         source[stage]++;
-        const landing = stage === 'entrances' ? e.path : e.landing;
+        const landing = e.landing || (stage === 'entrances' ? e.path : null);
         if (landing) getRow(source.landings, landing, emptyStages)[stage]++;
       }
       if (tool) source.tools.set(tool, (source.tools.get(tool) || 0) + 1);
     }
-    const stageCells = row => `<td>${row.entrances}</td><td>${row.interacted}</td><td>${row.started}</td><td>${row.completed}</td>`;
+    const stageCells = row => `<td>${row.entrances}</td><td>${row.started}</td><td>${row.completed}</td>`;
     const srcRows = [...sources.entries()].sort((a, b) => b[1].entrances - a[1].entrances)
       .map(([name, row]) => {
         const landings = [...row.landings.entries()].sort((a, b) => b[1].entrances - a[1].entrances)
           .map(([path, stages]) => `<tr><td>${escH(path)}</td>${stageCells(stages)}</tr>`).join('');
         const tools = [...row.tools.entries()].sort((a, b) => b[1] - a[1])
           .map(([tool, count]) => `<tr><td>${escH(tool)}</td><td>${count}</td></tr>`).join('');
-        return `<details class="fold"><summary>${escH(name)} · ${row.entrances} entrances · ${row.interacted} interacted · ${row.runs} tool runs</summary>
-          <table><tr><th>landing page</th><th>entrances</th><th>interacted</th><th>first run</th><th>first response</th></tr>
-          ${landings || '<tr><td colspan="5">No landing pages recorded in this range.</td></tr>'}</table>
+        return `<details class="fold"><summary>${escH(name)} · ${row.entrances} visits · ${row.runs} tool runs</summary>
+          <table><tr><th>landing page</th><th>visits</th><th>first run</th><th>first response</th></tr>
+          ${landings || '<tr><td colspan="4">No landing pages recorded in this range.</td></tr>'}</table>
           ${tools ? `<table><tr><th>experience opened</th><th>page views</th></tr>${tools}</table>` : ''}
         </details>`;
       }).join('');
 
-    const missing = events.filter(e => e.event === 'missing_page' || e.event === 'missing_page_interact');
+    const missing = events.filter(e => e.event === 'missing_page_interact');
     const missingByPath = new Map();
     const burstsBySource = new Map();
     const missingTime = new Intl.DateTimeFormat('en-US', {
@@ -1005,12 +1016,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const source = sourceOf(e);
       const from = e.props?.from;
       const row = getRow(missingByPath, JSON.stringify([e.path, source, from]), () => ({
-        path: e.path, source, from, views: 0, entrances: 0, interacted: 0, last: '',
+        path: e.path, source, from, views: 0, entrances: 0, last: '',
       }));
-      if (e.event === 'missing_page_interact') {
-        row.interacted++;
-        continue;
-      }
       row.views++;
       if (e.props?.entrance) row.entrances++;
       if (e.at > row.last) row.last = e.at;
@@ -1020,7 +1027,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     }
     const missingRows = [...missingByPath.values()].sort((a, b) => b.views - a.views || b.last.localeCompare(a.last))
       .map(row => `<tr><td>${escH(row.path)}</td><td>${escH(row.source)}</td><td>${escH(row.from || '—')}</td>
-        <td>${row.views}</td><td>${row.entrances}</td><td>${row.interacted}</td>
+        <td>${row.views}</td><td>${row.entrances}</td>
         <td>${row.last ? escH(missingTime.format(new Date(row.last))) : '—'}</td></tr>`).join('');
     const bursts = [];
     for (const [source, entries] of burstsBySource) {
@@ -1266,7 +1273,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       return (seg && /^[A-Z]/.test(seg)) ? seg : (path || '(unknown)');
     };
     function emptyBucket() {
-      return { views: 0, sessions: 0, allSessions: 0, returning: 0, runs: 0,
+      return { views: 0, sessions: 0, returning: 0, runs: 0,
         completes: 0, errors: 0, renderErrors: 0, taken: 0, bucket1_7: 0,
         pages: {}, entries: {}, froms: {}, tools: {} };
     }
@@ -1293,7 +1300,6 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         if (e.props && e.props.returning === true) b.returning++;
         if (e.props && e.props.bucket === '1-7d') b.bucket1_7++;
       } else if (e.event === 'page_view') {
-        if (e.props && e.props.newSession) b.allSessions++;  // every visit, bots included — shown as "of N"
         // Before HUMAN_SIGNAL_SINCE, returning came from the session's first view.
         if (e.props && e.props.newSession && (e.at || '') < HUMAN_SIGNAL_SINCE) {
           if (e.props.returning) b.returning++;
@@ -1324,7 +1330,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const out = emptyBucket();
       for (const d of dayStrs) {
         const b = ledgerByDay[d]; if (!b) continue;
-        out.views += b.views; out.sessions += b.sessions; out.allSessions += b.allSessions;
+        out.views += b.views; out.sessions += b.sessions;
         out.returning += b.returning; out.runs += b.runs; out.completes += b.completes;
         out.errors += b.errors; out.renderErrors += b.renderErrors; out.taken += b.taken;
         out.bucket1_7 += b.bucket1_7;
@@ -1439,7 +1445,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         `<td>${b.returning}</td>` +
         `<td>${b.runs}${deltaPct(b.runs, prevBucket, 'runs')}</td>` +
         `<td>${fmtPct1(b.delivered, b.sessions)}</td>` +
-        `<td>${b.sessions} <span style="color:#999;font-size:11px" title="all visits, likely bots included">of ${b.allSessions}</span>${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
+        `<td>${b.sessions}${deltaPct(b.sessions, prevBucket, 'sessions')}</td>` +
         `<td style="color:#888">${b.views}${deltaPct(b.views, prevBucket, 'views')}</td></tr>`;
     }
 
@@ -1581,7 +1587,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         <tr><td style="white-space:nowrap"><b>return visitors</b></td><td>Sessions from a browser that has visited DeftBrain before — any earlier visit, even earlier the same day. Cleared browser data looks new.</td></tr>
         <tr><td style="white-space:nowrap"><b>interactive</b></td><td>Sessions where someone clicked, tapped, typed or scrolled at least once, or (since Nov 18, 2026) kept the page open and visible for 15 seconds. The best guess at "a real person" — bots load pages but rarely do either. Browsers that announce they are automated send nothing at all.</td></tr>
         <tr><td style="white-space:nowrap"><b>tool runs</b></td><td>Times someone pressed a tool's main button and it asked for an answer — counted when the request starts, so failures count too. Follow-ups and "go deeper" buttons are extra runs.</td></tr>
-        <tr><td style="white-space:nowrap"><b>sessions</b></td><td>Visits. One browser tab from its first DeftBrain page until it closes. A new tab is a new session. No one is identified.</td></tr>
+        <tr><td style="white-space:nowrap"><b>sessions</b></td><td>Visits by a likely person (see interactive). One browser tab from its first DeftBrain page until it closes. A new tab is a new session. No one is identified. Every count in this report leaves likely bots out; Diagnostics says how many.</td></tr>
         <tr><td style="white-space:nowrap"><b>page views</b></td><td>How many times a page loaded. One person opening five pages = 5.</td></tr>
         <tr><td style="white-space:nowrap"><b>entered here</b></td><td>(In a day's pages list.) Views that started a visit — the person arrived on that page from outside: a search engine, a link, or typing the address ("direct"). Every other view of that page came from another DeftBrain page.</td></tr>
         <tr><td style="white-space:nowrap"><b>from</b></td><td>(In a day's pages list.) For views that did NOT start a visit: the DeftBrain page the person was on just before. Recorded since Sep 25, 2026.</td></tr>
@@ -1590,15 +1596,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </details>
     <h2 class="sec">1 · At a glance <span class="secsub">today and the days before it — click a day for its pages and tools</span></h2>
     <h2>Day by day <span style="font-weight:400;font-size:12px;color:#888">— since ${escH(ledgerStartDay)}${ledgerTruncated ? ` (earlier data exists but is not shown — ${escH(LEDGER_MAX_DAYS)}-day window)` : ''}, independent of the range picker above</span></h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs. These tables count likely people only: probable bots are left out of interactive, views and returning; "of N" after the interactive count is every visit, likely bots included.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Weeks run Monday–Sunday. ▲▼ compares each row with the period immediately before it (a partial period compares against the same number of elapsed days; today so far, against yesterday up to the same hour). "vs N" is the number it was compared with. ⚠️ = 0 tool runs or an error rate above 25% on 5+ runs. These tables count likely people only.</p>
     <div id="ledgerTables">
       <h3 style="font-size:13px;margin:16px 0 6px">Daily <span style="font-weight:400;color:#888">(last 2 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. &quot;of N&quot; is every visit, likely bots included.">interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${dayRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>day</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds.>interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${dayRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       <details class="fold"><summary>Weekly and monthly totals</summary>
       <h3 style="font-size:13px;margin:20px 0 6px">Weekly <span style="font-weight:400;color:#888">(Mon–Sun, last 4 weeks)</span></h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. &quot;of N&quot; is every visit, likely bots included.">interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${weekRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>week</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds.>interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${weekRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       <h3 style="font-size:13px;margin:20px 0 6px">Monthly</h3>
-      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds. &quot;of N&quot; is every visit, likely bots included.">interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${monthRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
+      <div style="overflow-x:auto"><table class="ledger-tbl"><tr><th>month</th><th>delivered</th><th>took it</th><th>returning</th><th>runs</th><th>delivered/session</th><th title="Visits by a likely person: someone clicked, tapped, typed or scrolled, or (since Nov 18, 2026) kept the page open 15 seconds.>interactive</th><th title="Pages opened during those visits. Before Nov 18, 2026, only the page where the person first showed up is counted.">views</th></tr>${monthRowsHtml || '<tr><td colspan=8 style="color:#888">No data yet.</td></tr>'}</table></div>
       </details>
     </div>
     <script>
@@ -1730,9 +1736,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p>Direct traffic has no recorded referrer or source tag.</p>
     ${srcRows || '<p>No source activity recorded in this range.</p>'}
     <h2>Page not found (404)</h2>
-    <p>Views count the missing-page screen. Entrances are views that started a session. Interactions are gestures recorded on that screen. Earlier ranges may predate this tracking.</p>
-    <table><tr><th>requested path</th><th>source</th><th>previous site page</th><th>views</th><th>entrances</th><th>interactions</th><th>last viewed</th></tr>
-    ${missingRows || '<tr><td colspan="7">No missing-page events recorded in this range.</td></tr>'}</table>
+    <p>Missing-page screens someone clicked, tapped or typed on; screens nobody touched are left out as likely bots. Entrances are those that started a visit. Earlier ranges may predate this tracking.</p>
+    <table><tr><th>requested path</th><th>source</th><th>previous site page</th><th>views</th><th>entrances</th><th>last viewed</th></tr>
+    ${missingRows || '<tr><td colspan="6">No missing-page events recorded in this range.</td></tr>'}</table>
     ${burstRows ? `<details class="fold"><summary>Bursts of 404 entrances</summary>
       <p>Three or more distinct paths from the same source within one minute. A burst can contain visits from multiple browsers.</p>
       <table><tr><th>first seen</th><th>source</th><th>entrances</th><th>paths</th></tr>${burstRows}</table></details>` : ''}
@@ -1799,6 +1805,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </details>
     <details class="fold"><summary>Diagnostics — data store, bot filters, testing without being counted</summary>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
+    <p style="font-size:11px;color:#888;margin:2px 0 0">likely bots left out of every count above: ${Math.max(0, allVisits - sessions.length)} of ${allVisits} visits in this range never clicked, typed, scrolled or stayed 15 seconds. Not separable: tool &ldquo;sessions that ran&rdquo; denominators, second-tool hops and load times, which carry no human flag.</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
     </details>

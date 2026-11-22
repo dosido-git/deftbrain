@@ -264,6 +264,20 @@ export function prepareResultTracking(startedAt) {
 // idx is the element's position among the markers on that page, so the
 // dashboard can order the funnel without the backend having to know the
 // running order of a page it never sees.
+// Markers wait for `interact`, so the home-page funnel counts likely people
+// only: a bot that renders the page never sends them. Dropped on route change.
+let heldMarkers = [];
+function sendMarker(props) {
+  let human = false;
+  try { human = sessionStorage.getItem('db-int') === '1'; } catch (_) {}
+  if (human) track('section_view', { ...props, human: true });
+  else heldMarkers.push(props);
+}
+function flushMarkers() {
+  const held = heldMarkers;
+  heldMarkers = [];
+  held.forEach(props => track('section_view', { ...props, human: true }));
+}
 function armSectionMarkers() {
   if (typeof IntersectionObserver === 'undefined') return;
   const seen = new Set();
@@ -279,7 +293,7 @@ function armSectionMarkers() {
       // next redesign's even when section names repeat.
       const holder = e.target.closest && e.target.closest('[data-db-layout]');
       const layout = holder ? String(holder.getAttribute('data-db-layout')).slice(0, 40) : undefined;
-      track('section_view', { section: String(name).slice(0, 40), idx: e.target.__dbIdx, layout });
+      sendMarker({ section: String(name).slice(0, 40), idx: e.target.__dbIdx, layout });
     }
   }, { threshold: 0.01 });
 
@@ -296,7 +310,7 @@ function armSectionMarkers() {
       });
     } catch (_) {}
   };
-  const rescan = () => { seen.clear(); scan(); setTimeout(scan, 400); setTimeout(scan, 1500); };
+  const rescan = () => { heldMarkers = []; seen.clear(); scan(); setTimeout(scan, 400); setTimeout(scan, 1500); };
   rescan();
   return rescan;
 }
@@ -454,6 +468,7 @@ function armInteractSignal() {
       bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
     } catch (_) {}
     track('interact', { how, returning, bucket });
+    flushMarkers();
   };
   const onGesture = (e) => { if (!e || e.isTrusted !== false) fire('gesture'); };
   const schedule = () => { clearTimeout(timer); timer = setTimeout(() => fire('stay'), Math.max(0, STAY_MS - visibleMs)); };
