@@ -295,6 +295,35 @@ the verdict stayed `LIKELY_SCAM` with a confidently-worded explanation.
 `npm run check:golden scam-radar` → 3/3 PASS, no golden re-record needed
 (no schema change, only prompt wording).
 
+## Link checks (2026-11-22)
+
+Links (and sender email domains) in the message or sender field are checked
+in code by `backend/lib/urlSignals.js` before the model runs; the findings go
+to the model as a LINK CHECKS block (prompt section of the same name) and to
+the page as `link_checks` (added in `finish`, after the strip, so the guard
+never sees or rewrites it). Rendered as a "Link checks" section after "Why
+this looks concerning", one line per signal via `scam_link_<code>`.
+
+- **Signals:** userinfo before "@", IP host, punycode, known shortener,
+  unusual port, brand in name/subdomain, brand lookalike (digit swap or one
+  edit), deep subdomains, http, domain registered ≤90 days ago. Sources are
+  in the file header. A domain whose own label IS the brand (amazon.de) is
+  never flagged, so no list of official domains has to be kept true.
+- **Domain age:** RDAP straight from the registry named in IANA's bootstrap
+  file (no rdap.org middleman, which Cloudflare caps at 10 req/10s). Fixed
+  hosts, no redirects followed, domain in the path only — SSRF-safe. 2s cap
+  per lookup, all links side by side, cached a day; bootstrap warmed at
+  route load. Typical warm lookup ~70ms.
+- **Never opens the link.** No reputation/blocklist check is done and the
+  prompt forbids claiming one.
+- **Not added (owner decision):** Google Safe Browsing (free API is
+  non-commercial only; commercial = paid Web Risk), URLhaus (needs a free
+  account key), suspicious-TLD lists (no stable source).
+- **Self-check:** `node backend/lib/urlSignals.js`.
+- **Verified:** one live EN call (brand-in-subdomain link) — the read named
+  the real domain and its registration date without calling it fraudulent;
+  canned-backend browser check in EN + ES. Golden not re-recorded.
+
 ## Audit fixes locked here (2026-07-14) — kept for history, both reconfirmed live 2026-09-09
 
 1. **🐛 DOWN in ALL 12 non-English languages — 500 every call.** The guard
