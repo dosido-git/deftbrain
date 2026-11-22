@@ -323,6 +323,9 @@ this looks concerning", one line per signal via `scam_link_<code>`.
   "Advisory provided by Google" link Safe Browsing's display rules require.
   No key or any error → skipped silently, never reported as "safe".
   Free to 100k calls/month, then $0.50/1k.
+  Verified live 2026-11-22 against Google's test page
+  (testsafebrowsing.appspot.com/s/phishing.html): read named the listing first,
+  hedged, guard PASS. A new key returned 403 for a few minutes before working.
 - **Not added:** URLhaus (malware downloads only, no phishing; commercial use
   points to paid Spamhaus), suspicious-TLD lists (no stable source).
 - **Self-check:** `node backend/lib/urlSignals.js`.
