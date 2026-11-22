@@ -1,0 +1,10 @@
+# Scan data and caches: large, regenerable, and full of third-party addresses.
+orgs/
+*.jsonl
+*.tsv
+*.log
+*.json
+noemail*.txt
+# Contact lists stay local: the repo is public.
+known_hosts.txt
+pm-original.csv
