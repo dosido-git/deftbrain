@@ -24,6 +24,14 @@ is gitignored: large, regenerable, and full of third-party addresses.
    `verdicts.json`, uses `backend/.env`; well under $1 per few hundred rows),
    mail-server check (`mxcheck.mjs`), final export.
 
+## International
+
+UK, Canada, Australia, New Zealand, Ireland and South Africa (Wikidata lists,
+`intl.tsv`, `za.tsv`) scan into `extra-intl*.jsonl` and export to
+`outreach/new-prospects-intl.csv`, kept apart from the US file so reply rates
+can be compared. Country second-level domains (`.org.uk`, `.gov.au`, `.co.za`)
+count as separate organisations.
+
 ## Export rules (`export.py`)
 
 - Owner format: Mac Roman, CRLF, no trailing newline, `offer_desc` = tool name,

@@ -18,23 +18,23 @@ const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 
 // tool id, display name, test on "dead url + anchor" (lowercase). First match wins.
 const TOOLS = [
-  ['ScamRadar', 'Scam Radar', /\bscam|fraud|phish|identity[- ]?theft|idtheft|imposter|impostor|(lottery|sweepstakes?|prize|romance) (scam|fraud)|robocall|do-?not-?call|onguardonline|ftccomplaintassistant|elder (financial )?abuse|ponzi|spoof|counterfeit check|fake check/],
-  ['BillRescue', 'Bill Rescue', /debt|collection agenc|collector|medical bill|billing error|foreclos|mortgage (help|relief|trouble|modif)|loan modif|bankrupt|garnish|credit counsel|payday|making home affordable|hope now|995hope/],
-  ['FinalWish', 'Final Wish', /advance directive|living will|end[- ]of[- ]life|funeral|burial|estate plan|power of attorney|cremation|final wishes|caringinfo/],
+  ['ScamRadar', 'Scam Radar', /action ?fraud|scamwatch|sabric|antifraudcentre|scamsmart|\bscam|fraud|phish|identity[- ]?theft|idtheft|imposter|impostor|(lottery|sweepstakes?|prize|romance) (scam|fraud)|robocall|do-?not-?call|onguardonline|ftccomplaintassistant|elder (financial )?abuse|ponzi|spoof|counterfeit check|fake check/],
+  ['BillRescue', 'Bill Rescue', /debt advice|debt review|stepchange|nationaldebtline|council tax arrears|rent arrears|moneyhelper|mabs\.ie|debt|collection agenc|collector|medical bill|billing error|foreclos|mortgage (help|relief|trouble|modif)|loan modif|bankrupt|garnish|credit counsel|payday|making home affordable|hope now|995hope/],
+  ['FinalWish', 'Final Wish', /lasting power of attorney|advance care plan|advance directive|living will|end[- ]of[- ]life|funeral|burial|estate plan|power of attorney|cremation|final wishes|caringinfo/],
   ['GriefGuide', 'GriefGuide', /grief|bereave|mourning|grieving/],
-  ['RentersDepositSaver', "Renter's Deposit Saver", /security deposit|move[- ]in checklist|move[- ]out checklist|move-in inspection/],
-  ['LeaseTrapDetector', 'Lease Trap Detector', /\blease|tenant|renter|landlord|rental agreement|off[- ]campus housing/],
+  ['RentersDepositSaver', "Renter's Deposit Saver", /tenancy deposit|deposit protection|rental bond|bond (lodgement|refund|claim)|security deposit|move[- ]in checklist|move[- ]out checklist|move-in inspection/],
+  ['LeaseTrapDetector', 'Lease Trap Detector', /tenancy agreement|letting agent|\blease|tenant|renter|landlord|rental agreement|off[- ]campus housing/],
   ['NerveCheck', 'Nerve Check', /interview (tips|prep|skills)|job interview|interviewing|public speaking|test anxiety|stage fright/],
   ['MentalHealthNavigator', 'Mental Health Navigator', /mental health|mentalhealth|therapist|psychotherap|depression|anxiety|psychiatr|counseling center|find (a )?counselor/],
   ['SleepArchitect', 'Sleep Architect', /\bsleep|insomnia/],
   ['DriveHome', 'Drive Home', /drowsy driv|drunk driv|impaired driv|designated driver|\bdui\b|\bdwi\b|buzzed driv/],
   ['SafeWalk', 'Safe Walk', /walk(ing)? (alone|safely|safety)|safety escort|safe ?walk|personal safety|pedestrian safety|safe ?ride/],
-  ['TicketTackler', 'Ticket Tackler', /parking ticket|traffic ticket|parking citation|traffic citation|traffic court|contest (a|your) ticket/],
-  ['ComplaintEscalationWriter', 'Complaint Escalation Writer', /complaint letter|consumer complaint|file a complaint|bbb\.org|better business bureau/],
+  ['TicketTackler', 'Ticket Tackler', /penalty charge notice|parking fine|speeding fine|traffic fine|parking infringement|parking ticket|traffic ticket|parking citation|traffic citation|traffic court|contest (a|your) ticket/],
+  ['ComplaintEscalationWriter', 'Complaint Escalation Writer', /ombudsman|complaint letter|consumer complaint|file a complaint|bbb\.org|better business bureau/],
   ['QuoteCheck', 'Quote Check', /contractor|home repair|home improvement|auto repair|car repair/],
   ['FakeReviewDetective', 'Fake Review Detective', /fake review|online reviews|review fraud/],
   ['UpsellShield', 'Upsell Shield', /car buying|buying a (new |used )?car|extended warrant|service contract|timeshare|high[- ]pressure sales/],
-  ['DoctorVisitPrep', 'Doctor Visit Prep', /questions to ask (your )?doctor|doctor visit|talking (to|with) your doctor|prepare for (your )?(doctor|medical) (visit|appointment)/],
+  ['DoctorVisitPrep', 'Doctor Visit Prep', /questions to ask your gp|gp appointment|questions to ask (your )?doctor|doctor visit|talking (to|with) your doctor|prepare for (your )?(doctor|medical) (visit|appointment)/],
   ['DoctorVisitTranslator', 'Doctor Visit Translator', /medical (terms|terminology|dictionary|jargon|words)|lab tests? online|understanding (your )?lab/],
   ['ProcedureProbe', 'Procedure Probe', /before (your )?surgery|surgery (prep|guide)|colonoscopy|anesthesia/],
   ['GhostWriter', 'Ghost Writer', /recommendation letter|letter of recommendation|reference letter/],
@@ -58,7 +58,9 @@ const INFO = /ftc|trade commission|consumer|guide|tips|how to|protect|avoid|righ
 const PAGE_KEY = /scam|fraud|security|identity|phish|elder|senior|consumer|debt|credit|financ|scholarship|resource|links|counsel|mental|wellness|health|sleep|safety|career|interview|housing|tenant|renter|lease|grief|bereave|estate|funeral|parking|ticket|complaint|garden|plant|bike|bicycle|pet|travel|abroad|nutrition|exercise|fitness|legal|help|tips|education|learn|protect|alert/i;
 const SKIP_DEAD_HOST = /facebook|twitter|x\.com|linkedin|instagram|youtube|pinterest|google|apple\.com|microsoft|tiktok|doubleclick|addthis|sharethis|bit\.ly/;
 
-const reg = (h) => { h = (h || '').toLowerCase().replace(/^www\d?\./, ''); const p = h.split('.'); return (/^(gov|us|edu)$/.test(p.at(-1)) && p.length > 2 && p.at(-1) !== 'edu') ? p.slice(-3).join('.') : p.slice(-2).join('.'); };
+// Registrable domain: keeps 3 labels for US gov/state hosts and country second-level domains (council.gov.uk, charity.org.au).
+const SLD = /^(ac|co|com|org|net|gov|govt|edu|nhs|ltd|plc|sch|police|mod|gc|nsw|vic|qld|tas|act|health|school|iwi|maori|parliament|asn|id|csiro|mil|on|bc|ab|qc|ns|nb|mb|sk|web|nic)$/;
+const reg = (h) => { h = (h || '').toLowerCase().replace(/^www\d?\./, ''); const p = h.split('.'); if (p.length > 2 && (/^(gov|us)$/.test(p.at(-1)) || (p.at(-1).length === 2 && SLD.test(p.at(-2))))) return p.slice(-3).join('.'); return p.slice(-2).join('.'); };
 // Already-contacted organisations (tracker, send log, earlier prospect files).
 const KNOWN = new Set(fs.readFileSync(new URL('./known_hosts.txt', import.meta.url), 'utf8').split('\n').filter(Boolean).map(h => reg(h)));
 const hostOf = (u) => { try { const h = new URL(u).hostname; return h.includes('.') ? h : ''; } catch { return ''; } };

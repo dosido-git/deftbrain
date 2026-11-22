@@ -36,12 +36,14 @@ def good(x):
 # Tracking columns added 2026-11-22 (owner): follow-up, reply, link placed and its last live check.
 COLS = 'bounced,date_sent,dead_url,From,followup_date,link_checked,link_placed,offer_desc,outcome,page_name,prospect_url,replacement_deftbrain,replied,reply_date,sent,To,which_link'.split(',')
 
+SLD = re.compile(r'^(ac|co|com|org|net|gov|govt|edu|nhs|ltd|plc|sch|police|mod|gc|nsw|vic|qld|tas|act|health|school|iwi|maori|parliament|asn|id|csiro|mil|on|bc|ab|qc|ns|nb|mb|sk|web|nic)$')
 def reg(h):
     h = (h or '').lower()
     for p in ('www.', 'www2.', 'www1.'):
         if h.startswith(p): h = h[len(p):]
     p = h.split('.')
-    return '.'.join(p[-3:]) if p[-1] in ('gov', 'us') and len(p) > 2 else '.'.join(p[-2:])
+    if len(p) > 2 and (p[-1] in ('gov', 'us') or (len(p[-1]) == 2 and SLD.match(p[-2]))): return '.'.join(p[-3:])
+    return '.'.join(p[-2:])
 
 def mac(s):
     out = []
