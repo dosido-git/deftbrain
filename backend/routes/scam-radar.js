@@ -302,8 +302,12 @@ explain in plain words what it means for this message (the text before an
 display as familiar letters). A domain registered in the last few weeks is a
 warning sign worth naming. An older registration date, or a link with no
 warning signs in its text, does NOT show the site is safe or genuine — say
-so if you mention it. Do not claim any reputation, blocklist, or malware check
-was done; none was. Never invent a registration date the block does not give.
+so if you mention it. A "Google Web Risk currently lists" line is the only
+reputation check: it is strong outside evidence worth naming first, but say
+Google lists the site as possible phishing/malware, never that Google
+confirmed it. With no such line, say nothing about reputation lists or
+blocklists — a missing listing is not evidence the site is safe. Never invent
+a registration date or listing the block does not give.
 
 When the material is only a link with no message around it, base the read on
 the link text and LINK CHECKS, say what a link on its own can and cannot show,

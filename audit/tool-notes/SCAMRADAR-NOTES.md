@@ -316,9 +316,15 @@ this looks concerning", one line per signal via `scam_link_<code>`.
   route load. Typical warm lookup ~70ms.
 - **Never opens the link.** No reputation/blocklist check is done and the
   prompt forbids claiming one.
-- **Not added (owner decision):** Google Safe Browsing (free API is
-  non-commercial only; commercial = paid Web Risk), URLhaus (needs a free
-  account key), suspicious-TLD lists (no stable source).
+- **Google Web Risk** (owner's key, `GOOGLE_WEB_RISK_KEY`, local `.env` +
+  Railway): Lookup API per link, side by side with RDAP, 2s cap, cached until
+  Google's `expireTime` (misses 10 min). Signals `google_phishing` /
+  `google_malware` / `google_unwanted`, always hedged ("possible"), with the
+  "Advisory provided by Google" link Safe Browsing's display rules require.
+  No key or any error → skipped silently, never reported as "safe".
+  Free to 100k calls/month, then $0.50/1k.
+- **Not added:** URLhaus (malware downloads only, no phishing; commercial use
+  points to paid Spamhaus), suspicious-TLD lists (no stable source).
 - **Self-check:** `node backend/lib/urlSignals.js`.
 - **Verified:** one live EN call (brand-in-subdomain link) — the read named
   the real domain and its registration date without calling it fraudulent;

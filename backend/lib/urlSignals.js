@@ -13,9 +13,12 @@
 // - Brand lookalike / brand in subdomain: PhishMatch (arXiv 2112.02226).
 // - Newly registered domain: phishing domains lived 8.6 days on average
 //   (UCL, WEIS 2025). Read from RDAP via the IANA bootstrap (RFC 9224).
+// - Google Web Risk (2026-11-22, owner's key): whether Google currently lists
+//   the URL as phishing, malware or unwanted software. Lookup API, free to
+//   100k calls/month then $0.50/1k. Skipped when GOOGLE_WEB_RISK_KEY is unset.
 // Deliberately NOT here: "suspicious TLD" lists (they shift month to month, no
-// stable source), and Google Safe Browsing (its free API is non-commercial
-// only; Web Risk is paid — an owner decision, not a code one).
+// stable source), and URLhaus (malware downloads only, no phishing; its terms
+// point commercial use to paid Spamhaus).
 const psl = require('psl');
 const { domainToUnicode } = require('url');
 
@@ -161,18 +164,53 @@ async function registeredOn(domain, ms = 2000) {
   return registered ?? null;
 }
 
+// ── Google Web Risk ──
+// Safe Browsing's display rules: a listing may be shown only while Google's
+// answer is still valid (expireTime), and only hedged ("possible"). A miss is
+// cached briefly and never reported as "safe". Fixed Google host; the link
+// goes in the query string only.
+const WEB_RISK_TYPES = { SOCIAL_ENGINEERING: 'google_phishing', MALWARE: 'google_malware', UNWANTED_SOFTWARE: 'google_unwanted' };
+const risks = new Map(); // href -> { codes, until }
+
+async function webRisk(href, ms = 2000) {
+  const key = process.env.GOOGLE_WEB_RISK_KEY;
+  if (!key) return [];
+  const hit = risks.get(href);
+  if (hit && Date.now() < hit.until) return hit.codes;
+  const q = new URLSearchParams({ uri: href, key });
+  Object.keys(WEB_RISK_TYPES).forEach(t => q.append('threatTypes', t));
+  try {
+    const res = await fetch(`https://webrisk.googleapis.com/v1/uris:search?${q}`, { redirect: 'error', signal: AbortSignal.timeout(ms) });
+    if (!res.ok) { console.warn('[urlSignals] Web Risk', res.status); return []; }
+    const j = await res.json();
+    const codes = (j.threat?.threatTypes || []).map(t => WEB_RISK_TYPES[t]).filter(Boolean);
+    const until = j.threat?.expireTime ? Date.parse(j.threat.expireTime) : Date.now() + 10 * 60000;
+    risks.set(href, { codes, until });
+    if (risks.size > 5000) risks.delete(risks.keys().next().value);
+    return codes;
+  } catch (err) {
+    console.warn('[urlSignals] Web Risk', err.message);
+    return [];
+  }
+}
+
 // Every link in the text, its signals, and its domain's registration date,
 // looked up side by side. `lookup: false` skips the network (tests).
 async function checkLinks(text, { lookup = true, now = Date.now() } = {}) {
-  const links = extractLinks(text).map(l => ({ ...linkSignals(l), email: l.email, isIp: l.isIp }));
-  await Promise.all(links.map(async l => {
+  const found = extractLinks(text);
+  const links = found.map(l => ({ ...linkSignals(l), email: l.email, isIp: l.isIp }));
+  await Promise.all(links.map(async (l, i) => {
+    if (!lookup) return;
+    const href = found[i].email ? `http://${l.domain}/` : found[i].url.href;
+    (await webRisk(href)).forEach(code => l.signals.unshift({ code }));
+  }).concat(links.map(async l => {
     if (!lookup || l.isIp || !l.domain.includes('.')) return;
     const registered = await registeredOn(l.domain);
     if (!registered) return;
     l.registered = registered;
     const days = Math.floor((now - Date.parse(registered)) / DAY);
     if (days >= 0 && days <= 90) l.signals.push({ code: 'new', date: registered, days: String(days) });
-  }));
+  })));
   return links.map(({ isIp, ...l }) => l);
 }
 
@@ -187,6 +225,9 @@ const SAY = {
   lookalike: s => `the domain ${s.domain} resembles "${s.brand}" through a character swap or near-spelling`,
   deep: s => `several layers of subdomain sit in front of the actual domain ${s.domain}`,
   http: () => 'it uses http, not https (by itself proves nothing either way)',
+  google_phishing: () => 'Google Web Risk currently lists this URL as possible phishing / deceptive site (a listing, not certainty)',
+  google_malware: () => 'Google Web Risk currently lists this URL as possibly hosting malware (a listing, not certainty)',
+  google_unwanted: () => 'Google Web Risk currently lists this URL as possibly offering unwanted software (a listing, not certainty)',
   new: s => `public registration records show the domain was registered ${s.date} (${s.days} days ago)`,
 };
 
