@@ -1,0 +1,12 @@
+{
+  "example-cu": {
+    "name": "Example Credit Union",
+    "initials": "EC",
+    "sample": true,
+    "packageTitle": "Check before you pay or reply",
+    "intro": "Not sure about a text, a bill or a big purchase? Answer a few questions and see what matters, what your options are and what to ask next.",
+    "tools": ["ScamRadar", "BillRescue", "BuyWise", "QuoteCheck", "UpsellShield"],
+    "help": { "text": "Think it's fraud? Call Example Credit Union first.", "phone": "1-800-555-0100" },
+    "advisor": "For account decisions, talk to a member advisor."
+  }
+}

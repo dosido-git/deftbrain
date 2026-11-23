@@ -19,6 +19,7 @@ import SharedResult from './components/SharedResult';
 import AllToolsPage from './components/AllToolsPage';
 import WaitNotice from './components/WaitNotice';
 import OrganizationsPage from './components/OrganizationsPage';
+import PartnerPage from './components/PartnerPage';
 import { SiteTailDemo } from './components/PublicProductDemo';
 
 export default function App() {
@@ -51,6 +52,7 @@ export default function App() {
                 <Route path="/r/:id" element={<SharedResult allTools={tools} />} />
                 <Route path="/tools" element={<AllToolsPage allTools={tools} />} />
                 <Route path="/organizations" element={<OrganizationsPage allTools={tools} />} />
+                <Route path="/for/:partnerId" element={<PartnerPage allTools={tools} />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

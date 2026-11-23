@@ -1006,6 +1006,16 @@ if (IS_PRODUCTION) {
     res.type('html').send(html);
   });
 
+  // Co-branded partner pages (/for/<partner>, PartnerPage.js). Same file the
+  // client reads, so a known partner answers 200 and anything else a real 404.
+  // noindex either way: these repeat public tool pages for one audience.
+  const PARTNERS = require('../src/data/partners.json');
+  app.get('/for/:partner', (req, res) => {
+    res.set('X-Robots-Tag', 'noindex');
+    const known = Object.prototype.hasOwnProperty.call(PARTNERS, req.params.partner);
+    res.status(known ? 200 : 404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  });
+
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\//, '');
     const canonical = slug ? toolIdMap[slug.toLowerCase()] : null;

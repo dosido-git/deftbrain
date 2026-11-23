@@ -31,7 +31,7 @@ const AUDIENCE_TOOLS = {
   community: ['PaperworkPath','PlainTalk','DoctorVisitPrep','ScamRadar','LeaseTrapDetector','DifficultTalkCoach'],
 };
 
-function ToolMiniCard({ tool }) {
+export function ToolMiniCard({ tool }) {
   if (!tool) return null;
   return (
     <Link className="org-tool-card" to={`/${tool.id}`}>
