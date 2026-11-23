@@ -52,6 +52,55 @@ const POLL_LIMITS = {
   perDay:    2000,
 };
 
+// ── Partner networks ──
+// Library PCs, campus Wi-Fi and offices put many people behind one IP, so the
+// per-IP limits above throttle a whole computer lab after a few visitors.
+// PARTNER_NETWORKS (env, JSON — partner IP ranges stay out of the public repo)
+// lists each partner's egress ranges and roughly how many people share them;
+// requests from those ranges get every tier's limits multiplied by `seats`.
+// Matched on req.ip (the trusted proxy hop), so no header can claim it.
+//   [{"code":"springfield-library","cidrs":["203.0.113.0/28"],"seats":40}]
+const net = require('node:net');
+const MAX_SEATS = 500; // spend backstop: one IP never gets more than 500× a visitor's budget
+
+function loadPartnerNetworks(raw) {
+  if (!raw) return [];
+  let list;
+  try { list = JSON.parse(raw); } catch (_) {
+    console.warn('[rateLimiter] PARTNER_NETWORKS is not valid JSON; ignored');
+    return [];
+  }
+  const out = [];
+  for (const p of Array.isArray(list) ? list : []) {
+    const seats = Math.floor(Number(p && p.seats));
+    if (!p || typeof p.code !== 'string' || !Array.isArray(p.cidrs) || !(seats >= 1 && seats <= MAX_SEATS)) {
+      console.warn('[rateLimiter] PARTNER_NETWORKS entry skipped (needs code, cidrs[], seats 1-' + MAX_SEATS + ')');
+      continue;
+    }
+    const block = new net.BlockList();
+    let ranges = 0;
+    for (const cidr of p.cidrs) {
+      const [addr, bits] = String(cidr).split('/');
+      const type = net.isIPv4(addr) ? 'ipv4' : net.isIPv6(addr) ? 'ipv6' : null;
+      const prefix = bits === undefined ? (type === 'ipv4' ? 32 : 128) : Number(bits);
+      try { block.addSubnet(addr, prefix, type); ranges++; } catch (_) {
+        console.warn(`[rateLimiter] PARTNER_NETWORKS ${p.code}: bad range ${cidr}; skipped`);
+      }
+    }
+    if (ranges) out.push({ code: p.code, seats, block });
+  }
+  return out;
+}
+
+const PARTNER_NETWORKS = loadPartnerNetworks(process.env.PARTNER_NETWORKS);
+
+function partnerFor(ip, networks = PARTNER_NETWORKS) {
+  if (!networks.length || !ip) return null;
+  const addr = ip.startsWith('::ffff:') ? ip.slice(7) : ip;
+  const type = net.isIPv4(addr) ? 'ipv4' : net.isIPv6(addr) ? 'ipv6' : null;
+  return (type && networks.find(n => n.block.check(addr, type))) || null;
+}
+
 // ── Storage ──
 const shortWindow = new Map();  // key: ip -> { count, resetAt }
 const dailyWindow = new Map();  // key: ip -> { count, resetAt }
@@ -75,7 +124,7 @@ setInterval(() => {
   for (const [key, val] of dailyWindow) {
     if (now > val.resetAt) dailyWindow.delete(key);
   }
-}, CLEANUP_INTERVAL);
+}, CLEANUP_INTERVAL).unref(); // never the only thing keeping a process (or a check script) alive
 
 // ── Helper: get or create a window bucket ──
 function getBucket(map, key, windowMs) {
@@ -122,7 +171,11 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     // asked for, so both limiting layers agree and the visitor's own budget is
     // untouched by chatter the tool generated.
     const automatic = AUTOMATIC_ACTIONS.has(req.body && req.body.action);
-    const effLimits = automatic ? AUTOMATIC_LIMITS : limits;
+    const base = automatic ? AUTOMATIC_LIMITS : limits;
+    const partner = partnerFor(ip);
+    const effLimits = partner
+      ? { perMinute: base.perMinute * partner.seats, perDay: base.perDay * partner.seats }
+      : base;
     const key = (automatic ? 'auto:' : keyPrefix) + ip;
 
     // COUNT ONCE PER REQUEST. server.js rate-limits every POST to /api, and
@@ -193,4 +246,4 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
 module.exports = {
   AUTOMATIC_ACTIONS,
   AUTOMATIC_LIMITS, rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS, DIVERSION_LIMITS,
-  GAME_LIMITS, POLL_LIMITS };
+  GAME_LIMITS, POLL_LIMITS, loadPartnerNetworks, partnerFor };
