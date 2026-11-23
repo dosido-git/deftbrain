@@ -10,6 +10,7 @@ const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool } = require('../lib/toolCatalog');
+const { scrubNumbers } = require('../lib/scrubNumbers');
 
 function metricPath(value) {
   return typeof value === 'string' && /^\/(?!\/)[^?#\s\\]*$/.test(value)
@@ -283,12 +284,12 @@ router.post('/idea', rateLimit(IDEA_LIMITS, 'idea:'), (req, res) => {
   // the operator's own submissions used to vanish here silently (2026-10-04).
   if (isBotRequest(req)) return res.status(204).end();
   const { problem, source, query, path } = req.body || {};
-  const text = (problem || '').toString().trim().slice(0, 1000);
+  const text = scrubNumbers((problem || '').toString().trim().slice(0, 1000));
   if (!text) return res.status(400).json({ error: 'Describe the problem first.' });
   logMetric('idea', {
     problem: text,
     source: (source || 'unknown').toString().slice(0, 60),
-    query: (query || '').toString().slice(0, 200),
+    query: scrubNumbers((query || '').toString().slice(0, 200)),
     path: (path || '').toString().slice(0, 200),
   });
   // Best-effort email — never blocks or fails the request.
@@ -309,7 +310,7 @@ router.post('/idea', rateLimit(IDEA_LIMITS, 'idea:'), (req, res) => {
           : `💡 Tool idea (${(source || 'site').toString().slice(0, 40)})`,
         text: isBrokenLink
           ? `A visitor hit a 404 and reported it as a broken link.\n\nBroken path: ${path || '—'}\nReferrer: ${query || '—'}`
-          : `Problem described:\n${text}\n\nSearch query: ${query || '—'}\nSource: ${source || '—'}\nPath: ${path || '—'}`,
+          : `Problem described:\n${text}\n\nSearch query: ${scrubNumbers(query) || '—'}\nSource: ${source || '—'}\nPath: ${path || '—'}`,
       }),
     }).catch(err => console.error('[idea-email] send failed:', err.message));
   }

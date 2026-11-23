@@ -34,7 +34,10 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
   // Page path → Buttondown-safe tag. Raw paths broke live: the homepage's
   // source is "/", which Buttondown rejects wholesale as tag_invalid — the
   // subscription itself failed over an analytics label.
-  const tag = source.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+  // Partner pages (/for/<id>) get no tag: a tag there would record that a
+  // named person belongs to that partner. The METRIC line below still counts
+  // signups per partner page, without the address.
+  const tag = source.startsWith('/for/') ? '' : source.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
 
   // The END SUBSCRIBER's IP, forwarded to Buttondown's `ip_address` so its
   // anti-spam firewall scores the actual person, not our server. Without this,

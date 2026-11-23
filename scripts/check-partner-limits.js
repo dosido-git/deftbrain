@@ -37,3 +37,11 @@ assert.strictEqual(allowed('192.0.2.1', limits), 5, 'ordinary IP keeps the per-I
 assert.strictEqual(allowed('203.0.113.2', limits), 15, 'partner IP gets seats × the limit');
 
 console.log('partner limits: ok');
+
+// Partner pages: suggestion text loses account/card/phone numbers before it is stored.
+const { scrubNumbers } = require('../backend/lib/scrubNumbers');
+assert.strictEqual(scrubNumbers('acct 1234567890 is locked'), 'acct [number removed] is locked');
+assert.strictEqual(scrubNumbers('call 1-800-555-0100'), 'call [number removed]');
+assert.strictEqual(scrubNumbers('card 4111 1111 1111 1111'), 'card [number removed]');
+assert.strictEqual(scrubNumbers('a $1,200 bill from 2026'), 'a $1,200 bill from 2026');
+console.log('check-partner-limits: scrubNumbers ok');

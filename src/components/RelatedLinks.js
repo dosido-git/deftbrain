@@ -103,6 +103,7 @@ export default function RelatedLinks() {
   if (!guides) return null; // manifest not loaded yet
 
   const seg = pathname.replace(/^\/+/, '').split('/')[0]; // '' on homepage, toolId on a tool page
+  if (seg === 'for') return null; // partner pages keep visitors on the partner's package
 
   // Like Footer, this block carries its OWN background. It renders in the app
   // shell (always white) below pages that don't re-theme with dark mode (the

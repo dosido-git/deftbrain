@@ -51,7 +51,7 @@ export default function PartnerPage({ allTools = [] }) {
             <span className="partner-name">{partner.name}</span>
           </div>
           <div className="partner-bar-end">
-            <Link className="partner-with" to="/">with <b>Deft</b><b className="gold">Brain</b></Link>
+            <Link className="partner-with" to="/">by <b>Deft</b><b className="gold">Brain</b></Link>
             <button type="button" className="org-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
               <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
             </button>
