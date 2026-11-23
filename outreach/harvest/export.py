@@ -34,7 +34,7 @@ def good(x):
     ws = WRONG_SENSE.get(x['tool'])
     return not (ws and ws.search(hay))
 # Tracking columns added 2026-11-22 (owner): follow-up, reply, link placed and its last live check.
-COLS = 'bounced,date_sent,dead_url,From,followup_date,link_checked,link_placed,offer_desc,outcome,page_name,prospect_url,replacement_deftbrain,replied,reply_date,sent,To,which_link'.split(',')
+COLS = 'bounced,date_sent,dead_url,From,followup_date,link_checked,link_placed,offer_desc,outcome,page_name,prospect_url,replacement_deftbrain,replied,reply_date,sent,Subject,To,which_link'.split(',')
 
 SLD = re.compile(r'^(ac|co|com|org|net|gov|govt|edu|nhs|ltd|plc|sch|police|mod|gc|nsw|vic|qld|tas|act|health|school|iwi|maori|parliament|asn|id|csiro|mil|on|bc|ab|qc|ns|nb|mb|sk|web|nic)$')
 def reg(h):
@@ -53,11 +53,20 @@ def mac(s):
             out.append(unicodedata.normalize('NFKD', ch).encode('ascii', 'ignore').decode() or ' ')
     return ''.join(out)
 
+def subject(name):
+    """Owner 2026-11-22: one subject per row, naming the page so it reads as a specific fix."""
+    name = ' '.join(name.replace('"', '').split())
+    if len(name) > 45: name = name[:45].rsplit(' ', 1)[0].rstrip(' ,:;-') + '…'
+    return f'A broken link on your "{name}" page'
+
+assert subject('Fraud Protection') == 'A broken link on your "Fraud Protection" page'
+assert len(subject('x ' * 60)) < 80
+
 def row(page, title, dead, anchor, tool_id, tool_name, email):
     name = title or urlparse(page).path.strip('/').split('/')[-1].replace('-', ' ').title() or 'Home'
     return {'bounced': '', 'date_sent': '', 'dead_url': dead, 'From': 'Outreach@DeftBrain.com',
             'offer_desc': tool_name, 'outcome': '', 'page_name': name, 'prospect_url': page,
-            'replacement_deftbrain': 'https://deftbrain.com/' + tool_id, 'sent': '', 'To': email,
+            'replacement_deftbrain': 'https://deftbrain.com/' + tool_id, 'sent': '', 'Subject': subject(name), 'To': email,
             'which_link': anchor.strip().strip('"')}
 
 args = sys.argv[1:]

@@ -27,7 +27,7 @@ is gitignored: large, regenerable, and full of third-party addresses.
 ## International
 
 UK, Canada, Australia, New Zealand, Ireland and South Africa (Wikidata lists,
-`intl.tsv`, `za.tsv`) scan into `extra-intl*.jsonl` and export to
+`intl.tsv`, `za.tsv`; Canada also the CRA List of charities, `cra.tsv`) scan into `extra-intl*.jsonl` and export to
 `outreach/new-prospects-intl.csv`, kept apart from the US file so reply rates
 can be compared. Country second-level domains (`.org.uk`, `.gov.au`, `.co.za`)
 count as separate organisations.
