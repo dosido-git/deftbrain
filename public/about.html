@@ -13,6 +13,7 @@
         if (localStorage.getItem('db-operator') === '1') return;
       } catch (e) {}
       if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
+      if (/^\/for\//.test(location.pathname)) return; // partner pages: no third-party cookies
 
       var s = document.createElement('script');
       s.async = true;

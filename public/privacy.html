@@ -13,6 +13,7 @@
         if (localStorage.getItem('db-operator') === '1') return;
       } catch (e) {}
       if (!/(^|\.)deftbrain\.com$/.test(location.hostname)) return;
+      if (/^/for//.test(location.pathname)) return; // partner pages: no third-party cookies
 
       var s = document.createElement('script');
       s.async = true;
@@ -197,7 +198,7 @@
   <main>
     <div class="container prose">
 <h1>Privacy Policy</h1>
-<p><strong>Last updated:</strong> November 13, 2026</p>
+<p><strong>Last updated:</strong> November 23, 2026</p>
 <p>This page explains what happens when you use DeftBrain, who else might see what you submit, and what control you have.</p>
 <h2>TL;DR</h2>
 <p>DeftBrain is built to need almost nothing from you. There are no accounts, no advertising, and nothing you type into a tool is stored on our servers. Signing up for the optional newsletter is the one place an email address enters the picture at all—voluntary, and handled by a separate mailing service, not by us (details below). We measure how the site is used in two ways: <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a>, which sets its own cookies, and a small, anonymous analytics system of our own—both described below. Neither ever sees what you type into a tool. Anything you submit to a tool is sent to an AI model to generate a result and the result comes back to your browser. That&#39;s the complete interaction in the typical case.</p>
@@ -238,16 +239,18 @@
 <p>What is never recorded: your name, an email address, an account identifier (there is none to record), anything you type into a tool, or any single identifier that would let two separate visits be linked to the same person. No cookie is set for this—the coarse &quot;have I been here before&quot; flag lives in your browser&#39;s own localStorage and is never joined with anything else that could identify you.</p>
 <p>This data is written to a private, append-only log on our own server—never sent to <a href="https://www.google.com/">Google</a>, <a href="https://www.meta.com/">Meta</a>, or any analytics vendor—and is visible only to the operator, behind a private access key. A separate, browser-level opt-out exists: visiting the site with <a href="/?operator=1">?operator=1</a> once turns off every beacon from that browser going forward—and stops <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a> loading in it too (<a href="/?operator=0">?operator=0</a> turns both back on). That mechanism exists so the operator&#39;s own visits don&#39;t skew the numbers, but it works the same way for anyone who uses it.</p>
 <h2>Feedback and tool ideas you submit voluntarily</h2>
-<p>Two things on this site work differently from a tool&#39;s input and output, and are stored: if you answer &quot;was this helpful?&quot; and add an optional comment, or use the &quot;no tool for your problem? describe it&quot; form, what you write is saved to the same private log described above—because the entire point of both is for the operator to read them. Neither is anonymized beyond whatever you choose to leave out, so treat both boxes the way you&#39;d treat an email to a stranger: useful to send, not the place to put anything you wouldn&#39;t want kept.</p>
+<p>Two things on this site work differently from a tool&#39;s input and output, and are stored: if you answer &quot;was this helpful?&quot; and add an optional comment, or use the &quot;no tool for your problem? describe it&quot; form, what you write is saved to the same private log described above—because the entire point of both is for the operator to read them. Tool ideas are also emailed to our team inbox through <a href="https://resend.com/">Resend</a>, an email-delivery service. Before an idea is saved or emailed, any run of seven or more digits (an account, card or phone number) is replaced with &quot;[number removed]&quot;. We delete ideas and comments within 90 days. Neither is anonymized beyond whatever you choose to leave out, so treat both boxes the way you&#39;d treat an email to a stranger: useful to send, not the place to put anything you wouldn&#39;t want kept.</p>
+<h2>Partner pages</h2>
+<p>Some organizations, such as a credit union or a library, link their members to a DeftBrain page made for them, at an address like deftbrain.com/for/their-name. On those pages the organization sees only overall usage counts, never what anyone types, and Google Analytics does not load. The ideas box and the newsletter appear there only if the organization has agreed, and each says it goes to DeftBrain, not to the organization.</p>
 <h2>The newsletter, if you sign up</h2>
-<p>Signing up for our monthly newsletter sends your email address—and, for spam-filtering purposes, your IP address at that moment—to <a href="https://buttondown.com/">Buttondown.com</a>, a service that sends the newsletter. We keep only the fact that a subscription happened and which page it came from, never the address itself. Buttondown handles the confirmation email (double opt-in—nothing is sent until you confirm) and the one-click unsubscribe link in every issue that follows.</p>
+<p>Signing up for our monthly newsletter sends your email address—and, for spam-filtering purposes, your IP address at that moment—to <a href="https://buttondown.com/">Buttondown.com</a>, a service that sends the newsletter. We keep only the fact that a subscription happened and which page it came from, never the address itself. Signups from a partner page are not labelled with the partner&#39;s name, so the mailing list doesn&#39;t show which organization you came from. Buttondown handles the confirmation email (double opt-in—nothing is sent until you confirm) and the one-click unsubscribe link in every issue that follows.</p>
 <p>If you never sign up, none of this applies to you.</p>
 <h2>Third parties involved when you use DeftBrain</h2>
 <p>These providers help us run DeftBrain or process requests when you use certain tools.</p>
 <h3>Anthropic</h3>
 <p>Some tools are powered by Anthropic&#39;s <a href="https://platform.claude.com/">Claude API</a>. Whatever you type into a tool is sent to Anthropic so Claude can generate a response. Under Anthropic&#39;s standard commercial API terms—which is what we use:</p>
 <ul>
-<li><strong>Retention:</strong> API inputs and outputs are stored by Anthropic for up to 7 days, then automatically deleted, unless a request is flagged by Anthropic&#39;s trust-and-safety classifiers as violating their usage policy.</li>
+<li><strong>Retention:</strong> Anthropic automatically deletes API inputs and outputs within 30 days. It keeps them longer only when its trust-and-safety systems flag a request as violating its usage policy, or when the law requires it (<a href="https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-commercial-api-data">Anthropic&#39;s retention page</a>).</li>
 <li><strong>Training:</strong> API data is not used to train Anthropic&#39;s models. This is contractual.</li>
 </ul>
 <p>Anthropic&#39;s privacy policy: <a href="https://www.anthropic.com/legal/privacy">https://www.anthropic.com/legal/privacy</a></p>
@@ -265,14 +268,18 @@
 <h3>Fastly</h3>
 <p><a href="https://railway.com/">Railway</a> delivers traffic through <a href="https://www.fastly.com/">Fastly</a>&#39;s CDN. <a href="https://www.fastly.com/">Fastly</a> may briefly process your IP and request data to serve cached pages efficiently. They are a sub-processor of <a href="https://railway.com/">Railway</a> under <a href="https://railway.com/">Railway</a>&#39;s DPA.</p>
 <p><a id="google-analytics"></a></p>
+<h3>Resend</h3>
+<p><a href="https://resend.com/">Resend</a> delivers the emails our server sends to our own team inbox: tool ideas from the &quot;describe it&quot; form, and broken-link reports from the page-not-found screen. It receives the text of that email and nothing else about you. Resend&#39;s privacy policy: <a href="https://resend.com/legal/privacy-policy">https://resend.com/legal/privacy-policy</a></p>
 <h3>Google Analytics</h3>
-<p>Every page loads <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a>, which tells us in aggregate how people find and move around the site: pages viewed, how they arrived, approximate location, and device and browser type. To recognize a returning browser it sets its own cookies (named _ga and <em>ga</em>…). Google receives your IP address and standard browser information to do this, and handles that data under its own privacy policy: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></p>
+<p>Every page except partner pages loads <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a>, which tells us in aggregate how people find and move around the site: pages viewed, how they arrived, approximate location, and device and browser type. To recognize a returning browser it sets its own cookies (named _ga and <em>ga</em>…). Google receives your IP address and standard browser information to do this, and handles that data under its own privacy policy: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></p>
 <p><a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a> never receives anything you type into a tool. You can block it with Google&#39;s own opt-out add-on (<a href="https://tools.google.com/dlpage/gaoptout">https://tools.google.com/dlpage/gaoptout</a>), with most content blockers, or with the <a href="/?operator=1">?operator=1</a> switch described above.</p>
 <h2>Per-tool third-party calls</h2>
 <p>A few specific tools make additional outbound requests to do their job. They are disclosed individually:</p>
 <ul>
 <li>Pronounce It Right Audio. When you request audio for a word, the word is sent to <a href="https://elevenlabs.io/">ElevenLabs</a>&#39; text-to-speech API to generate the spoken pronunciation. <a href="https://elevenlabs.io/">ElevenLabs</a>&#39; privacy policy is on their website at <a href="https://elevenlabs.io/privacy-policy">elevenlabs.io</a>.</li>
 <li>Name Audit and Name Storm. When checking handle availability for a candidate name, our server makes an HTTP HEAD request to <a href="https://www.instagram.com/">Instagram</a>, <a href="https://x.com/">X (Twitter)</a>, <a href="https://www.tiktok.com/">TikTok</a>, <a href="https://github.com/">GitHub</a>, and <a href="https://www.youtube.com/">YouTube</a>, with the candidate name as part of the URL path. We don&#39;t log in to those platforms or send any data beyond the URL itself; we observe only whether the URL returns &quot;found&quot; or &quot;not found.&quot; Each platform may log the request in its own standard server logs.</li>
+<li>Date Night. To check that suggested places are real and open, our server sends each place name, with the area you gave, to <a href="https://www.google.com/">Google</a>&#39;s Places API. Nothing else you typed is sent.</li>
+<li>Scam Radar. Links found in a message you paste are checked against <a href="https://www.google.com/">Google</a>&#39;s Web Risk list of known phishing and malware sites. Only the link is sent, not the rest of the message.</li>
 <li>Fake Review Detective. When you submit a URL to analyze, our server fetches that URL&#39;s HTML to extract reviews. The site you submit will see a request from our server&#39;s IP address, not yours. We pass a generic browser User-Agent string.</li>
 </ul>
 <p>If a tool we add later interacts with new third parties, this section will be updated in the same change that adds the tool.</p>
@@ -289,7 +296,7 @@
 <li>You can clear it any time—by clearing your browser&#39;s storage for <a href="https://deftbrain.com/">deftbrain.com</a>, or by using a &quot;reset&quot; button inside a tool.</li>
 </ul>
 <h2>International data transfers</h2>
-<p>DeftBrain operates from Massachusetts, USA. Anthropic, OpenAI, <a href="https://railway.com/">Railway</a>, and <a href="https://elevenlabs.io/">ElevenLabs</a> are US-based companies. If you access DeftBrain from outside the United States—from the EU, UK, or elsewhere—your tool input is processed in the US.</p>
+<p>DeftBrain operates from Massachusetts, USA. Anthropic, OpenAI, <a href="https://railway.com/">Railway</a>, <a href="https://elevenlabs.io/">ElevenLabs</a>, <a href="https://www.google.com/">Google</a>, Resend and Buttondown are US-based companies. If you access DeftBrain from outside the United States—from the EU, UK, or elsewhere—your tool input is processed in the US.</p>
 <p>For users in the EU and UK, this means your data crosses an international border. We rely on Standard Contractual Clauses (SCCs) and equivalent mechanisms via our processors&#39; agreements to protect this transfer in line with GDPR/UK GDPR Chapter V requirements.</p>
 <h2>Your rights</h2>
 <p>Depending on where you live, you have rights regarding your personal data. Because we hold so little of it, most rights requests resolve quickly.</p>
@@ -320,6 +327,7 @@
 <li>2026-09-25—Updated.</li>
 <li>2026-11-08—Updated.</li>
 <li>2026-11-13—Described how return visits are measured.</li>
+<li>2026-11-23—Added partner pages, Resend, Google Places and Web Risk; corrected Anthropic&#39;s retention to 30 days; described how ideas are stored and when they are deleted.</li>
 </ul>
 
     </div>

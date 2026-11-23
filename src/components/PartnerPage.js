@@ -33,7 +33,11 @@ export default function PartnerPage({ allTools = [] }) {
     const before = robots?.getAttribute('content');
     if (!robots) { robots = document.createElement('meta'); robots.name = 'robots'; document.head.appendChild(robots); }
     robots.setAttribute('content', 'noindex');
+    // index.html skips Google Analytics when the visit starts here; this covers
+    // arriving by in-app navigation (gtag's documented per-property kill switch).
+    window['ga-disable-G-0MLY19QEW6'] = true;
     return () => {
+      window['ga-disable-G-0MLY19QEW6'] = false;
       document.body.classList.remove('db-sand-page');
       if (before == null) robots.remove(); else robots.setAttribute('content', before);
     };
