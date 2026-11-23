@@ -83,6 +83,18 @@ export const currencySymbol = (userLocale, userCurrency) => {
 };
 
 /**
+ * Country name for an ISO region code, in the visitor's language ("GB" →
+ * "United Kingdom"). Empty string when the code or the browser can't resolve it.
+ */
+export const countryName = (region, userLocale) => {
+  try {
+    return (region && new Intl.DisplayNames([userLocale || 'en'], { type: 'region' }).of(region)) || '';
+  } catch {
+    return '';
+  }
+};
+
+/**
  * A day-and-month N days from today, in the given language ("November 20",
  * "20. November", "11月20日"). For built-in examples that mention dates: a
  * fixed date goes stale the day it passes (T8, audit/DEFECT-TYPES.md).

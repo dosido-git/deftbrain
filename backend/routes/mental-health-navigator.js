@@ -96,7 +96,7 @@ Never reference JSON field names (like what_to_say) in user-facing prose — the
       "why": <1-2 sentence explanation of why this fits their specific situation — cite what they shared>,
       "what_to_expect": <brief description of what working with this type of support is actually like>,
       "how_to_find": <ONE concrete place to start and what to do when they get there — a single named directory, service or phone number, specific to their country. One. Naming six is how someone who is already struggling ends up doing nothing.>,
-      "other_options": <a single short string naming at most 2 alternatives, or null if the one above is enough. A string, not a list — "Alma or Headway, both of which take insurance". Names and a handful of words each; anything longer turns this back into a menu.>,
+      "other_options": <a single short string naming at most 2 alternatives, or null if the one above is enough. A string, not a list — two real services from their country and the reason, e.g. "X or Y, both free". Names and a handful of words each; anything longer turns this back into a menu.>,
       "cost_note": <brief note on typical cost range or insurance — country-specific if possible, null if unknown>
     }
   ],
