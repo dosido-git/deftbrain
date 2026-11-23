@@ -47,6 +47,12 @@ count as separate organisations.
 `followup_date`, `link_checked`, `link_placed`, `replied`, `reply_date` were
 added 2026-11-22. One follow-up only, 7–10 days after the first email.
 
+`python3 linkcheck.py` loads every sent, unbounced prospect page and fills
+`link_placed` (`follow`, `nofollow` for nofollow/ugc/sponsored, `removed` if a
+placed link has gone, blank if not there yet) and `link_checked`. Pages that
+fail to load are left as they were. Run it weekly while replies come in, then
+with the quarterly rescan.
+
 ## Quarterly rescan (next: late February 2027)
 
 Links keep breaking. Each quarter, rescan the organisations that produced
