@@ -32,7 +32,7 @@ function gaSnippet(indent = '  ') {
       if (localStorage.getItem('db-operator') === '1') return;
     } catch (e) {}
     ${GA_GUARD}
-    if (/^\/for\//.test(location.pathname)) return; // partner pages: no third-party cookies
+    if (location.pathname.indexOf('/for/') === 0) return; // partner pages: no third-party cookies
 
     var s = document.createElement('script');
     s.async = true;
