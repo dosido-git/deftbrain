@@ -320,7 +320,7 @@ export default function HomeIntro({ allTools = [], onBrowse }) {
           // and new tabs follow — but a plain click opens the toolbox filtered
           // to this category, its chip highlighted (owner, 2026-10-04).
           <a key={cat.slug} href={`/tools/${cat.slug}`} title={cat.example}
-            onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); navigate(`/tools?category=${encodeURIComponent(cat.name)}`); }}>
+            onClick={e => { if (!isPlainClick(e)) return; e.preventDefault(); navigate(`/tools?category=${cat.slug}`); }}>
             <span aria-hidden="true">{cat.emoji}</span> {cat.name}
             <span className="db-home-category-count">{categoryCounts[cat.name]}</span>
           </a>

@@ -690,7 +690,7 @@ app.use('/guides', (req, res, next) => {
 // React Router still renders AllToolsPage client-side once the JS loads, but
 // the wrong status code makes it a soft-404 to any crawler. Matches this
 // param string too (Express path matching ignores the query string), so
-// /tools?category=Money hits this same handler.
+// /tools?category=money hits this same handler.
 app.get('/tools', (req, res) => {
   // Prerendered by scripts/prerender.js (2026-10-03) with this page's own head
   // and body; index.html is the HOMEPAGE variant, so it is only a fallback.

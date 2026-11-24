@@ -79,10 +79,15 @@ function ToolCard({ tool }) {
   );
 }
 
+// ?category= carries the category's slug (home-daily-life), not its display
+// name. Old shared links used the name ("Home & Daily Life"), so both resolve.
+const categoryFromParam = v => (v && CATEGORY_META.find(c => c.slug === v || c.name === v)?.name) || 'All';
+const categorySlug = name => CATEGORY_META.find(c => c.name === name)?.slug || name;
+
 export default function AllToolsPage({ allTools = [] }) {
   const [params, setParams] = useSearchParams();
   const initialQ = params.get('q') || '';
-  const initialCategory = params.get('category') || 'All';
+  const initialCategory = categoryFromParam(params.get('category'));
   const [query, setQuery] = useState(initialQ);
   const [category, setCategory] = useState(initialCategory);
   // Matches the homepage's persistent nav search exactly (narrow-then-
@@ -138,7 +143,7 @@ export default function AllToolsPage({ allTools = [] }) {
   // whenever the URL's own params change.
   useEffect(() => {
     setQuery(params.get('q') || '');
-    setCategory(params.get('category') || 'All');
+    setCategory(categoryFromParam(params.get('category')));
   }, [params]);
 
   const categoryCounts = useMemo(() => {
@@ -221,7 +226,7 @@ export default function AllToolsPage({ allTools = [] }) {
   const syncUrl = (nextQ, nextCategory) => {
     const next = {};
     if (nextQ.trim()) next.q = nextQ.trim();
-    if (nextCategory !== 'All') next.category = nextCategory;
+    if (nextCategory !== 'All') next.category = categorySlug(nextCategory);
     setParams(next, { replace: true });
   };
 
