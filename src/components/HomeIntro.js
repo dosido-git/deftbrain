@@ -70,13 +70,13 @@ function HomeProblemSearch() {
   );
 }
 
-const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
-const SCRAMBLE_SCALE = [.92,.98,1.04,1.1];
+export const SCRAMBLE_COLORS = ['#c94f45','#1f6f78','#d28a2e','#6c5aa8','#3f7b4d','#b14f78','#2e5f9e','#e36d32'];
+export const SCRAMBLE_SCALE = [.92,.98,1.04,1.1];
 // Independent "just landed" tilt for the hover-preview polaroid — deliberately
 // NOT the same set/index math as SCRAMBLE_ROTATE, so a card's photo doesn't
 // mirror its own tile's tilt (that would read as one rigid rotated unit
 // instead of a separate snapshot tossed on top of it).
-const SCRAMBLE_TILT = [-5,4,-3,6,-6,3,5,-4];
+export const SCRAMBLE_TILT = [-5,4,-3,6,-6,3,5,-4];
 
 // Deterministic shuffle so the same seed always renders the same order
 // (no layout flash from two different randoms racing on mount).

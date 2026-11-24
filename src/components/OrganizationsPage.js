@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import CENTER from '../data/partnerCenter.json';
+import { SCRAMBLE_COLORS, SCRAMBLE_SCALE, SCRAMBLE_TILT } from './HomeIntro';
 import './OrganizationsPage.css';
 
 const MOMENTS = [
@@ -16,28 +17,31 @@ const MOMENTS = [
   "I don't know what I'm supposed to do next.",
 ];
 
+// The "one place to start" name field: the home page's Tool Scramble look, names only.
+const NAME_FIELD_IDS = ['DoctorVisitPrep','ScamRadar','DifficultTalkCoach','BuyWise','LeaseTrapDetector','WaitingModeLiberator','Giftology','BillRescue','ProcedureProbe','SafeWalk','PaperworkPath','PlainTalk'];
+
 const SHOWCASE_IDS = ['ScamRadar','DoctorVisitPrep','DifficultTalkCoach','LeaseTrapDetector','BuyWise','PaperworkPath','MoneyDiplomat','PlainTalk'];
 
 // Each `key` is also the section's id, so outreach can link straight to it
 // (deftbrain.com/organizations#libraries). Package ids are partnerCenter.json's.
 const AUDIENCES = [
-  { key:'credit-unions', eyebrow:'Credit unions and banks', title:'Help members before they pay, sign or reply.',
+  { key:'credit-unions', icon:'🏦', eyebrow:'Credit unions and banks', title:'Help members before they pay, sign or reply.',
     moments:'A text saying their account is locked. A medical bill that looks wrong. A dealer’s add-ons. A contractor’s quote.',
     copy:'Members already trust you with their money. DeftBrain gives them a calm place to look at a decision before it costs them, with your member-service line right beside it.',
     packages:['pay-or-reply','money-conversations'], pilot:'Standard pilot', tools:['ScamRadar','BillRescue','BuyWise'] },
-  { key:'libraries', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
+  { key:'libraries', icon:'🏛️', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
     moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
     copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
     packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Community pilot', tools:['PaperworkPath','PlainTalk','TipOfTongue'] },
-  { key:'education', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
+  { key:'education', icon:'🎓', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
     moments:'A first lease. A roommate standoff. Four deadlines in one week. A hard stretch they can’t quite name.',
     copy:'Give students practical help at any hour, alongside student services and the counseling center, never instead of them. Works for first-year programs, housing, career centers and adult education.',
     packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], pilot:'Standard pilot', tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
-  { key:'community', eyebrow:'Community organizations', title:'An approachable first step for the people you serve.',
+  { key:'community', icon:'🏘️', eyebrow:'Community organizations', title:'An approachable first step for the people you serve.',
     moments:'A form in confusing language. A deposit a landlord won’t return. A message that might be a scam. An appointment to get ready for.',
     copy:'No account and no technical experience needed: a starting point your staff can hand anyone, with your own help line beside it.',
     packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Community pilot', tools:['PaperworkPath','RentersDepositSaver','ScamRadar'] },
-  { key:'employers', eyebrow:'Employers', title:'Support people beyond the job description.',
+  { key:'employers', icon:'🏢', eyebrow:'Employers', title:'Support people beyond the job description.',
     moments:'A raise to ask for. A conflict with a coworker. A parent’s medical appointment. A bill that won’t wait for the weekend.',
     copy:'Help with the everyday problems that follow people to work, and nothing about what anyone asks is reported back to you.',
     packages:['work-conversations','money-conversations','health-visits'], pilot:'Standard pilot', tools:['DifficultTalkCoach','MoneyDiplomat','DoctorVisitPrep'] },
@@ -155,7 +159,7 @@ export default function OrganizationsPage({ allTools = [] }) {
 
       <section className="org-section org-soft">
         <div className="org-shell">
-          <div className="org-section-heading centered"><div className="org-kicker">HOW IT WORKS</div><h2>Simple enough for anyone to use.</h2></div>
+          <div className="org-section-heading centered"><div className="org-kicker">HOW IT WORKS</div><h2>Simple enough for <em>everyone</em> to use.</h2></div>
           <div className="org-steps">
             <article><b>1</b><h3>Choose what's going on.</h3><p>No prompt writing. No figuring out what to ask an AI.</p></article>
             <article><b>2</b><h3>Answer a few thoughtful questions.</h3><p>DeftBrain asks for the information that matters.</p></article>
@@ -173,13 +177,22 @@ export default function OrganizationsPage({ allTools = [] }) {
             exactly that context (a headline stat in a sales pitch), so it
             gets the same treatment. */}
         <div className="org-section-heading centered"><div className="org-kicker">ONE PLACE TO START</div><h2>One resource. An extraordinary range of everyday needs.</h2><p><strong>{TOOL_COUNT_LABEL} tools.</strong> Hundreds of guides. One approachable place to begin.</p></div>
-        <div className="org-name-field" aria-hidden="true">Doctor Visit Prep <i>·</i> Scam Radar <i>·</i> Difficult Talk Coach <i>·</i> Buy Wise <i>·</i> Lease Trap Detector <i>·</i> Waiting Mode Liberator <i>·</i> Giftology <i>·</i> Bill Rescue <i>·</i> Procedure Probe <i>·</i> Safe Walk <i>·</i> Paperwork Path <i>·</i> Plain Talk</div>
+        <div className="org-scramble">{NAME_FIELD_IDS.map(id => byId[id]).filter(Boolean).map((t, i) => {
+          const accent = SCRAMBLE_COLORS[i % SCRAMBLE_COLORS.length];
+          return (
+            <Link key={t.id} to={`/${t.id}`} className="org-scramble-item" style={{ '--accent': accent, '--scale': SCRAMBLE_SCALE[i % SCRAMBLE_SCALE.length], '--tilt': `${SCRAMBLE_TILT[i % SCRAMBLE_TILT.length]}deg` }}>
+              <span className="org-scramble-name">{t.title}</span>
+              {/* Picture preview on hover or keyboard focus only; a tap just opens the tool. */}
+              <span className="org-scramble-pop" aria-hidden="true"><img src={`/scramble/${t.id}.webp`} alt="" loading="lazy" onError={e => { e.currentTarget.parentElement.style.display = 'none'; }} /><b>{t.tagline}</b></span>
+            </Link>
+          );
+        })}</div>
       </section>
 
       <section className="org-section org-soft" aria-labelledby="org-who-title">
         <div className="org-shell">
           <div className="org-section-heading centered"><div className="org-kicker">WHO IT'S FOR</div><h2 id="org-who-title">Built for organizations that help people.</h2><p>Each kind of organization hears different questions. Here is what yours might bring to DeftBrain.</p></div>
-          <nav className="org-tabs" aria-label="Kinds of organization">{AUDIENCES.map(a => <a key={a.key} href={`/organizations#${a.key}`}>{a.eyebrow}</a>)}</nav>
+          <nav className="org-tabs" aria-label="Kinds of organization">{AUDIENCES.map(a => <a key={a.key} href={`/organizations#${a.key}`}><span aria-hidden="true">{a.icon}</span>{a.eyebrow}</a>)}</nav>
         </div>
       </section>
 
@@ -190,6 +203,7 @@ export default function OrganizationsPage({ allTools = [] }) {
             <div className="org-shell">
               <div className="org-aud-head">
                 <div>
+                  <span className="org-aud-icon" aria-hidden="true">{a.icon}</span>
                   <div className="org-kicker">{a.eyebrow.toUpperCase()}</div>
                   <h2 id={`org-aud-${a.key}`}>{a.title}</h2>
                   <p className="org-aud-moments">{a.moments}</p>
