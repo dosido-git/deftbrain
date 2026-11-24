@@ -45,6 +45,10 @@
       "href": "/organizations"
     },
     {
+      "label": "Partner Center",
+      "href": "/partners"
+    },
+    {
       "label": "About",
       "href": "/about"
     },
