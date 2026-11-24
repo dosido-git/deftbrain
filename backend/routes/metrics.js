@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, summarizeRateLimits } = require('../lib/rateLimiter');
 const fs = require('fs');
 const nodePath = require('path');
 const geoip = require('geoip-lite');
@@ -874,6 +874,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const recurringErrorRows = [...failureGroups.values()].filter(group => group.count > 1)
       .sort((a, b) => a.tool.localeCompare(b.tool) || b.count - a.count)
       .map(({ tool, kind, message, count }) => `<tr><td>${escH(tool)}</td><td>${kind}</td><td>${count}</td><td>${escH(message)}</td></tr>`).join('');
+    // ── Rate limits: who the limiter turned away, and whether they came back. ──
+    const rl = summarizeRateLimits(rows);
+    const rlRows = rl.table.map(x => `<tr><td>${escH(x.path)}</td><td>${escH(x.tier)}</td><td>${x.minute}</td><td>${x.daily}</td><td>${x.visitors}</td><td>${x.partner}</td><td>${x.near}</td></tr>`).join('');
+    const rlHours = rl.firstDailyHours.map(at => new Date(at).toLocaleString('en-US', { timeZone: TZ, hour: 'numeric' }));
+    const rlSummary = `Browser saw ${rl.limited} refusal${rl.limited === 1 ? '' : 's'}; ${rl.recovered} later got an answer in the same visit.`
+      + (rlHours.length ? ` First daily-limit hits at: ${escH(rlHours.join(', '))}.` : '');
     const errorRows = recentErrors.map(e => {
       const when = e.at ? new Date(e.at).toLocaleString('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
       const kind = failureKind(e);
@@ -1712,6 +1718,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Recurring failures</h2>
     <p>Failures with the same message and kind, grouped by experience in the selected date range.</p>
     <table><tr><th>experience</th><th>kind</th><th>count</th><th>message</th></tr>${recurringErrorRows || '<tr><td colspan="4">No recurring failures recorded in this range.</td></tr>'}</table>
+    <h2>Rate limits <span style="font-weight:400;font-size:12px;color:#888">— resets on deploy (limits live in memory); visitors = first refusal per visitor per day, no IPs kept</span></h2>
+    <p>${rlSummary}</p>
+    <table><tr><th>endpoint</th><th>tier</th><th>per-minute refusals</th><th>daily refusals</th><th>visitors</th><th>on partner network</th><th>near misses (80% of day)</th></tr>${rlRows || '<tr><td colspan="7" style="color:#888">No refusals or near misses in this range.</td></tr>'}</table>
     <h2>Recent errors <span style="font-weight:400;font-size:12px;color:#888">(last 10, any date)</span></h2>
     <table><tr><th>when</th><th>tool</th><th>kind</th><th>message</th></tr>${errorRows || '<tr><td colspan=4 style="color:#888">No errors recorded.</td></tr>'}</table>
     <h2>Tool ideas${ideas.length ? ` (${ideas.length})` : ''}</h2>

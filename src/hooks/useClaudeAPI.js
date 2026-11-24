@@ -82,6 +82,7 @@ export const useClaudeAPI = () => {
         // text. Existing callers only read .message and are unaffected.
         err.status = response.status;
         if (typeof errorData.code === 'string') err.code = errorData.code;
+        if (typeof errorData.limitType === 'string') err.limitType = errorData.limitType;
         if (err.code === 'busy') signalBusy('failed');
         // Too vague to work with (lib/surge.js): say so in their language.
         if (err.code === 'unclear_input') err.message = t('err_unclear_input');
@@ -106,7 +107,7 @@ export const useClaudeAPI = () => {
       return json;
 
     } catch (err) {
-      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
+      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80), ...(err.limitType ? { limitType: err.limitType } : {}) });
       setError(err.message);
       throw err;
     } finally {
@@ -142,7 +143,9 @@ export const useClaudeAPI = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         if (errorData.code === 'busy') signalBusy('failed');
-        throw new Error(errorData.error || `Server error: ${response.status}`);
+        const err = new Error(errorData.error || `Server error: ${response.status}`);
+        if (typeof errorData.limitType === 'string') err.limitType = errorData.limitType;
+        throw err;
       }
 
       const reader = response.body.getReader();
@@ -201,7 +204,7 @@ export const useClaudeAPI = () => {
       if (onDone) onDone(accumulated);
 
     } catch (err) {
-      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
+      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80), ...(err.limitType ? { limitType: err.limitType } : {}) });
       endWait('error');
       setError(err.message);
       if (onError) onError(err.message);
@@ -257,6 +260,7 @@ export const useClaudeAPI = () => {
         const err = new Error(errorData.error || `Server error: ${response.status}`);
         err.status = response.status;
         if (typeof errorData.code === 'string') err.code = errorData.code;
+        if (typeof errorData.limitType === 'string') err.limitType = errorData.limitType;
         if (err.code === 'busy') signalBusy('failed');
         // Too vague to work with (lib/surge.js): say so in their language.
         if (err.code === 'unclear_input') err.message = t('err_unclear_input');
@@ -314,7 +318,7 @@ export const useClaudeAPI = () => {
       return latest;
     } catch (err) {
       if (err.name === 'AbortError') return null; // replaced by a newer run
-      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
+      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80), ...(err.limitType ? { limitType: err.limitType } : {}) });
       setError(err.message);
       // A failure after the answer showed (the check stream broke) keeps it.
       if (latest && !requireComplete) return latest;

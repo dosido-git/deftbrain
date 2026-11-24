@@ -154,6 +154,17 @@ function getBucket(map, key, windowMs) {
 const AUTOMATIC_ACTIONS = new Set(['warm-venues', 'next-help']);
 const AUTOMATIC_LIMITS = { perMinute: 40, perDay: 600 };
 
+// Refusals and near misses go to the metrics sink (report: "Rate limits") so a
+// limit set too tight shows up as a number, not a guess. Never the IP or key.
+const { logMetric } = require('./metricsSink');
+const TIERS = new Map([[DEFAULT_LIMITS, 'default'], [CREATIVE_LIMITS, 'creative'], [DIVERSION_LIMITS, 'diversion'],
+  [GAME_LIMITS, 'game'], [POLL_LIMITS, 'poll'], [AUTOMATIC_LIMITS, 'automatic']]);
+const NEAR_MISS = 0.8; // logged once per visitor per day on reaching 80% of the daily limit
+function logLimit(req, kind, data) {
+  const path = String(req.originalUrl || req.url || '').split('?')[0].slice(0, 80);
+  logMetric(kind, { path, ...data });
+}
+
 function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
   return (req, res, next) => {
     // ── Perf-probe bypass (development only) ──
@@ -203,7 +214,17 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     const dailyBucket = getBucket(dailyWindow, key, DAILY_WINDOW_MS);
 
     // ── Check daily limit ──
+    const tier = TIERS.get(base) || 'custom';
+    const refused = limitType => {
+      // `first` marks this visitor's first refusal in the daily window, so
+      // counting first:true rows gives distinct visitors without storing who.
+      const first = !dailyBucket.refused;
+      dailyBucket.refused = true;
+      logLimit(req, 'rate_limit', { limitType, tier, partner: Boolean(partner), first, usedToday: dailyBucket.count });
+    };
+
     if (dailyBucket.count >= effLimits.perDay) {
+      refused('daily');
       const retryAfter = Math.ceil((dailyBucket.resetAt - Date.now()) / 1000);
       res.set('Retry-After', String(retryAfter));
       res.set('X-RateLimit-Daily-Limit', String(effLimits.perDay));
@@ -219,6 +240,7 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
 
     // ── Check per-minute limit ──
     if (shortBucket.count >= effLimits.perMinute) {
+      refused('minute');
       const retryAfter = Math.ceil((shortBucket.resetAt - Date.now()) / 1000);
       res.set('Retry-After', String(retryAfter));
       res.set('X-RateLimit-Minute-Limit', String(effLimits.perMinute));
@@ -234,6 +256,10 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     // ── Allowed — increment counters ──
     shortBucket.count++;
     dailyBucket.count++;
+    if (!dailyBucket.nearMiss && dailyBucket.count >= Math.ceil(effLimits.perDay * NEAR_MISS)) {
+      dailyBucket.nearMiss = true;
+      logLimit(req, 'rate_limit_near', { tier, partner: Boolean(partner) });
+    }
 
     // ── Add informational headers ──
     res.set('X-RateLimit-Minute-Remaining', String(Math.max(0, effLimits.perMinute - shortBucket.count)));
@@ -243,7 +269,34 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
   };
 }
 
+// Report summary over metrics rows (rate_limit / rate_limit_near from above,
+// plus the browser's tool_error{limitType} and limit_recovered beacons).
+function summarizeRateLimits(rows) {
+  const byPath = new Map();
+  const row = (path, tier) => {
+    const k = path + '|' + tier;
+    if (!byPath.has(k)) byPath.set(k, { path, tier, minute: 0, daily: 0, visitors: 0, partner: 0, near: 0 });
+    return byPath.get(k);
+  };
+  let limited = 0, recovered = 0;
+  const firstDailyHours = [];
+  for (const r of rows) {
+    if (r.kind === 'rate_limit') {
+      const x = row(r.path, r.tier);
+      x[r.limitType === 'daily' ? 'daily' : 'minute']++;
+      if (r.first) x.visitors++;
+      if (r.partner) x.partner++;
+      if (r.first && r.limitType === 'daily' && r.at) firstDailyHours.push(r.at);
+    } else if (r.kind === 'rate_limit_near') row(r.path, r.tier).near++;
+    else if (r.kind === 'event' && r.event === 'tool_error' && r.props && r.props.limitType) limited++;
+    else if (r.kind === 'event' && r.event === 'limit_recovered') recovered++;
+  }
+  const table = [...byPath.values()].sort((a, b) => (b.minute + b.daily) - (a.minute + a.daily) || b.near - a.near);
+  return { table, limited, recovered, firstDailyHours };
+}
+
 module.exports = {
+  summarizeRateLimits,
   AUTOMATIC_ACTIONS,
   AUTOMATIC_LIMITS, rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS, DIVERSION_LIMITS,
   GAME_LIMITS, POLL_LIMITS, loadPartnerNetworks, partnerFor };

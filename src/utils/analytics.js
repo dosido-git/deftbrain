@@ -144,6 +144,15 @@ export function track(event, props = {}) {
     } catch (_) {}
   }
   send({ event, props, firstInSession });
+  // After a rate-limit refusal, did this visit still get an answer? One
+  // limit_recovered per refusal, on the session's next finished run.
+  try {
+    if (event === 'tool_error' && props.limitType) sessionStorage.setItem('db-limited', props.limitType);
+    else if (event === 'tool_complete' && sessionStorage.getItem('db-limited')) {
+      send({ event: 'limit_recovered', props: { tool: props.tool, limitType: sessionStorage.getItem('db-limited') } });
+      sessionStorage.removeItem('db-limited');
+    }
+  } catch (_) {}
   if (event === 'tool_run' && typeof window !== 'undefined') {
     const path = window.location.pathname;
     if (!TOOL_PATH.test(path)) return;
