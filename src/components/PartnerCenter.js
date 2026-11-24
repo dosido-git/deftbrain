@@ -179,6 +179,11 @@ function initialKit(params) {
 
 const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 
+// One picker, shown in the form and again beside the handout; both edit the same state.
+const PackageSelect = ({ value, onChange }) => (
+  <select value={value} onChange={onChange}>{CENTER.packages.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select>
+);
+
 function LaunchKit({ byId, params }) {
   const [kit, setKit] = useState(() => initialKit(params));
   const set = key => e => setKit(k => ({ ...k, [key]: e.target.value }));
@@ -206,7 +211,7 @@ function LaunchKit({ byId, params }) {
 
       <form className="pc-form pc-noprint" onSubmit={e => e.preventDefault()} aria-label="Your details">
         <label>Organization name<input value={kit.name} onChange={set('name')} placeholder="Example Credit Union" autoComplete="organization" /></label>
-        <label>Package<select value={kit.packageId} onChange={set('packageId')}>{CENTER.packages.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
+        <label>Package<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
         <label>Page address<span className="pc-prefix"><span>{SITE}/for/</span><input value={kit.slug} onChange={e => setKit(k => ({ ...k, slug: slugify(e.target.value) }))} placeholder={slugify(kit.name) || 'your-organization'} /></span></label>
         <label>Help line sentence<input value={kit.helpText} onChange={set('helpText')} placeholder={`For decisions, talk to ${name}.`} /></label>
         <label>Phone number (optional)<input value={kit.phone} onChange={set('phone')} placeholder="1-800-555-0100" inputMode="tel" /></label>
@@ -244,6 +249,7 @@ function LaunchKit({ byId, params }) {
           <PrintBtn label="Print handout" />
         </div>
         <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full beside the QR code. The QR code uses the printed-handout tracking link; download it on its own for posters or cards.</p>
+        <label className="pc-handout-pick pc-noprint">Package on this handout<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
         <article className="pc-handout" aria-label="Handout preview">
           <header><b>{name}</b><span>by DeftBrain</span></header>
           <h2>{pkg.title}</h2>

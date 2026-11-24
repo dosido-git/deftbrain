@@ -88,3 +88,6 @@
 .pc-qr-loading{background:#f2eee7;border-radius:6px}
 .pc-qr-download{appearance:none;border:0;background:none;padding:0;font:inherit;font-size:13px;font-weight:600;color:#165b9a;text-decoration:underline;cursor:pointer}
 @media(max-width:640px){.pc-handout-go{flex-direction:column;align-items:flex-start}}
+/* Package choice beside the handout (same state as the form at the top). */
+.pc-handout-pick{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--navy);margin:0 0 4px}
+.pc-handout-pick select{font:inherit;font-weight:400;font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--cream);color:var(--ink);max-width:100%}
