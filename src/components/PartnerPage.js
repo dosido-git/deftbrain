@@ -48,7 +48,9 @@ export default function PartnerPage({ allTools = [] }) {
       <header className="partner-bar">
         <div className="org-shell partner-bar-inner">
           <div className="partner-brand">
-            <span className="partner-badge" aria-hidden="true">{partner.initials}</span>
+            {partner.logo
+              ? <img className="partner-logo" src={partner.logo} alt="" width="40" height="40" />
+              : <span className="partner-badge" aria-hidden="true">{partner.initials}</span>}
             <span className="partner-name">{partner.name}</span>
           </div>
           <div className="partner-bar-end">

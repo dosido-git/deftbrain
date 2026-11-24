@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Example Credit Union logo">
+  <rect width="64" height="64" rx="14" fill="#0f5c63"/>
+  <circle cx="44" cy="20" r="6" fill="#f2b84b"/>
+  <path d="M12 46 C 20 28, 44 28, 52 46" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M22 46 V 39 M32 46 V 35 M42 46 V 39" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <path d="M10 50 H 54" stroke="#9fd3d6" stroke-width="3" stroke-linecap="round"/>
+</svg>

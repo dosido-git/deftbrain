@@ -174,6 +174,8 @@ function initialKit(params) {
     slug: partner ? id : '',
     helpText: partner?.help?.text || '',
     phone: partner?.help?.phone || '',
+    sample: partner?.sample === true,
+    logo: partner?.logo || '',
   };
 }
 
@@ -202,12 +204,22 @@ function LaunchKit({ byId, params }) {
   const card = `Title: ${pkg.title}\nSentence: ${pkg.intro}\nButton: Get started\nLink: ${link('website')}\nImage alt text: ${pkg.title}, free guidance from ${name} and DeftBrain`;
   const script = `"If you're not sure about this, there's a free guide on our website called '${pkg.title}'. It asks a few questions and helps you see your options, and we never see what you type."\n\nThen point them to ${page}.`;
   const social = `${pkg.intro} ${name} now offers free, private guidance from DeftBrain, with no account needed. ${link('social')}`;
-  const timeline = `Week 0: approve all copy and placements (owner: ____, approved on: ____)\nLaunch day: send the email, publish the website card, put out handouts\nWeek 1: brief front-line staff with the staff script\nWeek 4: send the reminder\nMonth 3: review the usage report together`;
+  // The finished example fills in what a real launch would: an owner for each step and where it goes.
+  const timeline = kit.sample
+    ? `Week 0, Monday: member communications lead approves all copy and placements, after compliance signs off on the help line sentence\nWeek 0, Thursday: DeftBrain checks the final wording and the tracked links\nLaunch day (Tuesday, week 1): newsletter goes out with the long email; website card goes live on the Help & Security page; handouts at every branch teller line and drive-through\nWeek 1: branch managers brief tellers and the call center with the staff script at the morning huddle\nWeek 2: social post on the credit union's usual channels\nWeek 4: reminder in the e-statement message area\nMonth 3: member communications lead and DeftBrain review the usage report and decide what to keep, move or stop`
+    : `Week 0: approve all copy and placements (owner: ____, approved on: ____)\nLaunch day: send the email, publish the website card, put out handouts\nWeek 1: brief front-line staff with the staff script\nWeek 4: send the reminder\nMonth 3: review the usage report together`;
   const channels = [['Email', 'email'], ['Reminder', 'reminder'], ['Website or portal', 'website'], ['Social posts', 'social'], ['Printed handout', 'print'], ['Staff referrals', 'staff']];
 
   return (
     <>
-      <p className="org-lede pc-lede pc-noprint">Fill in your details and every item below updates. Copy what you need, change the wording to sound like you, and send it to us for a quick check before it goes out.</p>
+      {kit.sample ? (
+        <div className="pc-example pc-noprint" role="note">
+          <p><b>A finished example.</b> This is the whole kit filled in for {name}, a made-up credit union: every message, link, owner and step a real launch would have. Change any field to see it update.</p>
+          <p className="pc-example-links"><Link to={`/for/${slug}`}>See its member page →</Link><Link to="/partners/launch-kit">Start your own kit →</Link></p>
+        </div>
+      ) : (
+        <p className="org-lede pc-lede pc-noprint">Fill in your details and every item below updates. Copy what you need, change the wording to sound like you, and send it to us for a quick check before it goes out. <Link to="/partners/launch-kit?partner=example-cu">See a finished example →</Link></p>
+      )}
 
       <form className="pc-form pc-noprint" onSubmit={e => e.preventDefault()} aria-label="Your details">
         <label>Organization name<input value={kit.name} onChange={set('name')} placeholder="Example Credit Union" autoComplete="organization" /></label>
@@ -251,7 +263,7 @@ function LaunchKit({ byId, params }) {
         <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full beside the QR code. The QR code uses the printed-handout tracking link; download it on its own for posters or cards.</p>
         <label className="pc-handout-pick pc-noprint">Package on this handout<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
         <article className="pc-handout" aria-label="Handout preview">
-          <header><b>{name}</b><span>by DeftBrain</span></header>
+          <header><b className="pc-handout-name">{kit.logo && <img src={kit.logo} alt="" width="36" height="36" />}{name}</b><span>by DeftBrain</span></header>
           <h2>{pkg.title}</h2>
           <p className="pc-handout-intro">{pkg.intro}</p>
           <h3>How it works</h3>
@@ -437,6 +449,7 @@ export default function PartnerCenter({ allTools = [] }) {
   const pkg = pkgId !== undefined && Object.prototype.hasOwnProperty.call(pkgById, pkgId) ? pkgById[pkgId] : null;
   const section = pkgId !== undefined ? 'packages' : page;
   const [params] = useSearchParams();
+  const kitPartner = params.get('partner') || '';
   const { isDark, toggleTheme } = useTheme();
   const byId = useMemo(() => Object.fromEntries(allTools.map(t => [t.id, t])), [allTools]);
   const known = section === 'packages' ? !!pkg : section === '' || CENTER.pages.includes(section);
@@ -460,7 +473,7 @@ export default function PartnerCenter({ allTools = [] }) {
     first.current = false;
     const t = setTimeout(() => revealSection(target || h1Ref.current, { frame: !target }), 120);
     return () => clearTimeout(t);
-  }, [section, pkgId, hash]);
+  }, [section, pkgId, hash, kitPartner]);
 
   if (!known) return <NotFound />;
 
@@ -474,7 +487,7 @@ export default function PartnerCenter({ allTools = [] }) {
           {SECTIONS.map(s => <Link key={s.id} to={s.id ? `/partners/${s.id}` : '/partners'} aria-current={s.id === section ? 'page' : undefined}>{s.label}</Link>)}
         </nav>
         {section === '' && <Overview byId={byId} />}
-        {section === 'launch-kit' && <LaunchKit byId={byId} params={params} />}
+        {section === 'launch-kit' && <LaunchKit key={kitPartner} byId={byId} params={params} />}
         {section === 'guidelines' && <Guidelines />}
         {section === 'privacy' && <PrivacyData />}
         {pkg && <PackageDetail pkg={pkg} byId={byId} />}

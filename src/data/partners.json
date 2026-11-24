@@ -2,6 +2,7 @@
   "example-cu": {
     "name": "Example Credit Union",
     "initials": "EC",
+    "logo": "/partners/example-cu.svg",
     "sample": true,
     "packageTitle": "Check before you pay or reply",
     "intro": "Not sure about a text, a bill or a big purchase? Answer a few questions and see what matters, what your options are and what to ask next.",
