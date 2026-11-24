@@ -1028,6 +1028,11 @@ if (IS_PRODUCTION) {
     const known = !req.params.page || PARTNER_CENTER.pages.includes(req.params.page);
     res.status(known ? 200 : 404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
   });
+  app.get('/partners/packages/:pkg', (req, res) => {
+    res.set('X-Robots-Tag', 'noindex');
+    const known = PARTNER_CENTER.packages.some(p => p.id === req.params.pkg);
+    res.status(known ? 200 : 404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  });
 
   app.get('*', (req, res) => {
     const slug = req.path.replace(/^\//, '');

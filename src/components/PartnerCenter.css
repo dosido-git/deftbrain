@@ -91,3 +91,19 @@
 /* Package choice beside the handout (same state as the form at the top). */
 .pc-handout-pick{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--navy);margin:0 0 4px}
 .pc-handout-pick select{font:inherit;font-weight:400;font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--cream);color:var(--ink);max-width:100%}
+/* One package (/partners/packages/<id>). */
+.pc-back{margin:0 0 14px;font-size:14px}
+.pc-back a{color:var(--blue);font-weight:600}
+.pc-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 22px;margin:22px 0 0;max-width:900px}
+.pc-facts dt,.pc-pkg-tools dt{color:var(--muted);font-weight:600;font-size:14px}
+.pc-facts dd,.pc-pkg-tools dd{margin:0;line-height:1.55}
+.pc-sensitive{max-width:780px;margin-block-start:16px;padding:12px 14px;border-inline-start:3px solid var(--gold);background:var(--soft)}
+.pc-pkg-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pc-pkg-tools h3{margin-top:0}
+.pc-pkg-tools h3 a{color:var(--navy);text-decoration:none}
+.pc-pkg-tools h3 a:hover{text-decoration:underline}
+.pc-pkg-tagline{margin:0 0 12px;line-height:1.55}
+.pc-pkg-tools dl{margin:0;font-size:15px}
+.pc-pkg-tools dl div{margin:0 0 10px}
+.pc-pkg-actions{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+@media(max-width:900px){.pc-pkg-tools,.pc-facts{grid-template-columns:1fr}}

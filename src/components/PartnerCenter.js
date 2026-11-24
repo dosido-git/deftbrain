@@ -135,7 +135,7 @@ function Overview({ byId }) {
                 <div><dt>Help line shown beside it</dt><dd>{p.help}</dd></div>
               </dl>
               {p.sensitive && <p className="pc-note">Offered only after a review of your launch copy, never as a first pilot, and reported for the package as a whole.</p>}
-              <Link className="pc-package-link" to={`/partners/launch-kit?package=${p.id}`}>Preview its launch kit →</Link>
+              <Link className="pc-package-link" to={`/partners/packages/${p.id}`}>See what's included →</Link>
             </article>
           ))}
         </div>
@@ -381,19 +381,70 @@ function PrivacyData() {
   );
 }
 
+// ─── One package (/partners/packages/<id>) ─────────────────────
+// Each experience is described from its own primer in src/data/tools.js
+// (when it helps, what someone brings, what they get), so the page never
+// drifts from what the experience itself tells a visitor.
+function PackageDetail({ pkg, byId }) {
+  const tools = pkg.tools.map(id => byId[id]).filter(Boolean);
+  return (
+    <>
+      <p className="pc-back"><Link to="/partners#pc-packages">← All packages</Link></p>
+      <p className="org-lede pc-lede">{pkg.intro}</p>
+      <p className="pc-note">That sentence is how the package introduces itself to the people you serve, on your page and in the launch materials.</p>
+      <dl className="pc-facts">
+        <div><dt>Often chosen by</dt><dd>{pkg.buyers}</dd></div>
+        <div><dt>Help line shown beside it</dt><dd>{pkg.help}</dd></div>
+        <div><dt>Experiences</dt><dd>{tools.length}, plus the rest of DeftBrain one click away</dd></div>
+      </dl>
+      {pkg.sensitive && <p className="pc-note pc-sensitive">Offered by request only: after a review of your launch copy, never as a first pilot, with crisis lines always shown beside your own support service, and usage reported for the package as a whole, never per experience.</p>}
+
+      <section className="pc-section" aria-labelledby="pc-pkg-included">
+        <h2 id="pc-pkg-included">What's included</h2>
+        <div className="pc-pkg-tools">
+          {tools.map(t => (
+            <article key={t.id} className="pc-material">
+              <h3><span aria-hidden="true">{t.icon}</span> <Link to={`/${t.id}`}>{t.title}</Link></h3>
+              <p className="pc-pkg-tagline">{t.tagline || t.description}</p>
+              {t.primer ? (
+                <dl>
+                  {t.primer.when && <div><dt>When it helps</dt><dd>{t.primer.when}</dd></div>}
+                  {t.primer.give && <div><dt>What someone brings</dt><dd>{t.primer.give}</dd></div>}
+                  {t.primer.get && <div><dt>What they get</dt><dd>{t.primer.get}</dd></div>}
+                </dl>
+              ) : <p>{t.description}</p>}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="pc-section" aria-labelledby="pc-pkg-price">
+        <h2 id="pc-pkg-price">Starting with this package</h2>
+        <p className="pc-section-lead">{pkg.sensitive ? 'Added to an existing partnership after its first pilot.' : 'Start with a 90-day pilot, credited in full to your first year.'} A standard license covers up to two packages. <Link to="/organizations#pricing">See pricing →</Link></p>
+        <div className="pc-pkg-actions">
+          <Link className="org-btn org-btn-primary" to={`/partners/launch-kit?package=${pkg.id}`}>Preview its launch kit →</Link>
+          <a className="org-text-link" href={`mailto:${CONTACT}?subject=${encodeURIComponent(`Package: ${pkg.title}`)}`}>Ask about this package</a>
+        </div>
+      </section>
+    </>
+  );
+}
+
 const TITLES = { '': 'Everything you need to offer DeftBrain to your people.', 'launch-kit': 'Launch kit', guidelines: 'Guidelines', privacy: 'Privacy and data' };
 
 export default function PartnerCenter({ allTools = [] }) {
-  const { section = '' } = useParams();
+  const { section: page = '', pkg: pkgId } = useParams();
+  const pkg = pkgId !== undefined && Object.prototype.hasOwnProperty.call(pkgById, pkgId) ? pkgById[pkgId] : null;
+  const section = pkgId !== undefined ? 'packages' : page;
   const [params] = useSearchParams();
   const { isDark, toggleTheme } = useTheme();
   const byId = useMemo(() => Object.fromEntries(allTools.map(t => [t.id, t])), [allTools]);
-  const known = section === '' || CENTER.pages.includes(section);
-  const head = HEADS[section] || { title: 'Page not found' };
+  const known = section === 'packages' ? !!pkg : section === '' || CENTER.pages.includes(section);
+  const head = pkg ? { title: `${pkg.title} — Partner Center`, description: pkg.intro } : HEADS[section] || { title: 'Page not found' };
   const h1Ref = useRef(null);
   const first = useRef(true);
 
-  useDocumentHead({ title: head.title, description: head.description, canonicalPath: section ? `/partners/${section}` : '/partners' });
+  useDocumentHead({ title: head.title, description: head.description, canonicalPath: pkg ? `/partners/packages/${pkg.id}` : section ? `/partners/${section}` : '/partners' });
   useNoindex();
   useEffect(() => {
     document.body.classList.add('db-sand-page');
@@ -409,7 +460,7 @@ export default function PartnerCenter({ allTools = [] }) {
     first.current = false;
     const t = setTimeout(() => revealSection(target || h1Ref.current, { frame: !target }), 120);
     return () => clearTimeout(t);
-  }, [section, hash]);
+  }, [section, pkgId, hash]);
 
   if (!known) return <NotFound />;
 
@@ -418,7 +469,7 @@ export default function PartnerCenter({ allTools = [] }) {
       <SiteHeader isDark={isDark} onToggleTheme={toggleTheme} showCurrency={false} />
       <div className="org-shell pc-shell">
         <div className="org-kicker pc-noprint">DEFTBRAIN PARTNER CENTER</div>
-        <h1 ref={h1Ref} tabIndex={-1} className="pc-noprint">{TITLES[section]}</h1>
+        <h1 ref={h1Ref} tabIndex={-1} className="pc-noprint">{pkg ? pkg.title : TITLES[section]}</h1>
         <nav className="pc-nav pc-noprint" aria-label="Partner Center">
           {SECTIONS.map(s => <Link key={s.id} to={s.id ? `/partners/${s.id}` : '/partners'} aria-current={s.id === section ? 'page' : undefined}>{s.label}</Link>)}
         </nav>
@@ -426,6 +477,7 @@ export default function PartnerCenter({ allTools = [] }) {
         {section === 'launch-kit' && <LaunchKit byId={byId} params={params} />}
         {section === 'guidelines' && <Guidelines />}
         {section === 'privacy' && <PrivacyData />}
+        {pkg && <PackageDetail pkg={pkg} byId={byId} />}
       </div>
     </main>
   );

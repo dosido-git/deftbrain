@@ -56,6 +56,7 @@ export default function App() {
                 <Route path="/for/:partnerId" element={<PartnerPage allTools={tools} />} />
                 <Route path="/partners" element={<PartnerCenter allTools={tools} />} />
                 <Route path="/partners/:section" element={<PartnerCenter allTools={tools} />} />
+                <Route path="/partners/packages/:pkg" element={<PartnerCenter allTools={tools} />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
