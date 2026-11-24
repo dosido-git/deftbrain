@@ -9,7 +9,9 @@ const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacente
 const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
-const { isRealTool } = require('../lib/toolCatalog');
+const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
+const { buildPartnerReport, renderPartnerReportHTML } = require('../lib/partnerReport');
+const PARTNERS = require('../../src/data/partners.json');
 const { scrubNumbers } = require('../lib/scrubNumbers');
 
 function metricPath(value) {
@@ -430,6 +432,10 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     </select>
     <button onclick="load()">Load</button>
     <button class="ghost" onclick="openReport()">open report ↗</button>
+    <select id="partner" title="partner">${Object.entries(PARTNERS).map(([id, p]) => `<option value="${escH(id)}">${escH(p.name)}</option>`).join('')}</select>
+    <input id="pfrom" type="month" title="from month">
+    <input id="pto" type="month" title="to month">
+    <button class="ghost" onclick="partnerReport()">partner report</button>
     <button class="ghost" onclick="reset()">reset baseline</button>
     <button class="ghost" onclick="forget()">forget key</button>
     <span id="msg"></span>
@@ -511,6 +517,22 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
         if(w){ w.document.open();w.document.write(html);w.document.close();say('opened — use ⌘P to print',true); }
         else { document.open();document.write(html);document.close(); } // popup blocked → replace this tab (reload to return)
       }).catch(function(e){say(e.message);});
+    }
+    // Per-partner report: same key, same iframe. Months are optional; blank
+    // means from the first to the last month with data.
+    function partnerReport(){
+      var k=keyEl.value.trim();
+      if(!k){say('enter a key');return;}
+      var q='partner='+encodeURIComponent(document.getElementById('partner').value);
+      var f=document.getElementById('pfrom').value, t=document.getElementById('pto').value;
+      if(f)q+='&from='+f; if(t)q+='&to='+t;
+      say('loading\u2026');
+      fetch('/api/metrics/partner-report?'+q,{headers:{'x-metrics-key':k}}).then(function(r){
+        if(r.status===404)throw new Error('key rejected or unknown partner');
+        if(r.status!==200)throw new Error('error '+r.status);
+        return r.text();
+      }).then(function(html){frame.srcdoc=html;frame.style.display='block';login.style.display='none';say('partner report loaded',true);})
+        .catch(function(e){say(e.message);});
     }
     function reset(){
       var k=keyEl.value.trim();
@@ -1822,6 +1844,20 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 // self-exclusion isn't catching your own traffic (trust-proxy hop count, IPv6
 // vs IPv4 / ::ffff-mapped form, stale IP, or unset METRICS_EXCLUDE_IPS). Does
 // NOT reveal the excluded IPs themselves — only whether YOUR req.ip matches.
+// GET /api/metrics/partner-report?partner=<id>&from=YYYY-MM&to=YYYY-MM[&format=json]
+// One partner's usage, totals only, small groups hidden (lib/partnerReport).
+// Same header key as the main report; a wrong key or unknown partner is a 404.
+router.get('/metrics/partner-report', rateLimit(METRIC_LIMITS, 'metrics-partner:'), (req, res) => {
+  if (!keyMatches(req.get('x-metrics-key'), process.env.METRICS_KEY)) return res.status(404).end();
+  const id = String(req.query.partner || '');
+  if (!Object.prototype.hasOwnProperty.call(PARTNERS, id)) return res.status(404).end();
+  const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
+  const report = buildPartnerReport(readMetrics(), id, { partner: PARTNERS[id], from: month(req.query.from), to: month(req.query.to) });
+  if (req.query.format === 'json') return res.json(report);
+  const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
+  res.set('Cache-Control', 'no-store').type('html').send(renderPartnerReportHTML(report, { toolTitles }));
+});
+
 router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req, res) => {
   const KEY = process.env.METRICS_KEY;
   if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
