@@ -117,16 +117,19 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to } = {}) 
   };
 }
 
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const monthName = (ym, short) => { const [y, m] = ym.split('-'); const n = MONTHS[Number(m) - 1] || ym; return `${short ? n.slice(0, 3) : n} ${y}`; };
+const period = (a, b) => (a === b ? monthName(a) : `${monthName(a)} to ${monthName(b)}`);
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const cell = v => (v === null ? '<td class="hid">fewer than 20</td>' : `<td>${Number(v).toLocaleString('en-US')}</td>`);
 
 function renderPartnerReportHTML(r, { toolTitles = {} } = {}) {
-  const table = (head, rows, keys, nameOf = x => x.label) => `<table><thead><tr><th>${head}</th>${keys.map(k => `<th>${k[1]}</th>`).join('')}</tr></thead><tbody>${
-    rows.map(x => `<tr><td class="name">${esc(nameOf(x))}</td>${keys.map(k => cell(x[k[0]])).join('')}</tr>`).join('')}</tbody></table>`;
+  const table = (head, rows, keys, nameOf = x => x.label) => `<div class="scroll"><table><thead><tr><th>${head}</th>${keys.map(k => `<th>${k[1]}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(x => `<tr><td class="name">${esc(nameOf(x))}</td>${keys.map(k => cell(x[k[0]])).join('')}</tr>`).join('')}</tbody></table></div>`;
   const T = r.totals;
   const tile = (label, v) => `<div class="tile"><b>${v === null ? 'fewer than 20' : Number(v).toLocaleString('en-US')}</b><span>${label}</span></div>`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
-<title>${esc(r.name)} usage report, ${r.from} to ${r.to}</title>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>${esc(r.name)} usage report, ${period(r.from, r.to)}</title>
 <style>
 body{font-family:system-ui,sans-serif;color:#1f2937;max-width:860px;margin:0 auto;padding:28px 20px;background:#fff;line-height:1.5}
 h1{font-family:Georgia,serif;color:#18324a;font-size:30px;margin:0 0 4px}
@@ -139,14 +142,16 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:8px 10px;border-bottom:1px solid #e7e1d7;text-align:right}
 th:first-child,td.name{text-align:left}th{background:#f2eee7;color:#18324a}
 td.hid{color:#8a8275;font-style:italic}
+td,th{white-space:nowrap}td.name{white-space:normal;min-width:9em}
+.scroll{overflow-x:auto}
 .note{font-size:13px;color:#5c5650;margin-top:24px;border-top:1px solid #e7e1d7;padding-top:12px}
-@media(max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}th,td{padding:7px 6px}}
 </style></head><body>
 <h1>${esc(r.name)}: usage report</h1>
-<p class="sub">${r.from} to ${r.to} · visits that started on deftbrain.com/for/${esc(r.partner)}</p>
+<p class="sub">${period(r.from, r.to)} · visits that started on deftbrain.com/for/${esc(r.partner)}</p>
 <div class="tiles">${tile('Visits', T.visits)}${tile('Visits with activity', T.active)}${tile('Guidance started', T.started)}${tile('Guidance finished', T.finished)}</div>
 <h2>By month</h2>
-${table('Month', r.byMonth, [['visits', 'Visits'], ['active', 'With activity'], ['started', 'Started'], ['finished', 'Finished']])}
+${table('Month', r.byMonth.map(m => ({ ...m, label: monthName(m.label, true) })), [['visits', 'Visits'], ['active', 'With activity'], ['started', 'Started'], ['finished', 'Finished']])}
 <h2>By experience</h2>
 ${table('Experience', r.byExperience, [['started', 'Started'], ['finished', 'Finished']], x => toolTitles[x.label] || x.label)}
 <h2>Where visits came from</h2>
