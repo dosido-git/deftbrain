@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import SiteHeader from './SiteHeader';
 import NotFound from './NotFound';
 import { CopyBtn, PrintBtn } from './ActionButtons';
@@ -393,12 +393,17 @@ export default function PartnerCenter({ allTools = [] }) {
     document.body.classList.add('db-sand-page');
     return () => { document.body.classList.remove('db-sand-page'); };
   }, []);
-  // Switching pages swaps the whole view: bring the window to its top and focus the heading.
+  // Switching pages swaps the whole view: bring the window to its top and focus
+  // the heading. A link with a #section (from the Organizations page, or the
+  // sample-report link) lands on that section instead, on arrival too.
+  const { hash } = useLocation();
   useEffect(() => {
-    if (first.current) { first.current = false; return undefined; }
-    const t = setTimeout(() => revealSection(h1Ref.current, { frame: true }), 120);
+    const target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (first.current && !target) { first.current = false; return undefined; }
+    first.current = false;
+    const t = setTimeout(() => revealSection(target || h1Ref.current, { frame: !target }), 120);
     return () => clearTimeout(t);
-  }, [section]);
+  }, [section, hash]);
 
   if (!known) return <NotFound />;
 
