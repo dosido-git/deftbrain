@@ -149,6 +149,8 @@ function organizationsPageHTML() {
     + `<ol style="padding-left:1.25rem;margin:0"><li>Choose what's going on. No prompt writing.</li><li>Answer a few thoughtful questions.</li><li>Get practical guidance: clear thinking, useful questions, and real options to weigh.</li></ol>`
     + `<h2 style="${STATIC_H2}">Start with a 90-day pilot.</h2>`
     + `<p style="line-height:1.6;margin:0">One package, your own page and everything you need to launch it: ready-made emails, a website card, a staff script and a printable handout. Your organization sees only overall usage counts, with any group under 20 hidden. Nothing anyone types is shared with you.</p>`
+    + `<h2 style="${STATIC_H2}">Flat prices, sized by scope.</h2>`
+    + `<p style="line-height:1.6;margin:0">Every visitor is included, with no per-person fees. Pilots (90 days): $1,500 community, $4,500 standard, credited in full to the first year. Licenses: $2,500 a year (one library system or nonprofit, one package), $7,500 a year (one institution, up to two packages), from $15,000 a year for consortia and multi-program partners. Prices in US dollars.</p>`
     + `<p style="line-height:1.6;margin:1rem 0 0"><a href="/tools">Explore all DeftBrain tools</a> · <a href="mailto:Org@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization</a></p>`
     + `</main>`;
 }

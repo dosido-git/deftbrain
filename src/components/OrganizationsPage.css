@@ -31,3 +31,32 @@
 .org-theme-toggle:hover{border-color:var(--gold)}
 .org-partner-link{margin:18px 0 0;font-size:15px}
 .org-pilot-points .org-text-link{display:inline-block;margin-top:8px;font-size:14px}
+/* Pricing card and quote form (2026-11-24). Logical properties only (RTL). */
+.org-price-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.org-price-grid article{background:var(--cream);border:1px solid var(--line);border-radius:18px;padding:20px}
+.org-price-grid h3{color:var(--navy);font-size:16px;margin:0 0 10px}
+.org-price{margin:0 0 10px;color:var(--muted)}
+.org-price b{display:block;font-family:Georgia,serif;font-size:28px;color:var(--navy);line-height:1.1}
+.org-price span{font-size:13px}
+.org-price-grid p{font-size:14px;line-height:1.5;color:var(--muted);margin:0 0 6px}
+.org-price-grid .org-price-fits{color:var(--ink);font-weight:600}
+.org-price-small{font-size:13px;color:var(--muted);margin:14px 0 0}
+.org-quote{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px;margin-block-start:44px;padding:28px;background:var(--cream);border:1px solid var(--line);border-radius:22px}
+.org-quote h3{grid-column:1/-1;font-family:Georgia,serif;color:var(--navy);font-size:26px;line-height:1.2;margin:0}
+.org-quote>p{grid-column:1/-1;color:var(--muted);margin:-8px 0 0;line-height:1.55}
+.org-quote-wide{grid-column:1/-1}
+.org-quote label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:700;color:var(--navy)}
+.org-quote input[type=text],.org-quote input[type=number],.org-quote input[type=month]{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);min-width:0}
+.org-quote fieldset{border:0;margin:0;padding:0;min-width:0}
+.org-quote legend{font-size:14px;font-weight:700;color:var(--navy);margin-block-end:8px;padding:0}
+.org-quote fieldset label{flex-direction:row;align-items:center;gap:8px;font-weight:400;color:var(--ink);margin-block-end:6px}
+.org-quote-pkgs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 18px}
+.org-quote-send{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.org-quote-send button{border:0;cursor:pointer;font-family:inherit}
+.org-quote-send span{font-size:13px;color:var(--muted);line-height:1.5;flex:1;min-width:220px}
+.org-quote-send a{color:var(--blue)}
+:root[data-theme="dark"] .org-price-grid article,:root[data-theme="dark"] .org-quote{background:#232326}
+:root[data-theme="dark"] .org-quote input[type=text],:root[data-theme="dark"] .org-quote input[type=number],:root[data-theme="dark"] .org-quote input[type=month]{background:#18181b}
+@media(max-width:1100px){.org-price-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.org-quote-pkgs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.org-price-grid,.org-quote,.org-quote-pkgs{grid-template-columns:1fr}.org-quote{padding:20px}}
