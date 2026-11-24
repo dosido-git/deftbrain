@@ -18,19 +18,30 @@ const MOMENTS = [
 
 const SHOWCASE_IDS = ['ScamRadar','DoctorVisitPrep','DifficultTalkCoach','LeaseTrapDetector','BuyWise','PaperworkPath','MoneyDiplomat','PlainTalk'];
 
+// Each `key` is also the section's id, so outreach can link straight to it
+// (deftbrain.com/organizations#libraries). Package ids are partnerCenter.json's.
 const AUDIENCES = [
-  { key:'employers', eyebrow:'Employers', title:'Support people beyond the job description.', copy:'Give employees approachable help with the everyday problems that consume attention, create stress, and follow them to work.' },
-  { key:'libraries', eyebrow:'Libraries', title:"Help patrons discover options they hadn't considered.", copy:"Extend the library's role as a trusted source of practical information and everyday help." },
-  { key:'credit-unions', eyebrow:'Credit unions', title:'Help members make more confident everyday decisions.', copy:'Extend member support beyond transactions with practical guidance for purchases, bills, scams, negotiations, and more.' },
-  { key:'community', eyebrow:'Community organizations', title:'Make practical guidance more accessible.', copy:'Offer people an approachable starting point regardless of their technical experience.' },
+  { key:'credit-unions', eyebrow:'Credit unions and banks', title:'Help members before they pay, sign or reply.',
+    moments:'A text saying their account is locked. A medical bill that looks wrong. A dealer’s add-ons. A contractor’s quote.',
+    copy:'Members already trust you with their money. DeftBrain gives them a calm place to look at a decision before it costs them, with your member-service line right beside it.',
+    packages:['pay-or-reply','money-conversations'], pilot:'Standard pilot', tools:['ScamRadar','BillRescue','BuyWise'] },
+  { key:'libraries', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
+    moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
+    copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
+    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Community pilot', tools:['PaperworkPath','PlainTalk','TipOfTongue'] },
+  { key:'education', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
+    moments:'A first lease. A roommate standoff. Four deadlines in one week. A hard stretch they can’t quite name.',
+    copy:'Give students practical help at any hour, alongside student services and the counseling center, never instead of them. Works for first-year programs, housing, career centers and adult education.',
+    packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], pilot:'Standard pilot', tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
+  { key:'community', eyebrow:'Community organizations', title:'An approachable first step for the people you serve.',
+    moments:'A form in confusing language. A deposit a landlord won’t return. A message that might be a scam. An appointment to get ready for.',
+    copy:'No account and no technical experience needed: a starting point your staff can hand anyone, with your own help line beside it.',
+    packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Community pilot', tools:['PaperworkPath','RentersDepositSaver','ScamRadar'] },
+  { key:'employers', eyebrow:'Employers', title:'Support people beyond the job description.',
+    moments:'A raise to ask for. A conflict with a coworker. A parent’s medical appointment. A bill that won’t wait for the weekend.',
+    copy:'Help with the everyday problems that follow people to work, and nothing about what anyone asks is reported back to you.',
+    packages:['work-conversations','money-conversations','health-visits'], pilot:'Standard pilot', tools:['DifficultTalkCoach','MoneyDiplomat','DoctorVisitPrep'] },
 ];
-
-const AUDIENCE_TOOLS = {
-  employers: ['DifficultTalkCoach','DoctorVisitPrep','MoneyDiplomat','PlainTalk','ScamRadar','BuyWise'],
-  libraries: ['ScamRadar','PaperworkPath','DoctorVisitPrep','PlainTalk','LeaseTrapDetector','ResearchDecoder'],
-  'credit-unions': ['BuyWise','BillRescue','ScamRadar','MoneyDiplomat','MarkupDetective','NotSoFast'],
-  community: ['PaperworkPath','PlainTalk','DoctorVisitPrep','ScamRadar','LeaseTrapDetector','DifficultTalkCoach'],
-};
 
 // Starting prices from the Organizations plan (USD, flat by scope: every
 // visitor is included, so nobody is counted or capped).
@@ -92,16 +103,25 @@ export function ToolMiniCard({ tool }) {
 }
 
 export default function OrganizationsPage({ allTools = [] }) {
-  const [audience, setAudience] = useState('employers');
   const byId = useMemo(() => Object.fromEntries(allTools.map(t => [t.id, t])), [allTools]);
   const showcase = SHOWCASE_IDS.map(id => byId[id]).filter(Boolean);
-  const audienceTools = (AUDIENCE_TOOLS[audience] || []).map(id => byId[id]).filter(Boolean);
+  const pkgById = Object.fromEntries(CENTER.packages.map(p => [p.id, p]));
+  const priceOf = name => PRICES.find(p => p.name === name);
+
+  // A link like /organizations#libraries arrives before the section renders,
+  // so the browser can't jump to it on its own: scroll and focus once mounted.
+  useEffect(() => {
+    const el = window.location.hash && document.getElementById(window.location.hash.slice(1));
+    if (!el) return undefined;
+    const t = setTimeout(() => { el.scrollIntoView({ block: 'start' }); el.focus({ preventScroll: true }); }, 120);
+    return () => clearTimeout(t);
+  }, []);
 
   const { isDark, toggleTheme } = useTheme();
   // Same head as scripts/prerender.js STATIC_PAGES.organizations — keep in sync.
   useDocumentHead({
     title: 'For Organizations — Practical Everyday Guidance',
-    description: 'Give employees, members, patrons, and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
+    description: 'Give employees, members, patrons, students, and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
     canonicalPath: '/organizations',
   });
   // The sand page color reaches the body (and overscroll) through a class;
@@ -119,7 +139,7 @@ export default function OrganizationsPage({ allTools = [] }) {
       <section className="org-hero org-shell">
         <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>
         <h1>Practical help for the things life throws at your people.</h1>
-        <p className="org-lede">DeftBrain gives employees, members, patrons, and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>
+        <p className="org-lede">DeftBrain gives employees, members, patrons, students, and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>
         <div className="org-actions"><a className="org-btn org-btn-primary" href="mailto:Org@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a><span>No AI expertise required.</span></div>
         <div className="org-moments" aria-label="Examples of everyday questions">
           {MOMENTS.map((m,i) => <div key={m} className={`org-moment m${i+1}`}>“{m}”</div>)}
@@ -156,24 +176,41 @@ export default function OrganizationsPage({ allTools = [] }) {
         <div className="org-name-field" aria-hidden="true">Doctor Visit Prep <i>·</i> Scam Radar <i>·</i> Difficult Talk Coach <i>·</i> Buy Wise <i>·</i> Lease Trap Detector <i>·</i> Waiting Mode Liberator <i>·</i> Giftology <i>·</i> Bill Rescue <i>·</i> Procedure Probe <i>·</i> Safe Walk <i>·</i> Paperwork Path <i>·</i> Plain Talk</div>
       </section>
 
-      <section className="org-section org-soft">
+      <section className="org-section org-soft" aria-labelledby="org-who-title">
         <div className="org-shell">
-          <div className="org-section-heading"><div className="org-kicker">WHO IT'S FOR</div><h2>Built for organizations that help people.</h2></div>
-          <div className="org-audience-grid">{AUDIENCES.map(a => <article key={a.key}><span>{a.eyebrow}</span><h3>{a.title}</h3><p>{a.copy}</p><a href="#pilot">Discuss a pilot →</a></article>)}</div>
+          <div className="org-section-heading centered"><div className="org-kicker">WHO IT'S FOR</div><h2 id="org-who-title">Built for organizations that help people.</h2><p>Each kind of organization hears different questions. Here is what yours might bring to DeftBrain.</p></div>
+          <nav className="org-tabs" aria-label="Kinds of organization">{AUDIENCES.map(a => <a key={a.key} href={`/organizations#${a.key}`}>{a.eyebrow}</a>)}</nav>
         </div>
       </section>
+
+      {AUDIENCES.map((a, i) => {
+        const price = priceOf(a.pilot);
+        return (
+          <section key={a.key} id={a.key} tabIndex={-1} className={`org-section org-aud${i % 2 ? ' org-soft' : ''}`} aria-labelledby={`org-aud-${a.key}`}>
+            <div className="org-shell">
+              <div className="org-aud-head">
+                <div>
+                  <div className="org-kicker">{a.eyebrow.toUpperCase()}</div>
+                  <h2 id={`org-aud-${a.key}`}>{a.title}</h2>
+                  <p className="org-aud-moments">{a.moments}</p>
+                </div>
+                <div className="org-aud-detail">
+                  <p>{a.copy}</p>
+                  <h3>Packages that fit</h3>
+                  <ul>{a.packages.map(id => pkgById[id] && <li key={id}><Link className="org-text-link" to={`/partners/packages/${id}`}>{pkgById[id].title}</Link></li>)}</ul>
+                  {price && <p className="org-aud-pilot">Start with the {price.name.toLowerCase()}: <strong>{price.price}</strong> for {price.unit}, credited to your first year.</p>}
+                  <a className="org-btn org-btn-primary" href={`mailto:Org@deftbrain.com?subject=${encodeURIComponent(`DeftBrain pilot: ${a.eyebrow}`)}`}>Discuss a pilot →</a>
+                </div>
+              </div>
+              <div className="org-sample-grid">{a.tools.map(id => <ToolMiniCard key={id} tool={byId[id]} />)}</div>
+            </div>
+          </section>
+        );
+      })}
 
       <section className="org-section org-shell org-privacy">
         <div className="org-section-heading"><div className="org-kicker">PRIVACY BY DESIGN</div><h2>Private for them. Useful for you.</h2><p className="org-privacy-lead">What someone asks DeftBrain should be their business.</p><p>For an organizational offering, our goal is to give organizations useful aggregate adoption information without turning individual questions, answers, or results into employer or sponsor reporting.</p><div className="org-product-note"><strong>How it works today:</strong> on your own DeftBrain page, your organization sees only overall usage counts, and any group under 20 is shown as “fewer than 20.” Nothing anyone types is shared with you, and the page sets no advertising or analytics cookies. <Link to="/partners/privacy">Privacy and data details →</Link></div></div>
         <div className="org-privacy-table"><div><h3>Individual</h3><p>Questions <strong>Private</strong></p><p>Answers <strong>Private</strong></p><p>Tool results <strong>Private</strong></p></div><div><h3>Organization</h3><p>Overall adoption <strong>Aggregate</strong></p><p>Popular categories <strong>Aggregate</strong></p><p>Usage trends <strong>Aggregate</strong></p></div></div>
-      </section>
-
-      <section className="org-section org-soft">
-        <div className="org-shell">
-          <div className="org-section-heading centered"><div className="org-kicker">TRY THE IDEA</div><h2>What would your people actually use?</h2><p>Choose an organization type and sample the kinds of everyday needs DeftBrain can support.</p></div>
-          <div className="org-tabs">{AUDIENCES.map(a => <button key={a.key} onClick={() => setAudience(a.key)} className={audience===a.key?'active':''}>{a.eyebrow}</button>)}</div>
-          <div className="org-sample-grid">{audienceTools.map(t => <ToolMiniCard key={t.id} tool={t} />)}</div>
-        </div>
       </section>
 
       <section className="org-section org-shell org-pilot" id="pilot">

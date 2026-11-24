@@ -142,9 +142,11 @@ function toolsPageHTML(categories, countLabel) {
 function organizationsPageHTML() {
   return `<main class="seo-prerender" style="max-width:860px;margin:0 auto;padding:2rem 1rem">`
     + `<h1 style="${STATIC_H1}">Practical help for the things life throws at your people.</h1>`
-    + `<p style="line-height:1.6;margin:0 0 1rem">DeftBrain gives employees, members, patrons, and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>`
+    + `<p style="line-height:1.6;margin:0 0 1rem">DeftBrain gives employees, members, patrons, students, and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>`
     + `<h2 style="${STATIC_H2}">Help that doesn't fit neatly into a benefits category.</h2>`
     + `<p style="line-height:1.6;margin:0">People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain gives them somewhere to start.</p>`
+    + `<h2 style="${STATIC_H2}">Built for organizations that help people.</h2>`
+    + `<ul style="padding-left:1.25rem;margin:0"><li><a href="#credit-unions">Credit unions and banks</a>: help members before they pay, sign or reply.</li><li><a href="#libraries">Libraries</a>: a starting point for questions that arrive after the desk closes.</li><li><a href="#education">Colleges and universities</a>: help students with everything outside the syllabus.</li><li><a href="#community">Community organizations</a>: an approachable first step for the people you serve.</li><li><a href="#employers">Employers</a>: support people beyond the job description.</li></ul>`
     + `<h2 style="${STATIC_H2}">Simple enough for anyone to use.</h2>`
     + `<ol style="padding-left:1.25rem;margin:0"><li>Choose what's going on. No prompt writing.</li><li>Answer a few thoughtful questions.</li><li>Get practical guidance: clear thinking, useful questions, and real options to weigh.</li></ol>`
     + `<h2 style="${STATIC_H2}">Start with a 90-day pilot.</h2>`
@@ -163,7 +165,7 @@ const STATIC_PAGES = {
   },
   organizations: {
     title: 'For Organizations — Practical Everyday Guidance | DeftBrain',
-    description: () => 'Give employees, members, patrons, and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
+    description: () => 'Give employees, members, patrons, students, and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
   },
 };
 
