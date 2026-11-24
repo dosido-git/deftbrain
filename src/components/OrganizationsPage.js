@@ -29,7 +29,7 @@ const AUDIENCES = [
     moments:'A text saying their account is locked. A medical bill that looks wrong. A dealer’s add-ons. A contractor’s quote.',
     copy:'Members already trust you with their money. DeftBrain gives them a calm place to look at a decision before it costs them, with your member-service line right beside it.',
     packages:['pay-or-reply','money-conversations'], pilot:'Standard pilot', tools:['ScamRadar','BillRescue','BuyWise'] },
-  { key:'libraries', icon:'🏛️', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
+  { key:'libraries', icon:'📚', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
     moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
     copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
     packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Community pilot', tools:['PaperworkPath','PlainTalk','TipOfTongue'] },
