@@ -57,6 +57,44 @@ function Material({ title, note, text }) {
   );
 }
 
+// A QR code drawn as one SVG path, with the standard four-module quiet zone.
+// The encoder is loaded only when the launch kit opens.
+function QrCode({ value, label }) {
+  const [path, setPath] = useState(null);
+  const svgRef = useRef(null);
+  useEffect(() => {
+    let alive = true;
+    import('qrcode-generator').then(({ default: qrcode }) => {
+      const qr = qrcode(0, 'M');
+      qr.addData(value);
+      qr.make();
+      const n = qr.getModuleCount();
+      let d = '';
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c + 4} ${r + 4}h1v1h-1z`;
+      if (alive) setPath({ d, size: n + 8 });
+    });
+    return () => { alive = false; };
+  }, [value]);
+  const download = () => {
+    const blob = new Blob([svgRef.current.outerHTML], { type: 'image/svg+xml' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'deftbrain-qr-code.svg';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  if (!path) return <div className="pc-qr pc-qr-loading" aria-hidden="true" />;
+  return (
+    <div className="pc-qr-wrap">
+      <svg ref={svgRef} className="pc-qr" xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${path.size} ${path.size}`} role="img" aria-label={label} shapeRendering="crispEdges">
+        <rect width={path.size} height={path.size} fill="#fff" />
+        <path d={path.d} fill="#000" />
+      </svg>
+      <button type="button" className="pc-qr-download pc-noprint" onClick={download}>Download QR code (SVG)</button>
+    </div>
+  );
+}
+
 // ─── Overview ────────────────────────────────────────────────
 function Overview({ byId }) {
   return (
@@ -205,7 +243,7 @@ function LaunchKit({ byId, params }) {
           <h2 id="pc-handout-title">Printable handout</h2>
           <PrintBtn label="Print handout" />
         </div>
-        <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full. A QR code version is available on request.</p>
+        <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full beside the QR code. The QR code uses the printed-handout tracking link; download it on its own for posters or cards.</p>
         <article className="pc-handout" aria-label="Handout preview">
           <header><b>{name}</b><span>by DeftBrain</span></header>
           <h2>{pkg.title}</h2>
@@ -214,7 +252,10 @@ function LaunchKit({ byId, params }) {
           <ol><li>Go to the address below.</li><li>Choose what's going on and answer a few questions.</li><li>See what matters, your options and what to ask next.</li></ol>
           <h3>What's included</h3>
           <ul>{tools.map(t => <li key={t.id}><b>{t.title}</b> — {t.tagline || t.description}</li>)}</ul>
-          <p className="pc-handout-url">{page}</p>
+          <div className="pc-handout-go">
+            <QrCode value={link('print')} label={`QR code that opens ${page}`} />
+            <p className="pc-handout-url">{page}</p>
+          </div>
           <p>Free and private. No account needed. {name} never sees what you type.</p>
           <p className="pc-handout-help">{help}</p>
           <footer>Guidance to widen your view, not a verdict.</footer>
