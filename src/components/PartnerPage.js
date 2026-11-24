@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
+import { useNoindex } from '../hooks/useNoindex';
 import NotFound from './NotFound';
 import { ToolMiniCard } from './OrganizationsPage';
 import PARTNERS from '../data/partners.json';
@@ -26,24 +27,20 @@ export default function PartnerPage({ allTools = [] }) {
     canonicalPath: `/for/${partnerId}`,
   });
 
+  useNoindex();
   useEffect(() => {
     document.body.classList.add('db-sand-page');
-    // index.html ships "index, follow"; flip it while here, restore on leave.
-    let robots = document.querySelector('meta[name="robots"]');
-    const before = robots?.getAttribute('content');
-    if (!robots) { robots = document.createElement('meta'); robots.name = 'robots'; document.head.appendChild(robots); }
-    robots.setAttribute('content', 'noindex');
     // index.html skips Google Analytics when the visit starts here; this covers
     // arriving by in-app navigation (gtag's documented per-property kill switch).
     window['ga-disable-G-0MLY19QEW6'] = true;
     return () => {
       window['ga-disable-G-0MLY19QEW6'] = false;
       document.body.classList.remove('db-sand-page');
-      if (before == null) robots.remove(); else robots.setAttribute('content', before);
     };
   }, []);
 
   if (!partner) return <NotFound />;
+  if (partner.retired) return <Navigate to="/tools" replace />; // ended partnership: keep printed links alive
   const tools = partner.tools.map(id => byId[id]).filter(Boolean);
 
   return (

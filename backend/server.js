@@ -1013,6 +1013,19 @@ if (IS_PRODUCTION) {
   app.get('/for/:partner', (req, res) => {
     res.set('X-Robots-Tag', 'noindex');
     const known = Object.prototype.hasOwnProperty.call(PARTNERS, req.params.partner);
+    // A partnership that ended keeps its address alive: printed handouts and
+    // QR codes forward to the public catalog instead of dead-ending.
+    if (known && PARTNERS[req.params.partner].retired) return res.redirect(301, '/tools');
+    res.status(known ? 200 : 404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  });
+
+  // Partner Center (/partners, /partners/<page>; PartnerCenter.js). Pages come
+  // from the same JSON the client reads. noindex: working materials for
+  // partners; the indexable sales page is /organizations.
+  const PARTNER_CENTER = require('../src/data/partnerCenter.json');
+  app.get(['/partners', '/partners/:page'], (req, res) => {
+    res.set('X-Robots-Tag', 'noindex');
+    const known = !req.params.page || PARTNER_CENTER.pages.includes(req.params.page);
     res.status(known ? 200 : 404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
   });
 

@@ -20,6 +20,7 @@ import AllToolsPage from './components/AllToolsPage';
 import WaitNotice from './components/WaitNotice';
 import OrganizationsPage from './components/OrganizationsPage';
 import PartnerPage from './components/PartnerPage';
+import PartnerCenter from './components/PartnerCenter';
 import { SiteTailDemo } from './components/PublicProductDemo';
 
 export default function App() {
@@ -53,6 +54,8 @@ export default function App() {
                 <Route path="/tools" element={<AllToolsPage allTools={tools} />} />
                 <Route path="/organizations" element={<OrganizationsPage allTools={tools} />} />
                 <Route path="/for/:partnerId" element={<PartnerPage allTools={tools} />} />
+                <Route path="/partners" element={<PartnerCenter allTools={tools} />} />
+                <Route path="/partners/:section" element={<PartnerCenter allTools={tools} />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -1,0 +1,82 @@
+/* /partners — Partner Center. Rides OrganizationsPage.css variables, so dark
+   mode comes from its :root[data-theme="dark"] .org-page block. Logical
+   properties only (RTL). */
+.pc-shell{max-width:1040px;padding:40px 0 72px}
+.pc-page h1{font-family:Georgia,serif;color:var(--navy);font-size:clamp(32px,4.5vw,48px);line-height:1.1;margin:8px 0 18px;outline:none}
+.pc-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px;padding-block-end:16px;border-block-end:1px solid var(--line)}
+.pc-nav a{padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:14px;font-weight:600}
+.pc-nav a:hover{border-color:var(--gold)}
+.pc-nav a[aria-current="page"]{background:var(--navy);border-color:var(--navy);color:var(--cream)}
+.pc-lede{max-width:780px;margin:0 0 8px}
+.pc-section{margin-block-start:44px}
+.pc-section h2{font-family:Georgia,serif;color:var(--navy);font-size:28px;line-height:1.2;margin:0 0 14px}
+.pc-section-lead{color:var(--muted);font-size:16px;line-height:1.6;max-width:780px;margin:0 0 18px}
+.pc-note{color:var(--muted);font-size:14px;line-height:1.55;margin:8px 0 0}
+.pc-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pc-cards article,.pc-package,.pc-material{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+.pc-cards article>span{font-size:24px}
+.pc-cards h3,.pc-package h3,.pc-material h3{color:var(--navy);font-size:18px;margin:8px 0 6px}
+.pc-cards p,.pc-package p{line-height:1.55;margin:0 0 10px}
+.pc-cards a,.pc-package-link,.pc-page main a{color:var(--blue);font-weight:600}
+.pc-steps{margin:0;padding-inline-start:22px;display:grid;gap:12px;max-width:780px;line-height:1.6}
+.pc-steps b{color:var(--navy)}
+.pc-packages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.pc-package{display:flex;flex-direction:column}
+.pc-package h3{margin-top:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pc-tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid var(--gold);color:var(--muted)}
+.pc-tool-list{margin:0 0 12px;padding-inline-start:18px;line-height:1.7}
+.pc-tool-list a{color:var(--blue)}
+.pc-package dl{margin:0 0 12px;font-size:14px}
+.pc-package dl div{margin:0 0 6px}
+.pc-package dt{color:var(--muted);font-weight:600}
+.pc-package dd{margin:0}
+.pc-package-link{margin-block-start:auto}
+.pc-faq{max-width:780px}
+.pc-faq h3{color:var(--navy);font-size:17px;margin:18px 0 4px}
+.pc-faq p{margin:0;line-height:1.6}
+.pc-cta{margin-block-start:52px;padding:28px;border-radius:16px;background:var(--soft);border:1px solid var(--line)}
+.pc-cta h2{font-family:Georgia,serif;color:var(--navy);margin:0 0 8px}
+.pc-cta p{margin:0 0 18px}
+.pc-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;margin:24px 0 0;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
+.pc-form label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--navy)}
+.pc-form input,.pc-form select{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--cream);color:var(--ink);min-width:0}
+.pc-prefix{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;background:var(--cream);overflow:hidden}
+.pc-prefix span{padding:10px 0 10px 12px;padding-inline:12px 0;color:var(--muted);font-weight:400;white-space:nowrap}
+.pc-prefix input{border:0;border-radius:0;flex:1;padding-inline-start:2px}
+.pc-materials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pc-material-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pc-material-head h3,.pc-material-head h2{margin:0}
+.pc-copy{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:15px;line-height:1.6;margin:12px 0 0;padding:14px;border-radius:10px;background:var(--soft);color:var(--ink)}
+.pc-table{width:100%;border-collapse:collapse;font-size:15px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.pc-table th,.pc-table td{text-align:start;padding:10px 14px;border-block-end:1px solid var(--line);vertical-align:top;line-height:1.5}
+.pc-table th{color:var(--navy);background:var(--soft);font-size:14px}
+.pc-table code{font-size:13px;word-break:break-all}
+.pc-num td:not(:first-child),.pc-num th:not(:first-child){text-align:end}
+.pc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pc-rules{margin:0;padding-inline-start:20px;max-width:780px;line-height:1.65}
+.pc-rules li{margin:0 0 6px}
+.pc-handout{margin-block-start:18px;max-width:720px;background:#fff;color:#1a1a1a;border:1px solid var(--line);border-radius:14px;padding:32px;font-size:17px;line-height:1.55}
+.pc-handout header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-block-end:2px solid #d4cfc6;padding-block-end:12px;margin-block-end:18px}
+.pc-handout header b{font-size:22px}
+.pc-handout header span{color:#5c5650;font-size:15px}
+.pc-handout h2{font-family:Georgia,serif;font-size:30px;margin:0 0 8px;color:#18324a}
+.pc-handout h3{font-size:18px;margin:18px 0 6px;color:#18324a}
+.pc-handout ol,.pc-handout ul{margin:0;padding-inline-start:22px}
+.pc-handout-url{font-size:26px;font-weight:800;color:#165b9a;margin:22px 0 8px;word-break:break-all}
+.pc-handout-help{font-weight:700}
+.pc-handout footer{margin-block-start:18px;padding-block-start:10px;border-block-start:1px solid #d4cfc6;font-size:14px;color:#5c5650}
+:root[data-theme="dark"] .pc-cards article,
+:root[data-theme="dark"] .pc-package,
+:root[data-theme="dark"] .pc-material,
+:root[data-theme="dark"] .pc-table{background:#232326}
+:root[data-theme="dark"] .pc-nav a[aria-current="page"]{color:#18181b}
+@media(max-width:900px){.pc-packages{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-materials{grid-template-columns:1fr}}
+@media(max-width:640px){.pc-cards,.pc-packages,.pc-form{grid-template-columns:1fr}.pc-shell{padding-top:24px}.pc-handout{padding:20px}.pc-table{font-size:14px}.pc-table th,.pc-table td{padding:8px 10px}}
+@media print{
+  .pc-noprint,.pc-page>header,.site-header,footer.site-footer{display:none!important}
+  .pc-shell{padding:0}
+  .pc-handout{border:0;padding:0;max-width:none;margin:0}
+}
+/* The site's base styles strip list markers; these lists are read as lists. */
+.pc-steps,.pc-handout ol{list-style:decimal}
+.pc-rules,.pc-tool-list,.pc-handout ul{list-style:disc}
