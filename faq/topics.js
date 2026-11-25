@@ -55,4 +55,18 @@ module.exports = {
     close: 'For a study you want to understand, [Research Decoder](/ResearchDecoder) explains what it found and how much weight it can bear. [Plain Talk](/PlainTalk) turns dense writing into plain language, and [Signal vs. Noise](/SignalVsNoise) checks a claim against what sources actually say.',
     more: 'More questions about research and reading',
   },
+  decisions: {
+    category: 'Decisions', // the /tools category page that lists this topic's questions
+    eyebrow: 'Decisions · Quick answer',
+    eyebrowHref: '/tools/decisions',
+    close: 'For a choice in front of you, [Decision Coach](/DecisionCoach) helps when you keep going back and forth, and [Break My Plan?](/BreakMyPlan) tests a plan against what could go wrong before you commit to it.',
+    more: 'More questions about deciding',
+  },
+  ideas: {
+    category: 'Ideas & Diversions', // the /tools category page that lists this topic's questions
+    eyebrow: 'Ideas & Diversions · Quick answer',
+    eyebrowHref: '/tools/ideas-diversions',
+    close: 'When a word won\'t come, [Tip of Tongue](/TipOfTongue) works from whatever you remember about it. [Belief Stress Test](/BeliefStressTest) puts a rule you live by under pressure, and [Argue Smarter](/ArgueSmarter) tests your ideas against the strongest criticism you can find.',
+    more: 'More questions about how minds work',
+  },
 };
