@@ -1,9 +1,9 @@
 // Mail-server check: does each email's domain accept mail (MX, else A record)?
-// Usage: node mxcheck.mjs <prospects.csv (Mac Roman)> <mx.json>   — cached; export.py drops domains marked false.
+// Usage: node mxcheck.mjs <prospects.csv (UTF-8)> <mx.json>   — cached; export.py drops domains marked false.
 import fs from 'node:fs';
 import { promises as dns } from 'node:dns';
 const [, , csvPath, outPath] = process.argv;
-const text = new TextDecoder('macintosh').decode(fs.readFileSync(csvPath));
+const text = new TextDecoder('utf-8').decode(fs.readFileSync(csvPath));
 const doms = [...new Set([...text.matchAll(/@([a-z0-9.-]+\.[a-z]{2,})/gi)].map(m => m[1].toLowerCase()))];
 const cache = fs.existsSync(outPath) ? JSON.parse(fs.readFileSync(outPath, 'utf8')) : {};
 async function ok(d) {

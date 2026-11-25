@@ -8,3 +8,5 @@ noemail*.txt
 # Contact lists stay local: the repo is public.
 known_hosts.txt
 pm-original.csv
+imls-*.csv
+*.tried

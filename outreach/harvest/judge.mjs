@@ -31,7 +31,7 @@ function parseCsv(text) {
   return data.filter(r => r.length === h.length).map(r => Object.fromEntries(h.map((k, i) => [k, r[i]])));
 }
 
-const rows = parseCsv(new TextDecoder('macintosh').decode(fs.readFileSync(csvPath)));
+const rows = parseCsv(new TextDecoder('utf-8').decode(fs.readFileSync(csvPath)));
 const verdicts = fs.existsSync(outPath) ? JSON.parse(fs.readFileSync(outPath, 'utf8')) : {};
 const todo = rows.filter(r => !verdicts[r.prospect_url + '|' + r.dead_url]);
 

@@ -13,6 +13,10 @@ is gitignored: large, regenerable, and full of third-party addresses.
 1. **Org list** (`name<TAB>url<TAB>type` per line) from public sources: FDIC
    banks, IPEDS colleges, NCUA credit unions, NCES school districts, CISA .gov
    list, HUD housing counselors, HRSA health centers, Wikidata classes.
+   Public libraries: the IMLS Public Libraries Survey (imls.gov, free; names and
+   cities, no websites) -> `UV_THREADPOOL_SIZE=64 node library-sites.mjs imls-pls-fy24-ae.csv libraries.tsv`
+   guesses each site (about 60% found, 2026-11-25). Yield is low: 3,031 new library
+   sites gave 15 prospects.
 2. `node harvest.mjs orgs.tsv extra-NAME.jsonl --workers 16 --pages 25`
    - `--from N --pages M`: deeper pass on the same sites (pages N+1 to N+M).
    - `--multi`: keep every dead link that has its own email (used for .edu/.gov).
@@ -34,7 +38,7 @@ count as separate organisations.
 
 ## Export rules (`export.py`)
 
-- Owner format: Mac Roman, CRLF, no trailing newline, `offer_desc` = tool name,
+- Owner format: UTF-8 (curly punctuation folded to ASCII), CRLF, no trailing newline, `offer_desc` = tool name, `ps_segment`,
   `which_link` without quotes, contact-form-only rows left out.
 - One row per email; every email in `outreach/all-sent.csv` is skipped.
 - Same organisation: at most 3 rows, extra rows only for a different subdomain

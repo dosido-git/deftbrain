@@ -1,12 +1,15 @@
 """Export harvested prospects in the owner's FileMaker format.
 
 Usage: python3 export.py <out.csv> <results.jsonl>... [--extra legacy.csv]
-Columns: bounced,date_sent,dead_url,From,offer_desc,outcome,page_name,
-prospect_url,replacement_deftbrain,sent,To,which_link — Mac Roman, CRLF, no
-trailing newline, no quotes around which_link, offer_desc = tool name.
-One row per organisation; rows without a published email are left out.
+Columns: see COLS. UTF-8 (owner 2026-11-25: FileMaker imports it as UTF-8;
+Mac Roman showed as �), curly punctuation folded to ASCII, CRLF, no trailing
+newline, no quotes around which_link, which_link cut to 60 characters + "...",
+offer_desc = tool name, ps_segment = which /organizations#section the P.S. links.
+One row per organisation; rows without a published email are left out, and so
+is any email already in another outreach/new-prospects-*.csv (each run writes
+only new prospects to its own file).
 """
-import csv, io, json, sys, unicodedata
+import csv, io, json, sys
 from urllib.parse import urlparse
 
 import re
@@ -34,7 +37,7 @@ def good(x):
     ws = WRONG_SENSE.get(x['tool'])
     return not (ws and ws.search(hay))
 # Tracking columns added 2026-11-22 (owner): follow-up, reply, link placed and its last live check.
-COLS = 'bounced,date_sent,dead_url,From,followup_date,link_checked,link_placed,offer_desc,outcome,page_name,prospect_url,replacement_deftbrain,replied,reply_date,sent,Subject,To,which_link'.split(',')
+COLS = 'bounced,date_sent,dead_url,From,followup_date,link_checked,link_placed,offer_desc,outcome,page_name,prospect_url,replacement_deftbrain,replied,reply_date,sent,Subject,To,which_link,ps_segment'.split(',')
 
 SLD = re.compile(r'^(ac|co|com|org|net|gov|govt|edu|nhs|ltd|plc|sch|police|mod|gc|nsw|vic|qld|tas|act|health|school|iwi|maori|parliament|asn|id|csiro|mil|on|bc|ab|qc|ns|nb|mb|sk|web|nic)$')
 def reg(h):
@@ -45,18 +48,47 @@ def reg(h):
     if len(p) > 2 and (p[-1] in ('gov', 'us') or (len(p[-1]) == 2 and SLD.match(p[-2]))): return '.'.join(p[-3:])
     return '.'.join(p[-2:])
 
-def mac(s):
-    out = []
-    for ch in s:
-        try: ch.encode('mac_roman'); out.append(ch)
-        except UnicodeEncodeError:
-            out.append(unicodedata.normalize('NFKD', ch).encode('ascii', 'ignore').decode() or ' ')
-    return ''.join(out)
+FOLD = str.maketrans({'\u2026': '...', '\u2019': "'", '\u2018': "'", '\u201c': '"', '\u201d': '"',
+                      '\u2013': '-', '\u2014': '-', '\u2022': '-', '\u203a': '>', '\u2039': '<', '\u00a0': ' '})
+def fold(s):
+    """Curly punctuation to ASCII; accented letters stay (the file is UTF-8)."""
+    return s.translate(FOLD)
+
+def read_csv_text(path):
+    """FileMaker exports (all-sent.csv) may still be Mac Roman; newer files are UTF-8."""
+    b = open(path, 'rb').read()
+    try: return b.decode('utf-8')
+    except UnicodeDecodeError: return b.decode('mac_roman')
+
+FIN = re.compile(r'(cu\d*|fcu|creditunion|bank|banking|savings|financial|federal|trust|fed)')
+def segment(email):
+    """Which /organizations section the P.S. links to, guessed from the address; 'none' = no P.S."""
+    e = email.strip().lower()
+    local, d = e.split('@', 1); host, tld = d.rsplit('.', 1)
+    if local in ('webmaster', 'press', 'media', 'mediarelations', 'news', 'newsroom', 'pressoffice') or local.endswith('-press'): return 'none'
+    if tld in ('gov', 'mil') or re.search(r'(^|\.)(co|ci|city|state|town|twp)\.[a-z]{2}\.us$', d): return 'none'
+    if d in ('gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com'): return 'none'
+    if 'librar' in d or re.search(r'(^|\.)lib\.', d) or re.search(r'[a-z]pld?\.org$', d) or local.startswith('librar'): return 'libraries'
+    if tld == 'bank' or FIN.search(host) or re.search(r'cu[a-z]*$|^cu|cu\d', host.split('.')[-1]) or local in ('memberservice', 'memberservices'): return 'credit-unions'
+    if tld in ('edu', 'university') or '.k12.' in d or (tld != 'com' and re.search(r'college|university|school|academy', d)): return 'education'
+    return 'community' if tld in ('org', 'us') else 'none'
+
+assert segment('info@springfieldpubliclibrary.org') == 'libraries' and segment('eref@wnpld.org') == 'libraries'
+assert segment('memberservices@acmefcu.org') == 'credit-unions'
+assert segment('counseling@state.edu') == 'education'
+assert segment('webmaster@foo.org') == 'none'
+assert segment('info@city.gov') == 'none'
+assert segment('info@helpers.org') == 'community'
+
+def cut(s, n=60):
+    s = s.strip().strip('"')
+    return s if len(s) <= n else s[:n].rstrip() + '...'
+assert cut('x' * 61) == 'x' * 60 + '...' and cut('short') == 'short'
 
 def subject(name):
     """Owner 2026-11-22: one subject per row, naming the page so it reads as a specific fix."""
     name = ' '.join(name.replace('"', '').split())
-    if len(name) > 45: name = name[:45].rsplit(' ', 1)[0].rstrip(' ,:;-') + '…'
+    if len(name) > 45: name = name[:45].rsplit(' ', 1)[0].rstrip(' ,:;-') + '...'
     return f'A broken link on your "{name}" page'
 
 assert subject('Fraud Protection') == 'A broken link on your "Fraud Protection" page'
@@ -67,7 +99,7 @@ def row(page, title, dead, anchor, tool_id, tool_name, email):
     return {'bounced': '', 'date_sent': '', 'dead_url': dead, 'From': 'Outreach@DeftBrain.com',
             'offer_desc': tool_name, 'outcome': '', 'page_name': name, 'prospect_url': page,
             'replacement_deftbrain': 'https://deftbrain.com/' + tool_id, 'sent': '', 'Subject': subject(name), 'To': email,
-            'which_link': anchor.strip().strip('"')}
+            'which_link': cut(fold(anchor)), 'ps_segment': segment(email)}
 
 args = sys.argv[1:]
 out_path = args[0]
@@ -79,8 +111,14 @@ rows, seen = [], set()
 import os as _os
 _sent = '/Users/SRsr/Desktop/deftbrain/outreach/all-sent.csv'
 if _os.path.exists(_sent):
-    for _r in csv.DictReader(io.StringIO(open(_sent, 'rb').read().decode('mac_roman'), newline='')):
+    for _r in csv.DictReader(io.StringIO(read_csv_text(_sent), newline='')):
         seen.add(_r['To'].strip().lower())
+# Emails already queued in an earlier export file are not new prospects.
+import glob as _glob
+for _f in _glob.glob('/Users/SRsr/Desktop/deftbrain/outreach/new-prospects-*.csv'):
+    if _os.path.abspath(_f) == _os.path.abspath(out_path): continue
+    for _r in csv.DictReader(io.StringIO(read_csv_text(_f), newline='')):
+        seen.add(_r.get('To', '').strip().lower())
 if extra:  # earlier hand-found rows, old 8-column layout
     for x in csv.DictReader(open(extra, newline='', encoding='utf-8')):
         if x['to'].startswith('(no email'): continue
@@ -121,7 +159,7 @@ if os.path.exists(_mx):
 GENERIC = re.compile(r'^(info|contact|contactus|webmaster|web|hello|general|office|admin|inquir|questions|help)\b', re.I)
 sent_orgs = set()
 if _os.path.exists(_sent):
-    for _r in csv.DictReader(io.StringIO(open(_sent, 'rb').read().decode('mac_roman'), newline='')):
+    for _r in csv.DictReader(io.StringIO(read_csv_text(_sent), newline='')):
         if '@' in _r['To']: sent_orgs.add(reg(_r['To'].split('@')[1]))
         if _r['prospect_url'].startswith('http'): sent_orgs.add(reg(urlparse(_r['prospect_url']).hostname))
 by_org = {}
@@ -146,5 +184,6 @@ w = csv.DictWriter(buf, fieldnames=COLS, lineterminator='\r\n', restval='')
 w.writeheader(); w.writerows(rows)
 text = buf.getvalue().rstrip('\r\n')
 assert all(r['To'] and '@' in r['To'] for r in rows)
-open(out_path, 'wb').write(mac(text).encode('mac_roman'))
+data = fold(text).encode('utf-8')  # built fully before the file is opened
+open(out_path, 'wb').write(data)
 print(len(rows), 'rows')

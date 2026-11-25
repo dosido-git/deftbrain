@@ -9,7 +9,9 @@ run() {  # $1 = output csv, rest = sources
   node mxcheck.mjs $OUT mx.json
   python3 export.py $OUT "$@"
 }
-run /Users/SRsr/Desktop/deftbrain/outreach/new-prospects-2026-11-21-pm.csv results.jsonl districts.jsonl gov.jsonl gov2.jsonl $(ls extra-*.jsonl 2>/dev/null | grep -v '^extra-intl') --extra pm-original.csv
+# Each run writes only new prospects to a dated file; earlier files are never overwritten (export.py skips their emails).
+DAY=$(date +%F)
+run /Users/SRsr/Desktop/deftbrain/outreach/new-prospects-$DAY.csv results.jsonl districts.jsonl gov.jsonl gov2.jsonl $(ls extra-*.jsonl 2>/dev/null | grep -v '^extra-intl') --extra pm-original.csv
 INTL=$(ls extra-intl*.jsonl 2>/dev/null)
-[ -n "$INTL" ] && run /Users/SRsr/Desktop/deftbrain/outreach/new-prospects-intl.csv $INTL
+[ -n "$INTL" ] && run /Users/SRsr/Desktop/deftbrain/outreach/new-prospects-intl-$DAY.csv $INTL
 exit 0
