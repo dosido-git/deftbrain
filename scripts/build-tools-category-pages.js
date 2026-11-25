@@ -239,7 +239,7 @@ function renderFaq(meta) {
       <section class="tcp-faq" aria-labelledby="tcp-faq-h">
         <h2 id="tcp-faq-h">Quick answers</h2>
         <ul>
-${qs.map(p => `          <li><a href="/faq/${p.slug}">${escHtml(p.question)}</a></li>`).join('\n')}
+${qs.map(p => `          <li><a href="${FAQ_TOPICS.faqPath(p)}">${escHtml(p.question)}</a></li>`).join('\n')}
         </ul>
       </section>
 `;

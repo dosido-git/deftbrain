@@ -1,12 +1,14 @@
-// One entry per FAQ topic. Each page in faq/pages.js names its topic; the
+// One entry per FAQ topic. Each topic has its own folder under /faq/ (owner,
+// 2026-11-25: organized by topic to build topical authority). Each page in faq/pages.js names its topic; the
 // builder takes the eyebrow, the closing paragraph and the "More ..." list
 // heading from here, and lists only that topic's other pages. The category
 // page named by `category` lists every question in the topic.
 //
 // `close` accepts inline links: [label](/path).
 
-module.exports = {
+const TOPICS = {
   deposits: {
+    folder: 'security-deposits', // pages are served at /faq/security-deposits/<slug>
     category: 'Home & Daily Life', // the /tools category page that lists this topic's questions
     eyebrow: 'Security deposits · Quick answer',
     eyebrowHref: '/guides/home/security-deposit-laws-by-state',
@@ -14,6 +16,7 @@ module.exports = {
     more: 'More deposit questions',
   },
   travel: {
+    folder: 'travel', // pages are served at /faq/travel/<slug>
     category: 'Travel & Events', // the /tools category page that lists this topic's questions
     eyebrow: 'Travel & Events · Quick answer',
     eyebrowHref: '/tools/travel-events',
@@ -21,6 +24,7 @@ module.exports = {
     more: 'More travel questions',
   },
   health: {
+    folder: 'health', // pages are served at /faq/health/<slug>
     category: 'Health & Wellness', // the /tools category page that lists this topic's questions
     eyebrow: 'Health & Wellness · Quick answer',
     eyebrowHref: '/tools/health-wellness',
@@ -28,6 +32,7 @@ module.exports = {
     more: 'More health questions',
   },
   money: {
+    folder: 'money', // pages are served at /faq/money/<slug>
     category: 'Money', // the /tools category page that lists this topic's questions
     eyebrow: 'Money · Quick answer',
     eyebrowHref: '/tools/money',
@@ -35,6 +40,7 @@ module.exports = {
     more: 'More money questions',
   },
   home: {
+    folder: 'home', // pages are served at /faq/home/<slug>
     category: 'Home & Daily Life', // the /tools category page that lists this topic's questions
     eyebrow: 'Home & Daily Life · Quick answer',
     eyebrowHref: '/tools/home-daily-life',
@@ -42,6 +48,7 @@ module.exports = {
     more: 'More home and everyday questions',
   },
   career: {
+    folder: 'work', // pages are served at /faq/work/<slug>
     category: 'Career and Business', // the /tools category page that lists this topic's questions
     eyebrow: 'Career and Business · Quick answer',
     eyebrowHref: '/tools/career',
@@ -49,6 +56,7 @@ module.exports = {
     more: 'More work questions',
   },
   learning: {
+    folder: 'research', // pages are served at /faq/research/<slug>
     category: 'Learning', // the /tools category page that lists this topic's questions
     eyebrow: 'Learning · Quick answer',
     eyebrowHref: '/tools/learning',
@@ -56,6 +64,7 @@ module.exports = {
     more: 'More questions about research and reading',
   },
   decisions: {
+    folder: 'decisions', // pages are served at /faq/decisions/<slug>
     category: 'Decisions', // the /tools category page that lists this topic's questions
     eyebrow: 'Decisions · Quick answer',
     eyebrowHref: '/tools/decisions',
@@ -63,6 +72,7 @@ module.exports = {
     more: 'More questions about deciding',
   },
   ideas: {
+    folder: 'thinking', // pages are served at /faq/thinking/<slug>
     category: 'Ideas & Diversions', // the /tools category page that lists this topic's questions
     eyebrow: 'Ideas & Diversions · Quick answer',
     eyebrowHref: '/tools/ideas-diversions',
@@ -70,6 +80,7 @@ module.exports = {
     more: 'More questions about how minds work',
   },
   conversations: {
+    folder: 'conversations', // pages are served at /faq/conversations/<slug>
     category: 'Conversations', // the /tools category page that lists this topic's questions
     eyebrow: 'Conversations · Quick answer',
     eyebrowHref: '/tools/conversations',
@@ -77,6 +88,7 @@ module.exports = {
     more: 'More questions about conversations',
   },
   relationships: {
+    folder: 'relationships', // pages are served at /faq/relationships/<slug>
     category: 'Relationships', // the /tools category page that lists this topic's questions
     eyebrow: 'Relationships · Quick answer',
     eyebrowHref: '/tools/relationships',
@@ -84,3 +96,10 @@ module.exports = {
     more: 'More relationship questions',
   },
 };
+
+// The one place a FAQ page's URL path is built (builder, category pages, server redirects).
+const faqPath = p => `/faq/${TOPICS[p.topic].folder}/${p.slug}`;
+
+module.exports = TOPICS;
+// Non-enumerable so loops over the topics never see it.
+Object.defineProperty(module.exports, 'faqPath', { value: faqPath });

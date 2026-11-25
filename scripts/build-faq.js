@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Renders faq/pages.js → public/faq/<slug>.html + public/sitemap-faq.xml.
+// Renders faq/pages.js → public/faq/<topic folder>/<slug>.html + public/sitemap-faq.xml.
 // Generated files are committed (same convention as privacy.html).
 //
 //   node scripts/build-faq.js          # write
@@ -16,6 +16,7 @@ const { THEME_SNIPPET } = require('./lib/themeSnippet');
 const { linksToHtml } = require('../src/utils/inlineLinks');
 const pages = require('../faq/pages');
 const TOPICS = require('../faq/topics');
+const { faqPath } = TOPICS;
 
 const ROOT = path.join(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'public', 'faq');
@@ -41,10 +42,10 @@ for (const p of pages) {
 }
 
 function render(p) {
-  const url = `${SITE}/faq/${p.slug}`;
+  const url = `${SITE}${faqPath(p)}`;
   const topic = TOPICS[p.topic];
   const others = pages.filter(o => o.topic === p.topic && o.slug !== p.slug)
-    .map(o => `          <li><a href="/faq/${o.slug}">${esc(o.question)}</a></li>`).join('\n');
+    .map(o => `          <li><a href="${faqPath(o)}">${esc(o.question)}</a></li>`).join('\n');
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,11 +121,11 @@ ${getFooterHTML()}
 `;
 }
 
-const files = new Map(pages.map(p => [path.join(OUT_DIR, `${p.slug}.html`), render(p)]));
+const files = new Map(pages.map(p => [path.join(ROOT, 'public', `${faqPath(p)}.html`), render(p)]));
 files.set(SITEMAP, `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map(p => `  <url>
-    <loc>${SITE}/faq/${p.slug}</loc>
+    <loc>${SITE}${faqPath(p)}</loc>
     <lastmod>${p.modified}</lastmod>
   </url>`).join('\n')}
 </urlset>
@@ -133,7 +134,10 @@ ${pages.map(p => `  <url>
 if (process.argv.includes('--check')) {
   const stale = [...files].filter(([f, html]) => !fs.existsSync(f) || fs.readFileSync(f, 'utf8') !== html);
   const known = new Set(files.keys());
-  const extra = fs.existsSync(OUT_DIR) ? fs.readdirSync(OUT_DIR).map(f => path.join(OUT_DIR, f)).filter(f => !known.has(f)) : [];
+  // A plain walk, not readdirSync({ recursive }): that needs Node 20.1+ (Railway may build on 18).
+  const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+  const all = fs.existsSync(OUT_DIR) ? walk(OUT_DIR) : [];
+  const extra = all.filter(f => !known.has(f));
   if (stale.length || extra.length) {
     console.error('\n❌ public/faq is out of date with faq/pages.js:');
     for (const [f] of stale) console.error('   stale: ' + path.relative(ROOT, f));
@@ -147,5 +151,8 @@ if (process.argv.includes('--check')) {
 
 fs.rmSync(OUT_DIR, { recursive: true, force: true });
 fs.mkdirSync(OUT_DIR, { recursive: true });
-for (const [f, html] of files) fs.writeFileSync(f, html);
+for (const [f, html] of files) {
+  fs.mkdirSync(path.dirname(f), { recursive: true });
+  fs.writeFileSync(f, html);
+}
 console.log(`✓ ${pages.length} FAQ pages → public/faq/, sitemap-faq.xml`);

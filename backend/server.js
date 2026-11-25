@@ -604,6 +604,17 @@ Object.entries(MERGED_GUIDE_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
 });
 
+// FAQ pages moved from /faq/<slug> into a folder per topic (owner, 2026-11-25:
+// organized by topic for topical authority). The deposit set had been live at
+// the flat URL since 2026-11-19; every old flat URL 301s to its topic folder.
+{
+  const faqPages = require('../faq/pages');
+  const { faqPath } = require('../faq/topics');
+  faqPages.forEach(p => {
+    app.get(`/faq/${p.slug}`, (req, res) => res.redirect(301, faqPath(p)));
+  });
+}
+
 // ── One URL per page (2026-10-09 live URL scan) ──
 // Every page also answered 200 at its .html file name (/ToastWriter.html,
 // /guides/health/how-to-x.html — express.static's extensions option serves
