@@ -27,3 +27,9 @@ The v1 prompt was "part behavioral psychologist, part ex-salesperson, part negot
 ## Verify
 
 `npm run check:golden upsell-shield` (1 DE/EUR case). Watch for English hedge-phrase leaks in non-English output if the hedging instructions are ever edited. Backend must be up.
+
+## Output standard v2 (2026-10-16)
+
+Declares `router.outputStandard = 'v2'` with a `router.outputGuard` profile; `runOutputGuard` runs inside the progressive `check` (it also runs the T3/T7 consistency check, replacing the bare `checkConsistency`). Prompt review: exit line no longer carries a copyable English example; `watch_for` prefers fewer situation-specific moments; `your_plan` names the one thing worth deciding when no goal or limit was given.
+
+- **Trap: the generic guard reads a hedged possibility as a prediction.** First live run flagged every `watch_for.what_might_happen` ("es könnte sein, dass der Verkäufer…") and the repairs left sentence fragments. Fixed by `suppliedFor()` telling the checker that possibility framing is correct, plus a WHAT FAILS list (before-hello pattern). Verified twice: hedged lines pass, a planted invented dealer margin is caught and repaired.

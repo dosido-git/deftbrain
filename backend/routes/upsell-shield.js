@@ -5,7 +5,48 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// The fields a person acts on or says out loud. `moment` is a 3-6 word label;
+// the checks still see it, but a repair has nothing to fix in a label.
+function guardFields(parsed) {
+  const fields = [];
+  const walk = (v, path) => {
+    if (typeof v === 'string' && v.trim().length > 12) fields.push([path, v]);
+    else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+    else if (v && typeof v === 'object') Object.entries(v).forEach(([k, x]) => { if (k !== 'moment') walk(x, `${path}.${k}`); });
+  };
+  for (const k of ['your_plan', 'watch_for', 'questions_worth_asking', 'before_you_commit', 'exit_line', 'if_pressure_continues']) walk(parsed[k], k);
+  return fields;
+}
+// What the checker is told. watch_for exists to name what MIGHT come up, so a
+// line framed as a possibility is the tool working, not a prediction — told
+// only "no predictions", the first live check flagged every hedged watch_for
+// line and its repairs stripped them into sentence fragments (2026-10-16).
+function suppliedFor(body) {
+  const v = (x) => (typeof x === 'string' && x.trim()) || '(not given)';
+  return `WHAT THE USER TOLD US, IN FULL — nothing else about the seller, the product, prices or terms is known:
+Situation: ${v(body.situation)}
+What they want: ${v(body.whatYouWant)}
+Budget / limit: ${v(body.budget)}
+Concerns: ${v(body.concerns)}
+
+watch_for describes moments the visitor MIGHT meet. A moment framed as a
+possibility (it could happen that, the conversation might, an offer may come)
+is correct, including when it names what a seller might say or do. So is a
+general reason a moment is hard to handle in the moment.
+
+WHAT FAILS:
+1. Stating as certain what this seller will do, intends, or is trying to do.
+2. A price, margin, fee, policy, legal right, availability, or contract term
+   stated as known for this deal, rather than as something to check.
+3. Telling the visitor to claim something they never said: another offer, a
+   deadline, a different budget, readiness to walk away for a reason they did
+   not give.
+4. Treating the stated limit as a starting point, or suggesting it can stretch.
+5. Calling the seller dishonest or predatory without anything the visitor said.`;
+}
+
 // ════════════════════════════════════════════════════════════
 // POST /upsell-shield — Walk In Prepared
 // ════════════════════════════════════════════════════════════
@@ -46,15 +87,15 @@ Never place a double-quote (") character inside any JSON string value — write 
     // only its own — told about all six, the first pass wrote all six.
     const SECTIONS = {
       your_plan: `1. YOUR PLAN
-In 2-4 bullets, restate only the priorities and limits the user actually supplied. Clearly distinguish anything that remains undecided.`,
+In 2-4 bullets, restate only the priorities and limits the user actually supplied. Clearly distinguish anything that remains undecided. If they gave no goal or limit at all, say so plainly and name the one thing worth deciding before they walk in — do not decide it for them.`,
       watch_for: `2. WATCH FOR
-Give up to 4 pressure or decision moments that are plausibly relevant to this type of interaction. For each: what might happen (described as a possibility, not a prediction), why it can be difficult (the practical decision problem, in plain language — avoid pop-psychology claims unless necessary), and the user's response (a short sentence or action that protects their stated goal without inventing facts or bluffing).`,
+Give up to 4 pressure or decision moments that this situation actually makes plausible — fewer is better than generic ones that would fit any purchase. For each: what might happen (described as a possibility, not a prediction), why it can be difficult (the practical decision problem, in plain language — avoid pop-psychology claims unless necessary), and the user's response (a short sentence or action that protects their stated goal without inventing facts or bluffing).`,
       questions_worth_asking: `3. QUESTIONS WORTH ASKING
 Give up to 4 questions that help the user clarify total cost, obligations, alternatives, cancellation terms, included/excluded items, or other uncertainties relevant to this situation. Questions should obtain useful information — not merely signal sophistication.`,
       before_you_commit: `4. BEFORE YOU COMMIT
 Give a short checklist of things the user should verify before agreeing. Clearly label anything requiring current prices, policies, contract terms, or outside research as something to check, not something already known.`,
       exit_line: `5. YOUR EXIT LINE
-Give one natural, polite exit line that requires no excuse or bluff. Example: 'Thanks. I'm not ready to agree to this today, so I'm going to stop here and think it over.'`,
+Give one natural, polite exit line that requires no excuse or bluff: thank them, say plainly you are not agreeing today, and end the conversation. Write it fresh for this situation, in the user's language.`,
       if_pressure_continues: `6. IF PRESSURE CONTINUES
 Give one firmer response that restates the user's boundary and ends the interaction. This is not a 'nuclear option' — keep it plain and grounded.`
     };
@@ -125,9 +166,20 @@ RULES:
       finish: d => structuredClone(d),
       ready: d => Array.isArray(d.your_plan) && d.your_plan.length > 0,
       complete: d => Array.isArray(d.your_plan) && d.your_plan.length > 0 && Array.isArray(d.watch_for),
+      // v2 guard: the prompt's rules — no predicted seller behaviour, no
+      // invented market facts or leverage, the visitor's limit kept exactly —
+      // checked on the lines they will say and act on. runOutputGuard also
+      // runs the T3/T7 consistency check (audit/DEFECT-TYPES.md) alongside.
       check: async (parsed) => {
-        // T3/T7 (audit/DEFECT-TYPES.md): contradictions and ignored choices.
-        await checkConsistency(parsed, { label: 'upsell-shield', userLanguage: req.body?.userLanguage });
+        await runOutputGuard(parsed, {
+          label: 'upsell-shield',
+          fields: guardFields(parsed),
+          supplied: suppliedFor(req.body),
+          promise: 'Prepares the visitor to keep their own plan and limits in a sales conversation: what might come up, what to ask, what to check, and how to leave — without predicting the seller or inventing facts.',
+          guard: router.outputGuard,
+          userLanguage,
+          locale: withLocaleContext(userLocale, userCurrency, userRegion),
+        });
       },
     });
 
@@ -136,5 +188,25 @@ RULES:
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+router.outputStandard = 'v2';
+// upsell-shield. The tool's failure mode is a confident script built on
+// something the visitor never said: a tactic presented as what this seller
+// will do, a price or policy nobody checked, a competing offer to bluff with,
+// or a budget quietly treated as an opening position.
+router.outputGuard = {
+  prohibit: [
+    'states_as_certain_what_this_seller_will_do_or_intends',
+    'invents_prices_margins_policies_or_terms',
+    'invents_leverage_or_a_bluff_the_user_never_supplied',
+    'moves_or_reinterprets_the_users_stated_limit',
+    'assumes_the_seller_is_dishonest_or_predatory',
+  ],
+  require: [
+    'every_line_usable_as_written_without_an_excuse_or_bluff',
+    'unverified_facts_framed_as_things_to_check',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
