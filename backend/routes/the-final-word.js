@@ -404,6 +404,7 @@ RULES:
 - Be specific about what the new evidence changes (or doesn't)
 - If the appeal is just restating the same argument with no new info, uphold firmly
 - Be concise and decisive, but never manufacture certainty
+- Judge how well each person's position holds up, both before and after the appeal, as one of five QUALITATIVE categories — strongly_supported, mostly_supported, partly_supported, weakly_supported, or not_supported. This is not a probability, a truth percentage, or a number you privately compute and then round to a label — reason in these categories directly. A person can land on the same category before and after if the new evidence doesn't move their position.
 ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
@@ -413,8 +414,8 @@ Return ONLY this JSON:
   "new_evidence_assessment": "How strong is the new evidence? 1-2 sentences.",
   "explanation": "3-4 sentence detailed explanation of the appeal ruling",
   "updated_scores": {
-    "person_a": { "name": "...", "original_accuracy": 0-100, "revised_accuracy": 0-100 },
-    "person_b": { "name": "...", "original_accuracy": 0-100, "revised_accuracy": 0-100 }
+    "person_a": { "name": "...", "original_support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported", "revised_support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported" },
+    "person_b": { "name": "...", "original_support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported", "revised_support": "strongly_supported" | "mostly_supported" | "partly_supported" | "weakly_supported" | "not_supported" }
   },
   "final_answer": "The definitive answer after considering all evidence — one sentence",
   "case_closed": "A decisive closing statement — this is truly THE final word — one sentence",

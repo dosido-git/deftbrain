@@ -2057,7 +2057,7 @@ const TheFinalWord = ({ tool }) => {
                     {Object.values(appealResult.updated_scores).map((p, i) => (
                       <div key={i} className={`p-2 rounded-lg border text-center ${c.cardAlt}`}>
                         <p className={`text-xs font-bold ${c.text}`}>{p.name}</p>
-                        <p className={`text-[13px] ${c.textMuted}`}>{p.original_accuracy}% → <span className="font-bold">{p.revised_accuracy}%</span></p>
+                        <p className={`text-[13px] uppercase tracking-wide ${c.textMuted}`}><span className={getSupportColor(p.original_support)}>{getSupportLabel(p.original_support)}</span> → <span className={`font-bold ${getSupportColor(p.revised_support)}`}>{getSupportLabel(p.revised_support)}</span></p>
                       </div>
                     ))}
                   </div>
