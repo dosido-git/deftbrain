@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "1ec1ebd63bade4c6823fed752953efc370367a42",
-  "lastmod": "2026-11-24"
+  "hash": "36ebf77e435d20fa245ae6c2aa0862e70fa2c8eb",
+  "lastmod": "2026-11-25"
  },
  "static:about": {
   "hash": "8e58a4d0479397c6fb4a9abe84bf7f1d8ea94133",
@@ -248,8 +248,8 @@
   "lastmod": "2026-10-06"
  },
  "static:organizations": {
-  "hash": "deea68808e70d3ab304bbd32846406682ad4b559",
-  "lastmod": "2026-11-24"
+  "hash": "fbad8ceb1ca11593b735d69192336d8f0dd1e3d9",
+  "lastmod": "2026-11-25"
  },
  "tool:ContractDecoder": {
   "hash": "fc32afe09ed738cad0478183db8d247e3ce22396",

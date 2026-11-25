@@ -62,8 +62,7 @@
 
 /* One section per kind of organization (2026-11-24); its id is the outreach link target. */
 .org-tabs{margin-bottom:0}
-.org-aud{scroll-margin-top:-64px} /* cancels the section padding, so a #link lands with the icon just under the sticky header */
-@media(max-width:640px){.org-aud{scroll-margin-top:-44px}}
+.org-section.org-aud{padding-top:24px;scroll-margin-top:-24px} /* content starts near the top; a #link lands with the icon just under the sticky header */
 .org-aud:focus{outline:none}
 .org-aud-head{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:start;margin-bottom:40px}
 .org-aud-head h2{font-family:Georgia,serif;color:var(--navy);font-size:clamp(30px,3.4vw,44px);line-height:1.1;letter-spacing:-.02em;margin:0 0 18px}
