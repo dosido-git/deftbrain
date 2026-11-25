@@ -41,4 +41,18 @@ module.exports = {
     close: 'For a life change that comes with forms, [Paperwork Path](/PaperworkPath) lists the documents that matter and the order to tackle them. [Final Wish](/FinalWish) helps you put your wishes in one place, and [Mise en Place](/MiseEnPlace) plans meals from what is already in your kitchen.',
     more: 'More home and everyday questions',
   },
+  career: {
+    category: 'Career and Business', // the /tools category page that lists this topic's questions
+    eyebrow: 'Career and Business · Quick answer',
+    eyebrowHref: '/tools/career',
+    close: 'These are US federal rules; your state may add more. When it is time to make your case for a raise or a review, [Brag Sheet Builder](/BragSheetBuilder) turns what you did into evidence, and [Skill Gap Map](/SkillGapMap) shows what stands between you and the role you want.',
+    more: 'More work questions',
+  },
+  learning: {
+    category: 'Learning', // the /tools category page that lists this topic's questions
+    eyebrow: 'Learning · Quick answer',
+    eyebrowHref: '/tools/learning',
+    close: 'For a study you want to understand, [Research Decoder](/ResearchDecoder) explains what it found and how much weight it can bear. [Plain Talk](/PlainTalk) turns dense writing into plain language, and [Signal vs. Noise](/SignalVsNoise) checks a claim against what sources actually say.',
+    more: 'More questions about research and reading',
+  },
 };

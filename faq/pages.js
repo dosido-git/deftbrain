@@ -137,4 +137,4 @@ module.exports = [
     sources: [S.ma, S.ca, S.tx],
   },
 ].map(p => ({ modified: MODIFIED, topic: 'deposits', ...p }))
-  .concat(require('./travel'), require('./health'), require('./money'), require('./home'));
+  .concat(require('./travel'), require('./health'), require('./money'), require('./home'), require('./career'), require('./learning'));
