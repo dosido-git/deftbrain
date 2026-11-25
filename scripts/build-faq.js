@@ -135,7 +135,8 @@ if (process.argv.includes('--check')) {
   const stale = [...files].filter(([f, html]) => !fs.existsSync(f) || fs.readFileSync(f, 'utf8') !== html);
   const known = new Set(files.keys());
   // A plain walk, not readdirSync({ recursive }): that needs Node 20.1+ (Railway may build on 18).
-  const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+  // Dotfiles (Finder's .DS_Store) are skipped: they are not pages and not committed.
+  const walk = d => fs.readdirSync(d, { withFileTypes: true }).filter(e => !e.name.startsWith('.')).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
   const all = fs.existsSync(OUT_DIR) ? walk(OUT_DIR) : [];
   const extra = all.filter(f => !known.has(f));
   if (stale.length || extra.length) {
