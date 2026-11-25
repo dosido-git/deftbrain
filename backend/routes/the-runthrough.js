@@ -4,7 +4,7 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const { checkConsistency } = require('../lib/outputGuard');
+const { runOutputGuard, stringFields, suppliedText } = require('../lib/outputGuard');
 const { answer, onlyKeys, planNote } = require('../lib/progressive');
 const PERSONALITY = `Presentation coach for people who already have something to say and need help making it work in the room.
 
@@ -13,6 +13,29 @@ Protect the speaker's meaning, facts, commitments, and natural voice. Improve wh
 Be practical rather than theatrical. The goal is a presentation the user can actually deliver: clear, concise, credible, and suited to the audience.
 
 Never place a double-quote (") character inside any JSON string value — quoted claims, audience questions, and presentation lines must be written plainly or with single quotes, or it breaks the JSON.`;
+
+// Labels, enums and the per-item headings the frontend switches on or shows
+// as chips: shown to the guard, never rewritten.
+// trimmed_content is the speaker's own talk: the check may flag it, never rewrite it.
+// Rewritten, a talk that already fit came back with its greeting and thanks
+// dropped while revision_status still said "unchanged" (2026-11-25).
+const READ_ONLY_RE = /(^|\.)(session_title|context_label|revision_status|difficulty|technique|between|trimmed_content)$/;
+// The v2 guard for all three modes. The cap is raised because the talk itself
+// is the supplied text: cut off at the default 8,000 characters, the back half
+// of a 20-minute talk would read as material the output invented.
+const guard = (d, req, label, promise) => {
+  const fields = stringFields(d);
+  return runOutputGuard(d, {
+    label,
+    fields,
+    readOnly: fields.filter(([p]) => READ_ONLY_RE.test(p)).map(([p]) => p),
+    supplied: suppliedText(req.body, 40000),
+    promise,
+    guard: router.outputGuard,
+    userLanguage: req.body?.userLanguage,
+    locale: withLocaleContext(req.body?.userLocale, req.body?.userCurrency, req.body?.userRegion),
+  });
+};
 
 // ─── CUT: Trim content to fit a time limit ───
 router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -151,8 +174,9 @@ If nothing needed to change, return an empty what_was_cut array. Do not manufact
       },
       ready: d => Boolean(d.revision_status),
       complete: d => Boolean(d.trimmed_content),
-      // T4 (audit/DEFECT-TYPES.md): Cut mode added a sentence the talk never had.
-      check: d => checkConsistency(d, { label: 'the-runthrough-cut', promise: 'Trims the visitor\'s own talk without adding anything to it.', userLanguage: req.body?.userLanguage }),
+      // T4 (audit/DEFECT-TYPES.md): Cut mode added a sentence the talk never
+      // had. The v2 guard runs the same consistency check alongside its own.
+      check: d => guard(d, req, 'the-runthrough-cut', 'Trims the visitor\'s own talk to fit the time limit without adding anything to it, and says exactly what was cut and why. A talk that already fits comes back unchanged, and that is the promise kept.'),
     });
   } catch (error) {
     console.error('TheRunthrough Cut error:', error);
@@ -227,8 +251,8 @@ Return ONLY valid JSON:
   "tough_questions": [
     {
       "question": "A natural question this audience could actually ask",
-      "why_they_ask": "The concern underneath it",
-      "difficulty": "hard | very_hard | killer",
+      "why_they_ask": "What the question tests in the presentation — the gap, claim or tradeoff it probes — not a claim about what anyone in the audience thinks or feels",
+      "difficulty": "hard" | "very_hard" | "killer" — MUST be exactly one of these three lowercase English words, never translated, whatever the output language,
       "draft_answer": "A concise, speakable answer using only supported information; if key information is missing, acknowledge that and show how to answer without bluffing",
       "trap_to_avoid": "The specific mistake that would make this answer weaker"
     }
@@ -248,10 +272,13 @@ Generate 4-6 tough_questions, ordered by how important they are to prepare for.`
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-2' });
-    clearInterval(keepAlive);
     if (!parsed.presentation_summary) {
+      clearInterval(keepAlive);
       return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
     }
+    // The heartbeat keeps running through the check. A failed check ships the answer as written.
+    await guard(parsed, req, 'the-runthrough-anticipate', 'Predicts the questions this audience is most likely to ask about this presentation, with honest, speakable answers that use only what the speaker supplied, and names what to fix before presenting.').catch(() => {});
+    clearInterval(keepAlive);
     res.end(JSON.stringify(parsed));
 
   } catch (error) {
@@ -284,10 +311,11 @@ router.post('/the-runthrough-hook', rateLimit(DEFAULT_LIMITS), async (req, res) 
     }, 10000);
 
     const toneMap = {
-      authoritative: 'AUTHORITATIVE — Confident, commanding, "I know this cold." Think keynote energy.',
-      conversational: 'CONVERSATIONAL — Warm, relatable, "Let me tell you a story." Think fireside chat.',
-      provocative: 'PROVOCATIVE — Bold, challenging, "Everything you think you know is wrong." Think debate opener.',
-      inspirational: 'INSPIRATIONAL — Uplifting, visionary, "Imagine a world where..." Think graduation speech.',
+      // No sample lines: the clichés the rules below ban used to be the examples here.
+      authoritative: 'AUTHORITATIVE — Confident and commanding; the speaker knows this cold.',
+      conversational: 'CONVERSATIONAL — Warm and relatable, as if talking to a colleague.',
+      provocative: 'PROVOCATIVE — Bold and challenging; takes on an assumption the audience holds.',
+      inspirational: 'INSPIRATIONAL — Uplifting; points at what becomes possible.',
     };
 
     const userPrompt = `PRESENTATION HOOK MODE:
@@ -353,10 +381,12 @@ Generate 0-3 transitions: only the ones that materially improve comprehension.`;
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-3' });
-    clearInterval(keepAlive);
     if (!parsed.diagnosis) {
+      clearInterval(keepAlive);
       return res.end(JSON.stringify({ error: 'Could not analyze your presentation. Please try again.' }));
     }
+    await guard(parsed, req, 'the-runthrough-hook', 'Rewrites the opening, closing and key transitions of the visitor\'s own talk in the chosen tone, keeping their message and voice and adding no new claim.').catch(() => {});
+    clearInterval(keepAlive);
     res.end(JSON.stringify(parsed));
 
   } catch (error) {
@@ -371,4 +401,27 @@ Generate 0-3 transitions: only the ones that materially improve comprehension.`;
   }
 });
 
+router.outputStandard = 'v2';
+// the-runthrough-v2. Reviewed 2026-10-18 against the output standard, all
+// three modes. Schema changes from the review: why_they_ask asks what the
+// question tests rather than what the audience feels (it read as mind-reading
+// to the guard); difficulty pinned to English (the frontend switches on it, so
+// a translated value fell back to 'hard'); Hook's tone descriptions no longer
+// model the clichés its own rules ban. Cut keeps its plan-first structure.
+router.outputGuard = {
+  prohibit: [
+    'sentence_fact_or_example_added_to_the_talk_that_the_source_does_not_contain',
+    'cut_list_or_central_message_that_does_not_match_the_returned_text',
+    'draft_answer_states_a_metric_date_result_or_commitment_the_presentation_does_not_supply',
+    'rewrite_attributes_a_new_idea_conclusion_or_lesson_to_the_speaker',
+    'question_or_advice_that_would_fit_any_presentation',
+    'cliche_opener_or_keynote_language_the_source_does_not_earn',
+  ],
+  require: [
+    'fulfills_tool_promise',
+    'actionable_output',
+    'speaker_meaning_facts_and_voice_preserved',
+    'missing_information_handled_with_a_placeholder_or_an_honest_way_to_answer',
+  ],
+};
 module.exports = router;
