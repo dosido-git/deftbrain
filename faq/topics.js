@@ -20,4 +20,11 @@ module.exports = {
     close: 'For a long connection, [Layover Maximizer](/LayoverMaximizer) works out what you can do with the time you have. Before a trip abroad, [Culture Briefing](/CultureBriefing) covers the customs that catch visitors out. And before a drive you are unsure about, [Drive Home](/DriveHome) helps you weigh going, pausing or not starting.',
     more: 'More travel questions',
   },
+  health: {
+    category: 'Health & Wellness', // the /tools category page that lists this topic's questions
+    eyebrow: 'Health & Wellness · Quick answer',
+    eyebrowHref: '/tools/health-wellness',
+    close: 'Before a visit, [Doctor Visit Prep](/DoctorVisitPrep) helps you decide what to raise first; afterwards, [Doctor Visit Translator](/DoctorVisitTranslator) puts what you were told into plain words. [Mental Health Navigator](/MentalHealthNavigator) matches what you are going through to the kind of professional that fits, and [GriefGuide](/GriefGuide) is for the weeks after a loss.',
+    more: 'More health questions',
+  },
 };
