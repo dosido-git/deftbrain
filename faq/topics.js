@@ -27,4 +27,18 @@ module.exports = {
     close: 'Before a visit, [Doctor Visit Prep](/DoctorVisitPrep) helps you decide what to raise first; afterwards, [Doctor Visit Translator](/DoctorVisitTranslator) puts what you were told into plain words. [Mental Health Navigator](/MentalHealthNavigator) matches what you are going through to the kind of professional that fits, and [GriefGuide](/GriefGuide) is for the weeks after a loss.',
     more: 'More health questions',
   },
+  money: {
+    category: 'Money', // the /tools category page that lists this topic's questions
+    eyebrow: 'Money · Quick answer',
+    eyebrowHref: '/tools/money',
+    close: 'If a message or call feels off, [Scam Radar](/ScamRadar) checks it for the warning signs. [Fake Review Detective](/FakeReviewDetective) weighs a page of reviews, [Quote Check](/QuoteCheck) tells you whether a repair quote is fair, and [Bill Rescue](/BillRescue) helps with a bill that looks wrong.',
+    more: 'More money questions',
+  },
+  home: {
+    category: 'Home & Daily Life', // the /tools category page that lists this topic's questions
+    eyebrow: 'Home & Daily Life · Quick answer',
+    eyebrowHref: '/tools/home-daily-life',
+    close: 'For a life change that comes with forms, [Paperwork Path](/PaperworkPath) lists the documents that matter and the order to tackle them. [Final Wish](/FinalWish) helps you put your wishes in one place, and [Mise en Place](/MiseEnPlace) plans meals from what is already in your kitchen.',
+    more: 'More home and everyday questions',
+  },
 };
