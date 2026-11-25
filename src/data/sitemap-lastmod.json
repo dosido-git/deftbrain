@@ -196,40 +196,40 @@
   "lastmod": "2026-11-24"
  },
  "category:home-daily-life": {
-  "hash": "7bbc01bdcabfd8e4ed88578b01ff153e10074ebe",
-  "lastmod": "2026-11-20"
+  "hash": "75d05eddf3a39aa4ebd3eb01c2056e80d0a9a6ef",
+  "lastmod": "2026-11-25"
  },
  "category:travel-events": {
-  "hash": "46d24cd5db2a8730564dfd0a24a3f8b00fd44c22",
-  "lastmod": "2026-11-20"
+  "hash": "41fe8c12e671c8cbdd40dda1b7918d32e93d1cb1",
+  "lastmod": "2026-11-25"
  },
  "category:relationships": {
-  "hash": "95237011b57e2e6c98e8ba4e11349fb97a9409cd",
-  "lastmod": "2026-11-20"
+  "hash": "c174c7da07652d24094bcf42b7c04ead0a74b88e",
+  "lastmod": "2026-11-25"
  },
  "category:money": {
-  "hash": "40083e1e2f7bfca53b07fefd1589b2856e4fc022",
-  "lastmod": "2026-11-20"
+  "hash": "b4a53fa672011df14a1ff9cb50ff8e3e4732ec21",
+  "lastmod": "2026-11-25"
  },
  "category:career": {
-  "hash": "359e289b44b4a6c3170cfda7a1233f03d1a1336d",
-  "lastmod": "2026-11-20"
+  "hash": "c27f9f9493f8781113422ed0709300d4aa04f42a",
+  "lastmod": "2026-11-25"
  },
  "category:work-meetings": {
   "hash": "d2adb1136ec5b307f14fefd3a434b1a4dc677daf",
   "lastmod": "2026-10-06"
  },
  "category:health-wellness": {
-  "hash": "28114ef0d260ebb3c32aa1c16792bc38223c8f54",
-  "lastmod": "2026-11-20"
+  "hash": "efe9d2e94dbd0ac96046786324adcecc3eaeb07c",
+  "lastmod": "2026-11-25"
  },
  "category:conversations": {
-  "hash": "ba35938357de570aeed8d47509a0bb99aaf81657",
-  "lastmod": "2026-11-20"
+  "hash": "f1d90cff88da1cdb3e99e22d944cb66552d95e49",
+  "lastmod": "2026-11-25"
  },
  "category:learning": {
-  "hash": "d7a2ece223d7b5f114fdb634909f9ae8d87b3f53",
-  "lastmod": "2026-11-20"
+  "hash": "4992898cb33459ffe36dfd82c0a3737a474cb3f4",
+  "lastmod": "2026-11-25"
  },
  "category:self-reflection": {
   "hash": "9ba9874709b7134ce9379229a082b4b2ee269473",
@@ -240,15 +240,15 @@
   "lastmod": "2026-10-08"
  },
  "category:decisions": {
-  "hash": "1b72de3cde902bc84296a54bf8255492823c939c",
-  "lastmod": "2026-11-20"
+  "hash": "6117adc37fa2590981c90b7909e38fbc12566615",
+  "lastmod": "2026-11-25"
  },
  "category:tasks": {
   "hash": "caf0edc9a3f42fe58751e2af3779ecc30a064f32",
   "lastmod": "2026-10-06"
  },
  "static:organizations": {
-  "hash": "fbad8ceb1ca11593b735d69192336d8f0dd1e3d9",
+  "hash": "7ad238f34774e66bc65753f7a8fa83b9fc186e1c",
   "lastmod": "2026-11-25"
  },
  "tool:ContractDecoder": {
@@ -588,7 +588,7 @@
   "lastmod": "2026-11-24"
  },
  "category:ideas-diversions": {
-  "hash": "dba18275dbd1fbb1fb42476e91a8f818d74e104c",
-  "lastmod": "2026-11-20"
+  "hash": "e4388223af74d3cc3019660ad888990ce06d504f",
+  "lastmod": "2026-11-25"
  }
 }

@@ -30,6 +30,8 @@ const path = require('path');
 const { getFooterHTML, getSiteHeaderHTML } = require('../src/seo/chrome');
 const { categoriesFor } = require('./lib/toolCategories');
 const { buildGuideShelves } = require('./lib/guideShelves');
+const FAQ_PAGES = require('../faq/pages');
+const FAQ_TOPICS = require('../faq/topics');
 const { guideListHtml, GUIDE_LIST_STYLE, GUIDE_LIST_SCRIPT, GUIDE_LIST_NOSCRIPT } = require('./lib/guideListHtml');
 const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
@@ -181,6 +183,10 @@ function renderHead({ title, description, canonicalPath }) {
     .tcp-sources-label{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:11px;margin:0 0 6px}
     .tcp-sources ul{margin:0;padding-inline-start:1.1rem}
     .tcp-sources a{color:var(--tcp-muted)}
+    .tcp-faq{margin-top:48px;max-width:720px;font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.8}
+    .tcp-faq h2{font-family:Georgia,'Times New Roman',serif;font-size:25px;line-height:1.25;margin:0 0 14px;color:var(--tcp-navy)}
+    .tcp-faq ul{margin:0;padding-inline-start:1.2rem}
+    .tcp-faq a{color:var(--tcp-blue);text-decoration:underline;text-underline-offset:2px}
     .tcp-guides{margin-top:48px;font-family:'DM Sans',system-ui,sans-serif}
     .tcp-guides h2{font-family:Georgia,'Times New Roman',serif;font-size:25px;margin:0 0 14px;color:var(--tcp-navy)}
     .tcp-page{--gl-ink:var(--tcp-navy);--gl-link:var(--tcp-blue);--gl-muted:var(--tcp-muted);--gl-line:var(--tcp-line)}${GUIDE_LIST_STYLE}
@@ -220,6 +226,21 @@ ${ov.sources.map(s => `            <li><a href="${escHtml(s.url)}" rel="noopener
       <section class="tcp-about" aria-labelledby="tcp-about-h">
         <h2 id="tcp-about-h">${escHtml(ov.heading)}</h2>
 ${ov.paras.map(p => `        <p>${linksToHtml(p, escHtml)}</p>`).join('\n')}${sources}
+      </section>
+`;
+}
+
+// Single-question answer pages (/faq/, faq/pages.js) whose topic belongs to
+// this category: the category page is how a crawler and a visitor reach them.
+function renderFaq(meta) {
+  const qs = FAQ_PAGES.filter(p => FAQ_TOPICS[p.topic].category === meta.name);
+  if (!qs.length) return '';
+  return `
+      <section class="tcp-faq" aria-labelledby="tcp-faq-h">
+        <h2 id="tcp-faq-h">Quick answers</h2>
+        <ul>
+${qs.map(p => `          <li><a href="/faq/${p.slug}">${escHtml(p.question)}</a></li>`).join('\n')}
+        </ul>
       </section>
 `;
 }
@@ -274,7 +295,7 @@ function renderCategoryPage(meta, toolsInCat, guideShelf, overview, toolIds) {
 ${cardsHtml}
       </div>
 
-${renderOverview(overview, toolIds)}${renderGuides(meta, guideShelf)}
+${renderOverview(overview, toolIds)}${renderFaq(meta)}${renderGuides(meta, guideShelf)}
       <p class="tcp-outro"><a href="/ToolFinder">Try Tool Finder →</a></p>
 
     </div>

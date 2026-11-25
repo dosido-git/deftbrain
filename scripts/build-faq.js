@@ -15,6 +15,7 @@ const { GA_SNIPPET } = require('./lib/gaSnippet');
 const { THEME_SNIPPET } = require('./lib/themeSnippet');
 const { linksToHtml } = require('../src/utils/inlineLinks');
 const pages = require('../faq/pages');
+const TOPICS = require('../faq/topics');
 
 const ROOT = path.join(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'public', 'faq');
@@ -29,6 +30,7 @@ function validate(p) {
   if (!/^[a-z0-9-]+$/.test(p.slug)) bad.push('slug');
   if (!p.question.endsWith('?')) bad.push('question must end with ?');
   if (!p.answer || !p.paras.length || !p.sources.length) bad.push('answer/paras/sources required');
+  if (!TOPICS[p.topic]) bad.push(`unknown topic "${p.topic}" (add it to faq/topics.js)`);
   if (bad.length) throw new Error(`faq/${p.slug}: ${bad.join(', ')}`);
 }
 const slugs = new Set();
@@ -40,7 +42,8 @@ for (const p of pages) {
 
 function render(p) {
   const url = `${SITE}/faq/${p.slug}`;
-  const others = pages.filter(o => o.slug !== p.slug)
+  const topic = TOPICS[p.topic];
+  const others = pages.filter(o => o.topic === p.topic && o.slug !== p.slug)
     .map(o => `          <li><a href="/faq/${o.slug}">${esc(o.question)}</a></li>`).join('\n');
   return `<!DOCTYPE html>
 <html lang="en">
@@ -80,7 +83,7 @@ function render(p) {
     <div class="container">
 
       <div class="eyebrow">
-        <a class="tag" href="/guides/home/security-deposit-laws-by-state">Security deposits · Quick answer</a>
+        <a class="tag" href="${topic.eyebrowHref}">${esc(topic.eyebrow)}</a>
         <div class="eyebrow-rule"></div>
       </div>
 
@@ -91,7 +94,7 @@ function render(p) {
       <p class="meta-line">Updated ${fmtDate(p.modified)} · By the DeftBrain team</p>
 
 ${p.paras.map(t => `      <p class="lede">${linksToHtml(t, esc)}</p>`).join('\n')}
-      <p class="lede">Rules differ by state: the <a href="/guides/home/security-deposit-laws-by-state">security deposit laws by state</a> table lists yours. To record the unit's condition at move-in and make your case at move-out, there's <a href="/RentersDepositSaver">Renter's Deposit Saver</a>.</p>
+      <p class="lede">${linksToHtml(topic.close, esc)}</p>
 
       <div class="guide-sources">
         <p class="guide-sources-label">Sources</p>
@@ -101,7 +104,7 @@ ${p.sources.map(s => `          <li><a href="${esc(s.url)}" rel="noopener" targe
       </div>
 
       <div class="faq-more">
-        <p class="guide-sources-label">More deposit questions</p>
+        <p class="guide-sources-label">${esc(topic.more)}</p>
         <ul>
 ${others}
         </ul>

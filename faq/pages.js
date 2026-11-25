@@ -4,8 +4,11 @@
 // deposit GUIDES of 2026-11-18. These follow one practitioner's recipe (David
 // Quaid) strictly: one question per page, the address and title are the
 // question, the answer is short and comes first, no structured data, and no
-// "| DeftBrain" in the title. Compare indexing of both sets at 3-4 weeks before
-// adding more. Every claim is from the statute linked in that page's sources.
+// "| DeftBrain" in the title. Every claim is from the statute linked in that
+// page's sources.
+//
+// 2026-11-25: widened to ~10 pages per category (owner), one file per topic
+// (faq/travel.js, ...), so the test covers the catalog and not just landlords.
 //
 // `paras` accept inline links: [label](/path) or [label](https://...).
 
@@ -133,4 +136,5 @@ module.exports = [
     ],
     sources: [S.ma, S.ca, S.tx],
   },
-].map(p => ({ modified: MODIFIED, ...p }));
+].map(p => ({ modified: MODIFIED, topic: 'deposits', ...p }))
+  .concat(require('./travel'));
