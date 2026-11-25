@@ -138,4 +138,5 @@ module.exports = [
   },
 ].map(p => ({ modified: MODIFIED, topic: 'deposits', ...p }))
   .concat(require('./travel'), require('./health'), require('./money'), require('./home'), require('./career'), require('./learning'),
-    require('./decisions'), require('./ideas'));
+    require('./decisions'), require('./ideas'),
+    require('./conversations'), require('./relationships'));

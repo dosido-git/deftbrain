@@ -69,4 +69,18 @@ module.exports = {
     close: 'When a word won\'t come, [Tip of Tongue](/TipOfTongue) works from whatever you remember about it. [Belief Stress Test](/BeliefStressTest) puts a rule you live by under pressure, and [Argue Smarter](/ArgueSmarter) tests your ideas against the strongest criticism you can find.',
     more: 'More questions about how minds work',
   },
+  conversations: {
+    category: 'Conversations', // the /tools category page that lists this topic's questions
+    eyebrow: 'Conversations · Quick answer',
+    eyebrowHref: '/tools/conversations',
+    close: 'Before a hard conversation, [Difficult Talk Coach](/DifficultTalkCoach) lets you practice it. [Mend](/Mend) matches an apology to the harm done, and [Complaint Escalation Writer](/ComplaintEscalationWriter) gives you a clear plan when a company stops answering.',
+    more: 'More questions about conversations',
+  },
+  relationships: {
+    category: 'Relationships', // the /tools category page that lists this topic's questions
+    eyebrow: 'Relationships · Quick answer',
+    eyebrowHref: '/tools/relationships',
+    close: '[Friendship Fade Alerter](/FriendshipFadeAlerter) helps you notice which friendships are fading before they are gone, and [Giftology](/Giftology) finds a gift for the hardest person on your list.',
+    more: 'More relationship questions',
+  },
 };
