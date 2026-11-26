@@ -169,7 +169,7 @@ export default function OrganizationsPage({ allTools = [] }) {
             "120+"-style label instead of the real number. This line is
             exactly that context (a headline stat in a sales pitch), so it
             gets the same treatment. */}
-        <div className="org-section-heading centered"><h2>An extraordinary range of help.</h2><p><strong>{TOOL_COUNT_LABEL} tools.</strong> Hundreds of guides. One approachable place to begin.</p></div>
+        <div className="org-section-heading centered"><div className="org-kicker">ONE RESOURCE.</div><h2>An extraordinary range of help.</h2><p><strong>{TOOL_COUNT_LABEL} tools.</strong> Hundreds of guides. One approachable place to begin.</p></div>
         <div className="org-scramble">{NAME_FIELD_IDS.map(id => byId[id]).filter(Boolean).map((t, i) => {
           const accent = SCRAMBLE_COLORS[i % SCRAMBLE_COLORS.length];
           return (
