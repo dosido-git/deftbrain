@@ -12,6 +12,16 @@ const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
 const { buildPartnerReport, renderPartnerReportHTML } = require('../lib/partnerReport');
 const PARTNERS = require('../../src/data/partners.json');
+// Guides are reported under the site's own categories (the ones the guide
+// lists and tool pages show), not their URL folders. Totals come from the same
+// files the guide build uses, so the heading can't drift from the site.
+const GUIDE_CATS = require('../../src/data/guide-categories.json').guides;
+const GUIDE_KEEP = (() => {
+  const keep = require('../../guides/keep-list.json').keep;
+  return new Set(Object.entries(keep).flatMap(([folder, slugs]) => slugs.map(sl => `${folder}/${sl}`)));
+})();
+const GUIDE_TOTAL = Object.keys(GUIDE_CATS).length;
+const GUIDE_INDEXABLE = Object.keys(GUIDE_CATS).filter(g => GUIDE_KEEP.has(g)).length;
 const { scrubNumbers } = require('../lib/scrubNumbers');
 
 function metricPath(value) {
@@ -33,6 +43,31 @@ function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+// A referrer host as a person would name it, so one source isn't split across
+// hosts (Google search arrives as www.google.com and as the Android Google
+// app). Unknown hosts pass through unchanged.
+const SOURCE_NAMES = [
+  [/^com\.google\.android\.gm$/i, 'Gmail'],
+  [/(^|\.)google\.[a-z.]+$|^com\.google\.android\.googlequicksearchbox$/i, 'Google'],
+  [/(^|\.)bing\.com$/i, 'Bing'],
+  [/(^|\.)search\.yahoo\.com$/i, 'Yahoo'],
+  [/(^|\.)duckduckgo\.com$/i, 'DuckDuckGo'],
+  [/(^|\.)ecosia\.org$/i, 'Ecosia'],
+  [/(^|\.)qwant\.com$/i, 'Qwant'],
+  [/(^|\.)yandex\.[a-z.]+$/i, 'Yandex'],
+  [/(^|\.)facebook\.com$/i, 'Facebook'],
+  [/(^|\.)linkedin\.com$/i, 'LinkedIn'],
+  [/(^|\.)chatgpt\.com$|^chatgpt$/i, 'ChatGPT'],
+  [/(^|\.)perplexity(\.ai)?$/i, 'Perplexity'],
+  [/^(?:www\.)?producthunt(?:\.com)?$/i, 'Product Hunt'],
+  [/^link\.edgepilot\.com$/i, 'Email (EdgePilot link scanner)'],
+];
+function sourceName(ref) {
+  if (typeof ref !== 'string' || !ref) return 'direct';
+  const hit = SOURCE_NAMES.find(([re]) => re.test(ref));
+  return hit ? hit[1] : ref;
 }
 
 function requestIp(req) {
@@ -346,7 +381,12 @@ function pct(n, d) { return d ? Math.round((n / d) * 100) + '%' : '—'; }
 // Tiny inline-SVG dual line chart (views + runs per day).
 function lineChart(days) {
   const W = 720, H = 160, P = 28;
-  const max = Math.max(1, ...days.map(d => Math.max(d.views, d.runs)));
+  // Vertical scale: round the top up to a tidy step so gridlines land on
+  // readable numbers (4 steps of 1, 2, 2.5 or 5 times a power of ten).
+  const peak = Math.max(1, ...days.map(d => Math.max(d.views, d.runs)));
+  const mag = 10 ** Math.floor(Math.log10(peak / 4 || 1));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(st => st * 4 >= peak && Number.isInteger(st)) || Math.ceil(peak / 4);
+  const max = step * 4;
   const x = i => days.length === 1 ? W / 2 : P + (i * (W - 2 * P)) / (days.length - 1);
   const y = v => H - P - (v * (H - 2 * P)) / max;
   const pts = k => days.map((d, i) => `${x(i).toFixed(1)},${y(d[k]).toFixed(1)}`).join(' ');
@@ -359,7 +399,7 @@ function lineChart(days) {
   const labels = days.map((d, i) => (i === 0 || i === days.length - 1 || i === Math.floor(days.length / 2))
     ? `<text x="${x(i)}" y="${H - 8}" font-size="10" text-anchor="middle" fill="#888">${d.day.slice(5)}</text>` : '').join('');
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">
-    <text x="${P}" y="14" font-size="10" fill="#888">max ${max}</text>
+    ${[0, 1, 2, 3, 4].map(k => `<line x1="${P}" x2="${W - P}" y1="${y(k * step)}" y2="${y(k * step)}" stroke="#e5e5e5"/><text x="${P - 4}" y="${y(k * step) + 3}" font-size="10" text-anchor="end" fill="#888">${k * step}</text>`).join('')}
     <polyline points="${pts('views')}" fill="none" stroke="#165b9a" stroke-width="2"/>
     <polyline points="${pts('runs')}" fill="none" stroke="#c8872e" stroke-width="2"/>
     ${dots}
@@ -992,11 +1032,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 
     // Milestones are counted on the day they occurred. The browser sends
     // first-run and first-completion flags without assigning a session ID.
-    const sourceOf = e => {
-      const ref = e.ref || e.props?.ref || 'direct';
-      if (typeof ref !== 'string') return 'direct';
-      return /^(?:www\.)?producthunt(?:\.com)?$/i.test(ref) ? 'Product Hunt' : ref;
-    };
+    const sourceOf = e => sourceName(e.ref || e.props?.ref);
     const sources = new Map();
     const emptyStages = () => ({ entrances: 0, started: 0, completed: 0 });
     const getRow = (map, key, create) => {
@@ -1031,7 +1067,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         return `<details class="fold"><summary>${escH(name)} · ${row.entrances} visits · ${row.runs} tool runs</summary>
           <table><tr><th>landing page</th><th>visits</th><th>first run</th><th>first response</th></tr>
           ${landings || '<tr><td colspan="4">No landing pages recorded in this range.</td></tr>'}</table>
-          ${tools ? `<table><tr><th>experience opened</th><th>page views</th></tr>${tools}</table>` : ''}
+          ${tools ? `<table><tr><th>tool opened</th><th>page views</th></tr>${tools}</table>` : ''}
         </details>`;
       }).join('');
 
@@ -1085,7 +1121,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     for (const e of guideViews) {
       const m = (e.path || '').match(/^\/guides\/([a-z-]+)(?:\/([a-z0-9-]+))?/);
       if (!m) continue;
-      guideByCat[m[1]] = (guideByCat[m[1]] || 0) + 1;
+      const cat = m[2] ? (GUIDE_CATS[`${m[1]}/${m[2]}`] || [])[0] || 'Uncategorized' : 'Guide index pages';
+      guideByCat[cat] = (guideByCat[cat] || 0) + 1;
       const key = m[2] ? `${m[1]}/${m[2]}` : `${m[1]} (hub)`;
       guideByPath[key] = (guideByPath[key] || 0) + 1;
     }
@@ -1324,7 +1361,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         const landName = pageNameOf(e.landing || e.path);
         const en = b.entries[landName] || (b.entries[landName] = { n: 0, src: {} });
         en.n++;
-        const src = e.ref || 'direct';
+        const src = sourceName(e.ref);
         en.src[src] = (en.src[src] || 0) + 1;
         if (e.props && e.props.returning === true) b.returning++;
         if (e.props && e.props.bucket === '1-7d') b.bucket1_7++;
@@ -1578,6 +1615,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       (vitalGroups[k] = vitalGroups[k] || []).push(e.props.value);
     }
     const fmtVital = (name, v) => name === 'CLS' ? v.toFixed(2) : v >= 1000 ? (v / 1000).toFixed(1) + ' s' : Math.round(v) + ' ms';
+    // The selected range, for headings whose numbers follow the range picker.
+    const rangeSpan = `<span style="font-weight:400;font-size:13px;color:#888">${escH(rangeText)}${windowStart && !isToday ? ` · ${escH(fmtDay(windowStart))} → ${escH(fmtDay(new Date(windowEnd.getTime() - 1)))}` : ''}${isToday ? ` · ${escH(fmtDay(now))}` : ''}</span>`;
+    const VITAL_NAMES = { FCP: 'First paint: first text or image appears', LCP: 'Largest paint: the main content appears', CLS: 'Layout shift: how much the page jumps while loading (no unit)', TTFB: 'Server response: first byte arrives from the server', FID: 'First input: delay before the first click or tap is handled' };
+    const fmtGood = (name, v) => name === 'CLS' ? String(v) : v >= 1000 ? `${v / 1000} s` : `${v} ms`;
+    const vitalKey = Object.keys(WEB_VITALS).map(n => `<tr><td><b>${n}</b></td><td>${escH(VITAL_NAMES[n] || n)}</td><td>${escH(fmtGood(n, WEB_VITALS[n]))}</td></tr>`).join('');
     const vitalRows = Object.entries(vitalGroups)
       .sort(([a], [b]) => Object.keys(WEB_VITALS).indexOf(a.split('|')[0]) - Object.keys(WEB_VITALS).indexOf(b.split('|')[0]) || a.localeCompare(b))
       .map(([k, xs]) => {
@@ -1716,8 +1758,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     </script>
     <h2 class="sec">2 · Needs attention</h2>
     <h2>Recurring failures</h2>
-    <p>Failures with the same message and kind, grouped by experience in the selected date range.</p>
-    <table><tr><th>experience</th><th>kind</th><th>count</th><th>message</th></tr>${recurringErrorRows || '<tr><td colspan="4">No recurring failures recorded in this range.</td></tr>'}</table>
+    <p>Failures with the same message and kind, grouped by tool in the selected date range.</p>
+    <table><tr><th>tool</th><th>kind</th><th>count</th><th>message</th></tr>${recurringErrorRows || '<tr><td colspan="4">No recurring failures recorded in this range.</td></tr>'}</table>
     <h2>Rate limits <span style="font-weight:400;font-size:12px;color:#888">— resets on deploy (limits live in memory); visitors = first refusal per visitor per day, no IPs kept</span></h2>
     <p>${rlSummary}</p>
     <table><tr><th>endpoint</th><th>tier</th><th>per-minute refusals</th><th>daily refusals</th><th>visitors</th><th>on partner network</th><th>near misses (80% of day)</th></tr>${rlRows || '<tr><td colspan="7" style="color:#888">No refusals or near misses in this range.</td></tr>'}</table>
@@ -1758,13 +1800,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
     <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.${guideBeaconLive ? '' : ' <span style="color:#b45309">Guide pages only began reporting on 2026-08-02 — before that this could only ever read 0.</span>'}</p>
-    <h3>Clicks from a guide to its linked experience</h3>
-    <p>${guideToolClicks.length} clicks on the main experience link. Views and clicks count repeats. Starts and visible results count once per browser tab for each guide and experience. Events are counted when they happen, and visible results require an instrumented result region.</p>
-    <table><tr><th>guide</th><th>linked experience</th><th>guide views</th><th>clicks</th><th>sessions started</th><th>sessions with visible result</th></tr>${guideClickRows || '<tr><td colspan="6">No guide handoff data recorded in this range.</td></tr>'}</table>
+    <h3>Clicks from a guide to its linked tool</h3>
+    <p>${guideToolClicks.length} clicks on the main tool link. Views and clicks count repeats. Starts and visible results count once per browser tab for each guide and tool. Events are counted when they happen, and visible results require an instrumented result region.</p>
+    <table><tr><th>guide</th><th>linked tool</th><th>guide views</th><th>clicks</th><th>sessions started</th><th>sessions with visible result</th></tr>${guideClickRows || '<tr><td colspan="6">No guide handoff data recorded in this range.</td></tr>'}</table>
 
-    <h2 class="sec">4 · How people find DeftBrain</h2>
+    <h2 class="sec">4 · How people find DeftBrain ${rangeSpan}</h2>
     <h2>Engagement by source</h2>
-    <p>Open a source to see landing pages and experiences opened. Landing-page milestones use the first interaction, run, and response received in a browser-tab session. They are counted when they happen, so they can fall in a later date range than the entrance. Older visits have limited milestone coverage.</p>
+    <p>Open a source to see landing pages and tools opened. Landing-page milestones use the first interaction, run, and response received in a browser-tab session. They are counted when they happen, so they can fall in a later date range than the entrance. Older visits have limited milestone coverage.</p>
     <p>Direct traffic has no recorded referrer or source tag.</p>
     ${srcRows || '<p>No source activity recorded in this range.</p>'}
     <h2>Page not found (404)</h2>
@@ -1774,7 +1816,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     ${burstRows ? `<details class="fold"><summary>Bursts of 404 entrances</summary>
       <p>Three or more distinct paths from the same source within one minute. A burst can contain visits from multiple browsers.</p>
       <table><tr><th>first seen</th><th>source</th><th>entrances</th><th>paths</th></tr>${burstRows}</table></details>` : ''}
-    <h2>Guides <span style="font-weight:400;font-size:12px;color:#888">— 552 pages; 112 indexable, the rest live but noindexed</span></h2>
+    <h2>Guides <span style="font-weight:400;font-size:12px;color:#888">— ${GUIDE_TOTAL} pages; ${GUIDE_INDEXABLE === GUIDE_TOTAL ? 'all indexable' : `${GUIDE_INDEXABLE} indexable, the rest live but noindexed`}</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Guide pages are static HTML and began reporting on 2026-08-02; earlier windows show nothing regardless of real traffic.</p>
     <h3 style="font-size:14px;margin:12px 0 4px">By category</h3>
     <table>${guideCatRows || '<tr><td style="color:#888">No guide views in this window.</td></tr>'}</table>
@@ -1786,7 +1828,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       : `Interaction is not yet attributable to a country: ${interactUnattributed} interactive session${interactUnattributed === 1 ? '' : 's'} in this window predate the 2026-08-01 change that records location on the interact beacon. The headline &ldquo;interactive&rdquo; count is unaffected. This column will populate as new sessions arrive.`}</p>
     <table>${locRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Languages (sessions)</h2><table>${langRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
-    <h2>Devices (sessions) <span style="font-weight:400;font-size:12px;color:#888">— ${deviceKnown}/${sessions.length} sessions resolved</span></h2>
+    <h2>Devices (sessions) ${rangeSpan} <span style="font-weight:400;font-size:12px;color:#888">— ${deviceKnown}/${sessions.length} sessions resolved</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from the User-Agent header at write time, same as Location — the header itself is never stored, only these three labels. Sessions recorded before this shipped (2026-09-08) carry none, so a low resolved count against an older range is missing data, not a real drop.</p>
     <div style="display:flex;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">Device</h3><table>${deviceRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
@@ -1794,9 +1836,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       <div style="flex:1;min-width:220px"><h3 style="font-size:13px;margin:0 0 4px">Browser</h3><table>${browserRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table></div>
     </div>
     <h2>Load times (real visitors)</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Measured in visitors' browsers, once per page load (recorded since 2026-11-16). The 75th percentile is what Google judges; green = within its &ldquo;good&rdquo; line (first paint 1.8 s, largest paint 2.5 s, server response 0.8 s, first input 100 ms, layout shift 0.1). Small counts swing widely.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Measured in visitors' browsers, once per page load (recorded since 2026-11-16). Small counts swing widely.</p>
+    <details class="fold" open><summary>Key</summary>
+      <table><tr><th>metric</th><th>what it measures</th><th>Google's &ldquo;good&rdquo; line</th></tr>${vitalKey}</table>
+      <p style="font-size:11px;color:#555;margin:4px 0 0"><b>p75</b>: 3 in 4 page loads were this fast or faster; it is the number Google judges. <b style="color:#1a7f37">Green</b> = within the good line, <b style="color:#b42318">red</b> = over it. <b>median</b>: half were faster. <b>n</b>: page loads measured. <b>page</b>: home, tool, guide or other.</p>
+    </details>
     <table><tr><th>metric</th><th>device</th><th>page</th><th>p75</th><th>median</th><th>n</th></tr>${vitalRows || '<tr><td colspan=6 style="color:#888">No data yet.</td></tr>'}</table>
-    <h2 class="sec">5 · Do they come back</h2>
+    <h2 class="sec">5 · Do they come back ${rangeSpan}</h2>
     <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
     <details class="fold" open><summary>Where returning browsers landed</summary>
@@ -1809,9 +1855,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${revisitRows || '<tr><td colspan="5">No page revisits recorded in this range.</td></tr>'}</table>
     </details>
     <table><tr><th>recency</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
-    <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s)</span></h2>
+    <h2>Retention trend <span style="font-weight:400;font-size:12px;color:#888">— last ${retentionWeeks.length} Mon–Sun week(s), newest first, independent of the range picker</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px"><b>This is an approximation, not true cohort retention.</b> It plots the share of each week's sessions that self-reported (via the browser's own localStorage timestamp) as having first visited within the last 7 days — a proxy for "people are coming back within a week," not "of last week's specific visitors, how many came back," which this anonymous, no-persistent-ID design cannot answer. A real cohort number would need a stable (even if anonymous/hashed) per-browser identifier, which nothing here sends today by design.</p>
-    <table><tr><th>week of</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? retentionWeeks.map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#165b9a;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
+    <table><tr><th>week of</th><th title="One visit: a browser tab from its first DeftBrain page until it closes. A new tab or a later visit is a new session.">sessions</th><th>% reporting a return within 7 days</th></tr>${retentionWeeks.length ? [...retentionWeeks].reverse().map(w => `<tr><td>${escH(w.key)}</td><td>${w.sessions}</td><td style="width:50%"><div style="display:flex;align-items:center;gap:8px"><div style="background:#165b9a;height:12px;width:${w.rate}%;max-width:100%;border-radius:2px"></div><span>${w.rate}%</span></div></td></tr>`).join('') : '<tr><td colspan=3 style="color:#888">No data yet.</td></tr>'}</table>
     <h2 class="sec">6 · What it costs</h2>
     <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
