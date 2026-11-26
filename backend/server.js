@@ -13,12 +13,13 @@ app.disable('x-powered-by'); // don't advertise the stack
 const PORT = process.env.PORT || 3001;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// Railway sits behind exactly one edge proxy. Trust one hop so req.ip resolves
-// to the real client (the proxy-appended X-Forwarded-For entry) instead of a
-// client-spoofable value — this is what the rate limiter keys on. If Railway's
-// topology ever changes, the startup log below prints the resolved client IP so
-// a wrong hop count is caught immediately.
-app.set('trust proxy', 1);
+// Railway's edge rewrites X-Forwarded-For to exactly "client, edge-proxy"
+// (a forged header from the visitor is dropped, verified 2026-11-26), and the
+// socket peer is Railway-internal. Trust two hops so req.ip is the client.
+// With 1, req.ip was the edge proxy: every visitor shared a rate-limit bucket
+// per edge, and metrics located everyone at the edge's registered country
+// (US readers showed as BR/GB/CZ). GET /api/metrics/whoami shows the chain.
+app.set('trust proxy', 2);
 
 const crypto = require('crypto');
 function keyMatchesHdr(provided, expected) {

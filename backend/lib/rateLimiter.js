@@ -173,7 +173,7 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     }
 
     // req.ip is derived by Express from the trusted proxy hop (see
-    // `app.set('trust proxy', 1)` in server.js) — NOT the client-controlled
+    // `app.set('trust proxy', 2)` in server.js) — NOT the client-controlled
     // leftmost X-Forwarded-For value, which was spoofable to mint a fresh
     // bucket per request and bypass every limit.
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
