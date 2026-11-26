@@ -184,7 +184,7 @@ export default function OrganizationsPage({ allTools = [] }) {
 
       <section className="org-section org-soft" aria-labelledby="org-who-title">
         <div className="org-shell">
-          <div className="org-section-heading centered"><div className="org-kicker">WHO IT'S FOR</div><h2 id="org-who-title">Built for organizations that help people.</h2><p>Each kind of organization hears different questions. Here is what yours might bring to DeftBrain.</p></div>
+          <div className="org-section-heading centered"><div className="org-kicker">FOR ORGANIZATIONS</div><h2 id="org-who-title">Built for organizations that help people.</h2><p>Each kind of organization hears different questions. Here is what yours might bring to DeftBrain.</p></div>
           <nav className="org-tabs" aria-label="Kinds of organization">{AUDIENCES.map(a => <a key={a.key} href={`/organizations#${a.key}`}><span aria-hidden="true">{a.icon}</span>{a.eyebrow}</a>)}</nav>
         </div>
       </section>
