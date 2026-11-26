@@ -157,3 +157,10 @@ a.db-newtab::after {
 
 /* RouteFocus moves focus to a heading or section on arrival; they are not controls. */
 [data-route-focus]:focus { outline: none; }
+
+/* A tool's title row (tagline + Try Example, with Start over beside it) is a
+   nowrap flex row written into each tool. In longer languages (Spanish,
+   German...) the two buttons no longer fit a phone and the page scrolled
+   sideways. Let any such row in the tool card wrap; it only does when the
+   contents don't fit, so wide screens are unchanged. */
+[data-print-section] .flex.justify-between:has(> button) { flex-wrap: wrap; }
