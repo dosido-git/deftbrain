@@ -159,7 +159,6 @@ export default function OrganizationsPage({ allTools = [] }) {
             <article><b>2</b><h3>Answer a few thoughtful questions.</h3><p>DeftBrain asks for the information that matters.</p></article>
             <article><b>3</b><h3>Done!</h3><p>Clear thinking, useful questions, and real options to weigh.</p></article>
           </div>
-          <blockquote>Your people don't need to learn AI.<br/><strong>They just need to know what's going on.</strong></blockquote>
         </div>
       </section>
 
