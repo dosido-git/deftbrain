@@ -604,6 +604,9 @@ Object.entries(LEGACY_REDIRECTS).forEach(([from, to]) => {
 Object.entries(MERGED_GUIDE_REDIRECTS).forEach(([from, to]) => {
   app.get(from, (req, res) => res.redirect(301, to));
 });
+// The printable tool list was /flier until 2026-11-26.
+app.get(['/flier', '/flier.html'], (req, res) => res.redirect(301, '/all-tools'));
+app.get('/flier.pdf', (req, res) => res.redirect(301, '/all-tools.pdf'));
 
 // FAQ pages moved from /faq/<slug> into a folder per topic (owner, 2026-11-25:
 // organized by topic for topical authority). The deposit set had been live at

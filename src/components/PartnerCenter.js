@@ -259,7 +259,7 @@ function LaunchKit({ byId, params }) {
           <h2 id="pc-handout-title">Printable handout</h2>
           <PrintBtn label="Print handout" />
         </div>
-        <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full beside the QR code. The QR code uses the printed-handout tracking link; download it on its own for posters or cards.</p>
+        <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full beside the QR code. The QR code uses the printed-handout tracking link; download it on its own for posters or cards. To list every tool instead: <a href="/all-tools.pdf">printable list (PDF)</a>.</p>
         <label className="pc-handout-pick pc-noprint">Package on this handout<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
         <article className="pc-handout" aria-label="Handout preview">
           <header><b className="pc-handout-name">{kit.logo && <img src={kit.logo} alt="" width="36" height="36" />}{name}</b><span>by DeftBrain</span></header>

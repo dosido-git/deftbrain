@@ -134,7 +134,7 @@ function toolsPageHTML(categories, countLabel) {
     `<li style="margin:.4rem 0;line-height:1.55"><a href="/tools/${e(c.slug)}">${e(c.name)}</a> — ${e(c.desc || '')}</li>`).join('');
   return `<main class="seo-prerender" style="max-width:860px;margin:0 auto;padding:2rem 1rem">`
     + `<h1 style="${STATIC_H1}">DeftBrain Toolbox</h1>`
-    + `<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">There’s probably a tool for that! ${e(countLabel)} free guided experiences for life’s awkward, confusing, and curious moments.</p>`
+    + `<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">There’s probably a tool for that! ${e(countLabel)} free guided experiences for life’s awkward, confusing, and curious moments. <a href="/all-tools.pdf">Printable list (PDF)</a></p>`
     + `<h2 style="${STATIC_H2}">Browse by topic</h2><ul style="padding-left:1.25rem;margin:0">${cats}</ul>`
     + `</main>`;
 }

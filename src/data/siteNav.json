@@ -32,6 +32,10 @@
       "href": "/tools"
     },
     {
+      "label": "Printable List (PDF)",
+      "href": "/all-tools.pdf"
+    },
+    {
       "label": "Find a Tool",
       "href": "/ToolFinder",
       "key": "toolFinder"

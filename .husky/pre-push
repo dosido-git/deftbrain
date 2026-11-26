@@ -62,6 +62,7 @@ node scripts/build-privacy.js --check
 
 # /faq pages are generated from faq/pages.js (same reason as privacy above).
 node scripts/build-faq.js --check
+node scripts/build-all-tools.mjs --check
 
 # Gate 8 — every rename in audit/RENAMES.md has a server-side 301. Recall →
 # TheCrux shipped with a CLIENT-side alias only, which a crawler never reaches:

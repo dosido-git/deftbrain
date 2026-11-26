@@ -244,6 +244,7 @@ export default function AllToolsPage({ allTools = [] }) {
             collection of...") — same size/weight/color/max-width — not
             the page's pre-existing --muted lede treatment. */}
         <p className="at-lede">“There’s probably a tool for that!”</p>
+        <p className="at-pdf"><a href="/all-tools.pdf">Printable list (PDF)</a></p>
       </section>
 
       <div id="categories" className="at-controls-sticky">

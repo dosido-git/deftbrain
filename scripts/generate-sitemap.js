@@ -107,6 +107,12 @@ for (const p of ['about', 'contact', 'listings', 'privacy', 'terms']) {
   const f = path.join(__dirname, '..', 'public', `${p}.html`);
   staticLastmod[p] = fs.existsSync(f) ? lastmodFor(`static:${p}`, sha(fs.readFileSync(f, 'utf-8'))) : TODAY;
 }
+// The printable list of every tool (scripts/build-all-tools.mjs). The PDF is
+// the indexed copy; its HTML twin is noindex because it duplicates /tools.
+{
+  const f = path.join(__dirname, '..', 'public', 'all-tools.pdf');
+  staticLastmod.allToolsPdf = fs.existsSync(f) ? lastmodFor('static:all-tools.pdf', sha(fs.readFileSync(f))) : TODAY;
+}
 // /tools (AllToolsPage.js, added 2026-09-22) is client-rendered, not a
 // standalone public/*.html file like the three above — hash its component
 // source instead so it gets the same "date only moves on a real edit"
@@ -226,6 +232,7 @@ const STATIC_PAGES = [
   { loc: `${SITE_URL}/tools`,   changefreq: 'weekly',  priority: '0.6', lastmod: staticLastmod.tools },
   { loc: `${SITE_URL}/organizations`, changefreq: 'monthly', priority: '0.5', lastmod: staticLastmod.organizations },
   { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3', lastmod: staticLastmod.contact },
+  { loc: `${SITE_URL}/all-tools.pdf`, changefreq: 'monthly', priority: '0.4', lastmod: staticLastmod.allToolsPdf },
 ];
 
 // Tool category pages (/tools/{slug}) — same priority tier as the guide hubs

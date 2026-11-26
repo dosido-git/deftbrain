@@ -1,19 +1,19 @@
 {
  "homepage": {
-  "hash": "890f7db93663e950901dc8fb3d1868b37674db8c",
+  "hash": "4bc8d1a07f88745e4ea9804b87c52ce29c036f5e",
   "lastmod": "2026-11-26"
  },
  "static:about": {
-  "hash": "8e58a4d0479397c6fb4a9abe84bf7f1d8ea94133",
-  "lastmod": "2026-11-24"
+  "hash": "1953093781ffa172a3d8fd652611b68adc493e71",
+  "lastmod": "2026-11-26"
  },
  "static:privacy": {
-  "hash": "c30028568db6bbd82060cb5f4f02c9caf952ad71",
-  "lastmod": "2026-11-24"
+  "hash": "a76e783ee942c1f776843125261d013b30ad5754",
+  "lastmod": "2026-11-26"
  },
  "static:terms": {
-  "hash": "d7d687b8d8b280916dcfa83f9445d1a186715b26",
-  "lastmod": "2026-11-24"
+  "hash": "f2eec74291bfd0a4014940ba08b82787784d2c61",
+  "lastmod": "2026-11-26"
  },
  "tool:AlternatePath": {
   "hash": "7f13b9938d31ecb49342da8bdeccef395a2fcf89",
@@ -192,7 +192,7 @@
   "lastmod": "2026-11-18"
  },
  "static:tools": {
-  "hash": "f509b8cc6c7e070737be64ce3d2f4836a91eeb95",
+  "hash": "0cb9a02f655cebc641f7784499b82fdbb866ed1e",
   "lastmod": "2026-11-26"
  },
  "category:home-daily-life": {
@@ -248,7 +248,7 @@
   "lastmod": "2026-10-06"
  },
  "static:organizations": {
-  "hash": "a8f74912a17d796403b2589a0dbc0e1c59413339",
+  "hash": "e2295b3fe13587a010e1950bdf03f675b2af9a42",
   "lastmod": "2026-11-26"
  },
  "tool:ContractDecoder": {
@@ -580,15 +580,19 @@
   "lastmod": "2026-11-18"
  },
  "static:listings": {
-  "hash": "7124428e4235f9a566093d30c939dd1f36fd20d8",
-  "lastmod": "2026-11-19"
+  "hash": "8be2aaf0837b93b0c88826cbd4af8519290a0a5f",
+  "lastmod": "2026-11-26"
  },
  "static:contact": {
-  "hash": "fd3c69b3c74a4c2e55da29fbc3ee2498166b820c",
-  "lastmod": "2026-11-24"
+  "hash": "dfeb70b1b69f348c15016b2b77b23d0b26047285",
+  "lastmod": "2026-11-26"
  },
  "category:ideas-diversions": {
   "hash": "31bd0c9817dcb7ad721b87000ea496c0fcb5565f",
   "lastmod": "2026-11-25"
+ },
+ "static:all-tools.pdf": {
+  "hash": "85cf1cc73a9d760f20fb466f76dd13ddd9b29fe1",
+  "lastmod": "2026-11-26"
  }
 }

@@ -51,6 +51,8 @@
    color #142a43, not this page's --muted; own 15px->16px scale and
    470px measure), not this page's old 18px --muted lede. */
 .at-lede{font-size:15px;line-height:1.5;color:#142a43;margin:10px 0 0;max-width:470px}
+.at-pdf{font-size:13px;margin:6px 0 0}
+.at-pdf a{text-decoration:underline;text-underline-offset:3px}
 @media(min-width:640px){.at-lede{font-size:16px}}
 
 .at-controls-sticky{position:sticky;top:0;z-index:30;background:rgba(250,248,245,.95);backdrop-filter:blur(12px);border-top:1px solid transparent;border-bottom:1px solid var(--line)}
