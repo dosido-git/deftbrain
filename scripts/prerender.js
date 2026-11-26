@@ -141,8 +141,7 @@ function toolsPageHTML(categories, countLabel) {
 
 function organizationsPageHTML() {
   return `<main class="seo-prerender" style="max-width:860px;margin:0 auto;padding:2rem 1rem">`
-    + `<h1 style="${STATIC_H1}">Practical help for the things life throws at your people.</h1>`
-    + `<p style="line-height:1.6;margin:0 0 1rem">DeftBrain gives employees, members, patrons, students, affiliates and communities an easy way to explore everyday situations they're facing — the possibilities, alternatives, things they might not have considered.</p>`
+    + `<h1 style="${STATIC_H1}">Practical guidance for the people you serve, whenever they’re unsure where to start.</h1>`
     + `<h2 style="${STATIC_H2}">Help that doesn't fit neatly into a benefits category.</h2>`
     + `<p style="line-height:1.6;margin:0">People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain gives them somewhere to start.</p>`
     + `<h2 style="${STATIC_H2}">Built for organizations that help people.</h2>`
