@@ -68,12 +68,20 @@
 .org-aud:focus{outline:none}
 .org-aud-head{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start;margin-bottom:28px}
 .org-aud-head h2{font-family:Georgia,serif;color:var(--navy);font-size:clamp(26px,2.8vw,36px);line-height:1.1;letter-spacing:-.02em;margin:0 0 18px}
-.org-aud-moments{font-family:Georgia,serif;color:var(--navy);font-size:20px;line-height:1.5;margin:0}
-.org-aud-detail>p{color:var(--muted);line-height:1.6;margin:0 0 20px}
+.org-aud-moments{font-family:Georgia,serif;color:var(--ink);font-size:17px;line-height:1.55;margin:0}
+.org-aud-label{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.org-aud-label .org-kicker{margin:0}
+/* The offer panel: level with the headline (the label row is ~52px), everything at body size. */
+.org-aud-detail{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:52px}
+.org-soft .org-aud-detail{background:var(--cream)}
+:root[data-theme="dark"] .org-aud-detail{background:#232326;border-color:#3f3f46}
+.org-aud-detail>p{color:var(--ink);font-size:16px;line-height:1.6;margin:0 0 16px}
+.org-aud-detail ul .org-text-link{font-weight:400;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.org-btn-sm{padding:10px 18px}
 .org-aud-detail h3{color:var(--navy);font-size:15px;margin:0 0 8px}
-.org-aud-detail ul{margin:0 0 20px;padding-inline-start:1.1rem;line-height:1.8}
-.org-aud-detail .org-aud-pilot{font-size:15px}
-@media(max-width:900px){.org-aud-head{grid-template-columns:1fr;gap:24px}}
+.org-aud-detail ul{margin:0 0 16px;padding-inline-start:1.1rem;line-height:1.75;font-size:16px}
+.org-aud-detail .org-aud-pilot{font-size:15px;margin:0 0 14px}
+@media(max-width:900px){.org-aud-head{grid-template-columns:1fr;gap:24px}.org-aud-detail{margin-top:0}}
 
 /* Tool names, scramble style (2026-11-24): the home page's pastel panel,
    colors, sizes and tilted picture preview, with names instead of taglines.
@@ -94,10 +102,10 @@
 .org-range{overflow-x:clip}
 
 /* One emoji per kind of organization (2026-11-24), in a round badge. */
-.org-aud-icon{display:grid;place-items:center;width:76px;height:76px;margin-bottom:18px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 6px 20px rgba(32,43,54,.06);font-size:40px;line-height:1}
+.org-aud-icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid var(--line);font-size:21px;line-height:1}
 .org-soft .org-aud-icon{background:var(--cream)}
 :root[data-theme="dark"] .org-aud-icon{background:#232326;border-color:#3f3f46;box-shadow:none}
-@media(max-width:640px){.org-aud-icon{width:60px;height:60px;font-size:32px}}
+@media(max-width:640px){.org-aud-icon{width:36px;height:36px;font-size:19px}}
 /* The jump links are icon tiles, not plain pills. */
 .org-tabs{gap:14px}
 .org-tabs a{display:flex;flex-direction:column;align-items:center;gap:8px;width:170px;padding:18px 12px 16px;border-radius:20px;text-align:center;background:var(--cream);transition:.2s transform}

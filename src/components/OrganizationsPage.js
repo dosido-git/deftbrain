@@ -200,8 +200,7 @@ export default function OrganizationsPage({ allTools = [] }) {
             <div className="org-shell">
               <div className="org-aud-head">
                 <div>
-                  <span className="org-aud-icon" aria-hidden="true">{a.icon}</span>
-                  <div className="org-kicker">{a.eyebrow.toUpperCase()}</div>
+                  <div className="org-aud-label"><span className="org-aud-icon" aria-hidden="true">{a.icon}</span><div className="org-kicker">{a.eyebrow.toUpperCase()}</div></div>
                   <h2 id={`org-aud-${a.key}`}>{a.title}</h2>
                   <p className="org-aud-moments">{a.moments}</p>
                 </div>
@@ -210,7 +209,7 @@ export default function OrganizationsPage({ allTools = [] }) {
                   <h3>Packages that fit</h3>
                   <ul>{a.packages.map(id => pkgById[id] && <li key={id}><Link className="org-text-link" to={`/partners/packages/${id}`}>{pkgById[id].title}</Link></li>)}</ul>
                   {price && <p className="org-aud-pilot">Start with the {price.name.toLowerCase()}: <strong>{price.price}</strong> for {price.unit}, credited to your first year.</p>}
-                  <a className="org-btn org-btn-primary" href={`mailto:Org@deftbrain.com?subject=${encodeURIComponent(`DeftBrain pilot: ${a.eyebrow}`)}`}>Discuss a pilot →</a>
+                  <a className="org-btn org-btn-primary org-btn-sm" href={`mailto:Org@deftbrain.com?subject=${encodeURIComponent(`DeftBrain pilot: ${a.eyebrow}`)}`}>Discuss a pilot →</a>
                 </div>
               </div>
               {/* Without this line the three cards read as the whole package. */}
