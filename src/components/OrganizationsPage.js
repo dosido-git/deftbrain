@@ -119,7 +119,7 @@ export default function OrganizationsPage({ allTools = [] }) {
   // Same head as scripts/prerender.js STATIC_PAGES.organizations — keep in sync.
   useDocumentHead({
     title: 'For Organizations — Practical Everyday Guidance',
-    description: 'Give employees, members, patrons, students, affiliates and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
+    description: 'Practical guidance for the people you serve, whenever they’re unsure where to start: confusing bills, hard conversations, suspicious messages.',
     canonicalPath: '/organizations',
   });
   // The sand page color reaches the body (and overscroll) through a class;

@@ -166,7 +166,7 @@ const STATIC_PAGES = {
   },
   organizations: {
     title: 'For Organizations — Practical Everyday Guidance | DeftBrain',
-    description: () => 'Give employees, members, patrons, students, affiliates and communities an easy way to explore everyday situations: confusing bills, hard conversations, suspicious messages.',
+    description: () => 'Practical guidance for the people you serve, whenever they’re unsure where to start: confusing bills, hard conversations, suspicious messages.',
   },
 };
 
