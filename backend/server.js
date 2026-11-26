@@ -607,6 +607,12 @@ Object.entries(MERGED_GUIDE_REDIRECTS).forEach(([from, to]) => {
 // The printable tool list was /flier until 2026-11-26.
 app.get(['/flier', '/flier.html'], (req, res) => res.redirect(301, '/all-tools'));
 app.get('/flier.pdf', (req, res) => res.redirect(301, '/all-tools.pdf'));
+// Opens in the browser as before, but a saved copy is named for the brand,
+// whichever link it came from (the address itself stays short and lowercase).
+app.get('/all-tools.pdf', (req, res, next) => {
+  res.setHeader('Content-Disposition', 'inline; filename="DeftBrain-All-Tools.pdf"');
+  next();
+});
 
 // FAQ pages moved from /faq/<slug> into a folder per topic (owner, 2026-11-25:
 // organized by topic for topical authority). The deposit set had been live at
