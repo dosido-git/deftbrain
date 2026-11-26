@@ -10,17 +10,21 @@ import './OrganizationsPage.css';
 
 const MOMENTS = [
   "I don't understand this lease.",
-  'I think this email might be a scam.',
-  'What should I ask my doctor?',
+  'How do I fight this parking ticket?',
+  'I have to give a toast on Saturday.',
   'I need to have a difficult conversation.',
   'Am I paying too much?',
   "What am I supposed to do next?",
 ];
 
 // The "one place to start" name field: the home page's Tool Scramble look, names only.
-const NAME_FIELD_IDS = ['DoctorVisitPrep','ScamRadar','DifficultTalkCoach','BuyWise','LeaseTrapDetector','WaitingModeLiberator','Giftology','BillRescue','ProcedureProbe','SafeWalk','PaperworkPath','PlainTalk'];
+// Deliberately different tools from the showcase and audience sections below,
+// so the page shows the range instead of repeating the same few (2026-11-26).
+const NAME_FIELD_IDS = ['PlantRescue','ToastWriter','BikeMedic','RoommateCourt','LaundroMat','DateNight','CultureBriefing','PronounceItRight','FocusPocus','HecklerPrep','LayoverMaximizer','DreamPatternSpotter'];
 
-const SHOWCASE_IDS = ['ScamRadar','DoctorVisitPrep','DifficultTalkCoach','LeaseTrapDetector','BuyWise','PaperworkPath','MoneyDiplomat','PlainTalk'];
+// Matches the situations in the paragraph above it (bill, conversation,
+// message, purchase, medical visit, a problem that won't get answered).
+const SHOWCASE_IDS = ['MarkupDetective','ConflictCoach','DecoderRing','UpsellShield','DoctorVisitTranslator','ComplaintEscalationWriter','TripRecon','Mend'];
 
 // Each `key` is also the section's id, so outreach can link straight to it
 // (deftbrain.com/organizations#libraries). Package ids are partnerCenter.json's.
@@ -32,7 +36,7 @@ const AUDIENCES = [
   { key:'libraries', people:'patrons', icon:'📚', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
     moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
     copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
-    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Pilot', tools:['PaperworkPath','PlainTalk','TipOfTongue'] },
+    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Pilot', tools:['ResearchDecoder','PlainTalk','TipOfTongue'] },
   { key:'education', people:'students', icon:'🎓', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
     moments:'A first lease. A roommate standoff. Four deadlines in one week. A hard stretch they can’t quite name.',
     copy:'Give students practical help at any hour, alongside student services and the counseling center, never instead of them. Works for first-year programs, housing, career centers and adult education.',
@@ -40,11 +44,11 @@ const AUDIENCES = [
   { key:'community', people:'the people you serve', icon:'🏘️', eyebrow:'Community organizations', title:'An approachable first step for the people you serve.',
     moments:'A form in confusing language. A deposit a landlord won’t return. A message that might be a scam. An appointment to get ready for.',
     copy:'No account and no technical experience needed: a starting point your staff can hand anyone, with your own help line beside it.',
-    packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Pilot', tools:['PaperworkPath','RentersDepositSaver','ScamRadar'] },
+    packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Pilot', tools:['PaperworkPath','RentersDepositSaver','TicketTackler'] },
   { key:'employers', people:'employees', icon:'🏢', eyebrow:'Employers', title:'Support people beyond the job description.',
     moments:'A raise to ask for. A conflict with a coworker. A parent’s medical appointment. A bill that won’t wait for the weekend.',
     copy:'Help with the everyday problems that follow people to work, and nothing about what anyone asks is reported back to you.',
-    packages:['work-conversations','money-conversations','health-visits'], pilot:'Pilot', tools:['DifficultTalkCoach','MoneyDiplomat','DoctorVisitPrep'] },
+    packages:['work-conversations','money-conversations','health-visits'], pilot:'Pilot', tools:['DifficultTalkCoach','MoneyDiplomat','BragSheetBuilder'] },
 ];
 
 // Tier prices from docs/DeftBrain pricing and sales model.xlsx (USD): your
