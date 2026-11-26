@@ -49,6 +49,9 @@ function pathToFile(p) {
     path.join(BUILD, `${u.slice(1)}.html`),       // /Foo -> build/Foo.html ; /guides/x/y -> build/guides/x/y.html
     path.join(BUILD, u.slice(1), 'index.html'),   // /guides -> build/guides/index.html
   ];
+  // A linked document such as /all-tools.pdf is its own file: reachable, but
+  // it has no links of its own to follow (linksIn skips non-HTML).
+  if (/\.(pdf)$/i.test(u)) candidates.unshift(path.join(BUILD, u.slice(1)));
   return candidates.find(f => fs.existsSync(f)) || null;
 }
 
@@ -62,6 +65,7 @@ function normKey(p) {
 
 // extract internal link targets from an HTML file
 function linksIn(file) {
+  if (!file.endsWith('.html')) return new Set();
   const html = fs.readFileSync(file, 'utf8');
   const out = new Set();
   const re = /<a\b[^>]*?\s+href\s*=\s*(["'])(.*?)\1/gi;
