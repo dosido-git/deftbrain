@@ -239,6 +239,18 @@ export default function OrganizationsPage({ allTools = [] }) {
         </div>
       </section>
 
+      {/* Answers the buyer's first question: why pay when DeftBrain is free?
+          Only what the Partner Center already delivers; no promised features. */}
+      <section className="org-section org-shell org-pilot" id="why-license" aria-labelledby="org-why-title">
+        <div><div className="org-kicker">WHY A LICENSE</div><h2 id="org-why-title">DeftBrain is free. So what are you paying for?</h2><p>Not access: anyone can use DeftBrain, and your page never puts any of it behind a fee. A license pays for what lets your organization offer DeftBrain as its own, recommend it with confidence and show what it did.</p></div>
+        <div className="org-pilot-points">
+          <article><h3>A page that fits your people</h3><p>The public site opens on {TOOL_COUNT_LABEL} tools for everyone. Your page opens on the situations your people bring to you, with your own help line beside them, so staff have something specific to point to.</p><Link className="org-text-link" to="/for/example-cu">See a sample page →</Link></article>
+          <article><h3>Evidence for your board or funder</h3><p>Usage by month, by experience and by link, ready to share. Free use leaves you nothing to report; a partner page does, with no individual data.</p><Link className="org-text-link" to="/partners/privacy#report">See a sample report →</Link></article>
+          <article><h3>Answers for your review team</h3><p>What the page collects, where typed text goes and how long each service keeps it, in writing. We complete security and vendor questionnaires, including the HECVAT.</p><Link className="org-text-link" to="/partners/privacy">Privacy and data →</Link></article>
+          <article><h3>A launch you don't have to write</h3><p>Emails, a website card, a staff script, tracked links and a printed handout, filled in for you. If you stop, your page forwards to DeftBrain's public pages, so no handout ever leads nowhere.</p><Link className="org-text-link" to="/partners/launch-kit">Open the launch kit →</Link></article>
+        </div>
+      </section>
+
       <section className="org-section org-soft org-pricing" id="pricing" aria-labelledby="org-pricing-title">
         <div className="org-shell">
           <div className="org-section-heading"><div className="org-kicker">PRICING</div><h2 id="org-pricing-title">Flat prices, sized by scope.</h2><p>Every visitor is included: no per-person fees and no accounts to count. Start with a pilot; its fee counts in full toward your first year.</p></div>
