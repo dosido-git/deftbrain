@@ -432,7 +432,7 @@ function PackageDetail({ pkg, byId }) {
 
       <section className="pc-section" aria-labelledby="pc-pkg-price">
         <h2 id="pc-pkg-price">Starting with this package</h2>
-        <p className="pc-section-lead">{pkg.sensitive ? 'Added to an existing partnership after its first pilot.' : 'Start with a 90-day pilot, credited in full to your first year.'} A standard license covers up to two packages. <Link to="/organizations#pricing">See pricing →</Link></p>
+        <p className="pc-section-lead">{pkg.sensitive ? 'Added to an existing partnership after its first pilot.' : 'Start with a 90-day pilot, credited in full to your first year.'} Each license covers up to two packages. <Link to="/organizations#pricing">See pricing →</Link></p>
         <div className="pc-pkg-actions">
           <Link className="org-btn org-btn-primary" to={`/partners/launch-kit?package=${pkg.id}`}>Preview its launch kit →</Link>
           <a className="org-text-link" href={`mailto:${CONTACT}?subject=${encodeURIComponent(`Package: ${pkg.title}`)}`}>Ask about this package</a>

@@ -28,33 +28,34 @@ const AUDIENCES = [
   { key:'credit-unions', people:'members', icon:'🏦', eyebrow:'Credit unions and banks', title:'Help members before they pay, sign or reply.',
     moments:'A text saying their account is locked. A medical bill that looks wrong. A dealer’s add-ons. A contractor’s quote.',
     copy:'Members already trust you with their money. DeftBrain gives them a calm place to look at a decision before it costs them, with your member-service line right beside it.',
-    packages:['pay-or-reply','money-conversations'], pilot:'Standard pilot', tools:['ScamRadar','BillRescue','BuyWise'] },
+    packages:['pay-or-reply','money-conversations'], pilot:'Pilot', tools:['ScamRadar','BillRescue','BuyWise'] },
   { key:'libraries', people:'patrons', icon:'📚', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
     moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
     copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
-    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Community pilot', tools:['PaperworkPath','PlainTalk','TipOfTongue'] },
+    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Pilot', tools:['PaperworkPath','PlainTalk','TipOfTongue'] },
   { key:'education', people:'students', icon:'🎓', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
     moments:'A first lease. A roommate standoff. Four deadlines in one week. A hard stretch they can’t quite name.',
     copy:'Give students practical help at any hour, alongside student services and the counseling center, never instead of them. Works for first-year programs, housing, career centers and adult education.',
-    packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], pilot:'Standard pilot', tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
+    packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], pilot:'Pilot', tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
   { key:'community', people:'the people you serve', icon:'🏘️', eyebrow:'Community organizations', title:'An approachable first step for the people you serve.',
     moments:'A form in confusing language. A deposit a landlord won’t return. A message that might be a scam. An appointment to get ready for.',
     copy:'No account and no technical experience needed: a starting point your staff can hand anyone, with your own help line beside it.',
-    packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Community pilot', tools:['PaperworkPath','RentersDepositSaver','ScamRadar'] },
+    packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Pilot', tools:['PaperworkPath','RentersDepositSaver','ScamRadar'] },
   { key:'employers', people:'employees', icon:'🏢', eyebrow:'Employers', title:'Support people beyond the job description.',
     moments:'A raise to ask for. A conflict with a coworker. A parent’s medical appointment. A bill that won’t wait for the weekend.',
     copy:'Help with the everyday problems that follow people to work, and nothing about what anyone asks is reported back to you.',
-    packages:['work-conversations','money-conversations','health-visits'], pilot:'Standard pilot', tools:['DifficultTalkCoach','MoneyDiplomat','DoctorVisitPrep'] },
+    packages:['work-conversations','money-conversations','health-visits'], pilot:'Pilot', tools:['DifficultTalkCoach','MoneyDiplomat','DoctorVisitPrep'] },
 ];
 
-// Starting prices from the Organizations plan (USD, flat by scope: every
-// visitor is included, so nobody is counted or capped).
+// Tier prices from docs/DeftBrain pricing and sales model.xlsx (USD): your
+// hours plus the cost of the included uses, at a 40% margin. "People served"
+// is the service-area population, members, enrolled students or employees.
 const PRICES = [
-  { name: 'Community pilot', price: '$1,500', unit: '90 days', fits: 'Libraries and nonprofits', note: 'Credited in full to your first year.' },
-  { name: 'Standard pilot', price: '$4,500', unit: '90 days', fits: 'Credit unions, banks and campuses', note: 'Credited in full to your first year.' },
-  { name: 'Community license', price: '$2,500', unit: 'per year', fits: 'One library system or nonprofit', note: 'One package.' },
-  { name: 'Standard license', price: '$7,500', unit: 'per year', fits: 'One institution', note: 'Up to two packages.' },
-  { name: 'Multi-program or consortium', price: 'From $15,000', unit: 'per year', fits: 'Library consortia, state leagues, university systems', note: 'Quoted from the five answers below.' },
+  { name: 'Pilot', price: '$4,000', unit: '90 days', fits: 'Any size', note: 'About 500 uses. Credited in full to your first year.' },
+  { name: 'Small', price: '$4,000', unit: 'per year', fits: 'Up to 25,000 people served', note: 'About 500 uses a year. Up to two packages.' },
+  { name: 'Medium', price: '$6,200', unit: 'per year', fits: 'Up to 100,000 people served', note: 'About 2,000 uses a year. Up to two packages.' },
+  { name: 'Large', price: '$12,800', unit: 'per year', fits: 'Up to 500,000 people served', note: 'About 10,000 uses a year. Up to two packages.' },
+  { name: 'Consortium', price: '30% off', unit: "each member's tier", fits: 'Library consortia, state leagues, university systems', note: 'One contract for every member. Quoted from the five answers below.' },
 ];
 
 // No backend: the answers become an email the visitor sends from their own app.
@@ -253,7 +254,7 @@ export default function OrganizationsPage({ allTools = [] }) {
 
       <section className="org-section org-soft org-pricing" id="pricing" aria-labelledby="org-pricing-title">
         <div className="org-shell">
-          <div className="org-section-heading"><div className="org-kicker">PRICING</div><h2 id="org-pricing-title">Flat prices, sized by scope.</h2><p>Every visitor is included: no per-person fees and no accounts to count. Start with a pilot; its fee counts in full toward your first year.</p></div>
+          <div className="org-section-heading"><div className="org-kicker">PRICING</div><h2 id="org-pricing-title">Flat prices, in tiers by the people you serve.</h2><p>Your tier follows how many people you serve: a library's service-area population, a credit union's members, enrolled students or employees. There are no per-person fees and no accounts to count. Each tier includes a yearly number of uses; if your people use more, we talk before anything changes. Start with a pilot; its fee counts in full toward your first year.</p></div>
           <div className="org-price-grid">{PRICES.map(x => (
             <article key={x.name}><h3>{x.name}</h3><p className="org-price"><b>{x.price}</b> <span>{x.unit}</span></p><p className="org-price-fits">{x.fits}</p><p>{x.note}</p></article>
           ))}</div>
