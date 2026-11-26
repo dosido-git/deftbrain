@@ -137,7 +137,7 @@ export default function OrganizationsPage({ allTools = [] }) {
       <section className="org-hero org-shell">
         <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>
         <h1>Practical guidance for the people you serve, whenever they’re unsure where to start.</h1>
-        <div className="org-actions"><a className="org-btn org-btn-primary" href="mailto:Org@deftbrain.com?subject=DeftBrain%20for%20Organizations">Bring DeftBrain to your organization →</a><span>No AI expertise required.</span></div>
+        <div className="org-actions"><span>No AI expertise required.</span></div>
         <div className="org-moments" aria-label="Examples of everyday questions">
           {MOMENTS.map((m,i) => <div key={m} className={`org-moment m${i+1}`}>“{m}”</div>)}
         </div>
