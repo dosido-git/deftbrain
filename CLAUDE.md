@@ -142,6 +142,12 @@ any listed type.
 - **Orphaned state.** Deleting a handler without also deleting the state variables it consumed creates a second wave of lint warnings. Remove the consumed state in the same pass.
 - **Changing a tool's icon leaves fallbacks behind.** Tool files render the icon as `{tool?.icon ?? '🔬'}` — often 3–6 times each, plus once in the copy-to-clipboard header. Editing `icon:` in `src/data/tools.js` changes nothing about those literals, and they take over the moment `tool` is undefined, so the old emoji silently returns. Nothing checks that the fallback matches the catalog. Hit three times in one session (DoctorVisitTranslator, DoctorVisitPrep, and the pirate flag in what is now Not So Fast!). After changing any `icon:`, grep the tool file for the old emoji and replace every hit.
 - **Always check focus.** Anything that reveals or swaps content — results, a new mode/view, a tab — must move the window to the top of the new content and put focus there (`revealSection`, `{ frame: true }` for a whole-view swap, scheduled ~120ms after the swap). Links that open another mode usually sit low on the page, so without it the visitor lands at the bottom of the new view. Reported repeatedly by the owner (Bill Rescue's Log/Triage/Quick Check, 2026-10-25). Before calling a change done, click every control that changes what is shown and confirm.
+  Arriving on a page is different: `src/components/RouteFocus.js` owns it site-wide
+  (top + focus the h1 on a link, the #section on a hash link, the saved position
+  and clicked link on Back/Forward/reload). Never add a page-level `scrollTo(0, 0)`
+  or hash-scroll on mount; it fights Back. `revealSection` ignores calls in the
+  first 1.5s after arrival with no click or key, so restored results don't yank
+  the page down.
 - **A crashed audit looks like a clean audit.** `audit_v2-3-2.py` reports findings by appending to a list; if it raises before finishing, it exits with no findings and `diff-audit.py` prints "no regressions". A `NameError` in a rule I added read as a pass. When editing the audit script, prove the rule still fires — run the same file under a name that should fail, not just one that should pass.
 
 ## Working style

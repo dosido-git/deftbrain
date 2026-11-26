@@ -1,0 +1,143 @@
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLocation, useNavigationType } from 'react-router-dom';
+import { markArrival } from '../utils/revealSection';
+
+/**
+ * Where the window and keyboard focus land after every page change, site-wide.
+ *
+ * BrowserRouter does none of this, and the browser's own scroll restoration
+ * can't: it restores before React has drawn the page (lazy tools, guide
+ * shelves), so Back clamps to a half-built page and lands somewhere else.
+ * Pages used to patch this one by one, each differently.
+ *
+ *  - A new page (link, Forward-by-click): top of the window, focus its <h1>.
+ *  - A link with #section: that section at the top, focus it.
+ *  - Back / Forward / reload: the scroll position you left, and focus back on
+ *    the link you clicked. Retried until the page is tall enough (up to ~3s),
+ *    and abandoned the moment you scroll or click yourself.
+ *  - A URL change that only replaces filters (setParams with replace): nothing.
+ *
+ * Positions live in sessionStorage keyed by history entry, so they survive a
+ * trip out to a static guide page and back.
+ */
+
+const STORE = 'db-route-views';
+const RETRY_MS = 75;
+const MAX_TRIES = 40;
+
+const idOf = loc => (loc.key && loc.key !== 'default' ? loc.key : loc.pathname + loc.search + loc.hash);
+const loadViews = () => { try { return JSON.parse(sessionStorage.getItem(STORE)) || {}; } catch (_) { return {}; } };
+const linksTo = href => [...document.querySelectorAll('a[href]')].filter(a => a.getAttribute('href') === href);
+const linkKey = a => { const href = a.getAttribute('href'); return { href, n: linksTo(href).indexOf(a) }; };
+
+function focusQuietly(el) {
+  if (!el) return;
+  if (!el.hasAttribute('tabindex') && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) {
+    el.setAttribute('tabindex', '-1');
+    el.setAttribute('data-route-focus', '');
+  }
+  el.focus({ preventScroll: true });
+}
+
+export default function RouteFocus() {
+  const location = useLocation();
+  const navType = useNavigationType();
+  const views = useRef(null);
+  if (!views.current) views.current = loadViews();
+  const y = useRef(typeof window === 'undefined' ? 0 : window.scrollY);
+  const link = useRef(null);
+  const current = useRef(null);
+  const path = useRef(null);
+  const cancel = useRef(() => {});
+
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+    const onScroll = () => { y.current = window.scrollY; };
+    const onClick = e => { const a = e.target.closest && e.target.closest('a[href]'); if (a) link.current = linkKey(a); };
+    const save = () => {
+      if (current.current) views.current[current.current] = { y: window.scrollY, link: link.current };
+      try { sessionStorage.setItem(STORE, JSON.stringify(views.current)); } catch (_) { /* no restore, nothing else */ }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('click', onClick, true);
+    window.addEventListener('pagehide', save);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('click', onClick, true);
+      window.removeEventListener('pagehide', save);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const id = idOf(location);
+    if (id === current.current) return; // StrictMode re-run, or nothing changed
+    const firstLoad = current.current === null;
+    const samePage = path.current === location.pathname;
+
+    if (!(navType === 'REPLACE' && samePage)) markArrival();
+    if (!firstLoad) views.current[current.current] = { y: y.current, link: link.current };
+    current.current = id;
+    path.current = location.pathname;
+    link.current = null;
+
+    let saved = null;
+    if (firstLoad) {
+      const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if (nav && (nav.type === 'back_forward' || nav.type === 'reload')) saved = views.current[id] || null;
+      if (!saved && !location.hash) return; // a fresh visit already starts at the top
+    } else if (navType === 'POP') {
+      saved = views.current[id] || null;
+      if (!saved && !location.hash) return; // e.g. Back across an in-page #link: the browser handles it
+    } else if (navType === 'REPLACE' && samePage) {
+      return; // filters and search boxes rewriting the URL
+    }
+
+    const hash = location.hash ? decodeURIComponent(location.hash.slice(1)) : '';
+    let tries = 0;
+    let timer = null;
+    let stopped = false;
+    const userEvents = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+    const stop = () => {
+      stopped = true;
+      clearTimeout(timer);
+      userEvents.forEach(ev => window.removeEventListener(ev, stop));
+    };
+
+    const attempt = () => {
+      if (saved) {
+        window.scrollTo(0, saved.y);
+        if (Math.abs(window.scrollY - saved.y) > 2) return false;
+        if (saved.link) {
+          const a = linksTo(saved.link.href)[saved.link.n];
+          if (a) a.focus({ preventScroll: true });
+        }
+        return true;
+      }
+      if (hash) {
+        const el = document.getElementById(hash);
+        if (!el) return false;
+        el.scrollIntoView({ block: 'start' });
+        focusQuietly(el);
+        return true;
+      }
+      if (tries === 1) window.scrollTo(0, 0);
+      const h1 = document.querySelector('main h1') || document.querySelector('h1');
+      if (!h1) return false;
+      focusQuietly(h1);
+      return true;
+    };
+    const step = () => {
+      if (stopped) return;
+      tries += 1;
+      if (attempt() || tries >= MAX_TRIES) stop();
+      else timer = setTimeout(step, RETRY_MS);
+    };
+
+    cancel.current();
+    cancel.current = stop;
+    userEvents.forEach(ev => window.addEventListener(ev, stop, { passive: true }));
+    step();
+  }, [location, navType]);
+
+  return null;
+}

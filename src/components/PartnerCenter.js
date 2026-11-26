@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import SiteHeader from './SiteHeader';
 import NotFound from './NotFound';
 import { CopyBtn, PrintBtn } from './ActionButtons';
 import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { useNoindex } from '../hooks/useNoindex';
-import { revealSection } from '../utils/revealSection';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import CENTER from '../data/partnerCenter.json';
 import PARTNERS from '../data/partners.json';
@@ -455,7 +454,6 @@ export default function PartnerCenter({ allTools = [] }) {
   const known = section === 'packages' ? !!pkg : section === '' || CENTER.pages.includes(section);
   const head = pkg ? { title: `${pkg.title} — Partner Center`, description: pkg.intro } : HEADS[section] || { title: 'Page not found' };
   const h1Ref = useRef(null);
-  const first = useRef(true);
 
   useDocumentHead({ title: head.title, description: head.description, canonicalPath: pkg ? `/partners/packages/${pkg.id}` : section ? `/partners/${section}` : '/partners' });
   useNoindex();
@@ -463,17 +461,7 @@ export default function PartnerCenter({ allTools = [] }) {
     document.body.classList.add('db-sand-page');
     return () => { document.body.classList.remove('db-sand-page'); };
   }, []);
-  // Switching pages swaps the whole view: bring the window to its top and focus
-  // the heading. A link with a #section (from the Organizations page, or the
-  // sample-report link) lands on that section instead, on arrival too.
-  const { hash } = useLocation();
-  useEffect(() => {
-    const target = hash && document.getElementById(decodeURIComponent(hash.slice(1)));
-    if (first.current && !target) { first.current = false; return undefined; }
-    first.current = false;
-    const t = setTimeout(() => revealSection(target || h1Ref.current, { frame: !target }), 120);
-    return () => clearTimeout(t);
-  }, [section, pkgId, hash, kitPartner]);
+  // Arriving on a page or #section (and Back to where you were) is RouteFocus's job.
 
   if (!known) return <NotFound />;
 

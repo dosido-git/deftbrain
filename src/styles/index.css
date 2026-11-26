@@ -154,3 +154,6 @@ a.db-newtab::after {
 [tabindex="-1"]:focus {
   outline: none;
 }
+
+/* RouteFocus moves focus to a heading or section on arrival; they are not controls. */
+[data-route-focus]:focus { outline: none; }

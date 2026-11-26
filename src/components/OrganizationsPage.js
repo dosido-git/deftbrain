@@ -113,14 +113,7 @@ export default function OrganizationsPage({ allTools = [] }) {
   const pkgById = Object.fromEntries(CENTER.packages.map(p => [p.id, p]));
   const priceOf = name => PRICES.find(p => p.name === name);
 
-  // A link like /organizations#libraries arrives before the section renders,
-  // so the browser can't jump to it on its own: scroll and focus once mounted.
-  useEffect(() => {
-    const el = window.location.hash && document.getElementById(window.location.hash.slice(1));
-    if (!el) return undefined;
-    const t = setTimeout(() => { el.scrollIntoView({ block: 'start' }); el.focus({ preventScroll: true }); }, 120);
-    return () => clearTimeout(t);
-  }, []);
+  // Arriving on a #section (and Back to where you were) is RouteFocus's job.
 
   const { isDark, toggleTheme } = useTheme();
   // Same head as scripts/prerender.js STATIC_PAGES.organizations — keep in sync.

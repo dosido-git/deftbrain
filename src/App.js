@@ -22,6 +22,7 @@ import OrganizationsPage from './components/OrganizationsPage';
 import PartnerPage from './components/PartnerPage';
 import PartnerCenter from './components/PartnerCenter';
 import { SiteTailDemo } from './components/PublicProductDemo';
+import RouteFocus from './components/RouteFocus';
 
 export default function App() {
   const [college] = useState("");
@@ -37,6 +38,7 @@ export default function App() {
       <LocaleProvider>
         <PremiumProvider>
         <BrowserRouter>
+          <RouteFocus />
           <div className="db-app-root min-h-screen bg-white font-sans flex flex-col">
             <div className="flex-1">
               <Routes>

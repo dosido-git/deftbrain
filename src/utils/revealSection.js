@@ -54,8 +54,24 @@
  * @param {HTMLElement|null|undefined} node   the content to reveal and focus
  * @param {{ block?: ScrollLogicalPosition, focus?: boolean, frame?: boolean }} [opts]
  */
+// A tool that remembers its last results draws them as the page opens, and its
+// "show the results" effect then yanks the window down to them before the
+// visitor has read the title. A reveal follows something the visitor did: in
+// the first moments after arriving on a page (RouteFocus calls markArrival),
+// with no click or key since, it is a restored screen, not a new one.
+const SETTLE_MS = 1500;
+let arrivedAt = 0;
+let actedSinceArrival = true;
+if (typeof document !== 'undefined') {
+  const acted = () => { actedSinceArrival = true; };
+  document.addEventListener('pointerdown', acted, true);
+  document.addEventListener('keyup', acted, true);
+}
+export function markArrival() { arrivedAt = Date.now(); actedSinceArrival = false; }
+
 export function revealSection(node, opts = {}) {
   if (!node || typeof node.scrollIntoView !== 'function') return;
+  if (!actedSinceArrival && Date.now() - arrivedAt < SETTLE_MS) return;
 
   const { block = 'start', focus = true, frame = false } = opts;
 

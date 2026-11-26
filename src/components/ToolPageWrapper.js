@@ -39,10 +39,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const { t, i18n } = useTranslation();
   const { actions } = useActionBar();
 
-  // Scroll to top when a new tool page opens
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+  // Arriving on a tool page (top of window, Back restore) is RouteFocus's job.
 
   // Cmd+P and the DeftBrain Print button share one stylesheet — see printStyles.js
   useEffect(() => { ensurePrintStyles(); }, []);

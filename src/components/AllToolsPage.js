@@ -32,11 +32,15 @@ function categoriesFor(tool) {
 }
 
 // Back from a guide lands where the visitor left (2026-10-05): the page saves
-// its scroll position and how many category guides were loaded when the
-// visitor leaves it, and restores them on a Back/Forward arrival to the same
-// URL. sessionStorage only; a failed read or write just means no restore.
+// how many category guides were loaded when the visitor leaves it, and
+// restores that on a Back/Forward arrival to the same URL, so the page is tall
+// enough for RouteFocus to put the scroll position back. sessionStorage only;
+// a failed read or write just means no restore. Only right after the page
+// loads: the navigation type below stays 'back_forward' for the life of the
+// document, so a later client-side Back would otherwise reuse a stale view.
 const VIEW_KEY = 'deft:tools-view';
 function savedView() {
+  if (performance.now() > 10000) return null;
   try {
     const nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
     if (nav.type !== 'back_forward') return null;
@@ -95,12 +99,7 @@ export default function AllToolsPage({ allTools = [] }) {
   // location, same action, not just a similar-looking one.
 
 
-  // Arriving from a link lower on another page (the home page's "Browse all
-  // tools"), client-side navigation kept that page's scroll offset and
-  // landed mid-catalog. Start at the top.
-  // ...unless this is a Back/Forward arrival with a saved view (see savedView).
   const restoreRef = useRef(savedView());
-  useEffect(() => { if (!restoreRef.current) window.scrollTo(0, 0); }, []);
 
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -215,13 +214,6 @@ export default function AllToolsPage({ allTools = [] }) {
     return () => window.removeEventListener('pagehide', save);
   }, []);
   const guideShelf = wantGuides && guideShelves ? guideShelves[category] : null;
-  useEffect(() => {
-    const v = restoreRef.current;
-    if (!v) return;
-    if (wantGuides && !guideShelves) return; // wait for the guide list to be drawn
-    restoreRef.current = null;
-    window.requestAnimationFrame(() => window.scrollTo(0, v.y));
-  }, [wantGuides, guideShelves]);
 
   const syncUrl = (nextQ, nextCategory) => {
     const next = {};
