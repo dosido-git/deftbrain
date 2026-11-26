@@ -155,7 +155,7 @@ export default function OrganizationsPage({ allTools = [] }) {
         <div className="org-shell">
           <div className="org-section-heading centered"><div className="org-kicker">HOW IT WORKS</div><h2>Simple enough for <em>everyone</em> to use.</h2></div>
           <div className="org-steps">
-            <article><b>1</b><h3>Select a tool to fit the situation.</h3><p>No prompt writing. No figuring out what to ask an AI.</p></article>
+            <article><b>1</b><h3>Select a tool to fit the situation.</h3><p>No prompt writing. No figuring out what to ask.</p></article>
             <article><b>2</b><h3>Answer a few thoughtful questions.</h3><p>DeftBrain asks for the information that matters.</p></article>
             <article><b>3</b><h3>Done!</h3><p>Clear thinking, useful questions, and real options to weigh.</p></article>
           </div>
