@@ -14,7 +14,7 @@ const MOMENTS = [
   'What should I ask my doctor?',
   'I need to have a difficult conversation.',
   'Am I paying too much?',
-  "I don't know what I'm supposed to do next.",
+  "What am I supposed to do next?",
 ];
 
 // The "one place to start" name field: the home page's Tool Scramble look, names only.
