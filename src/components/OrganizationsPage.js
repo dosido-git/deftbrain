@@ -119,7 +119,7 @@ export default function OrganizationsPage({ allTools = [] }) {
   // Same head as scripts/prerender.js STATIC_PAGES.organizations — keep in sync.
   useDocumentHead({
     title: 'For Organizations — Practical Everyday Guidance',
-    description: 'Practical guidance for the people you serve, whenever they’re unsure where to start: confusing bills, hard conversations, suspicious messages.',
+    description: 'Practical guidance for the people you serve, whenever they’re unsure where to start: a contract to sign, a conflict at work, a parking ticket.',
     canonicalPath: '/organizations',
   });
   // The sand page color reaches the body (and overscroll) through a class;
@@ -146,7 +146,7 @@ export default function OrganizationsPage({ allTools = [] }) {
       </section>
 
       <section className="org-section org-shell org-intro">
-        <div className="org-section-heading"><div className="org-kicker">EVERYDAY SUPPORT</div><h2>Help that doesn't fit neatly into a benefits category.</h2><p>People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain gives them a place to start.</p></div>
+        <div className="org-section-heading wide"><div className="org-kicker">EVERYDAY SUPPORT</div><h2>Help that doesn't fit neatly into a benefits category.</h2><p>People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain guides them through such moments.</p></div>
         <div className="org-tool-grid">{showcase.map(t => <ToolMiniCard key={t.id} tool={t} />)}</div>
         <div className="org-center"><Link className="org-text-link" to="/tools">Explore all DeftBrain tools →</Link></div>
       </section>
