@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 const SITE_NAME = 'DeftBrain'; // brand only — keep in sync with scripts/prerender.js
 const BASE_URL = 'https://deftbrain.com';
-const DEFAULT_DESCRIPTION = 'Check a lease or repair quote, question a medical bill, spot a scam, or prepare for a doctor visit or a hard conversation. Free, no account needed.';
+const DEFAULT_DESCRIPTION = 'Contest a parking ticket, plan a long layover, rescue a wilting plant, or find the words for a toast or an apology. Free, no account needed.';
 
 /**
  * Updates document <head> for SEO on each page.

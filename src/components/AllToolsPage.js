@@ -121,7 +121,7 @@ export default function AllToolsPage({ allTools = [] }) {
   // page used to set none, so it kept the homepage's title after navigation.
   useDocumentHead({
     title: 'DeftBrain Toolbox — Free Guided Experiences, A–Z',
-    description: `Browse ${TOOL_COUNT_LABEL} free guided experiences, A–Z or by topic: read a lease, check a repair quote, spot a scam, prepare for a hard conversation.`,
+    description: `Browse ${TOOL_COUNT_LABEL} free guided experiences, A–Z or by topic: decode a dream, fix a bike, read a laundry label, plan a micro-adventure.`,
     canonicalPath: '/tools',
   });
   // The sand page color reaches the body (and overscroll) through a class;

@@ -98,7 +98,7 @@ function QrCode({ value, label }) {
 function Overview({ byId }) {
   return (
     <>
-      <p className="org-lede pc-lede">DeftBrain gives the people you serve a free, private place to think through everyday situations: a confusing bill, a lease, a hard conversation, a suspicious message. You choose the package, we build your page, and you launch it with materials ready to send.</p>
+      <p className="org-lede pc-lede">DeftBrain gives the people you serve a free, private place to think through everyday situations: a roommate dispute, a performance review, a form in dense language, a trip to plan. You choose the package, we build your page, and you launch it with materials ready to send.</p>
 
       <section className="pc-section" aria-labelledby="pc-includes">
         <h2 id="pc-includes">What a partnership includes</h2>

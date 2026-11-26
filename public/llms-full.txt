@@ -1,6 +1,6 @@
 # DeftBrain — full content
 
-> DeftBrain (https://deftbrain.com) is a free collection of 121 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 121 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a contract, plan a long layover, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 This file carries the substance behind https://deftbrain.com/llms.txt: what each tool does, and the full text of the guides. Tool pages are interactive forms, so their value is described rather than transcribed; the guides are reproduced in full.
 
@@ -70,11 +70,11 @@ Categories: Home & Daily Life
 
 A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.
 
-**When.** The photo's ready and the caption isn't.
+**When.** The photo's ready — or the whole set of them — and the caption isn't.
 
-**You give.** The image, and anything it can't show — who's in it, what was happening, the joke behind it.
+**You give.** One photo, or up to 20 for a single post like a carousel or album, and anything they can't show — who's in them, what was happening, the joke behind it.
 
-**You get.** Six captions, from the plain one to one that goes somewhere strange. Then ask for funnier, drier or weirder.
+**You get.** Six captions for the post, from the plain one to one that goes somewhere strange, plus alt text for each photo. Then ask for funnier, drier or weirder.
 
 **The edge.** It won't invent a backstory for your photo, and it won't play it safe with the joke either.
 
@@ -341,9 +341,9 @@ Roommate problem? Tell Roommate Court what's happening and what each side says. 
 
 **You give.** What's going on, your side, and — if you know it — what they'd say. Don't guess just to fill that in.
 
-**You get.** Where the actual disagreement sits, practical options worth trying, and words to start the conversation with.
+**You get.** A grounded assessment, a practical way forward, and words you can use when a conversation would help.
 
-**The edge.** It only has your account, and says so — no fault percentages, no invented 'real conflict,' no fictional conversation where they agree.
+**The edge.** It distinguishes the accounts provided, keeps uncertainty visible, and can prioritize safety instead of a conversation.
 
 **Good to know.**
 
@@ -7634,10 +7634,382 @@ It depends on your state, and some states limit these clauses. New York, for exa
 
 Before signing, renewal terms are often negotiable: asking for month-to-month continuation instead of a full-term renewal, or a 30-day notice period instead of 60 or 90, is a reasonable request, and landlords agree more often than people expect ([how to negotiate a lease before signing](/guides/home/how-to-negotiate-a-lease-before-signing)). After signing, sending notice early is allowed in most leases and removes the risk entirely. If you have already missed the deadline, possibilities include asking the landlord for a release, the options in [how to break a lease legally](/guides/home/how-to-break-a-lease-legally), offering to find a replacement tenant, checking whether the lease allows subletting or an early termination fee, and checking your state's reminder rules. Which one fits depends on the landlord, the market, and the exact clause.
 
+### Can a Landlord Charge for Blinds From Your Security Deposit?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-blinds
+Updated: 2026-11-18
+
+Only for blinds that are broken, missing or damaged beyond ordinary use. Fading, cord wear and age are the kind of deterioration deposit laws bar landlords from charging. When only part of a blind is damaged, Washington limits the charge to repairing that part.
+
+Blinds take daily handling, sun and dust, so they show their age faster than most fixtures. Deposit laws don't mention blinds. They apply the general rule: landlords can deduct for damage beyond normal wear and tear, not for the deterioration that comes from ordinary use.
+
+That leaves three practical questions: is the blind actually damaged, does the charge match the damage, and was it already in that condition when you moved in? Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Can a landlord charge for broken blinds?**
+
+Yes, if they were broken through something beyond ordinary use, such as snapped slats, a torn-out headrail or a blind chewed by a pet. Texas defines normal wear and tear to exclude deterioration from negligence, carelessness, accident or abuse, so accidental damage can be charged. Missing blinds that were there at move-in can be charged too.
+
+**What counts as normal wear and tear for blinds?**
+
+Sun fading, cords that fray from normal use, slats that yellow or stiffen with age, and similar changes that come from simply living with them. California bars charges for ordinary wear and tear, including the cumulative effects of wear over one or more tenancies, so aging blinds from earlier tenants can't be pinned on you.
+
+**Can a landlord replace every blind because one is damaged?**
+
+Not as a charge to you. Washington limits deductions to the cost of repairing the damaged portion when the damage doesn't cover the whole item. California limits charges to a reasonable amount to restore the condition at the start of your tenancy. One bent blind supports replacing that blind, not the set in every room.
+
+**Can a landlord charge for dirty blinds?**
+
+It depends on the state. California lets a deposit cover cleaning needed to return the unit to the cleanliness it had when you moved in. Massachusetts limits deductions to unpaid rent, certain tax increases and damage beyond reasonable wear and tear, and New York's list of allowed deductions doesn't include cleaning. Wiping down the blinds before you leave avoids the question.
+
+**How do you dispute a charge for blinds?**
+
+Compare the charge with your move-in photos, which often show blinds already faded or bent. Ask for the receipt or invoice; California and Washington both require supporting documents. Then reply in writing with what your record shows and your state's statute from the [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table.
+
+### Can a Landlord Charge for Carpet Cleaning After You Move Out?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-carpet-cleaning
+Updated: 2026-11-18
+
+Not for routine cleaning after normal use in some states. Washington bars carpet-cleaning deductions unless the landlord documents wear beyond ordinary use, and California bars charges for professional carpet cleaning unless it's reasonably necessary to restore the move-in condition. Stains and pet damage are different.
+
+Carpet cleaning is one of the most common deposit deductions, and two states address it by name. Washington's deposit law says no deposit may be withheld for carpet cleaning unless the landlord documents wear to the carpet beyond ordinary use. California bars requiring a tenant to pay for professional carpet cleaning unless it's reasonably necessary to restore the move-in condition, not counting ordinary wear and tear.
+
+Elsewhere, the general rule applies: no charges for normal wear and tear, and a reasonable cost for real damage. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Can a landlord charge for routine carpet cleaning?**
+
+Not in Washington unless the landlord documents wear beyond ordinary use, and not in California unless the cleaning is reasonably necessary to return the carpet to its move-in condition. In other states, worn traffic paths and the general dinginess of a lived-on carpet are normal wear and tear, which deposit laws bar landlords from charging.
+
+**Can a lease require professional carpet cleaning?**
+
+In California, a landlord can't require you to pay for professional carpet cleaning unless it's reasonably necessary to restore the move-in condition, apart from ordinary wear and tear. Other states may enforce a cleaning clause if the charge is reasonable, but a lease still can't make ordinary wear into damage. Check the clause and your state's deposit law before paying.
+
+**Can a landlord charge for carpet stains or pet damage?**
+
+Yes, at a reasonable cost. Stains, burns, tears and pet damage go beyond ordinary use; Texas, for example, excludes deterioration from negligence, carelessness, accident or abuse from normal wear and tear. Washington limits the charge to repairing the damaged portion when the damage doesn't cover the whole item, so a stained corner supports spot treatment or a patch rather than new carpet everywhere.
+
+**Can a landlord make you pay to replace old carpet?**
+
+Not for normal aging. California bars charges for ordinary wear and tear, including its cumulative effects across more than one tenancy, so a carpet worn out over years of renters can't be billed to the last one. When carpet is truly damaged, the charge should be a reasonable amount to restore its condition at the start of your tenancy, not the price of new carpet.
+
+**How do you dispute a carpet charge?**
+
+Ask for the itemized statement and the invoice; in Washington, the landlord must also document wear beyond ordinary use. Compare the charge with your move-in photos of the carpet, especially any stains already there. Then reply in writing with your state's statute from the [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table.
+
+### Can a Landlord Charge for Dead Grass When You Move Out?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-dead-grass
+Updated: 2026-11-18
+
+Only if the lawn was your responsibility and it died through neglect. The lease decides who maintains the yard; deposit laws then allow deductions for damage beyond normal wear and tear, not for weather or age. Patches that recover with water are a weak basis for a full re-sod.
+
+A brown lawn at move-out raises two separate questions. First, whose job was the lawn? That comes from the lease. Second, did the grass die because of something the tenant did or failed to do, or because of weather, age or conditions nobody controlled? Deposit laws let landlords deduct for damage, not for normal wear and tear.
+
+Texas, for example, defines normal wear and tear as deterioration from the intended use of a home, and excludes deterioration from negligence, carelessness, accident or abuse. A lawn the tenant was supposed to water and didn't sits on one side of that line; a lawn lost to a hard freeze sits on the other. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Is dead grass damage or normal wear and tear?**
+
+It depends on the cause. Grass that dies because a tenant ignored a duty to water or mow is closer to damage from neglect. Grass that thinned with age, dried out during a drought or watering ban, or froze is closer to ordinary deterioration, which deposit laws in states such as California, Texas, New York, Washington and Massachusetts bar landlords from charging.
+
+**Who is responsible for watering and mowing?**
+
+Whoever the lease says. If it puts lawn care on the tenant, a landlord has grounds to charge for damage caused by skipping it. If it says nothing, or the landlord ran the sprinklers or hired a lawn service, it's much harder to pin dead grass on you. Read the yard clause before responding to a charge.
+
+**Can a landlord charge to re-sod the whole yard?**
+
+Not for a patch. Washington's deposit law limits deductions to the cost of repairing the damaged portion when damage doesn't cover the whole item. California limits charges to a reasonable amount needed to restore the condition at the start of the tenancy. A few brown spots, or grass that would recover with water, don't justify replacing the entire lawn.
+
+**What evidence settles a lawn dispute?**
+
+Dated photos of the yard at move-in and move-out, ideally in similar seasons, since lawns look very different in July and January. Keep any notices about watering restrictions, records of extreme weather, and messages about who handled the sprinklers. If the lawn was already patchy when you moved in, your move-in photos are the strongest answer.
+
+**How do you respond to a charge for dead grass?**
+
+Ask for the itemized statement and the bill or estimate behind the charge; California and Washington both require supporting documents. Then reply in writing: whether the lease made the lawn your job, what caused the damage, and what your photos show. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table lists your state's statute and deadline to cite.
+
+### Can a Landlord Charge for Light Bulbs When You Move Out?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-light-bulbs
+Updated: 2026-11-18
+
+Sometimes. A landlord can usually charge a reasonable amount for bulbs that are missing compared with move-in, or fixtures that were broken, but deposit laws don't mention light bulbs. Your lease, the unit's condition at move-in, and whether the price is reasonable decide it.
+
+Light bulbs are one of the smallest charges on a deposit statement and one of the most common to argue about. The deposit laws of California, Texas, New York, Washington and Massachusetts don't mention them. Instead, the general rules apply: no charges for normal wear and tear, deductions only for what the law allows, and a reasonable amount backed by receipts.
+
+In practice, the answer turns on three things: what your lease says about bulbs, which ones worked when you moved in, and what the landlord is charging per bulb. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Can a landlord deduct for burned-out bulbs?**
+
+It depends mostly on your lease. If it makes tenants responsible for replacing bulbs, a landlord has a stronger case for a small charge for any left burned out. If it says nothing, a bulb that simply wore out from use looks a lot like ordinary wear, which deposit laws bar landlords from charging. The statutes don't settle this case directly, so it often comes down to the amount and how reasonable each side is.
+
+**What about missing bulbs or broken fixtures?**
+
+These are easier for a landlord to charge. Bulbs that were in place at move-in and are gone at move-out are property not returned. California's law, for example, lets a deposit cover restoring, replacing or returning items the lease requires you to return, apart from ordinary wear and tear, when the lease allows the deposit to be used that way. A broken globe or fixture from an accident is damage rather than wear: Texas defines normal wear and tear to exclude deterioration from negligence, carelessness, accident or abuse.
+
+**How much can a landlord charge for a light bulb?**
+
+A reasonable amount: roughly what the bulb costs, plus reasonable labor if fitting it takes real time. Washington requires a bill, invoice, receipt or vendor price list for materials, even when the landlord does the work. California requires a receipt or a description of the work with the time and hourly rate. Specialty bulbs cost more than standard ones, so the type matters.
+
+**How do you avoid a light bulb charge?**
+
+Before you hand back the keys, replace any dead or missing bulbs with the same type and brightness, and switch each light on for a quick photo or video. Your move-in record matters too: a dated photo showing a fixture already dark on day one answers the charge. If a fixture itself is broken, report it in writing before you leave rather than letting it surface on the statement.
+
+**Is a light bulb charge worth disputing?**
+
+On its own, rarely. But padded small charges add up, and they can be a sign the rest of the statement deserves a closer look. Ask for the itemized statement and receipts, check each item against your move-in record, and challenge charges for bulbs that were already out or priced far above cost. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table gives your state's deadline and statute.
+
+### Can a Landlord Charge for Nail Holes in the Walls?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-nail-holes
+Updated: 2026-11-18
+
+Usually not for a few small holes from hanging pictures, which are the kind of mark ordinary living leaves. Large anchor or screw holes, lots of holes, or damaged drywall can be charged at a reasonable repair cost. Your lease and your move-in record decide the close calls.
+
+Hanging a few pictures is part of living in a home, and deposit laws bar landlords from charging for normal wear and tear. That's why small nail holes are so often argued as wear. Deposit laws don't define nail holes either way, so the size, the number and the lease decide most disputes.
+
+Larger holes are a different matter. Wall-mount anchors, dozens of holes, or drywall that cracked or tore around a fastener look more like damage, and landlords can deduct a reasonable cost to repair damage you caused. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Are nail holes normal wear and tear?**
+
+A few small ones often are. Texas, for example, defines normal wear and tear as deterioration from the intended use of a home, excluding negligence, carelessness, accident or abuse, and hanging artwork is an ordinary use. California, New York, Washington and Massachusetts also exclude ordinary or reasonable wear and tear from deductions. None of these laws names nail holes, which is why the lease and the details matter.
+
+**When can a landlord charge for holes in the walls?**
+
+When the holes go beyond what ordinary living leaves: large holes from heavy anchors or a TV mount, a wall full of holes, or drywall damaged around a fastener. A lease that forbade hanging things without permission also strengthens a landlord's case. Damage that was there when you moved in can't be charged to you, so check your move-in photos first.
+
+**How much can a landlord charge to fix nail holes?**
+
+A reasonable amount to repair the damaged area. California limits charges to what is reasonably needed to restore the unit's condition at the start of the tenancy, not counting wear and tear. Washington limits deductions to repairing the damaged portion when damage doesn't cover the whole item, so patching and touching up one wall shouldn't become repainting the whole unit.
+
+**Does your lease change the answer?**
+
+It can. A lease that allows small nails for pictures makes those holes hard to charge. One that bans holes, or requires repairs at move-out, gives the landlord more room on larger damage. Even so, a lease doesn't turn ordinary wear into damage, and the charge still has to be reasonable and documented.
+
+**Should you patch nail holes before moving out?**
+
+If your lease or landlord asks you to, or you can do a clean job, filling small holes can head off a charge. A sloppy patch that leaves bumps or mismatched paint can make things worse, so ask the landlord's preference if unsure. Either way, photograph the walls on move-out day. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table lists your state's statute if you need to dispute a charge.
+
+### Can a Landlord Charge for Painting After You Move Out?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-painting-after-you-move-out
+Updated: 2026-11-18
+
+Not for ordinary repainting between tenants. Paint that faded, scuffed lightly or simply aged is normal wear and tear, which deposit laws bar landlords from charging. A landlord can charge a reasonable amount to repair paint damage you caused, such as large marks or colors you weren't allowed to use.
+
+Paint wears out with time no matter who lives in a unit, and repainting between tenants is a normal cost of renting out a home. California's deposit law bars charges for ordinary wear and tear whether it happened before or during your tenancy, including its cumulative effects over more than one tenancy.
+
+What a landlord can charge for is paint damage beyond ordinary use, at a reasonable cost for the area actually damaged. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Can a landlord charge to repaint after you move out?**
+
+Not for routine repainting. Faded walls, light scuffs and paint that has simply aged are normal wear and tear, which the deposit laws of California, Texas, New York, Washington and Massachusetts all exclude from deductions. A landlord who repaints between every tenant is paying a normal cost of renting.
+
+**What paint damage can a landlord charge for?**
+
+Damage beyond ordinary use: crayon or marker on the walls, large stains, gouges, or a color you painted without permission when the lease required approval. Texas defines normal wear and tear to exclude deterioration from negligence, carelessness, accident or abuse, which is where these charges come from. Marks that were there when you moved in aren't yours to pay for.
+
+**Can a landlord charge you to repaint the whole unit?**
+
+Not because of one damaged wall. Washington limits deductions to repairing the damaged portion when the damage doesn't cover the whole item, and California limits charges to a reasonable amount to restore the condition at the start of your tenancy. A damaged bedroom wall supports repainting that wall, not every room.
+
+**What if you painted the walls yourself?**
+
+Check your lease. If it required permission or restoring the original color, a landlord can charge a reasonable cost to paint back over your color. If the landlord approved the color in writing, keep that approval; it's the best defense against a charge later. Either way, the charge should cover the painted area, not the whole unit.
+
+**How do you dispute a painting charge?**
+
+Ask for the itemized statement, the invoice, and if the landlord did the work, the hours and hourly rate, which California and Washington require. Compare the charge with your move-in photos and the length of your tenancy. Then reply in writing with your state's statute from the [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table.
+
+### Can a Landlord Charge for Professional Cleaning When You Move Out?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-professional-cleaning
+Updated: 2026-11-18
+
+Only if the unit needs it, and it depends on your state. California bars charging for professional cleaning unless it's reasonably necessary to return the unit to its move-in condition. Massachusetts and New York don't list cleaning among allowed deductions at all.
+
+Many leases say the unit must be professionally cleaned at move-out, and many deposit statements include a cleaning fee. Whether that's allowed depends on your state. California's law is the most specific: a landlord can't require you to pay for professional cleaning, or deduct for it, unless it's reasonably necessary to return the unit to its condition at the start of the tenancy, not counting ordinary wear and tear.
+
+Other states differ. Some don't list cleaning as an allowed deduction at all. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Can a landlord require professional cleaning at move-out?**
+
+In California, not unless it's reasonably necessary to return the unit to its move-in condition, setting aside ordinary wear and tear. A lease clause requiring a professional clean doesn't override that. If you leave the unit as clean as you found it, a professional-cleaning charge is hard to justify there.
+
+**Can a landlord deduct for cleaning at all?**
+
+It depends on the state. California lets a deposit cover cleaning needed to return the unit to the same level of cleanliness it had at the start of the tenancy. Massachusetts limits deductions to unpaid rent or water charges, certain tax increases and damage beyond reasonable wear and tear, and says no other deductions may be made. New York's list covers unpaid rent, damage beyond normal wear and tear, certain utility charges, and moving and storing a tenant's belongings, but not cleaning.
+
+**What does "move-in level of cleanliness" mean?**
+
+It means the unit as clean as it was when you got it, not cleaner. If the oven was greasy on day one, you aren't required to hand it back spotless. That's why a dated move-in record matters: it sets the baseline. California's rule applies to tenancies that began after January 1, 2003.
+
+**What proof does a landlord need for a cleaning charge?**
+
+In California, the itemized statement must include the bill or receipt for outside work, or a description with the time and hourly rate if the landlord did it. California landlords must also photograph the unit at the start of tenancies beginning on or after July 1, 2025, and after move-out before and after any repairs or cleaning they deduct for. Washington requires invoices or receipts too.
+
+**How do you avoid a cleaning charge?**
+
+Clean to at least the move-in standard and photograph every room, appliance and bathroom on move-out day. In California and New York, you can ask for an inspection before you move out so you can fix anything flagged. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table lists your state's statute and deadline.
+
+### Can a Landlord Charge for Their Own Labor From Your Deposit?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-their-own-labor
+Updated: 2026-11-18
+
+Often yes. A landlord who does repairs or cleaning personally can usually charge a reasonable amount for that time, but only for work needed to fix more than normal wear and tear. California and Washington require the itemized statement to list the hours spent and the hourly rate.
+
+Deposit laws care less about who did the work than about whether it was needed and whether the amount is reasonable. A landlord who patched a wall personally can often deduct for that time, as if they had hired someone, but not for fixing ordinary wear and tear or damage that was there before you moved in.
+
+Two states spell out the paperwork. California and Washington both require the landlord's statement to show the time spent and the hourly rate when the landlord or an employee did the work. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Is it legal for a landlord to bill for their own time?**
+
+In many states, yes. California Civil Code § 1950.5 covers work "performed by a contractor, the landlord, or the landlord's employee" and limits it to a reasonable amount needed to restore the unit to its condition at the start of the tenancy, not counting ordinary wear and tear. Washington's RCW 59.18.280 also covers repairs done by the landlord or the landlord's employee. In both, the work has to fix damage you were responsible for.
+
+**What hourly rate can a landlord charge for their own work?**
+
+A reasonable one. Neither California nor Washington sets a dollar figure; both instead require the statement to show the rate and the hours so you can judge them. A practical check is what a local handyman or cleaner would charge for the same job. Professional rates for a quick touch-up, or hours far beyond what the job takes, are worth questioning.
+
+**What has to be on the itemized statement?**
+
+In California, when the landlord or an employee did the work, the statement must reasonably describe it and include the time spent and the reasonable hourly rate; for outside work, the landlord must attach the bill, invoice or receipt. Washington requires a statement of time spent and the hourly rate for in-house repairs, plus a bill, invoice, receipt or vendor document for materials. If those details are missing, you can ask for them in writing.
+
+**What can't a landlord charge for, even if they did the work?**
+
+Ordinary wear and tear. California bars claims for wear and tear whether it existed before the tenancy or happened during it, and the deposit laws of Texas, New York, Washington and Massachusetts all exclude normal or reasonable wear and tear from deductions. Damage that was there when you moved in is off-limits too. Labor to fix either is no more chargeable than the materials.
+
+**How do you push back on an inflated labor charge?**
+
+Line up each charge with your move-in photos and checklist. For anything that was already there, or is ordinary wear, say so in writing and cite your state's deposit law; the [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table lists each statute. For real damage, compare the hours and rate with a quote for the same job. A written request for the time records and receipts often settles it, and small claims court is there if it doesn't.
+
+### Can a Landlord Charge You for Changing the Locks?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-charge-for-changing-the-locks
+Updated: 2026-11-18
+
+It depends on the state. Texas makes landlords rekey at their own expense within seven days after each tenant moves out, and allows a deposit deduction only if you broke a written lease with a bold or underlined clause. Massachusetts lets landlords collect lock costs only at move-in.
+
+Changing or rekeying locks between tenants protects the next tenant, so some states put the cost squarely on the landlord. Texas is the clearest: its Property Code requires landlords to rekey at their own expense no later than the seventh day after each tenant turnover.
+
+Other states leave it to the general deposit rules and the lease. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Who pays to rekey the locks after a tenant moves out?**
+
+In Texas, the landlord. Section 92.156 of the Property Code requires the landlord to rekey key, card or combination locks at the landlord's expense within seven days after each tenant turnover. It doesn't apply to closet or other interior doors. Many other states have no law specifically on rekeying, so the lease and the general deposit rules govern.
+
+**Can a landlord deduct rekeying costs if you broke the lease?**
+
+In Texas, only in narrow circumstances. If a tenant moves out in breach of a written lease, the landlord may deduct the reasonable cost of the required rekeying only if the lease has a clause authorizing it that is underlined or printed in bold. Without that clause, the rekeying stays the landlord's cost.
+
+**What about lost or unreturned keys?**
+
+That's a separate issue from routine rekeying. If you don't return keys you were given, the lease may make you responsible for replacing them or the locks they open. Any charge still has to be reasonable and documented. Returning every key and getting a written receipt removes the question.
+
+**What is the rule in Massachusetts?**
+
+Massachusetts allows a landlord to collect the purchase and installation cost of a key and lock at the start of the tenancy, alongside first and last month's rent and a security deposit. At move-out, deductions are limited to unpaid rent or water charges, certain tax increases and damage beyond reasonable wear and tear, and the law says no deduction may be made for any other purpose.
+
+**How do you handle a lock charge in other states?**
+
+Read the lock and key clauses in your lease, return all keys, and keep proof that you did. If a lock charge appears anyway, ask what it covers and for the receipt, and question it if it's routine rekeying between tenants. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table gives your state's deposit statute and deadline.
+
+### Can a Landlord Keep a Security Deposit If the Tenant Dies?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-keep-a-security-deposit-if-the-tenant-dies
+Updated: 2026-11-18
+
+Not automatically. The deposit still has to be returned, less lawful deductions such as unpaid rent or damage beyond normal wear. Texas sends it to the person the tenant named for this, or another person legally entitled to it; Washington sends it to the tenant's representative with a written statement.
+
+When a tenant dies, the deposit doesn't become the landlord's. It's still money held to cover lawful deductions, and the rest has to go back to someone. A few states set out who that is and how it works; elsewhere, it generally goes to whoever is legally handling the person's affairs.
+
+This is a hard time to deal with paperwork, so it helps to know the few steps that matter. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**What happens to a security deposit when a tenant dies?**
+
+It's returned, minus lawful deductions. In Texas, when a tenant who lived alone dies, the landlord must refund the deposit, less lawful deductions including the cost of removing and storing the tenant's property, to the person the tenant designated or to any other person lawfully entitled to the refund. Washington requires the landlord to refund unearned rent and give a full and specific statement of any deposit kept.
+
+**Who receives the deposit refund?**
+
+In Texas, the person the tenant named in advance as a contact for this purpose, or another person lawfully entitled to it. In Washington, the tenant representative, such as the personal representative or another person the law recognizes. In other states, the refund usually goes to the estate's personal representative; a probate court or attorney can confirm who that is.
+
+**What can a landlord deduct after a tenant dies?**
+
+The same kinds of charges as any move-out: unpaid rent, and damage beyond normal wear and tear. Texas also allows the reasonable cost of removing and storing the tenant's belongings. Ordinary wear and tear still can't be charged, and the usual requirement for an itemized statement still applies.
+
+**How long does the landlord have?**
+
+It varies. Washington applies the same 30-day period as its general deposit law, counted from when the tenant representative removes the property. Washington also sets out notices: the tenancy ends 15 days after the landlord's notice, or the date rent is paid through if later, unless arrangements are made to pay rent for up to 60 days after the death. Other states apply their usual deadlines; the [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table lists them.
+
+**What can family members do?**
+
+Let the landlord know in writing who is handling the person's affairs, with contact details. Ask for the itemized statement and the refund in writing, and take dated photos of the unit when you remove belongings. In Texas, any tenant can give the landlord a contact name in advance and authorize that person to collect the deposit, which spares family a step later.
+
+### Can a Landlord Keep Your Deposit If One Tenant Moves Out?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-keep-your-deposit-if-one-tenant-moves-out
+Updated: 2026-11-18
+
+Usually, yes, until the whole tenancy ends. Deposit laws start the refund clock when the tenancy ends and the unit is vacated, not when one roommate leaves. A departing roommate's share is usually settled with the roommates who stay, or by a written agreement that includes the landlord.
+
+When one roommate moves out mid-lease, the deposit usually doesn't move with them. Deposit laws tie the refund to the end of the tenancy: California's deadline runs from when the tenant has vacated, Texas's from when the tenant surrenders the premises, New York's from when the tenant has vacated, and Washington's from termination of the rental agreement and vacating of the premises.
+
+So the practical question is less what the landlord owes the departing roommate than how the roommates split it among themselves. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Does a landlord have to refund a departing roommate's share?**
+
+Generally not while the others stay on. On a joint lease, the deposit secures the whole lease, and the refund deadlines in state deposit laws start when the tenancy ends and the unit is empty. A landlord may agree to refund one roommate and collect a replacement deposit from the incoming one, but that's an arrangement, not a usual legal duty.
+
+**Can the landlord use the deposit for damage another roommate caused?**
+
+Usually, if you share one lease. The deposit secures the lease as a whole, so lawful deductions for unpaid rent or damage beyond normal wear and tear can come out of it regardless of which roommate was responsible. Who repays whom is then a matter between roommates, which is one reason a written roommate agreement helps.
+
+**How do roommates handle the leaving roommate's share?**
+
+The most common fix is for whoever replaces them to pay the leaving roommate directly for their share of the deposit, with everyone signing a short note recording the amount and date. If no one replaces them, the remaining roommates can buy out the share or agree to pay it once the landlord refunds the deposit. Either way, write down what was agreed.
+
+**Who gets the refund when everyone moves out?**
+
+The landlord returns the balance under your state's deadline and itemization rules. Settle in advance how the refund will be split and how it will be paid, and give the landlord a written forwarding address for each person entitled to part of it. In Texas, a landlord isn't required to send the refund or the list of deductions until the tenant gives a written forwarding address.
+
+**How do you protect yourself when you leave early?**
+
+Do a walkthrough with your roommates on the day you go, and take dated photos of your room and shared spaces. That record shows the condition you left it in, which matters if damage appears later. Keep a copy of any roommate or landlord agreement. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table lists each state's refund deadline.
+
+### Can a Landlord Keep Your Deposit If the Property Is Sold?
+
+URL: https://deftbrain.com/guides/home/can-a-landlord-keep-your-deposit-if-the-property-is-sold
+Updated: 2026-11-18
+
+No. When a rental is sold, the deposit is still yours. In California, Texas, New York and Massachusetts, the old owner must pass it to the buyer or settle it with you, and whoever ends up holding it must return it under the usual rules when you move out.
+
+A sale changes who your landlord is, not whose money the deposit is. State deposit laws handle the handover directly. The usual pattern: the seller transfers the deposit to the buyer and tells you in writing, and from then on the buyer owes you its return under the same deadlines and deduction rules as any landlord.
+
+If the seller skips the transfer, the laws generally keep someone on the hook. Massachusetts says a deposit stays the tenant's property and isn't subject to the claims of the landlord's creditors. Rules vary by state and sometimes by city, and leases signed before a change may follow older rules. This is general information, not legal advice.
+
+**Who owes you the deposit after a sale?**
+
+Usually the new owner. In Texas, the new owner is liable for returning deposits from the date they take title. In Massachusetts, the seller must transfer the deposit, with any accrued interest, to the buyer, who then becomes responsible for returning it. California lets the seller either transfer what remains to the buyer or return it to you, and a buyer who receives it takes on all of a landlord's duties for it.
+
+**Does the old landlord have to tell you about the transfer?**
+
+In several states, yes. New York requires the seller to turn the deposit over within five days of the sale and notify you by registered or certified mail with the buyer's name and address. California requires notice of the transfer, any claims against the deposit, its amount and the new owner's contact details. Texas requires the new owner to give you a signed statement acknowledging responsibility for the exact dollar amount.
+
+**What if the deposit wasn't passed to the new owner?**
+
+You still have someone to claim from. In Texas, the former owner stays liable until the new owner has received the deposit or taken on the liability, unless a written contract says otherwise. In California, if the transfer rules weren't followed, the buyer can be liable together with the seller. Massachusetts keeps the seller liable until the deposit is transferred and you have been notified in writing.
+
+**Can the new owner ask you for a new deposit?**
+
+Not to replace money the old owner never handed over, at least in California: a buyer can't require you to post security to replace an amount that wasn't transferred unless it first restores your original deposit. Foreclosure is different. Texas's sale rule, for example, doesn't apply to a mortgage lender that takes title through foreclosure, so check your state's law if that's how the property changed hands.
+
+**What should you do when your rental changes hands?**
+
+Ask in writing who now holds your deposit and how much it is, and keep any notice you receive. Hold on to your move-in photos and checklist: the new owner wasn't there when you moved in, so your record is the main evidence of the unit's starting condition. The [security deposit laws by state](/guides/home/security-deposit-laws-by-state) table gives your state's deadline for the eventual refund.
+
 ### Can a Landlord Keep Your Security Deposit (And When You Can Fight It)
 
 URL: https://deftbrain.com/guides/home/can-a-landlord-keep-your-security-deposit
-Updated: 2026-10-09
+Updated: 2026-11-19
 
 A landlord can keep a security deposit only for allowed costs, usually unpaid rent, damage beyond normal wear and tear, and sometimes cleaning, and must usually send an itemized statement by a state deadline, such as 14 days in New York or 21 in California. Unjustified deductions can be challenged.
 
@@ -7648,6 +8020,10 @@ You moved out and left the place clean. Three weeks later, the statement arrives
 **What can a landlord deduct from a security deposit?**
 
 Generally: unpaid rent, damage beyond normal wear and tear, and in some states cleaning needed to return the unit to its move-in level of cleanliness. Repainting after years of normal living, replacing carpet that simply aged, or fixing a previous tenant's damage usually doesn't qualify. Each deduction should connect to something the law in your state allows.
+
+Questions about a specific charge: can a landlord charge for [nail holes](/guides/home/can-a-landlord-charge-for-nail-holes), [painting after you move out](/guides/home/can-a-landlord-charge-for-painting-after-you-move-out), [carpet cleaning](/guides/home/can-a-landlord-charge-for-carpet-cleaning), [professional cleaning](/guides/home/can-a-landlord-charge-for-professional-cleaning), [blinds](/guides/home/can-a-landlord-charge-for-blinds), [light bulbs](/guides/home/can-a-landlord-charge-for-light-bulbs), [changing the locks](/guides/home/can-a-landlord-charge-for-changing-the-locks), [dead grass](/guides/home/can-a-landlord-charge-for-dead-grass) or [the landlord's own labor](/guides/home/can-a-landlord-charge-for-their-own-labor)? And can a landlord keep the deposit [if the property is sold](/guides/home/can-a-landlord-keep-your-deposit-if-the-property-is-sold), [if one tenant moves out](/guides/home/can-a-landlord-keep-your-deposit-if-one-tenant-moves-out) or [if the tenant dies](/guides/home/can-a-landlord-keep-a-security-deposit-if-the-tenant-dies)?
+
+Quick answers: can a landlord charge for [lost keys](/faq/security-deposits/can-a-landlord-charge-for-lost-keys), [mold](/faq/security-deposits/can-a-landlord-charge-for-mold), [pest control](/faq/security-deposits/can-a-landlord-charge-for-pest-control), [oven cleaning](/faq/security-deposits/can-a-landlord-charge-for-oven-cleaning), [broken appliances](/faq/security-deposits/can-a-landlord-charge-for-broken-appliances), [water damage](/faq/security-deposits/can-a-landlord-charge-for-water-damage) or [something not in the lease](/faq/security-deposits/can-a-landlord-charge-you-for-something-not-in-the-lease)? Can a landlord keep your deposit [for unpaid utilities](/faq/security-deposits/can-a-landlord-keep-your-deposit-for-unpaid-utilities), [if you never move in](/faq/security-deposits/can-a-landlord-keep-your-deposit-if-you-never-move-in) or [if you are evicted](/faq/security-deposits/can-a-landlord-keep-your-deposit-if-you-are-evicted)?
 
 **Does a landlord have to give you an itemized list of deductions?**
 
@@ -8106,6 +8482,51 @@ It depends on your state. Many states require reasonable advance notice, often 2
 **What does it mean if a whole lease seems one-sided?**
 
 Sometimes no single clause is dispositive — but you finish reading and realize every contingency is written from one side. Disputes go to mandatory arbitration. Late fees compound. Notice requirements run only one direction. Inspection rights are unilateral. The tenant indemnifies the landlord for nearly everything. This is the most important red flag, and the one you'll feel before you can name. The lease isn't trying to be fair. It's trying to win in advance. That's not a negotiation problem — it's a who-am-I-renting-from problem.
+
+### Security Deposit Laws by State: Limits, Return Deadlines and Interest (2026)
+
+URL: https://deftbrain.com/guides/home/security-deposit-laws-by-state
+Updated: 2026-11-19
+
+Each state sets its own security deposit rules. About 30 jurisdictions cap the deposit, usually at one or two months' rent. Return deadlines run from 14 to 60 days after move-out, and 13 jurisdictions require interest in some cases. The table covers all 50 states, DC and Puerto Rico.
+
+The table above gives each state's limit on the deposit, the deadline for returning it, and whether the landlord owes interest, with the law it comes from. Figures were checked against state statutes and official sources and are current as of November 14, 2026. Most deadlines start when the tenancy ends and you've moved out, and several only start once the landlord has your forwarding address in writing.
+
+Cities and counties can add their own rules, and leases signed before a law changed may follow the old rule. Laws change, so check the statute for your state before you rely on a number. This is general information, not legal advice.
+
+**How much can a landlord charge for a security deposit?**
+
+About 30 jurisdictions cap the deposit. The most common caps are one month's rent (Massachusetts, New York, Maryland, Alabama, Hawaii and others) and two months' rent (Colorado, Georgia, Iowa, Missouri, Virginia and others). Nevada allows up to three months. The rest set no cap at all, which leaves the amount to the lease.
+
+Several caps are recent. Colorado set a two-month cap in August 2023. Georgia capped deposits at two months for leases entered or renewed from July 1, 2024. Maryland cut its cap from two months to one for leases signed from October 1, 2024. In states such as Maryland, New York and Georgia, a refundable pet deposit counts toward the cap rather than on top of it.
+
+**How long does a landlord have to return a security deposit?**
+
+Deadlines range from 14 days (New York, Hawaii, Nebraska, Vermont, and Alaska in some cases) to 60 days (Alabama, Arkansas and West Virginia). Thirty days is the most common. By the deadline, the landlord must usually either return the full deposit or send an itemized list of deductions with any balance.
+
+Watch when the clock starts. In Texas, Iowa, South Dakota and Wyoming, among others, the deadline runs from when the landlord has your forwarding address, so give it in writing on the day you move out. Some deadlines changed recently: Washington went from 21 to 30 days in July 2023, Connecticut from 30 to 21 days in October 2023, and South Dakota from 14 to 21 days in July 2026. Kentucky and Tennessee set no fixed number of days. Puerto Rico has no deposit statute at all: under its 2020 Civil Code, the lease sets the amount and the return terms, and a landlord must return the deposit if the tenant has met the lease.
+
+**Which states require interest on security deposits?**
+
+Interest is the exception. Connecticut, the District of Columbia, Illinois, Maryland, Massachusetts, Minnesota, New Hampshire, New Jersey, New Mexico, New York, North Dakota, Ohio and Pennsylvania require it in at least some cases. Most of them attach conditions, such as a minimum building size (25 or more units in Illinois, 6 or more in New York), a minimum tenancy (two years in Pennsylvania, one year in New Hampshire) or a minimum deposit.
+
+Massachusetts is one of the strictest. The deposit must sit in a separate interest-bearing account at a Massachusetts bank, and interest runs from the first day of the tenancy at 5% a year, or the bank's rate if lower, paid each year or when the tenancy ends. In Florida, interest is owed only if the landlord chooses an interest-bearing account.
+
+**What happens if a landlord misses the deadline?**
+
+In many states, a landlord who misses the deadline loses the right to keep any part of the deposit, even for real damage. New York, Washington and Iowa all work this way. Many states add a penalty for bad-faith or wrongful withholding. Common amounts are two times the amount withheld (Arizona, Missouri and New Jersey, among others) or three times (Georgia and Maryland). Massachusetts awards three times the deposit plus 5% interest, court costs and attorney's fees for its main violations. Texas presumes bad faith after the deadline passes and allows $100 plus three times the amount wrongfully withheld.
+
+These penalties usually require a demand letter or a small-claims case. Your strongest evidence is a dated record of the unit's condition at move-in, which is the subject of [how to write a move-in condition report](/guides/home/how-to-write-a-move-in-condition-report).
+
+Questions about a specific charge: can a landlord charge for [nail holes](/guides/home/can-a-landlord-charge-for-nail-holes), [painting after you move out](/guides/home/can-a-landlord-charge-for-painting-after-you-move-out), [carpet cleaning](/guides/home/can-a-landlord-charge-for-carpet-cleaning), [professional cleaning](/guides/home/can-a-landlord-charge-for-professional-cleaning), [blinds](/guides/home/can-a-landlord-charge-for-blinds), [light bulbs](/guides/home/can-a-landlord-charge-for-light-bulbs), [changing the locks](/guides/home/can-a-landlord-charge-for-changing-the-locks), [dead grass](/guides/home/can-a-landlord-charge-for-dead-grass) or [the landlord's own labor](/guides/home/can-a-landlord-charge-for-their-own-labor)? And can a landlord keep the deposit [if the property is sold](/guides/home/can-a-landlord-keep-your-deposit-if-the-property-is-sold), [if one tenant moves out](/guides/home/can-a-landlord-keep-your-deposit-if-one-tenant-moves-out) or [if the tenant dies](/guides/home/can-a-landlord-keep-a-security-deposit-if-the-tenant-dies)?
+
+Quick answers: can a landlord charge for [lost keys](/faq/security-deposits/can-a-landlord-charge-for-lost-keys), [mold](/faq/security-deposits/can-a-landlord-charge-for-mold), [pest control](/faq/security-deposits/can-a-landlord-charge-for-pest-control), [oven cleaning](/faq/security-deposits/can-a-landlord-charge-for-oven-cleaning), [broken appliances](/faq/security-deposits/can-a-landlord-charge-for-broken-appliances), [water damage](/faq/security-deposits/can-a-landlord-charge-for-water-damage) or [something not in the lease](/faq/security-deposits/can-a-landlord-charge-you-for-something-not-in-the-lease)? Can a landlord keep your deposit [for unpaid utilities](/faq/security-deposits/can-a-landlord-keep-your-deposit-for-unpaid-utilities), [if you never move in](/faq/security-deposits/can-a-landlord-keep-your-deposit-if-you-never-move-in) or [if you are evicted](/faq/security-deposits/can-a-landlord-keep-your-deposit-if-you-are-evicted)?
+
+**How do you use your state's rules to get your deposit back?**
+
+Start at move-in: photograph every room, note every existing flaw on the condition form, and email both to the landlord. At move-out, give a forwarding address in writing, note the date, and count forward by your state's deadline. If the deadline passes with no refund or itemized list, send a short written demand that cites the statute in the table and the remedy it provides. Many landlords pay at that point.
+
+[Renter's Deposit Saver](/RentersDepositSaver) walks you through the move-in record room by room and lists your state's deposit rights in the cover letter to your landlord.
 
 ### What to Do When You and Your Roommate Are Not Speaking
 
@@ -12133,7 +12554,7 @@ With story-driven games there's a pull to restart from the beginning to refresh 
 ### How to Do Laundry Properly When You've Been Winging It
 
 URL: https://deftbrain.com/guides/practical/how-to-do-laundry-properly-when-youve-been-winging-it
-Updated: 2026-10-09
+Updated: 2026-11-10
 
 Laundry basics that prevent most problems: separate whites from colors and heavy items from delicates, wash new dark clothes alone at first, default to cold water, measure detergent to the line for your load size, follow care labels on anything hard to replace, and air-dry what you'd hate to lose.
 
