@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "336b2abbb22801e74168e9f7342b36fd71962377",
+  "hash": "2357afc6672c52f07652a472f66ebcf9e1031b03",
   "lastmod": "2026-11-26"
  },
  "static:about": {
@@ -248,7 +248,7 @@
   "lastmod": "2026-10-06"
  },
  "static:organizations": {
-  "hash": "12f8cd864ccce179d99c58f798b321871e9d217b",
+  "hash": "87a02f185c2a2e2b285ed19b1ef1ead40528c196",
   "lastmod": "2026-11-26"
  },
  "tool:ContractDecoder": {
