@@ -1117,7 +1117,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const pricingAll = allRows.filter(r => r.kind === 'pricing_access');
     const pricingByOrg = new Map();
     for (const r of pricingAll.filter(x => x.ok && x.org)) {
-      const o = pricingByOrg.get(r.org) || { inRange: 0, total: 0, last: '' };
+      const o = pricingByOrg.get(r.org) || { inRange: 0, total: 0, last: '', consortium: r.consortium || '' };
       o.total++;
       if (rows.includes(r)) o.inRange++;
       if ((r.at || '') > o.last) o.last = r.at || '';
@@ -1125,7 +1125,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     }
     const pricingFailed = rows.filter(r => r.kind === 'pricing_access' && !r.ok).length;
     const pricingRows = [...pricingByOrg.entries()].sort((x, y) => y[1].last.localeCompare(x[1].last))
-      .map(([org, o]) => `<tr><td>${escH(org)}</td><td>${o.inRange}</td><td>${o.total}</td><td>${o.last ? escH(missingTime.format(new Date(o.last))) : '—'}</td></tr>`).join('');
+      .map(([org, o]) => `<tr><td>${escH(org)}${o.consortium ? ` <small>(via ${escH(o.consortium)})</small>` : ''}</td><td>${o.inRange}</td><td>${o.total}</td><td>${o.last ? escH(missingTime.format(new Date(o.last))) : '—'}</td></tr>`).join('');
     const burstRows = bursts.filter(b => b.paths.size >= 3).sort((a, b) => b.start.localeCompare(a.start))
       .map(b => `<tr><td>${escH(missingTime.format(new Date(b.start)))}</td><td>${escH(b.source)}</td>
         <td>${b.count}</td><td>${escH([...b.paths].join(', '))}</td></tr>`).join('');

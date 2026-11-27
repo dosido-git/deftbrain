@@ -63,7 +63,7 @@ router.post('/pricing-access', rateLimit(PRICING_LIMITS, 'pricing-access:'), (re
     logMetric('pricing_access', { ok: false });
     return res.status(401).json({ error: 'wrong_code' });
   }
-  logMetric('pricing_access', { ok: true, org: org.slice(0, 120) });
+  logMetric('pricing_access', { ok: true, org: org.slice(0, 120), ...(match.consortium && { consortium: String(match.consortium).slice(0, 60) }) });
   const { _note, ...pricing } = PRICING;
   // A code with an audience sees only that audience's price (owner, 2026-11-26);
   // the others never leave the server. A code without one sees them all.

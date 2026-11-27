@@ -11,6 +11,7 @@
 // from the environment or backend/.env, and must match the one on Railway.
 //
 // --existing <code> "Organization name" [audience] adds a code made earlier.
+// --consortium <id> marks an organization that came through a consortium.
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -21,6 +22,11 @@ const AUDIENCES = require('../backend/data/pricing.json').audiences.map(a => a.k
 let args = process.argv.slice(2).map(x => x.trim());
 let existing = '';
 if (args[0] === '--existing') { existing = args[1] || ''; args = args.slice(2); }
+// --consortium <id>: the organization came through a consortium (revenue share,
+// owner 2026-11-27); its pricing views are reported under that consortium too.
+let consortium = '';
+const ci = args.indexOf('--consortium');
+if (ci >= 0) { consortium = args[ci + 1] || ''; args.splice(ci, 2); }
 const [org = '', audience = ''] = args;
 if (!org || (audience && !AUDIENCES.includes(audience)) || (args[0] === undefined)) {
   console.error(`Usage: node scripts/pricing-code.js "Organization name" [${AUDIENCES.join('|')}]`);
@@ -43,7 +49,7 @@ const ABC = 'abcdefghjkmnpqrstuvwxyz23456789';
 const pick = n => Array.from(crypto.randomBytes(n), b => ABC[b % ABC.length]).join('');
 const code = existing || `db-${pick(5)}-${pick(5)}`;
 
-data.codes.push({ org, audience: audience || null, added: new Date().toISOString().slice(0, 10), hash: hashCode(code, secret) });
+data.codes.push({ org, audience: audience || null, ...(consortium && { consortium }), added: new Date().toISOString().slice(0, 10), hash: hashCode(code, secret) });
 data.codes.sort((a, b) => a.org.localeCompare(b.org));
 fs.writeFileSync(FILE, `${JSON.stringify(data, null, 2)}\n`);
 

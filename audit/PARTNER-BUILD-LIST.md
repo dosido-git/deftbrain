@@ -53,8 +53,9 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   site (needs DNS/Railway domains; owner step).
 - [ ] E5. Embed (note: X-Frame-Options DENY today; an embed needs a per-partner frame-ancestors rule): a small script/iframe so a partner can put its edition inside
   its own site or app.
-- [ ] E6. Revenue share tracking: pricing codes carry a consortium; sales and
+- [~] E6. Revenue share tracking: pricing codes carry a consortium; sales and
   member counts roll up per consortium for royalty statements.
+  Shipped: pricing codes take --consortium; pricing views show "(via <consortium>)" in metrics. Royalty statements wait on a deals ledger (owner).
 
 ## F. Promotion kit (perk 6; consortia 10)
 - [x] F1. Co-branded printable all-tools list (PDF) per partner: scripts/partner-all-tools.mjs <id> → output/partners/ (QR = tracked print link).
