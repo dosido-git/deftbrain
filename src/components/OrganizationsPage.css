@@ -127,3 +127,9 @@
 :root[data-theme="dark"] .org-pricing-table tr.is-yours th,:root[data-theme="dark"] .org-pricing-table tr.is-yours td{background:#2c2c31}
 .org-pricing-calc select{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink)}
 .org-pricing-hint{margin:0;font-size:13px;color:var(--muted)}
+.org-pricing-sizes{display:flex;flex-wrap:wrap;gap:8px}
+.org-pricing-size{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.org-pricing-size:hover{border-color:var(--navy)}
+.org-pricing-size[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+:root[data-theme="dark"] .org-pricing-size{background:#232326;border-color:#3f3f46;color:inherit}
+:root[data-theme="dark"] .org-pricing-size[aria-pressed="true"]{background:var(--navy);color:#fff}

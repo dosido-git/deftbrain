@@ -26,7 +26,8 @@ function quoteFor(people, a, upTo) {
   const after = Math.max(0, people - upTo) * a.perPersonAfter;
   return Math.max(a.minimum, Math.round((first + after) / 10) * 10);
 }
-const rateText = n => (n < 1 ? `${Math.round(n * 100)}¢` : `$${Number.isInteger(n) ? n : n.toFixed(2)}`);
+const compact = n => new Intl.NumberFormat('en-US', { notation: 'compact' }).format(n);
+const rateText =n => (n < 1 ? `${Math.round(n * 100)}¢` : `$${Number.isInteger(n) ? n : n.toFixed(2)}`);
 
 export default function OrgPricingPage() {
   const { isDark, toggleTheme } = useTheme();
@@ -126,6 +127,13 @@ export default function OrgPricingPage() {
               <label>How many {aud.units}?
                 <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="10000" />
               </label>
+              {aud.sizes?.length > 0 && (
+                <div className="org-quote-wide org-pricing-sizes" role="group" aria-label={`Common sizes, in ${aud.units}`}>
+                  {aud.sizes.map(n => (
+                    <button key={n} type="button" className="org-pricing-size" aria-pressed={peopleN === n} onClick={() => setPeople(String(n))}>{compact(n)}</button>
+                  ))}
+                </div>
+              )}
               <p className="org-quote-wide org-pricing-hint">Count {aud.counts}.</p>
               <p className="org-quote-wide org-pricing-yours" aria-live="polite">
                 {quote === undefined ? 'Enter a number to see your price.'

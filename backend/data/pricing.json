@@ -4,11 +4,11 @@
   "updated": "2026-11-26",
   "upTo": 100000,
   "audiences": [
-    { "key": "libraries", "label": "Libraries", "unit": "resident", "units": "residents", "perPerson": 0.12, "perPersonAfter": 0.04, "minimum": 7500, "counts": "your service-area population" },
-    { "key": "credit-unions", "label": "Credit unions", "unit": "member", "units": "members", "perPerson": 0.25, "perPersonAfter": 0.0833, "minimum": 7500, "counts": "your members" },
-    { "key": "campuses", "label": "Colleges and universities", "unit": "student", "units": "students", "perPerson": 1.00, "perPersonAfter": 0.3333, "minimum": 7500, "counts": "your enrolled students" },
-    { "key": "community", "label": "Community organizations", "unit": "person served", "units": "people served", "perPerson": 0.75, "perPersonAfter": 0.25, "minimum": 5000, "counts": "the people you serve in a year" },
-    { "key": "employers", "label": "Employers", "unit": "employee", "units": "employees", "perPerson": 7.50, "perPersonAfter": 2.50, "minimum": 5000, "counts": "your employees" }
+    { "key": "libraries", "label": "Libraries", "unit": "resident", "units": "residents", "perPerson": 0.12, "perPersonAfter": 0.04, "minimum": 7500, "counts": "your service-area population", "sizes": [10000, 25000, 50000, 100000, 250000, 500000, 1000000] },
+    { "key": "credit-unions", "label": "Credit unions", "unit": "member", "units": "members", "perPerson": 0.25, "perPersonAfter": 0.0833, "minimum": 7500, "counts": "your members", "sizes": [5000, 10000, 25000, 50000, 100000, 250000, 500000] },
+    { "key": "campuses", "label": "Colleges and universities", "unit": "student", "units": "students", "perPerson": 1.00, "perPersonAfter": 0.3333, "minimum": 7500, "counts": "your enrolled students", "sizes": [1000, 2500, 5000, 10000, 25000, 50000] },
+    { "key": "community", "label": "Community organizations", "unit": "person served", "units": "people served", "perPerson": 0.75, "perPersonAfter": 0.25, "minimum": 5000, "counts": "the people you serve in a year", "sizes": [1000, 5000, 10000, 25000, 50000, 100000] },
+    { "key": "employers", "label": "Employers", "unit": "employee", "units": "employees", "perPerson": 7.50, "perPersonAfter": 2.50, "minimum": 5000, "counts": "your employees", "sizes": [250, 500, 1000, 2500, 5000, 10000] }
   ],
   "notes": [
     "One price a year, billed annually. It includes setup, your own page, the launch kit, ongoing promotion, usage reports and support.",
