@@ -324,7 +324,7 @@ const ExCard = ({ ex, idx, swappable, exercisesDone, startTimer, handleSwap, loa
 };
 
 const LazyWorkoutAdapter = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion, callToolEndpointQuietly } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   // currencySymbol imported per localization convention; this tool has no money values.
@@ -494,7 +494,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
   useEffect(() => {
     if (sessionHistory.length >= 3 && !nudge) {
       const now = new Date();
-      callToolEndpoint('lazy-workout-adapter-nudge', {
+      callToolEndpointQuietly('lazy-workout-adapter-nudge', {
         history: sessionHistory.slice(-10),
         lastSessionDate: sessionHistory[sessionHistory.length - 1]?.date,
         currentDay: now.toLocaleDateString('en', { weekday: 'long' }),

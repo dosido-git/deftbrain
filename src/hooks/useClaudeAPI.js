@@ -317,7 +317,9 @@ export const useClaudeAPI = () => {
       track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       return latest;
     } catch (err) {
-      if (err.name === 'AbortError') return null; // replaced by a newer run
+      // Replaced by a newer run or cancelled by a reset: an outcome, not a
+      // failure, so the run doesn't read as lost on the dashboard.
+      if (err.name === 'AbortError') { track('tool_cancelled', { tool: endpoint }); return null; }
       track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80), ...(err.limitType ? { limitType: err.limitType } : {}) });
       setError(err.message);
       // A failure after the answer showed (the check stream broke) keeps it.
@@ -333,9 +335,13 @@ export const useClaudeAPI = () => {
   // visitor reset the form or loaded an example), so it cannot reappear.
   const cancelProgressive = () => { progressiveAbort.current?.abort(); progressiveAbort.current = null; setLoading(false); };
 
-  // Status poll — same request shape and locale plumbing as callToolEndpoint,
+  // Quiet call — same request shape and locale plumbing as callToolEndpoint,
   // but it does NOT track tool_run / tool_complete and does not toggle
-  // `loading`. A tool that polls a readiness endpoint every few seconds
+  // `loading`. For anything the visitor didn't ask for as an answer: status
+  // polls, cache warm-ups, background fact checks, suggestion strips. Those
+  // counted as runs until 2026-11-27 and made per-tool numbers look busier
+  // and less reliable than they were (callToolEndpointQuietly is the same
+  // function). A tool that polls a readiness endpoint every few seconds
   // (signal-vs-noise/research) would otherwise log twenty "runs" per visitor
   // and skew every per-tool number on the dashboard. Errors carry status and
   // code like the tracked call.
@@ -355,5 +361,5 @@ export const useClaudeAPI = () => {
     return json;
   };
 
-  return { callToolEndpoint, callToolEndpointStreaming, callToolEndpointProgressive, cancelProgressive, pollToolEndpoint, loading, error, userLanguage, userLocale, userRegion, userCurrency };
+  return { callToolEndpoint, callToolEndpointStreaming, callToolEndpointProgressive, cancelProgressive, pollToolEndpoint, callToolEndpointQuietly: pollToolEndpoint, loading, error, userLanguage, userLocale, userRegion, userCurrency };
 };

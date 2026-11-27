@@ -45,7 +45,7 @@ const Card = ({ c, children, className = '' }) => (
 );
 
 const FocusPocus = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, callToolEndpointQuietly } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -232,7 +232,7 @@ const FocusPocus = ({ tool }) => {
   // returns to the form with the task kept — it does not extend the old one.
   const anotherBounded = async () => {
     await submitReview('yes');
-    await callToolEndpoint('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
+    await callToolEndpointQuietly('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
     timeUpRef.current = false;
     setSession(null); setPlan(null); setEnough(''); setNudge(''); setRemaining('');
     setReviewChoice(''); setBlockerOpen(false); setExtendOpen(false); setPromise('');
@@ -267,7 +267,7 @@ const FocusPocus = ({ tool }) => {
   const handleResetRef = useRef(null);
 
   const handleReset = useCallback(async () => {
-    if (session?.id) await callToolEndpoint('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
+    if (session?.id) await callToolEndpointQuietly('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
     timeUpRef.current = false;
     setSession(null); setTask(''); setEnough(''); setMinutes(25); setCustomMinutes('');
     setNudge(''); setRemaining(''); setReviewChoice(''); setPlan(null); setError('');

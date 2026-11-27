@@ -137,7 +137,7 @@ const START_TIMES = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:3
 // ═══════════════════════════════════════════
 
 const DateNight = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion, callToolEndpointQuietly } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t, tPlural } = useTranslation();
 
@@ -393,7 +393,7 @@ const DateNight = ({ tool }) => {
     const loc = String(raw || '').trim();
     if (loc.length < 3 || warmed.current.has(loc.toLowerCase())) return;
     warmed.current.add(loc.toLowerCase());
-    callToolEndpoint('date-night', { action: 'warm-venues', location: loc }).catch(() => {});
+    callToolEndpointQuietly('date-night', { action: 'warm-venues', location: loc }).catch(() => {});
   }, []);
 
   // Typing pauses count too, not just leaving the field — someone who types
@@ -578,7 +578,7 @@ const DateNight = ({ tool }) => {
   useEffect(() => {
     if (!results?.itinerary?.length) { setNextHelp([]); return; }
     let alive = true;
-    callToolEndpoint('date-night', { action: 'next-help', dateType, location,
+    callToolEndpointQuietly('date-night', { action: 'next-help', dateType, location,
       vibeTitle: results.vibe_title, itinerary: results.itinerary, yearsTogether,
       userLocale, userCurrency, userRegion })
       .then(d => { if (alive && Array.isArray(d?.suggestions)) setNextHelp(d.suggestions); })

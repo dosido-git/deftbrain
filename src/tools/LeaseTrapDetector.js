@@ -80,7 +80,7 @@ const SITUATIONS = [
 
 const LeaseTrapDetector = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, userLocale, userCurrency, userRegion, callToolEndpointQuietly } = useClaudeAPI();
   const { t } = useTranslation();
   const LEASE_TYPES = [
     { value: 'residential', label: t('ltd_lt_residential'), icon: '🏢' },
@@ -186,7 +186,7 @@ const LeaseTrapDetector = ({ tool }) => {
     if (warmLocation.length < 3 || warmedLoc.current.has(warmLocation.toLowerCase())) return undefined;
     const id = setTimeout(() => {
       warmedLoc.current.add(warmLocation.toLowerCase());
-      callToolEndpoint('lease-trap-detector', { action: 'warm', location: warmLocation }).catch(() => {});
+      callToolEndpointQuietly('lease-trap-detector', { action: 'warm', location: warmLocation }).catch(() => {});
     }, 1500);
     return () => clearTimeout(id);
   }, [warmLocation, callToolEndpoint]);

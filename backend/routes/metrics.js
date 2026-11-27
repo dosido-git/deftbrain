@@ -787,6 +787,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const runs = events.filter(e => e.event === 'tool_run');
     const completes = events.filter(e => e.event === 'tool_complete');
     const errors = events.filter(e => e.event === 'tool_error');
+    // A run replaced by a newer one, or stopped by a reset (since 2026-11-27).
+    const cancelled = events.filter(e => e.event === 'tool_cancelled');
     // A 200 the user never actually saw: the response parsed, then React threw
     // while rendering it. `tool_complete` fires before render, so without this
     // a white-screen crash counted as a success. See ToolErrorBoundary.
@@ -865,7 +867,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 
     // ── per tool ──
     const tools = {};
-    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, left: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, viewedSessions: 0, ranSessions: 0, firstVisible: [], ms: [] }; tools[t][k] += (n == null ? 1 : n); };
+    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, left: 0, cancelled: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, viewedSessions: 0, ranSessions: 0, firstVisible: [], ms: [] }; tools[t][k] += (n == null ? 1 : n); };
     for (const e of pv) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'views'); }
     // Match each first run to the date of its first view, even if the
     // visitor leaves a tab open past midnight. No session ID is collected.
@@ -893,6 +895,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     for (const e of runs) bump(toolOf(e), 'runs');
     for (const e of completes) { const t = toolOf(e); bump(t, 'completes'); if (e.props && e.props.ms) tools[t].ms.push(e.props.ms); }
     for (const e of errors) bump(toolOf(e), isLeftEarly(e) ? 'left' : 'errors');
+    for (const e of cancelled) bump(toolOf(e), 'cancelled');
     for (const e of renderErrors) bump(toolOf(e), 'renderErrors');
     for (const e of thinResults) bump(toolOf(e), 'thin');
     for (const e of taken) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'taken'); }
@@ -958,7 +961,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
           ? `<td style="color:#b91c1c;font-weight:700">${v.renderErrors}</td>`
           : '<td>0</td>';
         const tx = v.thin ? `<td style="color:#b45309;font-weight:700">${v.thin}</td>` : '<td>0</td>';
-        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${runsPerView}</td><td>${sessionRate}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td>${rx}${tx}<td>${escH(firstVisible)}</td><td>${averageSeconds(v.ms)}</td>${slowTd}<td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
+        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${runsPerView}</td><td>${sessionRate}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td><td>${v.left}</td><td>${v.cancelled}</td>${rx}${tx}<td>${escH(firstVisible)}</td><td>${averageSeconds(v.ms)}</td>${slowTd}<td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
       };
     // Tools somebody ran first; tools only viewed fold below (2026-10-04).
     const sortedTools = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs || b[1].views - a[1].views);
@@ -1812,8 +1815,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Tools <span style="font-weight:400;font-size:12px;color:#888">— tools somebody ran</span></h2>
     ${slowTools.length ? `<p style="color:#b91c1c;font-size:13px;margin:4px 0 8px">⏱ Slow for visitors (slowest 10% over ${SLOW_WARN_S}s; Safari gives up near 60s): ${slowTools.map(([t, sec, n]) => `<b>${escH(t)}</b> ${sec}s (${n} run${n === 1 ? '' : 's'})`).join(' · ')}</p>` : ''}
     <p>Session conversion uses the date of the first tool view and counts the first run from that tab. First-visible timing is measured on instrumented result regions and includes any wait before the result comes into view. Total time measures response completion.</p>
-    <table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>runs per view</th><th>sessions that ran</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th>render err</th><th>thin</th><th>avg to visible result</th><th>avg total time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=15 style="color:#888">No data yet.</td></tr>'}</table>
-    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>runs per view</th><th>sessions that ran</th><th>delivered</th><th>server err</th><th>left early</th><th>render err</th><th>thin</th><th>avg to visible result</th><th>avg total time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
+    <table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>runs per view</th><th>sessions that ran</th><th>delivered</th><th>server err</th><th title="The browser never got a reply: the visitor closed or left the page mid-request, or lost connection">left early</th><th title="Replaced by a newer run (the visitor asked again before the answer came) or stopped by a reset. Counted since Nov 27, 2026.">cancelled</th><th>render err</th><th>thin</th><th>avg to visible result</th><th>avg total time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=16 style="color:#888">No data yet.</td></tr>'}</table>
+    ${viewedOnly.length ? `<details class="fold"><summary>${viewedOnly.length} more tool${viewedOnly.length === 1 ? '' : 's'} viewed but not run</summary><table><tr><th>tool</th><th title="Page loads. Each page opened counts once, so one visit can have several.">views</th><th>runs</th><th>runs per view</th><th>sessions that ran</th><th>delivered</th><th>server err</th><th>left early</th><th>cancelled</th><th>render err</th><th>thin</th><th>avg to visible result</th><th>avg total time</th><th title="90th percentile of visitor-measured time (the slowest run when fewer than 10). Red above 45s — Safari gives up at about 60s.">slowest 10%</th><th>took it</th><th>helpful</th></tr>${viewedOnlyRows}</table></details>` : ''}
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>

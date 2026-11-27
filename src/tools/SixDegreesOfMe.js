@@ -109,7 +109,7 @@ const computeLayout = (nodes, edges, width, height) => {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const SixDegreesOfMe = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, callToolEndpointQuietly } = useClaudeAPI();
   // Which per-item action is running. The shared `loading` flag dims every
   // sibling button identically, so the one you pressed reads as unresponsive —
   // and the only spinner on this page is on the main Find button, far away.
@@ -293,14 +293,14 @@ const SixDegreesOfMe = ({ tool }) => {
     chain.forEach(s => { if (!nodeTags[s.from]) newNodes.push(s.from); if (!nodeTags[s.to]) newNodes.push(s.to); });
     if (newNodes.length === 0) return;
     try {
-      const parsed = await callToolEndpoint('six-degrees/tag-nodes', { nodes: newNodes, locale: navigator.language || 'en' });
+      const parsed = await callToolEndpointQuietly('six-degrees/tag-nodes', { nodes: newNodes, locale: navigator.language || 'en' });
       if (parsed.tagged) {
         const updates = {};
         parsed.tagged.forEach(tg => { updates[tg.node] = { tag: tg.tag, color: tg.color }; });
         setNodeTags(prev => ({ ...prev, ...updates }));
       }
     } catch { /* silent */ }
-  }, [nodeTags, callToolEndpoint, setNodeTags]);
+  }, [nodeTags, callToolEndpointQuietly, setNodeTags]);
 
   // ══════════════════════════════════════════
   // HANDLERS

@@ -141,7 +141,7 @@ function renderProse(text) {
 }
 
 const BrainRoulette = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, callToolEndpointQuietly } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -475,7 +475,7 @@ const BrainRoulette = ({ tool }) => {
   const verifyClaim = useCallback(async (title, claim, field = 'hook') => {
     if (!title || !claim || claim.length < 20) return;
     try {
-      const data = await callToolEndpoint('brain-roulette/verify', { title, claim });
+      const data = await callToolEndpointQuietly('brain-roulette/verify', { title, claim });
       if (!data?.verification) return;
       const { correction, ...verification } = data.verification;
       const apply = entry => {
@@ -505,7 +505,7 @@ const BrainRoulette = ({ tool }) => {
         }));
       }
     } catch { /* The draft can still be read if verification is unavailable. */ }
-  }, [callToolEndpoint, setResult, setSessionHistory, setSavedItems]);
+  }, [callToolEndpointQuietly, setResult, setSessionHistory, setSavedItems]);
 
   const handleSpin = async (isSurprise = false) => {
     if (!canSpin) return;

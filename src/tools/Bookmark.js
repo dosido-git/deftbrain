@@ -71,7 +71,7 @@ const EXAMPLES = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const Bookmark = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
+  const { callToolEndpointProgressive, cancelProgressive, loading, callToolEndpointQuietly } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -188,10 +188,10 @@ const Bookmark = ({ tool }) => {
     if (warmed.current.has(k)) return undefined;
     const id = setTimeout(() => {
       warmed.current.add(k);
-      callToolEndpoint('bookmark', { action: 'warm', mediaType, title: ti, stoppedAt: at }).catch(() => {});
+      callToolEndpointQuietly('bookmark', { action: 'warm', mediaType, title: ti, stoppedAt: at }).catch(() => {});
     }, 1500);
     return () => clearTimeout(id);
-  }, [mediaType, title, stoppedAt, callToolEndpoint]);
+  }, [mediaType, title, stoppedAt, callToolEndpointQuietly]);
 
   const recall = useCallback(async () => {
     if (!title.trim() || !stoppedAt.trim()) { setError(t('bk_err_missing')); return; }

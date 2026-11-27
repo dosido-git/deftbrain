@@ -201,7 +201,7 @@ function deriveTimeBudget(tm) {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const LayoverMaximizer = ({ tool }) => {
-  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading } = useClaudeAPI();
+  const { callToolEndpoint, callToolEndpointProgressive, cancelProgressive, loading, callToolEndpointQuietly } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -523,7 +523,7 @@ const LayoverMaximizer = ({ tool }) => {
       zoneFetched.current = key;
       setZoneLoading(true);
       try {
-        const data = await callToolEndpoint('layover-maximizer/timezone', { airport: ap });
+        const data = await callToolEndpointQuietly('layover-maximizer/timezone', { airport: ap });
         setAirportZone(data?.timezone ? data : null);
       } catch {
         setAirportZone(null);   // fall back to the device clock, and say so
