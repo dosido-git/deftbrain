@@ -110,7 +110,7 @@
 /* /organizations/pricing (OrgPricingPage.js) */
 .org-pricing-gate{max-width:560px}
 .org-table-wrap{overflow-x:auto}
-.org-pricing-table{width:100%;max-width:820px;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:16px}
+.org-pricing-table{width:100%;max-width:560px;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:16px}
 .org-pricing-table th,.org-pricing-table td{padding:12px 16px;border-bottom:1px solid var(--line);text-align:start}
 .org-pricing-table thead th{font-size:13px;color:var(--muted);font-weight:700}
 .org-pricing-table tbody th{color:var(--navy);font-weight:700}

@@ -91,9 +91,9 @@ export default function OrgPricingPage() {
           <div ref={resultRef} tabIndex={-1} className="org-pricing-result">
             <div className="org-table-wrap">
               <table className="org-pricing-table">
-                <thead><tr><th scope="col">People served</th><th scope="col">Setup, once</th><th scope="col">Each year</th><th scope="col">90-day pilot</th></tr></thead>
+                <thead><tr><th scope="col">People served</th><th scope="col">Price per year</th></tr></thead>
                 <tbody>{pricing.sizes.map(s => (
-                  <tr key={s.label}><th scope="row">{s.label}</th><td>{usd(s.setup)}</td><td>{usd(s.yearly)}</td><td>{usd(s.pilot)}</td></tr>
+                  <tr key={s.label}><th scope="row">{s.label}</th><td>{usd(s.annual)}</td></tr>
                 ))}</tbody>
               </table>
             </div>
