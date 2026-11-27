@@ -13,6 +13,7 @@ for (const [id, p] of Object.entries(PARTNERS)) {
   if (!p.name) bad(id, 'missing name');
   if (p.retired) continue;
   for (const k of ['packageTitle', 'intro']) if (!p[k]) bad(id, `missing ${k}`);
+  if (p.accent !== undefined && !/^#[0-9a-fA-F]{6}$/.test(p.accent)) bad(id, 'accent must be a #rrggbb colour');
   if (!Array.isArray(p.tools) || !p.tools.length) bad(id, 'tools must be a non-empty list');
   else for (const t of p.tools) if (!TOOLS.has(t)) bad(id, `unknown tool ${t}`);
   if (p.contacts !== undefined) {

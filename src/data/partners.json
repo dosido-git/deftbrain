@@ -35,6 +35,7 @@
     "sample": true,
     "edition": "Example Union Life Navigator",
     "memberWord": "local",
+    "accent": "#b3261e",
     "packageTitle": "Help with work, money and paperwork",
     "intro": "Not sure about a contract, a problem at work or a bill? Answer a few questions and see what matters, what your options are and what to ask next.",
     "tools": [

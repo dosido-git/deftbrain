@@ -28,8 +28,8 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 ## C. Co-branding (perk 5)
 - [x] C1. "Provided by <partner>" in the print header/footer and the shared copy
   footer (printBranding.js, ActionButtons.js) when a partner is in context.
-- [ ] C2. Tool-local `BRAND` constants (119 tools): move to the shared helper so
-  copy text gets the partner line too. Mechanical codemod, gated.
+- [x] C2. Covered by C1: every whole-result copy goes through ActionButtons, which adds the
+  partner line after the tool's own BRAND footer. Exact-copy snippets (captions, letters) stay unbranded by design.
 
 ## D. Reports partners can open themselves (perks 2, 3; consortia 5)
 - [x] D1. Per-partner report access: a report code per partner (hashed, same
@@ -47,8 +47,8 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   tools and branding unless it overrides them. Members added from a list.
 - [x] E2. Consortium roll-up report: all members together plus a per-member
   table.
-- [ ] E3. Edition branding: edition name ("<Consortium> Life Navigator"),
-  colours/logo on the partner bar, its own launch kit.
+- [x] E3. Edition branding: edition name ("<Consortium> Life Navigator"),
+  colours/logo on the partner bar, its own launch kit (launch kit per edition still to do).
 - [ ] E4. Own address: `<partner>.deftbrain.com` or a path on the partner's
   site (needs DNS/Railway domains; owner step).
 - [ ] E5. Embed (note: X-Frame-Options DENY today; an embed needs a per-partner frame-ancestors rule): a small script/iframe so a partner can put its edition inside

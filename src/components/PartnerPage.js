@@ -48,13 +48,14 @@ export default function PartnerPage({ allTools = [] }) {
 
   return (
     <main className="org-page partner-page">
-      <header className="partner-bar">
+      {/* Edition branding (consortia, 2026-11-27): an accent line in the partner's colour. */}
+      <header className="partner-bar" style={partner.accent ? { borderTop: `4px solid ${partner.accent}` } : undefined}>
         <div className="org-shell partner-bar-inner">
           <div className="partner-brand">
             {partner.logo
               ? <img className="partner-logo" src={partner.logo} alt="" width="40" height="40" />
               : <span className="partner-badge" aria-hidden="true">{partner.initials}</span>}
-            <span className="partner-name">{partner.name}</span>
+            <span className="partner-name">{partner.isConsortium && partner.edition ? partner.edition : partner.name}</span>
           </div>
           <div className="partner-bar-end">
             <Link className="partner-with" to="/">by <b>Deft</b><b className="gold">Brain</b></Link>
