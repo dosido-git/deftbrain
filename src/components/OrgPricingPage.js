@@ -183,6 +183,7 @@ export default function OrgPricingPage() {
                 </label>
               )}
               <label>How many {aud.units}?
+                {aud.counts && <span className="org-pricing-hint">{aud.counts}</span>}
                 <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="10000" />
               </label>
               {aud.sizes?.length > 0 && (
@@ -192,7 +193,7 @@ export default function OrgPricingPage() {
                   ))}
                 </div>
               )}
-              <p className="org-quote-wide org-pricing-hint">Count {aud.counts}.</p>
+              <p className="org-quote-wide org-pricing-hint">Minimum {usd(aud.minimum)} a year.</p>
               <p className="org-quote-wide org-pricing-yours" aria-live="polite">
                 {quote === undefined ? 'Enter a number to see your price.'
                   : <>Your price: <strong>{usd(quote)}</strong> a year, or <strong>{perText(quote / peopleN)}</strong> per {aud.unit}</>}

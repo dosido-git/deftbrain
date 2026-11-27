@@ -3,22 +3,27 @@
 // address and get a code of their own; /organizations/pricing posts it here.
 //
 // One code per organization, so the metrics report can show who looked and
-// when ("Pricing page by organization"). Codes live in the Railway variable
-//   PRICING_ACCESS_CODES = "code=Organization name|audience; code=..."
-// made with `node scripts/pricing-code.js "Organization name" audience`. The
-// audience (libraries, credit-unions, campuses, community, employers) is
-// optional; with it the page shows only that audience's price, without
-// it all of them. Remove an
-// entry to close that organization's access. Unset = the page says to email.
+// when ("Pricing page by organization"). The list is backend/data/pricing-codes.json
+// (hashed codes, see backend/lib/pricingCodes.js), checked with the Railway
+// secret PRICING_CODE_SECRET; add an organization with
+// `node scripts/pricing-code.js "Organization name" audience`. With an audience
+// (libraries, credit-unions, campuses, community, employers) the page shows only
+// that audience's price; without one, all of them. No secret or no entries =
+// the page says to email.
 //
-// The prices live only in backend/data/pricing.json and leave the server only
-// for a valid code, so they are never in the public bundle. Codes are never
-// logged; only the organization name they map to.
+// Transition: entries in the old PRICING_ACCESS_CODES variable
+// ("code=Organization name|audience; ...") still work until it is removed.
+//
 const express = require('express');
 const crypto = require('crypto');
 const { rateLimit } = require('../lib/rateLimiter');
 const { logMetric } = require('../lib/metricsSink');
 const PRICING = require('../data/pricing.json');
+const { FILE, findEntry } = require('../lib/pricingCodes');
+
+function fileEntries() {
+  try { return JSON.parse(require('fs').readFileSync(FILE, 'utf8')).codes || []; } catch (_) { return []; }
+}
 
 const router = express.Router();
 
@@ -45,12 +50,14 @@ function sameCode(given, expected) {
 
 router.post('/pricing-access', rateLimit(PRICING_LIMITS, 'pricing-access:'), (req, res) => {
   res.set('Cache-Control', 'no-store');
-  const codes = parseCodes(process.env.PRICING_ACCESS_CODES);
-  if (!codes.length) return res.status(503).json({ error: 'not_configured' });
+  const legacy = parseCodes(process.env.PRICING_ACCESS_CODES);
+  const secret = process.env.PRICING_CODE_SECRET;
+  const entries = secret ? fileEntries() : [];
+  if (!legacy.length && !entries.length) return res.status(503).json({ error: 'not_configured' });
   const given = String((req.body || {}).code || '').trim();
+  let match = entries.length ? findEntry(given, secret, entries) : null;
   // Compare against every entry (no early exit) so timing says nothing about which matched.
-  let match = null;
-  for (const entry of codes) if (sameCode(given, entry.code) && !match) match = entry;
+  for (const entry of legacy) if (sameCode(given, entry.code) && !match) match = entry;
   const org = match && match.org;
   if (!org) {
     logMetric('pricing_access', { ok: false });
@@ -65,5 +72,4 @@ router.post('/pricing-access', rateLimit(PRICING_LIMITS, 'pricing-access:'), (re
   return res.json({ ...pricing, audiences: own.length ? own : pricing.audiences, org, audience });
 });
 
-router.parseCodes = parseCodes; // for scripts/pricing-code.js --check
 module.exports = router;

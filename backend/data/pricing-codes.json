@@ -1,0 +1,40 @@
+{
+  "codes": [
+    {
+      "org": "DeftBrain preview",
+      "audience": null,
+      "added": "2026-11-27",
+      "hash": "8ba363c611de9c82325d4d93aa9ea3830c29674c1e36cdb3f7e8d1da7ed4d079"
+    },
+    {
+      "org": "Example Community Organization",
+      "audience": "community",
+      "added": "2026-11-27",
+      "hash": "24e5800a82e426d8ef072a8f9c511e50088065322c99a005de0aec6bc654598c"
+    },
+    {
+      "org": "Example Credit Union",
+      "audience": "credit-unions",
+      "added": "2026-11-27",
+      "hash": "41a24d05801147cc937645f019fb389ae3431289d7840d8d65f7a8b3b138e7ea"
+    },
+    {
+      "org": "Example Employer",
+      "audience": "employers",
+      "added": "2026-11-27",
+      "hash": "c9886dd1f8d61816b437c15326bca06b7f3bbbd63c7c7df99c99925dd1c94a91"
+    },
+    {
+      "org": "Example Library",
+      "audience": "libraries",
+      "added": "2026-11-27",
+      "hash": "623738792241ed6a9e5fa839fe8198a7fc894edc9119f20375370971a895637d"
+    },
+    {
+      "org": "Example University",
+      "audience": "campuses",
+      "added": "2026-11-27",
+      "hash": "5e6ac3fab504cd5f3c851382835857057674cdd154d5f449fef38647fca2aea5"
+    }
+  ]
+}
