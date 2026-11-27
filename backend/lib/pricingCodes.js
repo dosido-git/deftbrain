@@ -10,6 +10,8 @@ const crypto = require('crypto');
 const path = require('path');
 
 const FILE = path.join(__dirname, '..', 'data', 'pricing-codes.json');
+// Partner usage-report codes use the same scheme and key (owner, 2026-11-27).
+const REPORT_FILE = path.join(__dirname, '..', 'data', 'report-codes.json');
 
 const hashCode = (code, secret) => crypto.createHmac('sha256', secret).update(String(code).trim()).digest('hex');
 
@@ -24,4 +26,4 @@ function findEntry(code, secret, entries) {
   return match;
 }
 
-module.exports = { FILE, hashCode, findEntry };
+module.exports = { FILE, REPORT_FILE, hashCode, findEntry };

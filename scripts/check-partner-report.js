@@ -50,4 +50,17 @@ assert.strictEqual(only.totals.visits, null, 'a total under 20 is hidden too');
 
 const html = renderPartnerReportHTML(r, { toolTitles: { ScamRadar: 'Scam Radar' } });
 assert.ok(html.includes('Scam Radar') && html.includes('fewer than 20') && !html.includes('/for/other'));
+// Topics (first catalog category) and busiest days, same suppression.
+const cat = { ScamRadar: 'Money', BillRescue: 'Money', PlainTalk: 'Learning' };
+const rt = buildPartnerReport(events, 'acme', { partner: { tools: ['ScamRadar'] }, categoryOf: id => cat[id] || null });
+const topic = Object.fromEntries(rt.byTopic.map(x => [x.label, x]));
+assert.strictEqual(topic.Money.started, 44, 'Scam Radar 40 + Bill Rescue 4');
+assert.strictEqual(topic.Learning.started, 22);
+assert.strictEqual(rt.byTopic[0].label, 'Money', 'most started first');
+assert.strictEqual(rt.byWeekday.length, 7);
+const day = Object.fromEntries(rt.byWeekday.map(x => [x.label, x.visits]));
+assert.strictEqual(day.Wednesday, null, '2026-12-02 (9 visits) is hidden');
+assert.strictEqual(day.Thursday, null, '2026-11-05 (60) hidden too: 69 - 60 would give Wednesday back');
+assert.strictEqual(day.Monday, 0, 'zero describes no one');
+assert.ok(renderPartnerReportHTML(rt).includes('What people came for'));
 console.log('partner report: ok');

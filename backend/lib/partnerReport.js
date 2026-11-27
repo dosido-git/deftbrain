@@ -63,7 +63,7 @@ function suppressTable(rows, totals) {
   return { rows, totals: shown };
 }
 
-function buildPartnerReport(events, partnerId, { partner = {}, from, to } = {}) {
+function buildPartnerReport(events, partnerId, { partner = {}, from, to, categoryOf = () => null } = {}) {
   const landing = `/for/${partnerId}`;
   const mine = events.filter(e => e && e.kind === 'event' && e.landing === landing && measureOf(e));
   const months = mine.map(e => monthOf(e.at)).filter(Boolean).sort();
@@ -101,7 +101,30 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to } = {}) 
   }
   const byLink = Object.entries(channels).sort((a, b) => b[1] - a[1]).map(([label, visits]) => ({ label, visits }));
 
+  // What people came for (partner perk, 2026-11-27): guidance by topic, the
+  // tool's first catalog category, so the partner sees themes, not tools.
+  const topicsAt = {};
+  for (const e of rows) {
+    const k = measureOf(e);
+    if (k !== 'started' && k !== 'finished') continue;
+    const topic = categoryOf(toolOf(e.path)) || 'Other topics';
+    topicsAt[topic] = topicsAt[topic] || { label: topic, started: 0, finished: 0 };
+    topicsAt[topic][k] += 1;
+  }
+  const byTopic = Object.values(topicsAt).sort((a, b) => b.started - a.started || a.label.localeCompare(b.label));
+
+  // When people come: visits by weekday (UTC), Monday first.
+  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const byWeekday = DAYS.map(label => ({ label, visits: 0 }));
+  for (const e of rows) {
+    if (measureOf(e) !== 'visits' || typeof e.at !== 'string') continue;
+    const d = new Date(e.at).getUTCDay();
+    if (!Number.isNaN(d)) byWeekday[(d + 6) % 7].visits += 1;
+  }
+
   const t = suppressTable(byMonth, totals);
+  const topics = suppressTable(byTopic, { started: totals.started, finished: totals.finished });
+  const days = suppressTable(byWeekday, { visits: totals.visits });
   const tools = suppressTable([...Object.values(byTool), other], { started: totals.started, finished: totals.finished });
   const links = suppressTable(byLink, { visits: totals.visits });
   return {
@@ -114,6 +137,8 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to } = {}) 
     byMonth: t.rows,
     byExperience: tools.rows,
     byLink: links.rows,
+    byTopic: topics.rows,
+    byWeekday: days.rows,
   };
 }
 
@@ -154,6 +179,10 @@ td,th{white-space:nowrap}td.name{white-space:normal;min-width:9em}
 ${table('Month', r.byMonth.map(m => ({ ...m, label: monthName(m.label, true) })), [['visits', 'Visits'], ['active', 'With activity'], ['started', 'Started'], ['finished', 'Finished']])}
 <h2>By experience</h2>
 ${table('Experience', r.byExperience, [['started', 'Started'], ['finished', 'Finished']], x => toolTitles[x.label] || x.label)}
+<h2>What people came for</h2>
+${(r.byTopic || []).length ? table('Topic', r.byTopic, [['started', 'Started'], ['finished', 'Finished']]) : '<p>No guidance started in this period.</p>'}
+<h2>Busiest days</h2>
+${table('Day (UTC)', r.byWeekday || [], [['visits', 'Visits']])}
 <h2>Where visits came from</h2>
 ${r.byLink.length ? table('Link', r.byLink, [['visits', 'Visits']]) : '<p>No visits in this period.</p>'}
 <p class="note">Totals only. Any group of 1 to ${r.minGroup - 1} is shown as “fewer than 20”, and where one hidden number could be worked out from a total, a second is hidden too. This report never includes what anyone typed or was shown, names, email or IP addresses. Months are calendar months in UTC. Prepared by DeftBrain.</p>

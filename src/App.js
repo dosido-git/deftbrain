@@ -20,6 +20,7 @@ import AllToolsPage from './components/AllToolsPage';
 import WaitNotice from './components/WaitNotice';
 import OrganizationsPage from './components/OrganizationsPage';
 import OrgPricingPage from './components/OrgPricingPage';
+import PartnerReportPage from './components/PartnerReportPage';
 import PartnerPage from './components/PartnerPage';
 import PartnerCenter from './components/PartnerCenter';
 import { SiteTailDemo } from './components/PublicProductDemo';
@@ -59,6 +60,7 @@ export default function App() {
                 <Route path="/organizations/pricing" element={<OrgPricingPage />} />
                 <Route path="/for/:partnerId" element={<PartnerPage allTools={tools} />} />
                 <Route path="/partners" element={<PartnerCenter allTools={tools} />} />
+                <Route path="/partners/report" element={<PartnerReportPage />} />
                 <Route path="/partners/:section" element={<PartnerCenter allTools={tools} />} />
                 <Route path="/partners/packages/:pkg" element={<PartnerCenter allTools={tools} />} />
                 <Route path="/:toolId" element={<ToolRenderer college={college} />} />

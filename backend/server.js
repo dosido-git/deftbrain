@@ -1044,6 +1044,12 @@ if (IS_PRODUCTION) {
   // from the same JSON the client reads. noindex: working materials for
   // partners; the indexable sales page is /organizations.
   const PARTNER_CENTER = require('../src/data/partnerCenter.json');
+  // Partner usage report, by report code (PartnerReportPage.js); the report
+  // comes from POST /api/partner-report, never from this HTML.
+  app.get('/partners/report', (req, res) => {
+    res.set('X-Robots-Tag', 'noindex');
+    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  });
   app.get(['/partners', '/partners/:page'], (req, res) => {
     res.set('X-Robots-Tag', 'noindex');
     const known = !req.params.page || PARTNER_CENTER.pages.includes(req.params.page);

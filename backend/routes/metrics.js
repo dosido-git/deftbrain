@@ -11,6 +11,10 @@ const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
 const { buildPartnerReport, renderPartnerReportHTML } = require('../lib/partnerReport');
+const { REPORT_FILE, findEntry } = require('../lib/pricingCodes');
+// A tool's topic for partner reports: its first catalog category.
+const TOPIC_OF = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, String(t.category || '').split(', ')[0] || null]));
+const topicOf = id => (id && TOPIC_OF[id]) || null;
 const PARTNERS = require('../../src/data/partners.json');
 // Guides are reported under the site's own categories (the ones the guide
 // lists and tool pages show), not their URL folders. Totals come from the same
@@ -1925,10 +1929,34 @@ router.get('/metrics/partner-report', rateLimit(METRIC_LIMITS, 'metrics-partner:
   const id = String(req.query.partner || '');
   if (!Object.prototype.hasOwnProperty.call(PARTNERS, id)) return res.status(404).end();
   const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
-  const report = buildPartnerReport(readMetrics(), id, { partner: PARTNERS[id], from: month(req.query.from), to: month(req.query.to) });
+  const report = buildPartnerReport(readMetrics(), id, { partner: PARTNERS[id], from: month(req.query.from), to: month(req.query.to), categoryOf: topicOf });
   if (req.query.format === 'json') return res.json(report);
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
   res.set('Cache-Control', 'no-store').type('html').send(renderPartnerReportHTML(report, { toolTitles }));
+});
+
+// POST /api/partner-report { code, from?, to? } — the same report, opened by
+// the partner itself with its own report code (partner perk, owner
+// 2026-11-27). Codes: backend/data/report-codes.json, hashed with
+// PRICING_CODE_SECRET (scripts/report-code.js). Returns the printable HTML.
+const PARTNER_REPORT_LIMITS = { perMinute: 5, perDay: 30 };
+router.post('/partner-report', rateLimit(PARTNER_REPORT_LIMITS, 'partner-report:'), (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const secret = process.env.PRICING_CODE_SECRET;
+  let entries = [];
+  try { entries = JSON.parse(fs.readFileSync(REPORT_FILE, 'utf8')).codes || []; } catch (_) { /* none */ }
+  if (!secret || !entries.length) return res.status(503).json({ error: 'not_configured' });
+  const match = findEntry(String((req.body || {}).code || ''), secret, entries);
+  const id = match && match.partner;
+  if (!id || !Object.prototype.hasOwnProperty.call(PARTNERS, id)) {
+    logMetric('partner_report_access', { ok: false });
+    return res.status(401).json({ error: 'wrong_code' });
+  }
+  logMetric('partner_report_access', { ok: true, partner: id });
+  const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
+  const report = buildPartnerReport(readMetrics(), id, { partner: PARTNERS[id], from: month(req.body.from), to: month(req.body.to), categoryOf: topicOf });
+  const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
+  res.json({ name: report.name, from: report.from, to: report.to, html: renderPartnerReportHTML(report, { toolTitles }) });
 });
 
 router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req, res) => {

@@ -32,11 +32,11 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   copy text gets the partner line too. Mechanical codemod, gated.
 
 ## D. Reports partners can open themselves (perks 2, 3; consortia 5)
-- [ ] D1. Per-partner report access: a report code per partner (hashed, same
+- [x] D1. Per-partner report access: a report code per partner (hashed, same
   scheme as pricing codes) and a `/partners/report` page that shows that
   partner's report without the admin key.
-- [ ] D2. "What your people are struggling with": topics by category, rising
-  and falling month over month, busiest days and hours. Aggregate only, same
+- [x] D2. "What your people are struggling with": topics by category, busiest days
+  (shipped: topics + weekdays; month-over-month rising/falling and hours still to do). Aggregate only, same
   fewer-than-20 suppression as today.
 - [ ] D3. Grant/evidence export: the report as a printable one-pager framed for
   funders (reach, completions, topics, period), with method notes.
