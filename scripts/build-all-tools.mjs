@@ -2,7 +2,8 @@
 // public/all-tools.pdf (linked from the Toolbox, the footer and the
 // Organizations page; was /flier until 2026-11-26).
 //
-//   node scripts/build-all-tools.mjs          rebuild the HTML and print the PDF (needs local Chrome)
+//   node scripts/build-all-tools.mjs          rebuild the HTML and print the PDF and the
+//                                             large-print PDF, public/all-tools-large.pdf (needs local Chrome)
 //   node scripts/build-all-tools.mjs --check  fail if the list no longer matches the catalog (pre-push)
 //
 // Only the tool list is generated. The head, styles, embedded fonts, header and
@@ -20,6 +21,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HTML = path.join(root, 'public/all-tools.html');
 const PDF = path.join(root, 'public/all-tools.pdf');
+const LARGE_PDF = path.join(root, 'public/all-tools-large.pdf');
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 // tools.js / categoryMeta.js are ESM without "type": "module": load copies as .mjs.
@@ -62,7 +64,11 @@ if (process.argv.includes('--check')) {
 fs.writeFileSync(HTML, next);
 if (!fs.existsSync(CHROME)) { console.error(`build-all-tools: HTML written; Chrome not found at ${CHROME}, so the PDF was NOT rebuilt.`); process.exit(1); }
 execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--print-to-pdf=${PDF}`, pathToFileURL(HTML).href], { stdio: 'ignore' });
+// Large print: the same page with scripts/all-tools-large.css after its own styles.
+const largeHtml = path.join(tmp, 'all-tools-large.html');
+fs.writeFileSync(largeHtml, next.replace('</head>', `<style>${fs.readFileSync(path.join(root, 'scripts/all-tools-large.css'), 'utf8')}</style></head>`));
+execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--print-to-pdf=${LARGE_PDF}`, pathToFileURL(largeHtml).href], { stdio: 'ignore' });
 let pages = '?';
 try { pages = execFileSync('pdfinfo', [PDF]).toString().match(/Pages:\s+(\d+)/)[1]; } catch (_) { /* pdfinfo missing: skip the page check */ }
-console.log(`all-tools: ${listed.length} tools in ${groups.length} groups → ${path.relative(root, HTML)}, ${path.relative(root, PDF)} (${pages} pages)`);
+console.log(`all-tools: ${listed.length} tools in ${groups.length} groups → ${path.relative(root, HTML)}, ${path.relative(root, PDF)} (${pages} pages), ${path.relative(root, LARGE_PDF)}`);
 if (pages !== '?' && pages !== '2') console.error(`⚠ all-tools.pdf is ${pages} pages, not 2: tighten .desc / .tool in public/all-tools.html.`);

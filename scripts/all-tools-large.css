@@ -1,0 +1,17 @@
+/* Large-print version of public/all-tools.html (owner, 2026-11-27): every word
+   at 18pt or more, one column. Added after the page's own styles by
+   scripts/build-all-tools.mjs and scripts/partner-all-tools.mjs --large. */
+@page { size: 8.5in 11in; margin: 0.6in 0.7in; }
+header { flex-direction: column; align-items: flex-start; gap: 10pt; }
+.word { font-size: 40pt; }
+.def, .tag, .intro, .end { font-size: 18pt !important; }
+.tag, .intro { text-align: start !important; }
+.cols { column-count: 1; }
+h2 { font-size: 26pt; margin: 18pt 0 8pt; }
+.tool { margin: 0 0 12pt; }
+.name { font-size: 20pt; line-height: 1.25; }
+.ic { width: 30pt; font-size: 18pt; }
+.desc { font-size: 18pt; line-height: 1.35; padding-inline-start: 30pt; }
+.end { gap: 16pt; margin-top: 20pt; padding-top: 14pt; line-height: 1.4; }
+.end .url { font-size: 22pt; }
+.end .qr { width: 1.6in; height: 1.6in; }

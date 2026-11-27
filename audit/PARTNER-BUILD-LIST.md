@@ -74,7 +74,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [ ] H2. Phone and text access (needs a telephony account).
 - [ ] H3. Partner-exclusive tools (unions, health plans, state libraries, credit
   unions): each is a full tool build; pick with the partner.
-- [~] H4. Large-print handout (18pt and up) shipped in the launch kit; the all-tools PDF has no large-print version yet.
+- [x] H4. Large print: launch-kit handout format, plus public/all-tools-large.pdf (built with the regular list by build-all-tools.mjs) and partner copies via partner-all-tools.mjs <id> --large.
 - [ ] H5. Early access / partner tool requests (process + a flag).
 
 ## Order

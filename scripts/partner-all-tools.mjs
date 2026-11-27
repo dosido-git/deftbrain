@@ -5,6 +5,7 @@
 // partner's usage report shows under "Where visits came from").
 //
 //   node scripts/partner-all-tools.mjs example-cu          (or <consortium>/<member>)
+//   node scripts/partner-all-tools.mjs example-cu --large  large print (18pt and up)
 //
 // Writes output/partners/<id>-all-tools.html and .pdf (needs local Chrome).
 // Nothing is committed: send the PDF to the partner.
@@ -20,13 +21,14 @@ const { resolvePartner } = require(path.join(root, 'backend/lib/partners.js'));
 const qrcode = require('qrcode-generator');
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
-const id = (process.argv[2] || '').trim();
+const large = process.argv.includes('--large');
+const id = (process.argv.slice(2).find(a => !a.startsWith('--')) || '').trim();
 const partner = resolvePartner(id);
 if (!partner || partner.retired) { console.error('Usage: node scripts/partner-all-tools.mjs <partner id>'); process.exit(1); }
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const page = `deftbrain.com/for/${id}`;
-const link = `https://${page}?ref=${id}-print`;
+const link = `https://${page}?ref=${id}-${large ? 'large-print' : 'print'}`;
 
 // QR code as one SVG path, same drawing as the public list's.
 const qr = qrcode(0, 'M');
@@ -48,7 +50,8 @@ swap(/<div class="url">deftbrain\.com<\/div>/, `<div class="url" style="font-siz
 
 const outDir = path.join(root, 'output/partners');
 fs.mkdirSync(outDir, { recursive: true });
-const base = id.replace(/\//g, '--');
+if (large) html = html.replace('</head>', `<style>${fs.readFileSync(path.join(root, 'scripts/all-tools-large.css'), 'utf8')}</style></head>`);
+const base = id.replace(/\//g, '--') + (large ? '-large' : '');
 const HTML = path.join(outDir, `${base}-all-tools.html`);
 const PDF = path.join(outDir, `${base}-all-tools.pdf`);
 fs.writeFileSync(HTML, html);

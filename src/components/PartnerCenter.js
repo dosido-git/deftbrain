@@ -268,7 +268,7 @@ function LaunchKit({ byId, params }) {
           <h2 id="pc-handout-title">Printable handout and poster</h2>
           <PrintBtn label={poster ? 'Print poster' : 'Print handout'} />
         </div>
-        <p className="pc-section-lead pc-noprint">One page, with the address printed in full beside the QR code. The poster is for a wall, a counter or a flier: few words and a QR code large enough to scan from a few steps away, with its own tracked link. Large print sets every word at 18 points or more. To list every tool instead: <a href="/all-tools.pdf">printable list (PDF)</a>.</p>
+        <p className="pc-section-lead pc-noprint">One page, with the address printed in full beside the QR code. The poster is for a wall, a counter or a flier: few words and a QR code large enough to scan from a few steps away, with its own tracked link. Large print sets every word at 18 points or more. To list every tool instead: <a href="/all-tools.pdf">printable list (PDF)</a> or <a href="/all-tools-large.pdf">large print (PDF)</a>; we make both with your name and QR code on request.</p>
         <div className="pc-handout-picks pc-noprint">
           <label className="pc-handout-pick">Package<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
           <label className="pc-handout-pick">Format<select value={kit.format} onChange={set('format')}><option value="handout">Handout</option><option value="large">Handout, large print</option><option value="poster">Poster or flier</option></select></label>
@@ -567,7 +567,7 @@ What it costs: one contract for every local. [Price from your DeftBrain quote.]`
       <section className="pc-section" aria-labelledby="sc-print">
         <h2 id="sc-print">4. Printed materials and launch kits</h2>
         <div className="pc-cards">
-          <article><span aria-hidden="true">📄</span><h3>Printable list of every tool</h3><p>Two pages, "Provided by" the consortium or the member, with a QR code to their own page.</p><a href="/partners/example-union-all-tools.pdf" target="_blank" rel="noopener noreferrer">Edition PDF ↗</a> · <a href="/partners/example-union-local-101-all-tools.pdf" target="_blank" rel="noopener noreferrer">Local 101 PDF ↗</a></article>
+          <article><span aria-hidden="true">📄</span><h3>Printable list of every tool</h3><p>Two pages, "Provided by" the consortium or the member, with a QR code to their own page.</p><a href="/partners/example-union-all-tools.pdf" target="_blank" rel="noopener noreferrer">Edition PDF ↗</a> · <a href="/partners/example-union-large-all-tools.pdf" target="_blank" rel="noopener noreferrer">Large print ↗</a> · <a href="/partners/example-union-local-101-all-tools.pdf" target="_blank" rel="noopener noreferrer">Local 101 PDF ↗</a></article>
           <article><span aria-hidden="true">🧰</span><h3>Launch kits</h3><p>Emails, a website card, a staff script, tracked links, a handout with a QR code and a timeline, filled in.</p><Link to={`/partners/launch-kit?partner=${SAMPLE_ID}`}>For the consortium →</Link>{m1 && <> · <Link to={`/partners/launch-kit?partner=${encodeURIComponent(m1.id)}`}>For {m1.name} →</Link></>}</article>
         </div>
       </section>
