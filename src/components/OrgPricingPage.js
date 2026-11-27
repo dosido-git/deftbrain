@@ -182,20 +182,18 @@ export default function OrgPricingPage() {
                   </select>
                 </label>
               )}
-              <label>How many {aud.units}?
+              <div className="org-quote-wide org-pricing-size-pick" role="group" aria-labelledby="org-size-q">
+                <span id="org-size-q" className="org-pricing-q">How many {aud.units}?</span>
                 {aud.counts && <span className="org-pricing-hint">{aud.counts}</span>}
-                <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="10000" />
-              </label>
-              {aud.sizes?.length > 0 && (
-                <div className="org-quote-wide org-pricing-sizes" role="group" aria-label={`Common sizes, in ${aud.units}`}>
+                <div className="org-pricing-sizes">
                   {aud.sizes.map(n => (
                     <button key={n} type="button" className="org-pricing-size" aria-pressed={peopleN === n} onClick={() => setPeople(String(n))}>{compact(n)}</button>
                   ))}
                 </div>
-              )}
+              </div>
               <p className="org-quote-wide org-pricing-hint">Minimum {usd(aud.minimum)} a year.</p>
               <p className="org-quote-wide org-pricing-yours" aria-live="polite">
-                {quote === undefined ? 'Enter a number to see your price.'
+                {quote === undefined ? 'Pick a size to see your price.'
                   : <>Your price: <strong>{usd(quote)}</strong> a year, or <strong>{perText(quote / peopleN)}</strong> per {aud.unit}</>}
               </p>
             </div>

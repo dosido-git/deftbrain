@@ -135,3 +135,6 @@
 :root[data-theme="dark"] .org-pricing-size[aria-pressed="true"]{background:var(--navy);color:#fff}
 .org-pricing-signout{font:inherit;font-size:14px;background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;cursor:pointer;margin-block-start:6px}
 :root[data-theme="dark"] .org-pricing-signout{color:inherit}
+.org-pricing-size-pick{display:flex;flex-direction:column;gap:6px}
+.org-pricing-q{font-weight:700;color:var(--navy)}
+:root[data-theme="dark"] .org-pricing-q{color:inherit}
