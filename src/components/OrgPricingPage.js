@@ -13,6 +13,11 @@ import './OrganizationsPage.css';
 // for this tab only, so a refresh doesn't ask again.
 const SALES = 'sales@deftbrain.com';
 const CODE_KEY = 'deft:pricing-code';
+// Signed out after 15 minutes without a click or key (owner, 2026-11-26), and
+// the saved code is dropped too, so a shared screen doesn't stay open.
+const SEEN_KEY = 'deft:pricing-seen';
+const IDLE_MIN = 15;
+const IDLE_MS = IDLE_MIN * 60 * 1000;
 
 // Prices are set in US dollars whatever the visitor's locale.
 const usd = n => formatCurrency(n, 'en-US', 'USD');
@@ -49,6 +54,7 @@ export default function OrgPricingPage() {
   const [pricing, setPricing] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | checking | wrong | closed | failed
   const resultRef = useRef(null);
+  const codeRef = useRef(null);
   const [people, setPeople] = useState('');
   const peopleN = Math.floor(Number(people));
   const [audienceKey, setAudienceKey] = useState('');
@@ -67,7 +73,7 @@ export default function OrgPricingPage() {
         setPricing(data);
         setAudienceKey(data.audience || data.audiences[0].key);
         setStatus('idle');
-        try { sessionStorage.setItem(CODE_KEY, value); } catch (_) { /* this tab only; nothing else */ }
+        try { sessionStorage.setItem(CODE_KEY, value); sessionStorage.setItem(SEEN_KEY, String(Date.now())); } catch (_) { /* this tab only; nothing else */ }
         if (!quiet) setTimeout(() => resultRef.current?.focus(), 120);
         return;
       }
@@ -78,11 +84,46 @@ export default function OrgPricingPage() {
     }
   };
 
+  const signOut = reason => {
+    try { sessionStorage.removeItem(CODE_KEY); sessionStorage.removeItem(SEEN_KEY); } catch (_) { /* nothing to clear */ }
+    setPricing(null);
+    setCode('');
+    setPeople('');
+    setStatus(reason);
+    setTimeout(() => codeRef.current?.focus(), 120);
+  };
+
   useEffect(() => {
     let saved = '';
-    try { saved = sessionStorage.getItem(CODE_KEY) || ''; } catch (_) { /* no saved code */ }
-    if (saved) unlock(saved, true);
+    let seen = 0;
+    try { saved = sessionStorage.getItem(CODE_KEY) || ''; seen = Number(sessionStorage.getItem(SEEN_KEY)) || 0; } catch (_) { /* no saved code */ }
+    if (!saved) return;
+    if (Date.now() - seen < IDLE_MS) unlock(saved, true);
+    else signOut('timedout');
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // While pricing is open, any click or key counts as activity. A check every
+  // 30s (and on returning to the tab) also catches a laptop that slept.
+  useEffect(() => {
+    if (!pricing) return undefined;
+    const touch = () => { try { sessionStorage.setItem(SEEN_KEY, String(Date.now())); } catch (_) { /* best effort */ } };
+    const check = () => {
+      let seen = 0;
+      try { seen = Number(sessionStorage.getItem(SEEN_KEY)) || 0; } catch (_) { /* treat as idle */ }
+      if (Date.now() - seen >= IDLE_MS) signOut('timedout');
+    };
+    const onVisible = () => { if (document.visibilityState === 'visible') check(); };
+    window.addEventListener('pointerdown', touch);
+    window.addEventListener('keydown', touch);
+    document.addEventListener('visibilitychange', onVisible);
+    const timer = setInterval(check, 30000);
+    return () => {
+      window.removeEventListener('pointerdown', touch);
+      window.removeEventListener('keydown', touch);
+      document.removeEventListener('visibilitychange', onVisible);
+      clearInterval(timer);
+    };
+  }, [pricing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mail = `mailto:${SALES}?subject=${encodeURIComponent('DeftBrain pricing for our organization')}`;
 
@@ -93,6 +134,7 @@ export default function OrgPricingPage() {
         <div className="org-section-heading">
           <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>
           <h1 className="org-aud-title">{pricing?.org ? `Pricing for ${pricing.org}` : 'Pricing'}</h1>
+          {pricing && <button type="button" className="org-pricing-signout" onClick={() => signOut('signedout')}>Sign out</button>}
           {!pricing && <p>Email <a className="org-text-link" href={mail}>{SALES}</a> from your organization address to access pricing. We'll reply with an access code for your organization.</p>}
         </div>
 
@@ -100,7 +142,7 @@ export default function OrgPricingPage() {
           <form className="org-quote org-pricing-gate" onSubmit={e => { e.preventDefault(); unlock(code); }} aria-labelledby="org-code-title">
             <h2 id="org-code-title">Have an access code?</h2>
             <label className="org-quote-wide">Access code
-              <input type="text" value={code} onChange={e => { setCode(e.target.value); if (status !== 'checking') setStatus('idle'); }} autoComplete="off" spellCheck="false" />
+              <input ref={codeRef} type="text" value={code} onChange={e => { setCode(e.target.value); if (status !== 'checking') setStatus('idle'); }} autoComplete="off" spellCheck="false" />
             </label>
             <div className="org-quote-wide org-quote-send">
               <button type="submit" className="org-btn org-btn-primary" disabled={status === 'checking' || !code.trim()}>{status === 'checking' ? 'Checking…' : 'See pricing →'}</button>
@@ -108,6 +150,8 @@ export default function OrgPricingPage() {
                 {status === 'wrong' && 'That code didn’t match. Check it, or email us for a new one.'}
                 {status === 'closed' && <>Pricing isn’t open yet. Email <a href={mail}>{SALES}</a> and we’ll send it directly.</>}
                 {status === 'failed' && 'Something went wrong. Try again in a moment.'}
+                {status === 'signedout' && 'Signed out.'}
+                {status === 'timedout' && `Signed out after ${IDLE_MIN} minutes without activity. Enter your code to see pricing again.`}
               </span>
             </div>
           </form>

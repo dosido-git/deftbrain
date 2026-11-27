@@ -133,3 +133,5 @@
 .org-pricing-size[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
 :root[data-theme="dark"] .org-pricing-size{background:#232326;border-color:#3f3f46;color:inherit}
 :root[data-theme="dark"] .org-pricing-size[aria-pressed="true"]{background:var(--navy);color:#fff}
+.org-pricing-signout{font:inherit;font-size:14px;background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;cursor:pointer;margin-block-start:6px}
+:root[data-theme="dark"] .org-pricing-signout{color:inherit}
