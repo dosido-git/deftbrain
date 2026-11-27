@@ -36,7 +36,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   scheme as pricing codes) and a `/partners/report` page that shows that
   partner's report without the admin key.
 - [x] D2. "What your people are struggling with": topics by category, busiest days
-  (shipped: topics + weekdays; month-over-month rising/falling and hours still to do). Aggregate only, same
+  (shipped: topics with rising/falling, weekdays; hours of day left out on purpose: too identifying for small partners). Aggregate only, same
   fewer-than-20 suppression as today.
 - [x] D3. Grant/evidence export: the report as a printable one-pager framed for
   funders (reach, completions, topics, period), with method notes.

@@ -84,4 +84,14 @@ assert.strictEqual(lone.byMember, null);
 const fund = renderFunderSummaryHTML(rt);
 assert.ok(fund.includes('fewer than 20') || fund.includes('69'), 'funder summary uses the suppressed totals');
 assert.ok(!fund.includes('/for/other'));
+// Trend: Money 25 in Oct, 40 in Nov -> rising; small months show no trend.
+const tev = [
+  ...many(25, () => ({ ...ev('tool_run', { path: '/ScamRadar' }), at: '2026-10-10T12:00:00Z' })),
+  ...many(40, () => ev('tool_run', { path: '/ScamRadar' })),
+  ...many(5, () => ev('tool_run', { path: '/PlainTalk' })),
+];
+const tr = buildPartnerReport(tev, 'acme', { partner: { tools: [] }, from: '2026-10', to: '2026-11', categoryOf: id => cat[id] || null });
+assert.strictEqual(tr.byTopic.find(x => x.label === 'Money').trend, 'rising');
+assert.strictEqual(tr.byTopic.find(x => x.label === 'Learning').trend, null, 'under 20: no trend');
+assert.ok(renderPartnerReportHTML(tr).includes('Money (rising)'));
 console.log('partner report: ok');

@@ -116,6 +116,18 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
   }
   const byTopic = Object.values(topicsAt).sort((a, b) => b.started - a.started || a.label.localeCompare(b.label));
 
+  // Rising or falling: the last month of the period against the month before,
+  // only where both months reach the small-group floor (else no trend shown).
+  const monthList = monthsBetween(start, end);
+  if (monthList.length >= 2) {
+    const [prevM, lastM] = monthList.slice(-2);
+    const startedIn = (topic, m) => rows.filter(e => measureOf(e) === 'started' && monthOf(e.at) === m && (categoryOf(toolOf(e.path)) || 'Other topics') === topic).length;
+    for (const x of byTopic) {
+      const a = startedIn(x.label, prevM); const b = startedIn(x.label, lastM);
+      x.trend = a >= MIN_GROUP && b >= MIN_GROUP ? (b >= a * 1.2 ? 'rising' : b <= a * 0.8 ? 'falling' : 'steady') : null;
+    }
+  }
+
   // When people come: visits by weekday (UTC), Monday first.
   const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const byWeekday = DAYS.map(label => ({ label, visits: 0 }));
@@ -201,7 +213,8 @@ ${table('Experience', r.byExperience, [['started', 'Started'], ['finished', 'Fin
 ${r.byMember ? `<h2>By member</h2>
 ${table('Member', r.byMember, [['visits', 'Visits'], ['started', 'Started'], ['finished', 'Finished']])}` : ''}
 <h2>What people came for</h2>
-${(r.byTopic || []).length ? table('Topic', r.byTopic, [['started', 'Started'], ['finished', 'Finished']]) : '<p>No guidance started in this period.</p>'}
+${(r.byTopic || []).length ? table('Topic', r.byTopic, [['started', 'Started'], ['finished', 'Finished']], x => x.trend ? `${x.label} (${x.trend})` : x.label) : '<p>No guidance started in this period.</p>'}
+${(r.byTopic || []).some(x => x.trend) ? `<p class="sub" style="margin-top:6px">Rising or falling compares ${monthName(r.to)} with the month before, where both months have at least ${r.minGroup}.</p>` : ''}
 <h2>Busiest days</h2>
 ${table('Day (UTC)', r.byWeekday || [], [['visits', 'Visits']])}
 <h2>Where visits came from</h2>
