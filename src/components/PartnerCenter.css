@@ -115,3 +115,17 @@
 .pc-mailform textarea{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);resize:vertical}
 .pc-wide{grid-column:1/-1}
 :root[data-theme="dark"] .pc-mailform textarea{background:#1c1c1f;border-color:#3f3f46;color:inherit}
+/* Handout formats: large print (18pt and up) and a poster with a QR code scannable from a few steps away. */
+.pc-handout-picks{display:flex;flex-wrap:wrap;gap:8px 24px}
+.pc-handout-large{font-size:24px;line-height:1.5}
+.pc-handout-large header b{font-size:28px}
+.pc-handout-large header span,.pc-handout-large footer{font-size:24px}
+.pc-handout-large h2{font-size:40px}
+.pc-handout-large h3{font-size:28px}
+.pc-handout-large .pc-handout-url{font-size:32px}
+.pc-handout-poster{font-size:24px;text-align:center}
+.pc-handout-poster h2{font-size:52px;line-height:1.1;margin-block:18px 14px}
+.pc-handout-poster .pc-handout-go{flex-direction:column;justify-content:center;margin-block:28px 14px}
+.pc-handout-poster .pc-qr{width:300px;height:300px}
+.pc-handout-poster .pc-handout-url{font-size:34px}
+@media print{.pc-handout-large{font-size:18pt}.pc-handout-large header span,.pc-handout-large footer{font-size:18pt}.pc-handout-poster .pc-qr{width:3in;height:3in}.pc-handout-poster h2{font-size:40pt}.pc-handout-poster .pc-handout-go{margin-block:16px 8px}}

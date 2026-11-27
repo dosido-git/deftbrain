@@ -179,6 +179,7 @@ function initialKit(params) {
     phone: (partner?.contacts || []).find(ct => ct.phone)?.phone || partner?.help?.phone || '',
     sample: partner?.sample === true,
     logo: partner?.logo || '',
+    format: 'handout',
   };
 }
 
@@ -207,11 +208,14 @@ function LaunchKit({ byId, params }) {
   const card = `Title: ${pkg.title}\nSentence: ${pkg.intro}\nButton: Get started\nLink: ${link('website')}\nImage alt text: ${pkg.title}, free guidance from ${name} and DeftBrain`;
   const script = `"If you're not sure about this, there's a free guide on our website called '${pkg.title}'. It asks a few questions and helps you see your options, and we never see what you type."\n\nThen point them to ${page}.`;
   const social = `${pkg.intro} ${name} now offers free, private guidance from DeftBrain, with no account needed. ${link('social')}`;
+  // One short blurb a month, one tool each, for a newsletter or e-statement message.
+  const blurbs = tools.map((t, i) => `Month ${i + 1}: ${t.title}\n${t.tagline || t.description} Free and private from ${name}, with no account needed. ${link('newsletter')}`).join('\n\n');
   // The finished example fills in what a real launch would: an owner for each step and where it goes.
   const timeline = kit.sample
     ? `Week 0, Monday: member communications lead approves all copy and placements, after compliance signs off on the help line sentence\nWeek 0, Thursday: DeftBrain checks the final wording and the tracked links\nLaunch day (Tuesday, week 1): newsletter goes out with the long email; website card goes live on the Help & Security page; handouts at every branch teller line and drive-through\nWeek 1: branch managers brief tellers and the call center with the staff script at the morning huddle\nWeek 2: social post on the credit union's usual channels\nWeek 4: reminder in the e-statement message area\nMonth 3: member communications lead and DeftBrain review the usage report and decide what to keep, move or stop`
     : `Week 0: approve all copy and placements (owner: ____, approved on: ____)\nLaunch day: send the email, publish the website card, put out handouts\nWeek 1: brief front-line staff with the staff script\nWeek 4: send the reminder\nMonth 3: review the usage report together`;
-  const channels = [['Email', 'email'], ['Reminder', 'reminder'], ['Website or portal', 'website'], ['Social posts', 'social'], ['Printed handout', 'print'], ['Staff referrals', 'staff']];
+  const channels = [['Email', 'email'], ['Reminder', 'reminder'], ['Monthly newsletter', 'newsletter'], ['Website or portal', 'website'], ['Social posts', 'social'], ['Printed handout', 'print'], ['Poster or flier', 'poster'], ['Staff referrals', 'staff']];
+  const poster = kit.format === 'poster';
 
   return (
     <>
@@ -241,6 +245,7 @@ function LaunchKit({ byId, params }) {
           <Material title="Website or portal card" note="Use any photo you have rights to; keep the words on the page, not baked into the image." text={card} />
           <Material title="Staff script" note="Two sentences a teller, librarian or front-desk colleague can say out loud." text={script} />
           <Material title="Social post" note="Works on any platform you use." text={social} />
+          <Material title="Newsletter blurbs, one a month" note="A short item for each month after launch, one tool at a time." text={blurbs} />
         </div>
       </section>
 
@@ -260,21 +265,26 @@ function LaunchKit({ byId, params }) {
 
       <section className="pc-section" aria-labelledby="pc-handout-title">
         <div className="pc-material-head pc-noprint">
-          <h2 id="pc-handout-title">Printable handout</h2>
-          <PrintBtn label="Print handout" />
+          <h2 id="pc-handout-title">Printable handout and poster</h2>
+          <PrintBtn label={poster ? 'Print poster' : 'Print handout'} />
         </div>
-        <p className="pc-section-lead pc-noprint">One page, large type, with the address printed in full beside the QR code. The QR code uses the printed-handout tracking link; download it on its own for posters or cards. To list every tool instead: <a href="/all-tools.pdf">printable list (PDF)</a>.</p>
-        <label className="pc-handout-pick pc-noprint">Package on this handout<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
-        <article className="pc-handout" aria-label="Handout preview">
+        <p className="pc-section-lead pc-noprint">One page, with the address printed in full beside the QR code. The poster is for a wall, a counter or a flier: few words and a QR code large enough to scan from a few steps away, with its own tracked link. Large print sets every word at 18 points or more. To list every tool instead: <a href="/all-tools.pdf">printable list (PDF)</a>.</p>
+        <div className="pc-handout-picks pc-noprint">
+          <label className="pc-handout-pick">Package<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
+          <label className="pc-handout-pick">Format<select value={kit.format} onChange={set('format')}><option value="handout">Handout</option><option value="large">Handout, large print</option><option value="poster">Poster or flier</option></select></label>
+        </div>
+        <article className={`pc-handout pc-handout-${kit.format}`} aria-label={poster ? 'Poster preview' : 'Handout preview'}>
           <header><b className="pc-handout-name">{kit.logo && <img src={kit.logo} alt="" width="36" height="36" />}{name}</b><span>by DeftBrain</span></header>
           <h2>{pkg.title}</h2>
           <p className="pc-handout-intro">{pkg.intro}</p>
-          <h3>How it works</h3>
-          <ol><li>Go to the address below.</li><li>Choose what's going on and answer a few questions.</li><li>See what matters, your options and what to ask next.</li></ol>
-          <h3>What's included</h3>
-          <ul>{tools.map(t => <li key={t.id}><b>{t.title}</b> — {t.tagline || t.description}</li>)}</ul>
+          {!poster && <>
+            <h3>How it works</h3>
+            <ol><li>Go to the address below.</li><li>Choose what's going on and answer a few questions.</li><li>See what matters, your options and what to ask next.</li></ol>
+            <h3>What's included</h3>
+            <ul>{tools.map(t => <li key={t.id}><b>{t.title}</b> — {t.tagline || t.description}</li>)}</ul>
+          </>}
           <div className="pc-handout-go">
-            <QrCode value={link('print')} label={`QR code that opens ${page}`} />
+            <QrCode value={link(poster ? 'poster' : 'print')} label={`QR code that opens ${page}`} />
             <p className="pc-handout-url">{page}</p>
           </div>
           <p>Free and private. No account needed. {name} never sees what you type.</p>

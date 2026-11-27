@@ -59,9 +59,8 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 
 ## F. Promotion kit (perk 6; consortia 10)
 - [x] F1. Co-branded printable all-tools list (PDF) per partner: scripts/partner-all-tools.mjs <id> → output/partners/ (QR = tracked print link).
-- [ ] F2. Poster/flier templates with QR to the partner page (extends the
-  launch-kit handout).
-- [ ] F3. Monthly newsletter blurbs for partners to paste.
+- [x] F2. Poster/flier: launch-kit handout has a Format picker (Handout / Large print / Poster), poster has its own tracked link (?ref=<id>-poster).
+- [x] F3. Monthly newsletter blurbs in the launch kit: one tool a month from the package, tracked link ?ref=<id>-newsletter.
 
 ## G. Procurement paperwork (perk 9; consortia 9)
 - [~] G1. Accessibility statement page. Draft in docs/marketing/procurement-drafts.md; owner review before publishing.
@@ -75,7 +74,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [ ] H2. Phone and text access (needs a telephony account).
 - [ ] H3. Partner-exclusive tools (unions, health plans, state libraries, credit
   unions): each is a full tool build; pick with the partner.
-- [ ] H4. Large-print and paper kits.
+- [~] H4. Large-print handout (18pt and up) shipped in the launch kit; the all-tools PDF has no large-print version yet.
 - [ ] H5. Early access / partner tool requests (process + a flag).
 
 ## Order
