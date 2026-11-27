@@ -3,15 +3,40 @@
   "currency": "USD",
   "updated": "2026-11-26",
   "sizes": [
-    { "label": "Up to 25,000 people", "annual": 7200 },
-    { "label": "Up to 100,000 people", "annual": 11500 },
-    { "label": "Up to 250,000 people", "annual": 18100 },
-    { "label": "Up to 500,000 people", "annual": 27500 },
-    { "label": "Up to 750,000 people", "annual": 37000 },
-    { "label": "Up to 1,000,000 people", "annual": 46500 }
+    {
+      "label": "Up to 25,000 people",
+      "annual": 7200,
+      "people": 25000
+    },
+    {
+      "label": "Up to 100,000 people",
+      "annual": 11500,
+      "people": 100000
+    },
+    {
+      "label": "Up to 250,000 people",
+      "annual": 18100,
+      "people": 250000
+    },
+    {
+      "label": "Up to 500,000 people",
+      "annual": 27500,
+      "people": 500000
+    },
+    {
+      "label": "Up to 750,000 people",
+      "annual": 37000,
+      "people": 750000
+    },
+    {
+      "label": "Up to 1,000,000 people",
+      "annual": 46500,
+      "people": 1000000
+    }
   ],
   "notes": [
     "One price a year, billed annually. It includes setup, your own page, the launch kit, ongoing promotion, usage reports and support.",
+    "Your price follows your exact size: between two rows it falls on a straight line, so a few more people adds only a few dollars. Below 25,000 people the first price applies.",
     "People served means your library's service-area population, your credit union's members, your enrolled students or your employees.",
     "Consortia: one contract for every member, at 30% off each member's annual price.",
     "Over 1,000,000 people: quoted.",

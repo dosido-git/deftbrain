@@ -17,6 +17,20 @@ const CODE_KEY = 'deft:pricing-code';
 // Prices are set in US dollars whatever the visitor's locale.
 const usd = n => formatCurrency(n, 'en-US', 'USD');
 
+// Quote by exact size (owner, 2026-11-26): a straight line between the prices
+// of the sizes around it, so crossing a row never jumps. Below the smallest
+// size the first price applies; above the largest it is quoted (null).
+// Same rule as the spreadsheet's Tiers "Quote by exact size".
+function quoteFor(people, sizes) {
+  const pts = [...sizes].sort((x, y) => x.people - y.people);
+  if (people <= pts[0].people) return pts[0].annual;
+  for (let i = 1; i < pts.length; i++) {
+    const lo = pts[i - 1], hi = pts[i];
+    if (people <= hi.people) return Math.round((lo.annual + (people - lo.people) / (hi.people - lo.people) * (hi.annual - lo.annual)) / 10) * 10;
+  }
+  return null;
+}
+
 export default function OrgPricingPage() {
   const { isDark, toggleTheme } = useTheme();
   useDocumentHead({ title: 'Pricing for Organizations', description: 'DeftBrain pricing for organizations, by access code.', canonicalPath: '/organizations/pricing' });
@@ -30,6 +44,9 @@ export default function OrgPricingPage() {
   const [pricing, setPricing] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | checking | wrong | closed | failed
   const resultRef = useRef(null);
+  const [people, setPeople] = useState('');
+  const peopleN = Math.floor(Number(people));
+  const quote = pricing && peopleN > 0 ? quoteFor(peopleN, pricing.sizes) : undefined;
 
   const unlock = async (value, quiet) => {
     if (!value.trim()) return;
@@ -96,6 +113,16 @@ export default function OrgPricingPage() {
                   <tr key={s.label}><th scope="row">{s.label}</th><td>{usd(s.annual)}</td></tr>
                 ))}</tbody>
               </table>
+            </div>
+            <div className="org-quote org-pricing-calc">
+              <label className="org-quote-wide">How many people does your organization serve?
+                <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="60000" />
+              </label>
+              <p className="org-quote-wide org-pricing-yours" aria-live="polite">
+                {quote === undefined ? 'Enter a number to see your price.'
+                  : quote === null ? <>Over 1,000,000 people is quoted: email <a className="org-text-link" href={mail}>{SALES}</a>.</>
+                  : <>Your price: <strong>{usd(quote)}</strong> a year</>}
+              </p>
             </div>
             <ul className="org-pricing-notes">{pricing.notes.map(n => <li key={n}>{n}</li>)}</ul>
             <p className="org-price-small">Prices in {pricing.currency}. Questions? <a className="org-text-link" href={mail}>{SALES}</a></p>
