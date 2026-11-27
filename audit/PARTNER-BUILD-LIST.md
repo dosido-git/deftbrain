@@ -55,7 +55,9 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   its own site or app.
 - [~] E6. Revenue share tracking: pricing codes carry a consortium; sales and
   member counts roll up per consortium for royalty statements.
-  Shipped: pricing codes take --consortium; pricing views show "(via <consortium>)" in metrics. Royalty statements wait on a deals ledger (owner).
+  Shipped: pricing codes take --consortium; pricing views show "(via <consortium>)" in metrics;
+  scripts/royalty-statement.js <ledger.csv> <consortium> --from --to → printable statement (sample ledger in scripts/samples/).
+  Left: the owner keeps the real ledger (untracked) and sets each deal's rate. No public sample until a rate is chosen.
 
 ## F. Promotion kit (perk 6; consortia 10)
 - [x] F1. Co-branded printable all-tools list (PDF) per partner: scripts/partner-all-tools.mjs <id> → output/partners/ (QR = tracked print link).
@@ -75,7 +77,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [ ] H3. Partner-exclusive tools (unions, health plans, state libraries, credit
   unions): each is a full tool build; pick with the partner.
 - [x] H4. Large print: launch-kit handout format, plus public/all-tools-large.pdf (built with the regular list by build-all-tools.mjs) and partner copies via partner-all-tools.mjs <id> --large.
-- [ ] H5. Early access / partner tool requests (process + a flag).
+- [~] H5. Early access / partner tool requests. Requests: the sample consortium's "Request a tool" form. Flag: not built; no tool is hidden from the catalog today, and hiding one touches every catalog list (home, Toolbox, search, sitemap, prerender, guides). Build it with the first early-access tool.
 
 ## Order
 A1, A2 → B1, B2 → C1 → D1, D2 → E1, E2 → D3, F1, F2 → G1, G2, G3 → C2 → E3 →

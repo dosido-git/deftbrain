@@ -1,0 +1,6 @@
+paid_on,organization,consortium,amount,currency,royalty_pct,note
+2026-01-15,Example Union Local 101,example-union,7500,USD,15,Year 1 subscription
+2026-02-03,Example Union Local 202,example-union,5000,USD,15,Year 1 subscription
+2026-02-20,Example Credit Union,example-union,9000,USD,15,Members of the union's credit union
+2026-03-11,Example Union Local 101,example-union,1200,USD,15,Added large-print kits
+2026-04-02,Example Library,,6000,USD,,Direct sale (no consortium)
