@@ -25,6 +25,12 @@
       "hash": "c9886dd1f8d61816b437c15326bca06b7f3bbbd63c7c7df99c99925dd1c94a91"
     },
     {
+      "org": "Example Hospital",
+      "audience": "employers",
+      "added": "2026-11-27",
+      "hash": "492941bb60e2d2d1df907ffc1fed946a7d6b174cfa741157ced686e339d4559a"
+    },
+    {
       "org": "Example Library",
       "audience": "libraries",
       "added": "2026-11-27",

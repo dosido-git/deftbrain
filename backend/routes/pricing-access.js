@@ -7,7 +7,7 @@
 // (hashed codes, see backend/lib/pricingCodes.js), checked with the Railway
 // secret PRICING_CODE_SECRET; add an organization with
 // `node scripts/pricing-code.js "Organization name" audience`. With an audience
-// (libraries, credit-unions, campuses, community, employers) the page shows only
+// (libraries, credit-unions, campuses, community, employers, health-plans, unions) the page shows only
 // that audience's price; without one, all of them. No secret or no entries =
 // the page says to email.
 //

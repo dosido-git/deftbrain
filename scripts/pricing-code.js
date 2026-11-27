@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Make an access code for one organization's view of /organizations/pricing.
 //   node scripts/pricing-code.js "Springfield Public Library" libraries
-// The audience (libraries, credit-unions, campuses, community, employers) is
+// The audience (libraries, credit-unions, campuses, community, employers, health-plans, unions) is
 // optional; with it the page shows only that audience's price.
 //
 // Adds the organization to backend/data/pricing-codes.json with a keyed hash of
