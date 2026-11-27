@@ -49,8 +49,8 @@ export default function PartnerReportPage() {
     }
   };
 
-  const printable = () => {
-    const url = URL.createObjectURL(new Blob([report.html], { type: 'text/html' }));
+  const printable = html => {
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     window.open(url, '_blank', 'noopener');
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   };
@@ -96,7 +96,10 @@ export default function PartnerReportPage() {
 
         {report && (
           <div ref={resultRef} tabIndex={-1} className="org-pricing-result">
-            <p><button type="button" className="org-btn org-btn-primary" onClick={printable}>Open printable report ↗</button></p>
+            <p className="org-pricing-actions">
+              <button type="button" className="org-btn org-btn-primary" onClick={() => printable(report.html)}>Open printable report ↗</button>
+              {report.funderHtml && <button type="button" className="org-btn org-btn-outline" onClick={() => printable(report.funderHtml)}>One-page summary for funders ↗</button>}
+            </p>
             <iframe title={`Usage report: ${report.name}`} srcDoc={report.html} sandbox="" style={{ width: '100%', minHeight: '1400px', border: '1px solid var(--line)', borderRadius: '14px', background: '#fff' }} />
           </div>
         )}

@@ -210,4 +210,43 @@ ${r.byLink.length ? table('Link', r.byLink, [['visits', 'Visits']]) : '<p>No vis
 </body></html>`;
 }
 
-module.exports = { buildPartnerReport, renderPartnerReportHTML, suppressColumn, MIN_GROUP };
+// One page for funders and boards (partner perk, owner 2026-11-27): reach,
+// completion, what people came for, and how the numbers were counted, in the
+// form grant and community-benefit reports ask for. Same suppressed numbers as
+// the full report; nothing new is counted.
+function renderFunderSummaryHTML(r) {
+  const T = r.totals;
+  const n = v => (v === null ? 'fewer than 20' : Number(v).toLocaleString('en-US'));
+  const rate = T.started && T.finished !== null && T.started !== null ? `${Math.round((T.finished / T.started) * 100)}%` : null;
+  const topics = (r.byTopic || []).filter(x => x.started !== null && x.started > 0).slice(0, 5);
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>${esc(r.name)}: summary for funders, ${period(r.from, r.to)}</title>
+<style>
+body{font-family:system-ui,sans-serif;color:#1f2937;max-width:760px;margin:0 auto;padding:28px 20px;background:#fff;line-height:1.55}
+h1{font-family:Georgia,serif;color:#18324a;font-size:28px;margin:0 0 4px}
+h2{font-family:Georgia,serif;color:#18324a;font-size:18px;margin:26px 0 8px}
+.sub{color:#5c5650;margin:0 0 18px}
+.big{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.big div{border:1px solid #ded7cc;border-radius:10px;padding:12px}
+.big b{display:block;font-size:24px;color:#18324a}.big span{font-size:13px;color:#5c5650}
+ul{margin:0;padding-left:1.2rem}
+.note{font-size:13px;color:#5c5650;margin-top:24px;border-top:1px solid #e7e1d7;padding-top:12px}
+@media print{body{padding:0}}
+</style></head><body>
+<h1>${esc(r.name)}: what DeftBrain provided</h1>
+<p class="sub">${period(r.from, r.to)} · summary for funders, boards and annual reports</p>
+<div class="big">
+<div><b>${n(T.visits)}</b><span>visits by the people you serve</span></div>
+<div><b>${n(T.started)}</b><span>times someone worked through a situation</span></div>
+<div><b>${rate || n(T.finished)}</b><span>${rate ? 'of those reached a finished result' : 'finished results'}</span></div>
+</div>
+<h2>What people came for</h2>
+${topics.length ? `<ul>${topics.map(x => `<li>${esc(x.label)}: ${n(x.started)}</li>`).join('')}</ul>` : '<p>Not enough activity in this period to show topics without risking identifying anyone.</p>'}
+<h2>What the service is</h2>
+<p>DeftBrain is free, private, guided help for everyday situations: bills and paperwork, health visits, work and money decisions, difficult conversations. People answer a few questions and see what matters, what their options are and what to ask next. No account is needed, and the help is available in 13 languages, at any hour.</p>
+<h2>How these numbers were counted</h2>
+<p class="note" style="margin-top:0;border:0;padding:0">A visit is a browser session that started on ${esc(r.name)}'s DeftBrain page. Activity is counted for the whole session, including help the visitor opened after leaving that page. Any number from 1 to ${r.minGroup - 1} is shown as "fewer than 20", and where one hidden number could be worked out from a total, a second is hidden too. DeftBrain never records or reports what anyone typed or was shown, names, email or IP addresses. Months are calendar months in UTC. Prepared by DeftBrain from its own first-party usage counts.</p>
+</body></html>`;
+}
+
+module.exports = { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, suppressColumn, MIN_GROUP };

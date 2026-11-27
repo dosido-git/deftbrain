@@ -138,3 +138,6 @@
 .org-pricing-size-pick{display:flex;flex-direction:column;gap:6px}
 .org-pricing-q{font-weight:700;color:var(--navy)}
 :root[data-theme="dark"] .org-pricing-q{color:inherit}
+.org-pricing-actions{display:flex;flex-wrap:wrap;gap:10px}
+.org-btn-outline{border:1px solid var(--line);background:#fff;color:var(--navy);cursor:pointer;font:inherit;font-weight:800;font-size:14px}
+:root[data-theme="dark"] .org-btn-outline{background:#232326;border-color:#3f3f46;color:inherit}

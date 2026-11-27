@@ -38,7 +38,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [x] D2. "What your people are struggling with": topics by category, busiest days
   (shipped: topics + weekdays; month-over-month rising/falling and hours still to do). Aggregate only, same
   fewer-than-20 suppression as today.
-- [ ] D3. Grant/evidence export: the report as a printable one-pager framed for
+- [x] D3. Grant/evidence export: the report as a printable one-pager framed for
   funders (reach, completions, topics, period), with method notes.
 
 ## E. Consortia and branded editions (consortia 1, 2)

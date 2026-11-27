@@ -3,7 +3,7 @@
 // started on the partner page, hides groups of 1-19, and hides a second cell
 // when one hidden number could be worked out from a shown total.
 const assert = require('node:assert');
-const { buildPartnerReport, renderPartnerReportHTML, suppressColumn } = require('../backend/lib/partnerReport');
+const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, suppressColumn } = require('../backend/lib/partnerReport');
 
 // suppressColumn
 assert.deepStrictEqual(suppressColumn([50, 5, 0], true), [null, null, 0], 'lone hidden cell takes the next-smallest with it');
@@ -81,4 +81,7 @@ assert.strictEqual(um['Union (main page)'], 30);
 const lone = buildPartnerReport(uevents, 'union/l1', { partner: { name: 'Local 1', tools: [] } });
 assert.strictEqual(lone.totals.visits, 25, 'a member sees only its own page');
 assert.strictEqual(lone.byMember, null);
+const fund = renderFunderSummaryHTML(rt);
+assert.ok(fund.includes('fewer than 20') || fund.includes('69'), 'funder summary uses the suppressed totals');
+assert.ok(!fund.includes('/for/other'));
 console.log('partner report: ok');

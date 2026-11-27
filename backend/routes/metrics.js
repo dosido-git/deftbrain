@@ -10,7 +10,7 @@ const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
-const { buildPartnerReport, renderPartnerReportHTML } = require('../lib/partnerReport');
+const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML } = require('../lib/partnerReport');
 const { REPORT_FILE, findEntry } = require('../lib/pricingCodes');
 const { resolvePartner, allPartnerIds } = require('../lib/partners');
 // A tool's topic for partner reports: its first catalog category.
@@ -1958,7 +1958,7 @@ router.post('/partner-report', rateLimit(PARTNER_REPORT_LIMITS, 'partner-report:
   const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
   const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.body.from), to: month(req.body.to), categoryOf: topicOf });
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
-  res.json({ name: report.name, from: report.from, to: report.to, html: renderPartnerReportHTML(report, { toolTitles }) });
+  res.json({ name: report.name, from: report.from, to: report.to, html: renderPartnerReportHTML(report, { toolTitles }), funderHtml: renderFunderSummaryHTML(report) });
 });
 
 router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req, res) => {
