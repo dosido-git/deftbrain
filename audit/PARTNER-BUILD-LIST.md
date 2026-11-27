@@ -81,3 +81,14 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 ## Order
 A1, A2 → B1, B2 → C1 → D1, D2 → E1, E2 → D3, F1, F2 → G1, G2, G3 → C2 → E3 →
 the rest. Items needing the owner (E4, G4, H*) wait.
+
+## I. Sample consortium (owner, 2026-11-27)
+- [x] I1. /partners/sample-consortium: Example Union + two locals — edition and
+  member pages, contacts inside experiences, sample reports from fictional
+  usage (GET /api/partner-report/sample, sample partners only), co-branded PDFs
+  (public/partners/example-union*-all-tools.pdf; regenerate with
+  scripts/partner-all-tools.mjs after catalog changes), launch kits, letter to
+  members, setup checklist, board summary, and mailto forms (add/update a
+  member, request an experience, request report codes).
+- [ ] I2. Organizations page: point "See a sample report" at the live sample
+  report and add a "See a sample consortium" link (sales-page copy: owner).
