@@ -142,7 +142,10 @@ export default function OrgPricingPage() {
           <form className="org-quote org-pricing-gate" onSubmit={e => { e.preventDefault(); unlock(code); }} aria-labelledby="org-code-title">
             <h2 id="org-code-title">Have an access code?</h2>
             <label className="org-quote-wide">Access code
-              <input ref={codeRef} type="text" value={code} onChange={e => { setCode(e.target.value); if (status !== 'checking') setStatus('idle'); }} autoComplete="off" spellCheck="false" />
+              <input ref={codeRef} type="text" value={code} onKeyDown={e => {
+                // Return or ⌘/Ctrl-Return submits even where a browser skips implicit form submission.
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); if (status !== 'checking') unlock(code); }
+              }} onChange={e => { setCode(e.target.value); if (status !== 'checking') setStatus('idle'); }} autoComplete="off" spellCheck="false" />
             </label>
             <div className="org-quote-wide org-quote-send">
               <button type="submit" className="org-btn org-btn-primary" disabled={status === 'checking' || !code.trim()}>{status === 'checking' ? 'Checking…' : 'See pricing →'}</button>
