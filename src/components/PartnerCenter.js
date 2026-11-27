@@ -208,13 +208,14 @@ function LaunchKit({ byId, params }) {
   const card = `Title: ${pkg.title}\nSentence: ${pkg.intro}\nButton: Get started\nLink: ${link('website')}\nImage alt text: ${pkg.title}, free guidance from ${name} and DeftBrain`;
   const script = `"If you're not sure about this, there's a free guide on our website called '${pkg.title}'. It asks a few questions and helps you see your options, and we never see what you type."\n\nThen point them to ${page}.`;
   const social = `${pkg.intro} ${name} now offers free, private guidance from DeftBrain, with no account needed. ${link('social')}`;
+  const embed = `<iframe src="${link('embed')}" title="${pkg.title}, from ${name}" loading="lazy" style="width:100%;height:900px;border:0"></iframe>`;
   // One short blurb a month, one tool each, for a newsletter or e-statement message.
   const blurbs = tools.map((t, i) => `Month ${i + 1}: ${t.title}\n${t.tagline || t.description} Free and private from ${name}, with no account needed. ${link('newsletter')}`).join('\n\n');
   // The finished example fills in what a real launch would: an owner for each step and where it goes.
   const timeline = kit.sample
     ? `Week 0, Monday: member communications lead approves all copy and placements, after compliance signs off on the help line sentence\nWeek 0, Thursday: DeftBrain checks the final wording and the tracked links\nLaunch day (Tuesday, week 1): newsletter goes out with the long email; website card goes live on the Help & Security page; handouts at every branch teller line and drive-through\nWeek 1: branch managers brief tellers and the call center with the staff script at the morning huddle\nWeek 2: social post on the credit union's usual channels\nWeek 4: reminder in the e-statement message area\nMonth 3: member communications lead and DeftBrain review the usage report and decide what to keep, move or stop`
     : `Week 0: approve all copy and placements (owner: ____, approved on: ____)\nLaunch day: send the email, publish the website card, put out handouts\nWeek 1: brief front-line staff with the staff script\nWeek 4: send the reminder\nMonth 3: review the usage report together`;
-  const channels = [['Email', 'email'], ['Reminder', 'reminder'], ['Monthly newsletter', 'newsletter'], ['Website or portal', 'website'], ['Social posts', 'social'], ['Printed handout', 'print'], ['Poster or flier', 'poster'], ['Staff referrals', 'staff']];
+  const channels = [['Email', 'email'], ['Reminder', 'reminder'], ['Monthly newsletter', 'newsletter'], ['Website or portal', 'website'], ['Social posts', 'social'], ['Printed handout', 'print'], ['Poster or flier', 'poster'], ['Inside your website', 'embed'], ['Staff referrals', 'staff']];
   const poster = kit.format === 'poster';
 
   return (
@@ -246,6 +247,7 @@ function LaunchKit({ byId, params }) {
           <Material title="Staff script" note="Two sentences a teller, librarian or front-desk colleague can say out loud." text={script} />
           <Material title="Social post" note="Works on any platform you use." text={social} />
           <Material title="Newsletter blurbs, one a month" note="A short item for each month after launch, one tool at a time." text={blurbs} />
+          <Material title="Inside your website or app" note="Paste this where your page should appear. Send us the website address first: browsers show it only on sites we have switched on, and blank everywhere else." text={embed} />
         </div>
       </section>
 

@@ -51,8 +51,9 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   colours/logo on the partner bar, its own launch kit (Partner Center launch kit takes ?partner=<consortium>/<member>).
 - [ ] E4. Own address: `<partner>.deftbrain.com` or a path on the partner's
   site (needs DNS/Railway domains; owner step).
-- [ ] E5. Embed (note: X-Frame-Options DENY today; an embed needs a per-partner frame-ancestors rule): a small script/iframe so a partner can put its edition inside
-  its own site or app.
+- [x] E5. Embed: `embedOrigins` in partners.json (https origins, checked by check-partners.js) → production sends
+  `frame-ancestors <those sites>` instead of X-Frame-Options DENY; none listed = DENY as before. Launch kit has the iframe
+  snippet (tracked ?ref=<id>-embed). Switching a partner on = add its site, push, deploy (owner OK per partner).
 - [~] E6. Revenue share tracking: pricing codes carry a consortium; sales and
   member counts roll up per consortium for royalty statements.
   Shipped: pricing codes take --consortium; pricing views show "(via <consortium>)" in metrics;

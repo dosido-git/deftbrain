@@ -36,4 +36,16 @@ function allPartnerIds() {
   return out;
 }
 
-module.exports = { resolvePartner, allPartnerIds, PARTNERS };
+// Websites allowed to show DeftBrain in a frame (partner build list E5): each
+// active partner's or member's `embedOrigins`. Empty means no site may frame
+// DeftBrain, which is how it has always been.
+function embedOrigins() {
+  const out = new Set();
+  for (const id of allPartnerIds()) {
+    const p = resolvePartner(id);
+    if (p && !p.retired) for (const o of p.embedOrigins || []) out.add(o);
+  }
+  return [...out];
+}
+
+module.exports = { resolvePartner, allPartnerIds, embedOrigins, PARTNERS };

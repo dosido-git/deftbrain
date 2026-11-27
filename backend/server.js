@@ -174,9 +174,13 @@ if (IS_PRODUCTION) {
 
 // ── Security headers (production) ──
 if (IS_PRODUCTION) {
+  // Framing: nobody, unless a partner's website is listed in partners.json
+  // (`embedOrigins`, partner build list E5); then only those sites may.
+  const EMBED_ORIGINS = require('./lib/partners').embedOrigins();
   app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
+    if (EMBED_ORIGINS.length) res.setHeader('Content-Security-Policy', `frame-ancestors ${EMBED_ORIGINS.join(' ')}`);
+    else res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');

@@ -8,6 +8,13 @@ const TOOLS = new Set(require('fs').readFileSync(require('path').join(__dirname,
 
 const errors = [];
 const bad = (id, msg) => errors.push(`${id}: ${msg}`);
+// embedOrigins: the partner's own websites allowed to frame DeftBrain. Each one
+// goes into the frame-ancestors header as written, so only a bare https origin.
+const checkEmbed = (id, p) => {
+  if (p.embedOrigins === undefined) return;
+  if (!Array.isArray(p.embedOrigins)) { bad(id, 'embedOrigins must be a list'); return; }
+  for (const o of p.embedOrigins) if (!/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?$/.test(o)) bad(id, `embedOrigins: "${o}" must be just https://host (no path, no wildcard)`);
+};
 for (const [id, p] of Object.entries(PARTNERS)) {
   if (!/^[a-z0-9-]+$/.test(id)) bad(id, 'id must be lowercase letters, digits and hyphens');
   if (!p.name) bad(id, 'missing name');
@@ -16,6 +23,7 @@ for (const [id, p] of Object.entries(PARTNERS)) {
   if (p.accent !== undefined && !/^#[0-9a-fA-F]{6}$/.test(p.accent)) bad(id, 'accent must be a #rrggbb colour');
   if (!Array.isArray(p.tools) || !p.tools.length) bad(id, 'tools must be a non-empty list');
   else for (const t of p.tools) if (!TOOLS.has(t)) bad(id, `unknown tool ${t}`);
+  checkEmbed(id, p);
   if (p.contacts !== undefined) {
     if (!Array.isArray(p.contacts)) bad(id, 'contacts must be a list');
     else p.contacts.forEach((c, i) => {
@@ -34,6 +42,7 @@ for (const [id, p] of Object.entries(PARTNERS)) {
     if (!/^[a-z0-9-]+$/.test(mid)) bad(`${id}/${mid}`, 'member id must be lowercase letters, digits and hyphens');
     if (!m.name) bad(`${id}/${mid}`, 'missing name');
     if (m.tools) for (const t of m.tools) if (!TOOLS.has(t)) bad(`${id}/${mid}`, `unknown tool ${t}`);
+    checkEmbed(`${id}/${mid}`, m);
     (m.contacts || []).forEach((c, i) => {
       if (!c.label) bad(`${id}/${mid}`, `contact ${i + 1} has no label`);
       if (!c.phone && !c.url) bad(`${id}/${mid}`, `contact ${i + 1} needs a phone or a url`);
