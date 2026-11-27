@@ -25,5 +25,37 @@ for (const [id, p] of Object.entries(PARTNERS)) {
     });
   }
 }
+// Consortium members: same rules as a partner, after inheriting the consortium's record.
+for (const [id, p] of Object.entries(PARTNERS)) {
+  if (p.members === undefined) continue;
+  if (!p.members || typeof p.members !== 'object' || Array.isArray(p.members)) { bad(id, 'members must be an object keyed by member id'); continue; }
+  for (const [mid, m] of Object.entries(p.members)) {
+    if (!/^[a-z0-9-]+$/.test(mid)) bad(`${id}/${mid}`, 'member id must be lowercase letters, digits and hyphens');
+    if (!m.name) bad(`${id}/${mid}`, 'missing name');
+    if (m.tools) for (const t of m.tools) if (!TOOLS.has(t)) bad(`${id}/${mid}`, `unknown tool ${t}`);
+    (m.contacts || []).forEach((c, i) => {
+      if (!c.label) bad(`${id}/${mid}`, `contact ${i + 1} has no label`);
+      if (!c.phone && !c.url) bad(`${id}/${mid}`, `contact ${i + 1} needs a phone or a url`);
+      if (c.url && !/^https:\/\//.test(c.url)) bad(`${id}/${mid}`, `contact ${i + 1} url must start with https://`);
+    });
+  }
+}
+
+// The browser (src/hooks/usePartner.js) and the server (backend/lib/partners.js)
+// must resolve every id the same way, or a page and its 200/404 disagree.
+{
+  const { resolvePartner: server, allPartnerIds } = require('../backend/lib/partners');
+  const src = require('fs').readFileSync(require('path').join(__dirname, '../src/hooks/usePartner.js'), 'utf8')
+    .replace(/^import PARTNERS.*$/m, '')
+    .replace(/^export /gm, '');
+  // eslint-disable-next-line no-new-func
+  const browser = new Function('PARTNERS', 'sessionStorage', `${src}\nreturn resolvePartner;`)(PARTNERS, { getItem() { return null; }, setItem() {} });
+  const pick = p => p && { id: p.id, name: p.name, tools: p.tools, retired: Boolean(p.retired), parentId: p.parentId };
+  for (const id of [...allPartnerIds(), 'nope', 'example-cu/nope', 'a/b/c']) {
+    const a = JSON.stringify(pick(server(id))); const b = JSON.stringify(pick(browser(id)));
+    if (a !== b) bad(id, `server and browser resolve differently: ${a} vs ${b}`);
+  }
+}
+
 if (errors.length) { console.error('❌ partners.json:\n  ' + errors.join('\n  ')); process.exit(1); }
 console.log(`✅ partners: ${Object.keys(PARTNERS).length} partner record(s) well formed.`);

@@ -28,5 +28,50 @@
     "advisor": "For account decisions, talk to a member advisor.",
     "suggestions": true,
     "newsletter": false
+  },
+  "example-union": {
+    "name": "Example Union",
+    "initials": "EU",
+    "sample": true,
+    "edition": "Example Union Life Navigator",
+    "memberWord": "local",
+    "packageTitle": "Help with work, money and paperwork",
+    "intro": "Not sure about a contract, a problem at work or a bill? Answer a few questions and see what matters, what your options are and what to ask next.",
+    "tools": [
+      "ContractDecoder",
+      "ConflictCoach",
+      "DifficultTalkCoach",
+      "BillRescue",
+      "SkillGapMap"
+    ],
+    "contacts": [
+      {
+        "label": "Questions about your contract? Call the union hall.",
+        "phone": "1-800-555-0199",
+        "hours": "weekdays 8–6"
+      }
+    ],
+    "suggestions": true,
+    "newsletter": false,
+    "members": {
+      "local-101": {
+        "name": "Example Union Local 101",
+        "initials": "101",
+        "contacts": [
+          {
+            "label": "Talk to your Local 101 steward.",
+            "phone": "1-800-555-0101"
+          },
+          {
+            "label": "Questions about your contract? Call the union hall.",
+            "phone": "1-800-555-0199"
+          }
+        ]
+      },
+      "local-202": {
+        "name": "Example Union Local 202",
+        "initials": "202"
+      }
+    }
   }
 }

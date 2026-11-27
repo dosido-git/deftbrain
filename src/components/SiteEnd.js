@@ -10,7 +10,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import PARTNERS from '../data/partners.json';
+import { resolvePartner } from '../hooks/usePartner';
 
 const FAILED = 'Something went wrong — try again.';
 // How long "Got it — thank you" shows before the ideas box comes back.
@@ -68,8 +68,8 @@ export default function SiteEnd() {
   // Partner pages (/for/<id>) show each form only if that partner opted in
   // (partners.json `suggestions` / `newsletter`), labelled as DeftBrain's.
   const { pathname } = useLocation();
-  const partnerId = (pathname.match(/^\/for\/([^/]+)/) || [])[1];
-  const partner = partnerId && Object.prototype.hasOwnProperty.call(PARTNERS, partnerId) ? PARTNERS[partnerId] : null;
+  const partnerId = (pathname.match(/^\/for\/([^/]+(?:\/[^/]+)?)/) || [])[1];
+  const partner = partnerId ? resolvePartner(partnerId) : null;
   const onPartnerPage = partnerId !== undefined;
   const showIdeas = !onPartnerPage || !!partner?.suggestions;
   const showNews = !onPartnerPage || !!partner?.newsletter;

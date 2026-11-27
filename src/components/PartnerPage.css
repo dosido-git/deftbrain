@@ -24,3 +24,9 @@
 @media(max-width:900px){.partner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.partner-grid{grid-template-columns:1fr}.partner-name{font-size:16px}.partner-main{padding-top:28px}}
 .partner-logo{width:40px;height:40px;flex:none;display:block}
+/* Consortium editions (2026-11-27): a member's page names its consortium, and
+   the consortium's page lists its members. */
+.partner-edition{margin:0 0 4px;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.partner-members{margin:22px 0 6px}
+.partner-members h2{font-size:18px;margin:0 0 8px}
+.partner-members ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 18px}

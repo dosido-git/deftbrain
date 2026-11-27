@@ -12,10 +12,10 @@ const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
 const { buildPartnerReport, renderPartnerReportHTML } = require('../lib/partnerReport');
 const { REPORT_FILE, findEntry } = require('../lib/pricingCodes');
+const { resolvePartner, allPartnerIds } = require('../lib/partners');
 // A tool's topic for partner reports: its first catalog category.
 const TOPIC_OF = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, String(t.category || '').split(', ')[0] || null]));
 const topicOf = id => (id && TOPIC_OF[id]) || null;
-const PARTNERS = require('../../src/data/partners.json');
 // Guides are reported under the site's own categories (the ones the guide
 // lists and tool pages show), not their URL folders. Totals come from the same
 // files the guide build uses, so the heading can't drift from the site.
@@ -476,7 +476,7 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     </select>
     <button onclick="load()">Load</button>
     <button class="ghost" onclick="openReport()">open report ↗</button>
-    <select id="partner" title="partner">${Object.entries(PARTNERS).map(([id, p]) => `<option value="${escH(id)}">${escH(p.name)}</option>`).join('')}</select>
+    <select id="partner" title="partner">${allPartnerIds().map(id => `<option value="${escH(id)}">${escH(resolvePartner(id).name)}${id.includes('/') ? ` (${escH(resolvePartner(id).edition)})` : ''}</option>`).join('')}</select>
     <input id="pfrom" type="month" title="from month">
     <input id="pto" type="month" title="to month">
     <button class="ghost" onclick="partnerReport()">partner report</button>
@@ -1927,9 +1927,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 router.get('/metrics/partner-report', rateLimit(METRIC_LIMITS, 'metrics-partner:'), (req, res) => {
   if (!keyMatches(req.get('x-metrics-key'), process.env.METRICS_KEY)) return res.status(404).end();
   const id = String(req.query.partner || '');
-  if (!Object.prototype.hasOwnProperty.call(PARTNERS, id)) return res.status(404).end();
+  const partnerRec = resolvePartner(id);
+  if (!partnerRec) return res.status(404).end();
   const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
-  const report = buildPartnerReport(readMetrics(), id, { partner: PARTNERS[id], from: month(req.query.from), to: month(req.query.to), categoryOf: topicOf });
+  const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.query.from), to: month(req.query.to), categoryOf: topicOf });
   if (req.query.format === 'json') return res.json(report);
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
   res.set('Cache-Control', 'no-store').type('html').send(renderPartnerReportHTML(report, { toolTitles }));
@@ -1948,13 +1949,14 @@ router.post('/partner-report', rateLimit(PARTNER_REPORT_LIMITS, 'partner-report:
   if (!secret || !entries.length) return res.status(503).json({ error: 'not_configured' });
   const match = findEntry(String((req.body || {}).code || ''), secret, entries);
   const id = match && match.partner;
-  if (!id || !Object.prototype.hasOwnProperty.call(PARTNERS, id)) {
+  const partnerRec = id ? resolvePartner(id) : null;
+  if (!partnerRec) {
     logMetric('partner_report_access', { ok: false });
     return res.status(401).json({ error: 'wrong_code' });
   }
   logMetric('partner_report_access', { ok: true, partner: id });
   const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
-  const report = buildPartnerReport(readMetrics(), id, { partner: PARTNERS[id], from: month(req.body.from), to: month(req.body.to), categoryOf: topicOf });
+  const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.body.from), to: month(req.body.to), categoryOf: topicOf });
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
   res.json({ name: report.name, from: report.from, to: report.to, html: renderPartnerReportHTML(report, { toolTitles }) });
 });

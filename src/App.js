@@ -59,6 +59,7 @@ export default function App() {
                 <Route path="/organizations" element={<OrganizationsPage allTools={tools} />} />
                 <Route path="/organizations/pricing" element={<OrgPricingPage />} />
                 <Route path="/for/:partnerId" element={<PartnerPage allTools={tools} />} />
+                <Route path="/for/:partnerId/:memberId" element={<PartnerPage allTools={tools} />} />
                 <Route path="/partners" element={<PartnerCenter allTools={tools} />} />
                 <Route path="/partners/report" element={<PartnerReportPage />} />
                 <Route path="/partners/:section" element={<PartnerCenter allTools={tools} />} />

@@ -42,10 +42,10 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   funders (reach, completions, topics, period), with method notes.
 
 ## E. Consortia and branded editions (consortia 1, 2)
-- [ ] E1. Consortium records: a parent with members; every member gets its own
+- [x] E1. Consortium records: a parent with members; every member gets its own
   `/for/<parent>/<member>` page, contacts and report, inheriting the parent's
   tools and branding unless it overrides them. Members added from a list.
-- [ ] E2. Consortium roll-up report: all members together plus a per-member
+- [x] E2. Consortium roll-up report: all members together plus a per-member
   table.
 - [ ] E3. Edition branding: edition name ("<Consortium> Life Navigator"),
   colours/logo on the partner bar, its own launch kit.

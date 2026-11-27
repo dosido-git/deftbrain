@@ -63,4 +63,22 @@ assert.strictEqual(day.Wednesday, null, '2026-12-02 (9 visits) is hidden');
 assert.strictEqual(day.Thursday, null, '2026-11-05 (60) hidden too: 69 - 60 would give Wednesday back');
 assert.strictEqual(day.Monday, 0, 'zero describes no one');
 assert.ok(renderPartnerReportHTML(rt).includes('What people came for'));
+// Consortium roll-up: its own page plus every member page, one row each.
+const U = '/for/union';
+const uev = (landing, event, extra = {}) => ({ kind: 'event', event, at: '2026-11-05T12:00:00Z', landing, ...extra });
+const uevents = [
+  ...many(30, () => uev(U, 'page_view', { props: { newSession: true } })),
+  ...many(25, () => uev(`${U}/l1`, 'page_view', { props: { newSession: true } })),
+  ...many(5, () => uev(`${U}/l2`, 'page_view', { props: { newSession: true } })),
+  ...many(7, () => uev('/for/unionx', 'page_view', { props: { newSession: true } })), // a different partner
+];
+const ur = buildPartnerReport(uevents, 'union', { partner: { name: 'Union', tools: [], members: { l1: { name: 'Local 1' }, l2: { name: 'Local 2' } } } });
+assert.strictEqual(ur.totals.visits, 60, 'main page + members, not /for/unionx');
+const um = Object.fromEntries(ur.byMember.map(x => [x.label, x.visits]));
+assert.strictEqual(um['Local 2'], null, '5 visits hidden');
+assert.strictEqual(um['Local 1'], null, 'next-smallest hidden too');
+assert.strictEqual(um['Union (main page)'], 30);
+const lone = buildPartnerReport(uevents, 'union/l1', { partner: { name: 'Local 1', tools: [] } });
+assert.strictEqual(lone.totals.visits, 25, 'a member sees only its own page');
+assert.strictEqual(lone.byMember, null);
 console.log('partner report: ok');

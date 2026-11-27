@@ -65,7 +65,10 @@ function suppressTable(rows, totals) {
 
 function buildPartnerReport(events, partnerId, { partner = {}, from, to, categoryOf = () => null } = {}) {
   const landing = `/for/${partnerId}`;
-  const mine = events.filter(e => e && e.kind === 'event' && e.landing === landing && measureOf(e));
+  // A consortium's report covers its own page and every member's (2026-11-27).
+  const members = partner.members && typeof partner.members === 'object' ? partner.members : null;
+  const isMine = l => l === landing || (members && typeof l === 'string' && l.startsWith(`${landing}/`));
+  const mine = events.filter(e => e && e.kind === 'event' && isMine(e.landing) && measureOf(e));
   const months = mine.map(e => monthOf(e.at)).filter(Boolean).sort();
   const start = from || months[0] || new Date().toISOString().slice(0, 7);
   const end = to || months[months.length - 1] || start;
@@ -122,7 +125,22 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
     if (!Number.isNaN(d)) byWeekday[(d + 6) % 7].visits += 1;
   }
 
+  // Consortium: one row per member (and one for the consortium's own page).
+  let byMember = null;
+  if (members) {
+    const rowsAt = { '': { label: `${partner.name || partnerId} (main page)`, visits: 0, started: 0, finished: 0 } };
+    for (const [mid, m] of Object.entries(members)) rowsAt[mid] = { label: m.name || mid, visits: 0, started: 0, finished: 0 };
+    for (const e of rows) {
+      const k = measureOf(e);
+      if (k === 'active') continue;
+      const mid = e.landing === landing ? '' : e.landing.slice(landing.length + 1);
+      if (rowsAt[mid]) rowsAt[mid][k] += 1;
+    }
+    byMember = Object.values(rowsAt).sort((a, b) => b.visits - a.visits || a.label.localeCompare(b.label));
+  }
+
   const t = suppressTable(byMonth, totals);
+  const memberTable = byMember && suppressTable(byMember, { visits: totals.visits, started: totals.started, finished: totals.finished });
   const topics = suppressTable(byTopic, { started: totals.started, finished: totals.finished });
   const days = suppressTable(byWeekday, { visits: totals.visits });
   const tools = suppressTable([...Object.values(byTool), other], { started: totals.started, finished: totals.finished });
@@ -139,6 +157,7 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
     byLink: links.rows,
     byTopic: topics.rows,
     byWeekday: days.rows,
+    byMember: memberTable ? memberTable.rows : null,
   };
 }
 
@@ -173,12 +192,14 @@ td,th{white-space:nowrap}td.name{white-space:normal;min-width:9em}
 @media(max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}th,td{padding:7px 6px}}
 </style></head><body>
 <h1>${esc(r.name)}: usage report</h1>
-<p class="sub">${period(r.from, r.to)} · visits that started on deftbrain.com/for/${esc(r.partner)}</p>
+<p class="sub">${period(r.from, r.to)} · visits that started on deftbrain.com/for/${esc(r.partner)}${r.byMember ? ' or a member page under it' : ''}</p>
 <div class="tiles">${tile('Visits', T.visits)}${tile('Visits with activity', T.active)}${tile('Guidance started', T.started)}${tile('Guidance finished', T.finished)}</div>
 <h2>By month</h2>
 ${table('Month', r.byMonth.map(m => ({ ...m, label: monthName(m.label, true) })), [['visits', 'Visits'], ['active', 'With activity'], ['started', 'Started'], ['finished', 'Finished']])}
 <h2>By experience</h2>
 ${table('Experience', r.byExperience, [['started', 'Started'], ['finished', 'Finished']], x => toolTitles[x.label] || x.label)}
+${r.byMember ? `<h2>By member</h2>
+${table('Member', r.byMember, [['visits', 'Visits'], ['started', 'Started'], ['finished', 'Finished']])}` : ''}
 <h2>What people came for</h2>
 ${(r.byTopic || []).length ? table('Topic', r.byTopic, [['started', 'Started'], ['finished', 'Finished']]) : '<p>No guidance started in this period.</p>'}
 <h2>Busiest days</h2>

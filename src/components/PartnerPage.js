@@ -5,8 +5,7 @@ import { useDocumentHead } from '../hooks/useDocumentHead';
 import { useNoindex } from '../hooks/useNoindex';
 import NotFound from './NotFound';
 import { ToolMiniCard } from './OrganizationsPage';
-import PARTNERS from '../data/partners.json';
-import { partnerById, rememberPartner } from '../hooks/usePartner';
+import { resolvePartner, rememberPartner } from '../hooks/usePartner';
 import './OrganizationsPage.css';
 import './PartnerPage.css';
 
@@ -17,9 +16,10 @@ import './PartnerPage.css';
 // channels. Attribution needs nothing extra — analytics already records the
 // landing path (/for/<partner>) for the whole session.
 export default function PartnerPage({ allTools = [] }) {
-  const { partnerId } = useParams();
-  const raw = Object.prototype.hasOwnProperty.call(PARTNERS, partnerId) ? PARTNERS[partnerId] : null;
-  const partner = raw && !raw.retired ? partnerById(partnerId) : raw;
+  // /for/<partner>, or /for/<consortium>/<member> for a member of a consortium.
+  const { partnerId: first, memberId } = useParams();
+  const partnerId = memberId ? `${first}/${memberId}` : first;
+  const partner = resolvePartner(partnerId);
   const { isDark, toggleTheme } = useTheme();
   const byId = useMemo(() => Object.fromEntries(allTools.map(t => [t.id, t])), [allTools]);
 
@@ -67,6 +67,7 @@ export default function PartnerPage({ allTools = [] }) {
 
       <section className="org-shell partner-main">
         {partner.sample && <p className="partner-sample">Sample page — the organization and phone number are fictional.</p>}
+        {partner.parentId && <p className="partner-edition">Part of {partner.edition}</p>}
         <h1>{partner.packageTitle}</h1>
         <p className="partner-intro">{partner.intro}</p>
         <p className="partner-privacy"><span aria-hidden="true">🔒</span> Free and private, no account needed. {partner.name} sees only overall usage counts, never what you type. Please don't enter account numbers or passwords.</p>
@@ -81,6 +82,15 @@ export default function PartnerPage({ allTools = [] }) {
             {ct.hours && <> · {ct.hours}</>}
           </p>
         ))}
+
+        {partner.isConsortium && Object.keys(partner.members).length > 0 && (
+          <nav className="partner-members" aria-labelledby="partner-members-title">
+            <h2 id="partner-members-title">Find your {partner.memberWord || 'organization'}</h2>
+            <ul>{Object.entries(partner.members).filter(([, m]) => !m.retired).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([mid, m]) => (
+              <li key={mid}><Link className="org-text-link" to={`/for/${partner.id}/${mid}`}>{m.name}</Link></li>
+            ))}</ul>
+          </nav>
+        )}
 
         <Link className="org-text-link partner-more" to="/tools">Explore more guidance from DeftBrain →</Link>
 
