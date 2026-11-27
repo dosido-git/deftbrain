@@ -27,7 +27,14 @@ function quoteFor(people, a, upTo) {
   return Math.max(a.minimum, Math.round((first + after) / 10) * 10);
 }
 const compact = n => new Intl.NumberFormat('en-US', { notation: 'compact' }).format(n);
-const rateText =n => (n < 1 ? `${Math.round(n * 100)}¢` : `$${Number.isInteger(n) ? n : n.toFixed(2)}`);
+// What the quote works out to per person: the minimum and the lower rate past
+// 100,000 make it differ from the listed rate. Under 10¢ keeps a decimal.
+const perText = n => {
+  if (n >= 1) return `$${n.toFixed(2)}`;
+  const c = n * 100;
+  return `${c < 10 ? Number(c.toFixed(1)) : Math.round(c)}¢`;
+};
+const rateText = n =>(n < 1 ? `${Math.round(n * 100)}¢` : `$${Number.isInteger(n) ? n : n.toFixed(2)}`);
 
 export default function OrgPricingPage() {
   const { isDark, toggleTheme } = useTheme();
@@ -143,7 +150,7 @@ export default function OrgPricingPage() {
               <p className="org-quote-wide org-pricing-hint">Count {aud.counts}.</p>
               <p className="org-quote-wide org-pricing-yours" aria-live="polite">
                 {quote === undefined ? 'Enter a number to see your price.'
-                  : <>Your price: <strong>{usd(quote)}</strong> a year</>}
+                  : <>Your price: <strong>{usd(quote)}</strong> a year, or {perText(quote / peopleN)} per {aud.unit}</>}
               </p>
             </div>
             <ul className="org-pricing-notes">{pricing.notes.map(n => <li key={n}>{n}</li>)}</ul>
