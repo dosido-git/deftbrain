@@ -90,5 +90,5 @@ the rest. Items needing the owner (E4, G4, H*) wait.
   scripts/partner-all-tools.mjs after catalog changes), launch kits, letter to
   members, setup checklist, board summary, and mailto forms (add/update a
   member, request an experience, request report codes).
-- [ ] I2. Organizations page: point "See a sample report" at the live sample
+- [x] I2. Organizations page: point "See a sample report" at the live sample
   report and add a "See a sample consortium" link (sales-page copy: owner).
