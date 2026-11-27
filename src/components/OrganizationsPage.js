@@ -32,23 +32,23 @@ const AUDIENCES = [
   { key:'credit-unions', people:'members', icon:'🏦', eyebrow:'Credit unions and banks', title:'Help members before they pay, sign or reply.',
     moments:'A text saying their account is locked. A medical bill that looks wrong. A dealer’s add-ons. A contractor’s quote.',
     copy:'Members already trust you with their money. DeftBrain gives them a calm place to look at a decision before it costs them, with your member-service line right beside it.',
-    packages:['pay-or-reply','money-conversations'], pilot:'Pilot', tools:['ScamRadar','BillRescue','BuyWise'] },
+    packages:['pay-or-reply','money-conversations'], tools:['ScamRadar','BillRescue','BuyWise'] },
   { key:'libraries', people:'patrons', icon:'📚', eyebrow:'Libraries', title:'A starting point for questions that arrive after the desk closes.',
     moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
     copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
-    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], pilot:'Pilot', tools:['ResearchDecoder','PlainTalk','TipOfTongue'] },
+    packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], tools:['ResearchDecoder','PlainTalk','TipOfTongue'] },
   { key:'education', people:'students', icon:'🎓', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
     moments:'A first lease. A roommate standoff. Four deadlines in one week. A hard stretch they can’t quite name.',
     copy:'Give students practical help at any hour, alongside student services and the counseling center, never instead of them. Works for first-year programs, housing, career centers and adult education.',
-    packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], pilot:'Pilot', tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
+    packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
   { key:'community', people:'the people you serve', icon:'🏘️', eyebrow:'Community organizations', title:'An approachable first step for the people you serve.',
     moments:'A form in confusing language. A deposit a landlord won’t return. A message that might be a scam. An appointment to get ready for.',
     copy:'No account and no technical experience needed: a starting point your staff can hand anyone, with your own help line beside it.',
-    packages:['everyday-paperwork','sign-or-move-in','health-visits'], pilot:'Pilot', tools:['PaperworkPath','RentersDepositSaver','TicketTackler'] },
+    packages:['everyday-paperwork','sign-or-move-in','health-visits'], tools:['PaperworkPath','RentersDepositSaver','TicketTackler'] },
   { key:'employers', people:'employees', icon:'🏢', eyebrow:'Employers', title:'Support people beyond the job description.',
     moments:'A raise to ask for. A conflict with a coworker. A parent’s medical appointment. A bill that won’t wait for the weekend.',
     copy:'Help with the everyday problems that follow people to work, and nothing about what anyone asks is reported back to you.',
-    packages:['work-conversations','money-conversations','health-visits'], pilot:'Pilot', tools:['DifficultTalkCoach','MoneyDiplomat','BragSheetBuilder'] },
+    packages:['work-conversations','money-conversations','health-visits'], tools:['DifficultTalkCoach','MoneyDiplomat','BragSheetBuilder'] },
 ];
 
 // Tier prices from docs/DeftBrain pricing and sales model.xlsx (USD): your
@@ -115,7 +115,6 @@ export default function OrganizationsPage({ allTools = [] }) {
   const byId = useMemo(() => Object.fromEntries(allTools.map(t => [t.id, t])), [allTools]);
   const showcase = SHOWCASE_IDS.map(id => byId[id]).filter(Boolean);
   const pkgById = Object.fromEntries(CENTER.packages.map(p => [p.id, p]));
-  const priceOf = name => PRICES.find(p => p.name === name);
 
   // Arriving on a #section (and Back to where you were) is RouteFocus's job.
 
@@ -194,22 +193,22 @@ export default function OrganizationsPage({ allTools = [] }) {
       </section>
 
       {AUDIENCES.map((a, i) => {
-        const price = priceOf(a.pilot);
         return (
           <section key={a.key} id={a.key} tabIndex={-1} className={`org-section org-aud${i % 2 ? ' org-soft' : ''}`} aria-labelledby={`org-aud-${a.key}`}>
             <div className="org-shell">
+              <span className="org-aud-icon" aria-hidden="true">{a.icon}</span>
+              <div className="org-kicker">{a.eyebrow.toUpperCase()}</div>
+              <h2 className="org-aud-title" id={`org-aud-${a.key}`}>{a.title}</h2>
+              {/* Headline across the page; the text continues in two columns under it. */}
               <div className="org-aud-head">
                 <div>
-                  <div className="org-aud-label"><span className="org-aud-icon" aria-hidden="true">{a.icon}</span><div className="org-kicker">{a.eyebrow.toUpperCase()}</div></div>
-                  <h2 id={`org-aud-${a.key}`}>{a.title}</h2>
                   <p className="org-aud-moments">{a.moments}</p>
                 </div>
                 <div className="org-aud-detail">
                   <p>{a.copy}</p>
                   <h3>Packages that fit</h3>
                   <ul>{a.packages.map(id => pkgById[id] && <li key={id}><Link className="org-text-link" to={`/partners/packages/${id}`}>{pkgById[id].title}</Link></li>)}</ul>
-                  {price && <p className="org-aud-pilot">Start with the {price.name.toLowerCase()}: <strong>{price.price}</strong> for {price.unit}, credited to your first year.</p>}
-                  <a className="org-btn org-btn-primary org-btn-sm" href={`mailto:Org@deftbrain.com?subject=${encodeURIComponent(`DeftBrain pilot: ${a.eyebrow}`)}`}>Discuss a pilot →</a>
+                  <a className="org-btn org-btn-primary" href={`mailto:Org@deftbrain.com?subject=${encodeURIComponent(`DeftBrain pilot: ${a.eyebrow}`)}`}>Discuss a pilot →</a>
                 </div>
               </div>
               {/* Without this line the three cards read as the whole package. */}
