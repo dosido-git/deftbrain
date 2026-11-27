@@ -1,46 +1,14 @@
 {
-  "_note": "Served only by POST /api/pricing-access for a valid organization code (backend/routes/pricing-access.js); never shipped in the public site. One annual price per size from docs/DeftBrain pricing and sales model.xlsx (Tiers, 'One annual price at target margin', 2026-11-26): running cost + setup and selling time spread over the years a partner stays, at $100/hour, tool use at 5% of people served, 40% margin, rounded to $100.",
+  "_note": "Served only by POST /api/pricing-access for a valid organization code (backend/routes/pricing-access.js); never shipped in the public site. The rule (owner, 2026-11-26) sits within a few percent of the cost-based annual prices in docs/DeftBrain pricing and sales model.xlsx (Tiers, columns O and Q).",
   "currency": "USD",
   "updated": "2026-11-26",
-  "sizes": [
-    {
-      "label": "Up to 25,000 people",
-      "annual": 7200,
-      "people": 25000
-    },
-    {
-      "label": "Up to 100,000 people",
-      "annual": 11500,
-      "people": 100000
-    },
-    {
-      "label": "Up to 250,000 people",
-      "annual": 18100,
-      "people": 250000
-    },
-    {
-      "label": "Up to 500,000 people",
-      "annual": 27500,
-      "people": 500000
-    },
-    {
-      "label": "Up to 750,000 people",
-      "annual": 37000,
-      "people": 750000
-    },
-    {
-      "label": "Up to 1,000,000 people",
-      "annual": 46500,
-      "people": 1000000
-    }
-  ],
+  "rule": { "perPerson": 0.12, "upTo": 100000, "perPersonAfter": 0.04, "minimum": 7500 },
+  "examples": [25000, 60000, 100000, 250000, 500000, 750000, 1000000],
   "notes": [
     "One price a year, billed annually. It includes setup, your own page, the launch kit, ongoing promotion, usage reports and support.",
-    "Your price follows your exact size: between two rows it falls on a straight line, so a few more people adds only a few dollars. Below 25,000 people the first price applies.",
     "People served means your library's service-area population, your credit union's members, your enrolled students or your employees.",
-    "Consortia: one contract for every member, at 30% off each member's annual price.",
-    "Over 1,000,000 people: quoted.",
+    "Consortia: one contract for every member, at 30% off each member's price.",
     "A 90-day pilot is available; ask us about it.",
-    "There are no per-person fees and no accounts to count. Everyone you serve can use DeftBrain; the public site stays free."
+    "There are no per-person fees beyond this, and no accounts to count. Everyone you serve can use DeftBrain; the public site stays free."
   ]
 }

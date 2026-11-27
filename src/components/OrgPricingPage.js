@@ -17,19 +17,15 @@ const CODE_KEY = 'deft:pricing-code';
 // Prices are set in US dollars whatever the visitor's locale.
 const usd = n => formatCurrency(n, 'en-US', 'USD');
 
-// Quote by exact size (owner, 2026-11-26): a straight line between the prices
-// of the sizes around it, so crossing a row never jumps. Below the smallest
-// size the first price applies; above the largest it is quoted (null).
-// Same rule as the spreadsheet's Tiers "Quote by exact size".
-function quoteFor(people, sizes) {
-  const pts = [...sizes].sort((x, y) => x.people - y.people);
-  if (people <= pts[0].people) return pts[0].annual;
-  for (let i = 1; i < pts.length; i++) {
-    const lo = pts[i - 1], hi = pts[i];
-    if (people <= hi.people) return Math.round((lo.annual + (people - lo.people) / (hi.people - lo.people) * (hi.annual - lo.annual)) / 10) * 10;
-  }
-  return null;
+// The price rule (owner, 2026-11-26): a per-person rate for the first people,
+// a lower rate after that, and a minimum. Same rule as the spreadsheet's Tiers
+// "The price you quote". The numbers come from the server with the prices.
+function quoteFor(people, rule) {
+  const first = Math.min(people, rule.upTo) * rule.perPerson;
+  const after = Math.max(0, people - rule.upTo) * rule.perPersonAfter;
+  return Math.max(rule.minimum, Math.round((first + after) / 10) * 10);
 }
+const cents = n => `${Math.round(n * 100)}¢`;
 
 export default function OrgPricingPage() {
   const { isDark, toggleTheme } = useTheme();
@@ -46,7 +42,7 @@ export default function OrgPricingPage() {
   const resultRef = useRef(null);
   const [people, setPeople] = useState('');
   const peopleN = Math.floor(Number(people));
-  const quote = pricing && peopleN > 0 ? quoteFor(peopleN, pricing.sizes) : undefined;
+  const quote = pricing && peopleN > 0 ? quoteFor(peopleN, pricing.rule) : undefined;
 
   const unlock = async (value, quiet) => {
     if (!value.trim()) return;
@@ -106,11 +102,12 @@ export default function OrgPricingPage() {
 
         {pricing && (
           <div ref={resultRef} tabIndex={-1} className="org-pricing-result">
+            <p className="org-pricing-rule"><strong>{cents(pricing.rule.perPerson)} per person a year</strong>, with a minimum of {usd(pricing.rule.minimum)}. Past the first {pricing.rule.upTo.toLocaleString('en-US')} people, {cents(pricing.rule.perPersonAfter)} each.</p>
             <div className="org-table-wrap">
               <table className="org-pricing-table">
                 <thead><tr><th scope="col">People served</th><th scope="col">Price per year</th></tr></thead>
-                <tbody>{pricing.sizes.map(s => (
-                  <tr key={s.label}><th scope="row">{s.label}</th><td>{usd(s.annual)}</td></tr>
+                <tbody>{pricing.examples.map(n => (
+                  <tr key={n}><th scope="row">{n.toLocaleString('en-US')}</th><td>{usd(quoteFor(n, pricing.rule))}</td></tr>
                 ))}</tbody>
               </table>
             </div>
@@ -120,7 +117,6 @@ export default function OrgPricingPage() {
               </label>
               <p className="org-quote-wide org-pricing-yours" aria-live="polite">
                 {quote === undefined ? 'Enter a number to see your price.'
-                  : quote === null ? <>Over 1,000,000 people is quoted: email <a className="org-text-link" href={mail}>{SALES}</a>.</>
                   : <>Your price: <strong>{usd(quote)}</strong> a year</>}
               </p>
             </div>

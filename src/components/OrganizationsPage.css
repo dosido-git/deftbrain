@@ -121,3 +121,5 @@
 .org-pricing-calc{max-width:560px;margin-block-start:18px}
 .org-pricing-yours{margin:0;font-size:17px;color:var(--ink)}
 .org-pricing-yours strong{color:var(--navy);font-size:20px}
+.org-pricing-rule{max-width:640px;font-size:20px;line-height:1.45;color:var(--ink);margin:0 0 18px}
+.org-pricing-rule strong{color:var(--navy)}
