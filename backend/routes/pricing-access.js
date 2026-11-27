@@ -4,8 +4,10 @@
 //
 // One code per organization, so the metrics report can show who looked and
 // when ("Pricing page by organization"). Codes live in the Railway variable
-//   PRICING_ACCESS_CODES = "code=Organization name; code=Organization name"
-// made with `node scripts/pricing-code.js "Organization name"`. Remove an
+//   PRICING_ACCESS_CODES = "code=Organization name|audience; code=..."
+// made with `node scripts/pricing-code.js "Organization name" audience`. The
+// audience (libraries, credit-unions, campuses, community, employers) is
+// optional; it opens the page on that audience's rate. Remove an
 // entry to close that organization's access. Unset = the page says to email.
 //
 // The prices live only in backend/data/pricing.json and leave the server only
@@ -28,8 +30,8 @@ function parseCodes(raw) {
     const i = part.indexOf('=');
     if (i < 1) continue;
     const code = part.slice(0, i).trim();
-    const org = part.slice(i + 1).trim();
-    if (code && org) out.push({ code, org });
+    const [org, audience] = part.slice(i + 1).split('|').map(x => (x || '').trim());
+    if (code && org) out.push({ code, org, audience: audience || null });
   }
   return out;
 }
@@ -46,15 +48,17 @@ router.post('/pricing-access', rateLimit(PRICING_LIMITS, 'pricing-access:'), (re
   if (!codes.length) return res.status(503).json({ error: 'not_configured' });
   const given = String((req.body || {}).code || '').trim();
   // Compare against every entry (no early exit) so timing says nothing about which matched.
-  let org = null;
-  for (const entry of codes) if (sameCode(given, entry.code) && !org) org = entry.org;
+  let match = null;
+  for (const entry of codes) if (sameCode(given, entry.code) && !match) match = entry;
+  const org = match && match.org;
   if (!org) {
     logMetric('pricing_access', { ok: false });
     return res.status(401).json({ error: 'wrong_code' });
   }
   logMetric('pricing_access', { ok: true, org: org.slice(0, 120) });
   const { _note, ...pricing } = PRICING;
-  return res.json({ ...pricing, org });
+  const audience = pricing.audiences.some(a => a.key === match.audience) ? match.audience : null;
+  return res.json({ ...pricing, org, audience });
 });
 
 router.parseCodes = parseCodes; // for scripts/pricing-code.js --check

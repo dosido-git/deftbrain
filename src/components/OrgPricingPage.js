@@ -17,15 +17,16 @@ const CODE_KEY = 'deft:pricing-code';
 // Prices are set in US dollars whatever the visitor's locale.
 const usd = n => formatCurrency(n, 'en-US', 'USD');
 
-// The price rule (owner, 2026-11-26): a per-person rate for the first people,
-// a lower rate after that, and a minimum. Same rule as the spreadsheet's Tiers
-// "The price you quote". The numbers come from the server with the prices.
-function quoteFor(people, rule) {
-  const first = Math.min(people, rule.upTo) * rule.perPerson;
-  const after = Math.max(0, people - rule.upTo) * rule.perPersonAfter;
-  return Math.max(rule.minimum, Math.round((first + after) / 10) * 10);
+// Prices by audience (owner, 2026-11-26): each audience has a per-person rate
+// for the first 100,000 people, a third of it after that, and a minimum. Rates
+// come from the server with the rest of the prices (pricing model, "Market by
+// audience"). A code can carry the organization's audience, which opens there.
+function quoteFor(people, a, upTo) {
+  const first = Math.min(people, upTo) * a.perPerson;
+  const after = Math.max(0, people - upTo) * a.perPersonAfter;
+  return Math.max(a.minimum, Math.round((first + after) / 10) * 10);
 }
-const cents = n => `${Math.round(n * 100)}¢`;
+const rateText = n => (n < 1 ? `${Math.round(n * 100)}¢` : `$${Number.isInteger(n) ? n : n.toFixed(2)}`);
 
 export default function OrgPricingPage() {
   const { isDark, toggleTheme } = useTheme();
@@ -42,7 +43,9 @@ export default function OrgPricingPage() {
   const resultRef = useRef(null);
   const [people, setPeople] = useState('');
   const peopleN = Math.floor(Number(people));
-  const quote = pricing && peopleN > 0 ? quoteFor(peopleN, pricing.rule) : undefined;
+  const [audienceKey, setAudienceKey] = useState('');
+  const aud = pricing ? (pricing.audiences.find(a => a.key === audienceKey) || pricing.audiences[0]) : null;
+  const quote = aud && peopleN > 0 ? quoteFor(peopleN, aud, pricing.upTo) : undefined;
 
   const unlock = async (value, quiet) => {
     if (!value.trim()) return;
@@ -52,7 +55,9 @@ export default function OrgPricingPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: value }),
       });
       if (res.ok) {
-        setPricing(await res.json());
+        const data = await res.json();
+        setPricing(data);
+        setAudienceKey(data.audience || data.audiences[0].key);
         setStatus('idle');
         try { sessionStorage.setItem(CODE_KEY, value); } catch (_) { /* this tab only; nothing else */ }
         if (!quiet) setTimeout(() => resultRef.current?.focus(), 120);
@@ -102,19 +107,26 @@ export default function OrgPricingPage() {
 
         {pricing && (
           <div ref={resultRef} tabIndex={-1} className="org-pricing-result">
-            <p className="org-pricing-rule"><strong>{cents(pricing.rule.perPerson)} per person a year</strong>, with a minimum of {usd(pricing.rule.minimum)}. Past the first {pricing.rule.upTo.toLocaleString('en-US')} people, {cents(pricing.rule.perPersonAfter)} each.</p>
             <div className="org-table-wrap">
               <table className="org-pricing-table">
-                <thead><tr><th scope="col">People served</th><th scope="col">Price per year</th></tr></thead>
-                <tbody>{pricing.examples.map(n => (
-                  <tr key={n}><th scope="row">{n.toLocaleString('en-US')}</th><td>{usd(quoteFor(n, pricing.rule))}</td></tr>
+                <thead><tr><th scope="col">Organization</th><th scope="col">Per person a year</th><th scope="col">Minimum a year</th></tr></thead>
+                <tbody>{pricing.audiences.map(a => (
+                  <tr key={a.key} className={a.key === aud.key ? 'is-yours' : undefined}>
+                    <th scope="row">{a.label}</th><td>{rateText(a.perPerson)} per {a.unit}</td><td>{usd(a.minimum)}</td>
+                  </tr>
                 ))}</tbody>
               </table>
             </div>
             <div className="org-quote org-pricing-calc">
-              <label className="org-quote-wide">How many people does your organization serve?
-                <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="60000" />
+              <label>Your organization
+                <select value={aud.key} onChange={e => setAudienceKey(e.target.value)}>
+                  {pricing.audiences.map(a => <option key={a.key} value={a.key}>{a.label}</option>)}
+                </select>
               </label>
+              <label>How many {aud.units}?
+                <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="10000" />
+              </label>
+              <p className="org-quote-wide org-pricing-hint">Count {aud.counts}.</p>
               <p className="org-quote-wide org-pricing-yours" aria-live="polite">
                 {quote === undefined ? 'Enter a number to see your price.'
                   : <>Your price: <strong>{usd(quote)}</strong> a year</>}

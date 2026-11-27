@@ -1,14 +1,20 @@
 {
-  "_note": "Served only by POST /api/pricing-access for a valid organization code (backend/routes/pricing-access.js); never shipped in the public site. The rule (owner, 2026-11-26) sits within a few percent of the cost-based annual prices in docs/DeftBrain pricing and sales model.xlsx (Tiers, columns O and Q).",
+  "_note": "Served only by POST /api/pricing-access for a valid organization code (backend/routes/pricing-access.js); never shipped in the public site. Rates by audience from docs/DeftBrain pricing and sales model.xlsx ('Market by audience', chosen rates, 2026-11-26): each is at or above the cost floor and placed against published prices that audience already pays.",
   "currency": "USD",
   "updated": "2026-11-26",
-  "rule": { "perPerson": 0.12, "upTo": 100000, "perPersonAfter": 0.04, "minimum": 7500 },
-  "examples": [25000, 60000, 100000, 250000, 500000, 750000, 1000000],
+  "upTo": 100000,
+  "audiences": [
+    { "key": "libraries", "label": "Libraries", "unit": "resident", "units": "residents", "perPerson": 0.12, "perPersonAfter": 0.04, "minimum": 7500, "counts": "your service-area population" },
+    { "key": "credit-unions", "label": "Credit unions", "unit": "member", "units": "members", "perPerson": 0.25, "perPersonAfter": 0.0833, "minimum": 7500, "counts": "your members" },
+    { "key": "campuses", "label": "Colleges and universities", "unit": "student", "units": "students", "perPerson": 1.00, "perPersonAfter": 0.3333, "minimum": 7500, "counts": "your enrolled students" },
+    { "key": "community", "label": "Community organizations", "unit": "person served", "units": "people served", "perPerson": 0.75, "perPersonAfter": 0.25, "minimum": 5000, "counts": "the people you serve in a year" },
+    { "key": "employers", "label": "Employers", "unit": "employee", "units": "employees", "perPerson": 7.50, "perPersonAfter": 2.50, "minimum": 5000, "counts": "your employees" }
+  ],
   "notes": [
     "One price a year, billed annually. It includes setup, your own page, the launch kit, ongoing promotion, usage reports and support.",
-    "People served means your library's service-area population, your credit union's members, your enrolled students or your employees.",
-    "Consortia: one contract for every member, at 30% off each member's price.",
+    "Past the first 100,000 people, each additional person is a third of the rate.",
+    "Consortia and multi-site networks: one contract for every member, at 30% off each member's price.",
     "A 90-day pilot is available; ask us about it.",
-    "There are no per-person fees beyond this, and no accounts to count. Everyone you serve can use DeftBrain; the public site stays free."
+    "No accounts to count. Everyone you serve can use DeftBrain; the public site stays free."
   ]
 }

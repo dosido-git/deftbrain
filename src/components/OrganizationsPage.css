@@ -110,7 +110,7 @@
 /* /organizations/pricing (OrgPricingPage.js) */
 .org-pricing-gate{max-width:560px}
 .org-table-wrap{overflow-x:auto}
-.org-pricing-table{width:100%;max-width:560px;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:16px}
+.org-pricing-table{width:100%;max-width:680px;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:16px}
 .org-pricing-table th,.org-pricing-table td{padding:12px 16px;border-bottom:1px solid var(--line);text-align:start}
 .org-pricing-table thead th{font-size:13px;color:var(--muted);font-weight:700}
 .org-pricing-table tbody th{color:var(--navy);font-weight:700}
@@ -123,3 +123,7 @@
 .org-pricing-yours strong{color:var(--navy);font-size:20px}
 .org-pricing-rule{max-width:640px;font-size:20px;line-height:1.45;color:var(--ink);margin:0 0 18px}
 .org-pricing-rule strong{color:var(--navy)}
+.org-pricing-table tr.is-yours th,.org-pricing-table tr.is-yours td{background:var(--soft)}
+:root[data-theme="dark"] .org-pricing-table tr.is-yours th,:root[data-theme="dark"] .org-pricing-table tr.is-yours td{background:#2c2c31}
+.org-pricing-calc select{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.org-pricing-hint{margin:0;font-size:13px;color:var(--muted)}
