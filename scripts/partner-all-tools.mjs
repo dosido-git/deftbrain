@@ -45,8 +45,8 @@ swap(/\s*<a class="dl"[^>]*>[^<]*<\/a>/, '', 'download link');
 swap(/<p class="intro" style="text-align:right">Free to use, no sign-up\.<\/p>/,
   `<p class="intro" style="text-align:right"><b>Provided by ${esc(partner.name)}.</b> Free to use, no sign-up.</p>`, 'intro line');
 swap(/<span class="qr"><svg[\s\S]*?<\/svg><\/span>/, `<span class="qr">${svg}</span>`, 'QR code');
-// Partner addresses are longer than deftbrain.com: smaller, and allowed to wrap at a slash.
-swap(/<div class="url">deftbrain\.com<\/div>/, `<div class="url" style="font-size:${page.length > 24 ? '9pt' : 'inherit'}">${esc(page).replace(/\//g, '/<wbr>')}</div>`, 'address');
+// Partner addresses are longer than deftbrain.com: smaller, and allowed to wrap at a slash only (never inside local-101).
+swap(/<div class="url">deftbrain\.com<\/div>/, `<div class="url" style="font-size:${large ? '18pt' : page.length > 24 ? '9pt' : 'inherit'}">${esc(page).split('/').map(p => `<span style="white-space:nowrap">${p}</span>`).join('/<wbr>')}</div>`, 'address');
 
 const outDir = path.join(root, 'output/partners');
 fs.mkdirSync(outDir, { recursive: true });
