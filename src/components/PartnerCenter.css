@@ -112,3 +112,6 @@
 .pc-example p{margin:0 0 8px;line-height:1.55}
 .pc-example-links{display:flex;flex-wrap:wrap;gap:18px;margin:0!important}
 .pc-handout-name{display:inline-flex;align-items:center;gap:10px}
+.pc-mailform textarea{font:inherit;font-weight:400;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);resize:vertical}
+.pc-wide{grid-column:1/-1}
+:root[data-theme="dark"] .pc-mailform textarea{background:#1c1c1f;border-color:#3f3f46;color:inherit}

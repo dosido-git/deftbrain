@@ -10,7 +10,7 @@ const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
-const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML } = require('../lib/partnerReport');
+const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, sampleEvents, markSample } = require('../lib/partnerReport');
 const { REPORT_FILE, findEntry } = require('../lib/pricingCodes');
 const { resolvePartner, allPartnerIds } = require('../lib/partners');
 // A tool's topic for partner reports: its first catalog category.
@@ -1959,6 +1959,27 @@ router.post('/partner-report', rateLimit(PARTNER_REPORT_LIMITS, 'partner-report:
   const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.body.from), to: month(req.body.to), categoryOf: topicOf });
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
   res.json({ name: report.name, from: report.from, to: report.to, html: renderPartnerReportHTML(report, { toolTitles }), funderHtml: renderFunderSummaryHTML(report) });
+});
+
+// GET /api/partner-report/sample?partner=<id>[&view=funder] — a full report
+// from fictional usage, only for sample partners (partners.json sample: true),
+// so prospects see what they would get. No code needed; nothing real in it.
+router.get('/partner-report/sample', rateLimit(METRIC_LIMITS, 'partner-sample:'), (req, res) => {
+  try {
+    const id = String(req.query.partner || '');
+    const partnerRec = resolvePartner(id);
+    if (!partnerRec || !partnerRec.sample) return res.status(404).end();
+    // A member's sample is cut from its consortium's, so the two agree.
+    const owner = partnerRec.parentId ? resolvePartner(partnerRec.parentId) : partnerRec;
+    const { events, from, to } = sampleEvents(owner);
+    const report = buildPartnerReport(events, id, { partner: partnerRec, from, to, categoryOf: topicOf });
+    const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
+    const html = req.query.view === 'funder' ? renderFunderSummaryHTML(report) : renderPartnerReportHTML(report, { toolTitles });
+    res.set('Cache-Control', 'public, max-age=3600').set('X-Robots-Tag', 'noindex').type('html').send(markSample(html));
+  } catch (err) {
+    console.error('partner-report sample:', err.message);
+    res.status(500).end();
+  }
 });
 
 router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req, res) => {

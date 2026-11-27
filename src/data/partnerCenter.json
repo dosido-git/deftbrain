@@ -1,5 +1,5 @@
 {
-  "pages": ["launch-kit", "guidelines", "privacy"],
+  "pages": ["launch-kit", "guidelines", "privacy", "sample-consortium"],
   "packages": [
     { "id": "pay-or-reply", "title": "Check before you pay or reply", "tools": ["ScamRadar", "BillRescue", "BuyWise", "QuoteCheck", "UpsellShield"], "buyers": "Credit unions, banks", "help": "Official fraud or member-service line", "intro": "Not sure about a text, a bill or a big purchase? Answer a few questions and see what matters, what your options are and what to ask next." },
     { "id": "money-conversations", "title": "Money conversations", "tools": ["MoneyDiplomat", "NotSoFast", "ComplaintEscalationWriter", "MarkupDetective"], "buyers": "Credit unions, employers", "help": "Financial counseling or coaching", "intro": "Splitting costs, pushing back on a charge or asking about a price? Think it through first and go in knowing what to ask." },

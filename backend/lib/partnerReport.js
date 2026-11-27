@@ -266,4 +266,49 @@ ${topics.length ? `<ul>${topics.map(x => `<li>${esc(x.label)}: ${n(x.started)}</
 </body></html>`;
 }
 
-module.exports = { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, suppressColumn, MIN_GROUP };
+// Fictional usage for a sample partner (sample: true in partners.json), so
+// prospects can see a full report before any real numbers exist (owner,
+// 2026-11-27: example consortium). Deterministic: the same partner and months
+// always give the same report. Never used for a real partner.
+function sampleEvents(partner, { months = 6, now = new Date() } = {}) {
+  let seed = [...String(partner.id || partner.name || 'sample')].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const pages = [`/for/${partner.id}`, ...Object.keys(partner.members || {}).map(m => `/for/${partner.id}/${m}`)];
+  const weight = pages.map((_, i) => (i === 0 ? 1.4 : 1 / (i + 0.6)));
+  const tools = Array.isArray(partner.tools) && partner.tools.length ? partner.tools : ['PlainTalk'];
+  const extra = ['PlainTalk', 'DocumentDetective', 'ScamRadar', 'DoctorVisitPrep', 'MoneyDiplomat'];
+  const channels = ['email', 'print', 'website', 'staff', 'social'];
+  const out = [];
+  const ym = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+  for (let k = months; k >= 1; k--) {
+    const month = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - k, 1));
+    const days = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 0)).getUTCDate();
+    const growth = 1 + (months - k) * 0.18;
+    pages.forEach((landing, i) => {
+      const visits = Math.round(weight[i] * 260 * growth * (0.85 + rand() * 0.3));
+      for (let v = 0; v < visits; v++) {
+        const day = 1 + Math.floor(rand() * days);
+        // weekdays busier than weekends
+        const at = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth(), day, 9 + Math.floor(rand() * 10)));
+        if ([0, 6].includes(at.getUTCDay()) && rand() < 0.45) continue;
+        const iso = at.toISOString();
+        const slug = landing.slice(5);
+        const r = rand();
+        const ref = r < 0.55 ? `${slug}-${channels[Math.floor(rand() * channels.length)]}` : r < 0.8 ? 'google.com' : undefined;
+        out.push({ kind: 'event', event: 'page_view', at: iso, landing, ref, props: { newSession: true } });
+        if (rand() < 0.72) out.push({ kind: 'event', event: 'interact', at: iso, landing });
+        if (rand() < 0.58) {
+          const id = rand() < 0.8 ? tools[Math.floor(rand() * tools.length)] : extra[Math.floor(rand() * extra.length)];
+          out.push({ kind: 'event', event: 'tool_run', at: iso, landing, path: `/${id}` });
+          if (rand() < 0.78) out.push({ kind: 'event', event: 'tool_complete', at: iso, landing, path: `/${id}` });
+        }
+      }
+    });
+  }
+  return { events: out, from: ym(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - months, 1))), to: ym(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1))) };
+}
+
+// The sample banner goes right after <body> so nobody mistakes it for real usage.
+const markSample = html => html.replace('<body>', '<body><p style="background:#fff4d6;border:1px solid #e3c77a;border-radius:8px;padding:8px 12px;font-size:14px;color:#5c4a12;margin:0 0 18px"><b>Sample report.</b> The organization and every number here are fictional, to show what a partner sees.</p>');
+
+module.exports = { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, sampleEvents, markSample, suppressColumn, MIN_GROUP };

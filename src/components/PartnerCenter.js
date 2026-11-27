@@ -26,12 +26,14 @@ const SECTIONS = [
   { id: 'launch-kit', label: 'Launch kit' },
   { id: 'guidelines', label: 'Guidelines' },
   { id: 'privacy', label: 'Privacy and data' },
+  { id: 'sample-consortium', label: 'Sample consortium' },
 ];
 const HEADS = {
   '': { title: 'Partner Center', description: 'What a DeftBrain partnership includes: your own page, ready-to-send launch materials, and usage reports with no individual data.' },
   'launch-kit': { title: 'Launch kit — Partner Center', description: 'Emails, a website card, a staff script, tracked links and a printable handout, filled in for your organization.' },
   guidelines: { title: 'Guidelines — Partner Center', description: 'How to describe DeftBrain to your people, and the co-branding rules.' },
   privacy: { title: 'Privacy and data — Partner Center', description: 'What a partner page collects, what your organization sees, and which outside services are involved.' },
+  'sample-consortium': { title: 'Sample consortium — Partner Center', description: 'Everything a consortium gets, set up for a fictional union: pages, reports, printed materials, letters and forms.' },
 };
 const pkgById = Object.fromEntries(CENTER.packages.map(p => [p.id, p]));
 
@@ -447,7 +449,165 @@ function PackageDetail({ pkg, byId }) {
   );
 }
 
-const TITLES = { '': 'Everything you need to offer DeftBrain to your people.', 'launch-kit': 'Launch kit', guidelines: 'Guidelines', privacy: 'Privacy and data' };
+
+// ─── Sample consortium (/partners/sample-consortium) ─────────
+// Everything a consortium gets, set up for a fictional union and two of its
+// locals (owner, 2026-11-27): the edition and member pages, the contacts
+// inside every experience, reports from fictional usage, printed materials,
+// letters, and the forms a consortium uses. All from partners.json
+// "example-union" (sample: true), so it shows exactly what the real thing does.
+const SAMPLE_ID = 'example-union';
+
+function MailForm({ id, title, lead, subject, fields, submit }) {
+  const [v, setV] = useState(() => Object.fromEntries(fields.map(f => [f.name, f.sample || ''])));
+  const body = fields.map(f => `${f.label}: ${v[f.name] || ''}`).join('\n');
+  const href = `mailto:${CONTACT}?subject=${encodeURIComponent(subject(v))}&body=${encodeURIComponent(body)}`;
+  return (
+    <form className="pc-material pc-mailform" onSubmit={e => { e.preventDefault(); window.location.href = href; }} aria-labelledby={id}>
+      <h3 id={id}>{title}</h3>
+      <p className="pc-note">{lead}</p>
+      <div className="pc-form">
+        {fields.map(f => (
+          <label key={f.name} className={f.wide ? 'pc-wide' : undefined}>{f.label}
+            {f.long
+              ? <textarea rows={3} value={v[f.name]} onChange={e => setV(x => ({ ...x, [f.name]: e.target.value }))} />
+              : <input type="text" value={v[f.name]} onChange={e => setV(x => ({ ...x, [f.name]: e.target.value }))} />}
+          </label>
+        ))}
+      </div>
+      <p className="pc-note"><button type="submit" className="org-btn org-btn-primary">{submit}</button> Opens your email app with these answers filled in. Nothing is sent until you press send.</p>
+    </form>
+  );
+}
+
+function SampleConsortium({ byId }) {
+  const u = resolvePartner(SAMPLE_ID);
+  if (!u) return null;
+  const memberIds = Object.keys(u.members || {});
+  const m1 = resolvePartner(`${SAMPLE_ID}/${memberIds[0]}`);
+  const m2 = resolvePartner(`${SAMPLE_ID}/${memberIds[1]}`);
+  const edition = u.edition || u.name;
+  const sample = (q) => `/api/partner-report/sample?${q}`;
+  const letter = `Subject: ${edition}: free, private help for every member
+
+Dear local officers,
+
+${u.name} now offers ${edition}, free to every member and their family. It is guided help for the moments members bring to us: reading a contract, a problem at work, a confusing bill, a hard conversation. Members answer a few questions and see what matters, what their options are and what to ask next. No account, no cost to members, and the union never sees what anyone types.
+
+Every local gets its own page, with your local's name and your own contacts shown inside every experience, so members are pointed back to you:
+${memberIds.map(id => `  • ${u.members[id].name}: https://${SITE}/for/${SAMPLE_ID}/${id}`).join('\n')}
+
+What we ask of each local:
+  1. Check your page and send any changes to your contacts (phone, web link, hours).
+  2. Share your page in your next newsletter, on your website and at your next meeting.
+  3. Put the printed list of tools on the hall's notice board.
+
+Each local receives a quarterly usage report (totals only) and the consortium receives one report covering every local.
+
+In solidarity,
+[Name]
+[Title], ${u.name}`;
+  const checklist = `${edition}: member setup checklist
+
+☐ Local name as it should appear on the page
+☐ Who members should contact (label, phone, web link, hours), or use the union hall's
+☐ Page checked and approved by the local
+☐ Report code received (for the local's own usage report)
+☐ Launch: newsletter item, website card, notice-board list, staff/steward script
+☐ Month 3: review the usage report with the consortium`;
+  const board = `${edition}: summary for the executive board
+
+What it is: free, private guided help for members' everyday situations (contracts, work problems, bills, health visits, hard conversations), on a page in our name, with every local's own contacts built in.
+
+What members get: help at any hour, in 13 languages, with no account. Every experience points members back to their local or the union hall.
+
+What we see: a quarterly report for the whole union and for each local, with visits, what people came for and which channels worked. Totals only; small groups hidden; never what anyone typed.
+
+What it costs: one contract for every local. [Price from your DeftBrain quote.]`;
+  return (
+    <>
+      <p className="org-lede pc-lede">Everything a consortium gets, set up for a fictional union with two locals. Every name, number and phone number here is made up; the pages, reports and materials work exactly as they would for you.</p>
+
+      <section className="pc-section" aria-labelledby="sc-edition">
+        <h2 id="sc-edition">1. Your edition and every member's page</h2>
+        <p className="pc-section-lead">One page in the consortium's name, and one for each member, made from a list. Each member keeps the consortium's experiences and can have its own contacts.</p>
+        <div className="pc-cards">
+          <article><span aria-hidden="true">🏛️</span><h3>{edition}</h3><p>The consortium's page, listing every member.</p><Link to={`/for/${SAMPLE_ID}`}>Open the edition →</Link></article>
+          {m1 && <article><span aria-hidden="true">📍</span><h3>{m1.name}</h3><p>A member with its own steward line, plus the hall's.</p><Link to={`/for/${m1.id}`}>Open the member page →</Link></article>}
+          {m2 && <article><span aria-hidden="true">📍</span><h3>{m2.name}</h3><p>A member that uses the consortium's contacts.</p><Link to={`/for/${m2.id}`}>Open the member page →</Link></article>}
+        </div>
+      </section>
+
+      <section className="pc-section" aria-labelledby="sc-inside">
+        <h2 id="sc-inside">2. Your contacts inside every experience</h2>
+        <p className="pc-section-lead">Once someone arrives through a member page, every experience they open ends with how to reach a person there, and printouts and copied results say who provided them.</p>
+        <p className="pc-note">Try it: open <Link to={`/for/${m1 ? m1.id : SAMPLE_ID}`}>{m1 ? m1.name : edition}</Link>, then any experience on it{u.tools?.[0] && byId[u.tools[0]] ? <> (for example {byId[u.tools[0]].title})</> : null}, and look below the answer.</p>
+      </section>
+
+      <section className="pc-section" aria-labelledby="sc-reports">
+        <h2 id="sc-reports">3. Reports</h2>
+        <p className="pc-section-lead">Each member opens its own report with a report code at <Link to="/partners/report">deftbrain.com/partners/report</Link>; the consortium's code covers every member. These samples use fictional usage.</p>
+        <div className="pc-cards">
+          <article><span aria-hidden="true">📊</span><h3>Consortium report</h3><p>All members together, plus a table by member.</p><a href={sample(`partner=${SAMPLE_ID}`)} target="_blank" rel="noopener noreferrer">Open sample ↗</a></article>
+          {m1 && <article><span aria-hidden="true">📈</span><h3>A member's report</h3><p>{m1.name} sees only its own numbers.</p><a href={sample(`partner=${encodeURIComponent(m1.id)}`)} target="_blank" rel="noopener noreferrer">Open sample ↗</a></article>}
+          <article><span aria-hidden="true">🧾</span><h3>One page for funders and boards</h3><p>Reach, completion and topics, with how the numbers were counted.</p><a href={sample(`partner=${SAMPLE_ID}&view=funder`)} target="_blank" rel="noopener noreferrer">Open sample ↗</a></article>
+        </div>
+      </section>
+
+      <section className="pc-section" aria-labelledby="sc-print">
+        <h2 id="sc-print">4. Printed materials and launch kits</h2>
+        <div className="pc-cards">
+          <article><span aria-hidden="true">📄</span><h3>Printable list of every tool</h3><p>Two pages, "Provided by" the consortium or the member, with a QR code to their own page.</p><a href="/partners/example-union-all-tools.pdf" target="_blank" rel="noopener noreferrer">Edition PDF ↗</a> · <a href="/partners/example-union-local-101-all-tools.pdf" target="_blank" rel="noopener noreferrer">Local 101 PDF ↗</a></article>
+          <article><span aria-hidden="true">🧰</span><h3>Launch kits</h3><p>Emails, a website card, a staff script, tracked links, a handout with a QR code and a timeline, filled in.</p><Link to={`/partners/launch-kit?partner=${SAMPLE_ID}`}>For the consortium →</Link>{m1 && <> · <Link to={`/partners/launch-kit?partner=${encodeURIComponent(m1.id)}`}>For {m1.name} →</Link></>}</article>
+        </div>
+      </section>
+
+      <section className="pc-section" aria-labelledby="sc-docs">
+        <h2 id="sc-docs">5. Letters and documents</h2>
+        <div className="pc-materials">
+          <Material title="Letter to member organizations" note="From the consortium to every member, announcing the edition." text={letter} />
+          <Material title="Member setup checklist" note="What each member does, in order." text={checklist} />
+          <Material title="Summary for the board" note="For the consortium's executive board or annual report." text={board} />
+        </div>
+      </section>
+
+      <section className="pc-section" aria-labelledby="sc-forms">
+        <h2 id="sc-forms">6. Forms</h2>
+        <p className="pc-section-lead">How a consortium keeps its edition up to date. Filled in with sample answers.</p>
+        <div className="pc-materials">
+          <MailForm id="sc-f-member" title="Add or update a member" lead="A new member page, or new contacts for an existing one." submit="Send member details"
+            subject={v => `${edition}: member ${v.member || ''}`}
+            fields={[
+              { name: 'member', label: 'Member name', sample: 'Example Union Local 303', wide: true },
+              { name: 'label', label: 'What members should contact you about', sample: 'Talk to your Local 303 steward.', wide: true },
+              { name: 'phone', label: 'Phone', sample: '1-800-555-0303' },
+              { name: 'hours', label: 'Hours', sample: 'weekdays 9–5' },
+              { name: 'url', label: 'Web link (optional)', sample: '', wide: true },
+            ]} />
+          <MailForm id="sc-f-tool" title="Request a new experience" lead="A situation your people keep bringing you that DeftBrain doesn't cover yet." submit="Send request"
+            subject={() => `${edition}: experience request`}
+            fields={[
+              { name: 'situation', label: 'The situation', sample: 'Members preparing for a grievance meeting.', wide: true, long: true },
+              { name: 'who', label: 'Who it is for', sample: 'Members and stewards', wide: true },
+            ]} />
+          <MailForm id="sc-f-codes" title="Request report codes" lead="A report code for a member, or a new one if a code was lost." submit="Request codes"
+            subject={() => `${edition}: report codes`}
+            fields={[
+              { name: 'members', label: 'Which members', sample: 'Local 101, Local 202', wide: true },
+              { name: 'sendto', label: 'Send codes to (name and role)', sample: 'Pat Doe, Communications director', wide: true },
+            ]} />
+        </div>
+      </section>
+
+      <section className="pc-section" aria-labelledby="sc-privacy">
+        <h2 id="sc-privacy">7. Privacy and your review team</h2>
+        <p className="pc-section-lead">What the pages collect, what the consortium and each member see, and which outside services are involved: <Link to="/partners/privacy">Privacy and data</Link>.</p>
+      </section>
+    </>
+  );
+}
+
+const TITLES = { '': 'Everything you need to offer DeftBrain to your people.', 'launch-kit': 'Launch kit', guidelines: 'Guidelines', privacy: 'Privacy and data', 'sample-consortium': 'A sample consortium, fully set up' };
 
 export default function PartnerCenter({ allTools = [] }) {
   const { section: page = '', pkg: pkgId } = useParams();
@@ -484,6 +644,7 @@ export default function PartnerCenter({ allTools = [] }) {
         {section === 'launch-kit' && <LaunchKit key={kitPartner} byId={byId} params={params} />}
         {section === 'guidelines' && <Guidelines />}
         {section === 'privacy' && <PrivacyData />}
+        {section === 'sample-consortium' && <SampleConsortium byId={byId} />}
         {pkg && <PackageDetail pkg={pkg} byId={byId} />}
       </div>
     </main>
