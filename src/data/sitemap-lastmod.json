@@ -192,8 +192,8 @@
   "lastmod": "2026-11-18"
  },
  "static:tools": {
-  "hash": "8de28690f72175ae75b4aa7aeac041378833d414",
-  "lastmod": "2026-11-26"
+  "hash": "15a0d82151c4dcdeaf903bdb0a6787433566c16c",
+  "lastmod": "2026-11-27"
  },
  "category:home-daily-life": {
   "hash": "4b8b89d135c511f0acd2438986b9c8f5fbd812fc",
@@ -248,7 +248,7 @@
   "lastmod": "2026-10-06"
  },
  "static:organizations": {
-  "hash": "ddcc892972f52f6fa521b85f4cf4e49b4fd7a883",
+  "hash": "45a5a18099caa2d819e8354c0cbb4905cbb64011",
   "lastmod": "2026-11-27"
  },
  "tool:ContractDecoder": {
