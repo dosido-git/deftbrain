@@ -7,7 +7,8 @@
 //   PRICING_ACCESS_CODES = "code=Organization name|audience; code=..."
 // made with `node scripts/pricing-code.js "Organization name" audience`. The
 // audience (libraries, credit-unions, campuses, community, employers) is
-// optional; it opens the page on that audience's rate. Remove an
+// optional; with it the page shows only that audience's price, without
+// it all of them. Remove an
 // entry to close that organization's access. Unset = the page says to email.
 //
 // The prices live only in backend/data/pricing.json and leave the server only
@@ -57,8 +58,11 @@ router.post('/pricing-access', rateLimit(PRICING_LIMITS, 'pricing-access:'), (re
   }
   logMetric('pricing_access', { ok: true, org: org.slice(0, 120) });
   const { _note, ...pricing } = PRICING;
-  const audience = pricing.audiences.some(a => a.key === match.audience) ? match.audience : null;
-  return res.json({ ...pricing, org, audience });
+  // A code with an audience sees only that audience's price (owner, 2026-11-26);
+  // the others never leave the server. A code without one sees them all.
+  const own = pricing.audiences.filter(a => a.key === match.audience);
+  const audience = own.length ? match.audience : null;
+  return res.json({ ...pricing, audiences: own.length ? own : pricing.audiences, org, audience });
 });
 
 router.parseCodes = parseCodes; // for scripts/pricing-code.js --check

@@ -108,6 +108,9 @@ export default function OrgPricingPage() {
 
         {pricing && (
           <div ref={resultRef} tabIndex={-1} className="org-pricing-result">
+            {pricing.audiences.length === 1 ? (
+              <p className="org-pricing-rule"><strong>{rateText(aud.perPerson)} per {aud.unit}</strong> a year, with a minimum of {usd(aud.minimum)} a year.</p>
+            ) : (
             <div className="org-table-wrap">
               <table className="org-pricing-table">
                 <thead><tr><th scope="col">Organization</th><th scope="col">Per person a year</th><th scope="col">Minimum a year</th></tr></thead>
@@ -118,12 +121,15 @@ export default function OrgPricingPage() {
                 ))}</tbody>
               </table>
             </div>
+            )}
             <div className="org-quote org-pricing-calc">
-              <label>Your organization
-                <select value={aud.key} onChange={e => setAudienceKey(e.target.value)}>
-                  {pricing.audiences.map(a => <option key={a.key} value={a.key}>{a.label}</option>)}
-                </select>
-              </label>
+              {pricing.audiences.length > 1 && (
+                <label>Your organization
+                  <select value={aud.key} onChange={e => setAudienceKey(e.target.value)}>
+                    {pricing.audiences.map(a => <option key={a.key} value={a.key}>{a.label}</option>)}
+                  </select>
+                </label>
+              )}
               <label>How many {aud.units}?
                 <input type="number" min="1" inputMode="numeric" value={people} onChange={e => setPeople(e.target.value)} placeholder="10000" />
               </label>
