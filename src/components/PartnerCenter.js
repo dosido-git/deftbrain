@@ -171,8 +171,9 @@ function initialKit(params) {
     name: partner?.name || '',
     packageId: pkg.id,
     slug: partner ? id : '',
-    helpText: partner?.help?.text || '',
-    phone: partner?.help?.phone || '',
+    // First contact with a phone (older records: the single `help` line).
+    helpText: (partner?.contacts || []).find(ct => ct.phone)?.label || partner?.help?.text || '',
+    phone: (partner?.contacts || []).find(ct => ct.phone)?.phone || partner?.help?.phone || '',
     sample: partner?.sample === true,
     logo: partner?.logo || '',
   };

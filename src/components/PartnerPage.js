@@ -6,6 +6,7 @@ import { useNoindex } from '../hooks/useNoindex';
 import NotFound from './NotFound';
 import { ToolMiniCard } from './OrganizationsPage';
 import PARTNERS from '../data/partners.json';
+import { partnerById, rememberPartner } from '../hooks/usePartner';
 import './OrganizationsPage.css';
 import './PartnerPage.css';
 
@@ -17,7 +18,8 @@ import './PartnerPage.css';
 // landing path (/for/<partner>) for the whole session.
 export default function PartnerPage({ allTools = [] }) {
   const { partnerId } = useParams();
-  const partner = Object.prototype.hasOwnProperty.call(PARTNERS, partnerId) ? PARTNERS[partnerId] : null;
+  const raw = Object.prototype.hasOwnProperty.call(PARTNERS, partnerId) ? PARTNERS[partnerId] : null;
+  const partner = raw && !raw.retired ? partnerById(partnerId) : raw;
   const { isDark, toggleTheme } = useTheme();
   const byId = useMemo(() => Object.fromEntries(allTools.map(t => [t.id, t])), [allTools]);
 
@@ -33,11 +35,12 @@ export default function PartnerPage({ allTools = [] }) {
     // index.html skips Google Analytics when the visit starts here; this covers
     // arriving by in-app navigation (gtag's documented per-property kill switch).
     window['ga-disable-G-0MLY19QEW6'] = true;
+    rememberPartner(partnerId); // the tools this visit opens show this partner's contacts
     return () => {
       window['ga-disable-G-0MLY19QEW6'] = false;
       document.body.classList.remove('db-sand-page');
     };
-  }, []);
+  }, [partnerId]);
 
   if (!partner) return <NotFound />;
   if (partner.retired) return <Navigate to="/tools" replace />; // ended partnership: keep printed links alive
@@ -70,12 +73,14 @@ export default function PartnerPage({ allTools = [] }) {
 
         <div className="partner-grid">{tools.map(t => <ToolMiniCard key={t.id} tool={t} />)}</div>
 
-        {partner.help && (
-          <p className="partner-help">
-            <span aria-hidden="true">📞</span> {partner.help.text}
-            {partner.help.phone && <> <a href={`tel:${partner.help.phone.replace(/[^\d+]/g, '')}`}>{partner.help.phone}</a></>}
+        {partner.contacts.map(ct => (
+          <p className="partner-help" key={`${ct.label}${ct.phone || ''}${ct.url || ''}`}>
+            <span aria-hidden="true">{ct.url && !ct.phone ? '🔗' : '📞'}</span> {ct.label}
+            {ct.phone && <> <a href={`tel:${ct.phone.replace(/[^\d+]/g, '')}`}>{ct.phone}</a></>}
+            {ct.url && <> <a href={ct.url} target="_blank" rel="noopener noreferrer">{ct.urlText || ct.url.replace(/^https?:\/\//, '')}</a></>}
+            {ct.hours && <> · {ct.hours}</>}
           </p>
-        )}
+        ))}
 
         <Link className="org-text-link partner-more" to="/tools">Explore more guidance from DeftBrain →</Link>
 

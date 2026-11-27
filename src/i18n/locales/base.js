@@ -3,6 +3,8 @@
 // localization scripts (eval). Tool-specific keys live in ./tools/<tool>.js.
 export const base = {
   "en": {
+    "partner_reach_person": "Want to talk it through with someone at {{name}}?",
+    "partner_provided_by": "Provided by {{name}}",
     "cmd_enter": "Press ⌘↵ (Ctrl+Enter) to submit",
     "describe_situation": "Describe your situation...",
     "describe_problem": "Describe your problem...",
@@ -141,6 +143,8 @@ export const base = {
     "fb_thanks": "🙏 Thanks — this directly shapes what we build next."
   },
   "es": {
+    "partner_reach_person": "¿Quieres hablarlo con alguien de {{name}}?",
+    "partner_provided_by": "Ofrecido por {{name}}",
     "cmd_enter": "Pulsa ⌘↵ (Ctrl+Intro) para enviar",
     "describe_situation": "Describe tu situación...",
     "describe_problem": "Describe tu problema...",
@@ -279,6 +283,8 @@ export const base = {
     "fb_thanks": "🙏 Gracias — esto define directamente lo que construimos después."
   },
   "zh": {
+    "partner_reach_person": "想和{{name}}的工作人员谈谈吗？",
+    "partner_provided_by": "由{{name}}提供",
     "cmd_enter": "按 ⌘↵（Ctrl+Enter）提交",
     "describe_situation": "描述您的情况...",
     "describe_problem": "描述您的问题...",
@@ -417,6 +423,8 @@ export const base = {
     "fb_thanks": "🙏 谢谢 — 这直接决定我们接下来做什么。"
   },
   "hi": {
+    "partner_reach_person": "क्या आप {{name}} में किसी से इस बारे में बात करना चाहते हैं?",
+    "partner_provided_by": "{{name}} द्वारा प्रदान किया गया",
     "cmd_enter": "भेजने के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
     "describe_situation": "अपनी स्थिति बताएं...",
     "describe_problem": "अपनी समस्या बताएं...",
@@ -555,6 +563,8 @@ export const base = {
     "fb_thanks": "🙏 धन्यवाद — इससे तय होता है कि हम आगे क्या बनाएँ।"
   },
   "ar": {
+    "partner_reach_person": "هل تريد مناقشة الأمر مع شخص في {{name}}؟",
+    "partner_provided_by": "مقدَّم من {{name}}",
     "cmd_enter": "اضغط ⌘↵ (Ctrl+Enter) للإرسال",
     "describe_situation": "صف وضعك...",
     "describe_problem": "صف مشكلتك...",
@@ -693,6 +703,8 @@ export const base = {
     "fb_thanks": "🙏 شكراً — هذا يحدد مباشرة ما سنبنيه لاحقاً."
   },
   "pt": {
+    "partner_reach_person": "Quer conversar sobre isso com alguém da {{name}}?",
+    "partner_provided_by": "Oferecido por {{name}}",
     "cmd_enter": "Pressione ⌘↵ (Ctrl+Enter) para enviar",
     "describe_situation": "Descreva sua situação...",
     "describe_problem": "Descreva seu problema...",
@@ -831,6 +843,8 @@ export const base = {
     "fb_thanks": "🙏 Obrigado — isso define diretamente o que vamos construir em seguida."
   },
   "fr": {
+    "partner_reach_person": "Vous voulez en parler avec quelqu'un de {{name}} ?",
+    "partner_provided_by": "Proposé par {{name}}",
     "cmd_enter": "Appuyez sur ⌘↵ (Ctrl+Entrée) pour envoyer",
     "describe_situation": "Décrivez votre situation...",
     "describe_problem": "Décrivez votre problème...",
@@ -969,6 +983,8 @@ export const base = {
     "fb_thanks": "🙏 Merci — cela oriente directement la suite."
   },
   "de": {
+    "partner_reach_person": "Möchtest du mit jemandem bei {{name}} darüber sprechen?",
+    "partner_provided_by": "Bereitgestellt von {{name}}",
     "cmd_enter": "Mit ⌘↵ (Strg+Enter) absenden",
     "describe_situation": "Beschreib deine Situation...",
     "describe_problem": "Beschreib dein Problem...",
@@ -1107,6 +1123,8 @@ export const base = {
     "fb_thanks": "🙏 Danke — das bestimmt direkt, was wir als Nächstes bauen."
   },
   "ja": {
+    "partner_reach_person": "{{name}}の担当者に相談しますか？",
+    "partner_provided_by": "提供：{{name}}",
     "cmd_enter": "⌘↵（Ctrl+Enter）で送信",
     "describe_situation": "状況を説明してください...",
     "describe_problem": "問題を説明してください...",
@@ -1245,6 +1263,8 @@ export const base = {
     "fb_thanks": "🙏 ありがとうございます — 次に作るものを直接決める材料になります。"
   },
   "ko": {
+    "partner_reach_person": "{{name}}의 담당자와 이야기해 보시겠어요?",
+    "partner_provided_by": "제공: {{name}}",
     "cmd_enter": "⌘↵ (Ctrl+Enter)를 누르면 전송됩니다",
     "describe_situation": "상황을 설명해 주세요...",
     "describe_problem": "문제를 설명해 주세요...",
@@ -1383,6 +1403,8 @@ export const base = {
     "fb_thanks": "🙏 고맙습니다 — 다음에 만들 것을 정하는 데 그대로 반영돼요."
   },
   "ru": {
+    "partner_reach_person": "Хотите обсудить это с кем-нибудь из {{name}}?",
+    "partner_provided_by": "Предоставлено: {{name}}",
     "cmd_enter": "Нажмите ⌘↵ (Ctrl+Enter), чтобы отправить",
     "describe_situation": "Опишите вашу ситуацию...",
     "describe_problem": "Опишите вашу проблему...",
@@ -1521,6 +1543,8 @@ export const base = {
     "fb_thanks": "🙏 Спасибо — это напрямую определяет, что мы сделаем дальше."
   },
   "th": {
+    "partner_reach_person": "อยากคุยเรื่องนี้กับเจ้าหน้าที่ของ {{name}} ไหม",
+    "partner_provided_by": "ให้บริการโดย {{name}}",
     "cmd_enter": "กด ⌘↵ (Ctrl+Enter) เพื่อส่ง",
     "describe_situation": "อธิบายสถานการณ์ของคุณ...",
     "describe_problem": "อธิบายปัญหาของคุณ...",
@@ -1659,6 +1683,8 @@ export const base = {
     "fb_thanks": "🙏 ขอบคุณ — สิ่งนี้กำหนดโดยตรงว่าเราจะสร้างอะไรต่อไป"
   },
   "vi": {
+    "partner_reach_person": "Bạn muốn trao đổi với ai đó tại {{name}}?",
+    "partner_provided_by": "Do {{name}} cung cấp",
     "cmd_enter": "Nhấn ⌘↵ (Ctrl+Enter) để gửi",
     "describe_situation": "Mô tả tình huống của bạn...",
     "describe_problem": "Mô tả vấn đề của bạn...",
