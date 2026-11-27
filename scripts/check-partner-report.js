@@ -69,7 +69,7 @@ const uev = (landing, event, extra = {}) => ({ kind: 'event', event, at: '2026-1
 const uevents = [
   ...many(30, () => uev(U, 'page_view', { props: { newSession: true } })),
   ...many(25, () => uev(`${U}/l1`, 'page_view', { props: { newSession: true } })),
-  ...many(5, () => uev(`${U}/l2`, 'page_view', { props: { newSession: true } })),
+  ...many(5, () => uev(`${U}/l2`, 'page_view', { props: { newSession: true }, ref: 'union/l2-print' })),
   ...many(7, () => uev('/for/unionx', 'page_view', { props: { newSession: true } })), // a different partner
 ];
 const ur = buildPartnerReport(uevents, 'union', { partner: { name: 'Union', tools: [], members: { l1: { name: 'Local 1' }, l2: { name: 'Local 2' } } } });
@@ -78,6 +78,7 @@ const um = Object.fromEntries(ur.byMember.map(x => [x.label, x.visits]));
 assert.strictEqual(um['Local 2'], null, '5 visits hidden');
 assert.strictEqual(um['Local 1'], null, 'next-smallest hidden too');
 assert.strictEqual(um['Union (main page)'], 30);
+assert.ok(ur.byLink.some(x => x.label === 'print'), "a member's tracked link counts under its channel, not 'other source'");
 const lone = buildPartnerReport(uevents, 'union/l1', { partner: { name: 'Local 1', tools: [] } });
 assert.strictEqual(lone.totals.visits, 25, 'a member sees only its own page');
 assert.strictEqual(lone.byMember, null);

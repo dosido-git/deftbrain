@@ -99,7 +99,11 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
   for (const e of rows) {
     if (measureOf(e) !== 'visits') continue;
     const ref = typeof e.ref === 'string' ? e.ref : '';
-    const label = ref.startsWith(`${partnerId}-`) ? ref.slice(partnerId.length + 1) : ref ? 'other source' : 'no link (typed or bookmarked)';
+    // A consortium's members tag their links <consortium>/<member>-<channel>.
+    const memberTag = members && Object.keys(members).map(mid => `${partnerId}/${mid}-`).find(tag => ref.startsWith(tag));
+    const label = ref.startsWith(`${partnerId}-`) ? ref.slice(partnerId.length + 1)
+      : memberTag ? ref.slice(memberTag.length)
+        : ref ? 'other source' : 'no link (typed or bookmarked)';
     channels[label] = (channels[label] || 0) + 1;
   }
   const byLink = Object.entries(channels).sort((a, b) => b[1] - a[1]).map(([label, visits]) => ({ label, visits }));

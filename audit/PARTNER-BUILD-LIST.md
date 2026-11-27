@@ -57,7 +57,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   member counts roll up per consortium for royalty statements.
 
 ## F. Promotion kit (perk 6; consortia 10)
-- [ ] F1. Co-branded printable all-tools list (PDF) per partner.
+- [x] F1. Co-branded printable all-tools list (PDF) per partner: scripts/partner-all-tools.mjs <id> → output/partners/ (QR = tracked print link).
 - [ ] F2. Poster/flier templates with QR to the partner page (extends the
   launch-kit handout).
 - [ ] F3. Monthly newsletter blurbs for partners to paste.
