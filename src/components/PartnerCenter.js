@@ -603,6 +603,23 @@ What it costs: one contract for every local. [Price from your DeftBrain quote.]`
         <h2 id="sc-privacy">7. Privacy and your review team</h2>
         <p className="pc-section-lead">What the pages collect, what the consortium and each member see, and which outside services are involved: <Link to="/partners/privacy">Privacy and data</Link>.</p>
       </section>
+
+      <section className="pc-section" aria-labelledby="sc-approval">
+        <h2 id="sc-approval">8. Documents for your approval</h2>
+        <p className="pc-section-lead">The packet your IT, privacy, legal, accessibility and procurement teams usually ask for, in one file. We send it on request.</p>
+        <ul className="pc-rules">
+          <li><b>Vendor profile:</b> who we are, what the service is, what is and isn't collected.</li>
+          <li><b>Security questionnaire answers,</b> in HECVAT Lite order: hosting, encryption, access, logging, abuse protection.</li>
+          <li><b>Data processing addendum</b> (template): roles, data, purposes, retention, end of the partnership.</li>
+          <li><b>Subprocessors:</b> each outside service, what it receives and how long it keeps it.</li>
+          <li><b>Sector statements:</b> FERPA, GLBA, HIPAA, COPPA, state privacy laws and GDPR.</li>
+          <li><b>AI use and safety statement:</b> what the tools do and don't do, and how answers are checked.</li>
+          <li><b>Accessibility statement</b> and our conformance report plan.</li>
+          <li><b>Incident response and continuity.</b></li>
+          <li><b>Pilot agreement outline.</b></li>
+        </ul>
+        <p className="pc-note"><a className="org-btn org-btn-primary" href={`mailto:${CONTACT}?subject=${encodeURIComponent('Approval packet request')}&body=${encodeURIComponent('Organization:\nYour name and role:\nWhich review teams need it (IT, privacy, legal, accessibility, procurement):\n')}`}>Request the approval packet</a></p>
+      </section>
     </>
   );
 }
