@@ -1,0 +1,20 @@
+{
+  "_note": "Served only by POST /api/pricing-access with the right PRICING_ACCESS_CODE (backend/routes/pricing-access.js); never shipped in the public site. Figures from docs/DeftBrain pricing and sales model.xlsx (Tiers sheet, 2026-11-26): cost at $100/hour + model cost at 5% of people served a year, 40% margin, rounded to $100.",
+  "currency": "USD",
+  "updated": "2026-11-26",
+  "sizes": [
+    { "label": "Up to 25,000 people", "setup": 2500, "yearly": 5200, "pilot": 3800 },
+    { "label": "Up to 100,000 people", "setup": 3300, "yearly": 9300, "pilot": 5600 },
+    { "label": "Up to 250,000 people", "setup": 4200, "yearly": 15600, "pilot": 8100 },
+    { "label": "Up to 500,000 people", "setup": 5000, "yearly": 24800, "pilot": 11200 },
+    { "label": "Up to 750,000 people", "setup": 5800, "yearly": 34000, "pilot": 14300 },
+    { "label": "Up to 1,000,000 people", "setup": 6700, "yearly": 43200, "pilot": 17500 }
+  ],
+  "notes": [
+    "People served means your library's service-area population, your credit union's members, your enrolled students or your employees.",
+    "The pilot is 90 days: the setup fee plus a quarter of the yearly fee. It is credited in full if you continue.",
+    "Consortia: one contract for every member, at 30% off each member's yearly fee.",
+    "Over 1,000,000 people: quoted.",
+    "There are no per-person fees and no accounts to count. Everyone you serve can use DeftBrain; the public site stays free."
+  ]
+}

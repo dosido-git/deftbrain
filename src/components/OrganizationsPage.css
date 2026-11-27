@@ -106,3 +106,15 @@
 :root[data-theme="dark"] .org-tabs a{background:#232326}
 @media(max-width:640px){.org-tabs a{width:calc(50% - 7px);padding:14px 8px}.org-tabs a span{font-size:32px}}
 .org-aud-sample{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 14px}
+
+/* /organizations/pricing (OrgPricingPage.js) */
+.org-pricing-gate{max-width:560px}
+.org-table-wrap{overflow-x:auto}
+.org-pricing-table{width:100%;max-width:820px;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:16px}
+.org-pricing-table th,.org-pricing-table td{padding:12px 16px;border-bottom:1px solid var(--line);text-align:start}
+.org-pricing-table thead th{font-size:13px;color:var(--muted);font-weight:700}
+.org-pricing-table tbody th{color:var(--navy);font-weight:700}
+.org-pricing-table tbody tr:last-child th,.org-pricing-table tbody tr:last-child td{border-bottom:0}
+.org-pricing-notes{max-width:820px;margin:18px 0 0;padding-inline-start:1.2rem;line-height:1.6;color:var(--ink)}
+.org-pricing-result:focus{outline:none}
+:root[data-theme="dark"] .org-pricing-table{background:#232326;border-color:#3f3f46}

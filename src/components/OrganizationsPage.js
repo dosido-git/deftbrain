@@ -51,17 +51,6 @@ const AUDIENCES = [
     packages:['work-conversations','money-conversations','health-visits'], tools:['DifficultTalkCoach','MoneyDiplomat','BragSheetBuilder'] },
 ];
 
-// Tier prices from docs/DeftBrain pricing and sales model.xlsx (USD): your
-// hours plus the cost of the included uses, at a 40% margin. "People served"
-// is the service-area population, members, enrolled students or employees.
-const PRICES = [
-  { name: 'Pilot', price: '$4,000', unit: '90 days', fits: 'Any size', note: 'About 500 uses. Credited in full to your first year.' },
-  { name: 'Small', price: '$4,000', unit: 'per year', fits: 'Up to 25,000 people served', note: 'About 500 uses a year. Up to two packages.' },
-  { name: 'Medium', price: '$6,200', unit: 'per year', fits: 'Up to 100,000 people served', note: 'About 2,000 uses a year. Up to two packages.' },
-  { name: 'Large', price: '$12,800', unit: 'per year', fits: 'Up to 500,000 people served', note: 'About 10,000 uses a year. Up to two packages.' },
-  { name: 'Consortium', price: '30% off', unit: "each member's tier", fits: 'Library consortia, state leagues, university systems', note: 'One contract for every member. Quoted from the five answers below.' },
-];
-
 // No backend: the answers become an email the visitor sends from their own app.
 function QuoteForm() {
   const [q, setQ] = useState({ org: '', sites: '', packages: [], languages: '', where: 'page', start: '' });
@@ -248,11 +237,8 @@ export default function OrganizationsPage({ allTools = [] }) {
 
       <section className="org-section org-soft org-pricing" id="pricing" aria-labelledby="org-pricing-title">
         <div className="org-shell">
-          <div className="org-section-heading"><div className="org-kicker">PRICING</div><h2 id="org-pricing-title">Flat prices, in tiers by the people you serve.</h2><p>Your tier follows how many people you serve: a library's service-area population, a credit union's members, enrolled students or employees. There are no per-person fees and no accounts to count. Each tier includes a yearly number of uses; if your people use more, we talk before anything changes. Start with a pilot; its fee counts in full toward your first year.</p></div>
-          <div className="org-price-grid">{PRICES.map(x => (
-            <article key={x.name}><h3>{x.name}</h3><p className="org-price"><b>{x.price}</b> <span>{x.unit}</span></p><p className="org-price-fits">{x.fits}</p><p>{x.note}</p></article>
-          ))}</div>
-          <p className="org-price-small">Prices in US dollars. Starting prices while we run our first pilots.</p>
+          {/* Prices are not public (owner, 2026-11-26): they sit behind an access code at /organizations/pricing. */}
+          <div className="org-section-heading"><div className="org-kicker">PRICING</div><h2 id="org-pricing-title">Pricing depends on the size of your organization.</h2><p>Email <a className="org-text-link" href="mailto:sales@deftbrain.com?subject=DeftBrain%20pricing%20for%20our%20organization">sales@deftbrain.com</a> from your organization address to access pricing. <Link className="org-text-link" to="/organizations/pricing">Have an access code? →</Link></p></div>
           <QuoteForm />
         </div>
       </section>

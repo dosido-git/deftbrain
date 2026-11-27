@@ -1107,6 +1107,21 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         burst.count++;
       }
     }
+    // ── pricing page by organization (backend/routes/pricing-access.js) ──
+    // One access code per organization; each successful view is logged with
+    // the organization's name (never the code). Range counts plus all-time last view.
+    const pricingAll = allRows.filter(r => r.kind === 'pricing_access');
+    const pricingByOrg = new Map();
+    for (const r of pricingAll.filter(x => x.ok && x.org)) {
+      const o = pricingByOrg.get(r.org) || { inRange: 0, total: 0, last: '' };
+      o.total++;
+      if (rows.includes(r)) o.inRange++;
+      if ((r.at || '') > o.last) o.last = r.at || '';
+      pricingByOrg.set(r.org, o);
+    }
+    const pricingFailed = rows.filter(r => r.kind === 'pricing_access' && !r.ok).length;
+    const pricingRows = [...pricingByOrg.entries()].sort((x, y) => y[1].last.localeCompare(x[1].last))
+      .map(([org, o]) => `<tr><td>${escH(org)}</td><td>${o.inRange}</td><td>${o.total}</td><td>${o.last ? escH(missingTime.format(new Date(o.last))) : '—'}</td></tr>`).join('');
     const burstRows = bursts.filter(b => b.paths.size >= 3).sort((a, b) => b.start.localeCompare(a.start))
       .map(b => `<tr><td>${escH(missingTime.format(new Date(b.start)))}</td><td>${escH(b.source)}</td>
         <td>${b.count}</td><td>${escH([...b.paths].join(', '))}</td></tr>`).join('');
@@ -1809,6 +1824,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p>Open a source to see landing pages and tools opened. Landing-page milestones use the first interaction, run, and response received in a browser-tab session. They are counted when they happen, so they can fall in a later date range than the entrance. Older visits have limited milestone coverage.</p>
     <p>Direct traffic has no recorded referrer or source tag.</p>
     ${srcRows || '<p>No source activity recorded in this range.</p>'}
+    <h2>Pricing page by organization</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Views of /organizations/pricing, by the organization each access code belongs to (codes: PRICING_ACCESS_CODES on Railway; make one with <code>node scripts/pricing-code.js "Name"</code>). ${pricingFailed} wrong-code attempt${pricingFailed === 1 ? '' : 's'} in this range.</p>
+    <table><tr><th>organization</th><th>views in range</th><th>all time</th><th>last viewed</th></tr>${pricingRows || '<tr><td colspan="4" style="color:#888">No pricing views yet.</td></tr>'}</table>
     <h2>Page not found (404)</h2>
     <p>Missing-page screens someone clicked, tapped or typed on; screens nobody touched are left out as likely bots. Entrances are those that started a visit. Earlier ranges may predate this tracking.</p>
     <table><tr><th>requested path</th><th>source</th><th>previous site page</th><th>views</th><th>entrances</th><th>last viewed</th></tr>
