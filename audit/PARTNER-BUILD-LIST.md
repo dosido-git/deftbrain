@@ -51,7 +51,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   colours/logo on the partner bar, its own launch kit.
 - [ ] E4. Own address: `<partner>.deftbrain.com` or a path on the partner's
   site (needs DNS/Railway domains; owner step).
-- [ ] E5. Embed: a small script/iframe so a partner can put its edition inside
+- [ ] E5. Embed (note: X-Frame-Options DENY today; an embed needs a per-partner frame-ancestors rule): a small script/iframe so a partner can put its edition inside
   its own site or app.
 - [ ] E6. Revenue share tracking: pricing codes carry a consortium; sales and
   member counts roll up per consortium for royalty statements.
@@ -63,9 +63,9 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [ ] F3. Monthly newsletter blurbs for partners to paste.
 
 ## G. Procurement paperwork (perk 9; consortia 9)
-- [ ] G1. Accessibility statement page.
-- [ ] G2. Security summary page (hosting, data handled, retention, no accounts).
-- [ ] G3. Partner Center privacy/data page review against what the code does.
+- [~] G1. Accessibility statement page. Draft in docs/marketing/procurement-drafts.md; owner review before publishing.
+- [~] G2. Security summary page (hosting, data handled, retention, no accounts). Draft in docs/marketing/procurement-drafts.md; owner review.
+- [x] G3. Partner Center privacy/data page review against what the code does.
 - [ ] G4. Enterprise terms outline (uptime, response times, peak capacity):
   owner decisions.
 

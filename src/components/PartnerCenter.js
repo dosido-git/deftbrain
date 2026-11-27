@@ -345,6 +345,8 @@ function PrivacyData() {
           <li>No advertising or analytics cookies. Google Analytics does not load on partner pages.</li>
           <li>DeftBrain's own usage counter records page visits and which experiences were started and finished. It sets no cookies and stores no names, typed text or IP addresses.</li>
           <li>The suggestion box and newsletter signup appear only if you agree, and each says it goes to DeftBrain, not to you.</li>
+          <li>Your contact details (phone, web link, hours) appear inside the experiences people open from your page. That is a plain link or phone number; nothing is sent to you when someone uses it.</li>
+          <li>You open your report yourself at <a href="/partners/report">deftbrain.com/partners/report</a> with a report code we send you.</li>
         </ul>
       </section>
       <section className="pc-section" aria-labelledby="pc-see">
@@ -355,6 +357,8 @@ function PrivacyData() {
             <tr><td>Visits to your page, by month</td><td>What anyone typed</td></tr>
             <tr><td>Experiences started and finished</td><td>What anyone was shown</td></tr>
             <tr><td>Which tracked link brought people in</td><td>Names, emails or IP addresses</td></tr>
+            <tr><td>Topics people came for, and the busiest days of the week</td><td>Who looked at which topic</td></tr>
+            <tr><td>For a group of organizations: each member's totals</td><td>Anything a member couldn't see in its own report</td></tr>
             <tr><td>Totals only; any group under 20 sessions shown as “fewer than 20”</td><td>Anything that could identify one person</td></tr>
           </tbody>
         </table>
