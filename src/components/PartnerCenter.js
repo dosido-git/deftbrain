@@ -8,7 +8,7 @@ import { useDocumentHead } from '../hooks/useDocumentHead';
 import { useNoindex } from '../hooks/useNoindex';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import CENTER from '../data/partnerCenter.json';
-import PARTNERS from '../data/partners.json';
+import { resolvePartner } from '../hooks/usePartner';
 import './OrganizationsPage.css';
 import './PartnerCenter.css';
 
@@ -164,7 +164,8 @@ function Overview({ byId }) {
 // ─── Launch kit ──────────────────────────────────────────────
 function initialKit(params) {
   const id = params.get('partner');
-  const partner = id && Object.prototype.hasOwnProperty.call(PARTNERS, id) ? PARTNERS[id] : null;
+  // Partners and consortium members (<consortium>/<member>) both prefill the kit.
+  const partner = id ? resolvePartner(id) : null;
   const fromPartner = partner && CENTER.packages.find(p => p.title === partner.packageTitle);
   const pkg = pkgById[params.get('package')] || fromPartner || CENTER.packages[0];
   return {
@@ -224,7 +225,7 @@ function LaunchKit({ byId, params }) {
       <form className="pc-form pc-noprint" onSubmit={e => e.preventDefault()} aria-label="Your details">
         <label>Organization name<input value={kit.name} onChange={set('name')} placeholder="Example Credit Union" autoComplete="organization" /></label>
         <label>Package<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
-        <label>Page address<span className="pc-prefix"><span>{SITE}/for/</span><input value={kit.slug} onChange={e => setKit(k => ({ ...k, slug: slugify(e.target.value) }))} placeholder={slugify(kit.name) || 'your-organization'} /></span></label>
+        <label>Page address<span className="pc-prefix"><span>{SITE}/for/</span><input value={kit.slug} onChange={e => setKit(k => ({ ...k, slug: e.target.value.split('/').slice(0, 2).map(slugify).join('/')}))} placeholder={slugify(kit.name) || 'your-organization'} /></span></label>
         <label>Help line sentence<input value={kit.helpText} onChange={set('helpText')} placeholder={`For decisions, talk to ${name}.`} /></label>
         <label>Phone number (optional)<input value={kit.phone} onChange={set('phone')} placeholder="1-800-555-0100" inputMode="tel" /></label>
       </form>

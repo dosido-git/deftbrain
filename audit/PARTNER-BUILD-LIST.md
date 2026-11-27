@@ -48,7 +48,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [x] E2. Consortium roll-up report: all members together plus a per-member
   table.
 - [x] E3. Edition branding: edition name ("<Consortium> Life Navigator"),
-  colours/logo on the partner bar, its own launch kit (launch kit per edition still to do).
+  colours/logo on the partner bar, its own launch kit (Partner Center launch kit takes ?partner=<consortium>/<member>).
 - [ ] E4. Own address: `<partner>.deftbrain.com` or a path on the partner's
   site (needs DNS/Railway domains; owner step).
 - [ ] E5. Embed (note: X-Frame-Options DENY today; an embed needs a per-partner frame-ancestors rule): a small script/iframe so a partner can put its edition inside
