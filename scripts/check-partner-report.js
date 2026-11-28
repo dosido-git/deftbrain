@@ -115,4 +115,8 @@ assert.strictEqual(quarterRange('2026-07', now), null);
 assert.strictEqual(lastQuarter(now), '2026-Q3');
 assert.strictEqual(lastQuarter(new Date('2026-02-01T00:00:00Z')), '2025-Q4');
 assert.deepStrictEqual(quarterRange('2026-Q1', new Date('2026-04-01T00:00:00Z')), { from: '2026-01', to: '2026-03' }, 'a quarter opens the day after it ends');
+// Day-exact window for pilot reports: only Nov 5 events, Dec 2 left out.
+const dr = buildPartnerReport(events, 'acme', { partner: { tools: ['ScamRadar'] }, fromDay: '2026-11-01', toDay: '2026-11-30' });
+assert.strictEqual(dr.totals.visits, 60, 'the 9 December visits are outside the days');
+assert.ok(renderPartnerReportHTML(dr).includes('2026-11-01 to 2026-11-30'));
 console.log('partner report: ok');

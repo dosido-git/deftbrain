@@ -88,16 +88,22 @@ function suppressTable(rows, totals) {
   return { rows, totals: shown };
 }
 
-function buildPartnerReport(events, partnerId, { partner = {}, from, to, categoryOf = () => null } = {}) {
+function buildPartnerReport(events, partnerId, { partner = {}, from, to, fromDay, toDay, categoryOf = () => null } = {}) {
   const landing = `/for/${partnerId}`;
   // A consortium's report covers its own page and every member's (2026-11-27).
   const members = partner.members && typeof partner.members === 'object' ? partner.members : null;
   const isMine = l => l === landing || (members && typeof l === 'string' && l.startsWith(`${landing}/`));
   const mine = events.filter(e => e && e.kind === 'event' && isMine(e.landing) && measureOf(e));
   const months = mine.map(e => monthOf(e.at)).filter(Boolean).sort();
-  const start = from || months[0] || new Date().toISOString().slice(0, 7);
-  const end = to || months[months.length - 1] || start;
-  const inRange = e => { const m = monthOf(e.at); return m >= start && m <= end; };
+  // A pilot's midpoint and final reports follow its own dates, not calendar
+  // months: fromDay/toDay (YYYY-MM-DD, owner report only) narrow the window to
+  // those days, and the months shown are the ones they touch.
+  const start = (fromDay && fromDay.slice(0, 7)) || from || months[0] || new Date().toISOString().slice(0, 7);
+  const end = (toDay && toDay.slice(0, 7)) || to || months[months.length - 1] || start;
+  const inRange = e => {
+    const m = monthOf(e.at); const d = typeof e.at === 'string' ? e.at.slice(0, 10) : '';
+    return m >= start && m <= end && (!fromDay || d >= fromDay) && (!toDay || d <= toDay);
+  };
   const rows = mine.filter(inRange);
 
   const totals = Object.fromEntries(MEASURES.map(k => [k, 0]));
@@ -202,6 +208,8 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
   for (const k of MEASURES) t.totals[k] = roundShown(t.totals[k]);
   return {
     sensitive,
+    fromDay: fromDay || null,
+    toDay: toDay || null,
     partner: partnerId,
     name: partner.name || partnerId,
     from: start,
@@ -219,7 +227,9 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const monthName = (ym, short) => { const [y, m] = ym.split('-'); const n = MONTHS[Number(m) - 1] || ym; return `${short ? n.slice(0, 3) : n} ${y}`; };
-const period = (a, b) => (a === b ? monthName(a) : `${monthName(a)} to ${monthName(b)}`);
+const monthPeriod = (a, b) => (a === b ? monthName(a) : `${monthName(a)} to ${monthName(b)}`);
+// A day-exact report (pilot midpoint/final) names its days instead of months.
+const periodOf = r => (r.fromDay || r.toDay ? `${r.fromDay || r.from} to ${r.toDay || r.to}` : monthPeriod(r.from, r.to));
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const cell = v => (v === null ? '<td class="hid">fewer than 20</td>' : `<td>${Number(v).toLocaleString('en-US')}</td>`);
 
@@ -229,7 +239,7 @@ function renderPartnerReportHTML(r, { toolTitles = {} } = {}) {
   const T = r.totals;
   const tile = (label, v) => `<div class="tile"><b>${v === null ? 'fewer than 20' : Number(v).toLocaleString('en-US')}</b><span>${label}</span></div>`;
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>${esc(r.name)} usage report, ${period(r.from, r.to)}</title>
+<title>${esc(r.name)} usage report, ${periodOf(r)}</title>
 <style>
 body{font-family:system-ui,sans-serif;color:#1f2937;max-width:860px;margin:0 auto;padding:28px 20px;background:#fff;line-height:1.5}
 h1{font-family:Georgia,serif;color:#18324a;font-size:30px;margin:0 0 4px}
@@ -248,7 +258,7 @@ td,th{white-space:nowrap}td.name{white-space:normal;min-width:9em}
 @media(max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}th,td{padding:7px 6px}}
 </style></head><body>
 <h1>${esc(r.name)}: usage report</h1>
-<p class="sub">${period(r.from, r.to)} · visits that started on deftbrain.com/for/${esc(r.partner)}${r.byMember ? ' or a member page under it' : ''}</p>
+<p class="sub">${periodOf(r)} · visits that started on deftbrain.com/for/${esc(r.partner)}${r.byMember ? ' or a member page under it' : ''}</p>
 <div class="tiles">${tile('Visits', T.visits)}${tile('Visits with activity', T.active)}${tile('Guidance started', T.started)}${tile('Guidance finished', T.finished)}</div>
 <h2>By month</h2>
 ${table('Month', r.byMonth.map(m => ({ ...m, label: monthName(m.label, true) })), [['visits', 'Visits'], ['active', 'With activity'], ['started', 'Started'], ['finished', 'Finished']])}
@@ -277,7 +287,7 @@ function renderFunderSummaryHTML(r) {
   const rate = T.started && T.finished !== null && T.started !== null ? `${Math.round((T.finished / T.started) * 100)}%` : null;
   const topics = (r.byTopic || []).filter(x => x.started !== null && x.started > 0).slice(0, 5);
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>${esc(r.name)}: summary for funders, ${period(r.from, r.to)}</title>
+<title>${esc(r.name)}: summary for funders, ${periodOf(r)}</title>
 <style>
 body{font-family:system-ui,sans-serif;color:#1f2937;max-width:760px;margin:0 auto;padding:28px 20px;background:#fff;line-height:1.55}
 h1{font-family:Georgia,serif;color:#18324a;font-size:28px;margin:0 0 4px}
@@ -291,7 +301,7 @@ ul{margin:0;padding-left:1.2rem}
 @media print{body{padding:0}}
 </style></head><body>
 <h1>${esc(r.name)}: what DeftBrain provided</h1>
-<p class="sub">${period(r.from, r.to)} · summary for funders, boards and annual reports</p>
+<p class="sub">${periodOf(r)} · summary for funders, boards and annual reports</p>
 <div class="big">
 <div><b>${n(T.visits)}</b><span>visits by the people you serve</span></div>
 <div><b>${n(T.started)}</b><span>times someone worked through a situation</span></div>

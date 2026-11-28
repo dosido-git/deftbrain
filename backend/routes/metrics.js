@@ -477,8 +477,8 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     <button onclick="load()">Load</button>
     <button class="ghost" onclick="openReport()">open report ↗</button>
     <select id="partner" title="partner">${allPartnerIds().map(id => `<option value="${escH(id)}">${escH(resolvePartner(id).name)}${id.includes('/') ? ` (${escH(resolvePartner(id).edition)})` : ''}</option>`).join('')}</select>
-    <input id="pfrom" type="month" title="from month">
-    <input id="pto" type="month" title="to month">
+    <input id="pfrom" type="date" title="from day (a pilot's start, say)">
+    <input id="pto" type="date" title="to day">
     <button class="ghost" onclick="partnerReport()">partner report</button>
     <button class="ghost" onclick="reset()">reset baseline</button>
     <button class="ghost" onclick="forget()">forget key</button>
@@ -562,14 +562,14 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
         else { document.open();document.write(html);document.close(); } // popup blocked → replace this tab (reload to return)
       }).catch(function(e){say(e.message);});
     }
-    // Per-partner report: same key, same iframe. Months are optional; blank
-    // means from the first to the last month with data.
+    // Per-partner report: same key, same iframe. Days are optional (a pilot's
+    // midpoint or final dates); blank means the first to the last month with data.
     function partnerReport(){
       var k=keyEl.value.trim();
       if(!k){say('enter a key');return;}
       var q='partner='+encodeURIComponent(document.getElementById('partner').value);
       var f=document.getElementById('pfrom').value, t=document.getElementById('pto').value;
-      if(f)q+='&from='+f; if(t)q+='&to='+t;
+      if(f)q+='&fromDay='+f; if(t)q+='&toDay='+t;
       say('loading\u2026');
       fetch('/api/metrics/partner-report?'+q,{headers:{'x-metrics-key':k}}).then(function(r){
         if(r.status===404)throw new Error('key rejected or unknown partner');
@@ -1936,6 +1936,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 // vs IPv4 / ::ffff-mapped form, stale IP, or unset METRICS_EXCLUDE_IPS). Does
 // NOT reveal the excluded IPs themselves — only whether YOUR req.ip matches.
 // GET /api/metrics/partner-report?partner=<id>&from=YYYY-MM&to=YYYY-MM[&format=json]
+// or &fromDay=YYYY-MM-DD&toDay=YYYY-MM-DD for a pilot's midpoint/final report.
 // One partner's usage, totals only, small groups hidden (lib/partnerReport).
 // Same header key as the main report; a wrong key or unknown partner is a 404.
 router.get('/metrics/partner-report', rateLimit(METRIC_LIMITS, 'metrics-partner:'), (req, res) => {
@@ -1944,7 +1945,8 @@ router.get('/metrics/partner-report', rateLimit(METRIC_LIMITS, 'metrics-partner:
   const partnerRec = resolvePartner(id);
   if (!partnerRec) return res.status(404).end();
   const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
-  const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.query.from), to: month(req.query.to), categoryOf: topicOf });
+  const day = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(v) ? v : undefined);
+  const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.query.from), to: month(req.query.to), fromDay: day(req.query.fromDay), toDay: day(req.query.toDay), categoryOf: topicOf });
   if (req.query.format === 'json') return res.json(report);
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
   res.set('Cache-Control', 'no-store').type('html').send(renderPartnerReportHTML(report, { toolTitles }));
