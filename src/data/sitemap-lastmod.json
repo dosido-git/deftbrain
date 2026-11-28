@@ -4,16 +4,16 @@
   "lastmod": "2026-11-27"
  },
  "static:about": {
-  "hash": "1953093781ffa172a3d8fd652611b68adc493e71",
-  "lastmod": "2026-11-26"
+  "hash": "3a7f851d6a5b23411c52c8ec8406a6c7f6d09402",
+  "lastmod": "2026-11-28"
  },
  "static:privacy": {
-  "hash": "a76e783ee942c1f776843125261d013b30ad5754",
-  "lastmod": "2026-11-26"
+  "hash": "fab769b28f5e44a4e3aa375bbfa46de6c1aa58f4",
+  "lastmod": "2026-11-28"
  },
  "static:terms": {
-  "hash": "f2eec74291bfd0a4014940ba08b82787784d2c61",
-  "lastmod": "2026-11-26"
+  "hash": "7454798bb3c452aa5311242667188aee935bcf7f",
+  "lastmod": "2026-11-28"
  },
  "tool:AlternatePath": {
   "hash": "7f13b9938d31ecb49342da8bdeccef395a2fcf89",
@@ -192,8 +192,8 @@
   "lastmod": "2026-11-18"
  },
  "static:tools": {
-  "hash": "15a0d82151c4dcdeaf903bdb0a6787433566c16c",
-  "lastmod": "2026-11-27"
+  "hash": "6abf79fc76062f752bff244a55c04edb47fbb21b",
+  "lastmod": "2026-11-28"
  },
  "category:home-daily-life": {
   "hash": "4b8b89d135c511f0acd2438986b9c8f5fbd812fc",
@@ -580,19 +580,19 @@
   "lastmod": "2026-11-18"
  },
  "static:listings": {
-  "hash": "8be2aaf0837b93b0c88826cbd4af8519290a0a5f",
-  "lastmod": "2026-11-26"
+  "hash": "ceecf02fff88421102b43920ff3f36d61dff6254",
+  "lastmod": "2026-11-28"
  },
  "static:contact": {
-  "hash": "dfeb70b1b69f348c15016b2b77b23d0b26047285",
-  "lastmod": "2026-11-26"
+  "hash": "7961d5a912955d9513e7af61be6e25810b3fedee",
+  "lastmod": "2026-11-28"
  },
  "category:ideas-diversions": {
   "hash": "31bd0c9817dcb7ad721b87000ea496c0fcb5565f",
   "lastmod": "2026-11-25"
  },
  "static:all-tools.pdf": {
-  "hash": "85cf1cc73a9d760f20fb466f76dd13ddd9b29fe1",
-  "lastmod": "2026-11-26"
+  "hash": "fc3217fa6317571bddd19ed4134106a4377a9e55",
+  "lastmod": "2026-11-28"
  }
 }

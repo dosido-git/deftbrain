@@ -41,7 +41,9 @@ const svg = `<svg viewBox="0 0 ${n} ${n}" xmlns="http://www.w3.org/2000/svg" sha
 
 let html = fs.readFileSync(path.join(root, 'public/all-tools.html'), 'utf8');
 const swap = (from, to, what) => { if (!from.test(html)) throw new Error(`all-tools.html changed: can't find the ${what}`); html = html.replace(from, to); };
-swap(/\s*<a class="dl"[^>]*>[^<]*<\/a>/, '', 'download link');
+swap(/\s*<p class="webnav">[\s\S]*?<\/p>/, '', 'page links');
+// Tool names link to the live site from the PDF.
+html = html.replace('<head>', '<head><base href="https://deftbrain.com/">');
 swap(/<p class="intro" style="text-align:right">Free to use, no sign-up\.<\/p>/,
   `<p class="intro" style="text-align:right"><b>Provided by ${esc(partner.name)}.</b> Free to use, no sign-up.</p>`, 'intro line');
 swap(/<span class="qr"><svg[\s\S]*?<\/svg><\/span>/, `<span class="qr">${svg}</span>`, 'QR code');

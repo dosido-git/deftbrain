@@ -43,7 +43,7 @@ const groups = cats.map(name => ({ name, list: listed.filter(t => (t.categories 
 const left = listed.filter(t => !cats.includes((t.categories || [])[0]));
 if (left.length) groups.push({ name: 'More', list: left });
 const sections = groups.map(g => `<section><h2${INK[g.name] ? ` style="color:${INK[g.name]};border-bottom:1.5px solid ${INK[g.name]};padding-bottom:1.5pt;margin-bottom:4pt;display:table;border-top:0;padding-top:4pt"` : ''}>${esc(g.name)}</h2>${g.list.map(t =>
-  `<div class="tool"><div class="name"><span class="ic">${t.icon || ''}</span>${esc(t.title)}</div><div class="desc">${esc(t.tagline)}</div></div>`).join('')}</section>`).join('');
+  `<div class="tool"><a class="name" href="/${t.id}"><span class="ic" aria-hidden="true">${t.icon || ''}</span>${esc(t.title)}</a><div class="desc">${esc(t.tagline)}</div></div>`).join('')}</section>`).join('');
 
 const START = '<div class="cols" id="flow">';
 const END = '<div class="end">';
@@ -63,10 +63,15 @@ if (process.argv.includes('--check')) {
 
 fs.writeFileSync(HTML, next);
 if (!fs.existsSync(CHROME)) { console.error(`build-all-tools: HTML written; Chrome not found at ${CHROME}, so the PDF was NOT rebuilt.`); process.exit(1); }
-execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--print-to-pdf=${PDF}`, pathToFileURL(HTML).href], { stdio: 'ignore' });
+// The PDFs print from copies whose links point at the live site, so a tool
+// name clicked in the PDF opens that tool (the page itself links relatively).
+const forPrint = next.replace('<head>', '<head><base href="https://deftbrain.com/">');
+const printHtml = path.join(tmp, 'all-tools.html');
+fs.writeFileSync(printHtml, forPrint);
+execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--print-to-pdf=${PDF}`, pathToFileURL(printHtml).href], { stdio: 'ignore' });
 // Large print: the same page with scripts/all-tools-large.css after its own styles.
 const largeHtml = path.join(tmp, 'all-tools-large.html');
-fs.writeFileSync(largeHtml, next.replace('</head>', `<style>${fs.readFileSync(path.join(root, 'scripts/all-tools-large.css'), 'utf8')}</style></head>`));
+fs.writeFileSync(largeHtml, forPrint.replace('</head>', `<style>${fs.readFileSync(path.join(root, 'scripts/all-tools-large.css'), 'utf8')}</style></head>`));
 execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--print-to-pdf=${LARGE_PDF}`, pathToFileURL(largeHtml).href], { stdio: 'ignore' });
 let pages = '?';
 try { pages = execFileSync('pdfinfo', [PDF]).toString().match(/Pages:\s+(\d+)/)[1]; } catch (_) { /* pdfinfo missing: skip the page check */ }
