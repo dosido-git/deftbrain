@@ -54,6 +54,32 @@
  * @param {HTMLElement|null|undefined} node   the content to reveal and focus
  * @param {{ block?: ScrollLogicalPosition, focus?: boolean, frame?: boolean }} [opts]
  */
+import i18n from '../i18n/index.js';
+
+// A focused container with no name of its own is announced by reading every
+// word inside it as one block, and read again from the top each time more of
+// the answer arrives (VoiceOver, 2026-11-28). A short name makes it announce
+// as "Your answer, region"; the visitor then reads it at their own pace, with
+// its headings. Results containers (data-copy-results) are the answer; any
+// other view is named by its own first heading. Containers that already have
+// a role or a name are left alone. Set on every reveal so a language change
+// since the last one is picked up.
+function nameForReader(node) {
+  if (typeof node.getAttribute !== 'function') return;
+  const ours = node.hasAttribute('data-reveal-name');
+  if (!ours && (node.hasAttribute('role') || node.hasAttribute('aria-label') || node.hasAttribute('aria-labelledby'))) return;
+  let label = '';
+  if (node.hasAttribute('data-copy-results')) label = i18n.t('your_answer');
+  else {
+    const h = node.querySelector && node.querySelector('h1, h2, h3, h4');
+    label = h ? h.textContent.trim() : '';
+  }
+  if (!label) return;
+  node.setAttribute('role', 'region');
+  node.setAttribute('aria-label', label);
+  node.setAttribute('data-reveal-name', '');
+}
+
 // A tool that remembers its last results draws them as the page opens, and its
 // "show the results" effect then yanks the window down to them before the
 // visitor has read the title. A reveal follows something the visitor did: in
@@ -62,18 +88,27 @@
 const SETTLE_MS = 1500;
 let arrivedAt = 0;
 let actedSinceArrival = true;
+let lastArrowAt = 0;
 if (typeof document !== 'undefined') {
   const acted = () => { actedSinceArrival = true; };
   document.addEventListener('pointerdown', acted, true);
   document.addEventListener('keyup', acted, true);
+  document.addEventListener('keydown', (e) => { if (/^Arrow|^Home$|^End$/.test(e.key)) lastArrowAt = Date.now(); }, true);
 }
+// Arrowing along a row of tabs swaps the view under it. Focus has to stay on
+// the tab, or the visitor cannot arrow on to the next one; the screen reader
+// already says which panel is showing. Clicks and Enter still move focus to
+// the new content (VoiceOver, 2026-11-28).
+const arrowingTabs = () => Date.now() - lastArrowAt < 1500
+  && document.activeElement && document.activeElement.getAttribute('role') === 'tab';
 export function markArrival() { arrivedAt = Date.now(); actedSinceArrival = false; }
 
 export function revealSection(node, opts = {}) {
   if (!node || typeof node.scrollIntoView !== 'function') return;
   if (!actedSinceArrival && Date.now() - arrivedAt < SETTLE_MS) return;
 
-  const { block = 'start', focus = true, frame = false } = opts;
+  const { block = 'start', frame = false } = opts;
+  const focus = opts.focus !== false && !arrowingTabs();
 
   let behavior = 'smooth';
   try {
@@ -88,6 +123,7 @@ export function revealSection(node, opts = {}) {
     // target without putting it in the tab order, so nobody tabbing through the
     // page has to pass through the container to reach what is inside it.
     if (!node.hasAttribute('tabindex')) node.setAttribute('tabindex', '-1');
+    nameForReader(node);
     try {
       // preventScroll because the browser's own jump-to-focus ignores
       // scroll-margin-top; the scrollIntoView below honours it.
@@ -132,6 +168,7 @@ export function revealSection(node, opts = {}) {
 export function focusSection(node) {
   if (!node || typeof node.focus !== 'function') return;
   if (!node.hasAttribute('tabindex')) node.setAttribute('tabindex', '-1');
+  nameForReader(node);
   try {
     node.focus({ preventScroll: true });
   } catch (_) {

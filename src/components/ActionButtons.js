@@ -206,12 +206,16 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
   const [picked, setPicked] = useState([]);
   const [autoParts, setAutoParts] = useState(null);
   const wrapRef = useRef(null);
+  const btnRef = useRef(null);
   const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   useEffect(() => {
     if (!open) return undefined;
     const onDown = (e) => { if (!wrapRef.current?.contains(e.target)) setOpen(false); };
-    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    // Escape closes the panel and puts focus back on Share: the control that had
+    // focus is gone with the panel, and a keyboard or screen-reader visitor would
+    // otherwise be dropped at the top of the page (VoiceOver, 2026-11-28).
+    const onKey = (e) => { if (e.key === 'Escape') { setOpen(false); btnRef.current?.focus(); } };
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey);
     return () => {
@@ -269,7 +273,7 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url, parts }) => {
 
   return (
     <div ref={wrapRef} className="relative">
-      <button onClick={toggle} aria-expanded={open} aria-haspopup="true"
+      <button ref={btnRef} onClick={toggle} aria-expanded={open}
         className={`${btnClass} ${s.base}`}>
         <span className="text-sm">📤</span> {t('share')}
       </button>

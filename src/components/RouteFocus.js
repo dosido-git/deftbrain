@@ -58,12 +58,28 @@ export default function RouteFocus() {
       if (current.current) views.current[current.current] = { y: window.scrollY, link: link.current };
       try { sessionStorage.setItem(STORE, JSON.stringify(views.current)); } catch (_) { /* no restore, nothing else */ }
     };
+    // A control that removes itself when pressed (Start over, a closing panel,
+    // a step's Next) takes keyboard focus with it, and the browser drops focus
+    // on <body>: a screen reader says only "web content" and the next Tab
+    // starts from the top of the page (VoiceOver, 2026-11-28). Put focus on
+    // the page's heading instead, so the visitor hears where they are.
+    const onAct = () => {
+      const before = document.activeElement;
+      if (!before || before === document.body) return;
+      setTimeout(() => {
+        const now = document.activeElement;
+        if ((now && now !== document.body) || before.isConnected) return;
+        focusQuietly(document.querySelector('main h1') || document.querySelector('h1'));
+      }, 200);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('click', onClick, true);
+    document.addEventListener('click', onAct, true);
     window.addEventListener('pagehide', save);
     return () => {
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('click', onClick, true);
+      document.removeEventListener('click', onAct, true);
       window.removeEventListener('pagehide', save);
     };
   }, []);

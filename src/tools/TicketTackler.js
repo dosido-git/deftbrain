@@ -370,7 +370,7 @@ const TicketTackler = ({ tool }) => {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {sessionHistory.length > 0 && (
-              <button onClick={() => setShowHistory(!showHistory)}
+              <button onClick={() => setShowHistory(!showHistory)} aria-expanded={showHistory} aria-label={`${t('tt_recent')} (${sessionHistory.length})`}
                 className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
                 📋 {sessionHistory.length}
               </button>

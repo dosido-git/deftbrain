@@ -241,7 +241,7 @@ const MarkupDetective = ({ tool }) => {
     const buttons = (
       <>
         {sessionHistory.length > 0 && (
-          <button onClick={() => setShowHistory(!showHistory)}
+          <button onClick={() => setShowHistory(!showHistory)} aria-expanded={showHistory} aria-label={`${t('mkd_recent_lookups')} (${sessionHistory.length})`}
             className={`${sv ? 'text-sm' : 'text-xs'} font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
             📋 {sessionHistory.length}
           </button>
