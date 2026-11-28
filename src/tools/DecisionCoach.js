@@ -535,12 +535,12 @@ const DecisionCoach = ({ tool }) => {
     <div className={`mt-8 p-4 rounded-2xl border ${c.card}`}>
       <p className={`text-[15px] font-semibold ${c.labelText} mb-0.5`}>{t('dc_quick_intro')}</p>
       <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('dc_quick_sub')}</p>
-      <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_quick_decide')}</p>
+      <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('dc_quick_decide')}</p>
       <div className="grid grid-cols-5 gap-2 mb-2">
         {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-xs font-bold ${c.text}`}>{t(b.k)}</span></button>))}
       </div>
       {templates.length > 0 && (
-        <div><p className={`text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_templates')}</p>
+        <div><p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_templates')}</p>
         <div className="flex flex-wrap gap-1.5">{templates.map(tpl => (
           <div key={tpl.id} className="flex items-center gap-0.5"><button onClick={() => applyTemplate(tpl)} className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${c.templateBtn}`}>{tpl.name}</button><button onClick={() => deleteTemplate(tpl.id)} className={`text-xs ${c.btnSecondary} px-1`}>✕</button></div>
         ))}</div></div>
@@ -771,7 +771,7 @@ const DecisionCoach = ({ tool }) => {
         </div>
         {decisionBasis.length > 0 && (
           <div className={`p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
-            <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_basis_title')}</p>
+            <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('dc_basis_title')}</p>
             <dl className="space-y-1.5">
               {decisionBasis.map(([label, value]) => (
                 <div key={label} className="flex flex-col sm:flex-row sm:gap-2">
@@ -972,7 +972,7 @@ const DecisionCoach = ({ tool }) => {
         <h3 className={`text-base font-bold ${c.text} mb-3`}>{t('dc_pat_title')}</h3>
 
         <div className={`p-4 rounded-2xl border ${c.card} mb-3`}>
-          <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_pat_recent')}</p>
+          <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('dc_pat_recent')}</p>
           <ul className={`text-xs space-y-1 ${c.textSecondary}`}>
             <li>{patternCounts.total} {t('dc_pat_recorded')}</li>
             {patternCounts.quick > 0 && <li>{patternCounts.quick} {t('dc_pat_quick')}</li>}
@@ -993,7 +993,7 @@ const DecisionCoach = ({ tool }) => {
           {patternsResult && patternsOpen && (<div className="space-y-3">
             {!!patternsResult.tended_to_choose?.length && (
               <div className={`p-4 rounded-xl border ${c.patternCard}`}>
-                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_pat_tended')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('dc_pat_tended')}</p>
                 <ul className={`text-xs space-y-1.5 ${c.textSecondary}`}>
                   {patternsResult.tended_to_choose.map((x, i) => <li key={i}>• {x}</li>)}
                 </ul>
@@ -1002,7 +1002,7 @@ const DecisionCoach = ({ tool }) => {
             )}
             {!!patternsResult.recurring_constraints?.length && (
               <div className={`p-4 rounded-xl border ${c.patternCard}`}>
-                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('dc_pat_constraints')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('dc_pat_constraints')}</p>
                 <ul className={`text-xs space-y-1.5 ${c.textSecondary}`}>
                   {patternsResult.recurring_constraints.map((x, i) => <li key={i}>• {x}</li>)}
                 </ul>
@@ -1010,7 +1010,7 @@ const DecisionCoach = ({ tool }) => {
             )}
             {patternsResult.limits && (
               <div className={`p-4 rounded-xl border ${c.patternHighlight}`}>
-                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_pat_limits_title')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_pat_limits_title')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{patternsResult.limits}</p>
               </div>
             )}
@@ -1022,7 +1022,7 @@ const DecisionCoach = ({ tool }) => {
       <div>
         <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('dc_batch_title')}</h3>
         <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('dc_batch_hint')}</p>
-        <label className={`block text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
+        <label className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
         <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm mb-3 ${c.input}`}>
           <option value="dinner">{t('dc_batch_dinners')}</option>
           <option value="lunch">{t('dc_batch_lunches')}</option>
@@ -1035,7 +1035,7 @@ const DecisionCoach = ({ tool }) => {
 
         {batchCategory === 'custom' && (
           <div className="mb-3">
-            <label htmlFor="dc-batch-custom" className={`block text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_batch_custom_label')} <span className={c.required}>*</span></label>
+            <label htmlFor="dc-batch-custom" className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_custom_label')} <span className={c.required}>*</span></label>
             <input id="dc-batch-custom" type="text" value={batchCustom} onChange={e => setBatchCustom(e.target.value)}
               placeholder={t('dc_batch_custom_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
@@ -1043,7 +1043,7 @@ const DecisionCoach = ({ tool }) => {
 
         <div className="flex gap-2 mb-3">
           <div className="flex-1">
-            <label className={`block text-[13px] font-boldr ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
+            <label className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
             <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
           </div>
           <button onClick={handleBatch} disabled={loading || (batchCategory === 'custom' && !batchCustom.trim())}

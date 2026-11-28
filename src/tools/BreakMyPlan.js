@@ -347,7 +347,7 @@ const BreakMyPlan = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {results?.assumption_to_test_first?.dependency && (
               <div data-keybox="" className={sv ? KEY_BOX : `rounded-2xl border p-4 ${(sv ? 'bg-[var(--sc-card)] border-[var(--sc-x-line)]' : isDark ? 'bg-red-600/10 border-red-600/40' : 'bg-red-50 border-red-200')}`}>
-                <p className={`text-[13px] font-boldr mb-2 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>💣 {t('pm_fatal_assumption')}</p>
+                <p className={`text-[13px] font-bold mb-2 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>💣 {t('pm_fatal_assumption')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results?.assumption_to_test_first.dependency}</p>
                 {results?.assumption_to_test_first.why_it_matters && (
                   <p className={`text-xs mt-1 ${c.textMuted}`}>{results?.assumption_to_test_first.why_it_matters}</p>

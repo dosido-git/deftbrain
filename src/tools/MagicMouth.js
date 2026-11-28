@@ -598,7 +598,7 @@ const MagicMouth = ({ tool }) => {
             </p>
             {sessionHistory.length > 0 && (
               <div className={`${c.cardAlt} ${c.border} border rounded-lg p-2.5`}>
-                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-1.5`}>{t('mm_recent_asks')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>{t('mm_recent_asks')}</p>
                 <p className={`text-[13px] ${c.textMuteded}`}>{t('mm_recent_meta', { count: sessionHistory.length, date: new Date(sessionHistory[0].date).toLocaleDateString(userLocale) })}</p>
               </div>
             )}

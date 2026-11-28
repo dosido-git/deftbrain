@@ -497,7 +497,7 @@ const Giftology = ({ tool }) => {
                 </button>
               ) : (
                 <div className={`${c.wildcardBg} border ${c.border} rounded-xl p-5`}>
-                  <p className={`text-[13px] font-boldr ${c.wildcardText} mb-2 flex items-center gap-1.5`}>
+                  <p className={`text-[13px] font-bold ${c.wildcardText} mb-2 flex items-center gap-1.5`}>
                     <span>🃏</span> {t('gft_wildcard')}
                   </p>
                   <h3 className={`text-base font-bold ${c.text} mb-1`}>{results?.the_wildcard?.gift}</h3>
@@ -524,7 +524,7 @@ const Giftology = ({ tool }) => {
 
           {results?.if_deadline_is_now && (
             <div className={`${c.success} border rounded-xl p-4`}>
-              <p className={`text-[13px] font-boldr mb-2 flex items-center gap-1.5`}>
+              <p className={`text-[13px] font-bold mb-2 flex items-center gap-1.5`}>
                 <span>⏰</span> {t('gft_lastminute')}
               </p>
               <p className={`text-sm font-semibold ${c.text} mb-1`}>{results?.if_deadline_is_now?.instant_option}</p>

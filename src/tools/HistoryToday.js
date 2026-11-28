@@ -392,7 +392,7 @@ const HistoryToday = ({ tool }) => {
             <div className={`p-4 rounded-xl border flex items-start gap-3 ${results.premise_check.status === 'false_premise' ? c.danger : results.premise_check.status === 'unverifiable' ? c.warning : c.highlight}`}>
               <span className="text-lg flex-shrink-0">{results.premise_check.status === 'false_premise' ? '⚠️' : results.premise_check.status === 'unverifiable' ? '❓' : 'ℹ️'}</span>
               <div className="min-w-0">
-                <p className="text-[13px] font-boldr mb-0.5">{t('ht_premise_check')}</p>
+                <p className="text-[13px] font-bold mb-0.5">{t('ht_premise_check')}</p>
                 <p className="text-sm">{results.premise_check.assessment}</p>
               </div>
             </div>

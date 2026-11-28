@@ -447,7 +447,7 @@ const AlternatePath = ({ tool }) => {
           {/* Today in this timeline */}
           {sv && <ExpandAll />}
           {results?.today_looks_like && (
-            <SvSection sv={sv} c={c} icon="🌍" title={t('ap_today_title')} className={`${c.success} border rounded-2xl p-4`} heading={<p className={`text-[13px] font-boldr mb-1`}>🌍 {t('ap_today_title')}</p>}>
+            <SvSection sv={sv} c={c} icon="🌍" title={t('ap_today_title')} className={`${c.success} border rounded-2xl p-4`} heading={<p className={`text-[13px] font-bold mb-1`}>🌍 {t('ap_today_title')}</p>}>
               <p className="text-sm leading-relaxed">{results?.today_looks_like}</p>
             </SvSection>
           )}
@@ -455,7 +455,7 @@ const AlternatePath = ({ tool }) => {
           {/* Biggest surprise + Butterfly moment */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {results?.biggest_surprise && (
-              <SvSection sv={sv} c={c} icon="💡" title={t('ap_surprise')} className={`${c.warning} border rounded-2xl p-4`} heading={<p className={`text-[13px] font-boldr mb-1`}>💡 {t('ap_surprise')}</p>}>
+              <SvSection sv={sv} c={c} icon="💡" title={t('ap_surprise')} className={`${c.warning} border rounded-2xl p-4`} heading={<p className={`text-[13px] font-bold mb-1`}>💡 {t('ap_surprise')}</p>}>
                 <p className="text-sm leading-relaxed">{results?.biggest_surprise}</p>
               </SvSection>
             )}

@@ -600,7 +600,7 @@ const SixDegreesOfMe = ({ tool }) => {
             {/* AI questions */}
             {target === 'A' && aiQuestions?.questions?.length > 0 && (
               <div className={`p-3 rounded-xl border ${c.aiQuestionBg}`}>
-                <p className={`text-[13px] font-boldr ${c.textMuted} mb-2`}>{t('sdm_profile_think_about')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('sdm_profile_think_about')}</p>
                 {aiQuestions.questions.map((q, i) => (
                   <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {q}</p>
                 ))}
@@ -777,7 +777,7 @@ const SixDegreesOfMe = ({ tool }) => {
     return (
       <div className={`rounded-2xl border overflow-hidden mb-4 ${c.whatIfBg}`}>
         <div className="px-5 py-3 border-b border-red-200/30">
-          <p className={`text-[13px] font-boldr ${c.errorText}`}>
+          <p className={`text-[13px] font-bold ${c.errorText}`}>
             {t('sdm_whatif_header', { from: whatIfStep?.from, to: whatIfStep?.to })}
           </p>
         </div>
@@ -901,7 +901,7 @@ const SixDegreesOfMe = ({ tool }) => {
         <div className={`px-5 py-3 border-t ${c.border}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_web_hub_nodes')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sdm_web_hub_nodes')}</p>
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => b.count - a.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}
@@ -912,7 +912,7 @@ const SixDegreesOfMe = ({ tool }) => {
               </div>
             </div>
             <div>
-              <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_web_islands')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sdm_web_islands')}</p>
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => a.count - b.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}>
@@ -964,7 +964,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {/* Through-lines */}
                 {storyResult.through_lines?.length > 0 && (
                   <div className={`mt-4 p-3 rounded-xl border ${c.insightBg}`}>
-                    <p className={`text-[13px] font-boldr ${c.textMuted} mb-2`}>{t('sdm_story_through_lines')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('sdm_story_through_lines')}</p>
                     {storyResult.through_lines.map((tl, i) => (
                       <p key={i} className={`text-xs ${c.insightText} mb-1`}>• {tl}</p>
                     ))}
@@ -975,7 +975,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   {storyResult.hub_nodes?.length > 0 && (
                     <div className={`p-3 rounded-xl border ${c.card}`}>
-                      <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_story_hubs')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sdm_story_hubs')}</p>
                       <div className="flex flex-wrap gap-1">
                         {storyResult.hub_nodes.map((n, i) => (
                           <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.infoBox}`}>{n}</span>
@@ -985,7 +985,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   )}
                   {storyResult.island_nodes?.length > 0 && (
                     <div className={`p-3 rounded-xl border ${c.card}`}>
-                      <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_story_isolated')}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sdm_story_isolated')}</p>
                       <div className="flex flex-wrap gap-1">
                         {storyResult.island_nodes.map((n, i) => (
                           <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}>{n}</span>
@@ -998,7 +998,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {/* Prediction */}
                 {storyResult.prediction && (
                   <div className={`mt-4 p-3 rounded-xl border ${c.challengeBg}`}>
-                    <p className={`text-[13px] font-boldr ${c.textMuted} mb-1`}>{t('sdm_story_prediction')}</p>
+                    <p className={`text-[13px] font-bold ${c.textMuted} mb-1`}>{t('sdm_story_prediction')}</p>
                     <p className={`text-sm font-semibold ${c.accentTxt}`}>{storyResult.prediction}</p>
                   </div>
                 )}
@@ -1309,7 +1309,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 things might be connected. Reading the pairs is the pitch;
                 one tap fills both boxes. */}
             <div className="mb-4">
-              <p className={`text-[13px] font-boldr ${c.textMuted} mb-2`}>{t('sdm_try_these')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2`}>{t('sdm_try_these')}</p>
               <div className="flex flex-col gap-1.5">
                 {PAIRS.map((pr, i) => (
                   <button key={i} onClick={() => { setThingA(t(pr.aKey)); setThingB(t(pr.bKey)); }}
@@ -1329,7 +1329,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {t('sdm_make_it_harder')} <Caret open={showChallenge} />
               </button>
               {showChallenge && (<>
-              <p className={`text-[13px] font-boldr ${c.textMuted} mb-2 mt-2`}>{t('sdm_challenge_mode_label')}</p>
+              <p className={`text-[13px] font-bold ${c.textMuted} mb-2 mt-2`}>{t('sdm_challenge_mode_label')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {CHALLENGES.map(ch => (
                   <button aria-pressed={challengeMode === ch.id} key={ch.id}

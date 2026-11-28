@@ -348,7 +348,7 @@ const BeliefStressTest = ({ tool }) => {
                 <p className="text-xl font-black tracking-tight">{results.verdict.rating_label}</p>
                 <p className="text-sm mt-1 opacity-80">{results.verdict.one_line}</p>
                 {results.belief_type && (
-                  <p className={`text-[13px] font-boldr mt-2 opacity-75`}>{results.belief_type} {t('bst_belief_suffix')}</p>
+                  <p className={`text-[13px] font-bold mt-2 opacity-75`}>{results.belief_type} {t('bst_belief_suffix')}</p>
                 )}
               </div>
             )}

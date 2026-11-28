@@ -1209,11 +1209,11 @@ const PlainTalk = ({ tool }) => {
                             <div data-sec-body hidden={!(isOpen)} className={`px-4 pb-4 border-t ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                                 <div>
-                                  <p className={`text-[13px] font-boldr ${c.textMuteded} mb-1.5`}>{t('plt_original')}</p>
+                                  <p className={`text-[13px] font-bold ${c.textMuteded} mb-1.5`}>{t('plt_original')}</p>
                                   <p className={`text-xs leading-relaxed ${c.textSecondary} italic`}>{section.original}</p>
                                 </div>
                                 <div>
-                                  <p className={`text-[13px] font-boldr ${c.accentTxt} mb-1.5`}>{t('plt_plain_english')}</p>
+                                  <p className={`text-[13px] font-bold ${c.accentTxt} mb-1.5`}>{t('plt_plain_english')}</p>
                                   <p className={`text-sm leading-relaxed ${c.text}`}>{section.translation}</p>
                                 </div>
                               </div>
@@ -1327,11 +1327,11 @@ const PlainTalk = ({ tool }) => {
                           {(
                             <div data-sec-body hidden={!(isOpen)} className="grid grid-cols-1 md:grid-cols-2">
                               <div className={`p-4 ${(sv ? 'bg-[var(--sc-card)] border-e border-[var(--sc-line)]' : isDark ? 'bg-zinc-800 border-e border-zinc-700' : 'bg-white border-e border-zinc-200')}`}>
-                                <p className={`text-[13px] font-boldr ${c.textMuteded} mb-2`}>{t('plt_original')}</p>
+                                <p className={`text-[13px] font-bold ${c.textMuteded} mb-2`}>{t('plt_original')}</p>
                                 <p className={`text-xs leading-relaxed ${c.textSecondary}`}>{section.original}</p>
                               </div>
                               <div className={`p-4 ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700/20' : 'bg-[#eef3f8]')}`}>
-                                <p className={`text-[13px] font-boldr ${c.accentTxt} mb-2`}>{t('plt_plain_english')}</p>
+                                <p className={`text-[13px] font-bold ${c.accentTxt} mb-2`}>{t('plt_plain_english')}</p>
                                 <p className={`text-sm leading-relaxed ${c.text}`}>{section.translation}</p>
                                 {section.flags?.length > 0 && (
                                   <div className="mt-2 flex flex-wrap gap-1">
@@ -1475,7 +1475,7 @@ const PlainTalk = ({ tool }) => {
                       <div className={`p-5 rounded-2xl border ${
                         compareResult.bottom_line.should_you_care === 'no' ? c.success : c.warning
                       }`}>
-                        <p className="text-[13px] font-boldr mb-1">🎯 {t('plt_bottom_line')}</p>
+                        <p className="text-[13px] font-bold mb-1">🎯 {t('plt_bottom_line')}</p>
                         <p className="text-lg font-black mb-1">
                           {compareResult.bottom_line.should_you_care === 'no' ? t('plt_care_no') : t('plt_care_yes')}
                         </p>

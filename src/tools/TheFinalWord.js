@@ -982,7 +982,7 @@ const TheFinalWord = ({ tool }) => {
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
           <span className={`text-[15px] font-semibold ${c.labelText}`}>{t('tfw_confidence')}</span>
-          <span className={`text-[13px] font-boldr ${style.text}`}>{confidence}</span>
+          <span className={`text-[13px] font-bold ${style.text}`}>{confidence}</span>
         </div>
         <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-slate-100'}`}>
           <div className={`h-full rounded-full transition-all duration-700 ${confBarColor(confidence)}`} style={{ width: style.width }} />
@@ -1276,7 +1276,7 @@ const TheFinalWord = ({ tool }) => {
               <div className={`p-3 rounded-lg border-2 border-red-500/30 ${(sv ? 'bg-[var(--sc-card)]' : isDark ? 'bg-red-900/10' : 'bg-red-50')}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <span className={`text-[13px] font-boldr ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('tfw_listening')}</span>
+                  <span className={`text-[13px] font-bold ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('tfw_listening')}</span>
                 </div>
                 {voiceTranscript && <p className={`text-sm italic ${c.textSecondary}`}>"{voiceTranscript}"</p>}
               </div>
@@ -1465,7 +1465,7 @@ const TheFinalWord = ({ tool }) => {
                   <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_setup_difficulty')}</label>
                   <div className="flex gap-2">
                     {[['easy', 'tfw_diff_easy'], ['medium', 'tfw_diff_medium'], ['hard', 'tfw_diff_hard']].map(([d, dKey]) => (
-                      <button key={d} onClick={() => setTriviaDifficulty(d)} className={`flex-1 py-2 rounded-lg text-[13px] font-boldr transition-all border ${triviaDifficulty === d ? (sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]') : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{t(dKey)}</button>
+                      <button key={d} onClick={() => setTriviaDifficulty(d)} className={`flex-1 py-2 rounded-lg text-[13px] font-bold transition-all border ${triviaDifficulty === d ? (sv ? 'border-[var(--sc-border,var(--sc-accent))] bg-[var(--sc-envelope)] text-[var(--sc-strong)]' : isDark ? 'border-[#7fb3e0] bg-[#1f2530] text-[#a9cdef]' : 'border-[#142a43] bg-[#eef3f8] text-[#142a43]') : isDark ? 'border-zinc-700 text-zinc-400 hover:border-zinc-500' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>{t(dKey)}</button>
                     ))}
                   </div>
                 </div>
@@ -1619,7 +1619,7 @@ const TheFinalWord = ({ tool }) => {
 
               {roomState.revealed && roomState.currentQuestion.explanation && (
                 <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>
+                  <p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>
                     {roomState.myAnswer === roomState.currentQuestion.correct_index ? t('tfw_mp_got_it') : t('tfw_mp_not_quite')}
                   </p>
                   <p className={`text-sm ${c.textSecondary}`}>{roomState.currentQuestion.explanation}</p>
@@ -1701,7 +1701,7 @@ const TheFinalWord = ({ tool }) => {
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed mb-4 ${c.textSecondary}`}>{result.explanation}</p>
               {result.supporting_facts?.length > 0 && <div className={`p-3 rounded-xl border ${c.cardAlt} mb-3`}><p className={`text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('tfw_result_key_facts')}</p>{result.supporting_facts.map((f, i) => <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>• {f}</p>)}</div>}
-              {result.common_misconception && <div className={`p-3 rounded-xl border ${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200')}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_result_misconception')}</p><p className={`text-sm ${c.textSecondary}`}>{result.common_misconception}</p></div>}
+              {result.common_misconception && <div className={`p-3 rounded-xl border ${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-amber-900/10 border-amber-800/50' : 'bg-amber-50 border-amber-200')}`}><p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>{t('tfw_result_misconception')}</p><p className={`text-sm ${c.textSecondary}`}>{result.common_misconception}</p></div>}
               {result.fun_extra && <div className={`mt-3 p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-xs font-bold mb-1 ${c.accentTxt}`}>{t('tfw_result_bonus')}</p><p className={`text-sm ${c.textSecondary}`}>{result.fun_extra}</p></div>}
               <SourcesList sources={result.sources} />
             </div>
@@ -1735,8 +1735,8 @@ const TheFinalWord = ({ tool }) => {
             )}
             <div className="px-6 py-4 space-y-3">
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.explanation}</p>
-              {result.the_actual_answer && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_actual_answer')}</p><p className={`text-sm font-semibold ${c.text}`}>{result.the_actual_answer}</p></div>}
-              {result.time_sensitive && result.how_to_verify && <div className={`p-3 rounded-xl border ${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-sky-900/10 border-sky-800/50' : 'bg-sky-50 border-sky-200')}`}><p className={`text-[13px] font-boldr mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-400' : 'text-sky-600')}`}>{t('tfw_verify_live')}</p><p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-700')}`}>{result.how_to_verify}</p></div>}
+              {result.the_actual_answer && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>{t('tfw_actual_answer')}</p><p className={`text-sm font-semibold ${c.text}`}>{result.the_actual_answer}</p></div>}
+              {result.time_sensitive && result.how_to_verify && <div className={`p-3 rounded-xl border ${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-sky-900/10 border-sky-800/50' : 'bg-sky-50 border-sky-200')}`}><p className={`text-[13px] font-bold mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-400' : 'text-sky-600')}`}>{t('tfw_verify_live')}</p><p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-700')}`}>{result.how_to_verify}</p></div>}
               {result.settlement_suggestion && <div className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]')}`}><p className={`text-sm italic ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-[#a9cdef]' : 'text-[#142a43]')}`}>🤝 {result.settlement_suggestion}</p></div>}
               <SourcesList sources={result.sources} />
             </div>
@@ -1759,15 +1759,15 @@ const TheFinalWord = ({ tool }) => {
             <div className="px-6 py-4 space-y-3">
               <ConfidenceBar confidence={result.confidence} />
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.explanation}</p>
-              {result.what_is_true && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_whats_true')}</p><p className={`text-sm ${c.text}`}>{result.what_is_true}</p></div>}
+              {result.what_is_true && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>{t('tfw_whats_true')}</p><p className={`text-sm ${c.text}`}>{result.what_is_true}</p></div>}
               {result.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('tfw_the_nuance')}</p><p className={`text-sm ${c.textSecondary}`}>{result.the_nuance}</p></div>}
-              {result.origin_of_myth && <div className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]')}`}><p className={`text-[13px] font-boldr mb-1 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('tfw_myth_started')}</p><p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}>{result.origin_of_myth}</p></div>}
+              {result.origin_of_myth && <div className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]')}`}><p className={`text-[13px] font-bold mb-1 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('tfw_myth_started')}</p><p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}>{result.origin_of_myth}</p></div>}
               <SourcesList sources={result.sources} />
 
               {/* ═══ FACT-CHECK CHAINS ═══ */}
               {result.related_claims?.length > 0 && (
                 <div className={`p-4 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-[13px] font-boldr mb-2 ${c.accentTxt}`}>{t('tfw_related_claims')}</p>
+                  <p className={`text-[13px] font-bold mb-2 ${c.accentTxt}`}>{t('tfw_related_claims')}</p>
                   <div className="space-y-2">
                     {result.related_claims.map((rc, i) => (
                       <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-start px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${(sv ? 'border-[var(--sc-line)] text-[var(--sc-text)]' : isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700')}`}>
@@ -1849,7 +1849,7 @@ const TheFinalWord = ({ tool }) => {
               {/* What it gets right */}
               {dissectResult.what_the_claim_gets_right && (
                 <div className={`p-3 rounded-xl border ${(sv ? 'bg-[var(--sc-envelope)] border-[var(--sc-line)]' : isDark ? 'bg-emerald-900/10 border-emerald-800/40' : 'bg-emerald-50 border-emerald-200')}`}>
-                  <p className={`text-[13px] font-boldr mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>{t('tfw_dissect_gets_right')}</p>
+                  <p className={`text-[13px] font-bold mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-700')}`}>{t('tfw_dissect_gets_right')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_the_claim_gets_right}</p>
                 </div>
               )}
@@ -1857,7 +1857,7 @@ const TheFinalWord = ({ tool }) => {
               {/* What changes the picture */}
               {dissectResult.what_changes_the_picture && (
                 <div className={`p-3 rounded-xl border ${c.cardAlt}`}>
-                  <p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_dissect_changes_picture')}</p>
+                  <p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>{t('tfw_dissect_changes_picture')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{dissectResult.what_changes_the_picture}</p>
                 </div>
               )}
@@ -1865,7 +1865,7 @@ const TheFinalWord = ({ tool }) => {
               {/* How it spread */}
               {dissectResult.how_it_spread && (
                 <div className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-[#1f2530] border border-[#2c3a4a]' : 'bg-[#eef3f8] border border-[#d4dde8]')}`}>
-                  <p className={`text-[13px] font-boldr mb-1 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('tfw_dissect_why_spreads')}</p>
+                  <p className={`text-[13px] font-bold mb-1 ${(sv ? 'text-[var(--sc-accent)]' : isDark ? 'text-[#7fb3e0]' : 'text-[#165b9a]')}`}>{t('tfw_dissect_why_spreads')}</p>
                   <p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-zinc-100' : 'text-[#142a43]')}`}>{dissectResult.how_it_spread}</p>
                 </div>
               )}
@@ -1873,7 +1873,7 @@ const TheFinalWord = ({ tool }) => {
               {/* Accurate version */}
               {dissectResult.the_accurate_version && (
                 <div className={`p-4 rounded-xl border-2 ${(sv ? 'border-[var(--sc-line)] bg-[var(--sc-envelope)]' : isDark ? 'border-amber-700/60 bg-amber-900/10' : 'border-amber-300 bg-amber-50')}`}>
-                  <p className={`text-[13px] font-boldr mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-700')}`}>{t('tfw_dissect_accurate_version')}</p>
+                  <p className={`text-[13px] font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-700')}`}>{t('tfw_dissect_accurate_version')}</p>
                   <p className={`text-sm leading-relaxed italic ${c.text}`}>{dissectResult.the_accurate_version}</p>
                   <div className="mt-3">
                   </div>
@@ -1904,7 +1904,7 @@ const TheFinalWord = ({ tool }) => {
 
             {/* Counter-argument */}
             <div className={`px-6 py-4 border-b ${c.border}`}>
-              <p className={`text-[13px] font-boldr mb-2 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('tfw_da_counter_arg')}</p>
+              <p className={`text-[13px] font-bold mb-2 ${(sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-600')}`}>{t('tfw_da_counter_arg')}</p>
               <p className={`text-sm font-semibold ${c.text} mb-2`}>{daResult.counter_position}</p>
               {daResult.counter_supporting_facts?.map((f, i) => <p key={i} className={`text-xs ${c.textSecondary} mb-0.5`}>• {f}</p>)}
             </div>
@@ -1927,8 +1927,8 @@ const TheFinalWord = ({ tool }) => {
 
             <div className="px-6 py-4 space-y-3">
               <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{daResult.explanation}</p>
-              {daResult.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{t('tfw_da_key_insight')}</p><p className={`text-sm ${c.text}`}>{daResult.the_nuance}</p></div>}
-              {daResult.recommendation && <div className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-sky-900/10 border border-sky-800/50' : 'bg-sky-50 border border-sky-200')}`}><p className={`text-[13px] font-boldr mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-400' : 'text-sky-600')}`}>{t('tfw_da_what_consider')}</p><p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-700')}`}>{daResult.recommendation}</p></div>}
+              {daResult.the_nuance && <div className={`p-3 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>{t('tfw_da_key_insight')}</p><p className={`text-sm ${c.text}`}>{daResult.the_nuance}</p></div>}
+              {daResult.recommendation && <div className={`p-3 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-sky-900/10 border border-sky-800/50' : 'bg-sky-50 border border-sky-200')}`}><p className={`text-[13px] font-bold mb-1 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-400' : 'text-sky-600')}`}>{t('tfw_da_what_consider')}</p><p className={`text-sm ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-sky-200' : 'text-sky-700')}`}>{daResult.recommendation}</p></div>}
               <SourcesList sources={daResult.sources} />
             </div>
             <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>
@@ -1962,7 +1962,7 @@ const TheFinalWord = ({ tool }) => {
                   <TriviaOption key={idx} option={option} idx={idx} isSelected={selectedAnswer === idx} isCorrect={idx === triviaQuestion.correct_index} revealed={triviaRevealed} onClick={() => handleTriviaAnswer(idx)} disabled={triviaRevealed} />
                 ))}
               </div>
-              {triviaRevealed && <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-boldr mb-1 ${c.accentTxt}`}>{selectedAnswer === triviaQuestion.correct_index ? (teams[activeTeamIdx]?.name ? t('tfw_trivia_got_it', { name: teams[activeTeamIdx].name }) : t('tfw_trivia_got_it_you')) : (teams.length > 1 ? t('tfw_trivia_not_quite_named', { name: teams[activeTeamIdx]?.name }) : t('tfw_trivia_not_quite'))}</p><p className={`text-sm ${c.textSecondary}`}>{triviaQuestion.explanation}</p></div>}
+              {triviaRevealed && <div className={`mt-4 p-4 rounded-xl border ${c.cardAlt}`}><p className={`text-[13px] font-bold mb-1 ${c.accentTxt}`}>{selectedAnswer === triviaQuestion.correct_index ? (teams[activeTeamIdx]?.name ? t('tfw_trivia_got_it', { name: teams[activeTeamIdx].name }) : t('tfw_trivia_got_it_you')) : (teams.length > 1 ? t('tfw_trivia_not_quite_named', { name: teams[activeTeamIdx]?.name }) : t('tfw_trivia_not_quite'))}</p><p className={`text-sm ${c.textSecondary}`}>{triviaQuestion.explanation}</p></div>}
             </div>
             {triviaRevealed && (
               <div className={`px-6 py-3 border-t flex items-center justify-between ${c.border}`}>

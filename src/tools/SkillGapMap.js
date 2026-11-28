@@ -835,7 +835,7 @@ const SkillGapMap = ({ tool }) => {
               that it's the most important gap. */}
           {results.start_here && (
             <div data-keybox="" className={sv ? KEY_BOX : `${c.card} rounded-2xl shadow-sm p-6 border-2 ${(sv ? 'border-[var(--sc-line)]' : isDark ? 'border-[#2c3a4a]' : 'border-[#d4dde8]')}`}>
-              <p className={`text-[13px] font-boldr ${c.accentTxt} mb-1`}>{t('sgm_start_here')}</p>
+              <p className={`text-[13px] font-bold ${c.accentTxt} mb-1`}>{t('sgm_start_here')}</p>
               <h3 className={`text-lg font-black ${c.text}`}>{results.start_here.capability}</h3>
               {results.start_here.why_it_matters && (
                 <>

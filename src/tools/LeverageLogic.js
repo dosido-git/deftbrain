@@ -509,7 +509,7 @@ const LeverageLogic = ({ tool }) => {
                 )}
                 {results.read.standing_on && (
                   <div className={`mt-3 p-3 rounded-xl ${c.cardAlt}`}>
-                    <p className={`text-[13px] font-boldr mb-1 ${c.textMuted}`}>{t('llog_h_standing_on')}</p>
+                    <p className={`text-[13px] font-bold mb-1 ${c.textMuted}`}>{t('llog_h_standing_on')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{results.read.standing_on}</p>
                   </div>
                 )}
@@ -623,7 +623,7 @@ const LeverageLogic = ({ tool }) => {
                 <div className="space-y-2.5">
                   {results.what_to_say.map((sc, i) => (
                     <div key={i} className={`${c.cardAlt} border rounded-xl p-3.5`}>
-                      <p className={`text-[13px] font-boldr ${c.textMuted}`}>{sc.moment}</p>
+                      <p className={`text-[13px] font-bold ${c.textMuted}`}>{sc.moment}</p>
                       <p className={`text-sm mt-1 ${c.text}`}>{sc.say_this}</p>
                       {sc.rests_on && <p className={`text-[13px] mt-1.5 ${c.textMuted}`}>{t('llog_l_rests_on')} {sc.rests_on}</p>}
                     </div>
@@ -788,7 +788,7 @@ const LeverageLogic = ({ tool }) => {
                 <div className="grid grid-cols-2 gap-3">
                   {emailResults.before_you_send && (
                     <div className={`${c.cardAlt} border rounded-xl p-3.5`}>
-                      <p className={`text-[13px] font-boldr mb-1 ${c.textMuted}`}>{t('llog_l_before_send')}</p>
+                      <p className={`text-[13px] font-bold mb-1 ${c.textMuted}`}>{t('llog_l_before_send')}</p>
                       <p className={`text-xs ${c.textSecondary}`}>{emailResults.before_you_send}</p>
                     </div>
                   )}
@@ -855,7 +855,7 @@ const LeverageLogic = ({ tool }) => {
                 </div>
                 {prepResults.one_thing_first && (
                   <div className={`p-4 rounded-xl ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-amber-900/15 border border-amber-800/40' : 'bg-amber-50 border border-amber-200')}`}>
-                    <p className={`text-[13px] font-boldr mb-1 ${c.textMuted}`}>{t('llog_l_first')}</p>
+                    <p className={`text-[13px] font-bold mb-1 ${c.textMuted}`}>{t('llog_l_first')}</p>
                     <p className={`text-xs ${c.textSecondary}`}>{prepResults.one_thing_first}</p>
                   </div>
                 )}

@@ -1906,7 +1906,7 @@ const NameStorm = ({ tool }) => {
 
           {quickResults.top_pick && (
             <div className={`p-5 rounded-xl text-center ${(sv ? 'bg-[var(--sc-envelope)] border border-[var(--sc-line)]' : isDark ? 'bg-amber-900/20 border border-amber-700/40' : 'bg-amber-50 border border-amber-200')}`}>
-              <p className={`text-[13px] font-boldr mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-700')}`}>⭐ {t('ns_quick_top_pick_box')}</p>
+              <p className={`text-[13px] font-bold mb-2 ${(sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-amber-400' : 'text-amber-700')}`}>⭐ {t('ns_quick_top_pick_box')}</p>
               <p className={`text-lg font-black ${c.text}`}>{quickResults.top_pick}</p>
             </div>
           )}

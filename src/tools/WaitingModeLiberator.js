@@ -825,7 +825,7 @@ const WaitingModeLiberator = ({ tool }) => {
               )} </div>
 
             {/* ── ADDED EVENTS LIST ── */} {events.length > 0 && (<div className="space-y-2 pt-1">
-                <p className={`text-[13px] font-boldr ${c.textMuted}`}>{t('wml_your_events')}</p>
+                <p className={`text-[13px] font-bold ${c.textMuted}`}>{t('wml_your_events')}</p>
                 {events.map((ev, idx) => {
                   const typeObj   = APPT_TYPES.find(a => a.id === ev.type);
                   const typeLabel = ev.type === 'other' && ev.customType ? ev.customType : (typeObj ? t(typeObj.labelKey) : '');
