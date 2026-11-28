@@ -107,7 +107,7 @@ const NotFound = ({
             </button>
           )}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/tools')}
             className={`w-full py-3 ${TOOL_FINDER_PAUSED ? c.primary : `${c.secondary} border`} rounded-xl font-semibold transition-colors`}
           >
             Browse all tools
