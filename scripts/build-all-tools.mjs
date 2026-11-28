@@ -29,7 +29,9 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'all-tools-'));
 const load = async rel => { const f = path.join(tmp, path.basename(rel).replace(/\.js$/, '.mjs')); fs.copyFileSync(path.join(root, rel), f); return import(pathToFileURL(f)); };
 const { tools } = await load('src/data/tools.js');
 const meta = await load('src/data/categoryMeta.js');
-const cats = (Object.values(meta).find(v => Array.isArray(v) && v[0]?.name && v[0]?.slug) || []).map(c => c.name);
+const catList = Object.values(meta).find(v => Array.isArray(v) && v[0]?.name && v[0]?.slug) || [];
+const cats = catList.map(c => c.name);
+const slugOf = Object.fromEntries(catList.map(c => [c.name, c.slug]));
 
 // Heading colour per category, from each category's scheme (owner, 2026-10-27).
 const INK = {
@@ -42,7 +44,7 @@ const listed = tools.filter(t => !t.hidden && !t.internal);
 const groups = cats.map(name => ({ name, list: listed.filter(t => (t.categories || [])[0] === name).sort((a, b) => a.title.localeCompare(b.title)) })).filter(g => g.list.length);
 const left = listed.filter(t => !cats.includes((t.categories || [])[0]));
 if (left.length) groups.push({ name: 'More', list: left });
-const sections = groups.map(g => `<section><h2${INK[g.name] ? ` style="color:${INK[g.name]};border-bottom:1.5px solid ${INK[g.name]};padding-bottom:1.5pt;margin-bottom:4pt;display:table;border-top:0;padding-top:4pt"` : ''}>${esc(g.name)}</h2>${g.list.map(t =>
+const sections = groups.map(g => `<section><h2${INK[g.name] ? ` style="color:${INK[g.name]};border-bottom:1.5px solid ${INK[g.name]};padding-bottom:1.5pt;margin-bottom:4pt;display:table;border-top:0;padding-top:4pt"` : ''}>${slugOf[g.name] ? `<a class="cat" href="/tools/${slugOf[g.name]}">${esc(g.name)}</a>` : esc(g.name)}</h2>${g.list.map(t =>
   `<div class="tool"><a class="name" href="/${t.id}"><span class="ic" aria-hidden="true">${t.icon || ''}</span>${esc(t.title)}</a><div class="desc">${esc(t.tagline)}</div></div>`).join('')}</section>`).join('');
 
 const START = '<div class="cols" id="flow">';
