@@ -273,7 +273,7 @@ function LaunchKit({ byId, params }) {
           <h2 id="pc-handout-title">Printable handout and poster</h2>
           <PrintBtn label={poster ? 'Print poster' : 'Print handout'} />
         </div>
-        <p className="pc-section-lead pc-noprint">One page, with the address printed in full beside the QR code. The poster is for a wall, a counter or a flier: few words and a QR code large enough to scan from a few steps away, with its own tracked link. Large print sets every word at 18 points or more. To list every tool instead: <a href="/all-tools.pdf">printable list (PDF)</a> or <a href="/all-tools-large.pdf">large print (PDF)</a>; we make both with your name and QR code on request.</p>
+        <p className="pc-section-lead pc-noprint">One page, with the address printed in full beside the QR code. The poster is for a wall, a counter or a flier: few words and a QR code large enough to scan from a few steps away, with its own tracked link. Large print sets every word at 18 points or more. To list every tool instead: <a href="/all-tools">every tool on one page</a> (a link you can share), <a href="/all-tools.pdf">printable list (PDF)</a> or <a href="/all-tools-large.pdf">large print (PDF)</a>; we make both with your name and QR code on request.</p>
         <div className="pc-handout-picks pc-noprint">
           <label className="pc-handout-pick">Package<PackageSelect value={kit.packageId} onChange={set('packageId')} /></label>
           <label className="pc-handout-pick">Format<select value={kit.format} onChange={set('format')}><option value="handout">Handout</option><option value="large">Handout, large print</option><option value="poster">Poster or flier</option></select></label>
