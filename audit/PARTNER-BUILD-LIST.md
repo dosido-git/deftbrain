@@ -68,7 +68,9 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 ## G. Procurement paperwork (perk 9; consortia 9)
 - [~] G1. Accessibility statement page. Draft in docs/marketing/procurement-drafts.md; owner review before publishing.
   axe-core WCAG 2.1 AA pass (2026-11-27): all 121 tools + partner/org pages, light and dark — all failures fixed
-  (~500 labels linked via scripts/link-labels.js, ~20 controls named, contrast in 14 tools), re-run 0. Left: result views, screen-reader pass, outside audit/VPAT.
+  (~500 labels linked via scripts/link-labels.js, ~20 controls named, contrast in 14 tools), re-run 0.
+  Result screens (2026-11-27): every tool run to its answer on saved answers (npm run canned), checked; 4 tools fixed, re-run 0.
+  Left: screen-reader pass, outside audit/VPAT.
 - [~] G2. Security summary page (hosting, data handled, retention, no accounts). Draft in docs/marketing/procurement-drafts.md; owner review.
 - [x] G3. Partner Center privacy/data page review against what the code does.
 - [~] G4. Enterprise terms outline drafted (docs/marketing/organizations/DeftBrain enterprise terms outline (draft)):
