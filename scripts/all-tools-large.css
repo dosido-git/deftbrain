@@ -4,6 +4,7 @@
 @page { size: 8.5in 11in; margin: 0.6in 0.7in; }
 header { flex-direction: column; align-items: flex-start; gap: 10pt; }
 .word { font-size: 40pt; }
+.brand-img { height: 1.1in; }
 .def, .tag, .intro, .end { font-size: 18pt !important; }
 .tag, .intro { text-align: start !important; }
 .cols { column-count: 1; }
