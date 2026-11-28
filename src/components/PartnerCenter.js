@@ -208,7 +208,10 @@ function LaunchKit({ byId, params }) {
   const card = `Title: ${pkg.title}\nSentence: ${pkg.intro}\nButton: Get started\nLink: ${link('website')}\nImage alt text: ${pkg.title}, free guidance from ${name} and DeftBrain`;
   const script = `"If you're not sure about this, there's a free guide on our website called '${pkg.title}'. It asks a few questions and helps you see your options, and we never see what you type."\n\nThen point them to ${page}.`;
   const social = `${pkg.intro} ${name} now offers free, private guidance from DeftBrain, with no account needed. ${link('social')}`;
-  const embed = `<iframe src="${link('embed')}" title="${pkg.title}, from ${name}" loading="lazy" style="width:100%;height:900px;border:0"></iframe>`;
+  // The link under the frame is the fallback: if the frame is blocked (an
+  // address not switched on yet, a strict browser) or cramped on a phone,
+  // people still reach the page.
+  const embed = `<iframe src="${link('embed')}" title="${pkg.title}, from ${name}" loading="lazy" style="width:100%;height:900px;border:0"></iframe>\n<p><a href="${link('embed')}" target="_blank" rel="noopener">Open ${pkg.title} in a new tab</a></p>`;
   // One short blurb a month, one tool each, for a newsletter or e-statement message.
   const blurbs = tools.map((t, i) => `Month ${i + 1}: ${t.title}\n${t.tagline || t.description} Free and private from ${name}, with no account needed. ${link('newsletter')}`).join('\n\n');
   // The finished example fills in what a real launch would: an owner for each step and where it goes.
@@ -247,7 +250,7 @@ function LaunchKit({ byId, params }) {
           <Material title="Staff script" note="Two sentences a teller, librarian or front-desk colleague can say out loud." text={script} />
           <Material title="Social post" note="Works on any platform you use." text={social} />
           <Material title="Newsletter blurbs, one a month" note="A short item for each month after launch, one tool at a time." text={blurbs} />
-          <Material title="Inside your website or app" note="Paste this where your page should appear. Send us the website address first: browsers show it only on sites we have switched on, and blank everywhere else." text={embed} />
+          <Material title="Inside your website or app" note="Paste this where your page should appear. Send us the website address first: browsers show it only on sites we have switched on. The link under it opens the page on its own, for phones or if the frame is blocked." text={embed} />
         </div>
       </section>
 
@@ -323,6 +326,18 @@ function Guidelines() {
           <li>Send us your approved logo files. We use them only on the placements we agree, for the length of the agreement.</li>
           <li>Using your name, logo or results in a public case study needs your separate written approval.</li>
           <li>Every message is approved by you before it goes out. Send drafts to <a href={`mailto:${CONTACT}`}>{CONTACT}</a> for a quick check.</li>
+        </ul>
+      </section>
+      <section className="pc-section" aria-labelledby="pc-staff">
+        <h2 id="pc-staff">Using it with someone at your desk</h2>
+        <p className="pc-section-lead">For tellers, librarians, advisers and front-desk staff who open DeftBrain while helping someone in person or on a shared computer.</p>
+        <ul className="pc-rules">
+          <li><b>Start from your page.</b> Open your own page (the address on your handout), so your contacts appear at the end of every result.</li>
+          <li><b>Let them answer.</b> Read the questions together, but the answers are theirs. Leave out names, account numbers, passwords and ID numbers; the guidance never needs them.</li>
+          <li><b>On a shared or public computer, use a private window</b> (Incognito, InPrivate or Private Browsing) and close it when you finish. Some experiences keep recent results in the browser so a person can pick up where they left off; a private window clears them for the next person.</li>
+          <li><b>Send it home with them.</b> Print the result or copy it into an email they send themselves; both carry your organization's name.</li>
+          <li><b>Point to the people.</b> The result ends with your contacts. For a decision, that is where it goes next.</li>
+          <li><b>Say what it is:</b> “It helps you see your options and what to ask. It doesn't decide for you, and we don't see what you type.”</li>
         </ul>
       </section>
       <section className="pc-section" aria-labelledby="pc-access">

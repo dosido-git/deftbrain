@@ -51,7 +51,7 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   colours/logo on the partner bar, its own launch kit (Partner Center launch kit takes ?partner=<consortium>/<member>).
 - [ ] E4. Own address: `<partner>.deftbrain.com` or a path on the partner's
   site (needs DNS/Railway domains; owner step).
-- [x] E5. Embed: `embedOrigins` in partners.json (https origins, checked by check-partners.js) → production sends
+- [x] E5. Embed (snippet has a fallback "open in a new tab" link): `embedOrigins` in partners.json (https origins, checked by check-partners.js) → production sends
   `frame-ancestors <those sites>` instead of X-Frame-Options DENY; none listed = DENY as before. Launch kit has the iframe
   snippet (tracked ?ref=<id>-embed). Switching a partner on = add its site, push, deploy (owner OK per partner).
 - [~] E6. Revenue share tracking: pricing codes carry a consortium; sales and
@@ -73,12 +73,16 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
   owner decisions.
 
 ## H. Bigger builds (need owner decisions or outside accounts)
-- [ ] H1. Staff mode: front-line staff using tools while helping someone.
+- [~] H1. Staff mode: Partner Center guidelines "Using it with someone at your desk" (start from the partner page, let them answer, private window on shared computers, print/copy home, point to contacts). A separate staff view in the tools waits on a partner asking for one.
 - [ ] H2. Phone and text access (needs a telephony account).
 - [ ] H3. Partner-exclusive tools (unions, health plans, state libraries, credit
   unions): each is a full tool build; pick with the partner.
 - [x] H4. Large print: launch-kit handout format, plus public/all-tools-large.pdf (built with the regular list by build-all-tools.mjs) and partner copies via partner-all-tools.mjs <id> --large.
 - [~] H5. Early access / partner tool requests. Requests: the sample consortium's "Request a tool" form. Flag: not built; no tool is hidden from the catalog today, and hiding one touches every catalog list (home, Toolbox, search, sitemap, prerender, guides). Build it with the first early-access tool.
+
+## Added 2026-11-27 (from the implementation plan's gaps)
+- [x] Model cost per partner: X-DB-Partner header → llm_usage.partner → owner report "Model cost by partner".
+- [x] Pilot midpoint/final reports by exact days (owner partner report: fromDay/toDay).
 
 ## Order
 A1, A2 → B1, B2 → C1 → D1, D2 → E1, E2 → D3, F1, F2 → G1, G2, G3 → C2 → E3 →
