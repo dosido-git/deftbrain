@@ -636,7 +636,7 @@ What it costs: one contract for every local. [Price from your DeftBrain quote.]`
         <p className="pc-section-lead">The packet your IT, privacy, legal, accessibility and procurement teams usually ask for, in one file. We send it on request.</p>
         <ul className="pc-rules">
           <li><b>Vendor profile:</b> who we are, what the service is, what is and isn't collected.</li>
-          <li><b>Security questionnaire answers,</b> in HECVAT Lite order: hosting, encryption, access, logging, abuse protection.</li>
+          <li><b>Security questionnaire answers,</b> grouped the way security questionnaires such as the HECVAT ask: hosting, encryption, access, logging, abuse protection.</li>
           <li><b>Data processing addendum</b> (template): roles, data, purposes, retention, end of the partnership.</li>
           <li><b>Subprocessors:</b> each outside service, what it receives and how long it keeps it.</li>
           <li><b>Sector statements:</b> FERPA, GLBA, HIPAA, COPPA, state privacy laws and GDPR.</li>

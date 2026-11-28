@@ -69,8 +69,8 @@ Status: [ ] not started · [~] in progress · [x] done (commit)
 - [~] G1. Accessibility statement page. Draft in docs/marketing/procurement-drafts.md; owner review before publishing.
 - [~] G2. Security summary page (hosting, data handled, retention, no accounts). Draft in docs/marketing/procurement-drafts.md; owner review.
 - [x] G3. Partner Center privacy/data page review against what the code does.
-- [ ] G4. Enterprise terms outline (uptime, response times, peak capacity):
-  owner decisions.
+- [~] G4. Enterprise terms outline drafted (docs/marketing/organizations/DeftBrain enterprise terms outline (draft)):
+  facts from the build (capacity, limits, surge behaviour) + 8 owner decisions (availability %, monitor, credits, hours…).
 
 ## H. Bigger builds (need owner decisions or outside accounts)
 - [~] H1. Staff mode: Partner Center guidelines "Using it with someone at your desk" (start from the partner page, let them answer, private window on shared computers, print/copy home, point to contacts). A separate staff view in the tools waits on a partner asking for one.
