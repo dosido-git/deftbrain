@@ -22,6 +22,9 @@ h2 { font-family: 'Playfair Display', serif; font-size: 10.5pt; color: var(--nav
 section:first-child h2 { border-top: 0; padding-top: 0; }
 .tool { break-inside: avoid; margin: 0 0 3.6pt; }
 a.cat { color: inherit; text-decoration: none; }
+.brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+.word, .def { display: block; }
+.brand-img { display: none; }
 .name { display: block; text-decoration: none; font-weight: 700; font-size: 8.1pt; color: var(--navy); line-height: 1.2; }
 .ic { display: inline-block; width: 13pt; font-size: 8pt; }
 .desc { font-size: 7.3pt; line-height: 1.24; color: var(--ink); padding-inline-start: 13pt; }
@@ -55,11 +58,12 @@ a.cat { color: inherit; text-decoration: none; }
   @media (max-width: 640px) { .cols { column-count: 1; } header { flex-direction: column; align-items: flex-start; gap: 8px; } .tag { text-align: start; } .intro, .end { font-size: 10pt; } }
 }
 @media print { .dl, .webnav { display: none; } }
+@media screen { .brand-img { display: block; height: 64px; width: auto; } .brand:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 4px; } }
 </style></head><body>
   <p class="webnav"><a class="dl" href="/all-tools.pdf" download="DeftBrain-All-Tools.pdf">⬇ Download the PDF</a><a href="/all-tools-large.pdf">Large print (PDF)</a> · <a href="/tools">Search and browse tools</a> · <a href="/">DeftBrain home</a></p>
 
   <header>
-    <div><div class="word">Deft<b>Brain</b></div><div class="def"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</div></div>
+    <a class="brand" href="/" aria-label="DeftBrain — home"><img class="brand-img" src="/pBrain-r.png" alt="" height="64"><span><span class="word">Deft<b>Brain</b></span><span class="def"><b>deft</b> <i>(adj.)</i> — skillful, nimble, clever.</span></span></a>
     <div class="tag">Interactive guidance for life’s<br>awkward, confusing, and curious moments.<div class="site">deftbrain.com</div></div>
   </header>
   <p class="intro" style="text-align:right">Free to use, no sign-up.</p>
