@@ -3,6 +3,7 @@ import { prepareResultTracking, track } from '../utils/analytics';
 import { useLocale } from './useLocale';
 import { beginWait, summarizeRequest, toolFromPath, setWaitSearching } from '../utils/waitSignal';
 import { signalBusy } from '../utils/busySignal';
+import { partnerHeader } from './usePartner';
 import { t } from '../i18n';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -59,6 +60,7 @@ export const useClaudeAPI = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...partnerHeader(),
           },
           body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency, userTimezone })
         });
@@ -136,7 +138,7 @@ export const useClaudeAPI = () => {
     try {
       const response = await fetch(`${backendUrl()}/api/${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...partnerHeader() },
         body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency, userTimezone }),
       });
 
@@ -244,7 +246,7 @@ export const useClaudeAPI = () => {
       for (let attempt = 0; ; attempt++) {
         response = await fetch(`${backendUrl()}/api/${endpoint}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...partnerHeader() },
           body: JSON.stringify({ ...data, progressive: true, userLanguage, userLocale, userRegion, userCurrency, userTimezone }),
           signal: ctrl.signal,
         });
@@ -348,7 +350,7 @@ export const useClaudeAPI = () => {
   const pollToolEndpoint = async (endpoint, data) => {
     const response = await fetch(`${backendUrl()}/api/${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...partnerHeader() },
       body: JSON.stringify({ ...data, userLanguage, userLocale, userRegion, userCurrency, userTimezone }),
     });
     const json = await response.json().catch(() => ({}));

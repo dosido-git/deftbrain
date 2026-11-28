@@ -988,6 +988,15 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // here so that cost doesn't read as real visitor demand for a tool
     // nobody actually opened.
     let usageTotals = { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0, testCalls: 0, testUsd: 0 };
+    // Model cost per partner (internal, for margin per account; since 2026-11-27).
+    const partnerCost = {};
+    for (const r of usageRows) {
+      if (!r.partner) continue;
+      const pc = partnerCost[r.partner] = partnerCost[r.partner] || { calls: 0, usd: 0 };
+      pc.calls++; if (typeof r.usd === 'number') pc.usd += r.usd;
+    }
+    const partnerCostHtml = Object.entries(partnerCost).sort((a, b) => b[1].usd - a[1].usd)
+      .map(([id, v]) => `<tr><td>${escH(id)}</td><td>${v.calls}</td><td>$${v.usd.toFixed(2)}</td></tr>`).join('');
     for (const r of usageRows) {
       const k = r.route || r.label || '?';
       const u = usage[k] = usage[k] || { calls: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, usd: 0, unpriced: 0, ms: 0, timed: 0, maxMs: 0, models: {}, testCalls: 0, testUsd: 0 };
@@ -1887,6 +1896,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>LLM usage by route <span style="font-weight:400;font-size:12px;color:#888">(last 7 days, independent of the range picker above)</span></h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">One row per backend route, one record per model call (lib/claude.js writes them; a request to a fan-out tool is several calls). <b>in</b> is uncached input; <b>cache read/write</b> are the prompt-cache columns; <b>$</b> is an <b>estimate</b> from the price table in lib/models.js — reconcile against the Anthropic console, and an asterisk means some calls used a model the table doesn't price. <b>$/req</b> divides by tool_run events for the matching tool. Records only exist since this was deployed; before that, the only trace is the <code>cache:</code> line in the deploy log. <span style="color:#b45309">(N test)</span> next to a call count is the subset made directly against the API (curl, a script, an audit-session verification step) rather than through the site — still counted in every number here, just labeled so it doesn't read as real visitor demand for a tool nobody actually opened.</p>
     <table><tr><th>route</th><th>calls</th><th>requests</th><th title="average seconds per model call (server timing)">avg call</th><th title="slowest single model call">longest</th><th>in</th><th>cache read</th><th>cache write</th><th>out</th><th>$</th><th>$/req</th><th>models</th></tr>${usageRowsHtml || '<tr><td colspan=12 style="color:#888">No model calls recorded in this range.</td></tr>'}${usageTotalHtml}</table>
+    <h2>Model cost by partner <span style="font-weight:400;font-size:12px;color:#888">(last 7 days; internal, never in partner reports)</span></h2>
+    <table><tr><th>partner</th><th>calls</th><th>$</th></tr>${partnerCostHtml || '<tr><td colspan=3 style="color:#888">No partner-attributed model calls in the last 7 days.</td></tr>'}</table>
     <details class="fold"><summary>Prompt-cache viability — would caching save money?</summary>
     <h2>Prompt-cache viability — 5-minute vs. 1-hour TTL</h2>
     <p style="font-size:12px;margin:0 0 6px">Caching is <b>off unless a route is listed in <code>PROMPT_CACHE_ROUTES</code></b> (Railway variable; comma-separated route slugs, <code>*</code> = all). Currently on for: <b>${escH(process.env.PROMPT_CACHE_ROUTES || 'none')}</b>. Add a tool only if it stays above the ~22% break-even below.</p>

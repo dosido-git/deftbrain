@@ -6,6 +6,15 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { enterRouteStandard } = require('../lib/outputStandard');
+const { resolvePartner } = require('../lib/partners');
+// The partner a request came through (X-DB-Partner, sent by the page when the
+// visit started on a partner page). Only a known, active id counts; anything
+// else is ordinary traffic. Used only to total model cost per partner.
+const partnerOf = req => {
+  const id = String(req.get('x-db-partner') || '').slice(0, 80);
+  const p = id ? resolvePartner(id) : null;
+  return p && !p.retired ? p.id : null;
+};
 const { isTestClient } = require('../lib/requestClient');
 
 const router = express.Router();
@@ -29,7 +38,7 @@ files.forEach(file => {
     // The slug travels with the standard so every model call under this
     // request can attribute its token usage to the tool (see lib/claude.js).
     const slug = file.replace(/\.js$/, '');
-    router.use('/', (req, res, next) => { enterRouteStandard(declared, slug, isTestClient(req), req.body); next(); });
+    router.use('/', (req, res, next) => { enterRouteStandard(declared, slug, isTestClient(req), req.body, partnerOf(req)); next(); });
     router.use('/', routeModule);
   } catch (err) {
     console.error(`  ❌ Failed to load route ${file}:`, err.message);

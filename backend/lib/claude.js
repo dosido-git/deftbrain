@@ -4,7 +4,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { MODELS, ALL_MODELS } = require('./models');
 const { withEpistemics } = require('./epistemics');
-const { currentRoute, currentIsTestClient, currentRequestBody } = require('./outputStandard');
+const { currentRoute, currentIsTestClient, currentPartner, currentRequestBody } = require('./outputStandard');
 const { logMetric } = require('./metricsSink');
 const { estimateCostUSD } = require('./models');
 const { withSurge, isSurging, noteUnclearInput, noteDeclined } = require('./surge');
@@ -148,6 +148,7 @@ function logUsage(pending, label, model) {
       // Direct API hit (curl, a script, an audit-session verification step) vs.
       // a real page load — see lib/requestClient.js. Recorded, never excluded.
       testClient: currentIsTestClient(),
+      ...(currentPartner() ? { partner: currentPartner() } : {}),
       label: label || null,
       model,
       input: u.input_tokens || 0,

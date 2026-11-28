@@ -273,8 +273,16 @@ const requestStandard = new AsyncLocalStorage();
 // visitor made (a selected mode, a frequency, something to avoid) without each
 // route passing them along — lib/outputGuard.js reads it (T7 in
 // audit/DEFECT-TYPES.md).
-function enterRouteStandard(standard, route, testClient, body) {
-  requestStandard.enterWith({ standard: standard || null, route: route || null, testClient: !!testClient, body: body || null });
+// `partner` is the partner the visit came through (X-DB-Partner header, a
+// known active partner id or null), so lib/claude.js can total model cost per
+// partner for the owner's margin figures. Internal only.
+function enterRouteStandard(standard, route, testClient, body, partner) {
+  requestStandard.enterWith({ standard: standard || null, route: route || null, testClient: !!testClient, body: body || null, partner: partner || null });
+}
+
+function currentPartner() {
+  const s = requestStandard.getStore();
+  return (s && s.partner) || null;
 }
 
 function currentRequestBody() {
@@ -315,6 +323,7 @@ module.exports = {
   currentStandard,
   currentRoute,
   currentIsTestClient,
+  currentPartner,
   currentRequestBody,
   withOutputStandard,
 };

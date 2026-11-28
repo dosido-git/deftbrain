@@ -38,6 +38,15 @@ export function rememberPartner(id) {
   try { if (partnerById(id)) sessionStorage.setItem(KEY, id); } catch (_) { /* private mode: no partner context */ }
 }
 
+// The partner this visit came through, as a request header for the server's
+// cost-per-partner accounting (internal only; never shown to a partner).
+export function partnerHeader() {
+  let id = null;
+  try { id = sessionStorage.getItem(KEY); } catch (_) { /* none */ }
+  const p = partnerById(id);
+  return p && !p.retired ? { 'X-DB-Partner': p.id } : {};
+}
+
 export function usePartner() {
   let id = null;
   try { id = sessionStorage.getItem(KEY); } catch (_) { /* none */ }
