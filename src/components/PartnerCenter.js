@@ -418,7 +418,7 @@ function PrivacyData() {
       <section className="pc-section" aria-labelledby="pc-docs">
         <h2 id="pc-docs">For your review team</h2>
         <ul className="pc-rules">
-          <li>We complete security and vendor questionnaires, including the HECVAT for colleges and universities.</li>
+          <li>We complete security and vendor questionnaires, including the HECVAT for higher education.</li>
           <li>Accessibility: DeftBrain is working toward WCAG 2.1 AA, and a formal conformance report is being prepared.</li>
           <li>Ask for documents or a call at <a href={`mailto:${CONTACT}?subject=Partner%20review%20documents`}>{CONTACT}</a>.</li>
         </ul>

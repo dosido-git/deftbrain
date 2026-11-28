@@ -97,6 +97,10 @@ export default function RouteFocus() {
 
     if (!(navType === 'REPLACE' && samePage)) markArrival();
     if (!firstLoad) views.current[current.current] = { y: link.current && yAtClick.current !== null ? yAtClick.current : y.current, link: link.current };
+    // A same-page #link arrives as POP (the browser's own hash jump), under the
+    // same id every time. Its saved position is from the last visit and goes stale
+    // when the page changes: a click on a #link always goes to its section.
+    const hashClick = !!(link.current && location.hash && link.current.href.split('#')[1] === location.hash.slice(1));
     current.current = id;
     path.current = location.pathname;
     link.current = null;
@@ -108,7 +112,7 @@ export default function RouteFocus() {
       if (nav && (nav.type === 'back_forward' || nav.type === 'reload')) saved = views.current[id] || null;
       if (!saved && !location.hash) return; // a fresh visit already starts at the top
     } else if (navType === 'POP') {
-      saved = views.current[id] || null;
+      saved = hashClick ? null : views.current[id] || null;
       if (!saved && !location.hash) return; // e.g. Back across an in-page #link: the browser handles it
     } else if (navType === 'REPLACE' && samePage) {
       return; // filters and search boxes rewriting the URL

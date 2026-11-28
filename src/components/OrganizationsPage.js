@@ -31,7 +31,7 @@ const AUDIENCES = [
     moments:'A letter from a government office. A lease to read by Friday. What to ask the doctor. A book whose title won’t come.',
     copy:'Extend the library’s role as a trusted source of practical information, in plain language and in 13 languages, with reader’s advisory and the reference desk one click away.',
     packages:['everyday-paperwork','judging-what-you-read','ideas-and-diversions'], tools:['ResearchDecoder','PlainTalk','TipOfTongue'] },
-  { key:'education', people:'students', icon:'🎓', eyebrow:'Colleges and universities', title:'Help students with everything outside the syllabus.',
+  { key:'education', people:'students', icon:'🎓', eyebrow:'Higher education', title:'Help students with everything outside the syllabus.',
     moments:'A first lease. A roommate standoff. Four deadlines in one week. A hard stretch they can’t quite name.',
     copy:'Give students practical help at any hour, alongside student services and the counseling center, never instead of them. Works for first-year programs, housing, career centers and adult education.',
     packages:['starting-on-campus','support-wellbeing','judging-what-you-read'], tools:['LeaseTrapDetector','ConceptCoach','MentalHealthNavigator'] },
@@ -148,7 +148,7 @@ export default function OrganizationsPage({ allTools = [] }) {
 
       <section className="org-section org-soft" aria-labelledby="org-who-title">
         <div className="org-shell">
-          <div className="org-section-heading centered"><h2 id="org-who-title">Built for organizations that help people.</h2><p>Some examples:</p></div>
+          <div className="org-section-heading centered"><h2 id="org-who-title">Built for organizations that help people.</h2><p>For example:</p></div>
           <nav className="org-tabs" aria-label="Kinds of organization">{AUDIENCES.map(a => <a key={a.key} href={`/organizations#${a.key}`}><span aria-hidden="true">{a.icon}</span>{a.eyebrow}</a>)}</nav>
         </div>
       </section>
