@@ -968,8 +968,8 @@ const NameAudit = ({ tool }) => {
           {/* Analyze Mode */}
           {mode === 'analyze' && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-3`}>
-              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('nau_label_the_name')} <span className={c.required}>*</span></label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+              <label htmlFor="na-name" className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>{t('nau_label_the_name')} <span className={c.required}>*</span></label>
+              <input id="na-name" type="text" value={name} onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && name.trim() && context) handleAnalyze(); }}
                 placeholder={t('nau_ph_the_name')}
                 className={`w-64 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
@@ -1028,16 +1028,16 @@ const NameAudit = ({ tool }) => {
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('nau_optional_heading')}</p>
             <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_industry')}</label>
-              <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
+              <label htmlFor="na-industry" className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_industry')}</label>
+              <input id="na-industry" type="text" value={industry} onChange={(e) => setIndustry(e.target.value)}
                 placeholder={t('nau_ph_industry')}
                 onKeyDown={(e) => { if (e.key === 'Enter') { mode === 'analyze' ? handleAnalyze() : handleCompare(); } }}
                 className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
             </div>
             {mode === 'analyze' && (
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_audience')}</label>
-                <input type="text" value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
+                <label htmlFor="na-target-audience" className={`block text-sm font-semibold ${c.text} mb-1`}>{t('nau_label_audience')}</label>
+                <input id="na-target-audience" type="text" value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
                   placeholder={t('nau_ph_audience')}
                   onKeyDown={(e) => { if (e.key === 'Enter' && name.trim() && context) handleAnalyze(); }}
                   className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
@@ -1239,8 +1239,8 @@ const NameAudit = ({ tool }) => {
 
             {/* Analyze Another — quick input */}
             <div data-print-hide className={`flex items-center gap-2 pt-2 border-t ${c.border}`}>
-              <label className={`text-xs font-semibold ${c.textMuteded} flex-shrink-0`}>{t('nau_quick_audit')} <span className={c.required}>*</span>:</label>
-              <input type="text" value={quickName} onChange={(e) => setQuickName(e.target.value)}
+              <label htmlFor="na-quick-name" className={`text-xs font-semibold ${c.textMuteded} flex-shrink-0`}>{t('nau_quick_audit')} <span className={c.required}>*</span>:</label>
+              <input id="na-quick-name" type="text" value={quickName} onChange={(e) => setQuickName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleQuickAnalyze(); }}
                 placeholder={t('nau_ph_quick_audit')}
                 className={`flex-1 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
@@ -1760,10 +1760,10 @@ const NameAudit = ({ tool }) => {
                 </div>
               )}
               {/* Add note input */}
-              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
+              <label htmlFor="na-journal-draft" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
                 {t('nau_journal_add_label')} <span className={c.required}>*</span>
               </label>
-              <input type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
+              <input id="na-journal-draft" type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') addJournalNote(results.name_analyzed); }}
                 placeholder={t('nau_journal_ph')}
                 className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />

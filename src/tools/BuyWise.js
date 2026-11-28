@@ -1054,10 +1054,10 @@ const BuyWise = ({ tool }) => {
       {/* Gift recipient */}
       {isGift && (
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+          <label htmlFor="bw-gift-recipient" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             {t('bw_gift_who')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_gift_who_hint')}</span>
           </label>
-          <input
+          <input id="bw-gift-recipient"
             type="text"
             value={giftRecipient}
             onChange={e => setGiftRecipient(e.target.value)}
@@ -1110,10 +1110,10 @@ const BuyWise = ({ tool }) => {
 
       {/* Extra context */}
       <div className="mb-5">
-        <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+        <label htmlFor="bw-context" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
           {t('bw_anything_else')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_optional')}</span>
         </label>
-        <input
+        <input id="bw-context"
           type="text"
           value={context}
           onChange={e => setContext(e.target.value)}
@@ -2026,8 +2026,8 @@ const BuyWise = ({ tool }) => {
             </div>
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_category')} <span className={c.required}>*</span></label>
-            <select
+            <label htmlFor="bw-budget-category" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_category')} <span className={c.required}>*</span></label>
+            <select id="bw-budget-category"
               value={budgetCategory}
               onChange={e => { setBudgetCategory(e.target.value); setBudgetCategoryOther(''); }}
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none`}
@@ -2049,10 +2049,10 @@ const BuyWise = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+          <label htmlFor="bw-budget-needs" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             {t('bw_budget_needs')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_optional')}</span>
           </label>
-          <input
+          <input id="bw-budget-needs"
             type="text"
             value={budgetNeeds}
             onChange={e => setBudgetNeeds(e.target.value)}
@@ -2163,10 +2163,10 @@ const BuyWise = ({ tool }) => {
 
         <div className="flex gap-2 mb-4">
           <div className="flex-1">
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="bw-cal-category" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               {t('bw_category')} <span className={c.required}>*</span>
             </label>
-            <select
+            <select id="bw-cal-category"
               value={calCategory}
               onChange={e => setCalCategory(e.target.value)}
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none`}
@@ -2188,10 +2188,10 @@ const BuyWise = ({ tool }) => {
         </div>
         {calCategory === '__other__' && (
           <div className="mb-4">
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="bw-cal-category-other" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               {t('bw_cal_what_cat')} <span className={c.required}>*</span>
             </label>
-            <input
+            <input id="bw-cal-category-other"
               type="text"
               value={calCategoryOther}
               onChange={e => setCalCategoryOther(e.target.value)}
@@ -2555,8 +2555,8 @@ const BuyWise = ({ tool }) => {
 
         {!product.trim() && (
           <div className="mb-4">
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_convince_what_product')}</label>
-            <input
+            <label htmlFor="bw-product" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_convince_what_product')}</label>
+            <input id="bw-product"
               type="text"
               value={product}
               onChange={e => setProduct(e.target.value)}
@@ -2567,10 +2567,10 @@ const BuyWise = ({ tool }) => {
         )}
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+          <label htmlFor="bw-convince-context" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
             {t('bw_convince_context')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_convince_context_hint')}</span>
           </label>
-          <input
+          <input id="bw-convince-context"
             type="text"
             value={convinceContext}
             onChange={e => setConvinceContext(e.target.value)}
@@ -2707,10 +2707,10 @@ const BuyWise = ({ tool }) => {
             </div>
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="bw-haul-occasion" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               {t('bw_occasion')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_optional')}</span>
             </label>
-            <input
+            <input id="bw-haul-occasion"
               type="text"
               value={haulOccasion}
               onChange={e => setHaulOccasion(e.target.value)}
@@ -2850,8 +2850,8 @@ const BuyWise = ({ tool }) => {
 
         <div className="space-y-3">
           <div>
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_quote_service_q')} <span className={c.required}>*</span></label>
-            <input type="text" value={quoteService} onChange={e => setQuoteService(e.target.value)}
+            <label htmlFor="bw-quote-service" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_quote_service_q')} <span className={c.required}>*</span></label>
+            <input id="bw-quote-service" type="text" value={quoteService} onChange={e => setQuoteService(e.target.value)}
               placeholder={t('bw_ph_quote_service')}
               className={`w-full px-4 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
@@ -2868,20 +2868,20 @@ const BuyWise = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+              <label htmlFor="bw-quote-location" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
                 {t('bw_location')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_optional')}</span>
               </label>
-              <input type="text" value={quoteLocation} onChange={e => setQuoteLocation(e.target.value)}
+              <input id="bw-quote-location" type="text" value={quoteLocation} onChange={e => setQuoteLocation(e.target.value)}
                 placeholder={t('bw_ph_location')}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
           </div>
 
           <div>
-            <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="bw-quote-details" className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>
               {t('bw_quote_details')} <span className={`font-normal ${c.textMuteded}`}>{t('bw_quote_details_hint')}</span>
             </label>
-            <textarea value={quoteDetails} onChange={e => setQuoteDetails(e.target.value)}
+            <textarea id="bw-quote-details" value={quoteDetails} onChange={e => setQuoteDetails(e.target.value)}
               placeholder={t('bw_ph_quote_details')}
               className={`w-full h-24 px-4 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
           </div>

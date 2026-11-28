@@ -372,18 +372,18 @@ function GriefGuide({ tool }) {
       </div>
 
       <div>
-        <label className={`block text-sm font-medium ${c.label} mb-1`}>
+        <label htmlFor="gg-freeform" className={`block text-sm font-medium ${c.label} mb-1`}>
           {t('gg_share_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_share_hint')}</span>
         </label>
-        <textarea value={freeform} onChange={e => setFreeform(e.target.value)} placeholder={t('gg_share_ph')} rows={5}
+        <textarea id="gg-freeform" value={freeform} onChange={e => setFreeform(e.target.value)} placeholder={t('gg_share_ph')} rows={5}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
       </div>
 
       <div>
-        <label className={`block text-sm font-medium ${c.label} mb-1`}>
+        <label htmlFor="gg-country" className={`block text-sm font-medium ${c.label} mb-1`}>
           {t('gg_country_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_country_hint')}</span>
         </label>
-        <input value={country} onChange={e => setCountry(e.target.value)} placeholder={t('gg_country_ph')}
+        <input id="gg-country" value={country} onChange={e => setCountry(e.target.value)} placeholder={t('gg_country_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
       </div>
 

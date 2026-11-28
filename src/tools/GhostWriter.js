@@ -519,8 +519,8 @@ const GhostWriter = ({ tool }) => {
 
       {/* Additional context */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ghw_lbl_anything_else')}</label>
-        <input type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)}
+        <label htmlFor="gw-additional-context" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ghw_lbl_anything_else')}</label>
+        <input id="gw-additional-context" type="text" value={additionalContext} onChange={e => setAdditionalContext(e.target.value)}
           placeholder={t('ghw_ph_anything_else')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
@@ -622,8 +622,8 @@ const GhostWriter = ({ tool }) => {
 
                 {refiningVersion === v.style && (
                   <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-3`}>
-                    <label className={`text-sm font-semibold ${c.textSecondary}`}>{t('ghw_refine_q')} <span className={c.required}>*</span></label>
-                    <textarea value={refinementText} onChange={e => setRefinementText(e.target.value)}
+                    <label htmlFor="gw-refinement-text" className={`text-sm font-semibold ${c.textSecondary}`}>{t('ghw_refine_q')} <span className={c.required}>*</span></label>
+                    <textarea id="gw-refinement-text" value={refinementText} onChange={e => setRefinementText(e.target.value)}
                       placeholder={t('ghw_ph_refine')}
                       className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`} rows={2} />
                     <div className="flex gap-2">
@@ -770,10 +770,10 @@ const GhostWriter = ({ tool }) => {
             {/* Required fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+                <label htmlFor="gw-recipient-name" className={`block text-sm font-medium ${c.labelText} mb-1`}>
                   {t('ghw_q_recipient')} <span className={c.required}>*</span>
                 </label>
-                <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)}
+                <input id="gw-recipient-name" type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)}
                   placeholder={t('ghw_ph_recipient')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
                 {/* A letter runs on pronouns — a page of them. Not asking meant
@@ -789,10 +789,10 @@ const GhostWriter = ({ tool }) => {
                 </div>
               </div>
               <div>
-                <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+                <label htmlFor="gw-your-relationship" className={`block text-sm font-medium ${c.labelText} mb-1`}>
                   {t('ghw_q_relationship')} <span className={c.required}>*</span>
                 </label>
-                <input type="text" value={yourRelationship} onChange={e => setYourRelationship(e.target.value)}
+                <input id="gw-your-relationship" type="text" value={yourRelationship} onChange={e => setYourRelationship(e.target.value)}
                   placeholder={t('ghw_ph_relationship')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
               </div>
@@ -801,8 +801,8 @@ const GhostWriter = ({ tool }) => {
                 two below expect sentences and get the full width. */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_duration')}</label>
-                <input type="text" value={duration} onChange={e => setDuration(e.target.value)}
+                <label htmlFor="gw-duration" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_duration')}</label>
+                <input id="gw-duration" type="text" value={duration} onChange={e => setDuration(e.target.value)}
                   placeholder={t('ghw_ph_duration')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
               </div>
@@ -819,8 +819,8 @@ const GhostWriter = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_applying_for')}</label>
-              <input type="text" value={whatFor} onChange={e => setWhatFor(e.target.value)}
+              <label htmlFor="gw-what-for" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_applying_for')}</label>
+              <input id="gw-what-for" type="text" value={whatFor} onChange={e => setWhatFor(e.target.value)}
                 placeholder={t('ghw_ph_applying_for')}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
             </div>

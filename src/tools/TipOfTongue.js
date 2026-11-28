@@ -279,20 +279,20 @@ const TipOfTongue = ({ tool }) => {
       {/* Context fields */}
       <div className={'border rounded-xl p-5 space-y-3 ' + c.card + ' ' + c.border}>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🚫 {t('tot_not_label')}</label>
-          <input type="text" value={notThis} onChange={e => setNotThis(e.target.value)}
+          <label htmlFor="tot-not-this" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>🚫 {t('tot_not_label')}</label>
+          <input id="tot-not-this" type="text" value={notThis} onChange={e => setNotThis(e.target.value)}
             placeholder={t('tot_not_ph')}
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📍 {t('tot_when_label')}</label>
-          <input type="text" value={whenWhere} onChange={e => setWhenWhere(e.target.value)}
+          <label htmlFor="tot-when-where" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📍 {t('tot_when_label')}</label>
+          <input id="tot-when-where" type="text" value={whenWhere} onChange={e => setWhenWhere(e.target.value)}
             placeholder={t('tot_when_ph')}
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>💡 {t('tot_clues_label')}</label>
-          <input type="text" value={extraClues} onChange={e => setExtraClues(e.target.value)}
+          <label htmlFor="tot-extra-clues" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>💡 {t('tot_clues_label')}</label>
+          <input id="tot-extra-clues" type="text" value={extraClues} onChange={e => setExtraClues(e.target.value)}
             placeholder={t('tot_clues_ph')}
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>

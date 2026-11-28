@@ -564,8 +564,8 @@ const PetBehaviorDecoder = ({ tool }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_breed')}</label><input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder={t('pwd_breed_ph')} className={`w-full p-3 border rounded-lg ${c.input}`} /></div>
-            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_age_years')} <span className={c.required}>*</span></label><input type="number" min="0" max="50" step="0.5" value={age} onChange={(e) => setAge(e.target.value)} placeholder={t('pwd_age_ph')} className={`w-full p-3 border rounded-lg ${c.input}`} /></div>
+            <div><label htmlFor="pbd-breed" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_breed')}</label><input id="pbd-breed" type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder={t('pwd_breed_ph')} className={`w-full p-3 border rounded-lg ${c.input}`} /></div>
+            <div><label htmlFor="pbd-age" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_age_years')} <span className={c.required}>*</span></label><input id="pbd-age" type="number" min="0" max="50" step="0.5" value={age} onChange={(e) => setAge(e.target.value)} placeholder={t('pwd_age_ph')} className={`w-full p-3 border rounded-lg ${c.input}`} /></div>
           </div>
 
           <div>
@@ -592,8 +592,8 @@ const PetBehaviorDecoder = ({ tool }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_duration')}</label><select ref={durationSelectRef} value={duration} onChange={(e) => setDuration(e.target.value)} className={`w-full p-3 border rounded-lg ${c.input}`}>{durationOptions.map((o) => <option key={o} value={o}>{durationLabel(o)}</option>)}</select></div>
-            <div><label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_frequency')}</label><select value={frequency} onChange={(e) => setFrequency(e.target.value)} className={`w-full p-3 border rounded-lg ${c.input}`}>{frequencyOptions.map((o) => <option key={o} value={o}>{frequencyLabel(o)}</option>)}</select></div>
+            <div><label htmlFor="pbd-duration" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_duration')}</label><select id="pbd-duration" ref={durationSelectRef} value={duration} onChange={(e) => setDuration(e.target.value)} className={`w-full p-3 border rounded-lg ${c.input}`}>{durationOptions.map((o) => <option key={o} value={o}>{durationLabel(o)}</option>)}</select></div>
+            <div><label htmlFor="pbd-frequency" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_frequency')}</label><select id="pbd-frequency" value={frequency} onChange={(e) => setFrequency(e.target.value)} className={`w-full p-3 border rounded-lg ${c.input}`}>{frequencyOptions.map((o) => <option key={o} value={o}>{frequencyLabel(o)}</option>)}</select></div>
           </div>
 
           <div>
@@ -619,17 +619,17 @@ const PetBehaviorDecoder = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_when_it_happens')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <textarea value={whenItHappens} onChange={(e) => setWhenItHappens(e.target.value)} placeholder={t('pwd_when_it_happens_ph')} className={`w-full p-3 border rounded-lg ${c.input}`} rows={2} />
+            <label htmlFor="pbd-when-it-happens" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pwd_when_it_happens')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <textarea id="pbd-when-it-happens" value={whenItHappens} onChange={(e) => setWhenItHappens(e.target.value)} placeholder={t('pwd_when_it_happens_ph')} className={`w-full p-3 border rounded-lg ${c.input}`} rows={2} />
           </div>
 
           <div>
             <button data-print-heading onClick={() => setShowMoreContext(!showMoreContext)} aria-expanded={showMoreContext} className={`flex items-center gap-1 text-sm ${c.textSecondary} hover:underline`}>💊 {showMoreContext ? t('pwd_hide') : t('pwd_add')} {t('pwd_more_context_toggle')} <span data-print-hide><Caret open={showMoreContext} /></span></button>
             {(
               <div data-sec-body hidden={!(showMoreContext)} className={`mt-2 p-4 rounded-lg ${(sv ? 'bg-[var(--sc-envelope)]' : isDark ? 'bg-zinc-700' : 'bg-amber-50')} space-y-3`}>
-                <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_current_meds')}</label><input type="text" value={currentMeds} onChange={(e) => setCurrentMeds(e.target.value)} placeholder={t('pwd_current_meds_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
-                <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_recent_diet')}</label><input type="text" value={recentDietChanges} onChange={(e) => setRecentDietChanges(e.target.value)} placeholder={t('pwd_recent_diet_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
-                <div><label className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_recent_health')}</label><input type="text" value={recentHealthChanges} onChange={(e) => setRecentHealthChanges(e.target.value)} placeholder={t('pwd_recent_health_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
+                <div><label htmlFor="pbd-current-meds" className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_current_meds')}</label><input id="pbd-current-meds" type="text" value={currentMeds} onChange={(e) => setCurrentMeds(e.target.value)} placeholder={t('pwd_current_meds_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
+                <div><label htmlFor="pbd-recent-diet-changes" className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_recent_diet')}</label><input id="pbd-recent-diet-changes" type="text" value={recentDietChanges} onChange={(e) => setRecentDietChanges(e.target.value)} placeholder={t('pwd_recent_diet_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
+                <div><label htmlFor="pbd-recent-health-changes" className={`text-xs font-medium ${c.label} mb-1 block`}>{t('pwd_recent_health')}</label><input id="pbd-recent-health-changes" type="text" value={recentHealthChanges} onChange={(e) => setRecentHealthChanges(e.target.value)} placeholder={t('pwd_recent_health_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} /></div>
                 <p className={`text-[13px] ${c.textMuteded}`}>{t('pwd_more_context_hint')}</p>
               </div>
             )}
@@ -733,7 +733,7 @@ const PetBehaviorDecoder = ({ tool }) => {
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between"><label className={`text-xs ${c.label}`}>{t('pwd_concern_label')}</label><span className="text-xs font-bold">{saveSeverity}/5</span></div>
-                  <input type="range" min="1" max="5" value={saveSeverity} onChange={(e) => setSaveSeverity(parseInt(e.target.value, 10))} className="w-full" />
+                  <input type="range" aria-label={t('pwd_concern_label')} min="1" max="5" value={saveSeverity} onChange={(e) => setSaveSeverity(parseInt(e.target.value, 10))} className="w-full" />
                   <div className={`flex justify-between text-[13px] ${c.textMuted}`}><span>{t('pwd_concern_low')}</span><span>{t('pwd_concern_high')}</span></div>
                 </div>
                 <input type="text" value={saveNote} onChange={(e) => setSaveNote(e.target.value)} placeholder={t('pwd_observation_note_ph')} className={`w-full p-2 border rounded text-sm ${c.input}`} />

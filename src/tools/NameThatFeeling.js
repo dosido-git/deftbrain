@@ -584,8 +584,8 @@ const NameThatFeeling = ({ tool }) => {
 
         {/* Description */}
         <div>
-          <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('ntf_q_label')} <span className={c.required}>*</span></label>
-          <textarea
+          <label htmlFor="ntf-description" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('ntf_q_label')} <span className={c.required}>*</span></label>
+          <textarea id="ntf-description"
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder={t('ntf_ph_desc')}
@@ -615,8 +615,8 @@ const NameThatFeeling = ({ tool }) => {
           <summary className={`text-xs font-bold cursor-pointer ${c.accentTxt} mb-2`}>{t('ntf_add_context')}</summary>
           <div className="space-y-3 mt-2">
             <div>
-              <label className={`text-xs font-medium ${c.labelText} block mb-1`}>{t('ntf_ctx_what_label')}</label>
-              <input
+              <label htmlFor="ntf-what-was-happening" className={`text-xs font-medium ${c.labelText} block mb-1`}>{t('ntf_ctx_what_label')}</label>
+              <input id="ntf-what-was-happening"
                 type="text"
                 value={whatWasHappening}
                 onChange={e => setWhatWasHappening(e.target.value)}
@@ -625,8 +625,8 @@ const NameThatFeeling = ({ tool }) => {
               />
             </div>
             <div>
-              <label className={`text-xs font-medium ${c.labelText} block mb-1`}>{t('ntf_ctx_why_label')}</label>
-              <input
+              <label htmlFor="ntf-why-hard-to-name" className={`text-xs font-medium ${c.labelText} block mb-1`}>{t('ntf_ctx_why_label')}</label>
+              <input id="ntf-why-hard-to-name"
                 type="text"
                 value={whyHardToName}
                 onChange={e => setWhyHardToName(e.target.value)}

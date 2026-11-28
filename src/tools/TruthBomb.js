@@ -221,10 +221,10 @@ const TruthBomb = ({ tool }) => {
 
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+            <label htmlFor="tb-the-unsaid-thing" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
               {t('tb_unsaid_label')} <span className={c.required}>*</span>
             </label>
-            <textarea value={theUnsaidThing} onChange={e => setTheUnsaidThing(e.target.value)}
+            <textarea id="tb-the-unsaid-thing" value={theUnsaidThing} onChange={e => setTheUnsaidThing(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && theUnsaidThing.trim()) { e.preventDefault(); handleSubmit(); } }}
               placeholder={t('tb_unsaid_ph')}
               rows={4} maxLength={600}
@@ -246,8 +246,8 @@ const TruthBomb = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('tb_why_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-              <textarea value={whyNotSaying} onChange={e => setWhyNotSaying(e.target.value)}
+              <label htmlFor="tb-why-not-saying" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('tb_why_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+              <textarea id="tb-why-not-saying" value={whyNotSaying} onChange={e => setWhyNotSaying(e.target.value)}
                 placeholder={t('tb_why_ph')}
                 rows={3} maxLength={300}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
@@ -255,8 +255,8 @@ const TruthBomb = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('tb_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <input type="text" value={relationshipContext} onChange={e => setRelationshipContext(e.target.value)}
+            <label htmlFor="tb-relationship-context" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('tb_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <input id="tb-relationship-context" type="text" value={relationshipContext} onChange={e => setRelationshipContext(e.target.value)}
               placeholder={t('tb_context_ph')}
               className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
           </div>

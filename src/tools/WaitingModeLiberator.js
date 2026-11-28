@@ -934,7 +934,7 @@ const WaitingModeLiberator = ({ tool }) => {
               <p className={`text-xs font-semibold ${c.textSecondary}`}>
                 {t('wml_anxiety_q')} <span>{anxietyBefore <= 3 ? '😌' : anxietyBefore <= 6 ? '😐' : anxietyBefore <= 8 ? '😰' : '😫'}</span>
               </p>
-              <input type="range" min="1" max="10" value={anxietyBefore} onChange={e => setAnxietyBefore(parseInt(e.target.value))} className="w-full accent-cyan-500" />
+              <input type="range" aria-label={t('wml_anxiety_q')} min="1" max="10" value={anxietyBefore} onChange={e => setAnxietyBefore(parseInt(e.target.value))} className="w-full accent-cyan-500" />
               <div className="flex justify-between">
                 <span className={`text-[13px] ${c.textMuted}`}>{t('wml_chill')}</span>
                 <span className={`text-sm font-bold ${c.text}`}>{anxietyBefore}/10</span>

@@ -625,8 +625,8 @@ const MeetingHijackStopper = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_who_label')}</label>
-          <input type="number" min="1" value={participantCount} onChange={e => setParticipantCount(e.target.value)}
+          <label htmlFor="mhs-participant-count" className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_who_label')}</label>
+          <input id="mhs-participant-count" type="number" min="1" value={participantCount} onChange={e => setParticipantCount(e.target.value)}
             placeholder={t('mhp_f_who_count_ph')}
             className={`w-40 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           <input type="text" value={participantNotes} onChange={e => setParticipantNotes(e.target.value)}
@@ -646,8 +646,8 @@ const MeetingHijackStopper = ({ tool }) => {
           </div>
           {isVirtualish && (
             <div className="mt-3">
-              <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mhp_f_platform_label')}</label>
-              <select value={platform} onChange={e => setPlatform(e.target.value)}
+              <label htmlFor="mhs-platform" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mhp_f_platform_label')}</label>
+              <select id="mhs-platform" value={platform} onChange={e => setPlatform(e.target.value)}
                 className={`w-full sm:w-64 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}>
                 <option value="">{t('mhp_skip_optional')}</option>
                 {PLATFORMS.map(p => <option key={p.value} value={p.value}>{t(p.labelKey)}</option>)}
@@ -657,8 +657,8 @@ const MeetingHijackStopper = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_type_label')}</label>
-          <select value={meetingType} onChange={e => setMeetingType(e.target.value)}
+          <label htmlFor="mhs-meeting-type" className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_type_label')}</label>
+          <select id="mhs-meeting-type" value={meetingType} onChange={e => setMeetingType(e.target.value)}
             className={`w-full sm:w-72 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}>
             <option value="">{t('mhp_skip_optional')}</option>
             {MEETING_TYPES.map(m => <option key={m.value} value={m.value}>{t(m.labelKey)}</option>)}
@@ -683,8 +683,8 @@ const MeetingHijackStopper = ({ tool }) => {
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_decision_label')}</label>
-          <select value={decisionFramework} onChange={e => setDecisionFramework(e.target.value)}
+          <label htmlFor="mhs-decision-framework" className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_f_decision_label')}</label>
+          <select id="mhs-decision-framework" value={decisionFramework} onChange={e => setDecisionFramework(e.target.value)}
             className={`w-full sm:w-80 px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}>
             {FRAMEWORKS.map(f => <option key={f.value} value={f.value}>{t(f.labelKey)}</option>)}
           </select>
@@ -850,8 +850,8 @@ const MeetingHijackStopper = ({ tool }) => {
         <p className={`text-sm ${c.textSecondary}`}>{t('mhp_cap_intro')}</p>
 
         <div>
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_cap_decided')}</label>
-          <textarea value={decided} onChange={e => setDecided(e.target.value)}
+          <label htmlFor="mhs-decided" className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_cap_decided')}</label>
+          <textarea id="mhs-decided" value={decided} onChange={e => setDecided(e.target.value)}
             placeholder={t('mhp_cap_decided_ph')} rows={2}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
@@ -884,15 +884,15 @@ const MeetingHijackStopper = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_cap_open')}</label>
-          <textarea value={stillOpen} onChange={e => setStillOpen(e.target.value)}
+          <label htmlFor="mhs-still-open" className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_cap_open')}</label>
+          <textarea id="mhs-still-open" value={stillOpen} onChange={e => setStillOpen(e.target.value)}
             placeholder={t('mhp_cap_open_ph')} rows={2}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div>
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_cap_next_time')}</label>
-          <textarea value={forNextTime} onChange={e => setForNextTime(e.target.value)}
+          <label htmlFor="mhs-for-next-time" className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('mhp_cap_next_time')}</label>
+          <textarea id="mhs-for-next-time" value={forNextTime} onChange={e => setForNextTime(e.target.value)}
             placeholder={t('mhp_cap_next_time_ph')} rows={2}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>

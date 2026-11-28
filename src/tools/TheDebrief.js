@@ -503,22 +503,22 @@ const TheDebrief = ({ tool }) => {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_attendees_label')}</label>
-            <input type="text" value={attendees} onChange={e => setAttendees(e.target.value)}
+            <label htmlFor="td-attendees" className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_attendees_label')}</label>
+            <input id="td-attendees" type="text" value={attendees} onChange={e => setAttendees(e.target.value)}
               placeholder={t('td_attendees_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
           </div>
           <div>
-            <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_context_label')}</label>
-            <input type="text" value={context} onChange={e => setContext(e.target.value)}
+            <label htmlFor="td-context" className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_context_label')}</label>
+            <input id="td-context" type="text" value={context} onChange={e => setContext(e.target.value)}
               placeholder={t('td_context_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
           </div>
         </div>
 
         <div>
-          <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_focus_label')}</label>
-          <input type="text" value={focus} onChange={e => setFocus(e.target.value)}
+          <label htmlFor="td-focus" className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('td_focus_label')}</label>
+          <input id="td-focus" type="text" value={focus} onChange={e => setFocus(e.target.value)}
             placeholder={t('td_focus_ph')}
             className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>

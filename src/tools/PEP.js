@@ -396,8 +396,8 @@ const PEP = ({ tool }) => {
         </div>
 
         <div>
-          <div className="flex justify-between items-baseline"><label className="text-sm font-bold">{t('pep_energy_label')}</label><span className="text-lg font-bold">{ENERGY_EMOJIS[energy]} {energy}/10</span></div>
-          <input type="range" min="1" max="10" value={energy} onChange={(e) => setEnergy(Number(e.target.value))} className={sv ? 'w-full accent-[var(--sc-strong)]' : 'w-full accent-emerald-500'} />
+          <div className="flex justify-between items-baseline"><label htmlFor="pep-energy" className="text-sm font-bold">{t('pep_energy_label')}</label><span className="text-lg font-bold">{ENERGY_EMOJIS[energy]} {energy}/10</span></div>
+          <input id="pep-energy" type="range" min="1" max="10" value={energy} onChange={(e) => setEnergy(Number(e.target.value))} className={sv ? 'w-full accent-[var(--sc-strong)]' : 'w-full accent-emerald-500'} />
           <div className={`flex justify-between text-[13px] ${c.textMuted}`}><span>1 — {t('pep_energy_scale_low')}</span><span>10 — {t('pep_energy_scale_high')}</span></div>
         </div>
 
@@ -417,8 +417,8 @@ const PEP = ({ tool }) => {
         </div>
 
         <div>
-          <label className="text-sm font-bold">{t('pep_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-          <textarea value={context} onChange={(e) => setContext(e.target.value)} rows={3} placeholder={t('pep_context_ph')} className={`w-full mt-2 p-3 border rounded-xl text-sm ${c.input}`} />
+          <label htmlFor="pep-context" className="text-sm font-bold">{t('pep_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+          <textarea id="pep-context" value={context} onChange={(e) => setContext(e.target.value)} rows={3} placeholder={t('pep_context_ph')} className={`w-full mt-2 p-3 border rounded-xl text-sm ${c.input}`} />
         </div>
 
         <div className="grid sm:grid-cols-[1fr_auto] gap-2">

@@ -588,13 +588,13 @@ const ResearchDecoder = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper_title_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <input value={paperTitle} onChange={e => setPaperTitle(e.target.value)} placeholder={t('rd_paper_title_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+            <label htmlFor="rd-paper-title" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper_title_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <input id="rd-paper-title" value={paperTitle} onChange={e => setPaperTitle(e.target.value)} placeholder={t('rd_paper_title_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
 
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_interest_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <select value={interest} onChange={e => setInterest(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>
+            <label htmlFor="rd-interest" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_interest_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <select id="rd-interest" value={interest} onChange={e => setInterest(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>
               {INTEREST_OPTIONS.map(([val, key]) => <option key={val} value={val}>{t(key)}</option>)}
             </select>
             {interest === 'OTHER' && (
@@ -633,12 +633,12 @@ const ResearchDecoder = ({ tool }) => {
             )}
           </div>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_headline_label')} <span className={c.required}>*</span></label>
-            <input value={hlHeadline} onChange={e => setHlHeadline(e.target.value)} placeholder={t('rd_headline_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+            <label htmlFor="rd-hl-headline" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_headline_label')} <span className={c.required}>*</span></label>
+            <input id="rd-hl-headline" value={hlHeadline} onChange={e => setHlHeadline(e.target.value)} placeholder={t('rd_headline_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_article_excerpt_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <textarea value={hlArticleExcerpt} onChange={e => setHlArticleExcerpt(e.target.value)} placeholder={t('rd_article_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+            <label htmlFor="rd-hl-article-excerpt" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_article_excerpt_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <textarea id="rd-hl-article-excerpt" value={hlArticleExcerpt} onChange={e => setHlArticleExcerpt(e.target.value)} placeholder={t('rd_article_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
           {error && mode === 'headline' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
           <button onClick={handleHeadline} disabled={(!hlResearchText.trim() && !hlPdfBase64) || !hlHeadline.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -656,12 +656,12 @@ const ResearchDecoder = ({ tool }) => {
         <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>⚖️ {t('rd_compare_card_title')}</h3>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper1_label')} <span className={c.required}>*</span></label>
-            <textarea value={cmpPaper1} onChange={e => { setCmpPaper1(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
+            <label htmlFor="rd-cmp-paper1" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper1_label')} <span className={c.required}>*</span></label>
+            <textarea id="rd-cmp-paper1" value={cmpPaper1} onChange={e => { setCmpPaper1(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper2_label')} <span className={c.required}>*</span></label>
-            <textarea value={cmpPaper2} onChange={e => { setCmpPaper2(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
+            <label htmlFor="rd-cmp-paper2" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_paper2_label')} <span className={c.required}>*</span></label>
+            <textarea id="rd-cmp-paper2" value={cmpPaper2} onChange={e => { setCmpPaper2(e.target.value); setCmpResult(null); }} placeholder={t('rd_paste_abstract_ph')} rows={5} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           </div>
           {error && mode === 'compare' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
           <button onClick={handleCompare} disabled={!cmpPaper1.trim() || !cmpPaper2.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -679,12 +679,12 @@ const ResearchDecoder = ({ tool }) => {
         <div className={`border-t ${c.border} pt-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🔤 {t('rd_term_card_title')}</h3>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_label')} <span className={c.required}>*</span></label>
-            <input value={termText} onChange={e => { setTermText(e.target.value); setTermResult(null); }} placeholder={t('rd_term_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+            <label htmlFor="rd-term-text" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_label')} <span className={c.required}>*</span></label>
+            <input id="rd-term-text" value={termText} onChange={e => { setTermText(e.target.value); setTermResult(null); }} placeholder={t('rd_term_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-            <textarea value={termContext} onChange={e => setTermContext(e.target.value)} placeholder={t('rd_term_context_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+            <label htmlFor="rd-term-context" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_term_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+            <textarea id="rd-term-context" value={termContext} onChange={e => setTermContext(e.target.value)} placeholder={t('rd_term_context_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
           {error && mode === 'term' && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
           <button onClick={handleTerm} disabled={!termText.trim() || loading} title={tr('rd_cmd_enter', 'Press ⌘↵ (Ctrl+Enter) to decode')} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -808,12 +808,12 @@ const ResearchDecoder = ({ tool }) => {
               <div className={`border-t ${c.border} pt-5 space-y-3`}>
                 <h3 className={`font-bold ${c.text}`}>🎯 {t('rd_means_for_me')}</h3>
                 <div>
-                  <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_rel_wonder_label')} <span className={c.required}>*</span></label>
-                  <textarea value={relWonder} onChange={e => setRelWonder(e.target.value)} rows={2} placeholder={t('rd_rel_wonder_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+                  <label htmlFor="rd-rel-wonder" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_rel_wonder_label')} <span className={c.required}>*</span></label>
+                  <textarea id="rd-rel-wonder" value={relWonder} onChange={e => setRelWonder(e.target.value)} rows={2} placeholder={t('rd_rel_wonder_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_rel_about_you_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-                  <textarea value={relContext} onChange={e => setRelContext(e.target.value)} rows={2} placeholder={t('rd_rel_about_you_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+                  <label htmlFor="rd-rel-context" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_rel_about_you_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+                  <textarea id="rd-rel-context" value={relContext} onChange={e => setRelContext(e.target.value)} rows={2} placeholder={t('rd_rel_about_you_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
                 </div>
                 <button onClick={handleRelevance} disabled={!relWonder.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
                   {loading ? <><span className="inline-block animate-spin text-xl">{tool?.icon ?? '📄'}</span> {tr('rd_working', 'Working…')}</> : <>🎯 {tr('rd_check_relevance', 'Check Relevance to My Situation')}</>}

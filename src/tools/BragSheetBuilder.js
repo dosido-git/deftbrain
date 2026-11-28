@@ -920,15 +920,15 @@ const BragSheetBuilder = ({ tool }) => {
             <div className="space-y-5 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_your_role')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
-                  <input type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)}
+                  <label htmlFor="bsb-role-title" className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_your_role')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
+                  <input id="bsb-role-title" type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
                     placeholder={t('bsb_role_ph')}
                     className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_years_exp')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
-                  <input type="number" value={yearsExp} onChange={e => setYearsExp(e.target.value)}
+                  <label htmlFor="bsb-years-exp" className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_years_exp')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
+                  <input id="bsb-years-exp" type="number" value={yearsExp} onChange={e => setYearsExp(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
                     placeholder={t('bsb_years_ph')}
                     className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />

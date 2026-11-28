@@ -685,10 +685,10 @@ const DifficultTalkCoach = ({ tool }) => {
 
           {/* 5. How resistant will they be? */}
           <div>
-            <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
+            <label htmlFor="dtc-resistance-level" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
               {t('dtc_resistance_label')} <span className={`font-normal text-sm ${resistanceClass(resistanceLevel)}`}>{t(getResistanceInfo(resistanceLevel).labelKey)} ({resistanceLevel}%)</span>
             </label>
-            <input type="range" min="0" max="100" value={resistanceLevel} onChange={(e) => setResistanceLevel(parseInt(e.target.value))}
+            <input id="dtc-resistance-level" type="range" min="0" max="100" value={resistanceLevel} onChange={(e) => setResistanceLevel(parseInt(e.target.value))}
               className="w-full h-2 rounded-lg cursor-pointer"
               style={{
                 WebkitAppearance: 'none',
@@ -705,14 +705,14 @@ const DifficultTalkCoach = ({ tool }) => {
           <div className="space-y-4">
             <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('dtc_optional_header')}</p>
             <div>
-              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_their_side_label')}</label>
-              <input type="text" value={theirPerspective} onChange={(e) => setTheirPerspective(e.target.value)}
+              <label htmlFor="dtc-their-perspective" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_their_side_label')}</label>
+              <input id="dtc-their-perspective" type="text" value={theirPerspective} onChange={(e) => setTheirPerspective(e.target.value)}
                 placeholder={t('dtc_their_side_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-[15px] focus:ring-2 ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_tried_label')}</label>
-              <input type="text" value={previousAttempts} onChange={(e) => setPreviousAttempts(e.target.value)}
+              <label htmlFor="dtc-previous-attempts" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dtc_tried_label')}</label>
+              <input id="dtc-previous-attempts" type="text" value={previousAttempts} onChange={(e) => setPreviousAttempts(e.target.value)}
                 placeholder={t('dtc_tried_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-[15px] focus:ring-2 ${c.input}`} />
             </div>

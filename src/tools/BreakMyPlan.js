@@ -266,10 +266,10 @@ const BreakMyPlan = ({ tool }) => {
             </p>
 
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="bmp-plan" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('pm_plan_label')} <span className={c.required}>*</span>
               </label>
-              <textarea value={plan} onChange={e => setPlan(e.target.value)}
+              <textarea id="bmp-plan" value={plan} onChange={e => setPlan(e.target.value)}
                 placeholder={t('pm_plan_ph')}
                 rows={4} maxLength={800}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
@@ -293,18 +293,18 @@ const BreakMyPlan = ({ tool }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+                <label htmlFor="bmp-stakes" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                   {t('pm_stakes_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
-                <input type="text" value={stakes} onChange={e => setStakes(e.target.value)}
+                <input id="bmp-stakes" type="text" value={stakes} onChange={e => setStakes(e.target.value)}
                   placeholder={t('pm_stakes_ph')}
                   className={`w-full px-3 py-2.5 rounded-xl border text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+                <label htmlFor="bmp-assumptions" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                   {t('pm_assumptions_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
-                <input type="text" value={assumptions} onChange={e => setAssumptions(e.target.value)}
+                <input id="bmp-assumptions" type="text" value={assumptions} onChange={e => setAssumptions(e.target.value)}
                   placeholder={t('pm_assumptions_ph')}
                   className={`w-full px-3 py-2.5 rounded-xl border text-sm ${c.input}`} />
               </div>

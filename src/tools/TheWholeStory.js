@@ -256,14 +256,14 @@ const TheWholeStory = ({ tool }) => {
           </div>
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>😰 {t('ta_concerns_label')}</label>
-          <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
+          <label htmlFor="tws-concerns" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>😰 {t('ta_concerns_label')}</label>
+          <input id="tws-concerns" type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
             placeholder={t('ta_concerns_ph')}
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📝 {t('ta_context_label')}</label>
-          <input type="text" value={context} onChange={e => setContext(e.target.value)}
+          <label htmlFor="tws-context" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>📝 {t('ta_context_label')}</label>
+          <input id="tws-context" type="text" value={context} onChange={e => setContext(e.target.value)}
             placeholder={t('ta_context_ph')}
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>

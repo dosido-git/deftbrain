@@ -253,10 +253,10 @@ const RoastMe = ({ tool }) => {
 
         {/* Content */}
         <div>
-          <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>
+          <label htmlFor="rm-content" className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>
             {t('rm_paste_label')} <span className={c.required}>*</span>
           </label>
-          <textarea
+          <textarea id="rm-content"
             value={content}
             onChange={e => setContent(e.target.value)}
             placeholder={t('rm_ph')}

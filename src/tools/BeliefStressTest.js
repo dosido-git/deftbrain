@@ -247,10 +247,10 @@ const BeliefStressTest = ({ tool }) => {
       {!results && (
           <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : `border-t ${c.border} pt-5 space-y-4`}>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="bst-belief" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('bst_belief_label')} <span className={c.required}>*</span>
               </label>
-              <textarea value={belief} onChange={e => setBelief(e.target.value)}
+              <textarea id="bst-belief" value={belief} onChange={e => setBelief(e.target.value)}
                 placeholder={t('bst_belief_ph')}
                 rows={2} maxLength={300}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && belief.trim()) { e.preventDefault(); handleSubmit(); } }}
@@ -266,8 +266,8 @@ const BeliefStressTest = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('bst_context_label')} <span className={`font-normal ${c.textMuteded}`}>{t('bst_optional_paren')}</span></label>
-              <input type="text" value={context} onChange={e => setContext(e.target.value)}
+              <label htmlFor="bst-context" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('bst_context_label')} <span className={`font-normal ${c.textMuteded}`}>{t('bst_optional_paren')}</span></label>
+              <input id="bst-context" type="text" value={context} onChange={e => setContext(e.target.value)}
                 placeholder={t('bst_context_ph')}
                 onKeyDown={e => { if (e.key === 'Enter' && belief.trim()) { e.preventDefault(); handleSubmit(); } }}
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} focus:outline-none focus:ring-2`} />

@@ -591,29 +591,29 @@ const SkillGapMap = ({ tool }) => {
             {/* Inputs */}
             <div className={mode === 'map' ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : ''}>
               <div>
-                <label className={`block font-semibold ${c.text} mb-2`}>{t('sgm_label_current_role')} <span className={c.required}>*</span></label>
-                <input type="text" value={currentRole} onChange={e => setCurrentRole(e.target.value)}
+                <label htmlFor="sgm-current-role" className={`block font-semibold ${c.text} mb-2`}>{t('sgm_label_current_role')} <span className={c.required}>*</span></label>
+                <input id="sgm-current-role" type="text" value={currentRole} onChange={e => setCurrentRole(e.target.value)}
                   placeholder={t('sgm_ph_current_role')}
                   className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-emerald-300 ${c.input}`} />
               </div>
               {mode === 'map' && (
                 <div>
-                  <label className={`block font-semibold ${c.text} mb-2`}>{t('sgm_label_target_role')} <span className={c.required}>*</span></label>
-                  <input type="text" value={targetRole} onChange={e => setTargetRole(e.target.value)}
+                  <label htmlFor="sgm-target-role" className={`block font-semibold ${c.text} mb-2`}>{t('sgm_label_target_role')} <span className={c.required}>*</span></label>
+                  <input id="sgm-target-role" type="text" value={targetRole} onChange={e => setTargetRole(e.target.value)}
                     placeholder={t('sgm_ph_target_role')}
                     className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-emerald-300 ${c.input}`} />
                 </div>
               )}
             </div>
             <div>
-              <label className={`block text-sm font-semibold ${c.label} mb-1.5`}>{t('sgm_label_skills')} <span className={`font-normal ${c.textMuteded}`}>{t('sgm_optional')}</span></label>
-              <textarea value={currentSkills} onChange={e => setCurrentSkills(e.target.value)} rows={2}
+              <label htmlFor="sgm-current-skills" className={`block text-sm font-semibold ${c.label} mb-1.5`}>{t('sgm_label_skills')} <span className={`font-normal ${c.textMuteded}`}>{t('sgm_optional')}</span></label>
+              <textarea id="sgm-current-skills" value={currentSkills} onChange={e => setCurrentSkills(e.target.value)} rows={2}
                 placeholder={t('sgm_ph_skills')} className={`w-full p-3 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-emerald-300 ${c.input}`} />
             </div>
             {mode === 'explore' && (
               <div>
-                <label className={`block text-sm font-semibold ${c.label} mb-1.5`}>{t('sgm_label_interests')} <span className={`font-normal ${c.textMuteded}`}>{t('sgm_optional')}</span></label>
-                <input type="text" value={interests} onChange={e => setInterests(e.target.value)}
+                <label htmlFor="sgm-interests" className={`block text-sm font-semibold ${c.label} mb-1.5`}>{t('sgm_label_interests')} <span className={`font-normal ${c.textMuteded}`}>{t('sgm_optional')}</span></label>
+                <input id="sgm-interests" type="text" value={interests} onChange={e => setInterests(e.target.value)}
                   placeholder={t('sgm_ph_interests')} className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
               </div>
             )}
@@ -1053,7 +1053,7 @@ const SkillGapMap = ({ tool }) => {
                         <p className={`text-xs ${c.textSecondary} mb-1`}>{gap.gap}</p>
                         <p className={`text-[13px] ${c.textMuteded}`}>{t(BASIS_LABELS[gap.relevance_basis] || 'sgm_basis_role')}</p>
                       </div>
-                      <button data-print-heading aria-expanded={!!(expandedSections[gap.capability])} onClick={() => toggleSection(gap.capability)} className={`text-[13px] ${c.textMuteded}`}><span data-print-hide><Caret open={expandedSections[gap.capability]} /></span></button>
+                      <button data-print-heading aria-label={gap.capability} aria-expanded={!!(expandedSections[gap.capability])} onClick={() => toggleSection(gap.capability)} className={`text-[13px] ${c.textMuteded}`}><span data-print-hide><Caret open={expandedSections[gap.capability]} /></span></button>
                     </div>
                   </div>
                   {(

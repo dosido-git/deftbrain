@@ -541,8 +541,8 @@ const NerveCheck = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_q_label')} <span className={c.required}>*</span></label>
-              <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('nck_q_ph')} rows={3}
+              <label htmlFor="nc-situation" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_q_label')} <span className={c.required}>*</span></label>
+              <textarea id="nc-situation" value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('nck_q_ph')} rows={3}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
             </div>
 
@@ -559,16 +559,16 @@ const NerveCheck = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now')}
+              <label htmlFor="nc-readiness-level" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now')}
                 <span className={`ms-2 font-bold ${c.accentTxt}`}>{readinessLevel}/10</span>
                 {readinessLabel(readinessLevel) && <span className={`ms-1.5 text-[13px] ${c.textMuted}`}>{readinessLabel(readinessLevel)}</span>}
               </label>
-              <input type="range" min="1" max="10" value={readinessLevel} onChange={e => setReadinessLevel(Number(e.target.value))} className={`w-full ${c.sliderAccent}`} />
+              <input id="nc-readiness-level" type="range" min="1" max="10" value={readinessLevel} onChange={e => setReadinessLevel(Number(e.target.value))} className={`w-full ${c.sliderAccent}`} />
             </div>
 
             <div>
-              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_fears_label')}</label>
-              <textarea value={specificFears} onChange={e => setSpecificFears(e.target.value)} placeholder={t('nck_fears_ph')} rows={2}
+              <label htmlFor="nc-specific-fears" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_fears_label')}</label>
+              <textarea id="nc-specific-fears" value={specificFears} onChange={e => setSpecificFears(e.target.value)} placeholder={t('nck_fears_ph')} rows={2}
                 className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
             </div>
 
@@ -715,8 +715,8 @@ const NerveCheck = ({ tool }) => {
               <>
                 {!situation.trim() && (
                   <div>
-                    <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_about_to_do_ph')} <span className={c.required}>*</span></label>
-                    <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('nck_q_ph')}
+                    <label htmlFor="nc-situation-2" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_about_to_do_ph')} <span className={c.required}>*</span></label>
+                    <textarea id="nc-situation-2" value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('nck_q_ph')}
                       className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
                   </div>
                 )}
@@ -790,17 +790,17 @@ const NerveCheck = ({ tool }) => {
             <h2 className={`text-lg font-black ${c.sectionTitle}`}>📊 {t('nck_debrief_title')}</h2>
             <button onClick={loadDebriefExample} disabled={loading} className={`${c.btnSecondary} px-3 py-1.5 rounded-full text-xs font-semibold`}>✨ {t('try_example')}</button>
             <div>
-              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_how_go_label')} <span className={c.required}>*</span></label>
-              <textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder={t('nck_how_go_ph')} rows={3}
+              <label htmlFor="nc-how-it-went" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_how_go_label')} <span className={c.required}>*</span></label>
+              <textarea id="nc-how-it-went" value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder={t('nck_how_go_ph')} rows={3}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
             </div>
             <div>
-              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now_label')} <span className={`ms-2 font-bold ${c.accentTxt}`}>{readinessAfter}/10</span></label>
-              <input type="range" min="1" max="10" value={readinessAfter} onChange={e => setReadinessAfter(Number(e.target.value))} className={`w-full ${c.sliderAccent}`} />
+              <label htmlFor="nc-readiness-after" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_conf_now_label')} <span className={`ms-2 font-bold ${c.accentTxt}`}>{readinessAfter}/10</span></label>
+              <input id="nc-readiness-after" type="range" min="1" max="10" value={readinessAfter} onChange={e => setReadinessAfter(Number(e.target.value))} className={`w-full ${c.sliderAccent}`} />
             </div>
             <div>
-              <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_surprised_label')}</label>
-              <input type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={t('nck_surprised_ph')}
+              <label htmlFor="nc-what-surprised" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_surprised_label')}</label>
+              <input id="nc-what-surprised" type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={t('nck_surprised_ph')}
                 className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
             {debriefError && <div className={`${c.danger} border rounded-lg p-3 text-sm`}>{debriefError}</div>}
@@ -876,13 +876,13 @@ const NerveCheck = ({ tool }) => {
               <>
                 <button onClick={loadCoachExample} disabled={loading} className={`${c.btnSecondary} px-3 py-1.5 rounded-full text-xs font-semibold`}>✨ {t('try_example')}</button>
                 <div>
-                  <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_who_label')}</label>
-                  <input type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder={t('nck_coach_who_ph')}
+                  <label htmlFor="nc-coach-who" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_who_label')}</label>
+                  <input id="nc-coach-who" type="text" value={coachWho} onChange={e => setCoachWho(e.target.value)} placeholder={t('nck_coach_who_ph')}
                     className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
                 </div>
                 <div>
-                  <label className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_what_label')} <span className={c.required}>*</span></label>
-                  <textarea value={coachSituation} onChange={e => setCoachSituation(e.target.value)} placeholder={t('nck_coach_what_ph')} rows={2}
+                  <label htmlFor="nc-coach-situation" className={`text-sm font-medium ${c.labelText} block mb-1.5`}>{t('nck_coach_what_label')} <span className={c.required}>*</span></label>
+                  <textarea id="nc-coach-situation" value={coachSituation} onChange={e => setCoachSituation(e.target.value)} placeholder={t('nck_coach_what_ph')} rows={2}
                     className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
                 </div>
                 <div>

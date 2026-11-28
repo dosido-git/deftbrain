@@ -206,8 +206,8 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
       {!result && (
         <section className={sv ? `${FORM_PANEL} `.trim() : `border rounded-2xl p-4 sm:p-5 ${c.card} ${c.border}`}>
-          <label className={`font-bold ${c.text}`}>{t('tab_project_label')} <span className={c.required}>*</span></label>
-          <textarea
+          <label htmlFor="tab-project" className={`font-bold ${c.text}`}>{t('tab_project_label')} <span className={c.required}>*</span></label>
+          <textarea id="tab-project"
             value={project}
             onChange={e => setProject(e.target.value)}
             rows={5}

@@ -306,8 +306,8 @@ const FanTheory = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} mt-4 space-y-4`.trim() : "mt-4 space-y-4"}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('ft_title_label')} <span className={c.required}>*</span></label>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)}
+              <label htmlFor="ft-title" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('ft_title_label')} <span className={c.required}>*</span></label>
+              <input id="ft-title" type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={t('ft_title_ph')}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>

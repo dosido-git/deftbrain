@@ -833,10 +833,10 @@ const TheRunthrough = ({ tool }) => {
 
           {/* Content textarea (all modes) */}
           <div className="space-y-2">
-            <label className={`text-sm font-semibold ${c.text}`}>
+            <label htmlFor="tr-content" className={`text-sm font-semibold ${c.text}`}>
               <span className="me-1.5">📝</span> {t('trt_content_label')} <span className={c.required}>*</span>
             </label>
-            <textarea
+            <textarea id="tr-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={t('trt_content_ph')}
@@ -850,12 +850,12 @@ const TheRunthrough = ({ tool }) => {
           {mode === 'cut' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.text}`}>
+                <label htmlFor="trt-time" className={`text-sm font-semibold ${c.text}`}>
                   <span className="me-1.5">⏱️</span> {t('trt_time_label')}
                 </label>
                 <div className="flex items-center gap-3">
                   <input
-                    type="range"
+                    id="trt-time" type="range"
                     min={1}
                     max={30}
                     value={timeMinutes}
@@ -866,10 +866,10 @@ const TheRunthrough = ({ tool }) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.text}`}>
+                <label htmlFor="tr-context" className={`text-sm font-semibold ${c.text}`}>
                   <span className="me-1.5">💡</span> {t('trt_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
-                <input
+                <input id="tr-context"
                   type="text"
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
@@ -900,10 +900,10 @@ const TheRunthrough = ({ tool }) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.text}`}>
+                <label htmlFor="tr-stakes" className={`text-sm font-semibold ${c.text}`}>
                   <span className="me-1.5">🔥</span> {t('trt_stakes_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
-                <input
+                <input id="tr-stakes"
                   type="text"
                   value={stakes}
                   onChange={(e) => setStakes(e.target.value)}
@@ -939,10 +939,10 @@ const TheRunthrough = ({ tool }) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.text}`}>
+                <label htmlFor="tr-goal" className={`text-sm font-semibold ${c.text}`}>
                   <span className="me-1.5">🎯</span> {t('trt_goal_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
-                <input
+                <input id="tr-goal"
                   type="text"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}

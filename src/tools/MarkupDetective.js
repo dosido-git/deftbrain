@@ -304,10 +304,10 @@ const MarkupDetective = ({ tool }) => {
 
           {/* Textarea — required field */}
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>
+            <label htmlFor="md-product" className={`text-[15px] font-semibold ${c.labelText} block mb-2`}>
               {t('mkd_q_label')} <span className={c.required}>*</span>
             </label>
-            <textarea
+            <textarea id="md-product"
               value={product}
               onChange={e => setProduct(e.target.value)}
               placeholder={t('mkd_ph', { sym })}
@@ -330,7 +330,7 @@ const MarkupDetective = ({ tool }) => {
           </div>
 
           <div>
-            <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('mkd_why_label')} <span className="font-normal opacity-70">{t('mkd_why_optional')}</span></p>
+            <p className={`text-[15px] font-semibold ${c.labelText} mb-2`}>{t('mkd_why_label')} <span className="font-normal">{t('mkd_why_optional')}</span></p>
             <div role="group" aria-label={t('mkd_why_label')} className="flex flex-wrap gap-1.5">
               {MOTIVES.map(m => (
                 <button aria-pressed={motive === m.value} key={m.value} onClick={() => setMotive(motive === m.value ? '' : m.value)}

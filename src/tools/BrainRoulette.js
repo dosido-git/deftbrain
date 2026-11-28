@@ -1392,8 +1392,8 @@ const BrainRoulette = ({ tool }) => {
                 Choosing one now clears the other, which is what "or" has to
                 mean. */}
             <div className={`mb-4 p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-              <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2 flex-wrap`}>{t('bro_spin_on_topic')} <span className={`font-normal text-[13px] ${c.textMuted}`}>{t('bro_instead_interests')}</span></label>
-              <input type="text" value={customTopic}
+              <label htmlFor="br-custom-topic" className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2 flex-wrap`}>{t('bro_spin_on_topic')} <span className={`font-normal text-[13px] ${c.textMuted}`}>{t('bro_instead_interests')}</span></label>
+              <input id="br-custom-topic" type="text" value={customTopic}
                 onChange={e => { setCustomTopic(e.target.value); if (e.target.value.trim() && selectedInterests.length) setSelectedInterests([]); }}
                 placeholder={t('bro_custom_topic_ph')}
                 onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}

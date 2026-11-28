@@ -393,31 +393,31 @@ const Bookmark = ({ tool }) => {
       {/* Main inputs */}
       <div className="space-y-3">
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
+          <label htmlFor="b-title" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
             {mediaType === 'sports' ? t('bk_label_team') : t('bk_label_title', { type: t(mt.labelKey).split(' ')[0] })}{' '}
             <span className={c.required}>*</span>
           </label>
-          <input type="text" value={title} onChange={e => setTitle(e.target.value)}
+          <input id="b-title" type="text" value={title} onChange={e => setTitle(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
             placeholder={t(mt.phKey)} className={'w-full px-4 py-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 text-base'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
+          <label htmlFor="b-stopped-at" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>
             {mediaType === 'sports' ? t('bk_label_when_stopped') : t('bk_label_where_stopped')}{' '}
             <span className={c.required}>*</span>
           </label>
-          <input type="text" value={stoppedAt} onChange={e => setStoppedAt(e.target.value)}
+          <input id="b-stopped-at" type="text" value={stoppedAt} onChange={e => setStoppedAt(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
             placeholder={t(mt.stoppedPhKey)} className={'w-full px-4 py-2.5 rounded-xl border text-base ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('bk_label_remember')}</label>
-          <input type="text" value={whatYouRemember} onChange={e => setWhatYouRemember(e.target.value)}
+          <label htmlFor="b-what-you-remember" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('bk_label_remember')}</label>
+          <input id="b-what-you-remember" type="text" value={whatYouRemember} onChange={e => setWhatYouRemember(e.target.value)}
             placeholder={t('bk_ph_remember')} className={'w-full px-4 py-2.5 rounded-xl border text-base ' + c.input + ' outline-none'} />
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('bk_label_questions')}</label>
-          <input type="text" value={specificQuestions} onChange={e => setSpecificQuestions(e.target.value)}
+          <label htmlFor="b-specific-questions" className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('bk_label_questions')}</label>
+          <input id="b-specific-questions" type="text" value={specificQuestions} onChange={e => setSpecificQuestions(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
             placeholder={mediaType === 'sports' ? t('bk_ph_questions_sports') : t('bk_ph_questions_default')}
             className={'w-full px-4 py-2.5 rounded-xl border text-base ' + c.input + ' outline-none'} />

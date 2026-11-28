@@ -391,8 +391,8 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Intent */}
           <div>
-            <label className={`text-[13px] font-bold ${c.qLabel} mb-1 block`}>🎯 {t('ctc_intent_label')}</label>
-            <input
+            <label htmlFor="cc-intent" className={`text-[13px] font-bold ${c.qLabel} mb-1 block`}>🎯 {t('ctc_intent_label')}</label>
+            <input id="cc-intent"
               type="text" value={intent}
               onChange={e => setIntent(e.target.value)}
               placeholder={t('ctc_intent_ph')}
@@ -402,8 +402,8 @@ const ContextCollapse = ({ tool }) => {
 
           {/* Concerns */}
           <div>
-            <label className={`text-[13px] font-bold ${c.qLabel} mb-1 block`}>😰 {t('ctc_concerns_label')}</label>
-            <input
+            <label htmlFor="cc-concerns" className={`text-[13px] font-bold ${c.qLabel} mb-1 block`}>😰 {t('ctc_concerns_label')}</label>
+            <input id="cc-concerns"
               type="text" value={concerns}
               onChange={e => setConcerns(e.target.value)}
               placeholder={t('ctc_concerns_ph')}

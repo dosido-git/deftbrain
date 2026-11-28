@@ -255,7 +255,7 @@ const CompleteView = ({ exs, exercisesDone, exercisesSkipped, completeMsg, energ
             <p className={`text-sm ${c.textSecondaryAlt} mb-3`}>{t('lwa_energy_now')}</p>
             <div className="flex items-center gap-3 justify-center mb-3">
               <span className="text-xl">{ENERGY_LABELS[energyAfter]}</span>
-              <input type="range" min="1" max="10" value={energyAfter} onChange={e => setEnergyAfter(parseInt(e.target.value))} className={`w-40 h-2 rounded-full ${c.sld}`} />
+              <input type="range" aria-label={t('lwa_energy_now')} min="1" max="10" value={energyAfter} onChange={e => setEnergyAfter(parseInt(e.target.value))} className={`w-40 h-2 rounded-full ${c.sld}`} />
               <span className={`text-sm font-bold ${c.text}`}>{energyAfter}/10</span>
             </div>
             <button onClick={() => handleComplete()} disabled={loading} className={`disabled:opacity-40 px-6 py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>
@@ -913,7 +913,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text}`}>{t('lwa_energy_right_now')}</span>
                 <span className="text-2xl">{ENERGY_LABELS[energy]}</span>
               </div>
-              <input type="range" min="1" max="10" value={energy} onChange={e => setEnergy(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
+              <input type="range" aria-label={t('lwa_energy_right_now')} min="1" max="10" value={energy} onChange={e => setEnergy(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
               <div className="flex justify-between mt-1">
                 <span className={`text-xs ${c.textMute}`}>{t('lwa_exhausted')}</span>
                 <span className={`text-sm font-bold ${c.accTxt}`}>{energy}/10</span>
@@ -959,7 +959,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text}`}>{t('lwa_time')}</span>
                 <span className={`text-sm font-bold ${c.accTxt}`}>{timeMins}m</span>
               </div>
-              <input type="range" min="2" max="30" value={timeMins} onChange={e => setTimeMins(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
+              <input type="range" aria-label={t('lwa_time')} min="2" max="30" value={timeMins} onChange={e => setTimeMins(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
 
             {/* Setting (now with labels — was icon-only) */}
@@ -1204,7 +1204,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text}`}>{t('lwa_time')}</span>
                 <span className={`text-sm font-bold ${c.accTxt}`}>{bodyTime}m</span>
               </div>
-              <input type="range" min="3" max="15" value={bodyTime} onChange={e => setBodyTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
+              <input type="range" aria-label={t('lwa_time')} min="3" max="15" value={bodyTime} onChange={e => setBodyTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
             <button title={t('cmd_enter')}
               onClick={handleBody}
@@ -1252,8 +1252,8 @@ const LazyWorkoutAdapter = ({ tool }) => {
               <h3 className={`font-bold ${c.text}`}>📚 {t('lwa_stack_title')}</h3>
               <p className={`text-sm ${c.textMute}`}>{t('lwa_stack_desc')}</p>
             </div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('lwa_about_to_do_label')} <span className={c.required}>*</span></label>
-            <input
+            <label htmlFor="lwa-stack-activity" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('lwa_about_to_do_label')} <span className={c.required}>*</span></label>
+            <input id="lwa-stack-activity"
               value={stackActivity}
               onChange={e => setStackActivity(e.target.value)}
               placeholder={t('lwa_stack_ph')}
@@ -1264,7 +1264,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text}`}>{t('lwa_duration')}</span>
                 <span className={`text-sm font-bold ${c.accTxt}`}>{stackDuration}m</span>
               </div>
-              <input type="range" min="15" max="120" step="15" value={stackDuration} onChange={e => setStackDuration(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
+              <input type="range" aria-label={t('lwa_duration')} min="15" max="120" step="15" value={stackDuration} onChange={e => setStackDuration(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
             <div className="flex flex-wrap gap-1.5">
               {STACK_ACTIVITIES.map(a => (
@@ -1346,8 +1346,8 @@ const LazyWorkoutAdapter = ({ tool }) => {
               <h3 className={`font-bold ${c.text}`}>🩹 {t('lwa_recovery_title')}</h3>
               <p className={`text-sm ${c.textMute}`}>{t('lwa_recovery_desc')}</p>
             </div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('lwa_recover_from_label')} <span className={c.required}>*</span></label>
-            <input
+            <label htmlFor="lwa-recovery-event" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('lwa_recover_from_label')} <span className={c.required}>*</span></label>
+            <input id="lwa-recovery-event"
               value={recoveryEvent}
               onChange={e => setRecoveryEvent(e.target.value)}
               placeholder={t('lwa_recovery_ph')}
@@ -1383,7 +1383,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text}`}>{t('lwa_time')}</span>
                 <span className={`text-sm font-bold ${c.accTxt}`}>{recoveryTime}m</span>
               </div>
-              <input type="range" min="3" max="15" value={recoveryTime} onChange={e => setRecoveryTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
+              <input type="range" aria-label={t('lwa_time')} min="3" max="15" value={recoveryTime} onChange={e => setRecoveryTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
             <button title={t('cmd_enter')}
               onClick={handleRecovery}

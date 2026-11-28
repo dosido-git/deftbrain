@@ -303,14 +303,14 @@ const MissingLink = ({ tool }) => {
         </div>
       </div>
       <div>
-        <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_know_label')}</label>
-        <input type="text" value={whatIKnow} onChange={e => setWhatIKnow(e.target.value)}
+        <label htmlFor="ml-what-i-know" className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_know_label')}</label>
+        <input id="ml-what-i-know" type="text" value={whatIKnow} onChange={e => setWhatIKnow(e.target.value)}
           placeholder={t('tg_know_ph')}
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
       </div>
       <div>
-        <label className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_broke_label')}</label>
-        <input type="text" value={whereItBroke} onChange={e => setWhereItBroke(e.target.value)}
+        <label htmlFor="ml-where-it-broke" className={'text-[15px] font-semibold ' + c.text + ' mb-1 block'}>{t('tg_broke_label')}</label>
+        <input id="ml-where-it-broke" type="text" value={whereItBroke} onChange={e => setWhereItBroke(e.target.value)}
           placeholder={t('tg_broke_ph')}
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
       </div>

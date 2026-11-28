@@ -341,8 +341,8 @@ const GratitudeDebtClearer = ({ tool }) => {
 
         <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} space-y-5` : 'space-y-5'}>
           <div>
-            <label className={`block font-semibold mb-2 ${c.labelText}`}>{t('gdc_who_thanking')} <span className={c.required}>*</span></label>
-            <input
+            <label htmlFor="gdc-recipient-name" className={`block font-semibold mb-2 ${c.labelText}`}>{t('gdc_who_thanking')} <span className={c.required}>*</span></label>
+            <input id="gdc-recipient-name"
               value={recipientName}
               onChange={e => setRecipientName(e.target.value)}
               className={fieldClass}
@@ -351,8 +351,8 @@ const GratitudeDebtClearer = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block font-semibold mb-2 ${c.labelText}`}>{t('gdc_what_grateful')} <span className={c.required}>*</span></label>
-            <textarea
+            <label htmlFor="gdc-gratitude-points" className={`block font-semibold mb-2 ${c.labelText}`}>{t('gdc_what_grateful')} <span className={c.required}>*</span></label>
+            <textarea id="gdc-gratitude-points"
               value={gratitudePoints}
               onChange={e => setGratitudePoints(e.target.value)}
               rows={6}
@@ -363,8 +363,8 @@ const GratitudeDebtClearer = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block font-semibold mb-2 ${c.labelText}`}>{t('gdc_your_relationship')}</label>
-            <select value={relationship} onChange={e => setRelationship(e.target.value)} className={fieldClass}>
+            <label htmlFor="gdc-relationship" className={`block font-semibold mb-2 ${c.labelText}`}>{t('gdc_your_relationship')}</label>
+            <select id="gdc-relationship" value={relationship} onChange={e => setRelationship(e.target.value)} className={fieldClass}>
               {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.labelKey)}</option>)}
             </select>
           </div>
@@ -380,20 +380,20 @@ const GratitudeDebtClearer = ({ tool }) => {
           {(
             <div data-sec-body hidden={!(showOptions)} className={`rounded-xl border p-4 space-y-4 ${c.border} ${c.cardAlt}`}>
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${c.labelText}`}>{t('gdc_tone_preference')}</label>
-                <select value={tone} onChange={e => setTone(e.target.value)} className={fieldClass}>
+                <label htmlFor="gdc-tone" className={`block text-sm font-semibold mb-2 ${c.labelText}`}>{t('gdc_tone_preference')}</label>
+                <select id="gdc-tone" value={tone} onChange={e => setTone(e.target.value)} className={fieldClass}>
                   {TONES.map(v => <option key={v.value} value={v.value}>{t(v.labelKey)}</option>)}
                 </select>
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${c.labelText}`}>{t('gdc_msg_length')}</label>
-                <select value={length} onChange={e => setLength(e.target.value)} className={fieldClass}>
+                <label htmlFor="gdc-length" className={`block text-sm font-semibold mb-2 ${c.labelText}`}>{t('gdc_msg_length')}</label>
+                <select id="gdc-length" value={length} onChange={e => setLength(e.target.value)} className={fieldClass}>
                   {LENGTHS.map(v => <option key={v.value} value={v.value}>{t(v.labelKey)}</option>)}
                 </select>
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${c.labelText}`}>{t('gdc_extra_q')}</label>
-                <textarea
+                <label htmlFor="gdc-extra-context" className={`block text-sm font-semibold mb-2 ${c.labelText}`}>{t('gdc_extra_q')}</label>
+                <textarea id="gdc-extra-context"
                   value={extraContext}
                   onChange={e => setExtraContext(e.target.value)}
                   rows={3}

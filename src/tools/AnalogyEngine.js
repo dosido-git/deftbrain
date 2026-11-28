@@ -340,10 +340,10 @@ const AnalogyEngine = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
         {/* Concept — REQUIRED */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
+          <label htmlFor="ae-concept" className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
             {t('ae_q_concept')} <span className={c.required}>*</span>
           </label>
-          <input
+          <input id="ae-concept"
             type="text"
             value={concept}
             onChange={e => setConcept(e.target.value)}
@@ -354,10 +354,10 @@ const AnalogyEngine = ({ tool }) => {
 
         {/* Audience */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
+          <label htmlFor="ae-audience" className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
             {t('ae_q_audience')}
           </label>
-          <input
+          <input id="ae-audience"
             type="text"
             value={audience}
             onChange={e => setAudience(e.target.value)}
@@ -368,10 +368,10 @@ const AnalogyEngine = ({ tool }) => {
 
         {/* Their interests / world */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
+          <label htmlFor="ae-audience-interests" className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
             {t('ae_q_interests')} <span className={`font-normal ${c.textMuteded}`}>{t('ae_interests_hint')}</span>
           </label>
-          <input
+          <input id="ae-audience-interests"
             type="text"
             value={audienceInterests}
             onChange={e => setAudienceInterests(e.target.value)}

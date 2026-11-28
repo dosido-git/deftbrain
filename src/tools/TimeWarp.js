@@ -271,14 +271,14 @@ const TimeWarp = ({ tool }) => {
         <p className={`text-[13px] ${c.textMuted} mb-1.5`}>{t('tw_fill_hint')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('tw_modern_label')} <span className={c.required}>*</span></label>
-            <input type="text" value={modernThing} onChange={e => setModernThing(e.target.value)}
+            <label htmlFor="tw-modern-thing" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('tw_modern_label')} <span className={c.required}>*</span></label>
+            <input id="tw-modern-thing" type="text" value={modernThing} onChange={e => setModernThing(e.target.value)}
               placeholder={t('tw_modern_ph')}
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('tw_period_label')} <span className={c.required}>*</span></label>
-            <input type="text" value={historicalPeriod} onChange={e => setHistoricalPeriod(e.target.value)}
+            <label htmlFor="tw-historical-period" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('tw_period_label')} <span className={c.required}>*</span></label>
+            <input id="tw-historical-period" type="text" value={historicalPeriod} onChange={e => setHistoricalPeriod(e.target.value)}
               placeholder={t('tw_period_ph')}
               className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>

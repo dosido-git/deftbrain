@@ -49,7 +49,7 @@ export default function IdeaPrompt({ source = 'unknown', query = '', compact = f
 
   const c = {
     body: isDark ? 'text-zinc-400' : 'text-gray-500',
-    link: isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700',
+    link: isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-800 hover:text-cyan-900', // cyan-600 was 3.5:1 on cream (AA 4.5)
   };
 
   // The full box wears the site-end look (owner, 2026-10-05): the same card,

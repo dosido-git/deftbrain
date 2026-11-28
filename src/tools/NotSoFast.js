@@ -264,29 +264,29 @@ const NotSoFast = ({ tool }) => {
           <div className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
 
           <div>
-            <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+            <label htmlFor="nsf-system" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
               {t('rb_system_label')} <span className={c.required}>*</span>
             </label>
-            <input type="text" value={system} onChange={e => setSystem(e.target.value)}
+            <input id="nsf-system" type="text" value={system} onChange={e => setSystem(e.target.value)}
               placeholder={t('rb_system_ph')}
               className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
           </div>
 
           <div>
-            <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+            <label htmlFor="nsf-problem" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
               {t('rb_problem_label')} <span className={c.required}>*</span>
             </label>
-            <textarea value={problem} onChange={e => setProblem(e.target.value)}
+            <textarea id="nsf-problem" value={problem} onChange={e => setProblem(e.target.value)}
               placeholder={t('rb_problem_ph')}
               rows={3} maxLength={600}
               className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
           </div>
 
           <div>
-            <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+            <label htmlFor="nsf-official-answer" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
               {t('rb_official_label')} <span className={`font-normal ${c.textMuted}`}>{t('rb_optional')}</span>
             </label>
-            <textarea value={officialAnswer} onChange={e => setOfficialAnswer(e.target.value)}
+            <textarea id="nsf-official-answer" value={officialAnswer} onChange={e => setOfficialAnswer(e.target.value)}
               placeholder={t('rb_official_ph')}
               rows={2} maxLength={300}
               className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
@@ -294,19 +294,19 @@ const NotSoFast = ({ tool }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+              <label htmlFor="nsf-what-tried" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
                 {t('rb_tried_label')} <span className={`font-normal ${c.textMuted}`}>{t('rb_optional')}</span>
               </label>
-              <textarea value={whatTried} onChange={e => setWhatTried(e.target.value)}
+              <textarea id="nsf-what-tried" value={whatTried} onChange={e => setWhatTried(e.target.value)}
                 placeholder={t('rb_tried_ph')}
                 rows={2} maxLength={300}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+              <label htmlFor="nsf-goal" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
                 {t('rb_goal_label')} <span className={`font-normal ${c.textMuted}`}>{t('rb_optional')}</span>
               </label>
-              <textarea value={goal} onChange={e => setGoal(e.target.value)}
+              <textarea id="nsf-goal" value={goal} onChange={e => setGoal(e.target.value)}
                 placeholder={t('rb_goal_ph')}
                 rows={2} maxLength={300}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />

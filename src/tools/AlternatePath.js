@@ -290,10 +290,10 @@ const AlternatePath = ({ tool }) => {
 
         {/* What if — REQUIRED */}
         <div>
-          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>
+          <label htmlFor="ap-what-if" className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>
             {t('ap_whatif_label')} <span className={c.required}>*</span>
           </label>
-          <input
+          <input id="ap-what-if"
             type="text"
             value={whatIf}
             onChange={e => setWhatIf(e.target.value)}
@@ -308,10 +308,10 @@ const AlternatePath = ({ tool }) => {
 
         {/* Set the scene */}
         <div>
-          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>
+          <label htmlFor="ap-year-or-context" className={`block text-[15px] font-semibold ${c.labelText} mb-1.5`}>
             {t('ap_year_label')} <span className={`font-normal ${c.textMuteded}`}>{t('ap_optional')}</span>
           </label>
-          <input
+          <input id="ap-year-or-context"
             type="text"
             value={yearOrContext}
             onChange={e => setYearOrContext(e.target.value)}

@@ -306,10 +306,10 @@ function MentalHealthNavigator({ tool }) {
 
       {/* Freeform */}
       <div>
-        <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
+        <label htmlFor="mhn-freeform" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
           {t('mhn_tell_more')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('mhn_tell_more_hint')}</span>
         </label>
-        <textarea value={freeform} onChange={e => setFreeform(e.target.value)}
+        <textarea id="mhn-freeform" value={freeform} onChange={e => setFreeform(e.target.value)}
           placeholder={t('mhn_freeform_ph')}
           rows={5}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
@@ -347,10 +347,10 @@ function MentalHealthNavigator({ tool }) {
 
       {/* Country */}
       <div>
-        <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
+        <label htmlFor="mhn-country" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>
           {t('mhn_country')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('mhn_country_hint')}</span>
         </label>
-        <input type="text" value={country} onChange={e => setCountry(e.target.value)}
+        <input id="mhn-country" type="text" value={country} onChange={e => setCountry(e.target.value)}
           placeholder={t('mhn_country_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
       </div>

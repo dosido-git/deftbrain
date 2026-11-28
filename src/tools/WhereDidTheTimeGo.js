@@ -286,18 +286,18 @@ const WhereDidTheTimeGo = ({ tool }) => {
             </div>
 
             {/* Day description */} <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}>
+              <label htmlFor="wdttg-day-description" className={`text-sm font-semibold ${c.text}`}>
                 <span className="me-1.5">📋</span> {t('wdttg_day_q', { tf: timeframeLabel(timeframe) })} <span className={c.required}>*</span>
               </label>
-              <textarea
+              <textarea id="wdttg-day-description"
                 value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={t('wdttg_day_ph')} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`} />
             </div>
 
             {/* Felt discrepancy */} <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}>
+              <label htmlFor="wdttg-perceived-breakdown" className={`text-sm font-semibold ${c.text}`}>
                 <span className="me-1.5">🤔</span> {t('wdttg_perceived_q')} <span className={`font-normal ${c.textMuted}`}>{t('wdttg_perceived_hint')}</span>
               </label>
-              <textarea
+              <textarea id="wdttg-perceived-breakdown"
                 value={perceivedBreakdown} onChange={(e) => setPerceivedBreakdown(e.target.value)} placeholder={t('wdttg_perceived_ph')}
                 rows={2} maxLength={400} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`} />
             </div>

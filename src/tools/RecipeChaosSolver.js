@@ -726,8 +726,8 @@ const RecipeChaosSolver = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <textarea value={availableIngredients} onChange={e => setAvailableIngredients(e.target.value)} rows={2} placeholder={t('rcs_ph_have')}
+              <label htmlFor="rcs-available-ingredients" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <textarea id="rcs-available-ingredients" value={availableIngredients} onChange={e => setAvailableIngredients(e.target.value)} rows={2} placeholder={t('rcs_ph_have')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
               <div className="mt-2">
                 {pantryImagePreview ? (
@@ -761,13 +761,13 @@ const RecipeChaosSolver = ({ tool }) => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-                <input value={dietaryRestrictions} onChange={e => setDietaryRestrictions(e.target.value)} placeholder={t('rcs_ph_dietary')}
+                <label htmlFor="rcs-dietary-restrictions" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+                <input id="rcs-dietary-restrictions" value={dietaryRestrictions} onChange={e => setDietaryRestrictions(e.target.value)} placeholder={t('rcs_ph_dietary')}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_urgency')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-                <input value={timePressure} onChange={e => setTimePressure(e.target.value)} placeholder={t('rcs_ph_urgency')}
+                <label htmlFor="rcs-time-pressure" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_urgency')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+                <input id="rcs-time-pressure" value={timePressure} onChange={e => setTimePressure(e.target.value)} placeholder={t('rcs_ph_urgency')}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
             </div>
@@ -942,13 +942,13 @@ const RecipeChaosSolver = ({ tool }) => {
               <button onClick={addSubSlot} className={`mt-2 text-xs font-semibold ${c.accentTxt}`}>+ {t('rcs_add_another')}</button>
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_making')} <span className={c.required}>*</span></label>
-              <input value={subContext} onChange={e => setSubContext(e.target.value)} placeholder={t('rcs_ph_dish')}
+              <label htmlFor="rcs-sub-context" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_making')} <span className={c.required}>*</span></label>
+              <input id="rcs-sub-context" value={subContext} onChange={e => setSubContext(e.target.value)} placeholder={t('rcs_ph_dish')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <input value={subDiet} onChange={e => setSubDiet(e.target.value)} placeholder={t('rcs_ph_dietary')}
+              <label htmlFor="rcs-sub-diet" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <input id="rcs-sub-diet" value={subDiet} onChange={e => setSubDiet(e.target.value)} placeholder={t('rcs_ph_dietary')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
           </div>
@@ -998,19 +998,19 @@ const RecipeChaosSolver = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
           <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_q_recipe')} <span className={c.required}>*</span></label>
-              <textarea value={scaleRecipe} onChange={e => setScaleRecipe(e.target.value)} rows={5} placeholder={t('rcs_ph_recipe_paste')}
+              <label htmlFor="rcs-scale-recipe" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_q_recipe')} <span className={c.required}>*</span></label>
+              <textarea id="rcs-scale-recipe" value={scaleRecipe} onChange={e => setScaleRecipe(e.target.value)} rows={5} placeholder={t('rcs_ph_recipe_paste')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_original')}</label>
-                <input type="number" min="1" value={scaleOriginal} onChange={e => setScaleOriginal(e.target.value)}
+                <label htmlFor="rcs-scale-original" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_original')}</label>
+                <input id="rcs-scale-original" type="number" min="1" value={scaleOriginal} onChange={e => setScaleOriginal(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_target')} <span className={c.required}>*</span></label>
-                <input type="number" min="1" value={scaleTarget} onChange={e => setScaleTarget(e.target.value)}
+                <label htmlFor="rcs-scale-target" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_scale_target')} <span className={c.required}>*</span></label>
+                <input id="rcs-scale-target" type="number" min="1" value={scaleTarget} onChange={e => setScaleTarget(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
               </div>
             </div>
@@ -1069,18 +1069,18 @@ const RecipeChaosSolver = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
           <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_recipe')} <span className={c.required}>*</span></label>
-              <textarea value={pfRecipe} onChange={e => setPfRecipe(e.target.value)} rows={5} placeholder={t('rcs_ph_recipe_paste')}
+              <label htmlFor="rcs-pf-recipe" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_recipe')} <span className={c.required}>*</span></label>
+              <textarea id="rcs-pf-recipe" value={pfRecipe} onChange={e => setPfRecipe(e.target.value)} rows={5} placeholder={t('rcs_ph_recipe_paste')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <textarea value={pfIngredients} onChange={e => setPfIngredients(e.target.value)} rows={2} placeholder={t('rcs_ph_have')}
+              <label htmlFor="rcs-pf-ingredients" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <textarea id="rcs-pf-ingredients" value={pfIngredients} onChange={e => setPfIngredients(e.target.value)} rows={2} placeholder={t('rcs_ph_have')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_equipment')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <input value={pfEquipment} onChange={e => setPfEquipment(e.target.value)} placeholder={t('rcs_ph_equipment')}
+              <label htmlFor="rcs-pf-equipment" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_pf_q_equipment')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <input id="rcs-pf-equipment" value={pfEquipment} onChange={e => setPfEquipment(e.target.value)} placeholder={t('rcs_ph_equipment')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
           </div>
@@ -1145,23 +1145,23 @@ const RecipeChaosSolver = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
           <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_dish')} <span className={c.required}>*</span></label>
-              <input value={ffDish} onChange={e => setFfDish(e.target.value)} placeholder={t('rcs_ph_dish')}
+              <label htmlFor="rcs-ff-dish" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_dish')} <span className={c.required}>*</span></label>
+              <input id="rcs-ff-dish" value={ffDish} onChange={e => setFfDish(e.target.value)} placeholder={t('rcs_ph_dish')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_wrong')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <textarea value={ffWrong} onChange={e => setFfWrong(e.target.value)} rows={2} placeholder={t('rcs_ff_ph_wrong')}
+              <label htmlFor="rcs-ff-wrong" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_ff_q_wrong')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <textarea id="rcs-ff-wrong" value={ffWrong} onChange={e => setFfWrong(e.target.value)} rows={2} placeholder={t('rcs_ff_ph_wrong')}
                 className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <input value={ffIngredients} onChange={e => setFfIngredients(e.target.value)} placeholder={t('rcs_ph_have')}
+              <label htmlFor="rcs-ff-ingredients" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_have')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <input id="rcs-ff-ingredients" value={ffIngredients} onChange={e => setFfIngredients(e.target.value)} placeholder={t('rcs_ph_have')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
-              <input value={ffDiet} onChange={e => setFfDiet(e.target.value)} placeholder={t('rcs_ph_dietary')}
+              <label htmlFor="rcs-ff-diet" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('rcs_q_dietary')} <span className={`${c.textMuted} font-normal`}>({t('optional')})</span></label>
+              <input id="rcs-ff-diet" value={ffDiet} onChange={e => setFfDiet(e.target.value)} placeholder={t('rcs_ph_dietary')}
                 className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
             </div>
           </div>
@@ -1175,8 +1175,8 @@ const RecipeChaosSolver = ({ tool }) => {
       )}
       {ffResults?.needs_more_detail && (
         <div className={`border-t ${c.border} pt-5 space-y-3`}>
-          <label className={`text-sm font-semibold ${c.text} block`}>❓ {ffResults.clarifying_question} <span className={c.required}>*</span></label>
-          <input value={ffClarifyAnswer} onChange={e => setFfClarifyAnswer(e.target.value)} placeholder={t('rcs_ff_ph_answer')}
+          <label htmlFor="rcs-ff-clarify-answer" className={`text-sm font-semibold ${c.text} block`}>❓ {ffResults.clarifying_question} <span className={c.required}>*</span></label>
+          <input id="rcs-ff-clarify-answer" value={ffClarifyAnswer} onChange={e => setFfClarifyAnswer(e.target.value)} placeholder={t('rcs_ff_ph_answer')}
             className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <button onClick={answerFlavorClarify} disabled={loading || !ffClarifyAnswer.trim()}
             className={`w-full py-2.5 rounded-lg font-bold text-sm ${ffClarifyAnswer.trim() ? c.btnPrimary : c.btnIdle}`}>

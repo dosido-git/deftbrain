@@ -622,7 +622,7 @@ const BrainDumpBuddy = ({ tool }) => {
                 <div key={i} className={`p-3 rounded-lg ${c.blockBg} transition-opacity ${checked ? 'opacity-40' : ''}`}>
                   <div className="flex items-start gap-2.5">
                     {isActionable && (
-                      <button onClick={() => setCheckedItems(prev => ({ ...prev, [checkKey]: !prev[checkKey] }))}
+                      <button role="checkbox" aria-checked={!!checked} aria-label={text} onClick={() => setCheckedItems(prev => ({ ...prev, [checkKey]: !prev[checkKey] }))}
                         className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                           checked ? c.checkboxChecked : c.checkboxUnchecked
                         }`}>
@@ -652,10 +652,10 @@ const BrainDumpBuddy = ({ tool }) => {
                       {/* Reclassify buttons — hidden when checked */}
                       {!checked && (
                         <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-                          {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} title={t(CATEGORY_CONFIG.actions.labelKey)} aria-label={t(CATEGORY_CONFIG.actions.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ✅</button>}
-                          {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} title={t(CATEGORY_CONFIG.worries.labelKey)} aria-label={t(CATEGORY_CONFIG.worries.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ ☁️</button>}
-                          {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} title={t(CATEGORY_CONFIG.can_drop.labelKey)} aria-label={t(CATEGORY_CONFIG.can_drop.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 🗑️</button>}
-                          {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} title={t(CATEGORY_CONFIG.feelings.labelKey)} aria-label={t(CATEGORY_CONFIG.feelings.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary} opacity-60 hover:opacity-100`}>→ 💗</button>}
+                          {key !== 'actions' && <button onClick={() => reclassifyItem(key, i, 'actions')} title={t(CATEGORY_CONFIG.actions.labelKey)} aria-label={t(CATEGORY_CONFIG.actions.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary}`}>→ ✅</button>}
+                          {key !== 'worries' && <button onClick={() => reclassifyItem(key, i, 'worries')} title={t(CATEGORY_CONFIG.worries.labelKey)} aria-label={t(CATEGORY_CONFIG.worries.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary}`}>→ ☁️</button>}
+                          {key !== 'can_drop' && <button onClick={() => reclassifyItem(key, i, 'can_drop')} title={t(CATEGORY_CONFIG.can_drop.labelKey)} aria-label={t(CATEGORY_CONFIG.can_drop.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary}`}>→ 🗑️</button>}
+                          {key !== 'feelings' && <button onClick={() => reclassifyItem(key, i, 'feelings')} title={t(CATEGORY_CONFIG.feelings.labelKey)} aria-label={t(CATEGORY_CONFIG.feelings.labelKey)} className={`text-xs px-1.5 py-0.5 rounded ${c.btnSecondary}`}>→ 💗</button>}
                         </div>
                       )}
                     </div>
@@ -812,10 +812,10 @@ const BrainDumpBuddy = ({ tool }) => {
           {/* Free text input */}
           {inputMode === 'freetext' && (
             <div className={`border-t ${c.border} pt-5`}>
-              <label className={`block text-sm font-semibold ${c.text} mb-2`}>
+              <label htmlFor="bdb-free-text" className={`block text-sm font-semibold ${c.text} mb-2`}>
                 {t('bdb_your_dump')} <span className={c.required}>*</span>
               </label>
-              <textarea ref={textRef} value={freeText} onChange={e => setFreeText(e.target.value)}
+              <textarea id="bdb-free-text" ref={textRef} value={freeText} onChange={e => setFreeText(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleStructure(); } }}
                 placeholder={t('bdb_freetext_ph')}
                 className={`w-full p-4 border-2 rounded-xl text-sm ${c.dumpBg} ${c.text} outline-none focus:ring-2 focus:ring-cyan-400 resize-none leading-relaxed`}
@@ -1010,7 +1010,7 @@ const BrainDumpBuddy = ({ tool }) => {
                                 {d.completedTasks.map((ct, i) => (
                                   <p key={i} className={`text-xs ${c.textSecondary} flex items-start gap-1.5`}>
                                     <span className={sv ? 'text-[var(--sc-strong)] mt-px flex-shrink-0' : 'text-emerald-500 mt-px flex-shrink-0'}>✓</span>
-                                    <span className="line-through opacity-60">{ct}</span>
+                                    <span className="line-through">{ct}</span>
                                   </p>
                                 ))}
                               </div>
@@ -1135,7 +1135,7 @@ const BrainDumpBuddy = ({ tool }) => {
               : (c.doFirstActiveCard)
             }`}>
               <div className="flex items-start gap-3">
-                <button onClick={() => {
+                <button role="checkbox" aria-checked={doFirstDone} aria-label={r.do_first.task} onClick={() => {
                     const nowDone = !doFirstDone;
                     setDoFirstDone(nowDone);
                     // Also check/uncheck the matching action item to avoid duplication
@@ -1159,7 +1159,7 @@ const BrainDumpBuddy = ({ tool }) => {
                     ? (c.doFirstDoneLabel)
                     : (c.doFirstActiveLabel)
                   }`}>{doFirstDone ? t('bdb_done_label') : t('bdb_your_one_next_step')}</p>
-                  <p className={`text-lg font-bold ${c.text} ${doFirstDone ? 'line-through opacity-50' : ''}`}>{r.do_first.task}</p>
+                  <p className={`text-lg font-bold ${c.text} ${doFirstDone ? 'line-through' : ''}`}>{r.do_first.task}</p>
                   {!doFirstDone && r.do_first.why_this_first && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.do_first.why_this_first}</p>}
                   {!doFirstDone && r.do_first.time_estimate && (
                     <span className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded ${c.accentLight} border`}>~{r.do_first.time_estimate}</span>

@@ -737,8 +737,8 @@ const PlantRescue = ({ tool }) => {
 
           {mode !== 'identify' && (
             <div>
-              <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_plant_name')}</label>
-              <input type="text" value={plantName} onChange={e => setPlantName(e.target.value)}
+              <label htmlFor="pr-plant-name" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_plant_name')}</label>
+              <input id="pr-plant-name" type="text" value={plantName} onChange={e => setPlantName(e.target.value)}
                 placeholder={t('pr_plant_name_ph')}
                 className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`} />
             </div>
@@ -750,8 +750,8 @@ const PlantRescue = ({ tool }) => {
               satisfies that, no separate flag needed. */}
           {mode === 'care' && (
             <div>
-              <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_care_species_label')} <span className={c.required}>*</span></label>
-              <input type="text" value={careSpecies} onChange={e => setCareSpecies(e.target.value)}
+              <label htmlFor="pr-care-species" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_care_species_label')} <span className={c.required}>*</span></label>
+              <input id="pr-care-species" type="text" value={careSpecies} onChange={e => setCareSpecies(e.target.value)}
                 placeholder={t('pr_care_species_ph')}
                 className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2`} />
             </div>
@@ -828,8 +828,8 @@ const PlantRescue = ({ tool }) => {
           {/* Symptom duration — rescue only */}
           {mode === 'rescue' && (
             <div>
-              <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_symdur_label')}</label>
-              <select value={symptomDuration} onChange={(e) => setSymptomDuration(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+              <label htmlFor="pr-symptom-duration" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_symdur_label')}</label>
+              <select id="pr-symptom-duration" value={symptomDuration} onChange={(e) => setSymptomDuration(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                 <option value="">{t('pr_select')}</option>
                 {symptomDurationOptions.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
               </select>
@@ -873,8 +873,8 @@ const PlantRescue = ({ tool }) => {
           {mode === 'rescue' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
-                <select value={lightLevel} onChange={e => setLightLevel(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                <label htmlFor="pr-light-level" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
+                <select id="pr-light-level" value={lightLevel} onChange={e => setLightLevel(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                   <option value="">{t('pr_select')}</option>
                   <option value="full-sun">{t('pr_light_full')}</option>
                   <option value="partial-shade">{t('pr_light_partial')}</option>
@@ -882,8 +882,8 @@ const PlantRescue = ({ tool }) => {
                 </select>
               </div>
               <div>
-                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_location')}</label>
-                <select value={location} onChange={e => setLocation(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                <label htmlFor="pr-location" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_location')}</label>
+                <select id="pr-location" value={location} onChange={e => setLocation(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                   <option value="">{t('pr_select')}</option>
                   <option value="indoor">{t('pr_loc_indoor')}</option>
                   <option value="outdoor">{t('pr_loc_outdoor')}</option>
@@ -896,8 +896,8 @@ const PlantRescue = ({ tool }) => {
           {mode === 'care' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_care_where_label')}</label>
-                <select value={careWhereIsIt} onChange={e => setCareWhereIsIt(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                <label htmlFor="pr-care-where-is-it" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_care_where_label')}</label>
+                <select id="pr-care-where-is-it" value={careWhereIsIt} onChange={e => setCareWhereIsIt(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                   <option value="">{t('pr_select')}</option>
                   <option value="indoor">{t('pr_loc_indoor')}</option>
                   <option value="outdoor">{t('pr_loc_outdoor')}</option>
@@ -905,8 +905,8 @@ const PlantRescue = ({ tool }) => {
                 </select>
               </div>
               <div>
-                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
-                <select value={careLight} onChange={e => setCareLight(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                <label htmlFor="pr-care-light" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_light')}</label>
+                <select id="pr-care-light" value={careLight} onChange={e => setCareLight(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                   <option value="">{t('pr_select')}</option>
                   <option value="low">{t('pr_care_light_low')}</option>
                   <option value="medium">{t('pr_care_light_medium')}</option>
@@ -922,8 +922,8 @@ const PlantRescue = ({ tool }) => {
           {mode !== 'identify' && (
             <>
               <div>
-                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_watermethod_label')}</label>
-                <select value={wateringMethod} onChange={(e) => setWateringMethod(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input} mb-2`}>
+                <label htmlFor="pr-watering-method" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_watermethod_label')}</label>
+                <select id="pr-watering-method" value={wateringMethod} onChange={(e) => setWateringMethod(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input} mb-2`}>
                   <option value="">{t('pr_select')}</option>
                   {wateringMethodOptions.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
                 </select>
@@ -934,8 +934,8 @@ const PlantRescue = ({ tool }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_drainage_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
-                  <select value={hasDrainage} onChange={(e) => setHasDrainage(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <label htmlFor="pr-has-drainage" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_drainage_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
+                  <select id="pr-has-drainage" value={hasDrainage} onChange={(e) => setHasDrainage(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                     <option value="">{t('pr_select')}</option>
                     <option value="yes">{t('pr_yes')}</option>
                     <option value="no">{t('pr_no')}</option>
@@ -943,8 +943,8 @@ const PlantRescue = ({ tool }) => {
                   </select>
                 </div>
                 <div>
-                  <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_climate')}</label>
-                  <select value={climateZone} onChange={e => setClimateZone(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                  <label htmlFor="pr-climate-zone" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_climate')}</label>
+                  <select id="pr-climate-zone" value={climateZone} onChange={e => setClimateZone(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                     <option value="">{t('pr_select')}</option>
                     <option value="tropical">{t('pr_climate_tropical')}</option>
                     <option value="subtropical">{t('pr_climate_subtropical')}</option>
@@ -971,14 +971,14 @@ const PlantRescue = ({ tool }) => {
           {mode === 'care' && (
             <>
               <div>
-                <label className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_care_notes_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
-                <textarea value={plantDescription} onChange={e => setPlantDescription(e.target.value)}
+                <label htmlFor="pr-plant-description" className={`block text-sm font-medium ${c.label} mb-1`}>{t('pr_care_notes_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
+                <textarea id="pr-plant-description" value={plantDescription} onChange={e => setPlantDescription(e.target.value)}
                   placeholder={t('pr_care_notes_ph')}
                   className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 resize-y`} rows={2} />
               </div>
               <div>
-                <label className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_care_help_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
-                <select value={careHelpWith} onChange={e => setCareHelpWith(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
+                <label htmlFor="pr-care-help-with" className={`block text-xs font-medium ${c.label} mb-1`}>{t('pr_care_help_label')} <span className={`font-normal ${c.textMuted}`}>({t('pr_optional')})</span></label>
+                <select id="pr-care-help-with" value={careHelpWith} onChange={e => setCareHelpWith(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`}>
                   <option value="">{t('pr_select')}</option>
                   <option value="watering">{t('pr_care_help_watering')}</option>
                   <option value="light">{t('pr_care_help_light')}</option>

@@ -228,24 +228,24 @@ const GetNoticed = ({ tool }) => {
               {t('lks_xref_pre')} <a href="/SixDegreesOfMe" className={linkStyle}>🔗 {t('lks_xref_sixdegrees')}</a> {t('lks_xref_post')}
             </p>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="gn-description" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('lks_desc_label')} <span className={c.required}>*</span>
               </label>
-              <textarea value={description} onChange={e => setDescription(e.target.value)}
+              <textarea id="gn-description" value={description} onChange={e => setDescription(e.target.value)}
                 placeholder={t('lks_desc_ph')}
                 rows={5} maxLength={800}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('lks_goals_label')} <span className={`font-normal ${c.textMuteded}`}>{t('lks_optional')}</span></label>
-                <input type="text" value={goals} onChange={e => setGoals(e.target.value)}
+                <label htmlFor="gn-goals" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('lks_goals_label')} <span className={`font-normal ${c.textMuteded}`}>{t('lks_optional')}</span></label>
+                <input id="gn-goals" type="text" value={goals} onChange={e => setGoals(e.target.value)}
                   placeholder={t('lks_goals_ph')}
                   className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('lks_exposures_label')} <span className={`font-normal ${c.textMuteded}`}>{t('lks_optional')}</span></label>
-                <input type="text" value={currentExposures} onChange={e => setCurrentExposures(e.target.value)}
+                <label htmlFor="gn-current-exposures" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('lks_exposures_label')} <span className={`font-normal ${c.textMuteded}`}>{t('lks_optional')}</span></label>
+                <input id="gn-current-exposures" type="text" value={currentExposures} onChange={e => setCurrentExposures(e.target.value)}
                   placeholder={t('lks_exposures_ph')}
                   className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
               </div>

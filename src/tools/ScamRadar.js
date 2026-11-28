@@ -361,10 +361,10 @@ function ScamRadar({ tool }) {
           visitor is already pasting the actual material; a scam pattern is
           identified from content, not from a category the visitor picked. */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="sr-message-text" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('scam_msg_content')} <span className={c.required}>*</span>
         </label>
-        <textarea
+        <textarea id="sr-message-text"
           value={messageText}
           onChange={e => setMessageText(e.target.value)}
           placeholder={t('scam_msg_ph')}
@@ -376,8 +376,8 @@ function ScamRadar({ tool }) {
 
       {/* Sender context */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('scam_sender_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('scam_sender_optional')}</span></label>
-        <input
+        <label htmlFor="sr-sender-context" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('scam_sender_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('scam_sender_optional')}</span></label>
+        <input id="sr-sender-context"
           type="text"
           value={senderContext}
           onChange={e => setSenderContext(e.target.value)}

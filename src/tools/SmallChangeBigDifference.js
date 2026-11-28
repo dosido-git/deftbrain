@@ -385,24 +385,24 @@ const SmallChangeBigDifference = ({ tool }) => {
               {t('op_xref_intro')} <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('op_braindump')}</a> {t('op_braindump_after')}
             </p>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="scbd-routine" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('op_routine_label')} <span className={c.required}>*</span>
               </label>
-              <textarea value={routine} onChange={e => setRoutine(e.target.value)}
+              <textarea id="scbd-routine" value={routine} onChange={e => setRoutine(e.target.value)}
                 placeholder={t('op_routine_ph')}
                 rows={5} maxLength={800}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} `} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('op_goals_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-                <input type="text" value={goals} onChange={e => setGoals(e.target.value)}
+                <label htmlFor="scbd-goals" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('op_goals_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+                <input id="scbd-goals" type="text" value={goals} onChange={e => setGoals(e.target.value)}
                   placeholder={t('op_goals_ph')}
                   className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('op_pain_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-                <input type="text" value={painPoints} onChange={e => setPainPoints(e.target.value)}
+                <label htmlFor="scbd-pain-points" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('op_pain_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+                <input id="scbd-pain-points" type="text" value={painPoints} onChange={e => setPainPoints(e.target.value)}
                   placeholder={t('op_pain_ph')}
                   className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
               </div>
@@ -456,7 +456,7 @@ const SmallChangeBigDifference = ({ tool }) => {
                 <p className={`text-sm ${c.memoryText}`}>{results.previous_experiments.summary}</p>
                 {results?.previous_experiments?.how_it_affected_this_choice && (
                   <div className="mt-2">
-                    <p className={`text-[13px] font-bold mb-1 ${c.memoryText} opacity-80`}>{t('op_why_that_changed')}</p>
+                    <p className={`text-[13px] font-bold mb-1 ${c.memoryText}`}>{t('op_why_that_changed')}</p>
                     <p className={`text-sm ${c.memoryText}`}>{results.previous_experiments.how_it_affected_this_choice}</p>
                   </div>
                 )}

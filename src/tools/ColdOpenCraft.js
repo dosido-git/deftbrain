@@ -223,10 +223,10 @@ const ColdOpenCraft = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : "space-y-4"}>
           {/* Who */}
           <div>
-            <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+            <label htmlFor="coc-who" className={`text-sm font-bold ${c.text} block mb-1.5`}>
               {t('coc_who_label')} <span className={c.required}>*</span>
             </label>
-            <input
+            <input id="coc-who"
               type="text"
               value={who}
               onChange={e => setWho(e.target.value)}
@@ -237,10 +237,10 @@ const ColdOpenCraft = ({ tool }) => {
 
           {/* Why */}
           <div>
-            <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+            <label htmlFor="coc-why" className={`text-sm font-bold ${c.text} block mb-1.5`}>
               {t('coc_why_label')} <span className={c.required}>*</span>
             </label>
-            <textarea
+            <textarea id="coc-why"
               value={why}
               onChange={e => setWhy(e.target.value)}
               placeholder={t('coc_why_ph')}
@@ -271,11 +271,11 @@ const ColdOpenCraft = ({ tool }) => {
 
           {/* What you know */}
           <div>
-            <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+            <label htmlFor="coc-what-you-know" className={`text-sm font-bold ${c.text} block mb-1.5`}>
               {t('coc_know_label')}{' '}
               <span className={`font-normal ${c.textMuteded}`}>{t('coc_know_note')}</span>
             </label>
-            <input
+            <input id="coc-what-you-know"
               type="text"
               value={whatYouKnow}
               onChange={e => setWhatYouKnow(e.target.value)}

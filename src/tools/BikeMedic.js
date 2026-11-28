@@ -1660,7 +1660,7 @@ const BikeMedic = ({ tool }) => {
             className={`relative flex items-center gap-1 px-3 py-2 text-xs font-bold border-2 border-b-0 rounded-t-lg -mb-0.5 transition-all whitespace-nowrap ${
               isActive
                 ? `${c.card} ${c.text} ${c.border} z-10`
-                : `${c.cardAlt} ${c.textMuted} ${c.border} hover:${c.textSecondary} opacity-80 hover:opacity-100`
+                : `${c.cardAlt} ${c.textMuted} ${c.border} hover:${c.textSecondary}`
             }`}>
             <span>{tab.icon}</span>
             <span>{t(tab.labelKey)}</span>
@@ -1824,8 +1824,8 @@ const BikeMedic = ({ tool }) => {
           <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4`}>{editingBikeId ? t('bmd_garage_edit_bike') : t('bmd_garage_add_new_bike')}</h4>
             <div className="mb-5">
-              <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('bmd_garage_bike_name')}</label>
-              <input value={tempProfile.name || ''} onChange={e => setTempProfile(prev => ({ ...prev, name: e.target.value }))}
+              <label htmlFor="bm-temp-profile" className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('bmd_garage_bike_name')}</label>
+              <input id="bm-temp-profile" value={tempProfile.name || ''} onChange={e => setTempProfile(prev => ({ ...prev, name: e.target.value }))}
                 onKeyDown={e => { if (e.key === 'Enter' && tempProfile.bikeType) saveBike(tempProfile); }}
                 placeholder={t('bmd_garage_name_ph')}
                 className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />
@@ -2176,8 +2176,8 @@ const BikeMedic = ({ tool }) => {
             </div>
             <div className="flex gap-2 items-end">
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('bmd_hub_distance_label')} <span className={c.required}>*</span></label>
-                <input type="number" value={rideDistance} onChange={e => setRideDistance(e.target.value)}
+                <label htmlFor="bm-ride-distance" className={`text-[15px] font-semibold ${c.labelText} block mb-1`}>{t('bmd_hub_distance_label')} <span className={c.required}>*</span></label>
+                <input id="bm-ride-distance" type="number" value={rideDistance} onChange={e => setRideDistance(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && parseFloat(rideDistance) > 0) logRide(); }}
                   placeholder={t('bmd_hub_distance_ph')}
                   className={`w-full px-3 py-2 border-2 rounded-lg text-sm outline-none ${c.input}`} />

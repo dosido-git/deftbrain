@@ -415,21 +415,21 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs ${c.accentTxt}`}>📞 {t('mm_phone_intro')}</p>
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🏢</span> {t('mm_phone_company_label')} <span className={c.required}>*</span></label>
-              <input type="text" value={phoneCompany} onChange={e => setPhoneCompany(e.target.value)}
+              <label htmlFor="mm-phone-company" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🏢</span> {t('mm_phone_company_label')} <span className={c.required}>*</span></label>
+              <input id="mm-phone-company" type="text" value={phoneCompany} onChange={e => setPhoneCompany(e.target.value)}
                 placeholder={t('mm_phone_company_ph')}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">⚠️</span> {t('mm_phone_issue_label')} <span className={c.required}>*</span></label>
-              <textarea value={phoneIssue} onChange={e => setPhoneIssue(e.target.value)}
+              <label htmlFor="mm-phone-issue" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">⚠️</span> {t('mm_phone_issue_label')} <span className={c.required}>*</span></label>
+              <textarea id="mm-phone-issue" value={phoneIssue} onChange={e => setPhoneIssue(e.target.value)}
                 placeholder={t('mm_phone_issue_ph')}
                 rows={2} maxLength={400}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuteded} resize-none outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🎯</span> {t('mm_phone_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-              <input type="text" value={phoneGoal} onChange={e => setPhoneGoal(e.target.value)}
+              <label htmlFor="mm-phone-goal" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🎯</span> {t('mm_phone_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+              <input id="mm-phone-goal" type="text" value={phoneGoal} onChange={e => setPhoneGoal(e.target.value)}
                 placeholder={t('mm_phone_goal_ph')}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
@@ -504,10 +504,10 @@ const MagicMouth = ({ tool }) => {
 
             {/* What you want */}
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}>
+              <label htmlFor="mm-what-you-want" className={`text-sm font-semibold ${c.labelText}`}>
                 <span className="me-1.5">🎯</span> {t('mm_want_label')} <span className={c.required}>*</span>
               </label>
-              <textarea
+              <textarea id="mm-what-you-want"
                 value={whatYouWant}
                 onChange={(e) => setWhatYouWant(e.target.value)}
                 placeholder={t('mm_want_ph')}
@@ -519,10 +519,10 @@ const MagicMouth = ({ tool }) => {
 
             {/* Situation */}
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}>
+              <label htmlFor="mm-situation" className={`text-sm font-semibold ${c.labelText}`}>
                 <span className="me-1.5">📍</span> {t('mm_situation_label')} <span className={`font-normal ${c.textMuteded}`}>{t('mm_situation_hint')}</span>
               </label>
-              <textarea
+              <textarea id="mm-situation"
                 value={situation}
                 onChange={(e) => setSituation(e.target.value)}
                 placeholder={t('mm_situation_ph')}
@@ -535,10 +535,10 @@ const MagicMouth = ({ tool }) => {
             {/* Optional fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.labelText}`}>
+                <label htmlFor="mm-who-youre-asking" className={`text-sm font-semibold ${c.labelText}`}>
                   <span className="me-1.5">👤</span> {t('mm_who_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
                 </label>
-                <input
+                <input id="mm-who-youre-asking"
                   type="text"
                   value={whoYoureAsking}
                   onChange={(e) => setWhoYoureAsking(e.target.value)}
@@ -548,10 +548,10 @@ const MagicMouth = ({ tool }) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.labelText}`}>
+                <label htmlFor="mm-tried-already" className={`text-sm font-semibold ${c.labelText}`}>
                   <span className="me-1.5">🔄</span> {t('mm_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
                 </label>
-                <input
+                <input id="mm-tried-already"
                   type="text"
                   value={triedAlready}
                   onChange={(e) => setTriedAlready(e.target.value)}
@@ -781,28 +781,28 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs ${c.dontInk}`}>💣 {t('mm_nuclear_intro')}</p>
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🏢</span> {t('mm_nuclear_company_label')} <span className={c.required}>*</span></label>
-              <input type="text" value={nuclearCompany} onChange={e => setNuclearCompany(e.target.value)}
+              <label htmlFor="mm-nuclear-company" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🏢</span> {t('mm_nuclear_company_label')} <span className={c.required}>*</span></label>
+              <input id="mm-nuclear-company" type="text" value={nuclearCompany} onChange={e => setNuclearCompany(e.target.value)}
                 placeholder={t('mm_nuclear_company_ph')}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">⚠️</span> {t('mm_nuclear_problem_label')} <span className={c.required}>*</span></label>
-              <textarea value={nuclearProblem} onChange={e => setNuclearProblem(e.target.value)}
+              <label htmlFor="mm-nuclear-problem" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">⚠️</span> {t('mm_nuclear_problem_label')} <span className={c.required}>*</span></label>
+              <textarea id="mm-nuclear-problem" value={nuclearProblem} onChange={e => setNuclearProblem(e.target.value)}
                 placeholder={t('mm_nuclear_problem_ph')}
                 rows={3} maxLength={600}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuteded} resize-none outline-none transition-colors`} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🔄</span> {t('mm_nuclear_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-                <input type="text" value={nuclearTried} onChange={e => setNuclearTried(e.target.value)}
+                <label htmlFor="mm-nuclear-tried" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🔄</span> {t('mm_nuclear_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+                <input id="mm-nuclear-tried" type="text" value={nuclearTried} onChange={e => setNuclearTried(e.target.value)}
                   placeholder={t('mm_nuclear_tried_ph')}
                   className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
               </div>
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🎯</span> {t('mm_nuclear_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-                <input type="text" value={nuclearGoal} onChange={e => setNuclearGoal(e.target.value)}
+                <label htmlFor="mm-nuclear-goal" className={`text-sm font-semibold ${c.labelText}`}><span className="me-1.5">🎯</span> {t('mm_nuclear_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+                <input id="mm-nuclear-goal" type="text" value={nuclearGoal} onChange={e => setNuclearGoal(e.target.value)}
                   placeholder={t('mm_nuclear_goal_ph')}
                   className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
               </div>

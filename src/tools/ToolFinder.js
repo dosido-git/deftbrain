@@ -237,10 +237,10 @@ const ToolFinder = ({ tool }) => {
 
         <div className={sv ? `${FORM_PANEL} space-y-0` : 'space-y-0'}>
         {/* ── PROBLEM INPUT ── */} <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="tf-problem" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('tf_input_label')} <span className={c.required}>*</span>
           </label>
-          <textarea
+          <textarea id="tf-problem"
             value={problem} onChange={e => setProblem(e.target.value)} placeholder={t('tf_input_ph')}
             rows={3} className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none placeholder:${c.textMuted}`} />
         </div>

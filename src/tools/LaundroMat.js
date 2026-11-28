@@ -1414,8 +1414,8 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           <div className="mb-3">
-            <label className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_stain_tried_q')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></label>
-            <input type="text" value={stainTreatment} onChange={e => setStainTreatment(e.target.value)}
+            <label htmlFor="lm-stain-treatment" className={`text-[15px] font-semibold ${c.labelText} mb-2 block`}>{t('lmt_stain_tried_q')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></label>
+            <input id="lm-stain-treatment" type="text" value={stainTreatment} onChange={e => setStainTreatment(e.target.value)}
               placeholder={t('lmt_stain_tried_ph')}
               className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
@@ -1518,8 +1518,8 @@ const LaundroMat = ({ tool }) => {
 
               {/* Item description */}
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmt_rescue_what_is_it')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_what_is_it_hint')}</span></label>
-                <input value={rescueItem} onChange={e => setRescueItem(e.target.value)}
+                <label htmlFor="lm-rescue-item" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmt_rescue_what_is_it')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_what_is_it_hint')}</span></label>
+                <input id="lm-rescue-item" value={rescueItem} onChange={e => setRescueItem(e.target.value)}
                   placeholder={t('lmt_rescue_item_placeholder')}
                   className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
               </div>

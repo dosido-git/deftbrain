@@ -272,20 +272,20 @@ function SleepArchitect({ tool }) {
       {/* Times */}
       <div className="grid grid-cols-3 gap-3">
         <div>
-          <label className={`block text-xs font-medium ${c.labelText} mb-1`}>{t('sa_bedtime_label')}</label>
-          <input type="text" value={bedtime} onChange={e => setBedtime(e.target.value)}
+          <label htmlFor="sa-bedtime" className={`block text-xs font-medium ${c.labelText} mb-1`}>{t('sa_bedtime_label')}</label>
+          <input id="sa-bedtime" type="text" value={bedtime} onChange={e => setBedtime(e.target.value)}
             placeholder={t('sa_bedtime_ph')}
             className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
         </div>
         <div>
-          <label className={`block text-xs font-medium ${c.labelText} mb-1`}>{t('sa_wake_label')}</label>
-          <input type="text" value={wakeTime} onChange={e => setWakeTime(e.target.value)}
+          <label htmlFor="sa-wake-time" className={`block text-xs font-medium ${c.labelText} mb-1`}>{t('sa_wake_label')}</label>
+          <input id="sa-wake-time" type="text" value={wakeTime} onChange={e => setWakeTime(e.target.value)}
             placeholder={t('sa_wake_ph')}
             className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
         </div>
         <div>
-          <label className={`block text-xs font-medium ${c.labelText} mb-1`}>{t('sa_hours_label')}</label>
-          <input type="text" value={hoursActual} onChange={e => setHoursActual(e.target.value)}
+          <label htmlFor="sa-hours-actual" className={`block text-xs font-medium ${c.labelText} mb-1`}>{t('sa_hours_label')}</label>
+          <input id="sa-hours-actual" type="text" value={hoursActual} onChange={e => setHoursActual(e.target.value)}
             placeholder={t('sa_hours_ph')}
             className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
         </div>
@@ -306,10 +306,10 @@ function SleepArchitect({ tool }) {
 
       {/* Freeform */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="sa-freeform" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('sa_more_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('sa_more_hint')}</span>
         </label>
-        <textarea value={freeform} onChange={e => setFreeform(e.target.value)}
+        <textarea id="sa-freeform" value={freeform} onChange={e => setFreeform(e.target.value)}
           placeholder={t('sa_more_ph')}
           rows={4}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />

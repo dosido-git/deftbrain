@@ -1558,8 +1558,8 @@ const FocusSoundArchitect = ({ tool }) => {
               ))}
             </div>
             <div className="mt-4">
-              <label className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('fsa_energy')} <span className={c.accentTxt}>{energyLabel}</span></label>
-              <input type="range" min="0" max="100" value={energyGoal} onChange={e => setEnergyGoal(Number(e.target.value))}
+              <label htmlFor="fsa-energy-goal" className={`block text-[15px] font-semibold ${c.labelText} mb-2`}>{t('fsa_energy')} <span className={c.accentTxt}>{energyLabel}</span></label>
+              <input id="fsa-energy-goal" type="range" min="0" max="100" value={energyGoal} onChange={e => setEnergyGoal(Number(e.target.value))}
                 className={sv ? 'fsa-slider w-full h-2 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider w-full h-2 rounded-lg cursor-pointer accent-cyan-600'} />
               <div className={`flex justify-between text-[13px] ${c.textMuted} mt-1`}><span>{t('fsa_very_calm')}</span><span>{t('fsa_energized')}</span></div>
             </div>
@@ -1627,7 +1627,7 @@ const FocusSoundArchitect = ({ tool }) => {
             </div>
             <div className="flex items-center gap-3">
               <span className={`text-xs font-bold w-16 ${c.textMuted}`}>{t('fsa_master')}</span>
-              <input type="range" min="0" max="100" value={masterVolume}
+              <input type="range" aria-label={t('fsa_master')} min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
                 className={sv ? 'fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600'} />
               <span className={`text-xs font-mono w-8 text-end ${c.textMuted}`}>{masterVolume}</span>
@@ -1795,7 +1795,7 @@ const FocusSoundArchitect = ({ tool }) => {
                         )}
                       </div>
                     </div>
-                    <input type="range" min="0" max="100" value={vol}
+                    <input type="range" aria-label={t(typeDef.labelKey)} min="0" max="100" value={vol}
                       onChange={e => handleLayerVolume(idx, Number(e.target.value))}
                       className={sv ? 'fsa-slider w-full h-1.5 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider w-full h-1.5 rounded-lg cursor-pointer accent-cyan-600'} />
 
@@ -1808,7 +1808,7 @@ const FocusSoundArchitect = ({ tool }) => {
                           return (
                             <div key={band.id} className="flex items-center gap-2">
                               <span className={`text-xs font-bold w-12 ${c.textMuted}`}>{band.emoji} {t(band.labelKey)}</span>
-                              <input type="range" min="-12" max="12" step="1" value={val}
+                              <input type="range" aria-label={`${t(typeDef.labelKey)}: ${t(band.labelKey)}`} min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
                                 className={sv ? 'fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-[var(--sc-strong)]' : 'fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500'} />
                               <span className={`text-xs font-mono w-8 text-end ${val > 0 ? ((sv ? 'text-[var(--sc-strong)]' : isDark ? 'text-emerald-400' : 'text-emerald-600')) : val < 0 ? ((sv ? 'text-[var(--sc-x-text)]' : isDark ? 'text-red-400' : 'text-red-500')) : c.textMuted}`}>

@@ -685,10 +685,10 @@ const PlainTalk = ({ tool }) => {
         {/* Input mode: textarea below divider */}
         {!result && !compareOnly && (
           <div className="px-5 pb-5 pt-3 space-y-3">
-            <label className={`block text-sm font-bold ${c.text}`}>
+            <label htmlFor="pt-input-text" className={`block text-sm font-bold ${c.text}`}>
               📄 {t('plt_paste_label')} <span className={c.required}>*</span>
             </label>
-            <textarea
+            <textarea id="pt-input-text"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               placeholder={t('plt_paste_ph')}

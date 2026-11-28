@@ -485,10 +485,10 @@ const SomeoneSaidItBetter = ({ tool }) => {
         {!results && (
           <div className="space-y-4">
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="ssib-situation" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('ssib_situation_label')} <span className={c.required}>*</span>
               </label>
-              <textarea value={situation} onChange={e => setSituation(e.target.value)}
+              <textarea id="ssib-situation" value={situation} onChange={e => setSituation(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !busy && canSubmit) { e.preventDefault(); handleSubmit(); } }}
                 placeholder={t('ssib_situation_ph')}
                 rows={5} maxLength={2200}

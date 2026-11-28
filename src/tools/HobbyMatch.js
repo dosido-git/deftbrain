@@ -331,10 +331,10 @@ const HobbyMatch = ({ tool }) => {
 
         {/* Schedule */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="hm-schedule" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('hm_freetime_label')} <span className={`font-normal ${c.textMuteded}`}>{t('hm_optional')}</span>
           </label>
-          <input
+          <input id="hm-schedule"
             type="text"
             value={schedule}
             onChange={e => setSchedule(e.target.value)}
@@ -363,10 +363,10 @@ const HobbyMatch = ({ tool }) => {
 
         {/* Physical */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="hm-physical" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('hm_physical_label')} <span className={`font-normal ${c.textMuteded}`}>{t('hm_optional')}</span>
           </label>
-          <input
+          <input id="hm-physical"
             type="text"
             value={physical}
             onChange={e => setPhysical(e.target.value)}
@@ -377,10 +377,10 @@ const HobbyMatch = ({ tool }) => {
 
         {/* Tried before */}
         <div className="mb-5">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="hm-tried-before" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('hm_tried_label')} <span className={`font-normal ${c.textMuteded}`}>{t('hm_tried_hint')}</span>
           </label>
-          <input
+          <input id="hm-tried-before"
             type="text"
             value={triedBefore}
             onChange={e => setTriedBefore(e.target.value)}

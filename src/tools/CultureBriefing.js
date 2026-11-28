@@ -315,10 +315,10 @@ function CultureBriefing({ tool }) {
     <div className={sv ? `${FORM_PANEL} space-y-4` : `border-t ${c.border} pt-5 space-y-4`}>
       {/* Destination */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cb-destination" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('cb_destination')} <span className={c.required}>*</span>
         </label>
-        <input
+        <input id="cb-destination"
           type="text"
           value={destination}
           onChange={e => setDestination(e.target.value)}
@@ -329,10 +329,10 @@ function CultureBriefing({ tool }) {
 
       {/* Region / city */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cb-region" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('cb_region')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span>
         </label>
-        <input
+        <input id="cb-region"
           type="text"
           value={region}
           onChange={e => setRegion(e.target.value)}
@@ -357,10 +357,10 @@ function CultureBriefing({ tool }) {
       {/* Duration + Home country */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          <label htmlFor="cb-duration" className={`block text-sm font-medium ${c.labelText} mb-1`}>
             {t('cb_duration')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span>
           </label>
-          <input
+          <input id="cb-duration"
             type="text"
             value={duration}
             onChange={e => setDuration(e.target.value)}
@@ -369,10 +369,10 @@ function CultureBriefing({ tool }) {
           />
         </div>
         <div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          <label htmlFor="cb-home-country" className={`block text-sm font-medium ${c.labelText} mb-1`}>
             {t('cb_home_country')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span>
           </label>
-          <input
+          <input id="cb-home-country"
             type="text"
             value={homeCountry}
             onChange={e => setHomeCountry(e.target.value)}

@@ -638,32 +638,32 @@ const JustifyMyMeeting = ({ tool }) => {
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_j_intro')}</p>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label htmlFor="jmm-meeting-text" className={`text-sm font-bold ${c.label} block mb-1.5`}>
             {t('mbd_j_invite_label')} <span className={c.required}>{t('mbd_required')}</span>
           </label>
-          <textarea value={meetingText} onChange={e => setMeetingText(e.target.value)}
+          <textarea id="jmm-meeting-text" value={meetingText} onChange={e => setMeetingText(e.target.value)}
             placeholder={t('mbd_j_invite_ph')} rows={5}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_duration_label')}</label>
-            <input type="number" step="0.25" min="0" value={duration} onChange={e => setDuration(e.target.value)}
+            <label htmlFor="jmm-duration" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_duration_label')}</label>
+            <input id="jmm-duration" type="number" step="0.25" min="0" value={duration} onChange={e => setDuration(e.target.value)}
               placeholder={t('mbd_j_duration_ph')}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_attendees_label')}</label>
-            <input type="number" min="0" value={attendees} onChange={e => setAttendees(e.target.value)}
+            <label htmlFor="jmm-attendees" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_attendees_label')}</label>
+            <input id="jmm-attendees" type="number" min="0" value={attendees} onChange={e => setAttendees(e.target.value)}
               placeholder={t('mbd_j_attendees_ph')}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
         </div>
 
         <div className="mb-5">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_context_label')}</label>
-          <textarea value={context} onChange={e => setContext(e.target.value)}
+          <label htmlFor="jmm-context" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_context_label')}</label>
+          <textarea id="jmm-context" value={context} onChange={e => setContext(e.target.value)}
             placeholder={t('mbd_j_context_ph')} rows={2}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
@@ -749,8 +749,8 @@ const JustifyMyMeeting = ({ tool }) => {
             <div data-print-hide className={`border-t ${c.border} pt-5`}>
               <p className={`text-xs font-bold ${c.text} mb-1`}>✉️ {t('mbd_msg_offer_title')}</p>
               <p className={`text-xs ${c.textSecondary} mb-3`}>{t('mbd_msg_offer_sub')}</p>
-              <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_msg_relationship_label')}</label>
-              <select value={relationship} onChange={e => setRelationship(e.target.value)}
+              <label htmlFor="jmm-relationship" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_msg_relationship_label')}</label>
+              <select id="jmm-relationship" value={relationship} onChange={e => setRelationship(e.target.value)}
                 className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 mb-3`}>
                 <option value="">{t('mbd_msg_relationship_none')}</option>
                 {RELATIONSHIP_OPTIONS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
@@ -855,45 +855,45 @@ const JustifyMyMeeting = ({ tool }) => {
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_z_intro')}</p>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label htmlFor="jmm-z-name" className={`text-sm font-bold ${c.label} block mb-1.5`}>
             {t('mbd_z_name_label')} <span className={c.required}>{t('mbd_required')}</span>
           </label>
-          <input type="text" value={zName} onChange={e => setZName(e.target.value)}
+          <input id="jmm-z-name" type="text" value={zName} onChange={e => setZName(e.target.value)}
             placeholder={t('mbd_z_name_ph')}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_z_purpose_label')}</label>
-          <textarea value={zPurpose} onChange={e => setZPurpose(e.target.value)}
+          <label htmlFor="jmm-z-purpose" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_z_purpose_label')}</label>
+          <textarea id="jmm-z-purpose" value={zPurpose} onChange={e => setZPurpose(e.target.value)}
             placeholder={t('mbd_z_purpose_ph')} rows={2}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_z_actual_label')}</label>
-          <textarea value={zActual} onChange={e => setZActual(e.target.value)}
+          <label htmlFor="jmm-z-actual" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_z_actual_label')}</label>
+          <textarea id="jmm-z-actual" value={zActual} onChange={e => setZActual(e.target.value)}
             placeholder={t('mbd_z_actual_ph')} rows={3}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-5">
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_z_freq_label')}</label>
-            <select value={zFreq} onChange={e => setZFreq(e.target.value)}
+            <label htmlFor="jmm-z-freq" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_z_freq_label')}</label>
+            <select id="jmm-z-freq" value={zFreq} onChange={e => setZFreq(e.target.value)}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}>
               {FREQUENCY_OPTIONS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
             </select>
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_duration_label')}</label>
-            <input type="number" step="0.25" min="0" value={zDuration} onChange={e => setZDuration(e.target.value)}
+            <label htmlFor="jmm-z-duration" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_duration_label')}</label>
+            <input id="jmm-z-duration" type="number" step="0.25" min="0" value={zDuration} onChange={e => setZDuration(e.target.value)}
               placeholder={t('mbd_j_duration_ph')}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_attendees_label')}</label>
-            <input type="number" min="0" value={zAttendees} onChange={e => setZAttendees(e.target.value)}
+            <label htmlFor="jmm-z-attendees" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_j_attendees_label')}</label>
+            <input id="jmm-z-attendees" type="number" min="0" value={zAttendees} onChange={e => setZAttendees(e.target.value)}
               placeholder={t('mbd_j_attendees_ph')}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
@@ -1104,24 +1104,24 @@ const JustifyMyMeeting = ({ tool }) => {
         <p className={`text-sm ${c.textSecondary} mb-4`}>{t('mbd_r_intro')}</p>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label htmlFor="jmm-r-what" className={`text-sm font-bold ${c.label} block mb-1.5`}>
             {t('mbd_r_what_label')} <span className={c.required}>{t('mbd_required')}</span>
           </label>
-          <textarea value={rWhat} onChange={e => setRWhat(e.target.value)}
+          <textarea id="jmm-r-what" value={rWhat} onChange={e => setRWhat(e.target.value)}
             placeholder={t('mbd_r_what_ph')} rows={4}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_r_minutes_label')}</label>
-            <input type="number" min="0" value={rMinutes} onChange={e => setRMinutes(e.target.value)}
+            <label htmlFor="jmm-r-minutes" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_r_minutes_label')}</label>
+            <input id="jmm-r-minutes" type="number" min="0" value={rMinutes} onChange={e => setRMinutes(e.target.value)}
               placeholder={t('mbd_r_minutes_ph')}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_r_role_label')}</label>
-            <select value={rRole} onChange={e => setRRole(e.target.value)}
+            <label htmlFor="jmm-r-role" className={`text-xs font-bold ${c.label} block mb-1`}>{t('mbd_r_role_label')}</label>
+            <select id="jmm-r-role" value={rRole} onChange={e => setRRole(e.target.value)}
               className={`w-full px-2 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}>
               <option value="">{t('mbd_r_role_none')}</option>
               {ROLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}

@@ -284,10 +284,10 @@ const Giftology = ({ tool }) => {
 
         {/* Recipient */}
         <div className="mt-4 mb-4">
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          <label htmlFor="g-recipient" className={`block text-sm font-medium ${c.labelText} mb-1`}>
             {t('gft_recipient_label')} <span className={c.required}>*</span>
           </label>
-          <textarea
+          <textarea id="g-recipient"
             value={recipient}
             onChange={e => setRecipient(e.target.value)}
             onKeyDown={e => (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) && recipient.trim() && handleSubmit()}
@@ -323,8 +323,8 @@ const Giftology = ({ tool }) => {
         {/* Budget + Deadline row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className={`text-[13px] font-bold ${c.textSecondary} block mb-1.5`}>{t('gft_budget')}</label>
-            <input
+            <label htmlFor="g-budget" className={`text-[13px] font-bold ${c.textSecondary} block mb-1.5`}>{t('gft_budget')}</label>
+            <input id="g-budget"
               type="text"
               value={budget}
               onChange={e => setBudget(e.target.value)}
@@ -356,8 +356,8 @@ const Giftology = ({ tool }) => {
           <summary className={`text-xs font-bold cursor-pointer ${c.textSecondary} mb-2`}>{t('gft_extras_summary')}</summary>
           <div className="space-y-3 mt-3">
             <div>
-              <label className={`text-xs ${c.textSecondary} block mb-1`}>{t('gft_already_label')}</label>
-              <input
+              <label htmlFor="g-already-given" className={`text-xs ${c.textSecondary} block mb-1`}>{t('gft_already_label')}</label>
+              <input id="g-already-given"
                 type="text"
                 value={alreadyGiven}
                 onChange={e => setAlreadyGiven(e.target.value)}
@@ -366,8 +366,8 @@ const Giftology = ({ tool }) => {
               />
             </div>
             <div>
-              <label className={`text-xs ${c.textSecondary} block mb-1`}>{t('gft_avoid_label')}</label>
-              <input
+              <label htmlFor="g-avoid" className={`text-xs ${c.textSecondary} block mb-1`}>{t('gft_avoid_label')}</label>
+              <input id="g-avoid"
                 type="text"
                 value={avoid}
                 onChange={e => setAvoid(e.target.value)}

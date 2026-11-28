@@ -1255,8 +1255,8 @@ const MoneyDiplomat = ({ tool }) => {
           </div>
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_bill')}</label>
-              <input type="text" value={quickCalc.bill} onChange={e => setQuickCalc(p => ({ ...p, bill: e.target.value }))}
+              <label htmlFor="md-quick-calc" className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_bill')}</label>
+              <input id="md-quick-calc" type="text" value={quickCalc.bill} onChange={e => setQuickCalc(p => ({ ...p, bill: e.target.value }))}
                 placeholder={t('md_quick_bill_ph', { sym })} className={`w-full p-2 border rounded-lg text-lg font-bold ${c.input}`} />
             </div>
             {quickCalc.type === 'tip' && (
@@ -1271,8 +1271,8 @@ const MoneyDiplomat = ({ tool }) => {
               </div>
             )}
             <div className="w-16">
-              <label className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_people')}</label>
-              <input type="number" min="1" max="50" value={quickCalc.people} onChange={e => setQuickCalc(p => ({ ...p, people: parseInt(e.target.value) || 1 }))}
+              <label htmlFor="md-quick-calc-2" className={`text-xs font-bold ${c.textMuteded}`}>{t('md_quick_people')}</label>
+              <input id="md-quick-calc-2" type="number" min="1" max="50" value={quickCalc.people} onChange={e => setQuickCalc(p => ({ ...p, people: parseInt(e.target.value) || 1 }))}
                 className={`w-full p-2 border rounded-lg text-center ${c.input}`} />
             </div>
           </div>
@@ -1304,12 +1304,12 @@ const MoneyDiplomat = ({ tool }) => {
             {!simPrompt && (
               <>
                 <div>
-                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_situation_label')} <span className={c.required}>*</span></label>
-                  <textarea value={simSituation} onChange={e => setSimSituation(e.target.value)} rows={2} placeholder={t('md_sim_situation_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                  <label htmlFor="md-sim-situation" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_situation_label')} <span className={c.required}>*</span></label>
+                  <textarea id="md-sim-situation" value={simSituation} onChange={e => setSimSituation(e.target.value)} rows={2} placeholder={t('md_sim_situation_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_who_label')}</label>
-                  <input type="text" value={simOtherPerson} onChange={e => setSimOtherPerson(e.target.value)} placeholder={t('md_sim_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                  <label htmlFor="md-sim-other-person" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_sim_who_label')}</label>
+                  <input id="md-sim-other-person" type="text" value={simOtherPerson} onChange={e => setSimOtherPerson(e.target.value)} placeholder={t('md_sim_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
                 <button onClick={handleSimStart} disabled={simLoading || !simSituation.trim()} className={`${c.simBtn} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                   {loading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '💵'}</span> : <span>🎭</span>}
@@ -1387,16 +1387,16 @@ const MoneyDiplomat = ({ tool }) => {
             {/* Add new debt */}
             <div className="grid grid-cols-4 gap-2">
               <div>
-                <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_who')} <span className={c.required}>*</span></label>
-                <input type="text" value={newDebt.person} onChange={e => setNewDebt(p => ({ ...p, person: e.target.value }))} placeholder={t('md_tracker_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                <label htmlFor="md-new-debt" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_who')} <span className={c.required}>*</span></label>
+                <input id="md-new-debt" type="text" value={newDebt.person} onChange={e => setNewDebt(p => ({ ...p, person: e.target.value }))} placeholder={t('md_tracker_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_amount')} <span className={c.required}>*</span></label>
-                <input type="text" value={newDebt.amount} onChange={e => setNewDebt(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_tracker_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                <label htmlFor="md-new-debt-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_amount')} <span className={c.required}>*</span></label>
+                <input id="md-new-debt-2" type="text" value={newDebt.amount} onChange={e => setNewDebt(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_tracker_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_forwhat')}</label>
-                <input type="text" value={newDebt.context} onChange={e => setNewDebt(p => ({ ...p, context: e.target.value }))} placeholder={t('md_tracker_forwhat_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                <label htmlFor="md-new-debt-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tracker_forwhat')}</label>
+                <input id="md-new-debt-3" type="text" value={newDebt.context} onChange={e => setNewDebt(p => ({ ...p, context: e.target.value }))} placeholder={t('md_tracker_forwhat_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
               </div>
               <div className="flex items-end">
                 <button onClick={addDebt} disabled={!newDebt.person.trim() || !newDebt.amount} className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold w-full disabled:opacity-40`}>{t('md_tracker_add')}</button>
@@ -1494,8 +1494,8 @@ const MoneyDiplomat = ({ tool }) => {
               {/* Shared situation field */}
               {activeType !== 'travel' && activeType !== 'gift' && invite?.kind !== 'ask' && (
                 <div>
-                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_describe_label')} <span className={c.required}>*</span></label>
-                  <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={3} placeholder={
+                  <label htmlFor="md-situation" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_describe_label')} <span className={c.required}>*</span></label>
+                  <textarea id="md-situation" value={situation} onChange={e => setSituation(e.target.value)} rows={3} placeholder={
                   activeType === 'tip' ? t('md_ph_tip') :
                   activeType === 'split' ? t('md_ph_split', { sym }) :
                   activeType === 'venmo' ? t('md_ph_venmo') :
@@ -1512,8 +1512,8 @@ const MoneyDiplomat = ({ tool }) => {
 
               {INVITE_FIELDS[activeType] && invite && (
                 <div>
-                  <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{invite.kind === 'ask' ? t('invite_your_view') : t('invite_their_side')}</label>
-                  <textarea value={theirView} onChange={e => setTheirView(e.target.value)} rows={3} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                  <label htmlFor="md-their-view" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{invite.kind === 'ask' ? t('invite_your_view') : t('invite_their_side')}</label>
+                  <textarea id="md-their-view" value={theirView} onChange={e => setTheirView(e.target.value)} rows={3} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                 </div>
               )}
               {INVITE_FIELDS[activeType] && !invite && situation.trim() && (
@@ -1525,24 +1525,24 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'tip' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_country')}</label>
-                    <select value={tipFields.country} onChange={e => setTipFields(p => ({ ...p, country: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                    <label htmlFor="md-tip-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_country')}</label>
+                    <select id="md-tip-fields" value={tipFields.country} onChange={e => setTipFields(p => ({ ...p, country: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {TIP_COUNTRY_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_service')}</label>
-                    <select value={tipFields.serviceType} onChange={e => setTipFields(p => ({ ...p, serviceType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                    <label htmlFor="md-tip-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_service')}</label>
+                    <select id="md-tip-fields-3" value={tipFields.serviceType} onChange={e => setTipFields(p => ({ ...p, serviceType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {TIP_SERVICE_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_bill')}</label>
-                    <input type="text" value={tipFields.billAmount} onChange={e => setTipFields(p => ({ ...p, billAmount: e.target.value }))} placeholder={t('md_tip_bill_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-tip-fields-4" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_bill')}</label>
+                    <input id="md-tip-fields-4" type="text" value={tipFields.billAmount} onChange={e => setTipFields(p => ({ ...p, billAmount: e.target.value }))} placeholder={t('md_tip_bill_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_party')}</label>
-                    <input type="text" value={tipFields.partySize} onChange={e => setTipFields(p => ({ ...p, partySize: e.target.value }))} placeholder={t('md_tip_party_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-tip-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_tip_party')}</label>
+                    <input id="md-tip-fields-2" type="text" value={tipFields.partySize} onChange={e => setTipFields(p => ({ ...p, partySize: e.target.value }))} placeholder={t('md_tip_party_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1550,12 +1550,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'split' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_who')}</label>
-                    <input type="text" value={splitFields.people} onChange={e => setSplitFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_split_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-split-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_who')}</label>
+                    <input id="md-split-fields" type="text" value={splitFields.people} onChange={e => setSplitFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_split_who_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_total')}</label>
-                    <input type="text" value={splitFields.totalBill} onChange={e => setSplitFields(p => ({ ...p, totalBill: e.target.value }))} placeholder={t('md_split_total_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-split-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_split_total')}</label>
+                    <input id="md-split-fields-2" type="text" value={splitFields.totalBill} onChange={e => setSplitFields(p => ({ ...p, totalBill: e.target.value }))} placeholder={t('md_split_total_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1563,18 +1563,18 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'venmo' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_amount')}</label>
-                    <input type="text" value={venmoFields.amount} onChange={e => setVenmoFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_venmo_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-venmo-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_amount')}</label>
+                    <input id="md-venmo-fields" type="text" value={venmoFields.amount} onChange={e => setVenmoFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_venmo_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_relationship')}</label>
-                    <select value={venmoFields.relationship} onChange={e => setVenmoFields(p => ({ ...p, relationship: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                    <label htmlFor="md-venmo-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_relationship')}</label>
+                    <select id="md-venmo-fields-2" value={venmoFields.relationship} onChange={e => setVenmoFields(p => ({ ...p, relationship: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {VENMO_REL_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_howlong')}</label>
-                    <input type="text" value={venmoFields.timePassed} onChange={e => setVenmoFields(p => ({ ...p, timePassed: e.target.value }))} placeholder={t('md_venmo_howlong_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-venmo-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_venmo_howlong')}</label>
+                    <input id="md-venmo-fields-3" type="text" value={venmoFields.timePassed} onChange={e => setVenmoFields(p => ({ ...p, timePassed: e.target.value }))} placeholder={t('md_venmo_howlong_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1583,33 +1583,33 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_occasion')}</label>
-                      <input type="text" value={giftFields.occasion} onChange={e => setGiftFields(p => ({ ...p, occasion: e.target.value }))} placeholder={t('md_gift_occasion_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-gift-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_occasion')}</label>
+                      <input id="md-gift-fields" type="text" value={giftFields.occasion} onChange={e => setGiftFields(p => ({ ...p, occasion: e.target.value }))} placeholder={t('md_gift_occasion_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_relationship')}</label>
-                      <input type="text" value={giftFields.relationship} onChange={e => setGiftFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_gift_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-gift-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_relationship')}</label>
+                      <input id="md-gift-fields-2" type="text" value={giftFields.relationship} onChange={e => setGiftFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_gift_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_their_spend')}</label>
-                      <input type="text" value={giftFields.theirSpend} onChange={e => setGiftFields(p => ({ ...p, theirSpend: e.target.value }))} placeholder={t('md_gift_their_spend_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-gift-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_their_spend')}</label>
+                      <input id="md-gift-fields-3" type="text" value={giftFields.theirSpend} onChange={e => setGiftFields(p => ({ ...p, theirSpend: e.target.value }))} placeholder={t('md_gift_their_spend_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_budget')}</label>
-                      <input type="text" value={giftFields.yourBudget} onChange={e => setGiftFields(p => ({ ...p, yourBudget: e.target.value }))} placeholder={t('md_gift_budget_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-gift-fields-4" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_budget')}</label>
+                      <input id="md-gift-fields-4" type="text" value={giftFields.yourBudget} onChange={e => setGiftFields(p => ({ ...p, yourBudget: e.target.value }))} placeholder={t('md_gift_budget_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_region')}</label>
-                      <select value={giftFields.region} onChange={e => setGiftFields(p => ({ ...p, region: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                      <label htmlFor="md-gift-fields-5" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_region')}</label>
+                      <select id="md-gift-fields-5" value={giftFields.region} onChange={e => setGiftFields(p => ({ ...p, region: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                         {GIFT_REGION_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_context')}</label>
-                    <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_gift_context_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-situation-4" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_gift_context')}</label>
+                    <textarea id="md-situation-4" value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_gift_context_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1617,12 +1617,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'roommate' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_people')}</label>
-                    <input type="text" value={roommateFields.people} onChange={e => setRoommateFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_roommate_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-roommate-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_people')}</label>
+                    <input id="md-roommate-fields-2" type="text" value={roommateFields.people} onChange={e => setRoommateFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_roommate_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_total')}</label>
-                    <input type="text" value={roommateFields.totalCost} onChange={e => setRoommateFields(p => ({ ...p, totalCost: e.target.value }))} placeholder={t('md_roommate_total_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-roommate-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_roommate_total')}</label>
+                    <input id="md-roommate-fields" type="text" value={roommateFields.totalCost} onChange={e => setRoommateFields(p => ({ ...p, totalCost: e.target.value }))} placeholder={t('md_roommate_total_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1630,12 +1630,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'family' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
-                    <input type="text" value={familyFields.familyDynamic} onChange={e => setFamilyFields(p => ({ ...p, familyDynamic: e.target.value }))} placeholder={t('md_family_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-family-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
+                    <input id="md-family-fields" type="text" value={familyFields.familyDynamic} onChange={e => setFamilyFields(p => ({ ...p, familyDynamic: e.target.value }))} placeholder={t('md_family_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
-                    <input type="text" value={familyFields.culturalContext} onChange={e => setFamilyFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_family_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-family-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
+                    <input id="md-family-fields-2" type="text" value={familyFields.culturalContext} onChange={e => setFamilyFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_family_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1643,14 +1643,14 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'dining' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_context')}</label>
-                    <select value={diningFields.context} onChange={e => setDiningFields(p => ({ ...p, context: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                    <label htmlFor="md-dining-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_context')}</label>
+                    <select id="md-dining-fields" value={diningFields.context} onChange={e => setDiningFields(p => ({ ...p, context: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {DINING_CTX_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_budget')}</label>
-                    <input type="text" value={diningFields.yourBudget} onChange={e => setDiningFields(p => ({ ...p, yourBudget: e.target.value }))} placeholder={t('md_dining_budget_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-dining-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_dining_budget')}</label>
+                    <input id="md-dining-fields-2" type="text" value={diningFields.yourBudget} onChange={e => setDiningFields(p => ({ ...p, yourBudget: e.target.value }))} placeholder={t('md_dining_budget_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1659,19 +1659,19 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_event')}</label>
-                      <select value={groupFields.eventType} onChange={e => setGroupFields(p => ({ ...p, eventType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                      <label htmlFor="md-group-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_event')}</label>
+                      <select id="md-group-fields" value={groupFields.eventType} onChange={e => setGroupFields(p => ({ ...p, eventType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                         {GROUP_EVENT_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_people')}</label>
-                      <input type="text" value={groupFields.people} onChange={e => setGroupFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_group_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-group-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_people')}</label>
+                      <input id="md-group-fields-3" type="text" value={groupFields.people} onChange={e => setGroupFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_group_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_expenses')}</label>
-                    <textarea value={groupFields.expenses} onChange={e => setGroupFields(p => ({ ...p, expenses: e.target.value }))} rows={2} placeholder={t('md_group_expenses_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-group-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_group_expenses')}</label>
+                    <textarea id="md-group-fields-2" value={groupFields.expenses} onChange={e => setGroupFields(p => ({ ...p, expenses: e.target.value }))} rows={2} placeholder={t('md_group_expenses_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1679,16 +1679,16 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'lend' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_amount')}</label>
-                    <input type="text" value={lendFields.amount} onChange={e => setLendFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_lend_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-lend-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_amount')}</label>
+                    <input id="md-lend-fields" type="text" value={lendFields.amount} onChange={e => setLendFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_lend_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_relationship')}</label>
-                    <input type="text" value={lendFields.relationship} onChange={e => setLendFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_lend_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-lend-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_relationship')}</label>
+                    <input id="md-lend-fields-2" type="text" value={lendFields.relationship} onChange={e => setLendFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_lend_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_history')}</label>
-                    <input type="text" value={lendFields.sessionHistory} onChange={e => setLendFields(p => ({ ...p, sessionHistory: e.target.value }))} placeholder={t('md_lend_history_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-lend-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_lend_history')}</label>
+                    <input id="md-lend-fields-3" type="text" value={lendFields.sessionHistory} onChange={e => setLendFields(p => ({ ...p, sessionHistory: e.target.value }))} placeholder={t('md_lend_history_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1696,12 +1696,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'work' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_role')}</label>
-                    <input type="text" value={workFields.role} onChange={e => setWorkFields(p => ({ ...p, role: e.target.value }))} placeholder={t('md_work_role_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-work-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_role')}</label>
+                    <input id="md-work-fields" type="text" value={workFields.role} onChange={e => setWorkFields(p => ({ ...p, role: e.target.value }))} placeholder={t('md_work_role_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_company')}</label>
-                    <select value={workFields.companySize} onChange={e => setWorkFields(p => ({ ...p, companySize: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                    <label htmlFor="md-work-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_work_company')}</label>
+                    <select id="md-work-fields-2" value={workFields.companySize} onChange={e => setWorkFields(p => ({ ...p, companySize: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {WORK_SIZE_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
@@ -1711,12 +1711,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'travel' && (
                 <div className="space-y-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_destination')}</label>
-                    <input type="text" value={travelFields.destination} onChange={e => setTravelFields(p => ({ ...p, destination: e.target.value }))} placeholder={t('md_travel_destination_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-travel-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_destination')}</label>
+                    <input id="md-travel-fields" type="text" value={travelFields.destination} onChange={e => setTravelFields(p => ({ ...p, destination: e.target.value }))} placeholder={t('md_travel_destination_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_question')}</label>
-                    <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_travel_question_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-situation-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_travel_question')}</label>
+                    <textarea id="md-situation-2" value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_travel_question_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1725,18 +1725,18 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_number')}</label>
-                      <select value={dateFields.dateNumber} onChange={e => setDateFields(p => ({ ...p, dateNumber: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                      <label htmlFor="md-date-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_number')}</label>
+                      <select id="md-date-fields" value={dateFields.dateNumber} onChange={e => setDateFields(p => ({ ...p, dateNumber: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                         {DATE_NUM_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_dynamic')}</label>
-                      <input type="text" value={dateFields.dynamic} onChange={e => setDateFields(p => ({ ...p, dynamic: e.target.value }))} placeholder={t('md_date_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-date-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_dynamic')}</label>
+                      <input id="md-date-fields-3" type="text" value={dateFields.dynamic} onChange={e => setDateFields(p => ({ ...p, dynamic: e.target.value }))} placeholder={t('md_date_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_cultural')}</label>
-                      <input type="text" value={dateFields.culturalContext} onChange={e => setDateFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_date_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-date-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_date_cultural')}</label>
+                      <input id="md-date-fields-2" type="text" value={dateFields.culturalContext} onChange={e => setDateFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_date_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                 </div>
@@ -1745,16 +1745,16 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'subs' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_service')}</label>
-                    <input type="text" value={subsFields.service} onChange={e => setSubsFields(p => ({ ...p, service: e.target.value }))} placeholder={t('md_subs_service_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-subs-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_service')}</label>
+                    <input id="md-subs-fields" type="text" value={subsFields.service} onChange={e => setSubsFields(p => ({ ...p, service: e.target.value }))} placeholder={t('md_subs_service_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_people')}</label>
-                    <input type="text" value={subsFields.people} onChange={e => setSubsFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_subs_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-subs-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_people')}</label>
+                    <input id="md-subs-fields-2" type="text" value={subsFields.people} onChange={e => setSubsFields(p => ({ ...p, people: e.target.value }))} placeholder={t('md_subs_people_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_cost')}</label>
-                    <input type="text" value={subsFields.monthlyCost} onChange={e => setSubsFields(p => ({ ...p, monthlyCost: e.target.value }))} placeholder={t('md_subs_cost_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-subs-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_subs_cost')}</label>
+                    <input id="md-subs-fields-3" type="text" value={subsFields.monthlyCost} onChange={e => setSubsFields(p => ({ ...p, monthlyCost: e.target.value }))} placeholder={t('md_subs_cost_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1763,22 +1763,22 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_current')}</label>
-                      <input type="text" value={salaryFields.currentSalary} onChange={e => setSalaryFields(p => ({ ...p, currentSalary: e.target.value }))} placeholder={t('md_salary_current_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-salary-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_current')}</label>
+                      <input id="md-salary-fields" type="text" value={salaryFields.currentSalary} onChange={e => setSalaryFields(p => ({ ...p, currentSalary: e.target.value }))} placeholder={t('md_salary_current_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_target')}</label>
-                      <input type="text" value={salaryFields.targetRole} onChange={e => setSalaryFields(p => ({ ...p, targetRole: e.target.value }))} placeholder={t('md_salary_target_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-salary-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_target')}</label>
+                      <input id="md-salary-fields-2" type="text" value={salaryFields.targetRole} onChange={e => setSalaryFields(p => ({ ...p, targetRole: e.target.value }))} placeholder={t('md_salary_target_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_location')}</label>
-                      <input type="text" value={salaryFields.location} onChange={e => setSalaryFields(p => ({ ...p, location: e.target.value }))} placeholder={t('md_salary_location_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-salary-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_location')}</label>
+                      <input id="md-salary-fields-3" type="text" value={salaryFields.location} onChange={e => setSalaryFields(p => ({ ...p, location: e.target.value }))} placeholder={t('md_salary_location_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_experience')}</label>
-                      <input type="text" value={salaryFields.experience} onChange={e => setSalaryFields(p => ({ ...p, experience: e.target.value }))} placeholder={t('md_salary_experience_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-salary-fields-4" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_salary_experience')}</label>
+                      <input id="md-salary-fields-4" type="text" value={salaryFields.experience} onChange={e => setSalaryFields(p => ({ ...p, experience: e.target.value }))} placeholder={t('md_salary_experience_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                 </div>
@@ -1787,12 +1787,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'afford' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_cost')}</label>
-                    <input type="text" value={affordFields.cost} onChange={e => setAffordFields(p => ({ ...p, cost: e.target.value }))} placeholder={t('md_afford_cost_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-afford-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_cost')}</label>
+                    <input id="md-afford-fields" type="text" value={affordFields.cost} onChange={e => setAffordFields(p => ({ ...p, cost: e.target.value }))} placeholder={t('md_afford_cost_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_income')}</label>
-                    <input type="text" value={affordFields.income} onChange={e => setAffordFields(p => ({ ...p, income: e.target.value }))} placeholder={t('md_afford_income_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-afford-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_afford_income')}</label>
+                    <input id="md-afford-fields-2" type="text" value={affordFields.income} onChange={e => setAffordFields(p => ({ ...p, income: e.target.value }))} placeholder={t('md_afford_income_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1800,12 +1800,12 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'inheritance' && (
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
-                    <input type="text" value={inheritanceFields.familyDynamic} onChange={e => setInheritanceFields(p => ({ ...p, familyDynamic: e.target.value }))} placeholder={t('md_inh_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-inheritance-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_dynamic')}</label>
+                    <input id="md-inheritance-fields" type="text" value={inheritanceFields.familyDynamic} onChange={e => setInheritanceFields(p => ({ ...p, familyDynamic: e.target.value }))} placeholder={t('md_inh_dynamic_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
-                    <input type="text" value={inheritanceFields.culturalContext} onChange={e => setInheritanceFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_inh_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-inheritance-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_family_cultural')}</label>
+                    <input id="md-inheritance-fields-2" type="text" value={inheritanceFields.culturalContext} onChange={e => setInheritanceFields(p => ({ ...p, culturalContext: e.target.value }))} placeholder={t('md_inh_cultural_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1814,17 +1814,17 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_your_bg')}</label>
-                      <input type="text" value={culturalFields.yourBackground} onChange={e => setCulturalFields(p => ({ ...p, yourBackground: e.target.value }))} placeholder={t('md_cultural_your_bg_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-cultural-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_your_bg')}</label>
+                      <input id="md-cultural-fields" type="text" value={culturalFields.yourBackground} onChange={e => setCulturalFields(p => ({ ...p, yourBackground: e.target.value }))} placeholder={t('md_cultural_your_bg_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_their_bg')}</label>
-                      <input type="text" value={culturalFields.theirBackground} onChange={e => setCulturalFields(p => ({ ...p, theirBackground: e.target.value }))} placeholder={t('md_cultural_their_bg_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                      <label htmlFor="md-cultural-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_their_bg')}</label>
+                      <input id="md-cultural-fields-2" type="text" value={culturalFields.theirBackground} onChange={e => setCulturalFields(p => ({ ...p, theirBackground: e.target.value }))} placeholder={t('md_cultural_their_bg_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                     </div>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_situation')}</label>
-                    <textarea value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_cultural_situation_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-situation-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_cultural_situation')}</label>
+                    <textarea id="md-situation-3" value={situation} onChange={e => setSituation(e.target.value)} rows={2} placeholder={t('md_cultural_situation_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1832,18 +1832,18 @@ const MoneyDiplomat = ({ tool }) => {
               {activeType === 'charity' && (
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_type')}</label>
-                    <select value={charityFields.askType} onChange={e => setCharityFields(p => ({ ...p, askType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
+                    <label htmlFor="md-charity-fields" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_type')}</label>
+                    <select id="md-charity-fields" value={charityFields.askType} onChange={e => setCharityFields(p => ({ ...p, askType: e.target.value }))} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`}>
                       {CHARITY_TYPE_OPTS.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_relationship')}</label>
-                    <input type="text" value={charityFields.relationship} onChange={e => setCharityFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_charity_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-charity-fields-3" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_relationship')}</label>
+                    <input id="md-charity-fields-3" type="text" value={charityFields.relationship} onChange={e => setCharityFields(p => ({ ...p, relationship: e.target.value }))} placeholder={t('md_charity_relationship_ph')} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_amount')}</label>
-                    <input type="text" value={charityFields.amount} onChange={e => setCharityFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_charity_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label htmlFor="md-charity-fields-2" className={`text-xs font-bold ${c.textMuted} block mb-0.5`}>{t('md_charity_amount')}</label>
+                    <input id="md-charity-fields-2" type="text" value={charityFields.amount} onChange={e => setCharityFields(p => ({ ...p, amount: e.target.value }))} placeholder={t('md_charity_amount_ph', { sym })} className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}

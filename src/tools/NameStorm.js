@@ -1274,10 +1274,10 @@ const NameStorm = ({ tool }) => {
                   "Optional refinements", where most visitors never saw it and
                   the pills went in alone. Required for Other, which says
                   nothing by itself. Same field the route reads as context. */}
-              <label className={`block text-sm font-semibold ${c.text} mt-4 mb-1`}>
+              <label htmlFor="ns-industry-context" className={`block text-sm font-semibold ${c.text} mt-4 mb-1`}>
                 {t('ns_what_is_it')} {category === 'Other' && <span className={c.required}>*</span>}
               </label>
-              <input type="text" value={industryContext} onChange={(e) => setIndustryContext(e.target.value)}
+              <input id="ns-industry-context" type="text" value={industryContext} onChange={(e) => setIndustryContext(e.target.value)}
                 placeholder={t('ns_what_is_it_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
             </div>
@@ -1337,15 +1337,15 @@ const NameStorm = ({ tool }) => {
           <div className={`border-t ${c.border} pt-5 space-y-4`}>
             <p className={`text-[15px] font-semibold ${c.labelText}`}>{t('ns_optional_refinements')}</p>
             <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_constraints')}</label>
-              <input type="text" value={constraints} onChange={(e) => setConstraints(e.target.value)}
+              <label htmlFor="ns-constraints" className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_constraints')}</label>
+              <input id="ns-constraints" type="text" value={constraints} onChange={(e) => setConstraints(e.target.value)}
                 placeholder={isDomainMode ? t('ns_constraints_ph_domain') : t('ns_constraints_ph_default')}
                 className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
             </div>
             {isBlendMode && (
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_industry')}</label>
-                <input type="text" value={industryContext} onChange={(e) => setIndustryContext(e.target.value)}
+                <label htmlFor="ns-industry-context-2" className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_industry')}</label>
+                <input id="ns-industry-context-2" type="text" value={industryContext} onChange={(e) => setIndustryContext(e.target.value)}
                   placeholder={isDomainMode ? t('ns_industry_ph_domain') : t('ns_industry_ph_default')}
                   className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
               </div>
@@ -1353,11 +1353,11 @@ const NameStorm = ({ tool }) => {
 
             {/* Competitor-Aware Generation */}
             <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-1`}>
+              <label htmlFor="ns-competitors" className={`block text-sm font-semibold ${c.text} mb-1`}>
                 {t('ns_competitors')}
                 <span className={`font-normal text-[13px] ${c.textMuted} ms-1`}>({t('optional')})</span>
               </label>
-              <input type="text" value={competitors} onChange={(e) => setCompetitors(e.target.value)}
+              <input id="ns-competitors" type="text" value={competitors} onChange={(e) => setCompetitors(e.target.value)}
                 placeholder={t('ns_competitors_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />
               {competitors.trim() && (
@@ -1434,8 +1434,8 @@ const NameStorm = ({ tool }) => {
 
               {/* Max characters */}
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_max_chars')} <span className={`font-normal ${c.textMuted}`}>{t('ns_max_chars_hint')}</span></label>
-                <input type="number" value={maxChars} onChange={(e) => setMaxChars(e.target.value)}
+                <label htmlFor="ns-max-chars" className={`block text-sm font-semibold ${c.text} mb-1`}>{t('ns_max_chars')} <span className={`font-normal ${c.textMuted}`}>{t('ns_max_chars_hint')}</span></label>
+                <input id="ns-max-chars" type="number" value={maxChars} onChange={(e) => setMaxChars(e.target.value)}
                   placeholder={t('ns_max_chars_ph')}
                   min="4" max="30"
                   className={`w-24 p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`} />

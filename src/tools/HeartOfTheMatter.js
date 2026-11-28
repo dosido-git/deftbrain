@@ -563,15 +563,15 @@ const HeartOfTheMatter = ({ tool }) => {
       <div className={`border-t ${c.border} pt-5 space-y-3`}>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('rec_subject_label')}</label>
-            <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
+            <label htmlFor="hotm-subject" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('rec_subject_label')}</label>
+            <input id="hotm-subject" type="text" value={subject} onChange={e => setSubject(e.target.value)}
               placeholder={t('rec_subject_ph')}
               className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
           {mode !== 'connect' && (
             <div>
-              <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('rec_topic_label')}</label>
-              <input type="text" value={lectureTitle} onChange={e => setLectureTitle(e.target.value)}
+              <label htmlFor="hotm-lecture-title" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('rec_topic_label')}</label>
+              <input id="hotm-lecture-title" type="text" value={lectureTitle} onChange={e => setLectureTitle(e.target.value)}
                 placeholder={t('rec_topic_ph')}
                 className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
             </div>
@@ -581,8 +581,8 @@ const HeartOfTheMatter = ({ tool }) => {
         {mode === 'distill' && (
           <>
             <div>
-              <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('rec_bullets_label', { count: bulletCount })}</label>
-              <input type="range" min={5} max={20} value={bulletCount} onChange={e => setBulletCount(Number(e.target.value))}
+              <label htmlFor="hotm-bullet-count" className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('rec_bullets_label', { count: bulletCount })}</label>
+              <input id="hotm-bullet-count" type="range" min={5} max={20} value={bulletCount} onChange={e => setBulletCount(Number(e.target.value))}
                 className="w-full accent-cyan-600" />
             </div>
             <div>

@@ -550,10 +550,10 @@ export default function EmailUrgencyTriager({ tool }) {
                   <div className="flex items-center gap-2">
                     <span>{cfg.icon}</span>
                     <h3 className="text-base font-bold">{tx(cfg.key)}</h3>
-                    <span className="text-sm opacity-75">({emails.length})</span>
+                    <span className="text-sm">({emails.length})</span>
                     {tier === 'optional' && <span data-print-hide><Caret open={showOptional} className="ms-auto" /></span>}
                   </div>
-                  <p className="text-xs mt-1 opacity-75">{tx(`${cfg.key}Sub`)}</p>
+                  <p className="text-xs mt-1">{tx(`${cfg.key}Sub`)}</p>
                 </button>
                 {/* No reply needed is the pile you are being given permission to
                     ignore; it opens closed so it does not compete with the two

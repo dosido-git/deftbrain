@@ -233,10 +233,10 @@ const BeforeHello = ({ tool }) => {
         {!results && (
           <div className={sv ? `${FORM_PANEL} space-y-4`.trim() : `rounded-2xl border p-6 shadow-sm space-y-4 ${c.card} ${c.border}`}>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="bh-target-description" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('bh_target_label')} <span className={c.required}>*</span>
               </label>
-              <textarea value={targetDescription} onChange={e => setTargetDescription(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && targetDescription.trim()) handleSubmit(); }}
+              <textarea id="bh-target-description" value={targetDescription} onChange={e => setTargetDescription(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && targetDescription.trim()) handleSubmit(); }}
                 placeholder={t('bh_target_ph')}
                 rows={3} maxLength={500}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
@@ -258,15 +258,15 @@ const BeforeHello = ({ tool }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('bh_why_label')} <span className={`font-normal ${c.textMuteded}`}>{t('bh_optional')}</span></label>
-                <textarea value={whyThemContext} onChange={e => setWhyThemContext(e.target.value)}
+                <label htmlFor="bh-why-them-context" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('bh_why_label')} <span className={`font-normal ${c.textMuteded}`}>{t('bh_optional')}</span></label>
+                <textarea id="bh-why-them-context" value={whyThemContext} onChange={e => setWhyThemContext(e.target.value)}
                   placeholder={t('bh_why_ph')}
                   rows={2} maxLength={300}
                   className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('bh_bring_label')} <span className={`font-normal ${c.textMuteded}`}>{t('bh_optional')}</span></label>
-                <textarea value={yourBackground} onChange={e => setYourBackground(e.target.value)}
+                <label htmlFor="bh-your-background" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>{t('bh_bring_label')} <span className={`font-normal ${c.textMuteded}`}>{t('bh_optional')}</span></label>
+                <textarea id="bh-your-background" value={yourBackground} onChange={e => setYourBackground(e.target.value)}
                   placeholder={t('bh_bring_ph')}
                   rows={2} maxLength={300}
                   className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />

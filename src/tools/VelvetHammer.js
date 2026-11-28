@@ -289,20 +289,20 @@ const VelvetHammer = ({ tool }) => {
         {/* Context row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_recipient')}</label>
-            <select value={relationship} onChange={e => setRelationship(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
+            <label htmlFor="vh-relationship" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_recipient')}</label>
+            <select id="vh-relationship" value={relationship} onChange={e => setRelationship(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
               {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.tKey)}</option>)}
             </select>
           </div>
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_goal')}</label>
-            <select value={goal} onChange={e => setGoal(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
+            <label htmlFor="vh-goal" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_goal')}</label>
+            <select id="vh-goal" value={goal} onChange={e => setGoal(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
               {GOALS.map(g => <option key={g.value} value={g.value}>{t(g.tKey)}</option>)}
             </select>
           </div>
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_power')}</label>
-            <select value={power} onChange={e => setPower(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
+            <label htmlFor="vh-power" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('vh_power')}</label>
+            <select id="vh-power" value={power} onChange={e => setPower(e.target.value)} className={`w-full p-2.5 border rounded-lg text-sm outline-none ${c.input}`}>
               {POWER.map(p => <option key={p.value} value={p.value}>{t(p.tKey)}</option>)}
             </select>
           </div>

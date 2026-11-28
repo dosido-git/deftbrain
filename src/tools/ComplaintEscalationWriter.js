@@ -1011,8 +1011,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4` : `space-y-4 ${c.text}`}>
           {/* Issue */}
           <div>
-            <label className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_issue')} <span className={c.required}>*</span></label>
-              <textarea value={issue} onChange={e => setIssue(e.target.value)}
+            <label htmlFor="cew-issue" className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_issue')} <span className={c.required}>*</span></label>
+              <textarea id="cew-issue" value={issue} onChange={e => setIssue(e.target.value)}
               placeholder={t('cew_ph_issue')}
               rows={6} className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 ${c.input}`} />
             {issue.length > 0 && issue.length < 100 && (
@@ -1025,8 +1025,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {/* Who you are dealing with — after the story, not before it */}
           {/* Company */}
           <div>
-            <label className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_company')} <span className={c.required}>*</span></label>
-              <input type="text" value={company} onChange={e => setCompany(e.target.value)}
+            <label htmlFor="cew-company" className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_company')} <span className={c.required}>*</span></label>
+              <input id="cew-company" type="text" value={company} onChange={e => setCompany(e.target.value)}
               placeholder={t('cew_ph_company')}
               className={`w-full p-3 border rounded-xl outline-none focus:ring-2 ${c.input}`} />
           </div>

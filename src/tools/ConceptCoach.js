@@ -286,10 +286,10 @@ function ConceptCoach({ tool }) {
 
       {/* Idea description */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cc-idea-description" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('ia_desc_label')} <span className={c.required}>*</span>
         </label>
-        <textarea
+        <textarea id="cc-idea-description"
           value={ideaDescription}
           onChange={e => setIdeaDescription(e.target.value)}
           placeholder={t('ia_desc_ph')}
@@ -300,10 +300,10 @@ function ConceptCoach({ tool }) {
 
       {/* Evidence so far */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cc-evidence-so-far" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('ia_evidence_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('ia_evidence_hint')}</span>
         </label>
-        <textarea
+        <textarea id="cc-evidence-so-far"
           value={evidenceSoFar}
           onChange={e => setEvidenceSoFar(e.target.value)}
           placeholder={t('ia_evidence_ph')}
@@ -314,10 +314,10 @@ function ConceptCoach({ tool }) {
 
       {/* Founder context */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cc-founder-context" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('ia_founder_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('ia_founder_hint')}</span>
         </label>
-        <textarea
+        <textarea id="cc-founder-context"
           value={founderContext}
           onChange={e => setFounderContext(e.target.value)}
           placeholder={t('ia_founder_ph')}

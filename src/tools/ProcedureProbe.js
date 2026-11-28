@@ -259,10 +259,10 @@ const ProcedureProbe = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
         {/* Procedure */}
         <div>
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="pp-procedure" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('pp_q_procedure')} <span className={c.required}>*</span>
           </label>
-          <input
+          <input id="pp-procedure"
             type="text"
             value={procedure}
             onChange={e => setProcedure(e.target.value)}
@@ -318,10 +318,10 @@ const ProcedureProbe = ({ tool }) => {
 
         {/* Quote */}
         <div>
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="pp-quote" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('pp_q_quote')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
           </label>
-          <input type="text" value={quote} onChange={e => setQuote(e.target.value)}
+          <input id="pp-quote" type="text" value={quote} onChange={e => setQuote(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder={t('pp_ph_quote', { sym })}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
@@ -329,10 +329,10 @@ const ProcedureProbe = ({ tool }) => {
 
         {/* Insurance */}
         <div>
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+          <label htmlFor="pp-insurance" className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('pp_q_insurance')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
           </label>
-          <input type="text" value={insurance} onChange={e => setInsurance(e.target.value)}
+          <input id="pp-insurance" type="text" value={insurance} onChange={e => setInsurance(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder={t('pp_ph_insurance')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />

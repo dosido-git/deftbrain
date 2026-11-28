@@ -375,10 +375,10 @@ function QuoteCheck({ tool }) {
 
       {/* What's wrong */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="qc-what-went-wrong" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('qc_wrong_label')} <span className={c.required}>*</span>
         </label>
-        <textarea value={whatWentWrong} onChange={e => setWhatWentWrong(e.target.value)}
+        <textarea id="qc-what-went-wrong" value={whatWentWrong} onChange={e => setWhatWentWrong(e.target.value)}
           placeholder={t('qc_wrong_ph')} rows={2}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
         />
@@ -386,10 +386,10 @@ function QuoteCheck({ tool }) {
 
       {/* What they told you */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="qc-what-they-told-you" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('qc_told_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('qc_told_hint')}</span>
         </label>
-        <textarea value={whatTheyToldYou} onChange={e => setWhatTheyToldYou(e.target.value)}
+        <textarea id="qc-what-they-told-you" value={whatTheyToldYou} onChange={e => setWhatTheyToldYou(e.target.value)}
           placeholder={t('qc_told_ph')} rows={2}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
         />
@@ -477,10 +477,10 @@ function QuoteCheck({ tool }) {
 
       {/* Item age */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="qc-item-age" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('qc_age_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('qc_age_hint')}</span>
         </label>
-        <input type="text" value={itemAge} onChange={e => setItemAge(e.target.value)}
+        <input id="qc-item-age" type="text" value={itemAge} onChange={e => setItemAge(e.target.value)}
           placeholder={t('qc_age_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
         />

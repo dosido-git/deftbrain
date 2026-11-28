@@ -339,10 +339,10 @@ const FutureProof = ({ tool }) => {
 
         <div className={sv ? `${FORM_PANEL} mt-4 space-y-4`.trim() : "mt-4 space-y-4"}>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+            <label htmlFor="fp-subject" className={`block text-sm font-medium ${c.labelText} mb-1`}>
               {t('fp_q_label')} <span className={c.required}>*</span>
             </label>
-            <input
+            <input id="fp-subject"
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
@@ -378,10 +378,10 @@ const FutureProof = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+            <label htmlFor="fp-context" className={`block text-sm font-medium ${c.labelText} mb-1`}>
               {t('fp_context_label')} <span className={`font-normal ${c.textMuted}`}>{t('fp_optional')}</span>
             </label>
-            <textarea
+            <textarea id="fp-context"
               value={context}
               onChange={e => setContext(e.target.value)}
               placeholder={t('fp_ph_context')}

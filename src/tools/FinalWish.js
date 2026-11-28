@@ -386,7 +386,7 @@ const FinalWish = ({ tool }) => {
   c.label = c.labelText;
   const linkStyle = isDark
     ? 'text-amber-400 hover:text-amber-300 underline underline-offset-2'
-    : 'text-amber-600 hover:text-amber-700 underline underline-offset-2';
+    : 'text-amber-800 hover:text-amber-900 underline underline-offset-2';
   const fileInputRef = useRef(null);
   const toastTimersRef = useRef([]);
   // PF-19 focus pattern — refs for growable input lists.
@@ -1399,13 +1399,13 @@ async function decrypt(){
 
       <div className="space-y-4 mb-6">
         <div>
-          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_label_your_name')}</label>
-          <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder={t('fws_ph_your_name')}
+          <label htmlFor="fw-user-name" className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_label_your_name')}</label>
+          <input id="fw-user-name" type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder={t('fws_ph_your_name')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
         </div>
         <div>
-          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_label_primary_person')} <span className={c.required}>*</span></label>
-          <input type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
+          <label htmlFor="fw-primary-person" className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_label_primary_person')} <span className={c.required}>*</span></label>
+          <input id="fw-primary-person" type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
             placeholder={t('fws_ph_primary_person')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
           <p className={`text-[13px] ${c.textMuteded} mt-1.5`}>{t('fws_primary_person_hint')}</p>
@@ -1745,8 +1745,8 @@ async function decrypt(){
           })}
         </div>
         <div>
-          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_documents_extra_label', { name: tp })}</label>
-          <textarea value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder={t('fws_ph_doc_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
+          <label htmlFor="fw-doc-notes" className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_documents_extra_label', { name: tp })}</label>
+          <textarea id="fw-doc-notes" value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder={t('fws_ph_doc_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderNavButtons()}
       </div>
@@ -1803,8 +1803,8 @@ async function decrypt(){
           </div>
         )}
         <div className="mt-4">
-          <label className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_recurring_bills_label')}</label>
-          <textarea value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder={t('fws_ph_recurring_bills')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
+          <label htmlFor="fw-recurring-bills" className={`text-[15px] font-semibold ${c.textSecondary} mb-2 block`}>{t('fws_recurring_bills_label')}</label>
+          <textarea id="fw-recurring-bills" value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder={t('fws_ph_recurring_bills')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderError()}
         {renderNavButtons(financialAccounts.length === 0 ? t('fws_skip_for_now') : undefined)}
@@ -2010,10 +2010,10 @@ async function decrypt(){
         ))}
       </div>
 
-      <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_home_property_label')}</label>
-        <textarea value={homeNotes} onChange={e => setHomeNotes(e.target.value)} placeholder={t('fws_ph_home_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
-      <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_devices_label')}</label>
-        <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder={t('fws_ph_device_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
+      <div className="mb-6"><label htmlFor="fw-home-notes" className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_home_property_label')}</label>
+        <textarea id="fw-home-notes" value={homeNotes} onChange={e => setHomeNotes(e.target.value)} placeholder={t('fws_ph_home_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
+      <div className="mb-6"><label htmlFor="fw-device-notes" className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_devices_label')}</label>
+        <textarea id="fw-device-notes" value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder={t('fws_ph_device_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       <div className="mb-6">
         <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
           <Caret open={showMemorial} /> {t('fws_memorial_label')} <span className={`text-[13px] ${c.textMuteded}`}>{t('fws_optional')}</span>

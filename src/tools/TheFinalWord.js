@@ -1324,12 +1324,12 @@ const TheFinalWord = ({ tool }) => {
                   /* Devil's Advocate Input */
                   <div className="space-y-3">
                     <div>
-                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_da_topic_label')}</label>
-                      <input value={daTopic} onChange={(e) => setDaTopic(e.target.value)} placeholder={t('tfw_da_topic_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+                      <label htmlFor="tfw-da-topic" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_da_topic_label')}</label>
+                      <input id="tfw-da-topic" value={daTopic} onChange={(e) => setDaTopic(e.target.value)} placeholder={t('tfw_da_topic_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_da_position_label')} <span className={c.required}>*</span></label>
-                      <textarea value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder={t('tfw_da_position_ph')} rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
+                      <label htmlFor="tfw-da-position" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_da_position_label')} <span className={c.required}>*</span></label>
+                      <textarea id="tfw-da-position" value={daPosition} onChange={(e) => setDaPosition(e.target.value)} placeholder={t('tfw_da_position_ph')} rows={3} className={`w-full px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 resize-none ${c.input}`} />
                     </div>
                     <button onClick={handleDevilsAdvocate} disabled={loading || !daPosition.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
                       {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>😈</span>} {loading ? t('tfw_da_building') : t('tfw_da_submit')}
@@ -1340,12 +1340,12 @@ const TheFinalWord = ({ tool }) => {
                   <>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_name_label')}</label>
-                        <input value={personA} onChange={(e) => setPersonA(e.target.value)} placeholder={t('tfw_dispute_person_a')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+                        <label htmlFor="tfw-person-a" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_name_label')}</label>
+                        <input id="tfw-person-a" value={personA} onChange={(e) => setPersonA(e.target.value)} placeholder={t('tfw_dispute_person_a')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                       </div>
                       <div>
-                        <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_name_label')}</label>
-                        <input value={personB} onChange={(e) => setPersonB(e.target.value)} placeholder={t('tfw_dispute_person_b')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+                        <label htmlFor="tfw-person-b" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_name_label')}</label>
+                        <input id="tfw-person-b" value={personB} onChange={(e) => setPersonB(e.target.value)} placeholder={t('tfw_dispute_person_b')} className={`w-full px-3 py-2 rounded-lg border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                       </div>
                     </div>
                     {invite?.kind === 'ask' ? (
@@ -1374,8 +1374,8 @@ const TheFinalWord = ({ tool }) => {
                       </div>
                     </div>
                     <div>
-                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_context_label')}</label>
-                      <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
+                      <label htmlFor="tfw-dispute-context" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('tfw_dispute_context_label')}</label>
+                      <input id="tfw-dispute-context" value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
                     <button title={t('cmd_enter')} onClick={() => handleSubmit()} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!claimA.trim() || !claimB.trim()) ? c.btnIdle : c.btnPrimary}`}>
                       {loading ? <span className='inline-block animate-spin text-xl'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? t('tfw_dispute_reviewing') : t('tfw_dispute_submit')}

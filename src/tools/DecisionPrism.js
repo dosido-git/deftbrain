@@ -465,14 +465,14 @@ const DecisionPrism = ({ tool }) => {
       {/* Context + Deadline */}
       <div className={`border-t ${c.border} pt-5 space-y-3`}>
         <div>
-          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_context_label')}</label>
-          <textarea value={context} onChange={e => setContext(e.target.value)}
+          <label htmlFor="dp-context" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_context_label')}</label>
+          <textarea id="dp-context" value={context} onChange={e => setContext(e.target.value)}
             placeholder={t('ptw_context_ph')}
             className={`w-full h-20 p-3 rounded-xl border text-sm ${c.input} outline-none resize-none`} />
         </div>
         <div>
-          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_deadline_label')}</label>
-          <input type="text" value={deadline} onChange={e => setDeadline(e.target.value)}
+          <label htmlFor="dp-deadline" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>{t('ptw_deadline_label')}</label>
+          <input id="dp-deadline" type="text" value={deadline} onChange={e => setDeadline(e.target.value)}
             placeholder={t('ptw_deadline_ph')}
             className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>

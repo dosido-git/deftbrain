@@ -252,8 +252,8 @@ const WrongAnswersOnly = ({ tool }) => {
 
         {/* Question */}
         <div>
-          <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('wao_q_label')} <span className={c.required}>*</span></label>
-          <input type="text" value={question} onChange={e => setQuestion(e.target.value)} placeholder={t('wao_ph')}
+          <label htmlFor="wao-question" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('wao_q_label')} <span className={c.required}>*</span></label>
+          <input id="wao-question" type="text" value={question} onChange={e => setQuestion(e.target.value)} placeholder={t('wao_ph')}
             className={`w-full p-3 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()} />
         </div>
 

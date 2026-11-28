@@ -1062,16 +1062,16 @@ const BillRescue = ({ tool }) => {
         {showMore && (
           <>
             <div className="mb-3">
-              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_anything_else')}</label>
-              <input type="text" value={details} onChange={e => setDetails(e.target.value)}
+              <label htmlFor="br-details" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_anything_else')}</label>
+              <input id="br-details" type="text" value={details} onChange={e => setDetails(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && billType && !loading) analyze(); }}
                 placeholder={t('br_ph_details')}
                 className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div className="mb-3">
-              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_paste_bill')}</label>
-              <textarea value={pastedBill} onChange={e => setPastedBill(e.target.value)}
+              <label htmlFor="br-pasted-bill" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_paste_bill')}</label>
+              <textarea id="br-pasted-bill" value={pastedBill} onChange={e => setPastedBill(e.target.value)}
                 placeholder={t('br_ph_paste_bill')}
                 rows={2}
                 className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2 font-mono`} />
@@ -1082,8 +1082,8 @@ const BillRescue = ({ tool }) => {
         {/* The photo stays in the open: it is the one optional input that makes
             the difference between generic advice and a line-by-line autopsy. */}
         <div className="mb-5">
-          <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_upload')}</label>
-          <input type="file" ref={billPhotoRef} accept="image/*,.heic,.heif,application/pdf" onChange={handleBillPhoto} className="hidden" />
+          <label htmlFor="br-field-1086" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_q_upload')}</label>
+          <input id="br-field-1086" type="file" ref={billPhotoRef} accept="image/*,.heic,.heif,application/pdf" onChange={handleBillPhoto} className="hidden" />
           {billImagePreview ? (
             billImagePreview.startsWith('pdf:') ? (
               <div className={`relative flex items-center gap-2 px-3 py-2 h-16 rounded-lg border ${c.cardAlt}`}>
@@ -1881,34 +1881,34 @@ const BillRescue = ({ tool }) => {
 
           <div className="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_rep_name')}</label>
-              <input type="text" value={logRepName} onChange={e => setLogRepName(e.target.value)}
+              <label htmlFor="br-log-rep-name" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_rep_name')}</label>
+              <input id="br-log-rep-name" type="text" value={logRepName} onChange={e => setLogRepName(e.target.value)}
                 placeholder={t('br_ph_rep_name')} className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_conf_num')}</label>
-              <input type="text" value={logConfNum} onChange={e => setLogConfNum(e.target.value)}
+              <label htmlFor="br-log-conf-num" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_conf_num')}</label>
+              <input id="br-log-conf-num" type="text" value={logConfNum} onChange={e => setLogConfNum(e.target.value)}
                 placeholder={t('br_ph_conf_num')} className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
           </div>
 
           <div className="mb-2">
-            <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_what_agreed')}</label>
-            <input type="text" value={logAgreed} onChange={e => setLogAgreed(e.target.value)}
+            <label htmlFor="br-log-agreed" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_what_agreed')}</label>
+            <input id="br-log-agreed" type="text" value={logAgreed} onChange={e => setLogAgreed(e.target.value)}
               placeholder={t('br_ph_agreed', { sym })}
               className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
           </div>
 
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div>
-              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_notes')}</label>
-              <input type="text" value={logNotes} onChange={e => setLogNotes(e.target.value)}
+              <label htmlFor="br-log-notes" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_notes')}</label>
+              <input id="br-log-notes" type="text" value={logNotes} onChange={e => setLogNotes(e.target.value)}
                 placeholder={t('br_ph_log_notes')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_next_followup')}</label>
-              <input type="date" value={logNextDate} onChange={e => setLogNextDate(e.target.value)}
+              <label htmlFor="br-log-next-date" className={`text-[13px] font-semibold ${c.labelText} block mb-1`}>{t('br_next_followup')}</label>
+              <input id="br-log-next-date" type="date" value={logNextDate} onChange={e => setLogNextDate(e.target.value)}
                 className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
             </div>
           </div>
@@ -1979,8 +1979,8 @@ const BillRescue = ({ tool }) => {
 
           <div className="space-y-3">
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_whats_charge')} <span className={c.required}>*</span></label>
-              <input value={qcCharge} onChange={e => setQcCharge(e.target.value)}
+              <label htmlFor="br-qc-charge" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_whats_charge')} <span className={c.required}>*</span></label>
+              <input id="br-qc-charge" value={qcCharge} onChange={e => setQcCharge(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && qcCharge.trim() && !loading) runQuickCheck(); }}
                 placeholder={t('br_ph_charge', { sym })}
                 className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
@@ -1988,16 +1988,16 @@ const BillRescue = ({ tool }) => {
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
-                <select value={qcType} onChange={e => setQcType(e.target.value)}
+                <label htmlFor="br-qc-type" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
+                <select id="br-qc-type" value={qcType} onChange={e => setQcType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                   <option value="">{t('br_opt_any')}</option>
                   {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_amount')}</label>
-                <input type="number" value={qcAmount} onChange={e => setQcAmount(e.target.value)} placeholder={t('br_opt_optional')}
+                <label htmlFor="br-qc-amount" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_amount')}</label>
+                <input id="br-qc-amount" type="number" value={qcAmount} onChange={e => setQcAmount(e.target.value)} placeholder={t('br_opt_optional')}
                   className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
               </div>
             </div>
@@ -2066,23 +2066,23 @@ const BillRescue = ({ tool }) => {
           {!rhActive ? (
             <div className="space-y-3">
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_situation')} <span className={c.required}>*</span></label>
-                <textarea rows={3} value={rhSituation} onChange={e => setRhSituation(e.target.value)}
+                <label htmlFor="br-rh-situation" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_situation')} <span className={c.required}>*</span></label>
+                <textarea id="br-rh-situation" rows={3} value={rhSituation} onChange={e => setRhSituation(e.target.value)}
                   placeholder={t('br_ph_situation', { sym })}
                   className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
               </div>
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
-                  <select value={rhType} onChange={e => setRhType(e.target.value)}
+                  <label htmlFor="br-rh-type" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
+                  <select id="br-rh-type" value={rhType} onChange={e => setRhType(e.target.value)}
                     className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                     <option value="">{t('br_opt_any')}</option>
                     {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_difficulty')}</label>
-                  <select value={rhDifficulty} onChange={e => setRhDifficulty(e.target.value)}
+                  <label htmlFor="br-rh-difficulty" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_difficulty')}</label>
+                  <select id="br-rh-difficulty" value={rhDifficulty} onChange={e => setRhDifficulty(e.target.value)}
                     className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                     <option value="normal">{t('br_diff_normal')}</option>
                     <option value="hard">{t('br_diff_hard')}</option>
@@ -2231,31 +2231,31 @@ const BillRescue = ({ tool }) => {
 
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
-                <select value={ltBillType} onChange={e => setLtBillType(e.target.value)}
+                <label htmlFor="br-lt-bill-type" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_bill_type_short')}</label>
+                <select id="br-lt-bill-type" value={ltBillType} onChange={e => setLtBillType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                   <option value="">{t('br_opt_any')}</option>
                   {BILL_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.emoji} {t(bt.tkey)}</option>)}
                 </select>
               </div>
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_amount')}</label>
-                <input type="number" value={ltAmount} onChange={e => setLtAmount(e.target.value)} placeholder={t('br_opt_optional')}
+                <label htmlFor="br-lt-amount" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_amount')}</label>
+                <input id="br-lt-amount" type="number" value={ltAmount} onChange={e => setLtAmount(e.target.value)} placeholder={t('br_opt_optional')}
                   className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
               </div>
             </div>
 
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_your_situation')}</label>
-              <textarea rows={3} value={ltSituation} onChange={e => setLtSituation(e.target.value)}
+              <label htmlFor="br-lt-situation" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_your_situation')}</label>
+              <textarea id="br-lt-situation" rows={3} value={ltSituation} onChange={e => setLtSituation(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && ltType && !loading) generateLetter(); }}
                 placeholder={t('br_ph_lt_situation')}
                 className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_additional_context')}</label>
-              <input value={ltContext} onChange={e => setLtContext(e.target.value)}
+              <label htmlFor="br-lt-context" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_q_additional_context')}</label>
+              <input id="br-lt-context" value={ltContext} onChange={e => setLtContext(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && ltType && !loading) generateLetter(); }}
                 placeholder={t('br_ph_lt_context')}
                 className={`w-full px-3 py-2 border rounded-lg text-[15px] ${c.input} outline-none focus:ring-2`} />
@@ -2470,13 +2470,13 @@ const BillRescue = ({ tool }) => {
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_saved_label')} ({currency})</label>
-                <input type="number" value={vicAmount} onChange={e => setVicAmount(e.target.value)} placeholder="0"
+                <label htmlFor="br-vic-amount" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_saved_label')} ({currency})</label>
+                <input id="br-vic-amount" type="number" value={vicAmount} onChange={e => setVicAmount(e.target.value)} placeholder="0"
                   className={`w-full px-2 py-1.5 border rounded-lg text-[15px] ${c.input} outline-none`} />
               </div>
               <div className="flex-1">
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_type')}</label>
-                <select value={vicType} onChange={e => setVicType(e.target.value)}
+                <label htmlFor="br-vic-type" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('br_type')}</label>
+                <select id="br-vic-type" value={vicType} onChange={e => setVicType(e.target.value)}
                   className={`w-full py-1.5 px-2 border rounded-lg text-[15px] ${c.input}`}>
                   <option value="">{t('br_pick_one')}</option>
                   {WIN_TYPES.map(wt => <option key={wt.value} value={wt.value}>{wt.emoji} {wt.label}</option>)}

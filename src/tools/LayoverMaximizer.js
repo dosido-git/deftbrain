@@ -821,8 +821,8 @@ const LayoverMaximizer = ({ tool }) => {
             <p className={`text-[13px] font-bold ${c.textSecondary}`}>{t('lmx_step1_title')}</p>
 
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-              <input value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
+              <label htmlFor="lm-airport" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <input id="lm-airport" value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
                 placeholder={t('lmx_ph_airport_main')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               <div className="flex flex-wrap gap-1 mt-1.5">
@@ -839,8 +839,8 @@ const LayoverMaximizer = ({ tool }) => {
                 question, so only one of the two fields is ever on screen. */}
             {!isLiveMode ? (
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-                <input type="number" step="0.5" min="0.5" max="24" value={layoverHours}
+                <label htmlFor="lm-layover-hours" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+                <input id="lm-layover-hours" type="number" step="0.5" min="0.5" max="24" value={layoverHours}
                   onChange={e => setLayoverHours(e.target.value)}
                   placeholder={t('lmx_ph_duration')}
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
@@ -930,8 +930,8 @@ const LayoverMaximizer = ({ tool }) => {
               {(
                 <div data-sec-body hidden={!(showDetails)} className="mt-3 space-y-3">
                   <div>
-                    <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_nationality')}</label>
-                    <input value={nationality} onChange={e => setNationality(e.target.value)}
+                    <label htmlFor="lm-nationality" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_nationality')}</label>
+                    <input id="lm-nationality" value={nationality} onChange={e => setNationality(e.target.value)}
                       placeholder={t('lmx_ph_nationality')}
                       className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
                   </div>
@@ -944,14 +944,14 @@ const LayoverMaximizer = ({ tool }) => {
 
                   <div className="flex flex-wrap gap-2">
                     <div className="flex-1 min-w-[120px]">
-                      <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
-                      <input value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
+                      <label htmlFor="lm-arrival-terminal" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
+                      <input id="lm-arrival-terminal" value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
                         placeholder={t('lmx_ph_arrival_terminal')}
                         className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
                     </div>
                     <div className="flex-1 min-w-[120px]">
-                      <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
-                      <input value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
+                      <label htmlFor="lm-connection-terminal" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
+                      <input id="lm-connection-terminal" value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
                         placeholder={t('lmx_ph_departure_terminal')}
                         className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
                     </div>
@@ -967,8 +967,8 @@ const LayoverMaximizer = ({ tool }) => {
                       only field that can produce a clock time to be back by. */}
                   {!isLiveMode && (
                     <div>
-                      <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_return_time')}</label>
-                      <input type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
+                      <label htmlFor="lm-arrival-time" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_return_time')}</label>
+                      <input id="lm-arrival-time" type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
                         className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
                       <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('lmx_field_landing_time')}</p>
                     </div>
@@ -1027,7 +1027,7 @@ const LayoverMaximizer = ({ tool }) => {
                   verdict second. Durations are for planning; these are moments. */}
               {isLiveMode && liveMinutesRemaining !== null && (
                 <div className={`${c.highlight} border rounded-xl p-4`}>
-                  <p className="text-[13px] font-bold opacity-80">{t('lmx_live_until_departure')}</p>
+                  <p className="text-[13px] font-bold">{t('lmx_live_until_departure')}</p>
                   <p className={`text-2xl font-black ${c.text}`}>
                     {t('lmx_unit_hm', { h: Math.floor(liveMinutesRemaining / 60), m: liveMinutesRemaining % 60 })}
                   </p>
@@ -1187,7 +1187,7 @@ const LayoverMaximizer = ({ tool }) => {
                   to argue with it. */}
               {r.best_plan?.headline && (
                 <div className={`${c.highlight} border rounded-xl p-4`}>
-                  <p className="text-[13px] font-bold mb-1 opacity-80">{t('lmx_best_plan')}</p>
+                  <p className="text-[13px] font-bold mb-1">{t('lmx_best_plan')}</p>
                   <p className={`text-sm font-bold ${c.text} mb-2`}>{r.best_plan.headline}</p>
                   {r.best_plan.steps?.length > 0 && (
                     <ol className="space-y-1.5 mb-2">
@@ -1498,32 +1498,32 @@ const LayoverMaximizer = ({ tool }) => {
 
         <div className="space-y-3">
           <div>
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-            <input value={loungeAirport} onChange={e => setLoungeAirport(e.target.value)}
+            <label htmlFor="lm-lounge-airport" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+            <input id="lm-lounge-airport" value={loungeAirport} onChange={e => setLoungeAirport(e.target.value)}
               placeholder={t('lmx_airport_code_or_name')}
               className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_terminal')}</label>
-            <input value={loungeTerminal} onChange={e => setLoungeTerminal(e.target.value)}
+            <label htmlFor="lm-lounge-terminal" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_terminal')}</label>
+            <input id="lm-lounge-terminal" value={loungeTerminal} onChange={e => setLoungeTerminal(e.target.value)}
               placeholder={t('lmx_optional')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_airline')}</label>
-            <input value={loungeAirline} onChange={e => setLoungeAirline(e.target.value)}
+            <label htmlFor="lm-lounge-airline" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_airline')}</label>
+            <input id="lm-lounge-airline" value={loungeAirline} onChange={e => setLoungeAirline(e.target.value)}
               placeholder={t('lmx_optional')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_cards')}</label>
-            <input value={loungeCards} onChange={e => setLoungeCards(e.target.value)}
+            <label htmlFor="lm-lounge-cards" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_cards')}</label>
+            <input id="lm-lounge-cards" value={loungeCards} onChange={e => setLoungeCards(e.target.value)}
               placeholder={t('lmx_ph_lounge_cards')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_status')}</label>
-            <input value={loungeStatus} onChange={e => setLoungeStatus(e.target.value)}
+            <label htmlFor="lm-lounge-status" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_lounge_field_status')}</label>
+            <input id="lm-lounge-status" value={loungeStatus} onChange={e => setLoungeStatus(e.target.value)}
               placeholder={t('lmx_ph_lounge_status')}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
@@ -1632,31 +1632,31 @@ const LayoverMaximizer = ({ tool }) => {
 
           <div className="space-y-3">
             <div className="flex-1">
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-              <input value={riskAirport} onChange={e => setRiskAirport(e.target.value)}
+              <label htmlFor="lm-risk-airport" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <input id="lm-risk-airport" value={riskAirport} onChange={e => setRiskAirport(e.target.value)}
                 placeholder={t('lmx_airport_code')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex-1">
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
-              <input value={riskAirline} onChange={e => setRiskAirline(e.target.value)}
+              <label htmlFor="lm-risk-airline" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
+              <input id="lm-risk-airline" value={riskAirline} onChange={e => setRiskAirline(e.target.value)}
                 placeholder={t('lmx_optional')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_layover_hours')}</label>
-              <input type="number" step="0.5" value={riskHours} onChange={e => setRiskHours(e.target.value)}
+              <label htmlFor="lm-risk-hours" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_layover_hours')}</label>
+              <input id="lm-risk-hours" type="number" step="0.5" value={riskHours} onChange={e => setRiskHours(e.target.value)}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_current_delay')}</label>
-              <input type="number" value={riskDelay} onChange={e => setRiskDelay(e.target.value)}
+              <label htmlFor="lm-risk-delay" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_current_delay')}</label>
+              <input id="lm-risk-delay" type="number" value={riskDelay} onChange={e => setRiskDelay(e.target.value)}
                 placeholder="0"
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_worried')}</label>
-              <input value={riskScenario} onChange={e => setRiskScenario(e.target.value)}
+              <label htmlFor="lm-risk-scenario" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_worried')}</label>
+              <input id="lm-risk-scenario" value={riskScenario} onChange={e => setRiskScenario(e.target.value)}
                 placeholder={t('lmx_ph_risk_scenario')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
@@ -1866,23 +1866,23 @@ const LayoverMaximizer = ({ tool }) => {
           <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_gate_subtitle')}</p>
           <div className="space-y-3">
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-              <input value={g2gAirport} onChange={e => setG2gAirport(e.target.value)} placeholder={t('lmx_airport_code_or_name')}
+              <label htmlFor="lm-g2g-airport" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <input id="lm-g2g-airport" value={g2gAirport} onChange={e => setG2gAirport(e.target.value)} placeholder={t('lmx_airport_code_or_name')}
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
             <div className="flex-1">
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_arriving')}</label>
-              <input value={g2gArrival} onChange={e => setG2gArrival(e.target.value)} placeholder={t('lmx_ph_gate_arriving')}
+              <label htmlFor="lm-g2g-arrival" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_arriving')}</label>
+              <input id="lm-g2g-arrival" value={g2gArrival} onChange={e => setG2gArrival(e.target.value)} placeholder={t('lmx_ph_gate_arriving')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_departing')}</label>
-              <input value={g2gDeparture} onChange={e => setG2gDeparture(e.target.value)} placeholder={t('lmx_ph_gate_departing')}
+              <label htmlFor="lm-g2g-departure" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_departing')}</label>
+              <input id="lm-g2g-departure" value={g2gDeparture} onChange={e => setG2gDeparture(e.target.value)} placeholder={t('lmx_ph_gate_departing')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div>
-              <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_minutes')}</label>
-              <input type="number" value={g2gMinutes} onChange={e => setG2gMinutes(e.target.value)} placeholder={t('lmx_optional')}
+              <label htmlFor="lm-g2g-minutes" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_gate_field_minutes')}</label>
+              <input id="lm-g2g-minutes" type="number" value={g2gMinutes} onChange={e => setG2gMinutes(e.target.value)} placeholder={t('lmx_optional')}
                 className={`w-32 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <button onClick={runGateToGate} disabled={loading || !g2gAirport.trim()}
@@ -1987,8 +1987,8 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
 
               <div>
-                <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_delay_field_minutes')}</label>
-                <input type="number" value={delayMinutes} onChange={e => { setDelayMinutes(e.target.value); setDelayResults(null); }}
+                <label htmlFor="lm-delay-minutes" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_delay_field_minutes')}</label>
+                <input id="lm-delay-minutes" type="number" value={delayMinutes} onChange={e => { setDelayMinutes(e.target.value); setDelayResults(null); }}
                   placeholder={t('lmx_ph_delay_minutes')}
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
@@ -2082,7 +2082,7 @@ const LayoverMaximizer = ({ tool }) => {
 
                   {delayResults.revised_plan?.headline && (
                     <div className={`${c.highlight} border rounded-xl p-4`}>
-                      <p className="text-[13px] font-bold mb-1 opacity-80">{t('lmx_replan_now')}</p>
+                      <p className="text-[13px] font-bold mb-1">{t('lmx_replan_now')}</p>
                       <p className={`text-sm font-bold ${c.text} mb-2`}>{delayResults.revised_plan.headline}</p>
                       {delayResults.revised_plan.steps?.length > 0 && (
                         <div className="space-y-1.5 mb-2">
@@ -2383,18 +2383,18 @@ const LayoverMaximizer = ({ tool }) => {
         <p className={`text-[13px] ${c.textMuteded} mb-4`}>{t('lmx_kit_subtitle')}</p>
         <div className="space-y-3">
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-            <input value={kitAirport || results?.airport_code || ''} onChange={e => setKitAirport(e.target.value)}
+            <label htmlFor="lm-kit-airport" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+            <input id="lm-kit-airport" value={kitAirport || results?.airport_code || ''} onChange={e => setKitAirport(e.target.value)}
               placeholder={t('lmx_airport_code')} className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
-            <input value={kitAirline} onChange={e => setKitAirline(e.target.value)}
+            <label htmlFor="lm-kit-airline" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_risk_field_airline')}</label>
+            <input id="lm-kit-airline" value={kitAirline} onChange={e => setKitAirline(e.target.value)}
               placeholder={t('lmx_optional')} className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <div className="flex-1">
-            <label className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_kit_field_hours')}</label>
-            <input type="number" value={kitHours || layoverHours || ''} onChange={e => setKitHours(e.target.value)}
+            <label htmlFor="lm-kit-hours" className={`text-[15px] font-semibold ${c.labelText} block mb-1.5`}>{t('lmx_kit_field_hours')}</label>
+            <input id="lm-kit-hours" type="number" value={kitHours || layoverHours || ''} onChange={e => setKitHours(e.target.value)}
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <button onClick={runSurvivalKit} disabled={loading || !(kitAirport.trim() || results?.airport_code || airport.trim())}

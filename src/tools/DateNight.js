@@ -1132,8 +1132,8 @@ const DateNight = ({ tool }) => {
               important questions first. */}
           <div className={`border-t ${c.border} pt-5 space-y-3`}>
             <div>
-              <label className={`block text-xs font-bold ${sv ? c.labelText : c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
-              <input value={location} onChange={e => setLocation(e.target.value)} onBlur={e => warmVenues(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+              <label htmlFor="dn-location" className={`block text-xs font-bold ${sv ? c.labelText : c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
+              <input id="dn-location" value={location} onChange={e => setLocation(e.target.value)} onBlur={e => warmVenues(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
               <input value={region} onChange={e => setRegion(e.target.value)} placeholder={t('dn_region_ph')} aria-label={t('dn_region')} className={`w-full mt-2 px-3 py-2 border rounded-lg text-xs ${c.input}`} />
             </div>
             <div>

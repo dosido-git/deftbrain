@@ -283,10 +283,10 @@ const SocialBatteryAdvisor = ({ tool }) => {
         <div className="space-y-4">
           <div className={sv ? `${FORM_PANEL} space-y-5`.trim() : `border-t ${c.border} pt-5 space-y-5`}>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="sba-interaction" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('sea_log_question')} <span className={c.required}>*</span>
               </label>
-              <input value={interaction} onChange={e => setInteraction(e.target.value)}
+              <input id="sba-interaction" value={interaction} onChange={e => setInteraction(e.target.value)}
                 placeholder={t('sea_log_ph')}
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
               <p className={`mt-1.5 text-[13px] ${c.textMuted}`}>{t('sea_log_hint')}</p>
@@ -311,10 +311,10 @@ const SocialBatteryAdvisor = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
+              <label htmlFor="sba-note" className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 {t('sea_note_label')} <span className={`font-normal ${c.textMuted}`}>{t('sea_note_optional')}</span>
               </label>
-              <textarea value={note} onChange={e => setNote(e.target.value)}
+              <textarea id="sba-note" value={note} onChange={e => setNote(e.target.value)}
                 placeholder={t('sea_note_ph')} rows={3}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
             </div>

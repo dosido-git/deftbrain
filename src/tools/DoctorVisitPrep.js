@@ -538,8 +538,8 @@ const DoctorVisitPrep = ({ tool }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_duration')}</label>
-            <input
+            <label htmlFor="dvp-duration-text" className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_duration')}</label>
+            <input id="dvp-duration-text"
               value={durationText}
               onChange={e => setDurationText(e.target.value)}
               placeholder={t('dvp_duration_ph')}
@@ -547,10 +547,11 @@ const DoctorVisitPrep = ({ tool }) => {
             />
           </div>
           <div>
-            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="dvp-severity" className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
               {t('dvp_severity')} <span className={`${c.text} font-bold`}>{severity}</span>
             </label>
             <input
+              id="dvp-severity"
               type="range" min="1" max="10"
               value={severity}
               onChange={e => setSeverity(Number(e.target.value))}
@@ -618,8 +619,8 @@ const DoctorVisitPrep = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_better_worse')}</label>
-          <input
+          <label htmlFor="dvp-what-makes-it-better-worse" className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvp_better_worse')}</label>
+          <input id="dvp-what-makes-it-better-worse"
             value={whatMakesItBetterWorse}
             onChange={e => setWhatMakesItBetterWorse(e.target.value)}
             placeholder={t('dvp_better_worse_ph')}
@@ -649,10 +650,10 @@ const DoctorVisitPrep = ({ tool }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="dvp-allergies" className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
               {t('dvp_allergies')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_allergies_hint')}</span>
             </label>
-            <input
+            <input id="dvp-allergies"
               value={allergies}
               onChange={e => setAllergies(e.target.value)}
               placeholder={t('dvp_allergies_ph')}
@@ -660,10 +661,10 @@ const DoctorVisitPrep = ({ tool }) => {
             />
           </div>
           <div>
-            <label className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
+            <label htmlFor="dvp-relevant-history" className={`text-[15px] font-semibold ${c.textSecondary} block mb-1.5`}>
               {t('dvp_history')} <span className={`text-[13px] font-normal ${c.textMuted}`}>{t('dvp_history_hint')}</span>
             </label>
-            <input
+            <input id="dvp-relevant-history"
               value={relevantHistory}
               onChange={e => setRelevantHistory(e.target.value)}
               placeholder={t('dvp_history_ph')}

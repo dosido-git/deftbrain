@@ -1190,10 +1190,10 @@ const RentersDepositSaver = ({ tool }) => {
                 street implies follows immediately below. */}
             <div className="grid grid-cols-1 sm:grid-cols-[2fr,1fr] gap-4">
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
+                <label htmlFor="rds-address" className={`block text-sm font-semibold ${c.text} mb-1.5`}>
                   {t('rds_property_address')} <span className={c.required}>*</span>
                 </label>
-                <input
+                <input id="rds-address"
                   type="text"
                   value={address}
                   onChange={e => setAddress(e.target.value)}
@@ -1202,8 +1202,8 @@ const RentersDepositSaver = ({ tool }) => {
                 />
               </div>
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_unit_apt')}</label>
-                <input
+                <label htmlFor="rds-unit" className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_unit_apt')}</label>
+                <input id="rds-unit"
                   type="text"
                   value={unit}
                   onChange={e => setUnit(e.target.value)}
@@ -1224,6 +1224,7 @@ const RentersDepositSaver = ({ tool }) => {
             <div className="flex flex-col sm:flex-row gap-3 mb-3">
               {/* Country */}
               <select
+                aria-label={t('rds_your_location')}
                 value={country}
                 onChange={e => { setCountry(e.target.value); setRegion(''); setRightsResult(null); setShowRights(false); }}
                 className={`sm:w-48 p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
@@ -1237,6 +1238,7 @@ const RentersDepositSaver = ({ tool }) => {
               <div className="flex-1">
                 {hasDropdownRegions ? (
                   <select
+                    aria-label={countryObj.regionLabel}
                     value={region}
                     onChange={e => { setRegion(e.target.value); setRightsResult(null); setShowRights(false); }}
                     className={`w-full p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
@@ -1336,10 +1338,10 @@ const RentersDepositSaver = ({ tool }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Move-in date (defaults to today) */}
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
+                <label htmlFor="rds-move-in-date" className={`block text-sm font-semibold ${c.text} mb-1.5`}>
                   {t('rds_move_in_date')} <span className={c.required}>*</span>
                 </label>
-                <input
+                <input id="rds-move-in-date"
                   type="date"
                   value={moveInDate}
                   onChange={e => setMoveInDate(e.target.value)}
@@ -1349,8 +1351,8 @@ const RentersDepositSaver = ({ tool }) => {
 
               {/* Deposit amount */}
               <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_deposit_amount')}</label>
-                <input
+                <label htmlFor="rds-deposit-amount" className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_deposit_amount')}</label>
+                <input id="rds-deposit-amount"
                   type="text"
                   value={depositAmount}
                   onChange={e => setDepositAmount(e.target.value)}
@@ -1364,8 +1366,8 @@ const RentersDepositSaver = ({ tool }) => {
               <p className={`text-[15px] font-semibold ${c.labelText} mb-3`}>{t('rds_landlord_optional')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>{t('rds_name')}</label>
-                  <input
+                  <label htmlFor="rds-landlord-name" className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>{t('rds_name')}</label>
+                  <input id="rds-landlord-name"
                     type="text"
                     value={landlordName}
                     onChange={e => setLandlordName(e.target.value)}
@@ -1374,8 +1376,8 @@ const RentersDepositSaver = ({ tool }) => {
                   />
                 </div>
                 <div>
-                  <label className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>{t('rds_email')}</label>
-                  <input
+                  <label htmlFor="rds-landlord-email" className={`block text-sm font-medium ${c.textSecondary} mb-1.5`}>{t('rds_email')}</label>
+                  <input id="rds-landlord-email"
                     type="email"
                     value={landlordEmail}
                     onChange={e => setLandlordEmail(e.target.value)}

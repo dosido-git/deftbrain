@@ -425,17 +425,17 @@ const TicketTackler = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>
+            <label htmlFor="tt-city" className={`block text-sm font-medium mb-1.5 ${c.label}`}>
               {t('tt_city_label')} <span className={c.required}>*</span>
             </label>
-            <input type="text" value={city} onChange={(e) => setCity(e.target.value)}
+            <input id="tt-city" type="text" value={city} onChange={(e) => setCity(e.target.value)}
               placeholder={t('tt_city_ph')}
               className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 ${c.input}`} />
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_ticket_label')}</label>
-            <textarea value={ticketText} onChange={(e) => setTicketText(e.target.value)}
+            <label htmlFor="tt-ticket-text" className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_ticket_label')}</label>
+            <textarea id="tt-ticket-text" value={ticketText} onChange={(e) => setTicketText(e.target.value)}
               placeholder={t('tt_ticket_ph')} rows={4}
               className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 resize-y ${c.input}`} />
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
@@ -447,22 +447,22 @@ const TicketTackler = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_happened_label')}</label>
-            <textarea value={whatHappened} onChange={(e) => setWhatHappened(e.target.value)}
+            <label htmlFor="tt-what-happened" className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_happened_label')}</label>
+            <textarea id="tt-what-happened" value={whatHappened} onChange={(e) => setWhatHappened(e.target.value)}
               placeholder={t('tt_happened_ph')} rows={3}
               className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 resize-y ${c.input}`} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_fine_label')}</label>
-              <input type="text" value={fineAmount} onChange={(e) => setFineAmount(e.target.value)}
+              <label htmlFor="tt-fine-amount" className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_fine_label')}</label>
+              <input id="tt-fine-amount" type="text" value={fineAmount} onChange={(e) => setFineAmount(e.target.value)}
                 placeholder={t('tt_fine_ph', { sym })}
                 className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_deadline_label')}</label>
-              <input type="text" value={deadline} onChange={(e) => setDeadline(e.target.value)}
+              <label htmlFor="tt-deadline" className={`block text-sm font-medium mb-1.5 ${c.label}`}>{t('tt_deadline_label')}</label>
+              <input id="tt-deadline" type="text" value={deadline} onChange={(e) => setDeadline(e.target.value)}
                 placeholder={t('tt_deadline_ph')}
                 className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 ${c.input}`} />
             </div>

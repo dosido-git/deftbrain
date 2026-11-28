@@ -333,24 +333,24 @@ const PartyArchitect = ({ tool }) => {
       {/* ── INPUT CARD ── */}
       <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
         <div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          <label htmlFor="pa-occasion" className={`block text-sm font-medium ${c.labelText} mb-1`}>
             {t('pa_occasion_label')} <span className={c.required}>*</span>
           </label>
-          <input type="text" value={occasion} onChange={e => setOccasion(e.target.value)}
+          <input id="pa-occasion" type="text" value={occasion} onChange={e => setOccasion(e.target.value)}
             placeholder={t('pa_occasion_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_guests_label')}</label>
-            <input type="text" value={guestCount} onChange={e => setGuestCount(e.target.value)}
+            <label htmlFor="pa-guest-count" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_guests_label')}</label>
+            <input id="pa-guest-count" type="text" value={guestCount} onChange={e => setGuestCount(e.target.value)}
               placeholder={t('pa_guests_ph')}
               className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_budget_label')}</label>
-            <input type="text" value={budget} onChange={e => setBudget(e.target.value)}
+            <label htmlFor="pa-budget" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_budget_label')}</label>
+            <input id="pa-budget" type="text" value={budget} onChange={e => setBudget(e.target.value)}
               placeholder={t('pa_budget_ph', { sym })}
               className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
           </div>
@@ -365,8 +365,8 @@ const PartyArchitect = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_space_label')}</label>
-          <input type="text" value={space} onChange={e => setSpace(e.target.value)}
+          <label htmlFor="pa-space" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_space_label')}</label>
+          <input id="pa-space" type="text" value={space} onChange={e => setSpace(e.target.value)}
             placeholder={t('pa_space_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
         </div>

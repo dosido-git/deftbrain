@@ -518,13 +518,13 @@ const MiseEnPlace = ({ tool }) => {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>👥 {t('mep_servings')}</label>
-            <input type="text" value={servings} onChange={e => setServings(e.target.value)}
+            <label htmlFor="mep-servings" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>👥 {t('mep_servings')}</label>
+            <input id="mep-servings" type="text" value={servings} onChange={e => setServings(e.target.value)}
               placeholder={t('mep_servings_ph')} className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>💬 {t('mep_preferences')}</label>
-            <input type="text" value={preferences} onChange={e => setPreferences(e.target.value)}
+            <label htmlFor="mep-preferences" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>💬 {t('mep_preferences')}</label>
+            <input id="mep-preferences" type="text" value={preferences} onChange={e => setPreferences(e.target.value)}
               placeholder={t('mep_preferences_ph')} className={`w-full px-3 py-2 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
         </div>

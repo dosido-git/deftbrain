@@ -452,21 +452,21 @@ const SignalVsNoise = ({ tool }) => {
               <p data-print-hide className={`text-[13px] ${c.textMuted} mb-2`}>
                 {t('svn_xref_intro')} <a href="/ResearchDecoder" className={linkStyle}>📄 {t('svn_research_decoder')}</a> {t('svn_xref_intro_end')}
               </p>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('svn_topic_label')} <span className={c.required}>*</span></label>
-              <input type="text" value={topic} onChange={e => setTopic(e.target.value)}
+              <label htmlFor="svn-topic" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('svn_topic_label')} <span className={c.required}>*</span></label>
+              <input id="svn-topic" type="text" value={topic} onChange={e => setTopic(e.target.value)}
                 placeholder={t('svn_topic_ph')}
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('svn_conflict_label')} <span className={`font-normal ${c.textMuted}`}>{t('svn_conflict_hint')}</span></label>
-              <textarea value={conflictingAdvice} onChange={e => setConflictingAdvice(e.target.value)}
+              <label htmlFor="svn-conflicting-advice" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('svn_conflict_label')} <span className={`font-normal ${c.textMuted}`}>{t('svn_conflict_hint')}</span></label>
+              <textarea id="svn-conflicting-advice" value={conflictingAdvice} onChange={e => setConflictingAdvice(e.target.value)}
                 placeholder={t('svn_conflict_ph')}
                 rows={3} maxLength={600}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input} `} />
             </div>
             <div>
-              <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('svn_context_label')} <span className={`font-normal ${c.textMuted}`}>{t('svn_context_hint')}</span></label>
-              <input type="text" value={userContext} onChange={e => setUserContext(e.target.value)}
+              <label htmlFor="svn-user-context" className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>{t('svn_context_label')} <span className={`font-normal ${c.textMuted}`}>{t('svn_context_hint')}</span></label>
+              <input id="svn-user-context" type="text" value={userContext} onChange={e => setUserContext(e.target.value)}
                 placeholder={t('svn_context_ph')}
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
             </div>

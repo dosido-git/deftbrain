@@ -275,8 +275,8 @@ const PaperworkPath = ({ tool }) => {
 
           {/* Location — optional */}
           <div>
-            <label className={`text-sm font-medium ${c.label} block mb-2`}>{t('pwp_location_label')}</label>
-            <input
+            <label htmlFor="pp-location" className={`text-sm font-medium ${c.label} block mb-2`}>{t('pwp_location_label')}</label>
+            <input id="pp-location"
               type="text"
               value={location}
               onChange={e => setLocation(e.target.value)}
@@ -287,8 +287,8 @@ const PaperworkPath = ({ tool }) => {
 
           {/* Situation — optional */}
           <div>
-            <label className={`text-sm font-medium ${c.label} block mb-2`}>{t('pwp_situation_label')}</label>
-            <textarea
+            <label htmlFor="pp-situation" className={`text-sm font-medium ${c.label} block mb-2`}>{t('pwp_situation_label')}</label>
+            <textarea id="pp-situation"
               value={situation}
               onChange={e => setSituation(e.target.value)}
               placeholder={t('pwp_situation_ph')}

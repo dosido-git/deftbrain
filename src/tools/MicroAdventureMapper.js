@@ -589,8 +589,8 @@ const MicroAdventureMapper = ({ tool }) => {
     <div data-print-form {...(results ? { 'data-print-hide': '' } : {})} className={`space-y-4 ${c.formWrap}`}>
       {/* Location */}
       <div className={c.formGroup}>
-        <label className={`text-[13px] font-bold ${c.qLabel} mb-2 block`}>{t('mam_where_label')} <span className={c.required}>*</span></label>
-        <input type="text" value={location} onChange={e => setLocation(e.target.value)}
+        <label htmlFor="mam-location" className={`text-[13px] font-bold ${c.qLabel} mb-2 block`}>{t('mam_where_label')} <span className={c.required}>*</span></label>
+        <input id="mam-location" type="text" value={location} onChange={e => setLocation(e.target.value)}
           placeholder={t('mam_where_ph')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
@@ -778,7 +778,7 @@ const MicroAdventureMapper = ({ tool }) => {
                   <div className={`flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs ${c.transitText}`}>
                     
                     <span>{transit.guidance}</span>
-                    {transit.estimated_time && <span className="opacity-60">· {transit.estimated_time}</span>}
+                    {transit.estimated_time && <span>· {transit.estimated_time}</span>}
                   </div>
                 </div>
               )}
@@ -824,7 +824,7 @@ const MicroAdventureMapper = ({ tool }) => {
           <h4 className="text-sm font-bold mb-1 flex items-center gap-2">
             ☔ {t('mam_rain_title')}
           </h4>
-          {bp.when_to_use && <p className="text-xs opacity-70 mb-1">{bp.when_to_use}</p>}
+          {bp.when_to_use && <p className="text-xs mb-1">{bp.when_to_use}</p>}
           <p className="text-sm">{bp.description}</p>
         </div>
       );
@@ -839,7 +839,7 @@ const MicroAdventureMapper = ({ tool }) => {
           <h4 className="text-sm font-bold mb-1 flex items-center gap-2">
             ⏱️ {t('mam_extend_title')}
           </h4>
-          {kg.extra_time && <p className="text-xs opacity-70 mb-1">{t('mam_add_time', { time: kg.extra_time })}</p>}
+          {kg.extra_time && <p className="text-xs mb-1">{t('mam_add_time', { time: kg.extra_time })}</p>}
           <p className="text-sm">{kg.suggestion}</p>
         </div>
       );

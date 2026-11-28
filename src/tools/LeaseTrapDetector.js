@@ -594,8 +594,8 @@ const LeaseTrapDetector = ({ tool }) => {
           <div className={`border-t ${c.border} pt-5`}>
             {inputMethod === 'text' ? (
               <>
-                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_paste_label')}</label>
-                <textarea value={leaseText} onChange={(e) => setLeaseText(e.target.value)} placeholder={t('ltd_paste_ph')} rows={10} className={`w-full p-4 border-2 rounded-xl text-base resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                <label htmlFor="ltd-lease-text" className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_paste_label')}</label>
+                <textarea id="ltd-lease-text" value={leaseText} onChange={(e) => setLeaseText(e.target.value)} placeholder={t('ltd_paste_ph')} rows={10} className={`w-full p-4 border-2 rounded-xl text-base resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 <p className={`text-xs ${c.textMuted} mt-2`}>{t('ltd_paste_hint')}</p>
               </>
             ) : (
@@ -626,8 +626,8 @@ const LeaseTrapDetector = ({ tool }) => {
 
             <div className={`border-t ${c.border} pt-5 space-y-4`}>
               <div>
-                <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_location_label')} <span className={c.required}>*</span></label>
-                <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('ltd_location_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                <label htmlFor="ltd-location" className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_location_label')} <span className={c.required}>*</span></label>
+                <input id="ltd-location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t('ltd_location_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
                 <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_leasetype_label')} <span className={c.required}>*</span></label>
@@ -770,34 +770,34 @@ const LeaseTrapDetector = ({ tool }) => {
                   </div>
                 )}
                 <div>
-                  <label className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_missing_paste_label')} <span className={c.required}>*</span></label>
-                  <textarea value={missingContractText} onChange={e => setMissingContractText(e.target.value)}
+                  <label htmlFor="ltd-missing-contract-text" className={`block text-[15px] font-semibold mb-2 ${c.labelText}`}>{t('ltd_missing_paste_label')} <span className={c.required}>*</span></label>
+                  <textarea id="ltd-missing-contract-text" value={missingContractText} onChange={e => setMissingContractText(e.target.value)}
                     placeholder={t('ltd_missing_paste_ph')}
                     rows={10} className={`w-full p-4 border-2 rounded-xl text-base resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_ctype_label')}</label>
-                    <input type="text" value={missingContractType} onChange={e => setMissingContractType(e.target.value)}
+                    <label htmlFor="ltd-missing-contract-type" className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_ctype_label')}</label>
+                    <input id="ltd-missing-contract-type" type="text" value={missingContractType} onChange={e => setMissingContractType(e.target.value)}
                       placeholder={t('ltd_missing_ctype_ph')}
                       className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_role_label')}</label>
-                    <input type="text" value={missingRole} onChange={e => setMissingRole(e.target.value)}
+                    <label htmlFor="ltd-missing-role" className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_role_label')}</label>
+                    <input id="ltd-missing-role" type="text" value={missingRole} onChange={e => setMissingRole(e.target.value)}
                       placeholder={t('ltd_missing_role_ph')}
                       className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_location_label')}</label>
-                    <input type="text" value={location} onChange={e => setLocation(e.target.value)}
+                    <label htmlFor="ltd-location-2" className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_location_label')}</label>
+                    <input id="ltd-location-2" type="text" value={location} onChange={e => setLocation(e.target.value)}
                       placeholder={t('ltd_missing_location_ph')}
                       className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                   </div>
                 </div>
                 <div>
-                  <label className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_concerns_label')}</label>
-                  <input type="text" value={missingConcerns} onChange={e => setMissingConcerns(e.target.value)}
+                  <label htmlFor="ltd-missing-concerns" className={`block text-[15px] font-semibold mb-1 ${c.labelText}`}>{t('ltd_missing_concerns_label')}</label>
+                  <input id="ltd-missing-concerns" type="text" value={missingConcerns} onChange={e => setMissingConcerns(e.target.value)}
                     placeholder={t('ltd_missing_concerns_ph')}
                     className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                 </div>

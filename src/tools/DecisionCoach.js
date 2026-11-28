@@ -598,8 +598,8 @@ const DecisionCoach = ({ tool }) => {
       {['standard','devils','chain'].includes(decideMode) && (<>
         {decideMode === 'devils' && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_label_gut')} <span className={c.required}>*</span></label>
-            <input type="text" value={gutInstinct} onChange={e => setGutInstinct(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleDevilsAdvocate(); }}
+            <label htmlFor="dc-gut-instinct" className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_label_gut')} <span className={c.required}>*</span></label>
+            <input id="dc-gut-instinct" type="text" value={gutInstinct} onChange={e => setGutInstinct(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleDevilsAdvocate(); }}
               placeholder={t('dc_ph_gut')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
             <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('dc_gut_hint')}</p>
           </div>
@@ -783,7 +783,7 @@ const DecisionCoach = ({ tool }) => {
           </div>
         )}
         {!awaitingAnswer && renderSteps(steps)}
-        {!awaitingAnswer && alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-base font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {!awaitingAnswer && alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-base font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through">{a}</span></p>)}</div>)}
         {!awaitingAnswer && results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
 
         {showRejectionPicker ? (
@@ -900,8 +900,8 @@ const DecisionCoach = ({ tool }) => {
   const renderGroupTab = () => (
     <div className="space-y-4">
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_group_decision_label')} <span className={c.required}>*</span></label>
-        <input type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder={t('dc_ph_group')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+        <label htmlFor="dc-group-decision" className={`text-[13px] font-bold ${c.textSecondary} mb-2 block`}>{t('dc_group_decision_label')} <span className={c.required}>*</span></label>
+        <input id="dc-group-decision" type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder={t('dc_ph_group')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
       <div className={`p-5 rounded-2xl border ${c.card}`}>
         <label className={`text-[13px] font-bold ${c.textSecondary} mb-3 block`}>{t('dc_people')}</label>
@@ -1022,8 +1022,8 @@ const DecisionCoach = ({ tool }) => {
       <div>
         <h3 className={`text-base font-bold ${c.text} mb-1`}>{t('dc_batch_title')}</h3>
         <p className={`text-[13px] ${c.textMuteded} mb-3`}>{t('dc_batch_hint')}</p>
-        <label className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
-        <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm mb-3 ${c.input}`}>
+        <label htmlFor="dc-batch-category" className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
+        <select id="dc-batch-category" value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm mb-3 ${c.input}`}>
           <option value="dinner">{t('dc_batch_dinners')}</option>
           <option value="lunch">{t('dc_batch_lunches')}</option>
           <option value="outfit">{t('dc_batch_outfits')}</option>
@@ -1043,8 +1043,8 @@ const DecisionCoach = ({ tool }) => {
 
         <div className="flex gap-2 mb-3">
           <div className="flex-1">
-            <label className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
-            <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
+            <label htmlFor="dc-batch-count" className={`block text-[13px] font-bold ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
+            <select id="dc-batch-count" value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
           </div>
           <button onClick={handleBatch} disabled={loading || (batchCategory === 'custom' && !batchCustom.trim())}
             className={`self-end px-4 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>
@@ -1135,7 +1135,7 @@ const DecisionCoach = ({ tool }) => {
                     {alts.length > 0 && (
                       <div className={`p-3 rounded-xl border ${c.card}`}>
                         <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('dc_ruled_out')}</p>
-                        {alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary} line-through opacity-60`}>{a}</p>)}
+                        {alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary} line-through`}>{a}</p>)}
                       </div>
                     )}
                     {/* No second guessing */}

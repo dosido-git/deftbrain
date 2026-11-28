@@ -300,8 +300,8 @@ const ToastWriter = ({ tool }) => {
 
         <div className={sv ? FORM_PANEL : ''}>
         {/* Person */} <div className="mb-4">
-          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>{t('tst_q_person')} <span className={c.required}>*</span></label>
-          <input
+          <label htmlFor="tw-person" className={`text-sm font-bold ${c.labelText} block mb-1.5`}>{t('tst_q_person')} <span className={c.required}>*</span></label>
+          <input id="tw-person"
             type="text"
             value={person} onChange={e => setPerson(e.target.value)} placeholder={t('tst_ph_person')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
@@ -319,20 +319,20 @@ const ToastWriter = ({ tool }) => {
         </div>
 
         {/* Relationship */} <div className="mb-4">
-          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>
+          <label htmlFor="tw-relationship" className={`text-sm font-bold ${c.labelText} block mb-1.5`}>
             {t('tst_relationship')} <span className={`font-normal ${c.textMuted}`}>{t('tst_optional')}</span>
           </label>
-          <input
+          <input id="tw-relationship"
             type="text"
             value={relationship} onChange={e => setRelationship(e.target.value)} placeholder={t('tst_ph_relationship')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         {/* Stories */} <div className="mb-4">
-          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>
+          <label htmlFor="tw-stories" className={`text-sm font-bold ${c.labelText} block mb-1.5`}>
             {t('tst_stories')} <span className={`font-normal ${c.textMuted}`}>{t('tst_stories_hint')}</span>
           </label>
-          <textarea
+          <textarea id="tw-stories"
             value={stories} onChange={e => setStories(e.target.value)} placeholder={t('tst_ph_stories')}
             rows={3} className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`} />
         </div>
@@ -361,10 +361,10 @@ const ToastWriter = ({ tool }) => {
         </div>
 
         {/* Avoid */} <div className="mb-5">
-          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>
+          <label htmlFor="tw-avoid" className={`text-sm font-bold ${c.labelText} block mb-1.5`}>
             {t('tst_avoid')} <span className={`font-normal ${c.textMuted}`}>{t('tst_optional')}</span>
           </label>
-          <input
+          <input id="tw-avoid"
             type="text"
             value={avoid} onChange={e => setAvoid(e.target.value)} placeholder={t('tst_ph_avoid')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />

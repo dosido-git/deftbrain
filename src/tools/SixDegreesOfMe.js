@@ -1020,13 +1020,13 @@ const SixDegreesOfMe = ({ tool }) => {
       <div className={`rounded-2xl border p-5 ${c.card}`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_a')}</label>
-            <input type="text" value={betweenNameA} onChange={e => setBetweenNameA(e.target.value)}
+            <label htmlFor="sdom-between-name-a" className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_a')}</label>
+            <input id="sdom-between-name-a" type="text" value={betweenNameA} onChange={e => setBetweenNameA(e.target.value)}
               placeholder={t('sdm_between_person_a_ph')} className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_b')} <span className={c.required}>*</span></label>
-            <input type="text" value={betweenNameB} onChange={e => setBetweenNameB(e.target.value)}
+            <label htmlFor="sdom-between-name-b" className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_b')} <span className={c.required}>*</span></label>
+            <input id="sdom-between-name-b" type="text" value={betweenNameB} onChange={e => setBetweenNameB(e.target.value)}
               placeholder={t('sdm_between_person_b_ph')} className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none`} />
           </div>
         </div>
@@ -1048,8 +1048,8 @@ const SixDegreesOfMe = ({ tool }) => {
 
         {betweenMode === 'shared' && (
           <div className="mb-4">
-            <label className={`text-xs font-bold ${c.text} mb-1 block`}>{t('sdm_between_shared_thing_label')}</label>
-            <input type="text" value={betweenSharedThing} onChange={e => setBetweenSharedThing(e.target.value)}
+            <label htmlFor="sdom-between-shared-thing" className={`text-xs font-bold ${c.text} mb-1 block`}>{t('sdm_between_shared_thing_label')}</label>
+            <input id="sdom-between-shared-thing" type="text" value={betweenSharedThing} onChange={e => setBetweenSharedThing(e.target.value)}
               placeholder={t('sdm_between_shared_thing_ph')}
               className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none`} />
           </div>
@@ -1273,21 +1273,21 @@ const SixDegreesOfMe = ({ tool }) => {
           <div data-print-form {...(result ? { 'data-print-hide': '' } : {})} className={sv ? `${FORM_PANEL} mb-5`.trim() : `mb-5 p-5 rounded-2xl border ${c.card}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
+                <label htmlFor="sdom-thing-a" className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
                   <span className={`w-2.5 h-2.5 rounded-full ${sv ? 'bg-[var(--sc-accent)]' : 'bg-amber-500'} shrink-0`} aria-hidden="true" />
                   {t('sdm_thing_a')} <span className={c.required}>*</span>
                 </label>
-                <input type="text" value={thingA} onChange={e => setThingA(e.target.value)}
+                <input id="sdom-thing-a" type="text" value={thingA} onChange={e => setThingA(e.target.value)}
                   placeholder={t('sdm_thing_a_ph')}
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
                   className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
               </div>
               <div>
-                <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
+                <label htmlFor="sdom-thing-b" className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
                   <span className={`w-2.5 h-2.5 rounded-full ${sv ? 'bg-[var(--sc-strong)]' : 'bg-emerald-500'} shrink-0`} aria-hidden="true" />
                   {t('sdm_thing_b')} <span className={c.required}>*</span>
                 </label>
-                <input type="text" value={thingB} onChange={e => setThingB(e.target.value)}
+                <input id="sdom-thing-b" type="text" value={thingB} onChange={e => setThingB(e.target.value)}
                   placeholder={t('sdm_thing_b_ph')}
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
                   className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />

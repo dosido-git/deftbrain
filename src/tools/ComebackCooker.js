@@ -266,10 +266,10 @@ const ComebackCooker = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
           {/* Situation */}
           <div>
-            <label className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>
+            <label htmlFor="cc-situation" className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>
               <span className="me-1.5">📍</span>{t('cbc_q_label')} <span className={c.required}>*</span>
             </label>
-            <textarea
+            <textarea id="cc-situation"
               value={situation}
               onChange={e => setSituation(e.target.value)}
               placeholder={t('cbc_q_ph')}
@@ -282,11 +282,11 @@ const ComebackCooker = ({ tool }) => {
 
           {/* What they said */}
           <div>
-            <label className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>
+            <label htmlFor="cc-what-they-said" className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>
               <span className="me-1.5">💬</span>{t('cbc_said_label')}{' '}
               <span className={`font-normal ${c.textMuted}`}>{t('cbc_said_hint')}</span>
             </label>
-            <input
+            <input id="cc-what-they-said"
               type="text"
               value={whatTheySaid}
               onChange={e => setWhatTheySaid(e.target.value)}
@@ -298,11 +298,11 @@ const ComebackCooker = ({ tool }) => {
 
           {/* Relationship */}
           <div>
-            <label className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>
+            <label htmlFor="cc-relationship" className={`text-sm font-semibold ${c.labelText} block mb-1.5`}>
               <span className="me-1.5">👤</span>{t('cbc_rel_label')}{' '}
               <span className={`font-normal ${c.textMuted}`}>{t('cbc_rel_hint')}</span>
             </label>
-            <input
+            <input id="cc-relationship"
               type="text"
               value={relationship}
               onChange={e => setRelationship(e.target.value)}

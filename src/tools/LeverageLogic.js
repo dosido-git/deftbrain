@@ -397,8 +397,8 @@ const LeverageLogic = ({ tool }) => {
         <div className={sv ? `${FORM_PANEL} space-y-5`.trim() : "space-y-5"}>
           <div className={`border-t ${c.border} pt-5 space-y-5`}>
               <div>
-                <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_situation')} <span className={c.required}>*</span></label>
-                <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('llog_ph_situation')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                <label htmlFor="ll-situation" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_situation')} <span className={c.required}>*</span></label>
+                <textarea id="ll-situation" value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('llog_ph_situation')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
                 <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_type')}</label>
@@ -426,8 +426,8 @@ const LeverageLogic = ({ tool }) => {
                 <textarea value={theirSide} onChange={e => setTheirSide(e.target.value)} placeholder={t('llog_ph_their_side')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_want')}</label>
-                <input type="text" value={desired} onChange={e => setDesired(e.target.value)} placeholder={t('llog_ph_want')} className={`w-full p-3 border-2 rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
+                <label htmlFor="ll-desired" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_q_want')}</label>
+                <input id="ll-desired" type="text" value={desired} onChange={e => setDesired(e.target.value)} placeholder={t('llog_ph_want')} className={`w-full p-3 border-2 rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -808,12 +808,12 @@ const LeverageLogic = ({ tool }) => {
                 <p className={`text-lg font-black ${c.text}`}>{t('llog_prep_title')}</p>
                 <p className={`text-xs ${c.textSecondary}`}>{t('llog_prep_intro')}</p>
                 <div>
-                  <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_prep_know')}</label>
-                  <textarea value={whatYouKnow} onChange={e => setWhatYouKnow(e.target.value)} placeholder={t('llog_ph_prep_know', { sym })} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                  <label htmlFor="ll-what-you-know" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_prep_know')}</label>
+                  <textarea id="ll-what-you-know" value={whatYouKnow} onChange={e => setWhatYouKnow(e.target.value)} placeholder={t('llog_ph_prep_know', { sym })} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <div>
-                  <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_prep_unsure')}</label>
-                  <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={t('llog_ph_prep_unsure')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                  <label htmlFor="ll-what-you-dont-know" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('llog_prep_unsure')}</label>
+                  <textarea id="ll-what-you-dont-know" value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={t('llog_ph_prep_unsure')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
                 <button title={t('cmd_enter')} onClick={fetchPrepCheck} disabled={prepLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                   {prepLoading ? <span className="animate-spin inline-block me-2 text-xl">{tool?.icon ?? '⚖️'}</span> : <span className="me-2 text-xl">{tool?.icon ?? '⚖️'}</span>}

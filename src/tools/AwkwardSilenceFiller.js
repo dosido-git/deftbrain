@@ -461,10 +461,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
         {/* ── TOPIC LANDMINES ── */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label htmlFor="asf-custom-context" className={`text-sm font-bold ${c.label} block mb-1.5`}>
             {t('asf_describe_label')} <span className={`font-normal ${c.textMuteded}`}>{t('asf_describe_optional')}</span>
           </label>
-          <input
+          <input id="asf-custom-context"
             type="text"
             value={customContext}
             onChange={e => { setCustomContext(e.target.value); if (e.target.value.trim()) setScenario(''); }}
@@ -476,10 +476,10 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
         {/* ── RELATIONSHIP ── */}
         <div className="mb-5">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+          <label htmlFor="asf-landmines" className={`text-sm font-bold ${c.label} block mb-1.5`}>
             {t('asf_landmines_label')} <span className={`font-normal ${c.textMuteded}`}>{t('asf_landmines_optional')}</span>
           </label>
-          <input
+          <input id="asf-landmines"
             type="text"
             value={landmines}
             onChange={e => setLandmines(e.target.value)}

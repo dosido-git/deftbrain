@@ -306,10 +306,10 @@ function ContractDecoder({ tool }) {
       <div className={sv ? `${FORM_PANEL} space-y-4` : 'space-y-4'}>
       {/* Jurisdiction — contract location, never inferred from visitor locale */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cd-jurisdiction" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('cd_juris_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('cd_optional')}</span>
         </label>
-        <input type="text" value={jurisdiction} onChange={e => setJurisdiction(e.target.value)}
+        <input id="cd-jurisdiction" type="text" value={jurisdiction} onChange={e => setJurisdiction(e.target.value)}
           placeholder={t('cd_juris_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
         />
@@ -354,10 +354,10 @@ function ContractDecoder({ tool }) {
 
       {/* Context */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label htmlFor="cd-context" className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('cd_situation')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('cd_optional')}</span>
         </label>
-        <input type="text" value={context} onChange={e => setContext(e.target.value)}
+        <input id="cd-context" type="text" value={context} onChange={e => setContext(e.target.value)}
           placeholder={t('cd_situation_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
         />

@@ -413,18 +413,18 @@ const PlotHoleFinder = ({ tool }) => {
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>{t('plh_title_label')} <span className={c.required}>*</span></label>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)}
+              <label htmlFor="phf-title" className={`text-xs font-bold ${c.label} block mb-1.5`}>{t('plh_title_label')} <span className={c.required}>*</span></label>
+              <input id="phf-title" type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={t('plh_title_ph')}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
                 onKeyDown={e => e.key === 'Enter' && title.trim() && runAnalysis()} />
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>
+              <label htmlFor="phf-what-to-look-at" className={`text-xs font-bold ${c.label} block mb-1.5`}>
                 {t('plh_lookat_label')} <span className={`font-normal ${c.textMuted}`}>({t('plh_optional')})</span>
               </label>
-              <textarea value={whatToLookAt} onChange={e => setWhatToLookAt(e.target.value)}
+              <textarea id="phf-what-to-look-at" value={whatToLookAt} onChange={e => setWhatToLookAt(e.target.value)}
                 placeholder={t('plh_lookat_ph')}
                 rows={2} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             </div>
@@ -562,26 +562,26 @@ const PlotHoleFinder = ({ tool }) => {
             <p className={`text-sm font-bold ${c.textSecondary}`}>{t('plh_defend_intro')}</p>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>
+              <label htmlFor="phf-title-2" className={`text-xs font-bold ${c.label} block mb-1.5`}>
                 {t('plh_story_title')} <span className={`font-normal ${c.textMuted}`}>({t('plh_optional')})</span>
               </label>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)}
+              <input id="phf-title-2" type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={t('plh_story_title_ph')}
                 className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>{t('plh_the_hole')} <span className={c.required}>*</span></label>
-              <textarea value={allegedHole} onChange={e => setAllegedHole(e.target.value)}
+              <label htmlFor="phf-alleged-hole" className={`text-xs font-bold ${c.label} block mb-1.5`}>{t('plh_the_hole')} <span className={c.required}>*</span></label>
+              <textarea id="phf-alleged-hole" value={allegedHole} onChange={e => setAllegedHole(e.target.value)}
                 placeholder={t('plh_the_hole_ph')}
                 rows={3} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             </div>
 
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1.5`}>
+              <label htmlFor="phf-what-feels-wrong" className={`text-xs font-bold ${c.label} block mb-1.5`}>
                 {t('plh_feels_wrong')} <span className={`font-normal ${c.textMuted}`}>({t('plh_optional')})</span>
               </label>
-              <textarea value={whatFeelsWrong} onChange={e => setWhatFeelsWrong(e.target.value)}
+              <textarea id="phf-what-feels-wrong" value={whatFeelsWrong} onChange={e => setWhatFeelsWrong(e.target.value)}
                 placeholder={t('plh_feels_wrong_ph')}
                 rows={2} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             </div>

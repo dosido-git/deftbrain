@@ -80,12 +80,12 @@ const SESSION_MODES = [
 
 // Mode-specific color accents for active session
 const MODE_COLORS = {
-  default:          { bar: 'bg-cyan-500',    glow: 'shadow-cyan-500/20',    badge: 'bg-cyan-500' },
-  deep_work:        { bar: 'bg-cyan-600',    glow: 'shadow-cyan-600/20',    badge: 'bg-cyan-600' },
-  sprint:           { bar: 'bg-amber-500',   glow: 'shadow-amber-500/20',   badge: 'bg-amber-500' },
-  grind:            { bar: 'bg-zinc-500',    glow: 'shadow-zinc-500/20',    badge: 'bg-zinc-600' },
-  creative:         { bar: 'bg-cyan-500',  glow: 'shadow-cyan-500/20',  badge: 'bg-cyan-500' },
-  avoidance_buster: { bar: 'bg-emerald-500', glow: 'shadow-emerald-500/20', badge: 'bg-emerald-500' },
+  default:          { bar: 'bg-cyan-500',    glow: 'shadow-cyan-500/20',    badge: 'bg-cyan-700' },
+  deep_work:        { bar: 'bg-cyan-600',    glow: 'shadow-cyan-600/20',    badge: 'bg-cyan-700' },
+  sprint:           { bar: 'bg-amber-500',   glow: 'shadow-amber-500/20',   badge: 'bg-amber-700' },
+  grind:            { bar: 'bg-zinc-500',    glow: 'shadow-zinc-500/20',    badge: 'bg-zinc-700' },
+  creative:         { bar: 'bg-cyan-500',  glow: 'shadow-cyan-500/20',  badge: 'bg-cyan-700' },
+  avoidance_buster: { bar: 'bg-emerald-500', glow: 'shadow-emerald-500/20', badge: 'bg-emerald-700' },
 };
 
 // ─── Sound helper (Web Audio API — no external files) ───
@@ -835,7 +835,7 @@ const VirtualBodyDouble = ({ tool }) => {
                   <span className="text-lg">{m.icon}</span>
                   <div>
                     <span className="text-sm font-medium block">{t(m.descKey)}</span>
-                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuted}`}>{t(m.labelKey)}</span>
+                    <span className={`text-xs ${sessionMode === m.id ? 'text-white' : c.textMuted}`}>{t(m.labelKey)}</span>
                   </div>
                 </button>
               ))} </div>
@@ -858,8 +858,8 @@ const VirtualBodyDouble = ({ tool }) => {
                 ))} </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>{t('vbd_session_goal')}</label>
-              <input type="text" value={goals} onChange={e => setGoals(e.target.value)} placeholder={t('vbd_goal_placeholder')}
+              <label htmlFor="vbd-goals" className={`block text-sm font-medium ${c.textSecondary} mb-2`}>{t('vbd_session_goal')}</label>
+              <input id="vbd-goals" type="text" value={goals} onChange={e => setGoals(e.target.value)} placeholder={t('vbd_goal_placeholder')}
                 className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm`} />
             </div>
           </div>

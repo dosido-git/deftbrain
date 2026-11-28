@@ -714,8 +714,8 @@ const ArgueSmarter = ({ tool }) => {
       {mode === 'setup' && <div data-print-form className={sv ? `${FORM_PANEL} space-y-5` : `space-y-5`}>
         <div><h3 className={`font-bold text-lg ${c.text}`}>🥊 {t('dm_setup_heading')}</h3><p className={`text-sm ${c.textMuteded} mt-1`}>{t('dm_setup_sub')}</p></div>
         <div>
-          <label className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
-          <textarea value={position} onChange={e => setPosition(e.target.value)} placeholder={t('dm_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          <label htmlFor="as-position" className={`block text-[15px] font-semibold ${c.labelText} mb-1`}>{t('dm_your_position')} <span className={c.required}>*</span></label>
+          <textarea id="as-position" value={position} onChange={e => setPosition(e.target.value)} placeholder={t('dm_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
         </div>
         <div data-print-hide><button onClick={() => setShowStarters(!showStarters)} className={`text-xs font-bold ${c.orangeText}`}>{showStarters ? t('dm_hide') : t('dm_try_these')}</button>
           {showStarters && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">{STARTERS.map((s, i) => <button key={i} onClick={() => { setPosition(t(s.key)); setShowStarters(false); }} className={`text-start p-2 rounded-lg text-xs ${c.cardAlt} border ${c.border} hover:border-amber-400`}>{s.cat} {t(s.key)}</button>)}</div>}

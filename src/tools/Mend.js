@@ -894,8 +894,8 @@ const Mend = ({ tool }) => {
         </div>
 
         <div className="mt-4">
-          <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
-          <input type="text" value={calForm.situation} onChange={e => setCalForm(p => ({ ...p, situation: e.target.value }))}
+          <label htmlFor="m-cal-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
+          <input id="m-cal-form" type="text" value={calForm.situation} onChange={e => setCalForm(p => ({ ...p, situation: e.target.value }))}
             placeholder={t('apc_cal_ph_context')}
             className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
         </div>
@@ -1213,13 +1213,13 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🔍</span>{t('apc_det_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_det_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_det_draft_label')} <span className={c.required}>*</span></label>
-        <textarea value={detectForm.draft} onChange={e => setDetectForm(p => ({ ...p, draft: e.target.value }))}
+        <label htmlFor="m-detect-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_det_draft_label')} <span className={c.required}>*</span></label>
+        <textarea id="m-detect-form" value={detectForm.draft} onChange={e => setDetectForm(p => ({ ...p, draft: e.target.value }))}
           placeholder={t('apc_det_ph_draft')}
           className={`w-full h-36 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
-        <input type="text" value={detectForm.context} onChange={e => setDetectForm(p => ({ ...p, context: e.target.value }))}
+        <label htmlFor="m-detect-form-2" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
+        <input id="m-detect-form-2" type="text" value={detectForm.context} onChange={e => setDetectForm(p => ({ ...p, context: e.target.value }))}
           placeholder={t('apc_det_ph_context')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
@@ -1335,8 +1335,8 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🎯</span>{t('apc_del_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_del_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
-        <textarea value={delForm.whatHappened} onChange={e => setDelForm(p => ({ ...p, whatHappened: e.target.value }))}
+        <label htmlFor="m-del-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+        <textarea id="m-del-form" value={delForm.whatHappened} onChange={e => setDelForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder={t('apc_del_ph_what_happened')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -1344,8 +1344,8 @@ const Mend = ({ tool }) => {
           <RelationshipPicker value={delForm.relationship} onChange={v => setDelForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_del_planned_label')}</label>
-        <textarea value={delForm.apologyText} onChange={e => setDelForm(p => ({ ...p, apologyText: e.target.value }))}
+        <label htmlFor="m-del-form-2" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_del_planned_label')}</label>
+        <textarea id="m-del-form-2" value={delForm.apologyText} onChange={e => setDelForm(p => ({ ...p, apologyText: e.target.value }))}
           placeholder={t('apc_del_ph_planned')}
           className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -1666,8 +1666,8 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🌍</span>{t('apc_cul_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_cul_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
-        <textarea value={culForm.whatHappened} onChange={e => setCulForm(p => ({ ...p, whatHappened: e.target.value }))}
+        <label htmlFor="m-cul-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+        <textarea id="m-cul-form" value={culForm.whatHappened} onChange={e => setCulForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder={t('apc_cul_ph_what_happened')}
           className={`w-full h-24 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -1689,8 +1689,8 @@ const Mend = ({ tool }) => {
             <RelationshipPicker value={culForm.relationship} onChange={v => setCulForm(p => ({ ...p, relationship: v }))} />
           </div>
           <div>
-            <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cul_setting_label')}</label>
-            <input type="text" value={culForm.setting} onChange={e => setCulForm(p => ({ ...p, setting: e.target.value }))}
+            <label htmlFor="m-cul-form-2" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cul_setting_label')}</label>
+            <input id="m-cul-form-2" type="text" value={culForm.setting} onChange={e => setCulForm(p => ({ ...p, setting: e.target.value }))}
               placeholder={t('apc_cul_ph_setting')}
               className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
           </div>
@@ -1809,8 +1809,8 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🧐</span>{t('apc_dec_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_dec_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_dec_words_label')} <span className={c.required}>*</span></label>
-        <textarea value={decodeForm.theirWords} onChange={e => setDecodeForm(p => ({ ...p, theirWords: e.target.value }))}
+        <label htmlFor="m-decode-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_dec_words_label')} <span className={c.required}>*</span></label>
+        <textarea id="m-decode-form" value={decodeForm.theirWords} onChange={e => setDecodeForm(p => ({ ...p, theirWords: e.target.value }))}
           placeholder={t('apc_dec_ph_words')}
           className={`w-full h-36 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -1818,8 +1818,8 @@ const Mend = ({ tool }) => {
           <RelationshipPicker value={decodeForm.relationship} onChange={v => setDecodeForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
-        <input type="text" value={decodeForm.context} onChange={e => setDecodeForm(p => ({ ...p, context: e.target.value }))}
+        <label htmlFor="m-decode-form-2" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
+        <input id="m-decode-form-2" type="text" value={decodeForm.context} onChange={e => setDecodeForm(p => ({ ...p, context: e.target.value }))}
           placeholder={t('apc_dec_ph_context')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
@@ -1966,8 +1966,8 @@ const Mend = ({ tool }) => {
 
         {!practiceStarted ? (
           <>
-            <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
-            <textarea value={practiceForm.situation} onChange={e => setPracticeForm(p => ({ ...p, situation: e.target.value }))}
+            <label htmlFor="m-practice-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+            <textarea id="m-practice-form" value={practiceForm.situation} onChange={e => setPracticeForm(p => ({ ...p, situation: e.target.value }))}
               placeholder={t('apc_prac_ph_situation')}
               className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -2124,13 +2124,13 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">💜</span>{t('apc_for_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_for_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_for_what_label')} <span className={c.required}>*</span></label>
-        <textarea value={forgiveForm.whatTheyDid} onChange={e => setForgiveForm(p => ({ ...p, whatTheyDid: e.target.value }))}
+        <label htmlFor="m-forgive-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_for_what_label')} <span className={c.required}>*</span></label>
+        <textarea id="m-forgive-form" value={forgiveForm.whatTheyDid} onChange={e => setForgiveForm(p => ({ ...p, whatTheyDid: e.target.value }))}
           placeholder={t('apc_for_ph_what')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_for_their_apology_label')}</label>
-        <textarea value={forgiveForm.theirApology} onChange={e => setForgiveForm(p => ({ ...p, theirApology: e.target.value }))}
+        <label htmlFor="m-forgive-form-2" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_for_their_apology_label')}</label>
+        <textarea id="m-forgive-form-2" value={forgiveForm.theirApology} onChange={e => setForgiveForm(p => ({ ...p, theirApology: e.target.value }))}
           placeholder={t('apc_for_ph_their_apology')}
           className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -2138,8 +2138,8 @@ const Mend = ({ tool }) => {
           <RelationshipPicker value={forgiveForm.relationship} onChange={v => setForgiveForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_for_feel_label')}</label>
-        <input type="text" value={forgiveForm.howYouFeel} onChange={e => setForgiveForm(p => ({ ...p, howYouFeel: e.target.value }))}
+        <label htmlFor="m-forgive-form-3" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_for_feel_label')}</label>
+        <input id="m-forgive-form-3" type="text" value={forgiveForm.howYouFeel} onChange={e => setForgiveForm(p => ({ ...p, howYouFeel: e.target.value }))}
           placeholder={t('apc_for_ph_feel')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
@@ -2282,8 +2282,8 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🗺️</span>{t('apc_road_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_road_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
-        <textarea value={roadmapForm.whatHappened} onChange={e => setRoadmapForm(p => ({ ...p, whatHappened: e.target.value }))}
+        <label htmlFor="m-roadmap-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+        <textarea id="m-roadmap-form" value={roadmapForm.whatHappened} onChange={e => setRoadmapForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder={t('apc_road_ph_what_happened')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -2291,13 +2291,13 @@ const Mend = ({ tool }) => {
           <RelationshipPicker value={roadmapForm.relationship} onChange={v => setRoadmapForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_road_current_label')}</label>
-        <input type="text" value={roadmapForm.currentState} onChange={e => setRoadmapForm(p => ({ ...p, currentState: e.target.value }))}
+        <label htmlFor="m-roadmap-form-2" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_road_current_label')}</label>
+        <input id="m-roadmap-form-2" type="text" value={roadmapForm.currentState} onChange={e => setRoadmapForm(p => ({ ...p, currentState: e.target.value }))}
           placeholder={t('apc_road_ph_current')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_road_effort_label')}</label>
-        <input type="text" value={roadmapForm.effortSoFar} onChange={e => setRoadmapForm(p => ({ ...p, effortSoFar: e.target.value }))}
+        <label htmlFor="m-roadmap-form-3" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_road_effort_label')}</label>
+        <input id="m-roadmap-form-3" type="text" value={roadmapForm.effortSoFar} onChange={e => setRoadmapForm(p => ({ ...p, effortSoFar: e.target.value }))}
           placeholder={t('apc_road_ph_effort')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
@@ -2462,8 +2462,8 @@ const Mend = ({ tool }) => {
         <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">✉️</span>{t('apc_let_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_let_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
-        <textarea value={letterForm.whatHappened} onChange={e => setLetterForm(p => ({ ...p, whatHappened: e.target.value }))}
+        <label htmlFor="m-letter-form" className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+        <textarea id="m-letter-form" value={letterForm.whatHappened} onChange={e => setLetterForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder={t('apc_let_ph_what_happened')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
@@ -2483,8 +2483,8 @@ const Mend = ({ tool }) => {
           </div>
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_let_else_label')}</label>
-        <input type="text" value={letterForm.additionalContext} onChange={e => setLetterForm(p => ({ ...p, additionalContext: e.target.value }))}
+        <label htmlFor="m-letter-form-2" className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_let_else_label')}</label>
+        <input id="m-letter-form-2" type="text" value={letterForm.additionalContext} onChange={e => setLetterForm(p => ({ ...p, additionalContext: e.target.value }))}
           placeholder={t('apc_let_ph_else')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
@@ -2615,29 +2615,29 @@ const Mend = ({ tool }) => {
 
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_what_said_label')} <span className={c.required}>*</span></label>
-            <textarea value={fixForm.whatYouSaid} onChange={e => setFixForm(p => ({ ...p, whatYouSaid: e.target.value }))}
+            <label htmlFor="m-fix-form" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_what_said_label')} <span className={c.required}>*</span></label>
+            <textarea id="m-fix-form" value={fixForm.whatYouSaid} onChange={e => setFixForm(p => ({ ...p, whatYouSaid: e.target.value }))}
               placeholder={t('apc_fix_ph_what_said')}
               className={`w-full h-28 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_reaction_label')} <span className={c.required}>*</span></label>
-            <textarea value={fixForm.theirReaction} onChange={e => setFixForm(p => ({ ...p, theirReaction: e.target.value }))}
+            <label htmlFor="m-fix-form-2" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_reaction_label')} <span className={c.required}>*</span></label>
+            <textarea id="m-fix-form-2" value={fixForm.theirReaction} onChange={e => setFixForm(p => ({ ...p, theirReaction: e.target.value }))}
               placeholder={t('apc_fix_ph_reaction')}
               className={`w-full h-20 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_relationship_label')}</label>
-              <select value={fixForm.relationship} onChange={e => setFixForm(p => ({ ...p, relationship: e.target.value }))}
+              <label htmlFor="m-fix-form-3" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_relationship_label')}</label>
+              <select id="m-fix-form-3" value={fixForm.relationship} onChange={e => setFixForm(p => ({ ...p, relationship: e.target.value }))}
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`}>
                 <option value="">{t('apc_fix_select')}</option>
                 {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.labelKey)}</option>)}
               </select>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
-              <input type="text" value={fixForm.context} onChange={e => setFixForm(p => ({ ...p, context: e.target.value }))}
+              <label htmlFor="m-fix-form-4" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
+              <input id="m-fix-form-4" type="text" value={fixForm.context} onChange={e => setFixForm(p => ({ ...p, context: e.target.value }))}
                 placeholder={t('apc_fix_ph_context')}
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
             </div>
@@ -2775,32 +2775,32 @@ const Mend = ({ tool }) => {
           <div className={`rounded-lg p-4 border space-y-3 ${c.cardInner}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_who_label')} <span className={c.required}>*</span></label>
-                <input type="text" value={repairForm.who} onChange={e => setRepairForm(p => ({ ...p, who: e.target.value }))}
+                <label htmlFor="m-repair-form" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_who_label')} <span className={c.required}>*</span></label>
+                <input id="m-repair-form" type="text" value={repairForm.who} onChange={e => setRepairForm(p => ({ ...p, who: e.target.value }))}
                   placeholder={t('apc_rep_ph_who')}
                   className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_date_label')}</label>
-                <input type="date" value={repairForm.date} onChange={e => setRepairForm(p => ({ ...p, date: e.target.value }))}
+                <label htmlFor="m-repair-form-2" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_date_label')}</label>
+                <input id="m-repair-form-2" type="date" value={repairForm.date} onChange={e => setRepairForm(p => ({ ...p, date: e.target.value }))}
                   className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_what_label')} <span className={c.required}>*</span></label>
-              <textarea value={repairForm.what} onChange={e => setRepairForm(p => ({ ...p, what: e.target.value }))}
+              <label htmlFor="m-repair-form-3" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_what_label')} <span className={c.required}>*</span></label>
+              <textarea id="m-repair-form-3" value={repairForm.what} onChange={e => setRepairForm(p => ({ ...p, what: e.target.value }))}
                 placeholder={t('apc_rep_ph_what')}
                 className={`w-full h-16 p-2 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_said_label')}</label>
-              <textarea value={repairForm.apologyGiven} onChange={e => setRepairForm(p => ({ ...p, apologyGiven: e.target.value }))}
+              <label htmlFor="m-repair-form-4" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_said_label')}</label>
+              <textarea id="m-repair-form-4" value={repairForm.apologyGiven} onChange={e => setRepairForm(p => ({ ...p, apologyGiven: e.target.value }))}
                 placeholder={t('apc_rep_ph_said')}
                 className={`w-full h-14 p-2 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_commit_label')}</label>
-              <input type="text" value={repairForm.commitments} onChange={e => setRepairForm(p => ({ ...p, commitments: e.target.value }))}
+              <label htmlFor="m-repair-form-5" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_commit_label')}</label>
+              <input id="m-repair-form-5" type="text" value={repairForm.commitments} onChange={e => setRepairForm(p => ({ ...p, commitments: e.target.value }))}
                 placeholder={t('apc_rep_ph_commit')}
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
             </div>

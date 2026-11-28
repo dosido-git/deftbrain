@@ -155,7 +155,7 @@ const ConflictCoach = ({ tool }) => {
   // ─── Persisted state ───
   const [receivedMessage, setReceivedMessage] = usePersistentState('cc-message', '');
   const [relationship,    setRelationship]    = usePersistentState('cc-relationship', 'Friend');
-  const [personLabel,     setPersonLabel]     = usePersistentState('cc-person', '');
+  const [personLabel] = usePersistentState('cc-person', ''); // only the removed in-form example set it; kept for saved values
   const [actualGoal,      setActualGoal]      = usePersistentState('cc-goal', '');
   const [results,         setResults]         = usePersistentState('cc-results', null);
 
@@ -408,8 +408,8 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Relationship */}
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('cc_relationship_label')}</label>
-            <select value={relationship} onChange={e => setRelationship(e.target.value)}
+            <label htmlFor="cc-relationship" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('cc_relationship_label')}</label>
+            <select id="cc-relationship" value={relationship} onChange={e => setRelationship(e.target.value)}
               className={`w-full p-3 border rounded-lg ${c.input}`}>
               {relationshipOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -465,8 +465,8 @@ const ConflictCoach = ({ tool }) => {
           {/* What they want to say. An ordinary optional field: the red box and
               the stop sign made typing an honest answer feel like a confession. */}
           <div>
-            <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('cc_draft_label')}</label>
-            <textarea value={userDraft} onChange={e => setUserDraft(e.target.value)}
+            <label htmlFor="cc-user-draft" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('cc_draft_label')}</label>
+            <textarea id="cc-user-draft" value={userDraft} onChange={e => setUserDraft(e.target.value)}
               placeholder={t('cc_draft_ph')}
               className={`w-full p-4 border rounded-lg ${c.input}`} rows={3} />
             <p className={`text-[13px] ${c.textMuteded} mt-1`}>{t('cc_draft_hint')}</p>
@@ -508,23 +508,6 @@ const ConflictCoach = ({ tool }) => {
             )}
             </button>
           </div>
-
-          {!receivedMessage.trim() && !loading && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setReceivedMessage("Fine. Whatever. I guess I'll just handle it myself like I always do. Don't worry about it.");
-                  setRelationship('Partner');
-                  setPersonLabel('Alex');
-                  setActualGoal('Reconnect without escalating');
-                  setEmotionalState({ angry: false, hurt: true, defensive: true, frustrated: false, calm: false, confused: false });
-                  setGoal('');
-                }}
-                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
 
           {error && (
             <div className={`p-4 ${c.danger} border rounded-lg flex items-start gap-3`}>

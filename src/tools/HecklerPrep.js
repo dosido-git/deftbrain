@@ -240,29 +240,29 @@ const HecklerPrep = ({ tool }) => {
           <p data-print-hide className={`text-[13px] ${c.textMuted} mb-2`}>
             {t('hp_coldopen_q')} <a href="/ColdOpenCraft" className={linkStyle}>📬 {t('hp_coldopen_name')}</a> {t('hp_coldopen_rest')}
           </p>
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_topic_label')} <span className={c.required}>*</span></label>
-          <textarea value={topic} onChange={e => setTopic(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && topic.trim()) generate(); }} rows={2}
+          <label htmlFor="hp-topic" className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_topic_label')} <span className={c.required}>*</span></label>
+          <textarea id="hp-topic" value={topic} onChange={e => setTopic(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && topic.trim()) generate(); }} rows={2}
             placeholder={t('hp_topic_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2 resize-none`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_audience_label')}</label>
-          <input type="text" value={audience} onChange={e => setAudience(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
+          <label htmlFor="hp-audience" className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_audience_label')}</label>
+          <input id="hp-audience" type="text" value={audience} onChange={e => setAudience(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
             placeholder={t('hp_audience_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_proposal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-          <input type="text" value={proposal} onChange={e => setProposal(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
+          <label htmlFor="hp-proposal" className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_proposal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+          <input id="hp-proposal" type="text" value={proposal} onChange={e => setProposal(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
             placeholder={t('hp_proposal_ph', { sym })}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_objections_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
-          <input type="text" value={knownObjections} onChange={e => setKnownObjections(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
+          <label htmlFor="hp-known-objections" className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hp_objections_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+          <input id="hp-known-objections" type="text" value={knownObjections} onChange={e => setKnownObjections(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && topic.trim()) generate(); }}
             placeholder={t('hp_objections_ph')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.text} outline-none focus:ring-2`} />
         </div>

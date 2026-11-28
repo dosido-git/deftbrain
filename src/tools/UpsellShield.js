@@ -257,8 +257,8 @@ const UpsellShield = ({ tool }) => {
         {renderHeaderRow()}
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_situation')} <span className={c.required}>*</span></label>
-          <input type="text" value={situation} onChange={e => setSituation(e.target.value)}
+          <label htmlFor="us-situation" className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_situation')} <span className={c.required}>*</span></label>
+          <input id="us-situation" type="text" value={situation} onChange={e => setSituation(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && situation.trim() && !loading && generate()}
             placeholder={t('us_ph_situation')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
@@ -279,22 +279,22 @@ const UpsellShield = ({ tool }) => {
         )}
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_want')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-          <input type="text" value={whatYouWant} onChange={e => setWhatYouWant(e.target.value)}
+          <label htmlFor="us-what-you-want" className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_want')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+          <input id="us-what-you-want" type="text" value={whatYouWant} onChange={e => setWhatYouWant(e.target.value)}
             placeholder={t('us_ph_want', { sym })}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_budget')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-          <input type="text" value={budget} onChange={e => setBudget(e.target.value)}
+          <label htmlFor="us-budget" className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_budget')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+          <input id="us-budget" type="text" value={budget} onChange={e => setBudget(e.target.value)}
             placeholder={t('us_ph_budget', { sym })}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-5">
-          <label className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_concerns')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
-          <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
+          <label htmlFor="us-concerns" className={`text-sm font-bold ${sv ? c.labelText : c.text} block mb-1.5`}>{t('us_q_concerns')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span></label>
+          <input id="us-concerns" type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
             placeholder={t('us_ph_concerns')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2`} />
         </div>

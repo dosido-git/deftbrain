@@ -527,10 +527,10 @@ const CaptionMagic = ({ tool }) => {
         </div>
       )}
       <div className="mt-3">
-        <label className={`text-xs font-semibold ${c.textMuted} block mb-1`}>
+        <label htmlFor="cm-image-description" className={`text-xs font-semibold ${c.textMuted} block mb-1`}>
           {t('cm_describe_label')}
         </label>
-        <input type="text" value={imageDescription} onChange={e => setImageDescription(e.target.value)}
+        <input id="cm-image-description" type="text" value={imageDescription} onChange={e => setImageDescription(e.target.value)}
           placeholder={t('cm_describe_ph')}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
@@ -557,8 +557,8 @@ const CaptionMagic = ({ tool }) => {
             className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
         </div>
         <div>
-          <label className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>🎯 {t('cm_avoid_label')}</label>
-          <input type="text" value={avoidMention} onChange={e => setAvoidMention(e.target.value)}
+          <label htmlFor="cm-avoid-mention" className={`text-[13px] font-bold ${c.textSecondary} mb-1 block`}>🎯 {t('cm_avoid_label')}</label>
+          <input id="cm-avoid-mention" type="text" value={avoidMention} onChange={e => setAvoidMention(e.target.value)}
             placeholder={t('cm_avoid_ph')}
             className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>

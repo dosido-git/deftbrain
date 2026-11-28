@@ -575,8 +575,8 @@ function TripRecon({ tool }) {
                   )}
 
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
-                    <input type="text" value={location}
+                    <label htmlFor="tr-location" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_where_label')} <span className={c.required}>*</span></label>
+                    <input id="tr-location" type="text" value={location}
                       onChange={e => { setLocation(e.target.value); if (selectedRecent && e.target.value !== selectedRecent.location) setSelectedRecent(null); }}
                       placeholder={t('smm_where_ph')} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                     {pastVisitsHere.length > 0 && <p className={`text-xs mt-1.5 ${c.accentTxt}`}>📋 {t('smm_been_here_n', { count: pastVisitsHere.length })}</p>}
@@ -596,13 +596,13 @@ function TripRecon({ tool }) {
                   </div>
 
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                    <textarea value={knownInfo} onChange={e => setKnownInfo(e.target.value)} placeholder={t('smm_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                    <label htmlFor="tr-known-info" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <textarea id="tr-known-info" value={knownInfo} onChange={e => setKnownInfo(e.target.value)} placeholder={t('smm_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                   </div>
 
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                    <textarea value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder={t('smm_specific_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
+                    <label htmlFor="tr-specific-notes" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_anything_specific')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <textarea id="tr-specific-notes" value={specificNotes} onChange={e => setSpecificNotes(e.target.value)} placeholder={t('smm_specific_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                   </div>
 
                   {/* Place type + day/time — tucked away rather than removed.
@@ -632,12 +632,12 @@ function TripRecon({ tool }) {
 
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                          <input type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                          <label htmlFor="tr-visit-date" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_what_day')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                          <input id="tr-visit-date" type="date" value={visitDate} onChange={e => setVisitDate(e.target.value)} min={today} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                         </div>
                         <div>
-                          <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                          <input type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
+                          <label htmlFor="tr-visit-time" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_what_time')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                          <input id="tr-visit-time" type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)} className={`w-full p-3 border-2 rounded-xl focus:outline-none focus:ring-2 ${c.input}`} />
                         </div>
                       </div>
                     </div>
@@ -718,14 +718,14 @@ function TripRecon({ tool }) {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_start')} <span className={c.required}>*</span></label>
-                      <input type="text" value={routeStart}
+                      <label htmlFor="tr-route-start" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_start')} <span className={c.required}>*</span></label>
+                      <input id="tr-route-start" type="text" value={routeStart}
                         onChange={e => { setRouteStart(e.target.value); if (selectedRecentRoute && e.target.value !== selectedRecentRoute.routeStart) setSelectedRecentRoute(null); }}
                         className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                     </div>
                     <div>
-                      <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_destination')} <span className={c.required}>*</span></label>
-                      <input type="text" value={routeDestination}
+                      <label htmlFor="tr-route-destination" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_destination')} <span className={c.required}>*</span></label>
+                      <input id="tr-route-destination" type="text" value={routeDestination}
                         onChange={e => { setRouteDestination(e.target.value); if (selectedRecentRoute && e.target.value !== selectedRecentRoute.routeDestination) setSelectedRecentRoute(null); }}
                         className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                     </div>
@@ -743,8 +743,8 @@ function TripRecon({ tool }) {
                     </div>
                   </div>
                   <div>
-                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                    <input type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
+                    <label htmlFor="tr-route-when" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_when')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <input id="tr-route-when" type="text" value={routeWhen} onChange={e => setRouteWhen(e.target.value)} placeholder={t('smm_route_when_ph')} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                   </div>
                   <div>
                     <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_care_about')}</label>
@@ -758,8 +758,8 @@ function TripRecon({ tool }) {
                     {/* Own key, distinct from smm_known_label (used by the main
                         "Prepare for a Place" form) — reusing that key here said
                         "the place" on a screen asking about a route. */}
-                    <label className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
-                    <textarea value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
+                    <label htmlFor="tr-route-known-info" className={`block text-[15px] font-semibold mb-1.5 ${c.labelText}`}>{t('smm_route_known_label')} <span className={`text-xs font-normal normal-case ${c.textMuteded}`}>({t('smm_optional')})</span></label>
+                    <textarea id="tr-route-known-info" value={routeKnownInfo} onChange={e => setRouteKnownInfo(e.target.value)} placeholder={t('smm_route_known_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y ${c.input}`} />
                   </div>
                   <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
                     {routeLoading ? <span className="inline-block animate-spin text-xl">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🧭</span>}

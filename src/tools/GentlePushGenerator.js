@@ -545,7 +545,7 @@ const GentlePushGenerator = ({ tool }) => {
               <p className={`text-xs font-semibold ${c.text}`}>{t('gpg_push_day_title')} <span className={`font-normal ${c.textMuted}`}>{t('gpg_optional')}</span></p>
               <p className={`text-[13px] ${c.textMuted}`}>{t('gpg_push_day_hint')}</p>
             </div>
-            <select value={pushDay} onChange={e => setPushDay(e.target.value)} className={`text-xs p-2 rounded-lg border ${c.input}`}>
+            <select aria-label={t('gpg_push_day_title')} value={pushDay} onChange={e => setPushDay(e.target.value)} className={`text-xs p-2 rounded-lg border ${c.input}`}>
               <option value="">{t('gpg_push_day_off')}</option>
               {PUSH_DAYS.map(d => <option key={d.value} value={d.value}>{t(d.labelKey)}</option>)}
             </select>
@@ -584,19 +584,19 @@ const GentlePushGenerator = ({ tool }) => {
         </div>
 
         <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
-          <label className={`block text-sm font-semibold ${c.text}`}>
+          <label htmlFor="gpg-comfort-zone" className={`block text-sm font-semibold ${c.text}`}>
             {t('gpg_comfort_zone_label')} <span className={`font-normal ${c.textMuted}`}>{t('gpg_optional')}</span>
           </label>
-          <input value={comfortZone} onChange={e => setComfortZone(e.target.value)}
+          <input id="gpg-comfort-zone" value={comfortZone} onChange={e => setComfortZone(e.target.value)}
             placeholder={t('gpg_comfort_zone_ph')}
             className={`w-full p-3 rounded-xl border-2 ${c.input} text-sm outline-none`} />
         </div>
 
         <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
-          <label className={`block text-sm font-semibold ${c.text}`}>
+          <label htmlFor="gpg-growth-area" className={`block text-sm font-semibold ${c.text}`}>
             {t('gpg_growth_area_label')} <span className={c.required}>*</span>
           </label>
-          <input value={growthArea} onChange={e => setGrowthArea(e.target.value)}
+          <input id="gpg-growth-area" value={growthArea} onChange={e => setGrowthArea(e.target.value)}
             placeholder={t('gpg_growth_area_ph')}
             className={`w-full p-3 rounded-xl border-2 ${c.input} text-sm outline-none`} />
         </div>
@@ -609,7 +609,7 @@ const GentlePushGenerator = ({ tool }) => {
                 className={`flex-1 py-3 rounded-xl text-center transition-all ${capacity === cap.value ? c.tagActive : c.tag}`}>
                 <span className="block text-lg">{cap.icon}</span>
                 <span className="block text-xs font-medium mt-0.5">{t(cap.labelKey)}</span>
-                <span className={`block text-xs mt-0.5 ${capacity === cap.value ? 'text-white/75' : c.textMuted}`}>{t(cap.descKey)}</span>
+                <span className={`block text-xs mt-0.5 ${capacity === cap.value ? 'text-white' : c.textMuted}`}>{t(cap.descKey)}</span>
               </button>
             ))}
           </div>
@@ -813,10 +813,10 @@ const GentlePushGenerator = ({ tool }) => {
         )}
 
         <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
-          <label className={`block text-sm font-semibold ${c.text}`}>
+          <label htmlFor="gpg-what-happened" className={`block text-sm font-semibold ${c.text}`}>
             {attempted ? t('gpg_what_happened') : t('gpg_what_got_in_way')} <span className={`font-normal ${c.textMuted}`}>{t('gpg_optional')}</span>
           </label>
-          <textarea value={whatHappened} onChange={e => setWhatHappened(e.target.value)}
+          <textarea id="gpg-what-happened" value={whatHappened} onChange={e => setWhatHappened(e.target.value)}
             placeholder={attempted ? t('gpg_what_happened_ph') : t('gpg_what_got_in_way_ph')}
             className={`w-full p-3 rounded-xl border-2 ${c.input} text-sm resize-none outline-none`} rows={3} />
         </div>

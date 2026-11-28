@@ -267,8 +267,8 @@ const WhatsMyVibe = ({ tool }) => {
         </div>
 
         {/* Samples */} <div className="mb-5">
-          <label className={`text-sm font-bold ${c.labelText} block mb-1.5`}>{t('wmv_samples_label')} <span className={c.required}>*</span></label>
-          <textarea
+          <label htmlFor="wmv-samples" className={`text-sm font-bold ${c.labelText} block mb-1.5`}>{t('wmv_samples_label')} <span className={c.required}>*</span></label>
+          <textarea id="wmv-samples"
             value={samples} onChange={e => setSamples(e.target.value)} placeholder={t('wmv_samples_ph')} rows={8} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
           <p className={`text-[13px] ${c.textMuted} mt-1`}>
             {samples.length > 0 ? `${wordCount} ${t('wmv_words')} — ${wordQuality}` : t('wmv_hint_empty')} </p>

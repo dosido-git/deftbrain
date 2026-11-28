@@ -295,8 +295,8 @@ const HistoryToday = ({ tool }) => {
               <p data-print-hide className={`text-[13px] ${c.textMuted} mb-3`}>
                 {t('ht_xref_timewarp_pre')} <a href="/TimeWarp" className={linkStyle}>{t('ht_timewarp_link')}</a> {t('ht_xref_timewarp_post')}
               </p>
-              <label className={`block text-[15px] font-semibold ${c.text} mb-2`}>{t('ht_event_label')} <span className={c.required}>*</span></label>
-              <textarea value={event} onChange={e => setEvent(e.target.value)} rows={3}
+              <label htmlFor="ht-event" className={`block text-[15px] font-semibold ${c.text} mb-2`}>{t('ht_event_label')} <span className={c.required}>*</span></label>
+              <textarea id="ht-event" value={event} onChange={e => setEvent(e.target.value)} rows={3}
                 placeholder={t('ht_event_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-base resize-y focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
             </div>
@@ -314,10 +314,10 @@ const HistoryToday = ({ tool }) => {
               </div>
             </div>
             <div>
-              <label className={`block text-[15px] font-semibold ${c.textSecondary} mb-1.5`}>
+              <label htmlFor="ht-context" className={`block text-[15px] font-semibold ${c.textSecondary} mb-1.5`}>
                 {t('ht_angle_label')} <span className={`font-normal ${c.textMuteded}`}>{t('ht_optional')}</span>
               </label>
-              <input type="text" value={context} onChange={e => setContext(e.target.value)}
+              <input id="ht-context" type="text" value={context} onChange={e => setContext(e.target.value)}
                 placeholder={t('ht_angle_ph')}
                 className={`w-full p-3 border rounded-xl outline-none text-base focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
             </div>
