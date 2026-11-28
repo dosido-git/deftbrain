@@ -12,6 +12,20 @@ import './OrganizationsPage.css';
 // hidden. Nothing is kept after the tab closes.
 const SALES = 'sales@deftbrain.com';
 
+// Reports cover one finished calendar quarter (the server refuses any other
+// window, so two reports can never be subtracted). The last eight, newest first.
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const finishedQuarters = (now = new Date()) => {
+  let y = now.getUTCFullYear(); let q = Math.floor(now.getUTCMonth() / 3); // current quarter, 0-based
+  const out = [];
+  for (let i = 0; i < 8; i++) {
+    if (q === 0) { y -= 1; q = 4; }
+    out.push({ value: `${y}-Q${q}`, label: `${MONTHS[(q - 1) * 3]} to ${MONTHS[(q - 1) * 3 + 2]} ${y}` });
+    q -= 1;
+  }
+  return out;
+};
+
 export default function PartnerReportPage() {
   const { isDark, toggleTheme } = useTheme();
   useDocumentHead({ title: 'Partner usage report', description: 'Usage report for DeftBrain partners, by report code.', canonicalPath: '/partners/report' });
@@ -22,8 +36,8 @@ export default function PartnerReportPage() {
   }, []);
 
   const [code, setCode] = useState('');
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const quarters = finishedQuarters();
+  const [quarter, setQuarter] = useState(quarters[0].value);
   const [report, setReport] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | checking | wrong | closed | failed
   const resultRef = useRef(null);
@@ -35,7 +49,7 @@ export default function PartnerReportPage() {
     try {
       const res = await fetch('/api/partner-report', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.trim(), from: from || undefined, to: to || undefined }),
+        body: JSON.stringify({ code: code.trim(), quarter }),
       });
       if (res.ok) {
         setReport(await res.json());
@@ -81,8 +95,8 @@ export default function PartnerReportPage() {
                 onChange={e => { setCode(e.target.value); if (status !== 'checking') setStatus('idle'); }}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); open(); } }} />
             </label>
-            <label>From month (optional)<input type="month" value={from} onChange={e => setFrom(e.target.value)} /></label>
-            <label>To month (optional)<input type="month" value={to} onChange={e => setTo(e.target.value)} /></label>
+            <label className="org-quote-wide">Quarter<select value={quarter} onChange={e => setQuarter(e.target.value)}>{quarters.map(q => <option key={q.value} value={q.value}>{q.label}</option>)}</select></label>
+            <p className="org-quote-wide org-price-small">Reports cover whole quarters that have ended, so no two reports overlap and nobody can be singled out by comparing them. For a pilot's midpoint or final report, email us.</p>
             <div className="org-quote-wide org-quote-send">
               <button type="submit" className="org-btn org-btn-primary" disabled={status === 'checking' || !code.trim()}>{status === 'checking' ? 'Checking…' : 'See report →'}</button>
               <span role="status">

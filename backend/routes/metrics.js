@@ -10,7 +10,7 @@ const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 const { deviceInfo } = require('../lib/deviceInfo');
 const { isRealTool, TOOL_CATALOG } = require('../lib/toolCatalog');
-const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, sampleEvents, markSample } = require('../lib/partnerReport');
+const { quarterRange, lastQuarter, buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, sampleEvents, markSample } = require('../lib/partnerReport');
 const { REPORT_FILE, findEntry } = require('../lib/pricingCodes');
 const { resolvePartner, allPartnerIds } = require('../lib/partners');
 // A tool's topic for partner reports: its first catalog category.
@@ -1939,7 +1939,7 @@ router.get('/metrics/partner-report', rateLimit(METRIC_LIMITS, 'metrics-partner:
   res.set('Cache-Control', 'no-store').type('html').send(renderPartnerReportHTML(report, { toolTitles }));
 });
 
-// POST /api/partner-report { code, from?, to? } — the same report, opened by
+// POST /api/partner-report { code, quarter? ("2026-Q3", a finished quarter; default the last one) } — the same report, opened by
 // the partner itself with its own report code (partner perk, owner
 // 2026-11-27). Codes: backend/data/report-codes.json, hashed with
 // PRICING_CODE_SECRET (scripts/report-code.js). Returns the printable HTML.
@@ -1957,9 +1957,12 @@ router.post('/partner-report', rateLimit(PARTNER_REPORT_LIMITS, 'partner-report:
     logMetric('partner_report_access', { ok: false });
     return res.status(401).json({ error: 'wrong_code' });
   }
+  // Self-serve reports cover one finished calendar quarter: fixed windows that
+  // never overlap, so two reports can't be subtracted to reveal a hidden count.
+  const range = quarterRange(req.body.quarter || lastQuarter());
+  if (!range) return res.status(400).json({ error: 'bad_quarter' });
   logMetric('partner_report_access', { ok: true, partner: id });
-  const month = v => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : undefined);
-  const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: month(req.body.from), to: month(req.body.to), categoryOf: topicOf });
+  const report = buildPartnerReport(readMetrics(), id, { partner: partnerRec, from: range.from, to: range.to, categoryOf: topicOf });
   const toolTitles = Object.fromEntries(TOOL_CATALOG.map(t => [t.id, t.title]));
   res.json({ name: report.name, from: report.from, to: report.to, html: renderPartnerReportHTML(report, { toolTitles }), funderHtml: renderFunderSummaryHTML(report) });
 });

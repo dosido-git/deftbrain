@@ -3,7 +3,7 @@
 // started on the partner page, hides groups of 1-19, and hides a second cell
 // when one hidden number could be worked out from a shown total.
 const assert = require('node:assert');
-const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, suppressColumn } = require('../backend/lib/partnerReport');
+const { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, suppressColumn, quarterRange, lastQuarter } = require('../backend/lib/partnerReport');
 
 // suppressColumn
 assert.deepStrictEqual(suppressColumn([50, 5, 0], true), [null, null, 0], 'lone hidden cell takes the next-smallest with it');
@@ -31,9 +31,9 @@ const events = [
 
 const r = buildPartnerReport(events, 'acme', { partner: { name: 'Acme CU', tools: ['ScamRadar', 'BillRescue'] } });
 assert.strictEqual(r.from, '2026-11'); assert.strictEqual(r.to, '2026-12');
-assert.deepStrictEqual(r.totals, { visits: 69, active: 45, started: 66, finished: 35 });
+assert.deepStrictEqual(r.totals, { visits: 70, active: 45, started: 65, finished: 35 }, 'shown counts rounded to the nearest 5 (69, 66 raw)');
 assert.deepStrictEqual(r.byMonth.map(m => m.visits), [null, null], 'December (9) hidden, and November with it: 69 - 9 would give it back');
-assert.deepStrictEqual(r.byMonth.map(m => m.started), [66, 0]);
+assert.deepStrictEqual(r.byMonth.map(m => m.started), [65, 0]);
 const tool = Object.fromEntries(r.byExperience.map(x => [x.label, x]));
 assert.strictEqual(tool.ScamRadar.started, 40);
 assert.strictEqual(tool.BillRescue.started, null, '4 runs: hidden');
@@ -43,7 +43,7 @@ const link = Object.fromEntries(r.byLink.map(x => [x.label, x.visits]));
 assert.strictEqual(link.email, 30);
 assert.strictEqual(link.print, null);
 assert.strictEqual(link.staff, null, 'two small channels hide each other; no third cell needed');
-assert.strictEqual(link['no link (typed or bookmarked)'], 34);
+assert.strictEqual(link['no link (typed or bookmarked)'], 35, '34 rounded');
 
 const only = buildPartnerReport(events, 'acme', { partner: { tools: [] }, from: '2026-12', to: '2026-12' });
 assert.strictEqual(only.totals.visits, null, 'a total under 20 is hidden too');
@@ -54,8 +54,8 @@ assert.ok(html.includes('Scam Radar') && html.includes('fewer than 20') && !html
 const cat = { ScamRadar: 'Money', BillRescue: 'Money', PlainTalk: 'Learning' };
 const rt = buildPartnerReport(events, 'acme', { partner: { tools: ['ScamRadar'] }, categoryOf: id => cat[id] || null });
 const topic = Object.fromEntries(rt.byTopic.map(x => [x.label, x]));
-assert.strictEqual(topic.Money.started, 44, 'Scam Radar 40 + Bill Rescue 4');
-assert.strictEqual(topic.Learning.started, 22);
+assert.strictEqual(topic.Money.started, 45, 'Scam Radar 40 + Bill Rescue 4 = 44, rounded');
+assert.strictEqual(topic.Learning.started, 20, '22 rounded');
 assert.strictEqual(rt.byTopic[0].label, 'Money', 'most started first');
 assert.strictEqual(rt.byWeekday.length, 7);
 const day = Object.fromEntries(rt.byWeekday.map(x => [x.label, x.visits]));
@@ -83,7 +83,7 @@ const lone = buildPartnerReport(uevents, 'union/l1', { partner: { name: 'Local 1
 assert.strictEqual(lone.totals.visits, 25, 'a member sees only its own page');
 assert.strictEqual(lone.byMember, null);
 const fund = renderFunderSummaryHTML(rt);
-assert.ok(fund.includes('fewer than 20') || fund.includes('69'), 'funder summary uses the suppressed totals');
+assert.ok(fund.includes('fewer than 20') || fund.includes('70'), 'funder summary uses the suppressed totals');
 assert.ok(!fund.includes('/for/other'));
 // Trend: Money 25 in Oct, 40 in Nov -> rising; small months show no trend.
 const tev = [
@@ -95,4 +95,24 @@ const tr = buildPartnerReport(tev, 'acme', { partner: { tools: [] }, from: '2026
 assert.strictEqual(tr.byTopic.find(x => x.label === 'Money').trend, 'rising');
 assert.strictEqual(tr.byTopic.find(x => x.label === 'Learning').trend, null, 'under 20: no trend');
 assert.ok(renderPartnerReportHTML(tr).includes('Money (rising)'));
+// Sensitive package: package totals only, no experiences or topics.
+const sev = [
+  ...many(30, () => ev('tool_run', { path: '/GriefGuide' })),
+  ...many(25, () => ev('tool_run', { path: '/MentalHealthNavigator' })),
+];
+const sr = buildPartnerReport(sev, 'acme', { partner: { tools: ['MentalHealthNavigator', 'GriefGuide', 'NameThatFeeling'] }, categoryOf: () => 'Health & Wellness' });
+assert.strictEqual(sr.sensitive, true);
+assert.deepStrictEqual(sr.byExperience.map(x => x.label), ['All experiences in the package', 'Other DeftBrain experiences'], 'no per-experience rows');
+assert.strictEqual(sr.byExperience[0].started, 55);
+assert.deepStrictEqual(sr.byTopic, [], 'no topics');
+assert.ok(!renderPartnerReportHTML(sr).includes('GriefGuide') && !renderFunderSummaryHTML(sr).includes('Health'), 'nothing per tool or topic rendered');
+assert.strictEqual(r.sensitive, false);
+// Self-serve windows: finished calendar quarters only.
+const now = new Date('2026-11-27T12:00:00Z');
+assert.deepStrictEqual(quarterRange('2026-Q3', now), { from: '2026-07', to: '2026-09' });
+assert.strictEqual(quarterRange('2026-Q4', now), null, 'not over yet');
+assert.strictEqual(quarterRange('2026-07', now), null);
+assert.strictEqual(lastQuarter(now), '2026-Q3');
+assert.strictEqual(lastQuarter(new Date('2026-02-01T00:00:00Z')), '2025-Q4');
+assert.deepStrictEqual(quarterRange('2026-Q1', new Date('2026-04-01T00:00:00Z')), { from: '2026-01', to: '2026-03' }, 'a quarter opens the day after it ends');
 console.log('partner report: ok');

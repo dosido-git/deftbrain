@@ -12,6 +12,31 @@
 //   finished = guidance runs that finished (tool_complete)
 
 const MIN_GROUP = 20;
+// Shown counts are rounded to the nearest 5 (after small groups are hidden), so
+// subtracting one report from another can't recover an exact hidden number.
+const ROUND_TO = 5;
+const roundShown = v => (v === null || v === undefined ? v : Math.round(v / ROUND_TO) * ROUND_TO);
+
+// Tools in a sensitive package (Partner Center: "reported for the package as a
+// whole, never per experience"). A partner offering any of them gets package
+// totals only: no per-experience rows and no topics.
+const SENSITIVE_TOOLS = new Set(require('../../src/data/partnerCenter.json').packages.filter(p => p.sensitive).flatMap(p => p.tools));
+
+// The fixed windows a partner can open by itself: whole calendar quarters that
+// have ended. Windows that don't overlap can't be subtracted from each other.
+// "2026-Q3" → { from: '2026-07', to: '2026-09' }, or null if not a finished quarter.
+function quarterRange(q, now = new Date()) {
+  const m = /^(\d{4})-Q([1-4])$/.exec(String(q || ''));
+  if (!m) return null;
+  const y = Number(m[1]); const first = (Number(m[2]) - 1) * 3 + 1;
+  const to = `${y}-${String(first + 2).padStart(2, '0')}`;
+  if (to >= now.toISOString().slice(0, 7)) return null; // not over yet
+  return { from: `${y}-${String(first).padStart(2, '0')}`, to };
+}
+function lastQuarter(now = new Date()) {
+  const y = now.getUTCFullYear(); const q = Math.floor(now.getUTCMonth() / 3); // 0-based current quarter
+  return q === 0 ? `${y - 1}-Q4` : `${y}-Q${q}`;
+}
 const MEASURES = ['visits', 'active', 'started', 'finished'];
 
 const monthOf = at => (typeof at === 'string' ? at.slice(0, 7) : ''); // UTC month
@@ -155,13 +180,28 @@ function buildPartnerReport(events, partnerId, { partner = {}, from, to, categor
     byMember = Object.values(rowsAt).sort((a, b) => b.visits - a.visits || a.label.localeCompare(b.label));
   }
 
+  // Sensitive package: one row for the package, nothing per experience or topic.
+  const sensitive = pkg.some(id => SENSITIVE_TOOLS.has(id));
+  if (sensitive) {
+    const all = { label: 'All experiences in the package', started: 0, finished: 0 };
+    for (const id of pkg) { all.started += byTool[id].started; all.finished += byTool[id].finished; }
+    for (const id of Object.keys(byTool)) delete byTool[id];
+    byTool.all = all;
+    byTopic.length = 0;
+  }
+
   const t = suppressTable(byMonth, totals);
   const memberTable = byMember && suppressTable(byMember, { visits: totals.visits, started: totals.started, finished: totals.finished });
   const topics = suppressTable(byTopic, { started: totals.started, finished: totals.finished });
   const days = suppressTable(byWeekday, { visits: totals.visits });
   const tools = suppressTable([...Object.values(byTool), other], { started: totals.started, finished: totals.finished });
   const links = suppressTable(byLink, { visits: totals.visits });
+  for (const table of [t.rows, memberTable ? memberTable.rows : [], topics.rows, days.rows, tools.rows, links.rows]) {
+    for (const row of table) for (const k of MEASURES) if (k in row) row[k] = roundShown(row[k]);
+  }
+  for (const k of MEASURES) t.totals[k] = roundShown(t.totals[k]);
   return {
+    sensitive,
     partner: partnerId,
     name: partner.name || partnerId,
     from: start,
@@ -213,17 +253,17 @@ td,th{white-space:nowrap}td.name{white-space:normal;min-width:9em}
 <h2>By month</h2>
 ${table('Month', r.byMonth.map(m => ({ ...m, label: monthName(m.label, true) })), [['visits', 'Visits'], ['active', 'With activity'], ['started', 'Started'], ['finished', 'Finished']])}
 <h2>By experience</h2>
-${table('Experience', r.byExperience, [['started', 'Started'], ['finished', 'Finished']], x => toolTitles[x.label] || x.label)}
+${table('Experience', r.byExperience, [['started', 'Started'], ['finished', 'Finished']], x => toolTitles[x.label] || x.label)}${r.sensitive ? '<p class="sub" style="margin-top:6px">This package includes support and wellbeing experiences, so it is reported as a whole: no counts per experience and no topics.</p>' : ''}
 ${r.byMember ? `<h2>By member</h2>
 ${table('Member', r.byMember, [['visits', 'Visits'], ['started', 'Started'], ['finished', 'Finished']])}` : ''}
 <h2>What people came for</h2>
-${(r.byTopic || []).length ? table('Topic', r.byTopic, [['started', 'Started'], ['finished', 'Finished']], x => x.trend ? `${x.label} (${x.trend})` : x.label) : '<p>No guidance started in this period.</p>'}
+${r.sensitive ? '<p>Not shown for this package (reported as a whole).</p>' : (r.byTopic || []).length ? table('Topic', r.byTopic, [['started', 'Started'], ['finished', 'Finished']], x => x.trend ? `${x.label} (${x.trend})` : x.label) : '<p>No guidance started in this period.</p>'}
 ${(r.byTopic || []).some(x => x.trend) ? `<p class="sub" style="margin-top:6px">Rising or falling compares ${monthName(r.to)} with the month before, where both months have at least ${r.minGroup}.</p>` : ''}
 <h2>Busiest days</h2>
 ${table('Day (UTC)', r.byWeekday || [], [['visits', 'Visits']])}
 <h2>Where visits came from</h2>
 ${r.byLink.length ? table('Link', r.byLink, [['visits', 'Visits']]) : '<p>No visits in this period.</p>'}
-<p class="note">Totals only. Any group of 1 to ${r.minGroup - 1} is shown as “fewer than 20”, and where one hidden number could be worked out from a total, a second is hidden too. This report never includes what anyone typed or was shown, names, email or IP addresses. Months are calendar months in UTC. Prepared by DeftBrain.</p>
+<p class="note">Totals only. Any group of 1 to ${r.minGroup - 1} is shown as “fewer than 20”, and where one hidden number could be worked out from a total, a second is hidden too. Every other number is rounded to the nearest 5. This report never includes what anyone typed or was shown, names, email or IP addresses. Months are calendar months in UTC. Prepared by DeftBrain.</p>
 </body></html>`;
 }
 
@@ -258,11 +298,11 @@ ul{margin:0;padding-left:1.2rem}
 <div><b>${rate || n(T.finished)}</b><span>${rate ? 'of those reached a finished result' : 'finished results'}</span></div>
 </div>
 <h2>What people came for</h2>
-${topics.length ? `<ul>${topics.map(x => `<li>${esc(x.label)}: ${n(x.started)}</li>`).join('')}</ul>` : '<p>Not enough activity in this period to show topics without risking identifying anyone.</p>'}
+${r.sensitive ? '<p>Reported for the package as a whole, to protect the privacy of the people who used it.</p>' : topics.length ? `<ul>${topics.map(x => `<li>${esc(x.label)}: ${n(x.started)}</li>`).join('')}</ul>` : '<p>Not enough activity in this period to show topics without risking identifying anyone.</p>'}
 <h2>What the service is</h2>
 <p>DeftBrain is free, private, guided help for everyday situations: bills and paperwork, health visits, work and money decisions, difficult conversations. People answer a few questions and see what matters, what their options are and what to ask next. No account is needed, and the help is available in 13 languages, at any hour.</p>
 <h2>How these numbers were counted</h2>
-<p class="note" style="margin-top:0;border:0;padding:0">A visit is a browser session that started on ${esc(r.name)}'s DeftBrain page. Activity is counted for the whole session, including help the visitor opened after leaving that page. Any number from 1 to ${r.minGroup - 1} is shown as "fewer than 20", and where one hidden number could be worked out from a total, a second is hidden too. DeftBrain never records or reports what anyone typed or was shown, names, email or IP addresses. Months are calendar months in UTC. Prepared by DeftBrain from its own first-party usage counts.</p>
+<p class="note" style="margin-top:0;border:0;padding:0">A visit is a browser session that started on ${esc(r.name)}'s DeftBrain page. Activity is counted for the whole session, including help the visitor opened after leaving that page. Any number from 1 to ${r.minGroup - 1} is shown as "fewer than 20", and where one hidden number could be worked out from a total, a second is hidden too; other numbers are rounded to the nearest 5. DeftBrain never records or reports what anyone typed or was shown, names, email or IP addresses. Months are calendar months in UTC. Prepared by DeftBrain from its own first-party usage counts.</p>
 </body></html>`;
 }
 
@@ -311,4 +351,4 @@ function sampleEvents(partner, { months = 6, now = new Date() } = {}) {
 // The sample banner goes right after <body> so nobody mistakes it for real usage.
 const markSample = html => html.replace('<body>', '<body><p style="background:#fff4d6;border:1px solid #e3c77a;border-radius:8px;padding:8px 12px;font-size:14px;color:#5c4a12;margin:0 0 18px"><b>Sample report.</b> The organization and every number here are fictional, to show what a partner sees.</p>');
 
-module.exports = { buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, sampleEvents, markSample, suppressColumn, MIN_GROUP };
+module.exports = { quarterRange, lastQuarter, buildPartnerReport, renderPartnerReportHTML, renderFunderSummaryHTML, sampleEvents, markSample, suppressColumn, MIN_GROUP };
