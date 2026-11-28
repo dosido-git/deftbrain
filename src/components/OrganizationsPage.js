@@ -128,7 +128,6 @@ export default function OrganizationsPage({ allTools = [] }) {
           {MOMENTS.map((m,i) => <div key={m} className={`org-moment m${i+1}`}>“{m}”</div>)}
         </div>
         <h2 className="org-moments-caption">These are the types of moments DeftBrain was built for.</h2>
-        <p className="org-moments-pdf"><a className="org-text-link" href="/all-tools">Every tool on one page</a></p>
       </section>
 
       <section className="org-section org-shell org-intro">
