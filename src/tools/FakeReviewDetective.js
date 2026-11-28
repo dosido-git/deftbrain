@@ -825,7 +825,7 @@ const FakeReviewDetective = ({ tool }) => {
           </div></div>}
 
           {analysis.purchase_recommendation && <div className={`${analysis.purchase_recommendation.verdict === 'buy' ? c.success : analysis.purchase_recommendation.verdict === 'skip' ? c.danger : c.warning} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.purchase_recommendation.verdict === 'buy' ? '✅' : analysis.purchase_recommendation.verdict === 'skip' ? '🚫' : '⏸️'}</span><div>
-            <h4 className="text-sm font-bold mb-1">{t('frd_rec_label')}: {t(RECOMMENDATION_KEY[analysis.purchase_recommendation.verdict] || 'frd_rec_wait')} {analysis.purchase_recommendation.confidence && <span className="text-xs opacity-70">({analysis.purchase_recommendation.confidence})</span>}</h4>
+            <h4 className="text-sm font-bold mb-1">{t('frd_rec_label')}: {t(RECOMMENDATION_KEY[analysis.purchase_recommendation.verdict] || 'frd_rec_wait')} {analysis.purchase_recommendation.confidence && <span className="text-xs">({analysis.purchase_recommendation.confidence})</span>}</h4>
             <p className="text-sm">{analysis.purchase_recommendation.reasoning}</p>
           </div></div>}
         </div>
@@ -952,7 +952,7 @@ const FakeReviewDetective = ({ tool }) => {
             <div className={`${synthesis.unified_verdict === 'buy' ? c.success : synthesis.unified_verdict === 'skip' ? c.danger : c.warning} border-2 rounded-xl p-5 text-center`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-1`}>{t('frd_synth_verdict')}</p>
               <p className="text-3xl font-black">{synthesis.unified_trust_score}/100</p>
-              <p className="text-sm font-bold uppercase mt-1">{synthesis.unified_verdict} <span className="text-xs opacity-70">({synthesis.unified_confidence})</span></p>
+              <p className="text-sm font-bold uppercase mt-1">{synthesis.unified_verdict} <span className="text-xs">({synthesis.unified_confidence})</span></p>
             </div>
             {synthesis.consensus && <div className={`${c.success} border rounded-lg p-4`}><h4 className="text-sm font-bold mb-2">{t('frd_synth_consensus')}</h4><p className="text-sm mb-2">{synthesis.consensus.summary}</p>
               <div className="grid grid-cols-2 gap-3">

@@ -281,9 +281,6 @@ const ExCard = ({ ex, idx, swappable, exercisesDone, startTimer, handleSwap, loa
   return (
     <div
       onClick={() => startTimer(idx)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startTimer(idx); } }}
       className={`${c.cardLime} border ${c.borderLine} rounded-xl p-4 space-y-2 cursor-pointer hover:ring-2 ${isDark ? 'hover:ring-lime-500/50' : 'hover:ring-lime-400/50'} transition-all ${ex.swapped ? `ring-2 ${isDark ? 'ring-lime-500' : 'ring-lime-400'}` : ''}`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -291,7 +288,7 @@ const ExCard = ({ ex, idx, swappable, exercisesDone, startTimer, handleSwap, loa
           <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDone ? c.on : `${c.sec} border ${c.borderLine}`}`}>
             {isDone ? '✅' : idx + 1}
           </span>
-          <h4 className={`font-bold text-sm ${c.text} ${isDone ? 'line-through opacity-60' : ''}`}>{ex.name}</h4>
+          <h4 className={`font-bold text-sm ${c.text} ${isDone ? 'line-through' : ''}`}>{ex.name}</h4>
         </div>
         <span className={`text-xs px-2 py-0.5 rounded-full ${c.on}`}>{ex.duration}</span>
       </div>

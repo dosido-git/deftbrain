@@ -1669,10 +1669,10 @@ async function decrypt(){
                     <div className="flex-1 space-y-2">
                       <input ref={el => { accountInputRefs.current[i] = el; }} type="text" value={acc.name} onChange={e => updateAccount(acc.id, 'name', e.target.value)} placeholder={t('fws_ph_service_name')} className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
                       <div className="flex flex-wrap gap-2">
-                        <select value={acc.category} onChange={e => updateAccount(acc.id, 'category', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
+                        <select aria-label={t('fws_lbl_category')} value={acc.category} onChange={e => updateAccount(acc.id, 'category', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
                           {ACCOUNT_CATEGORIES.map(cat => <option key={cat.id} value={cat.id}>{cat.icon} {t(cat.labelKey)}</option>)}
                         </select>
-                        <select value={acc.priority} onChange={e => updateAccount(acc.id, 'priority', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
+                        <select aria-label={t('fws_lbl_priority')} value={acc.priority} onChange={e => updateAccount(acc.id, 'priority', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
                           <option value="critical">{t('fws_priority_critical')}</option><option value="important">{t('fws_priority_important')}</option><option value="nice-to-have">{t('fws_priority_nice')}</option>
                         </select>
                         {renderVisibilityTag(acc, updateAccount, acc.id)}
@@ -1787,7 +1787,7 @@ async function decrypt(){
                     <div className="flex-1 space-y-2">
                       <input ref={el => { financialInputRefs.current[i] = el; }} type="text" value={fin.name} onChange={e => updateFinancial(fin.id, 'name', e.target.value)} placeholder={t('fws_ph_account_name')} className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
                       <div className="flex flex-wrap gap-2">
-                        <select value={fin.type} onChange={e => updateFinancial(fin.id, 'type', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
+                        <select aria-label={t('fws_lbl_fin_type')} value={fin.type} onChange={e => updateFinancial(fin.id, 'type', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
                           <option value="bank">{t('fws_fintype_bank')}</option><option value="investment">{t('fws_fintype_investment')}</option><option value="debt">{t('fws_fintype_debt')}</option><option value="income">{t('fws_fintype_income')}</option><option value="insurance">{t('fws_fintype_insurance')}</option>
                         </select>
                         <input type="text" value={fin.institution} onChange={e => updateFinancial(fin.id, 'institution', e.target.value)} placeholder={t('fws_ph_institution')} className={`flex-1 min-w-[120px] px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`} />

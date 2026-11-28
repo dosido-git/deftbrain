@@ -1313,6 +1313,7 @@ const TheFinalWord = ({ tool }) => {
                     <p className={`text-[13px] ${c.textMuted}`}>{t('tfw_da_subtitle')}</p>
                   </div>
                   <button
+                    role="switch" aria-checked={devilsAdvocate} aria-label={t('tfw_da_title')}
                     onClick={() => setDevilsAdvocate(!devilsAdvocate)}
                     className={`w-12 h-6 rounded-full transition-all relative ${devilsAdvocate ? (sv ? 'bg-[var(--sc-strong)]' : 'bg-amber-500') : isDark ? 'bg-zinc-600' : 'bg-slate-300'}`}
                   >
