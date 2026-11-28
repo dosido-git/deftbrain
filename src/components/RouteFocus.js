@@ -46,6 +46,11 @@ export default function RouteFocus() {
   if (!views.current) views.current = loadViews();
   const y = useRef(typeof window === 'undefined' ? 0 : window.scrollY);
   const link = useRef(null);
+  // Scroll position when a link was clicked. A same-page #link jumps before the
+  // route change arrives, so by then `y` already holds the new position and Back
+  // would return to the section instead of the link (Organizations page,
+  // 2026-11-28).
+  const yAtClick = useRef(null);
   const current = useRef(null);
   const path = useRef(null);
   const cancel = useRef(() => {});
@@ -53,7 +58,7 @@ export default function RouteFocus() {
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
     const onScroll = () => { y.current = window.scrollY; };
-    const onClick = e => { const a = e.target.closest && e.target.closest('a[href]'); if (a) link.current = linkKey(a); };
+    const onClick = e => { const a = e.target.closest && e.target.closest('a[href]'); if (a) { link.current = linkKey(a); yAtClick.current = window.scrollY; } };
     const save = () => {
       if (current.current) views.current[current.current] = { y: window.scrollY, link: link.current };
       try { sessionStorage.setItem(STORE, JSON.stringify(views.current)); } catch (_) { /* no restore, nothing else */ }
@@ -91,10 +96,11 @@ export default function RouteFocus() {
     const samePage = path.current === location.pathname;
 
     if (!(navType === 'REPLACE' && samePage)) markArrival();
-    if (!firstLoad) views.current[current.current] = { y: y.current, link: link.current };
+    if (!firstLoad) views.current[current.current] = { y: link.current && yAtClick.current !== null ? yAtClick.current : y.current, link: link.current };
     current.current = id;
     path.current = location.pathname;
     link.current = null;
+    yAtClick.current = null;
 
     let saved = null;
     if (firstLoad) {

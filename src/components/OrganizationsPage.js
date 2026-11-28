@@ -5,7 +5,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import CENTER from '../data/partnerCenter.json';
-import { SCRAMBLE_COLORS, SCRAMBLE_SCALE, SCRAMBLE_TILT } from './HomeIntro';
 import './OrganizationsPage.css';
 
 const MOMENTS = [
@@ -17,11 +16,6 @@ const MOMENTS = [
   "What am I supposed to do next?",
 ];
 
-// The "one place to start" name field: the home page's Tool Scramble look, names only.
-// Deliberately different tools from the showcase and audience sections below,
-// so the page shows the range instead of repeating the same few (2026-11-26).
-const NAME_FIELD_IDS = ['PlantRescue','ToastWriter','BikeMedic','RoommateCourt','LaundroMat','DateNight','CultureBriefing','PronounceItRight','FocusPocus','HecklerPrep','LayoverMaximizer','DreamPatternSpotter'];
-
 // Matches the situations in the paragraph above it (bill, conversation,
 // message, purchase, medical visit, a problem that won't get answered).
 const SHOWCASE_IDS = ['MarkupDetective','ConflictCoach','DecoderRing','UpsellShield','DoctorVisitTranslator','ComplaintEscalationWriter','TripRecon','Mend'];
@@ -29,7 +23,7 @@ const SHOWCASE_IDS = ['MarkupDetective','ConflictCoach','DecoderRing','UpsellShi
 // Each `key` is also the section's id, so outreach can link straight to it
 // (deftbrain.com/organizations#libraries). Package ids are partnerCenter.json's.
 const AUDIENCES = [
-  { key:'credit-unions', people:'members', icon:'🏦', eyebrow:'Credit unions and banks', title:'Help members before they pay, sign or reply.',
+  { key:'credit-unions', people:'members', icon:'🏦', eyebrow:'Banks and credit unions', title:'Help members before they pay, sign or reply.',
     moments:'A text saying their account is locked. A medical bill that looks wrong. A dealer’s add-ons. A contractor’s quote.',
     copy:'Members already trust you with their money. DeftBrain gives them a calm place to look at a decision before it costs them, with your member-service line right beside it.',
     packages:['pay-or-reply','money-conversations'], tools:['ScamRadar','BillRescue','BuyWise'] },
@@ -128,24 +122,23 @@ export default function OrganizationsPage({ allTools = [] }) {
 
       <section className="org-hero org-shell">
         <div className="org-kicker">DEFTBRAIN FOR ORGANIZATIONS</div>
-        <h1>Practical guidance for the people you serve, whenever they’re unsure where to start.</h1>
+        <h1>Practical guidance for the people you serve, whenever they want direction.</h1>
         <div className="org-actions"><span>No AI expertise required.</span></div>
         <div className="org-moments" aria-label="Examples of everyday questions">
           {MOMENTS.map((m,i) => <div key={m} className={`org-moment m${i+1}`}>“{m}”</div>)}
         </div>
         <h2 className="org-moments-caption">These are the types of moments DeftBrain was built for.</h2>
-        <p className="org-moments-pdf"><a className="org-text-link" href="/all-tools">Every tool on one page</a> · <a className="org-text-link" href="/all-tools.pdf">Printable list (PDF)</a> · <a className="org-text-link" href="/all-tools-large.pdf">Large print</a></p>
+        <p className="org-moments-pdf"><a className="org-text-link" href="/all-tools">Every tool on one page</a></p>
       </section>
 
       <section className="org-section org-shell org-intro">
-        <div className="org-section-heading wide"><div className="org-kicker">EVERYDAY SUPPORT</div><h2>Help that doesn't fit neatly into a benefits category.</h2><p>People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain guides them through such moments.</p></div>
+        <div className="org-section-heading wide"><div className="org-kicker">EVERYDAY ASSISTANCE</div><h2>Help that doesn't fit neatly into a benefits category.</h2><p>People bring the rest of their lives with them—to work, to school, to the library, and everywhere else. A confusing bill. A difficult conversation. A suspicious message. A major purchase. A medical appointment. A problem with a landlord. DeftBrain guides them through such moments.</p></div>
         <div className="org-tool-grid">{showcase.map(t => <ToolMiniCard key={t.id} tool={t} />)}</div>
-        <div className="org-center"><Link className="org-text-link" to="/tools">Explore all DeftBrain tools →</Link></div>
       </section>
 
       <section className="org-section org-soft">
         <div className="org-shell">
-          <div className="org-section-heading centered"><div className="org-kicker">HOW IT WORKS</div><h2>Simple enough for <em>everyone</em> to use.</h2></div>
+          <div className="org-section-heading centered"><h2>Simple and diverse enough for <em>everyone</em> to use.</h2></div>
           <div className="org-steps">
             <article><b>1</b><h3>Select a tool to fit the situation.</h3><p>No prompt writing. No figuring out what to ask.</p></article>
             <article><b>2</b><h3>Answer a few thoughtful questions.</h3><p>DeftBrain asks for the information that matters.</p></article>
@@ -154,29 +147,9 @@ export default function OrganizationsPage({ allTools = [] }) {
         </div>
       </section>
 
-      <section className="org-section org-shell org-range">
-        {/* {allTools.length} → TOOL_COUNT_LABEL (2026-09-23): the site never
-            publishes the exact live catalog count in marketing copy — same
-            reason HomeIntro/NotFound/ToolRenderer all use this rounded
-            "120+"-style label instead of the real number. This line is
-            exactly that context (a headline stat in a sales pitch), so it
-            gets the same treatment. */}
-        <div className="org-section-heading centered"><div className="org-kicker">ONE RESOURCE.</div><h2>An extraordinary range of help.</h2><p><strong>{TOOL_COUNT_LABEL} tools.</strong> Hundreds of guides. Easy to find. Easy to use.</p></div>
-        <div className="org-scramble">{NAME_FIELD_IDS.map(id => byId[id]).filter(Boolean).map((t, i) => {
-          const accent = SCRAMBLE_COLORS[i % SCRAMBLE_COLORS.length];
-          return (
-            <Link key={t.id} to={`/${t.id}`} className="org-scramble-item" style={{ '--accent': accent, '--scale': SCRAMBLE_SCALE[i % SCRAMBLE_SCALE.length], '--tilt': `${SCRAMBLE_TILT[i % SCRAMBLE_TILT.length]}deg` }}>
-              <span className="org-scramble-name">{t.title}</span>
-              {/* Picture preview on hover or keyboard focus only; a tap just opens the tool. */}
-              <span className="org-scramble-pop" aria-hidden="true"><img src={`/scramble/${t.id}.webp`} alt="" loading="lazy" onError={e => { e.currentTarget.parentElement.style.display = 'none'; }} /><b>{t.tagline}</b></span>
-            </Link>
-          );
-        })}</div>
-      </section>
-
       <section className="org-section org-soft" aria-labelledby="org-who-title">
         <div className="org-shell">
-          <div className="org-section-heading centered"><div className="org-kicker">FOR ORGANIZATIONS</div><h2 id="org-who-title">Built for organizations that help people.</h2><p>Each kind of organization hears different questions. Here is what yours might bring to DeftBrain.</p></div>
+          <div className="org-section-heading centered"><h2 id="org-who-title">Built for organizations that help people.</h2><p>Some examples:</p></div>
           <nav className="org-tabs" aria-label="Kinds of organization">{AUDIENCES.map(a => <a key={a.key} href={`/organizations#${a.key}`}><span aria-hidden="true">{a.icon}</span>{a.eyebrow}</a>)}</nav>
         </div>
       </section>
@@ -201,7 +174,7 @@ export default function OrganizationsPage({ allTools = [] }) {
                 </div>
               </div>
               {/* Without this line the three cards read as the whole package. */}
-              <p className="org-aud-sample">A few of the {TOOL_COUNT_LABEL} tools {a.people} might open first. These are examples, not the package: every partner page keeps the rest of DeftBrain one click away.</p>
+              <p className="org-aud-sample">A few of the {TOOL_COUNT_LABEL} tools {a.people} might open first. These are examples, not the package: all of DeftBrain is one click away.</p>
               <div className="org-sample-grid">{a.tools.map(id => <ToolMiniCard key={id} tool={byId[id]} />)}</div>
             </div>
           </section>
