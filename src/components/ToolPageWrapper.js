@@ -146,7 +146,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     textSecondary: isDark ? 'text-zinc-400' : 'text-stone-600',
     // zinc-400 (not 500): zinc-500 on zinc-900 is 3.67:1 — fails WCAG AA for
     // the ← Dashboard back-link and other small muted text in dark mode.
-    textMuted: isDark ? 'text-zinc-400' : 'text-stone-500',
+    textMuted: isDark ? 'text-zinc-400' : 'text-stone-600', // stone-500 was 4.32:1 on the tool card (WCAG AA needs 4.5)
     
     // Borders
     border: isDark ? 'border-zinc-700' : 'border-[#e4ddd2]',
